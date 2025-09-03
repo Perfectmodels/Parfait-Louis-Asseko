@@ -1,6 +1,9 @@
 import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction } from '../types';
 import { AcademicCapIcon, CameraIcon, FilmIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
+export const siteConfig = {
+  logo: "https://scontent.flbv4-1.fna.fbcdn.net/v/t39.30808-6/480946208_616728137878198_6925216743970681454_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=Xdd3awvCFt0Q7kNvwHpuuDQ&_nc_oc=Adm_abWZUBmndkqPgQqAANPoVYJr_cywMJ4f46IymB8i5WdaMTmXujfCfavpMkxdXUY&_nc_zt=23&_nc_ht=scontent.flbv4-1.fna&_nc_gid=NXsz3tNyennzi34_OegkXQ&oh=00_AfYFEt2IZUh-gUou3D3EJeOcW8i2LMHJ2z6rB7fWGrvwZA&oe=68BD499C"
+};
 
 export const models: Model[] = [
     { id: 'rosnel-akoma-ayo', name: 'Akoma Ayo Rosnel', age: 23, height: "1m90", gender: 'Homme', location: 'Charbonnage', imageUrl: 'https://i.ibb.co/7FcrvPf/AJC-4643.jpg' },

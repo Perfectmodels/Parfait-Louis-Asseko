@@ -11,6 +11,7 @@ import Magazine from './pages/Magazine';
 import Formations from './pages/Activity';
 import Contact from './pages/Contact';
 import Casting from './pages/Casting';
+import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 
 const ScrollToTop: React.FC = () => {
@@ -38,6 +39,7 @@ const App: React.FC = () => {
           <Route path="/formations" element={<Formations />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/casting" element={<Casting />} />
+          <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

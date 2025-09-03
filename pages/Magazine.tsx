@@ -1,8 +1,14 @@
 import React from 'react';
+import SEO from '../components/SEO';
 
 const Magazine: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+      <SEO 
+        title="Magazine Focus Model 241"
+        description="Plongez dans l'univers de la mode gabonaise avec le magazine Focus Model 241. Interviews exclusives, tendances, et coulisses des événements."
+        keywords="magazine mode Gabon, Focus Model 241, interview mannequin, tendances mode africaine"
+      />
       <header className="bg-black py-8 border-b-2 border-pm-gold">
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-5xl font-playfair text-pm-gold tracking-widest">FOCUS MODEL 241</h1>

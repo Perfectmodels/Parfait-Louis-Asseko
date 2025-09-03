@@ -1,10 +1,15 @@
-
 import React from 'react';
 import { MapPinIcon, DevicePhoneMobileIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
+import SEO from '../components/SEO';
 
 const Contact: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+      <SEO 
+        title="Contact"
+        description="Contactez l'agence Perfect Models Management pour toute demande de booking, partenariat ou information. Nous sommes à votre écoute."
+        keywords="contacter agence mannequin, booking mannequin, partenariat mode, contact PMM"
+      />
       <div className="container mx-auto px-6">
         <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Contactez-Nous</h1>
         <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">

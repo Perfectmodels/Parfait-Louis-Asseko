@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { models, agencyInfo, agencyPartners, fashionDayEvents } from '../constants/data';
 import ModelCard from '../components/ModelCard';
+import SEO from '../components/SEO';
 
 // Dummy data for magazine articles since it's hardcoded in Magazine.tsx
 const magazineArticles = [
@@ -32,6 +32,12 @@ const Home: React.FC = () => {
 
   return (
     <div className="text-pm-off-white">
+      <SEO 
+        title="Accueil"
+        description="Agence de mannequins à Libreville, Gabon. Découvrez nos talents, événements exclusifs comme le Perfect Fashion Day, et notre magazine Focus Model 241."
+        keywords="agence de mannequins, mannequin Gabon, Perfect Models Management, mode Libreville, casting mannequin"
+      />
+
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-[url('https://i.ibb.co/vvc0k6TQ/titostyle-36.jpg')] bg-fixed">
         <div className="absolute inset-0 bg-pm-dark/80"></div>

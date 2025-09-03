@@ -1,8 +1,9 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CountdownTimer from '../components/CountdownTimer';
 import { CalendarDaysIcon, ClockIcon, MapPinIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import SEO from '../components/SEO';
+import { siteConfig } from '../constants/data';
 
 const Casting: React.FC = () => {
   const castingDate = "2025-09-06T14:00:00";
@@ -29,6 +30,12 @@ const Casting: React.FC = () => {
 
   return (
     <div className="bg-pm-dark text-pm-off-white">
+      <SEO 
+        title="Grand Casting National 2025"
+        description="Participez au grand casting national de Perfect Models Management le 6 septembre 2025. Toutes les informations et conditions de participation."
+        keywords="casting mannequin Gabon, devenir mannequin Libreville, casting PMM 2025, agence de casting"
+        image={posterUrl}
+      />
       {/* Hero Section */}
       <section 
         className="relative min-h-[70vh] flex items-center justify-center text-center bg-cover bg-center bg-no-repeat"
