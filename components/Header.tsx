@@ -61,7 +61,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-pm-dark/95 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'}`}>
+      <header className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-pm-dark/95 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'}`}>
         <div className="container mx-auto px-6 py-2 flex justify-between items-center">
           <Link to="/">
             <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />
