@@ -48,3 +48,34 @@ export interface ModelDistinction {
     name: string;
     titles: string[];
 }
+
+// Types for Magazine Feature
+export type ArticleContent = 
+  | { type: 'heading'; level: 2 | 3; text: string }
+  | { type: 'paragraph'; text: string }
+  | { type: 'quote'; text: string; author?: string };
+
+export interface Article {
+  slug: string;
+  title: string;
+  category: string;
+  excerpt: string;
+  imageUrl: string;
+  author: string;
+  date: string;
+  content: ArticleContent[];
+}
+
+
+// Types for Classroom feature
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+}
+
+export interface Module {
+  title: string;
+  chapters: { title: string; content: string }[];
+  quiz: QuizQuestion[];
+}

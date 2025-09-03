@@ -8,6 +8,7 @@ import Models from './pages/Models';
 import ModelDetail from './pages/ModelDetail';
 import FashionDay from './pages/FashionDay';
 import Magazine from './pages/Magazine';
+import ArticleDetail from './pages/ArticleDetail';
 import Formations from './pages/Activity';
 import Contact from './pages/Contact';
 import Casting from './pages/Casting';
@@ -36,6 +37,7 @@ const App: React.FC = () => {
           <Route path="/mannequins/:id" element={<ModelDetail />} />
           <Route path="/fashion-day" element={<FashionDay />} />
           <Route path="/magazine" element={<Magazine />} />
+          <Route path="/magazine/:slug" element={<ArticleDetail />} />
           <Route path="/formations" element={<Formations />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/casting" element={<Casting />} />
