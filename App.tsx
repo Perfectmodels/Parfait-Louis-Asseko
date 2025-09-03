@@ -21,6 +21,7 @@ import AdminModels from './pages/AdminModels';
 import AdminMagazine from './pages/AdminMagazine';
 import AdminClassroom from './pages/AdminClassroom';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminSettings from './pages/AdminSettings';
 
 
 const ScrollToTop: React.FC = () => {
@@ -58,6 +59,7 @@ const App: React.FC = () => {
             <Route path="/admin/mannequins" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
             <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
             <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
+            <Route path="/admin/parametres" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Module, Chapter } from '../types';
@@ -13,7 +12,7 @@ const AdminClassroom: React.FC = () => {
 
   useEffect(() => {
     if (isInitialized && data?.courseData) {
-      setCourse(JSON.parse(JSON.stringify(data.courseData))); // Deep copy
+      setCourse(JSON.parse(JSON.stringify(data.courseData)));
       setOpenModule(0);
     }
   }, [isInitialized, data?.courseData]);
@@ -112,7 +111,7 @@ const AdminClassroom: React.FC = () => {
                  <button onClick={handleAddModule} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
                     <PlusIcon className="w-5 h-5"/> Ajouter un Module
                 </button>
-                <button onClick={handleSave} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
+                <button onClick={handleSave} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/30">
                     Sauvegarder les Changements
                 </button>
             </div>
@@ -120,7 +119,7 @@ const AdminClassroom: React.FC = () => {
 
         <div className="space-y-4">
           {course.map((module, moduleIndex) => (
-            <div key={module.slug} className="bg-black border border-pm-gold/20 overflow-hidden">
+            <div key={module.slug} className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
                  <button
                     onClick={() => setOpenModule(openModule === moduleIndex ? null : moduleIndex)}
                     className="w-full flex justify-between items-center p-4 text-left text-xl font-bold text-pm-gold hover:bg-pm-gold/5"
@@ -128,16 +127,16 @@ const AdminClassroom: React.FC = () => {
                     <span>Module {moduleIndex+1}: {module.title}</span>
                     <ChevronDownIcon className={`w-6 h-6 transition-transform duration-300 ${openModule === moduleIndex ? 'rotate-180' : ''}`} />
                 </button>
-                 <div className={`transition-all duration-500 ease-in-out ${openModule === moduleIndex ? 'max-h-full visible' : 'max-h-0 invisible'}`}>
+                 <div className={`transition-all duration-500 ease-in-out ${openModule === moduleIndex ? 'max-h-[5000px] visible' : 'max-h-0 invisible'}`}>
                     <div className="p-4 border-t border-pm-gold/20 space-y-6">
-                        <div className="flex justify-between items-end gap-4">
+                        <div className="flex justify-between items-end gap-4 bg-pm-dark p-4 rounded-md">
                             <div className="flex-grow">
                                 <FormInput label="Titre du Module" value={module.title} onChange={(e) => handleModuleChange(moduleIndex, 'title', e.target.value)} />
                             </div>
                             <button onClick={() => handleDeleteModule(moduleIndex)} className="text-red-500/70 hover:text-red-500 p-2"><TrashIcon className="w-5 h-5"/> Supprimer Module</button>
                         </div>
                         
-                        <div className="pt-4 border-t border-pm-dark">
+                        <div className="pt-4 border-t border-pm-dark/50">
                              <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-bold text-pm-gold">Chapitres</h3>
                                 <button onClick={() => handleAddChapter(moduleIndex)} className="inline-flex items-center gap-2 px-3 py-1 bg-pm-dark border border-pm-gold/50 text-pm-gold/80 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark">
@@ -145,7 +144,7 @@ const AdminClassroom: React.FC = () => {
                                 </button>
                              </div>
                             {module.chapters.map((chapter, chapterIndex) => (
-                                <div key={chapter.slug} className="p-4 bg-pm-dark space-y-3 border border-pm-off-white/10 mb-4">
+                                <div key={chapter.slug} className="p-4 bg-pm-dark space-y-3 border border-pm-off-white/10 mb-4 rounded-md">
                                     <div className="flex justify-between items-center">
                                         <h4 className="text-md font-semibold text-pm-off-white/80">Chapitre {chapterIndex + 1}</h4>
                                         <button onClick={() => handleDeleteChapter(moduleIndex, chapterIndex)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
@@ -168,13 +167,13 @@ const AdminClassroom: React.FC = () => {
 const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
         <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <input type="text" value={value} onChange={onChange} className="w-full bg-pm-dark border border-pm-off-white/20 p-2 focus:outline-none focus:border-pm-gold" />
+        <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
 const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
         <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <textarea value={value} onChange={onChange} rows={10} className="w-full bg-pm-dark border border-pm-off-white/20 p-2 focus:outline-none focus:border-pm-gold" />
+        <textarea value={value} onChange={onChange} rows={10} className="admin-input admin-textarea" />
     </div>
 );
 
