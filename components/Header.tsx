@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
+import { siteConfig } from '../constants/data';
 
 const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => {
   const activeLinkStyle = {
@@ -17,7 +17,7 @@ const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => {
       <NavLink to="/mannequins" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Mannequins</NavLink>
       <NavLink to="/fashion-day" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Perfect Fashion Day</NavLink>
       <NavLink to="/magazine" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Magazine</NavLink>
-      <NavLink to="/formations" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Formations</NavLink>
+      <NavLink to="/formations" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Classroom</NavLink>
       <NavLink to="/casting" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Casting</NavLink>
       <NavLink to="/contact" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Contact</NavLink>
     </>
@@ -43,9 +43,9 @@ const Header: React.FC = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isOpen ? 'bg-pm-dark/95 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'}`}>
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold font-playfair text-pm-gold tracking-wider">
-          Perfect Models
+      <div className="container mx-auto px-6 py-2 flex justify-between items-center">
+        <Link to="/">
+          <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />
         </Link>
         <nav className="hidden md:flex items-center space-x-8 text-pm-off-white uppercase text-sm tracking-widest">
           <NavLinks />

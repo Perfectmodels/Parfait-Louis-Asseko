@@ -2,12 +2,18 @@ import React, { useState } from 'react';
 import { fashionDayEvents } from '../constants/data';
 import ImageCarousel from '../components/ImageCarousel';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon } from '@heroicons/react/24/outline';
+import SEO from '../components/SEO';
 
 const FashionDay: React.FC = () => {
   const [selectedEdition, setSelectedEdition] = useState(fashionDayEvents[0]);
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20">
+      <SEO 
+        title="Perfect Fashion Day"
+        description="Revivez les éditions du Perfect Fashion Day, l'événement mode incontournable au Gabon. Découvrez les thèmes, les stylistes et les moments forts."
+        keywords="Perfect Fashion Day, défilé de mode Gabon, événement mode Libreville, stylistes gabonais"
+      />
       <div className="container mx-auto px-6">
         <h1 className="text-6xl font-playfair text-pm-gold text-center mb-4">Perfect Fashion Day</h1>
         <p className="text-center text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-12">

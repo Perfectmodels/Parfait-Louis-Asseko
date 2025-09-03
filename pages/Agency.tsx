@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { agencyTimeline, agencyInfo, modelDistinctions, agencyServices, agencyAchievements, agencyPartners } from '../constants/data';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction, Service } from '../types';
+import SEO from '../components/SEO';
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <h2 className="text-4xl font-playfair text-pm-gold text-center mb-12">{children}</h2>
@@ -12,6 +12,11 @@ const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 const Agency: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20">
+      <SEO 
+        title="L'Agence"
+        description="Découvrez l'histoire, les valeurs, les services et les réalisations de Perfect Models Management, l'agence qui façonne l'avenir de la mode au Gabon."
+        keywords="histoire agence mannequin, services mannequinat, valeurs PMM, agence de mode Gabon"
+      />
       <div className="container mx-auto px-6 space-y-24">
 
         {/* À Propos */}
