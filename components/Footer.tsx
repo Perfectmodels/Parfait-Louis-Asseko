@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { socialLinks } from '../constants/data';
+import { socialLinks, siteConfig, navLinks } from '../constants/data';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
 
 const Footer: React.FC = () => {
@@ -11,7 +10,9 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Section */}
           <div>
-            <h3 className="text-xl font-playfair text-pm-gold mb-4">Perfect Models Management</h3>
+            <Link to="/">
+              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto mb-4" />
+            </Link>
             <p className="text-sm">
               Fondée en 2021 à Libreville, notre agence se consacre à la formation, la valorisation et l'accompagnement des talents de la mode africaine.
             </p>
@@ -21,12 +22,13 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-bold text-pm-off-white mb-4 uppercase tracking-wider">Liens Rapides</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/agence" className="hover:text-pm-gold transition-colors">L'Agence</Link></li>
-              <li><Link to="/mannequins" className="hover:text-pm-gold transition-colors">Nos Mannequins</Link></li>
-              <li><Link to="/fashion-day" className="hover:text-pm-gold transition-colors">Perfect Fashion Day</Link></li>
-              <li><Link to="/casting" className="hover:text-pm-gold transition-colors">Casting 2025</Link></li>
-              <li><Link to="/formations" className="hover:text-pm-gold transition-colors">Classroom</Link></li>
-              <li><Link to="/contact" className="hover:text-pm-gold transition-colors">Contact</Link></li>
+              {navLinks.filter(link => link.inFooter).map(link => (
+                <li key={link.path}>
+                  <Link to={link.path} className="hover:text-pm-gold transition-colors">
+                    {link.footerLabel}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
