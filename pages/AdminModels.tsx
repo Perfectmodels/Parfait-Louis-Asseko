@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Model } from '../types';
+import { Model, AIAssistantProps } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import AIAssistant from '../components/AIAssistant';
 
 const AdminModels: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -125,6 +125,7 @@ interface ModelFormProps {
 
 const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreating }) => {
     const [formData, setFormData] = useState<Model>(model);
+    const [assistantProps, setAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'> | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -137,6 +138,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
     };
 
     return (
+        <>
          <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <div className="container mx-auto px-6 max-w-2xl">
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Ajouter un mannequin' : 'Modifier le mannequin'}</h1>
@@ -147,7 +149,17 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     <FormInput label="Âge" name="age" type="number" value={formData.age || ''} onChange={handleChange} />
                     <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange} options={['Femme', 'Homme']} />
                     <FormInput label="Lieu" name="location" value={formData.location || ''} onChange={handleChange} />
-                    <FormTextArea label="Distinctions (une par ligne)" name="distinctions" value={Array.isArray(formData.distinctions) ? formData.distinctions.join('\n') : ''} onChange={(e) => setFormData(p => ({...p, distinctions: e.target.value.split('\n').filter(line => line.trim() !== '')}))} />
+                    <FormTextArea 
+                        label="Distinctions (une par ligne)" 
+                        name="distinctions" 
+                        value={Array.isArray(formData.distinctions) ? formData.distinctions.join('\n') : ''} 
+                        onChange={(e) => setFormData(p => ({...p, distinctions: e.target.value.split('\n').filter(line => line.trim() !== '')}))}
+                        onAssistantClick={() => setAssistantProps({
+                            fieldName: 'Distinctions',
+                            initialPrompt: `Génère une liste de 2 à 3 distinctions ou titres prestigieux pour un mannequin nommé ${formData.name}. Sois créatif et professionnel.`,
+                            onInsertContent: (content) => setFormData(p => ({...p, distinctions: content.split('\n').filter(line => line.trim() !== '')}))
+                        })}
+                    />
 
                     <div className="flex justify-end gap-4 pt-4">
                         <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
@@ -156,6 +168,8 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </form>
             </div>
         </div>
+        {assistantProps && <AIAssistant isOpen={!!assistantProps} onClose={() => setAssistantProps(null)} {...assistantProps} />}
+       </>
     );
 };
 
@@ -165,9 +179,16 @@ const FormInput: React.FC<{label: string, name: string, value: any, onChange: an
         <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any}> = ({label, name, value, onChange}) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, onAssistantClick?: () => void}> = ({label, name, value, onChange, onAssistantClick}) => (
     <div>
-        <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+        <div className="flex justify-between items-center mb-1">
+            <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            {onAssistantClick && (
+                <button type="button" onClick={onAssistantClick} className="flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
+        </div>
         <textarea id={name} name={name} value={value} onChange={onChange} rows={4} className="admin-input admin-textarea" />
     </div>
 );

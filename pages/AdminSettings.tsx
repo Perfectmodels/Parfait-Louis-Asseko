@@ -1,16 +1,18 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
+import { AIAssistantProps } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import AIAssistant from '../components/AIAssistant';
 
 type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData'>;
 
 const AdminSettings: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localData, setLocalData] = useState<EditableData | null>(null);
+    const [assistantProps, setAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'> | null>(null);
 
     useEffect(() => {
         if (isInitialized && data) {
@@ -52,6 +54,7 @@ const AdminSettings: React.FC = () => {
     }
 
     return (
+        <>
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Paramètres du Site" />
             <div className="container mx-auto px-6">
@@ -96,7 +99,16 @@ const AdminSettings: React.FC = () => {
                                     <FormInput label="Nom" value={item.name} onChange={e => onChange('name', e.target.value)} />
                                     <FormInput label="Rôle" value={item.role} onChange={e => onChange('role', e.target.value)} />
                                     <FormInput label="URL Image" value={item.imageUrl} onChange={e => onChange('imageUrl', e.target.value)} />
-                                    <FormTextArea label="Citation" value={item.quote} onChange={e => onChange('quote', e.target.value)} />
+                                    <FormTextArea 
+                                        label="Citation" 
+                                        value={item.quote} 
+                                        onChange={e => onChange('quote', e.target.value)} 
+                                        onAssistantClick={() => setAssistantProps({
+                                            fieldName: `Témoignage de ${item.name}`,
+                                            initialPrompt: `Rédige un témoignage court, authentique et positif pour ${item.name}, qui est "${item.role}" chez nous. Le témoignage doit mettre en avant le professionnalisme, l'esprit de famille ou les opportunités offertes par l'agence.`,
+                                            onInsertContent: (content) => onChange('quote', content)
+                                        })}
+                                    />
                                 </>
                             )}
                             getNewItem={() => ({ name: 'Nouveau Témoin', role: 'Rôle', quote: '', imageUrl: ''})}
@@ -106,6 +118,8 @@ const AdminSettings: React.FC = () => {
                 </div>
             </div>
         </div>
+        {assistantProps && <AIAssistant isOpen={!!assistantProps} onClose={() => setAssistantProps(null)} {...assistantProps} />}
+        </>
     );
 };
 
@@ -116,15 +130,29 @@ const SectionWrapper: React.FC<{ title: string, children: React.ReactNode }> = (
     </div>
 );
 
-const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormInput: React.FC<{label: string, value: any, onChange: any, onAssistantClick?: () => void}> = ({label, value, onChange, onAssistantClick}) => (
     <div>
-        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+        <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            {onAssistantClick && (
+                <button type="button" onClick={onAssistantClick} className="flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
+        </div>
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormTextArea: React.FC<{label: string, value: any, onChange: any, onAssistantClick?: () => void}> = ({label, value, onChange, onAssistantClick}) => (
     <div>
-        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+        <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            {onAssistantClick && (
+                <button type="button" onClick={onAssistantClick} className="flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
+        </div>
         <textarea value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
     </div>
 );
