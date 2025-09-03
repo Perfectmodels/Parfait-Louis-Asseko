@@ -10,8 +10,13 @@ const Login: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'pmm2025' || password === 'mannequins2025') {
+    if (password === 'pmm2025') {
       sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'admin');
+      navigate('/formations');
+    } else if (password === 'mannequins2025') {
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'student');
       navigate('/formations');
     } else {
       setError('Mot de passe incorrect.');
