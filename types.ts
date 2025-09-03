@@ -93,3 +93,13 @@ export interface Testimonial {
   quote: string;
   imageUrl: string;
 }
+
+// Types for AI Assistant
+export interface AIAssistantProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onInsertContent: (content: string) => void;
+  fieldName: string;
+  initialPrompt: string;
+  jsonSchema?: any;
+}
