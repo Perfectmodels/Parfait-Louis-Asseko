@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useData } from '../contexts/DataContext';
 
@@ -18,7 +17,7 @@ const Marquee: React.FC = () => {
       ...fashionDayEvents.flatMap(e => e.stylists?.map(s => s.name) || []),
       ...fashionDayEvents.flatMap(e => e.partners?.map(p => p.name) || []),
       ...fashionDayEvents.map(e => e.theme),
-      ...agencyPartners,
+      ...agencyPartners.map(p => p.name),
     ]),
   ].filter(Boolean); // Filter out any potential undefined/null values
 

@@ -1,13 +1,17 @@
-
 import React, { useState } from 'react';
 import { MapPinIcon, DevicePhoneMobileIcon, EnvelopeIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
+import { useData } from '../contexts/DataContext';
 
 const Contact: React.FC = () => {
+  const { data, isInitialized } = useData();
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const contactInfo = data?.contactInfo;
+  const apiKeys = data?.apiKeys;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -16,8 +20,8 @@ const Contact: React.FC = () => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!process.env.BREVO_API_KEY) {
-      setError("La configuration du service d'envoi est manquante. Veuillez contacter l'administrateur.");
+    if (!apiKeys?.emailApiKey) {
+      setError("La configuration du service d'envoi d'email (Clé API) est manquante. Veuillez la configurer dans le panel d'administration (Paramètres du Site > Clés API).");
       return;
     }
     
@@ -26,23 +30,24 @@ const Contact: React.FC = () => {
 
     try {
       const payload = {
-        sender: { name: formData.name, email: formData.email },
-        to: [{ email: 'contact@perfectmodels.ga' }],
+        from: `contact@perfectmodels.ga`,
+        to: contactInfo?.email || 'contact@perfectmodels.ga',
         subject: `Nouveau message de contact de ${formData.name}`,
-        htmlContent: `<div style="font-family: sans-serif;">
+        html: `<div style="font-family: sans-serif;">
                         <h2>Nouveau Message de Contact</h2>
                         <p><strong>Nom:</strong> ${formData.name}</p>
-                        <p><strong>Email:</strong> ${formData.email}</p>
+                        <p><strong>Email (à utiliser pour répondre):</strong> ${formData.email}</p>
                         <p><strong>Message:</strong></p>
                         <p style="white-space: pre-wrap; background: #f4f4f4; padding: 15px; border-radius: 5px;">${formData.message}</p>
                       </div>`,
       };
 
-      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      const response = await fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'api-key': process.env.BREVO_API_KEY,
+          'content-type': 'application/json',
+          'x-rapidapi-host': 'octopus-mail.p.rapidapi.com',
+          'x-rapidapi-key': apiKeys.emailApiKey,
         },
         body: JSON.stringify(payload),
       });
@@ -60,6 +65,10 @@ const Contact: React.FC = () => {
       setIsLoading(false);
     }
   };
+  
+  if (!isInitialized || !contactInfo) {
+      return <div className="min-h-screen bg-pm-dark" />;
+  }
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -106,9 +115,9 @@ const Contact: React.FC = () => {
             <div className="md:w-1/2">
               <h3 className="text-2xl font-playfair text-pm-gold mb-6">Nos Coordonnées</h3>
               <div className="space-y-4 text-pm-off-white/90 text-lg">
-                <p className="flex items-center gap-4"><EnvelopeIcon className="w-6 h-6 text-pm-gold"/> Contact@perfectmodels.ga</p>
-                <p className="flex items-center gap-4"><DevicePhoneMobileIcon className="w-6 h-6 text-pm-gold"/> +241 074066461</p>
-                <p className="flex items-center gap-4"><MapPinIcon className="w-6 h-6 text-pm-gold"/> Ancien Sobraga, Libreville, Gabon</p>
+                <p className="flex items-center gap-4"><EnvelopeIcon className="w-6 h-6 text-pm-gold"/> {contactInfo.email}</p>
+                <p className="flex items-center gap-4"><DevicePhoneMobileIcon className="w-6 h-6 text-pm-gold"/> {contactInfo.phone}</p>
+                <p className="flex items-center gap-4"><MapPinIcon className="w-6 h-6 text-pm-gold"/> {contactInfo.address}</p>
               </div>
               <div className="mt-8 h-64 bg-pm-dark border border-pm-gold/50 flex items-center justify-center text-pm-gold/50 rounded-lg">
                  <iframe 

@@ -5,6 +5,7 @@ import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import AIAssistant from '../components/AIAssistant';
+import ImageInput from '../components/ImageInput';
 
 const AdminModels: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -18,7 +19,8 @@ const AdminModels: React.FC = () => {
     }
   }, [data?.models, isInitialized]);
 
-  const handleFormSave = (modelToSave: Model) => {
+  const handleFormSave = async (modelToSave: Model) => {
+    if (!data) return;
     let updatedModels;
     if (isCreating) {
       const newModel = { ...modelToSave, id: modelToSave.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now() };
@@ -26,21 +28,21 @@ const AdminModels: React.FC = () => {
     } else {
       updatedModels = localModels.map(m => m.id === modelToSave.id ? modelToSave : m);
     }
-    setLocalModels(updatedModels);
+    
+    await saveData({ ...data, models: updatedModels });
+    alert("Mannequin enregistré avec succès.");
+
     setEditingModel(null);
     setIsCreating(false);
   };
 
-  const handleDelete = (modelId: string) => {
+  const handleDelete = async (modelId: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce mannequin ?")) {
-      setLocalModels(prevModels => prevModels.filter(m => m.id !== modelId));
+      if (!data) return;
+      const updatedModels = localModels.filter(m => m.id !== modelId);
+      await saveData({ ...data, models: updatedModels });
+      alert("Mannequin supprimé avec succès.");
     }
-  };
-
-  const handleSaveChanges = () => {
-    if (!data) return;
-    saveData({ ...data, models: localModels });
-    alert("Changements enregistrés pour la session actuelle. N'oubliez pas d'exporter le code depuis le dashboard pour les rendre permanents.");
   };
 
   const handleStartCreate = () => {
@@ -73,9 +75,6 @@ const AdminModels: React.FC = () => {
           <div className="flex items-center gap-4">
             <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
               <PlusIcon className="w-5 h-5"/> Ajouter Mannequin
-            </button>
-            <button onClick={handleSaveChanges} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/30">
-              Sauvegarder les Changements
             </button>
           </div>
         </div>
@@ -131,6 +130,10 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
+    
+    const handleImageChange = (value: string) => {
+        setFormData(prev => ({ ...prev, imageUrl: value }));
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -144,7 +147,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Ajouter un mannequin' : 'Modifier le mannequin'}</h1>
                 <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
                     <FormInput label="Nom" name="name" value={formData.name} onChange={handleChange} />
-                    <FormInput label="URL de l'image" name="imageUrl" value={formData.imageUrl} onChange={handleChange} />
+                    <ImageInput label="Photo" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
                     <FormInput label="Âge" name="age" type="number" value={formData.age || ''} onChange={handleChange} />
                     <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange} options={['Femme', 'Homme']} />

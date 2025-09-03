@@ -2,6 +2,10 @@
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, PhotoIcon, UserIcon, ArrowsRightLeftIcon, DocumentCheckIcon, EnvelopeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { storage } from '../firebaseConfig';
+import { useData } from '../contexts/DataContext';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { CastingApplication } from '../types';
 
 const initialFormData = {
   firstName: '',
@@ -29,19 +33,11 @@ const initialFormData = {
 };
 
 type FormData = typeof initialFormData;
+type PhotoUrls = { photoPortraitUrl: string | null; photoFullBodyUrl: string | null; photoProfileUrl: string | null };
 
-const toBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const result = reader.result as string;
-      resolve(result.split(',')[1]);
-    };
-    reader.onerror = error => reject(error);
-  });
 
 const CastingForm: React.FC = () => {
+  const { data, saveData } = useData();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -75,11 +71,11 @@ const CastingForm: React.FC = () => {
     }
   };
   
-  const createHtmlBody = (data: FormData): string => {
+  const createHtmlBody = (data: FormData, photoUrls: PhotoUrls): string => {
       return `
         <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
             <h1 style="color: #D4AF37;">Nouvelle Candidature Casting</h1>
-            <p>Une nouvelle candidature a été soumise via le site web.</p>
+            <p>Une nouvelle candidature a été soumise via le site web et sauvegardée dans le panel d'administration.</p>
             
             <h2 style="color: #D4AF37; border-bottom: 1px solid #eee; padding-bottom: 5px;">Informations Personnelles</h2>
             <table cellpadding="5">
@@ -109,6 +105,11 @@ const CastingForm: React.FC = () => {
                 <tr><td><strong>Instagram:</strong></td><td><a href="https://instagram.com/${data.instagram.replace('@','')}">${data.instagram || 'N/A'}</a></td></tr>
                 <tr><td><strong>Portfolio:</strong></td><td><a href="${data.portfolioLink}">${data.portfolioLink || 'N/A'}</a></td></tr>
             </table>
+
+            <h2 style="color: #D4AF37; border-bottom: 1px solid #eee; padding-bottom: 5px;">Photos</h2>
+            <p><strong>Portrait:</strong> ${photoUrls.photoPortraitUrl ? `<a href="${photoUrls.photoPortraitUrl}">Voir la photo</a>` : 'Non fournie'}</p>
+            <p><strong>Plein-pied:</strong> ${photoUrls.photoFullBodyUrl ? `<a href="${photoUrls.photoFullBodyUrl}">Voir la photo</a>` : 'Non fournie'}</p>
+            <p><strong>Profil:</strong> ${photoUrls.photoProfileUrl ? `<a href="${photoUrls.photoProfileUrl}">Voir la photo</a>` : 'Non fournie'}</p>
         </div>
       `;
   }
@@ -120,8 +121,8 @@ const CastingForm: React.FC = () => {
         return;
     }
 
-    if (!process.env.BREVO_API_KEY) {
-        setError("La configuration du service d'envoi est manquante. Veuillez contacter l'administrateur.");
+    if (!data?.apiKeys?.emailApiKey) {
+        setError("La configuration du service d'envoi d'email (Clé API) est manquante. Veuillez la configurer dans le panel d'administration (Paramètres du Site > Clés API).");
         return;
     }
     
@@ -129,37 +130,62 @@ const CastingForm: React.FC = () => {
     setError(null);
 
     try {
-        const attachments = [];
-        if(formData.photoPortrait) {
-            attachments.push({ name: formData.photoPortrait.name, content: await toBase64(formData.photoPortrait) });
-        }
-        if(formData.photoFullBody) {
-            attachments.push({ name: formData.photoFullBody.name, content: await toBase64(formData.photoFullBody) });
-        }
-        if(formData.photoProfile) {
-            attachments.push({ name: formData.photoProfile.name, content: await toBase64(formData.photoProfile) });
-        }
-
-        const payload = {
-            sender: { name: 'Candidature PMM', email: 'contact@perfectmodels.ga' },
-            to: [{ email: 'contact@perfectmodels.ga' }],
-            subject: `Nouvelle Candidature Casting - ${formData.firstName} ${formData.lastName}`,
-            htmlContent: createHtmlBody(formData),
-            attachment: attachments,
+        const uploadFile = async (file: File | null): Promise<string | null> => {
+            if (!file) return null;
+            const storageRef = ref(storage, `casting-uploads/${Date.now()}-${file.name}`);
+            const snapshot = await uploadBytes(storageRef, file);
+            return await getDownloadURL(snapshot.ref);
         };
 
-        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        const [photoPortraitUrl, photoFullBodyUrl, photoProfileUrl] = await Promise.all([
+            uploadFile(formData.photoPortrait),
+            uploadFile(formData.photoFullBody),
+            uploadFile(formData.photoProfile),
+        ]);
+
+        const newApplication: Omit<CastingApplication, 'agreedToTerms'> = {
+            id: Date.now().toString(),
+            submissionDate: new Date().toISOString(),
+            status: 'Nouveau',
+            ...formData,
+            photoPortraitUrl,
+            photoFullBodyUrl,
+            photoProfileUrl,
+        };
+        
+        // Remove file objects before saving to db
+        delete (newApplication as any).photoPortrait;
+        delete (newApplication as any).photoFullBody;
+        delete (newApplication as any).photoProfile;
+
+        const currentApplications = data.castingApplications ? Object.values(data.castingApplications) : [];
+        const updatedApplications = [...currentApplications, newApplication];
+
+        await saveData({ ...data, castingApplications: updatedApplications });
+
+
+        const htmlContent = createHtmlBody(formData, { photoPortraitUrl, photoFullBodyUrl, photoProfileUrl });
+
+        const payload = {
+            from: 'casting@perfectmodels.ga',
+            to: 'contact@perfectmodels.ga',
+            subject: `Nouvelle Candidature Casting - ${formData.firstName} ${formData.lastName}`,
+            html: htmlContent,
+        };
+
+        const response = await fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json',
+                'x-rapidapi-host': 'octopus-mail.p.rapidapi.com',
+                'x-rapidapi-key': data.apiKeys.emailApiKey,
             },
             body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Une erreur est survenue lors de l\'envoi.');
+            throw new Error(errorData.message || 'Une erreur est survenue lors de l\'envoi de l\'email de notification.');
         }
 
         setIsSubmitted(true);

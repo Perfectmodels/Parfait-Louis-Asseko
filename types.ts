@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export interface Model {
@@ -34,7 +35,7 @@ export interface FashionDayEvent {
 }
 
 export interface Service {
-  icon: React.ElementType;
+  icon: string;
   title: string;
   description: string;
 }
@@ -92,6 +93,63 @@ export interface Testimonial {
   role: string;
   quote: string;
   imageUrl: string;
+}
+
+// Types for Site Settings
+export interface ContactInfo {
+  email: string;
+  phone: string;
+  address: string;
+}
+
+export interface SiteImages {
+  hero: string;
+  about: string;
+  fashionDayBg: string;
+  agencyHistory: string;
+  classroomBg: string;
+  castingBg: string;
+}
+
+export interface Partner {
+  name: string;
+}
+
+export interface ApiKeys {
+  emailApiKey: string;
+}
+
+export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Refusé';
+
+export interface CastingApplication {
+  id: string;
+  submissionDate: string;
+  status: CastingApplicationStatus;
+  
+  // From form
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  email: string;
+  phone: string;
+  nationality: string;
+  city: string;
+  height: string;
+  weight: string;
+  chest: string;
+  waist: string;
+  hips: string;
+  shoeSize: string;
+  eyeColor: string;
+  hairColor: string;
+  experience: string;
+  instagram: string;
+  portfolioLink: string;
+
+  // Photo URLs from storage
+  photoPortraitUrl: string | null;
+  photoFullBodyUrl: string | null;
+  photoProfileUrl: string | null;
 }
 
 // FIX: Added missing AIAssistantProps interface to resolve import errors.

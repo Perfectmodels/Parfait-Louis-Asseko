@@ -1,9 +1,31 @@
-import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial } from '../types';
+
+import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication } from '../types';
 import { AcademicCapIcon, CameraIcon, FilmIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 export const siteConfig = {
   logo: "https://i.ibb.co/dKqY7b4/PMM-logo-2024.png"
 };
+
+export const contactInfo: ContactInfo = {
+    email: "Contact@perfectmodels.ga",
+    phone: "+241 074066461",
+    address: "Ancien Sobraga, Libreville, Gabon"
+};
+
+export const siteImages: SiteImages = {
+    hero: "https://i.ibb.co/vvc0k6TQ/titostyle-36.jpg",
+    about: "https://i.ibb.co/hR9Sfy5Q/agstyle-15.jpg",
+    fashionDayBg: "https://i.ibb.co/LDm73BY2/ventex-44.jpg",
+    agencyHistory: "https://i.ibb.co/hR9Sfy5Q/agstyle-15.jpg",
+    classroomBg: "https://i.ibb.co/b5LgVZgr/DSC-0090.jpg",
+    castingBg: "https://scontent.flbv4-1.fna.fbcdn.net/v/t39.30808-6/514264614_759289996955344_5265340269840402279_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_ohc=sHlbDXhATdoQ7kNvwFNMON0&_nc_oc=Adn6E0CBc-ktIORu8wXsZYEVX2NHwhr-i6a8_-HrnHG7KFvZmBwwipx9U-45LsTgHQQ&_nc_zt=23&_nc_ht=scontent.flbv4-1.fna&_nc_gid=U7zZZJjuuJK94I7YBa38Dw&oh=00_AfYPvNJbdSgcqD19D2NYVeRiIXkPGj0hzkoDVL8VDw49Dg&oe=68BD4C7A"
+};
+
+export const apiKeys: ApiKeys = {
+    emailApiKey: ""
+};
+
+export const castingApplications: CastingApplication[] = [];
 
 export const navLinks = [
   { path: '/', label: 'Accueil', inFooter: false },
@@ -123,12 +145,12 @@ export const modelDistinctions: ModelDistinction[] = [
 ];
 
 export const agencyServices: Service[] = [
-    { icon: UserGroupIcon, title: "Développement de carrière", description: "Recrutement, encadrement, élaboration de plans de carrière et création de books professionnels." },
-    { icon: AcademicCapIcon, title: "Formations & Coaching", description: "Ateliers de défilé, posture, expression corporelle, confiance en soi et mentorat personnalisé." },
-    { icon: CameraIcon, title: "Production Photo & Vidéo", description: "Organisation de shootings, réalisation de portraits éditoriaux et création de contenu promotionnel." },
-    { icon: SparklesIcon, title: "Événementiel & Défilés", description: "Organisation de castings, défilés, concours de beauté et coordination de prestations artistiques." },
-    { icon: ScaleIcon, title: "Services aux Entreprises", description: "Location de mannequins pour campagnes publicitaires, partenariat avec stylistes et marques." },
-    { icon: GlobeAltIcon, title: "International & Prestige", description: "Représentation de nos mannequins à l’international et castings pour des marques de luxe (en développement)." },
+    { icon: "UserGroupIcon", title: "Développement de carrière", description: "Recrutement, encadrement, élaboration de plans de carrière et création de books professionnels." },
+    { icon: "AcademicCapIcon", title: "Formations & Coaching", description: "Ateliers de défilé, posture, expression corporelle, confiance en soi et mentorat personnalisé." },
+    { icon: "CameraIcon", title: "Production Photo & Vidéo", description: "Organisation de shootings, réalisation de portraits éditoriaux et création de contenu promotionnel." },
+    { icon: "SparklesIcon", title: "Événementiel & Défilés", description: "Organisation de castings, défilés, concours de beauté et coordination de prestations artistiques." },
+    { icon: "ScaleIcon", title: "Services aux Entreprises", description: "Location de mannequins pour campagnes publicitaires, partenariat avec stylistes et marques." },
+    { icon: "GlobeAltIcon", title: "International & Prestige", description: "Représentation de nos mannequins à l’international et castings pour des marques de luxe (en développement)." },
 ];
 
 export const agencyAchievements: AchievementCategory[] = [
@@ -137,16 +159,15 @@ export const agencyAchievements: AchievementCategory[] = [
     { name: "Collaborations Photo", items: ["Edele A – Collection Un Air d’été", "Tito Style – Collection Africa", "Vanella Fashion", "Vi Design", "Alban Design", "Issée by Lita", "Muni Design (Kenya)", "Maysah (Côte d’Ivoire)", "Angèle Epouta", "Angelina Créations", "Joha Fashion", "Traxel (Dakar)"] }
 ];
 
-// FIX: Added missing agencyPartners export to resolve import errors.
-export const agencyPartners: string[] = [
-  "La Gare du Nord",
-  "Darain Visuals",
-  "AG Style",
-  "Farel MD",
-  "Ventex Custom",
-  "Miguel Fashion Style",
-  "Tito Style",
-  "Alban Design"
+export const agencyPartners: Partner[] = [
+  { name: "La Gare du Nord" },
+  { name: "Darain Visuals" },
+  { name: "AG Style" },
+  { name: "Farel MD" },
+  { name: "Ventex Custom" },
+  { name: "Miguel Fashion Style" },
+  { name: "Tito Style" },
+  { name: "Alban Design" }
 ];
 
 export const testimonials: Testimonial[] = [

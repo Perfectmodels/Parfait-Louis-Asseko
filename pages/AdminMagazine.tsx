@@ -5,6 +5,7 @@ import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import AIAssistant from '../components/AIAssistant';
+import ImageInput from '../components/ImageInput';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -18,7 +19,8 @@ const AdminMagazine: React.FC = () => {
     }
   }, [data?.articles, isInitialized]);
 
-  const handleFormSave = (articleToSave: Article) => {
+  const handleFormSave = async (articleToSave: Article) => {
+    if (!data) return;
     let updatedArticles;
     if (isCreating) {
         const newArticle = { ...articleToSave, slug: articleToSave.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') + '-' + Date.now() };
@@ -26,23 +28,23 @@ const AdminMagazine: React.FC = () => {
     } else {
         updatedArticles = localArticles.map(a => a.slug === articleToSave.slug ? articleToSave : a);
     }
-    setLocalArticles(updatedArticles);
+    
+    await saveData({ ...data, articles: updatedArticles });
+    alert("Article enregistré avec succès.");
+
     setEditingArticle(null);
     setIsCreating(false);
   };
 
-  const handleDelete = (slug: string) => {
+  const handleDelete = async (slug: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
-      setLocalArticles(prevArticles => prevArticles.filter(a => a.slug !== slug));
+      if (!data) return;
+      const updatedArticles = localArticles.filter(a => a.slug !== slug);
+      await saveData({ ...data, articles: updatedArticles });
+      alert("Article supprimé avec succès.");
     }
   };
   
-  const handleSaveChanges = () => {
-    if (!data) return;
-    saveData({ ...data, articles: localArticles });
-    alert("Changements enregistrés pour la session actuelle. N'oubliez pas d'exporter le code depuis le dashboard pour les rendre permanents.");
-  };
-
   const handleStartCreate = () => {
     setIsCreating(true);
     setEditingArticle({
@@ -76,9 +78,6 @@ const AdminMagazine: React.FC = () => {
             <div className="flex items-center gap-4">
                  <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
                     <PlusIcon className="w-5 h-5"/> Ajouter Article
-                </button>
-                <button onClick={handleSaveChanges} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/30">
-                    Sauvegarder les Changements
                 </button>
             </div>
         </div>
@@ -128,6 +127,10 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
+    
+    const handleImageChange = (value: string) => {
+        setFormData(prev => ({ ...prev, imageUrl: value }));
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -150,7 +153,7 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
                         initialPrompt: 'Génère 5 suggestions de titres accrocheurs pour un article de magazine de mode sur le sujet : ',
                         onInsertContent: (content) => setFormData(p => ({...p, title: content.split('\n')[0]}))
                     })} />
-                    <FormInput label="URL de l'image" name="imageUrl" value={formData.imageUrl} onChange={handleChange} />
+                    <ImageInput label="Image de l'article" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormInput label="Catégorie" name="category" value={formData.category} onChange={handleChange} />
                     <FormTextArea label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange} onAssistantClick={() => setAssistantProps({
                         fieldName: 'Extrait',

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
@@ -10,9 +9,13 @@ const Login: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'pmm2025' || password === 'mannequins2025') {
+    if (password === 'admin2025') {
       sessionStorage.setItem('classroom_access', 'granted');
-      sessionStorage.setItem('classroom_role', 'student'); // Grant student role for all valid passwords
+      sessionStorage.setItem('classroom_role', 'admin');
+      navigate('/admin');
+    } else if (password === 'pmm2025' || password === 'mannequins2025') {
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'student');
       navigate('/formations');
     } else {
       setError('Mot de passe incorrect.');
@@ -25,9 +28,9 @@ const Login: React.FC = () => {
       <div className="w-full max-w-md mx-auto px-6">
         <div className="bg-black p-8 md:p-12 border border-pm-gold/20 text-center">
           <LockClosedIcon className="w-16 h-16 text-pm-gold mx-auto mb-6" />
-          <h1 className="text-4xl font-playfair text-pm-gold mb-4">Accès au Classroom</h1>
+          <h1 className="text-4xl font-playfair text-pm-gold mb-4">Accès Privé</h1>
           <p className="text-pm-off-white/80 mb-8">
-            Veuillez entrer le mot de passe pour accéder aux modules de formation.
+            Veuillez entrer le mot de passe pour accéder à votre espace (Classroom ou Admin).
           </p>
           <form onSubmit={handleLogin} className="space-y-6">
             <input
