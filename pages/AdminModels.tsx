@@ -86,8 +86,8 @@ const AdminModels: React.FC = () => {
                         <tr className="border-b border-pm-gold/20">
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Photo</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Nom</th>
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Taille</th>
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Genre</th>
+                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Taille</th>
+                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Genre</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 text-right">Actions</th>
                         </tr>
                     </thead>
@@ -96,8 +96,8 @@ const AdminModels: React.FC = () => {
                             <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
                                 <td className="p-2"><img src={model.imageUrl} alt={model.name} className="w-12 h-16 object-cover rounded-md"/></td>
                                 <td className="p-4 font-semibold">{model.name}</td>
-                                <td className="p-4 text-pm-off-white/80">{model.height}</td>
-                                <td className="p-4 text-pm-off-white/80">{model.gender}</td>
+                                <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{model.height}</td>
+                                <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{model.gender}</td>
                                 <td className="p-4">
                                     <div className="flex items-center justify-end gap-4">
                                         <button onClick={() => { setEditingModel(model); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>

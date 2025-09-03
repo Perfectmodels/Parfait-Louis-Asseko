@@ -1,6 +1,7 @@
 
+
 import { useState, useEffect, useCallback } from 'react';
-import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication } from '../types';
+import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication } from '../types';
 import { db } from '../firebaseConfig';
 import { ref, get, set } from 'firebase/database';
 
@@ -21,7 +22,8 @@ import {
     contactInfo as initialContactInfo,
     siteImages as initialSiteImages,
     apiKeys as initialApiKeys,
-    castingApplications as initialCastingApplications
+    castingApplications as initialCastingApplications,
+    fashionDayApplications as initialFashionDayApplications
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -45,6 +47,7 @@ export interface AppData {
   siteImages: SiteImages;
   apiKeys: ApiKeys;
   castingApplications: CastingApplication[];
+  fashionDayApplications: FashionDayApplication[];
 }
 
 const getSeedData = (): AppData => ({
@@ -66,6 +69,7 @@ const getSeedData = (): AppData => ({
   siteImages: initialSiteImages,
   apiKeys: initialApiKeys,
   castingApplications: initialCastingApplications,
+  fashionDayApplications: initialFashionDayApplications,
 });
 
 export const useDataStore = () => {
@@ -87,6 +91,7 @@ export const useDataStore = () => {
             ...fetchedData,
             // Convert Firebase objects to arrays where necessary
             castingApplications: fetchedData.castingApplications ? Object.values(fetchedData.castingApplications) : [],
+            fashionDayApplications: fetchedData.fashionDayApplications ? Object.values(fetchedData.fashionDayApplications) : [],
             // Explicitly merge nested objects to prevent them from being completely overwritten
             siteConfig: { ...seedData.siteConfig, ...fetchedData.siteConfig },
             socialLinks: { ...seedData.socialLinks, ...fetchedData.socialLinks },
