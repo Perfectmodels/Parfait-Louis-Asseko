@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale-1.0" />
     <title>Perfect Models Management</title>
     
     <!-- SEO & Social Sharing Meta Tags -->
@@ -45,6 +45,13 @@
         background-color: #111111;
         color: #F4F4F4;
         font-family: 'Montserrat', sans-serif;
+      }
+      @keyframes marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-100%); }
+      }
+      .animate-marquee {
+        animation: marquee 150s linear infinite;
       }
     </style>
   <script type="importmap">
