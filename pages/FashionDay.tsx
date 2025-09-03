@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import ImageCarousel from '../components/ImageCarousel';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon } from '@heroicons/react/24/outline';
