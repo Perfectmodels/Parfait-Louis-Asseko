@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Article } from '../types';
@@ -31,17 +32,15 @@ const AdminMagazine: React.FC = () => {
   };
 
   const handleDelete = (slug: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ? N'oubliez pas de sauvegarder les changements.")) {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
       setLocalArticles(prevArticles => prevArticles.filter(a => a.slug !== slug));
     }
   };
   
   const handleSaveChanges = () => {
     if (!data) return;
-    if (window.confirm("Sauvegarder toutes les modifications apportées au magazine ?")) {
-      saveData({ ...data, articles: localArticles });
-      alert("Magazine mis à jour avec succès !");
-    }
+    saveData({ ...data, articles: localArticles });
+    alert("Changements enregistrés pour la session actuelle. N'oubliez pas d'exporter le code depuis le dashboard pour les rendre permanents.");
   };
 
   const handleStartCreate = () => {

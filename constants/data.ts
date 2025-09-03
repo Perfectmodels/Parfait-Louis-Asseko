@@ -18,38 +18,35 @@ export const navLinks = [
 
 export const models: Model[] = [
     { id: 'rosnel-akoma-ayo', name: 'Akoma Ayo Rosnel', age: 23, height: "1m90", gender: 'Homme', location: 'Charbonnage', imageUrl: 'https://i.ibb.co/7FcrvPf/AJC-4643.jpg' },
-    { id: 'mirabelle-medame-mba', name: 'Medame Mba Mirabelle', age: 27, height: "1m77", gender: 'Femme', location: 'Nzeng-Ayong', imageUrl: 'https://i.ibb.co/Pv0JsH4m/AJC-4593.jpg' },
-    { id: 'ruth-jussy-nyamete-towene', name: 'NYAMETE TOWENE Ruth Jussy', age: 21, height: "1m77", gender: 'Femme', location: 'PG2', imageUrl: 'https://picsum.photos/800/1200?random=3', distinctions: ['Meilleur Mannequin Espoir du Gabon', 'Miss Tourisme Ogooué-Maritime', 'Deuxième dauphine Miss Tourisme Gabon'] },
-    { id: 'sadia-christelle-benga-eneme', name: 'Benga Eneme Désirée Sadia', age: 22, height: "1m68", gender: 'Femme', location: 'Alibandeng', imageUrl: 'https://i.ibb.co/1t6zbJm3/484135904-630949926456019-7069478021622378576-n.jpg' },
-    { id: 'annie-flora-okamba-pembe', name: 'Okamba Pembe Annie Flora', age: 24, height: "1m78", gender: 'Femme', location: 'Awoungou', imageUrl: 'https://i.ibb.co/4n4W615B/AJC-4537.jpg' },
-    { id: 'ruth-moussogou-mandoukou', name: 'Moussogou Mandoukou Ruth', age: 32, height: "1m65", gender: 'Femme', location: 'PK9', imageUrl: 'https://picsum.photos/800/1200?random=6' },
-    { id: 'alexandrine-meyie-edzo', name: 'Meyie Edzo Alexandrine', age: 25, height: "1m70", gender: 'Femme', location: 'Angondje Château', imageUrl: 'https://picsum.photos/800/1200?random=7' },
-    { id: 'lea-danielle-mekui-messono', name: 'Mekui M\'Essono Lea Danielle', age: 20, height: "1m76", gender: 'Femme', location: 'Ondogo', imageUrl: 'https://i.ibb.co/1GgZSPcG/MG-9621-2.jpg' },
-    { id: 'nynelle-mbazoghe', name: 'Mbazoghe Bekale Latifa Nynelle', age: 21, height: '1m72', gender: 'Femme', location: 'Belle Vue 2', imageUrl: 'https://picsum.photos/800/1200?random=9', distinctions: ['Première dauphine Miss Casino Croisette', 'Mannequin vedette'] },
-    { id: 'triphène-olery-nnegue-obame', name: 'Olery N’Negue Obame Triphène', age: 19, height: "1m75", gender: 'Femme', location: 'Château d’Angondjé', imageUrl: 'https://picsum.photos/800/1200?random=10' },
-    { id: 'donatien-bonoukpo-anani', name: 'Bonoukpo Anani Donatien', age: 27, height: "1m84", gender: 'Homme', location: 'Ozangué', imageUrl: 'https://i.ibb.co/b5LgVZgr/DSC-0090.jpg' },
-    { id: 'darlyne-patchelie-moussavou', name: 'Moussavou Darlyne Patchelie', age: 23, height: "1m75", gender: 'Femme', location: 'Cocotier', imageUrl: 'https://i.ibb.co/7xwhF4Qq/DSC-0203.jpg' },
-    { id: 'sephora-nawelle-okome-houssa', name: 'Okome Houssa Sephora Nawelle', age: 21, height: "1m78", gender: 'Femme', location: 'Charbonnage', imageUrl: 'https://i.ibb.co/kgdjvvN9/DSC01394-Modifier.jpg' },
-    { id: 'merveille-aworet-niel', name: 'Niel-Merveille Aworet', age: 18, height: "1m75", gender: 'Femme', location: 'Libreville', imageUrl: 'https://i.ibb.co/tnMZ3NJ/MG-0666.jpg' },
-    { id: 'diane-vanessa', name: 'Diane Vanessa', height: '1m76', gender: 'Femme', imageUrl: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg' },
-    { id: 'cassandra', name: 'Cassandra', height: '1m74', gender: 'Femme', imageUrl: 'https://i.ibb.co/LGYkqzc/AJC-4601.jpg' },
-    { id: 'hurielle', name: 'Hurielle', height: '1m73', gender: 'Femme', imageUrl: 'https://i.ibb.co/R4VNc7Ng/AJC-4528.jpg' },
-    { id: 'lesly', name: 'Lesly', height: '1m70', gender: 'Femme', imageUrl: 'https://i.ibb.co/B5ZY82CW/DSC-0312.jpg' },
+    { id: 'mirabelle-medza', name: 'Medza Mirabelle', age: 27, height: "1m70", gender: 'Femme', location: 'Nzeng-Ayong', imageUrl: 'https://i.ibb.co/Pv0JsH4m/AJC-4593.jpg' },
+    { id: 'ruth-jussy-nyamete-towene', name: 'NYAMETE TOWENE Ruth Jussy', age: 21, height: "1m77", gender: 'Femme', location: 'PG2', imageUrl: 'https://scontent.flbv4-1.fna.fbcdn.net/v/t39.30808-6/537102148_750023657946208_7470252981010894424_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=y3xrXvqRLMsQ7kNvwGjJ5ey&_nc_oc=AdkqYW7diBLapILLcS2EgxwUz91-WJk0e3B6V9_fMxguwpgNnYJ1jtX-iRIrfXYB8tc&_nc_zt=23&_nc_ht=scontent.flbv4-1.fna&_nc_gid=A_NYPexj8khKOfvNNeSzTw&oh=00_AfagAHRqA9PyPsPr5QIt_brhQxetRzNpCab0Nbd3lavS-A&oe=68BD9296', distinctions: ['Meilleur Mannequin Espoir du Gabon', 'Miss Tourisme Ogooué-Maritime', 'Deuxième dauphine Miss Tourisme Gabon'] },
+    { id: 'sadia-benga-eneme', name: 'Benga Sadia', age: 22, height: "1m68", gender: 'Femme', location: 'Alibandeng', imageUrl: 'https://i.ibb.co/1t6zbJm3/484135904-630949926456019-7069478021622378576-n.jpg' },
+    { id: 'annie-flora-okamba-pembe', name: ' Annie Flora', age: 24, height: "1m78", gender: 'Femme', location: 'Awoungou', imageUrl: 'https://i.ibb.co/4n4W615B/AJC-4537.jpg' },
+    { id: 'lea-danielle-mekui-messono', name: 'Essono Lea Danielle', age: 20, height: "1m76", gender: 'Femme', location: 'Ondogo', imageUrl: 'https://i.ibb.co/1GgZSPcG/MG-9621-2.jpg' },
+    { id: 'nynelle-mbazoghe', name: 'Mbazoghe Latifa Nynelle', age: 21, height: '1m72', gender: 'Femme', location: 'Belle Vue 2', imageUrl: 'https://scontent.flbv4-1.fna.fbcdn.net/v/t39.30808-6/487401066_660439293229802_6598838965572788442_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=833d8c&_nc_ohc=eMx2S59kM7oQ7kNvwG_VK1B&_nc_oc=AdlK7GyHezToifvKJbetbz31JX55AMtdNhpZQlMVeZUolSJ0UVe7a2ewzo-GMY-RRqI&_nc_zt=23&_nc_ht=scontent.flbv4-1.fna&_nc_gid=45mr7ZYAGOAeQssTcCwi9Q&oh=00_AfbMvrU-r3fR2NM2xE7Gy5xOUHHNbz8Q3N2DWa2eUr4naA&oe=68BD6E59', distinctions: ['Première dauphine Miss Casino Croisette', 'Mannequin vedette'] },
+    { id: 'triphène-olery-nnegue-obame', name: 'Olery Triphène', age: 19, height: "1m75", gender: 'Femme', location: 'Château d’Angondjé', imageUrl: 'https://picsum.photos/800/1200?random=10' },
+    { id: 'donatien-bonoukpo-anani', name: ' Anani Donatien', age: 27, height: "1m84", gender: 'Homme', location: 'Ozangué', imageUrl: 'https://i.ibb.co/b5LgVZgr/DSC-0090.jpg' },
+    { id: 'darlyne-patchelie-moussavou', name: 'Moussavou Darlyne ', age: 23, height: "1m75", gender: 'Femme', location: 'Cocotier', imageUrl: 'https://i.ibb.co/7xwhF4Qq/DSC-0203.jpg' },
+    { id: 'sephora-nawelle-okome-houssa', name: 'Sephora Nawelle', age: 21, height: "1m67", gender: 'Femme', location: 'Charbonnage', imageUrl: 'https://i.ibb.co/kgdjvvN9/DSC01394-Modifier.jpg' },
+    { id: 'merveille-aworet-niel', name: 'Niel-Merveille Aworet', age: 18, height: "1m76", gender: 'Femme', location: 'Libreville', imageUrl: 'https://i.ibb.co/tnMZ3NJ/MG-0666.jpg' },
+    { id: 'diane-vanessa', name: 'Diane Vanessa', height: '1m81', gender: 'Femme', imageUrl: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg' },
+    { id: 'cassandra', name: 'Cassandra Ibouanga', height: '1m83', gender: 'Femme', imageUrl: 'https://i.ibb.co/LGYkqzc/AJC-4601.jpg' },
+    { id: 'hurielle', name: 'Hurielle Kerenne', height: '1m81', gender: 'Femme', imageUrl: 'https://i.ibb.co/R4VNc7Ng/AJC-4528.jpg' },
+    { id: 'lesly', name: 'Lesly Zomo', height: '1m75', gender: 'Femme', imageUrl: 'https://i.ibb.co/B5ZY82CW/DSC-0312.jpg' },
     { id: 'noemi-kim', name: 'Noemi Kim', height: '1m75', gender: 'Femme', imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg', distinctions: ['Mannequin phare de l’agence'] },
-    { id: 'patricia', name: 'Patricia', height: '1m71', gender: 'Femme', imageUrl: 'https://i.ibb.co/dw0rSZw1/DSC-0220.jpg' },
-    { id: 'khelany', name: 'Khelany', height: '1m72', gender: 'Femme', imageUrl: 'https://i.ibb.co/bgW2TwP3/DSC-0457.jpg' },
-    { id: 'cegolaine', name: 'Cegolaine', height: '1m74', gender: 'Femme', imageUrl: 'https://i.ibb.co/LzrGBNyd/DSC-0402.jpg' },
+    { id: 'patricia', name: 'Patricia Sally', height: '1m78', gender: 'Femme', imageUrl: 'https://i.ibb.co/dw0rSZw1/DSC-0220.jpg' },
+    { id: 'khelany', name: 'Khelany Allogho', height: '1m79', gender: 'Femme', imageUrl: 'https://i.ibb.co/bgW2TwP3/DSC-0457.jpg' },
+    { id: 'cegolaine', name: 'Cegolaine', height: '1m85', gender: 'Femme', imageUrl: 'https://i.ibb.co/LzrGBNyd/DSC-0402.jpg' },
     { id: 'davy', name: 'Davy', height: '1m86', gender: 'Homme', imageUrl: 'https://i.ibb.co/LD3Bg4Rf/DSC-0297.jpg' },
-    { id: 'stecy', name: 'Stecy', height: '1m77', gender: 'Femme', imageUrl: 'https://i.ibb.co/rGztyrP4/1L4A9705.jpg' },
-    { id: 'osee', name: 'Osée Jn', height: '1m88', gender: 'Homme', imageUrl: 'https://i.ibb.co/7tk4pKvr/474620403-594457843438561-7313394165363117491-n.jpg' },
-    { id: 'danara', name: 'Danara', height: '1m73', gender: 'Femme', imageUrl: 'https://i.ibb.co/mCwz8JYy/483828066-629699233247755-7611737956009481678-n.jpg' },
-    { id: 'moustapha', name: 'Moustapha', height: '1m85', gender: 'Homme', imageUrl: 'https://i.ibb.co/C5Z1N6Zp/481335188-618392171045128-1143329793191383014-n.jpg' },
-    { id: 'noe-maks', name: 'Noé Mak\'s', height: '1m87', gender: 'Homme', imageUrl: 'https://i.ibb.co/4ncX4Brk/481054309-617829164434762-185712014482056867-n.jpg' },
-    { id: 'aj-caramela', name: 'AJ Caramela', height: '1m78', gender: 'Femme', imageUrl: 'https://i.ibb.co/WpyDyqGM/480764039-617423107808701-5578356664870683876-n.jpg' },
-    { id: 'eunice', name: 'Eunice', height: '1m76', gender: 'Femme', imageUrl: 'https://i.ibb.co/8nq5gBTW/485976709-640513238697791-5779836737383586501-n.jpg' },
-    { id: 'kendra-mebiame', name: 'Kendra Mebiame', height: '1m75', gender: 'Femme', imageUrl: 'https://i.ibb.co/ksdXSfpY/474134983-590912627126416-4665446951991920838-n.jpg', distinctions: ['Meilleur Mannequin Espoir du Gabon (édition 2022)'] },
+    { id: 'stecy', name: 'Stecy Glappier', height: '1m73', gender: 'Femme', imageUrl: 'https://i.ibb.co/rGztyrP4/1L4A9705.jpg' },
+    { id: 'osee', name: 'Osée Jn', height: '1m80', gender: 'Homme', imageUrl: 'https://i.ibb.co/7tk4pKvr/474620403-594457843438561-7313394165363117491-n.jpg' },
+    { id: 'danara', name: 'Danara Prefna', height: '1m73', gender: 'Femme', imageUrl: 'https://i.ibb.co/mCwz8JYy/483828066-629699233247755-7611737956009481678-n.jpg' },
+    { id: 'moustapha', name: 'Moustapha', height: '1m73', gender: 'Homme', imageUrl: 'https://i.ibb.co/C5Z1N6Zp/481335188-618392171045128-1143329793191383014-n.jpg' },
+    { id: 'noe-maks', name: 'Noé Mak\'s', height: '1m77', gender: 'Homme', imageUrl: 'https://i.ibb.co/4ncX4Brk/481054309-617829164434762-185712014482056867-n.jpg' },
+    { id: 'aj-caramela', name: 'AJ Caramela', height: '1m68', gender: 'Femme', imageUrl: 'https://i.ibb.co/WpyDyqGM/480764039-617423107808701-5578356664870683876-n.jpg' },
+    { id: 'eunice', name: 'Eunice', height: '1m71', gender: 'Femme', imageUrl: 'https://i.ibb.co/8nq5gBTW/485976709-640513238697791-5779836737383586501-n.jpg' },
+    { id: 'kendra-mebiame', name: 'Kendra Mebiame', height: '1m85', gender: 'Femme', imageUrl: 'https://i.ibb.co/ksdXSfpY/474134983-590912627126416-4665446951991920838-n.jpg', distinctions: ['Meilleur Mannequin Espoir du Gabon (édition 2022)'] },
     { id: 'pablo-zapatero', name: 'Pablo Zapatero', height: '1m89', gender: 'Homme', imageUrl: 'https://picsum.photos/800/1200?random=32' },
-    { id: 'juliana-jodelle', name: 'Juliana Jodelle', height: '1m79', gender: 'Femme', imageUrl: 'https://picsum.photos/800/1200?random=33' },
     { id: 'billy-le-gamin', name: 'Billy Le Gamin', height: '1m83', gender: 'Homme', imageUrl: 'https://picsum.photos/800/1200?random=34' }
 ];
 
@@ -97,9 +94,9 @@ export const agencyTimeline = [
   { year: '2021', event: 'Fondation de Perfect Models Management le 12 septembre par Louis Parfait Asseko.' },
   { year: '2021', event: 'Participation à notre premier événement de mode, le défilé "Bye Bye Vacances" par Alban Design.' },
   { year: '2022', event: 'Lancement des formations hebdomadaires et coaching en développement personnel pour nos talents.' },
-  { year: '2023', event: 'Collaboration avec des marques internationales comme BADŪ Créations (Liban) et Muni Design (Kenya).' },
-  { year: '2024', event: 'Organisation de la première édition réussie du "Perfect Fashion Day".' },
-  { year: '2025', event: 'Expansion des services avec la section "International & Prestige" pour une représentation mondiale.' },
+  { year: '2023', event: 'Collaboration avec des marques internationales comme Maysah (Cote d'Ivoir) et Muni Design (Kenya).' },
+  { year: '2025', event: 'Organisation de la première édition réussie du "Perfect Fashion Day".' },
+  { year: '2025', event: 'Expansion des services avec la section "International & Prestige" pour une représentation mondiale en développement.' },
 ];
 
 export const agencyInfo = {
@@ -121,6 +118,7 @@ export const modelDistinctions: ModelDistinction[] = [
     { name: "Kendra Mebiame", titles: ["Meilleur Mannequin Espoir du Gabon (édition 2022)"] },
     { name: "Noémie Kim", titles: ["Mannequin phare de l’agence"] },
     { name: "Nynelle Mbazoghe", titles: ["Première dauphine Miss Casino Croisette", "Mannequin vedette"] },
+     { name: "Akoma Ayo Rosnel", titles: ["Mister Akae Beach"] },
 ];
 
 export const agencyServices: Service[] = [
@@ -137,8 +135,6 @@ export const agencyAchievements: AchievementCategory[] = [
     { name: "Figuration & Clip Vidéo", items: ["King Ben – Cotelet", "Donzer – Ovengo", "Orfee Lashka – Je sais que tu mens", "Communauté Black – Même pas un KOKOKO", "Petit Jesus International – Y’a pas l’argent dedans", "Monsieur Oyone – Le collectionneur de pain", "Pléiade Gabon", "Paf paf"] },
     { name: "Collaborations Photo", items: ["Edele A – Collection Un Air d’été", "Tito Style – Collection Africa", "Vanella Fashion", "Vi Design", "Alban Design", "Issée by Lita", "Muni Design (Kenya)", "Maysah (Côte d’Ivoire)", "Angèle Epouta", "Angelina Créations", "Joha Fashion", "Traxel (Dakar)"] }
 ];
-
-export const agencyPartners: string[] = ["Akile Tabarna", "Chouchou Lazare", "LB Design", "Tito Style", "Les Kabas de Tamar", "Le Pagne de Paris", "K’Elle Collection", "Dimbu Van", "Edele A", "House Of Design / Mystic Création"];
 
 export const testimonials: Testimonial[] = [
   {

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Model } from '../types';
@@ -31,17 +32,15 @@ const AdminModels: React.FC = () => {
   };
 
   const handleDelete = (modelId: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce mannequin ? N'oubliez pas de sauvegarder les changements.")) {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce mannequin ?")) {
       setLocalModels(prevModels => prevModels.filter(m => m.id !== modelId));
     }
   };
 
   const handleSaveChanges = () => {
     if (!data) return;
-    if (window.confirm("Sauvegarder toutes les modifications apportées aux mannequins ?")) {
-      saveData({ ...data, models: localModels });
-      alert("Mannequins mis à jour avec succès !");
-    }
+    saveData({ ...data, models: localModels });
+    alert("Changements enregistrés pour la session actuelle. N'oubliez pas d'exporter le code depuis le dashboard pour les rendre permanents.");
   };
 
   const handleStartCreate = () => {

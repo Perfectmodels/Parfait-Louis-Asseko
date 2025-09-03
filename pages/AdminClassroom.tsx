@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Module, Chapter } from '../types';
@@ -89,10 +90,9 @@ const AdminClassroom: React.FC = () => {
   };
 
   const handleSave = () => {
-    if (window.confirm("Êtes-vous sûr de vouloir sauvegarder toutes les modifications du Classroom ?")) {
-        saveData({ ...data, courseData: course });
-        alert("Contenu du Classroom sauvegardé !");
-    }
+    if (!data || !course) return;
+    saveData({ ...data, courseData: course });
+    alert("Changements enregistrés pour la session actuelle. N'oubliez pas d'exporter le code depuis le dashboard pour les rendre permanents.");
   };
 
   return (

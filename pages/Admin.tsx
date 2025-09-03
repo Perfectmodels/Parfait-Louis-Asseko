@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -45,7 +46,7 @@ ${Object.entries(dataToFormat).map(([key, value]) => `export const ${key} = ${JS
         <div className="mt-16 max-w-5xl mx-auto">
             <h2 className="text-3xl font-playfair text-pm-gold text-center mb-8">Exporter les Données</h2>
             <p className="text-center text-pm-off-white/80 max-w-3xl mx-auto mb-10">
-                Après avoir modifié le contenu du site, vous pouvez exporter les données à jour ici. Copiez le code généré et collez-le dans les fichiers correspondants de votre projet pour rendre les changements permanents.
+                Les modifications que vous effectuez dans le panel d'administration sont temporaires et ne durent que le temps de votre session. Pour les rendre permanentes, vous devez copier le code généré ci-dessous et l'utiliser pour remplacer le contenu des fichiers correspondants dans le code source de votre projet.
             </p>
             <div className="space-y-8">
                 {dataFiles.map(file => (
