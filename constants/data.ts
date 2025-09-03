@@ -94,7 +94,8 @@ export const agencyTimeline = [
   { year: '2021', event: 'Fondation de Perfect Models Management le 12 septembre par Louis Parfait Asseko.' },
   { year: '2021', event: 'Participation à notre premier événement de mode, le défilé "Bye Bye Vacances" par Alban Design.' },
   { year: '2022', event: 'Lancement des formations hebdomadaires et coaching en développement personnel pour nos talents.' },
-  { year: '2023', event: 'Collaboration avec des marques internationales comme Maysah (Cote d'Ivoir) et Muni Design (Kenya).' },
+  // FIX: Changed single quotes to double quotes to avoid syntax error from unescaped apostrophe. Also corrected spelling.
+  { year: '2023', event: "Collaboration avec des marques internationales comme Maysah (Cote d'Ivoire) et Muni Design (Kenya)." },
   { year: '2025', event: 'Organisation de la première édition réussie du "Perfect Fashion Day".' },
   { year: '2025', event: 'Expansion des services avec la section "International & Prestige" pour une représentation mondiale en développement.' },
 ];
@@ -134,6 +135,18 @@ export const agencyAchievements: AchievementCategory[] = [
     { name: "Défilés de Mode", items: ["Défilé Bye Bye Vacances", "K’elle POUR ELLE (2, 3 & 4)", "Défilé Nouvelle Vision", "Festival International des Talents d’Exception", "O'Fashion Évent", "After Work Fashion", "Edele A 2022", "Sorties Officielles des Femmes Actives du Gabon", "FEMOGA (1 & 2)", "Musée Éphémère Iconique", "EDYDY Concours", "Pink Woman Show (1 & 2)", "Fashionshowchou / Awards de la Mode Gabonaise", "Vernissage Symbiose Concept Store", "Inauguration House Of Design", "Festival de l'Indépendance", "Issée Fashion Show"] },
     { name: "Figuration & Clip Vidéo", items: ["King Ben – Cotelet", "Donzer – Ovengo", "Orfee Lashka – Je sais que tu mens", "Communauté Black – Même pas un KOKOKO", "Petit Jesus International – Y’a pas l’argent dedans", "Monsieur Oyone – Le collectionneur de pain", "Pléiade Gabon", "Paf paf"] },
     { name: "Collaborations Photo", items: ["Edele A – Collection Un Air d’été", "Tito Style – Collection Africa", "Vanella Fashion", "Vi Design", "Alban Design", "Issée by Lita", "Muni Design (Kenya)", "Maysah (Côte d’Ivoire)", "Angèle Epouta", "Angelina Créations", "Joha Fashion", "Traxel (Dakar)"] }
+];
+
+// FIX: Added missing agencyPartners export to resolve import errors.
+export const agencyPartners: string[] = [
+  "La Gare du Nord",
+  "Darain Visuals",
+  "AG Style",
+  "Farel MD",
+  "Ventex Custom",
+  "Miguel Fashion Style",
+  "Tito Style",
+  "Alban Design"
 ];
 
 export const testimonials: Testimonial[] = [

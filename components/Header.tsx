@@ -14,10 +14,14 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }>
          ${isActive ? 'text-pm-gold' : 'hover:text-pm-gold'}`
       }
     >
-      {label}
-      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out
-        ${({ isActive }: {isActive: boolean}) => isActive ? 'scale-x-100' : ''}`}
-      />
+      {({ isActive }) => (
+        <>
+          {label}
+          <span 
+            className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out group-hover:scale-x-100 ${isActive ? 'scale-x-100' : 'scale-x-0'}`}
+          />
+        </>
+      )}
     </NavLink>
   );
 };
