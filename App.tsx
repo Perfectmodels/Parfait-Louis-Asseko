@@ -26,7 +26,9 @@ import AdminSettings from './pages/AdminSettings';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminCasting from './pages/AdminCasting';
 import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
-import AdminFashionDay from './pages/AdminFashionDay';
+import AdminFashionDayApps from './pages/AdminFashionDay';
+import AdminAgency from './pages/AdminAgency';
+import AdminFashionDayEvents from './pages/AdminFashionDayEvents';
 
 
 const ScrollToTop: React.FC = () => {
@@ -66,9 +68,11 @@ const App: React.FC = () => {
             <Route path="/admin/mannequins" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
             <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
             <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
+            <Route path="/admin/candidatures-casting" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
+            <Route path="/admin/fashion-day-apps" element={<ProtectedRoute role="admin"><AdminFashionDayApps /></ProtectedRoute>} />
+            <Route path="/admin/agence" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />
+            <Route path="/admin/pfd-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
             <Route path="/admin/parametres" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
-            <Route path="/admin/candidatures" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
-            <Route path="/admin/fashion-day" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>
