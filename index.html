@@ -53,21 +53,65 @@
       .animate-marquee {
         animation: marquee 150s linear infinite;
       }
+      
       @media print {
-        header, footer, .fixed.top-0, .print-hide, #chatbase-bubble-window {
-          display: none !important;
+        @page {
+          size: A4;
+          margin: 2cm 1.5cm;
         }
-        main {
-          padding-top: 0 !important;
-        }
+
         body {
-            background-color: #FFFFFF !important;
+          background-color: #FFFFFF !important;
+          color: #000000 !important;
         }
+
+        /* Robust printing: Hide everything by default */
+        body * {
+          visibility: hidden;
+        }
+        
+        /* Make only the designated printable area and its children visible */
+        .printable-content, .printable-content * {
+          visibility: visible;
+        }
+        
+        /* Position the printable content to fill the page */
+        .printable-content {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+        }
+
+        /* Reset and apply print-specific styles to the article content */
         article {
-            color: #000000 !important;
+          border: none !important;
+          padding: 0 !important;
+          box-shadow: none !important;
+          color: #000000 !important;
+          font-family: serif;
+          font-size: 12pt;
+          line-height: 1.4;
         }
-        article h1, article p {
-            color: #000000 !important;
+        
+        article *, article p {
+          color: #000000 !important;
+        }
+
+        article header p {
+          font-size: 10pt;
+          color: #555 !important;
+        }
+
+        article h1 {
+          font-family: serif !important;
+          font-size: 24pt;
+          font-weight: bold;
+          margin-bottom: 1cm;
+        }
+
+        article div p {
+          margin-bottom: 0.5cm;
         }
       }
     </style>

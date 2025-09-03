@@ -41,20 +41,22 @@ const ChapterDetail: React.FC = () => {
           </button>
         </div>
         
-        <article className="bg-black p-8 md:p-12 border border-pm-gold/20">
-          <header>
-            <p className="text-sm uppercase tracking-widest text-pm-gold/80 font-bold">{module.title}</p>
-            <h1 className="text-4xl lg:text-5xl font-playfair text-pm-off-white my-4 leading-tight">
-              {chapter.title}
-            </h1>
-          </header>
-          <div className="mt-8 text-lg text-pm-off-white/80 leading-relaxed">
-            {/* Split content by newlines and render as paragraphs for better formatting */}
-            {chapter.content.split('\n').map((paragraph, index) => (
-              <p key={index} className="mb-4">{paragraph}</p>
-            ))}
-          </div>
-        </article>
+        <div className="printable-content">
+          <article className="bg-black p-8 md:p-12 border border-pm-gold/20">
+            <header>
+              <p className="text-sm uppercase tracking-widest text-pm-gold/80 font-bold">{module.title}</p>
+              <h1 className="text-4xl lg:text-5xl font-playfair text-pm-off-white my-4 leading-tight">
+                {chapter.title}
+              </h1>
+            </header>
+            <div className="mt-8 text-lg text-pm-off-white/80 leading-relaxed">
+              {/* Split content by newlines and render as paragraphs for better formatting */}
+              {chapter.content.split('\n').map((paragraph, index) => (
+                <p key={index} className="mb-4">{paragraph}</p>
+              ))}
+            </div>
+          </article>
+        </div>
       </div>
     </div>
   );
