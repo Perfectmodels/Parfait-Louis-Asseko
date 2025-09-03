@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Article } from '../types';
@@ -32,7 +31,7 @@ const AdminMagazine: React.FC = () => {
   };
 
   const handleDelete = (slug: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ? Cette action affectera la liste locale. N'oubliez pas de sauvegarder les changements.")) {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ? N'oubliez pas de sauvegarder les changements.")) {
       setLocalArticles(prevArticles => prevArticles.filter(a => a.slug !== slug));
     }
   };
@@ -79,17 +78,17 @@ const AdminMagazine: React.FC = () => {
                  <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
                     <PlusIcon className="w-5 h-5"/> Ajouter Article
                 </button>
-                <button onClick={handleSaveChanges} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
+                <button onClick={handleSaveChanges} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/30">
                     Sauvegarder les Changements
                 </button>
             </div>
         </div>
 
-        <div className="bg-black border border-pm-gold/20 p-6 space-y-4">
+        <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
           {localArticles.map(article => (
-            <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark">
+            <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
               <div className="flex items-center gap-4">
-                <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover"/>
+                <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover rounded"/>
                 <div>
                   <h2 className="font-bold">{article.title}</h2>
                   <p className="text-sm text-pm-off-white/70">{article.category} - {article.date}</p>
@@ -130,12 +129,12 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
          <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <div className="container mx-auto px-6 max-w-3xl">
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvel Article' : 'Modifier l\'Article'}</h1>
-                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-4">
+                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
                     <FormInput label="Titre" name="title" value={formData.title} onChange={handleChange} />
                     <FormInput label="URL de l'image" name="imageUrl" value={formData.imageUrl} onChange={handleChange} />
                     <FormInput label="Catégorie" name="category" value={formData.category} onChange={handleChange} />
                     <FormTextArea label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange} />
-                    <FormTextArea label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} />
+                    <FormTextArea label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true} />
                     <div className="text-xs text-pm-off-white/50">
                         <p>Format du contenu: tableau d'objets. Types valides: 'paragraph', 'heading', 'quote'.</p>
                         <p>Ex: [{"type": "paragraph", "text": "Bonjour."}]</p>
@@ -143,7 +142,7 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
 
                     <div className="flex justify-end gap-4 pt-4">
                         <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
-                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">Sauvegarder</button>
+                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
                     </div>
                 </form>
             </div>
@@ -154,13 +153,13 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
 const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string}> = ({label, name, value, onChange, type="text"}) => (
     <div>
         <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <input type={type} id={name} name={name} value={value} onChange={onChange} className="w-full bg-pm-dark border border-pm-off-white/20 p-2 focus:outline-none focus:border-pm-gold" />
+        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any}> = ({label, name, value, onChange}) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, isJson?: boolean}> = ({label, name, value, onChange, isJson=false}) => (
     <div>
         <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <textarea id={name} name={name} value={value} onChange={onChange} rows={5} className="w-full bg-pm-dark border border-pm-off-white/20 p-2 focus:outline-none focus:border-pm-gold font-mono text-sm" />
+        <textarea id={name} name={name} value={value} onChange={onChange} rows={isJson ? 10 : 5} className={`admin-input admin-textarea ${isJson ? 'font-mono text-sm' : ''}`} />
     </div>
 );
 

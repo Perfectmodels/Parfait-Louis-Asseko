@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -34,7 +33,7 @@ const Magazine: React.FC = () => {
         {/* Featured Article */}
         {featuredArticle && (
           <section className="mb-16">
-            <Link to={`/magazine/${featuredArticle.slug}`} className="group block md:grid md:grid-cols-2 gap-8 items-center bg-black border border-pm-gold/20 p-6">
+            <Link to={`/magazine/${featuredArticle.slug}`} className="group block md:grid md:grid-cols-2 gap-8 items-center bg-black border border-pm-gold/20 p-6 shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-pm-gold/10">
               <div className="overflow-hidden">
                 <img src={featuredArticle.imageUrl} alt={featuredArticle.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               </div>
@@ -62,16 +61,17 @@ const Magazine: React.FC = () => {
 };
 
 const ArticleCard: React.FC<{ article: Article }> = ({ article }) => (
-  <Link to={`/magazine/${article.slug}`} className="group block bg-black border border-pm-gold/20 overflow-hidden transition-all duration-300 hover:border-pm-gold hover:shadow-lg hover:shadow-pm-gold/20">
-    <div className="relative h-64 overflow-hidden">
+  <Link to={`/magazine/${article.slug}`} className="group block bg-black border border-pm-gold/20 overflow-hidden relative shadow-lg shadow-black/30 hover:border-pm-gold hover:shadow-xl hover:shadow-pm-gold/20">
+    <div className="relative h-80 overflow-hidden">
       <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
     </div>
-    <div className="p-6">
+    <div className="absolute bottom-0 left-0 p-6 w-full transition-transform duration-300 group-hover:-translate-y-2">
       <p className="text-sm uppercase tracking-widest text-pm-gold font-bold">{article.category}</p>
-      <h3 className="text-xl font-playfair text-pm-off-white mt-2 transition-colors group-hover:text-pm-gold">{article.title}</h3>
-      <p className="text-sm text-pm-off-white/70 mt-2">{article.excerpt}</p>
-      <span className="block mt-4 font-bold text-sm text-pm-gold/80 group-hover:text-pm-gold group-hover:underline">Lire la suite...</span>
+      <h3 className="text-xl font-playfair text-pm-off-white mt-2 transition-transform duration-300 group-hover:-translate-y-2">{article.title}</h3>
+      <p className="text-sm text-pm-off-white/70 mt-2 opacity-0 max-h-0 group-hover:opacity-100 group-hover:max-h-40 transition-all duration-300">
+        {article.excerpt}
+      </p>
     </div>
   </Link>
 );

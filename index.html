@@ -46,12 +46,51 @@
         color: #F4F4F4;
         font-family: 'Montserrat', sans-serif;
       }
+      
+      /* Global Transitions */
+      *, *::before, *::after {
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+      }
+      
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1a1a1a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #D4AF37;
+        border-radius: 5px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #e6c35c;
+      }
+      
       @keyframes marquee {
         from { transform: translateX(0); }
         to { transform: translateX(-100%); }
       }
       .animate-marquee {
         animation: marquee 150s linear infinite;
+      }
+      
+      /* Improved Admin Form Styles */
+      .admin-input {
+          width: 100%;
+          background-color: #000;
+          border: 1px solid rgba(244, 244, 244, 0.2);
+          padding: 0.75rem;
+          border-radius: 0.25rem;
+          outline: none;
+          box-shadow: none;
+      }
+      .admin-input:focus {
+          border-color: #D4AF37;
+          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+      }
+      .admin-textarea {
+          min-height: 120px;
       }
       
       @media print {

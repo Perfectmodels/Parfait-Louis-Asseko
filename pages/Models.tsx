@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import ModelCard from '../components/ModelCard';
 import SEO from '../components/SEO';
@@ -22,7 +21,7 @@ const Models: React.FC = () => {
   const FilterButton: React.FC<{ gender: GenderFilter }> = ({ gender }) => (
     <button
       onClick={() => setFilter(gender)}
-      className={`px-6 py-2 text-sm uppercase tracking-widest rounded-full transition-colors duration-300 ${filter === gender ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold hover:text-pm-dark'}`}
+      className={`px-6 py-2 text-sm uppercase tracking-widest rounded-full transition-all duration-300 transform hover:scale-105 ${filter === gender ? 'bg-pm-gold text-pm-dark shadow-md shadow-pm-gold/30' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold hover:text-pm-dark'}`}
     >
       {gender}
     </button>
@@ -58,7 +57,7 @@ const Models: React.FC = () => {
               placeholder="Rechercher un mannequin..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-64 bg-black border border-pm-gold/50 rounded-full px-4 py-2 text-pm-off-white focus:outline-none focus:border-pm-gold"
+              className="w-full md:w-64 bg-black border border-pm-gold/50 rounded-full px-4 py-2 text-pm-off-white focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/50 transition-all"
             />
           </div>
         </div>
