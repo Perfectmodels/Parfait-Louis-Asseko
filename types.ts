@@ -94,7 +94,7 @@ export interface Testimonial {
   imageUrl: string;
 }
 
-// FIX: Added the missing AIAssistantProps interface to define the props for the AI Assistant modal, resolving import errors in admin pages.
+// FIX: Added missing AIAssistantProps interface to resolve import errors.
 export interface AIAssistantProps {
   isOpen: boolean;
   onClose: () => void;
