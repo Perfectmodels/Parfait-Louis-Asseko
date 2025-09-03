@@ -213,8 +213,9 @@ const CastingForm: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO 
-        title="Formulaire de Casting"
-        description="Postulez en ligne pour rejoindre l'agence Perfect Models Management. Remplissez notre formulaire de casting détaillé."
+        title="Postuler au Casting | Formulaire en Ligne"
+        description="Prêt(e) à rejoindre l'aventure Perfect Models Management ? Soumettez votre candidature en ligne via notre formulaire sécurisé. Photos, mensurations, informations : tout est là pour vous lancer."
+        keywords="formulaire casting mannequin, postuler agence mannequin, s'inscrire casting, candidature mannequin gabon"
       />
       <div className="container mx-auto px-6 max-w-4xl">
         <header className="text-center mb-12">

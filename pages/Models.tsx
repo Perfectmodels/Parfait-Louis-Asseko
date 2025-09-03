@@ -34,9 +34,9 @@ const Models: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO 
-        title="Nos Mannequins"
-        description="Parcourez le catalogue complet de nos mannequins professionnels, hommes et femmes. Trouvez le visage parfait pour votre prochain projet."
-        keywords="mannequins hommes, mannequins femmes, catalogue mannequins, booker mannequin, agence Libreville"
+        title="Nos Mannequins | Le Visage de la Mode Gabonaise"
+        description="Découvrez le portfolio complet des mannequins hommes et femmes de Perfect Models Management. Des visages uniques et professionnels prêts à incarner votre marque et vos créations."
+        keywords="mannequins hommes gabon, mannequins femmes gabon, book mannequins, agence de modèles photo, casting modèles libreville"
       />
       <div className="container mx-auto px-6">
         <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Nos Mannequins</h1>

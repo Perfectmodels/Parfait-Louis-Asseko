@@ -73,9 +73,9 @@ const Contact: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO 
-        title="Contact"
-        description="Contactez l'agence Perfect Models Management pour toute demande de booking, partenariat ou information. Nous sommes à votre écoute."
-        keywords="contacter agence mannequin, booking mannequin, partenariat mode, contact PMM"
+        title="Contact | Perfect Models Management"
+        description="Contactez l'agence Perfect Models Management à Libreville pour toute demande de booking de mannequins, proposition de partenariat ou information. Notre équipe est à votre écoute pour concrétiser vos projets."
+        keywords="contacter agence mannequin, booking mannequin gabon, partenariat mode libreville, adresse pmm, téléphone agence mannequin"
       />
       <div className="container mx-auto px-6">
         <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Contactez-Nous</h1>

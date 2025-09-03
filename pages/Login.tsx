@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
+import SEO from '../components/SEO';
 
 const Login: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -25,6 +26,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="bg-pm-dark text-pm-off-white flex items-center justify-center min-h-screen py-20">
+      <SEO title="Accès Privé" noIndex />
       <div className="w-full max-w-md mx-auto px-6">
         <div className="bg-black p-8 md:p-12 border border-pm-gold/20 text-center">
           <LockClosedIcon className="w-16 h-16 text-pm-gold mx-auto mb-6" />

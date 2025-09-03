@@ -43,7 +43,7 @@ const ArticleDetail: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO 
-        title={article.title}
+        title={`${article.title} | Focus Model 241`}
         description={article.excerpt}
         keywords={`${article.category}, ${article.title}, magazine mode, PMM`}
         image={article.imageUrl}

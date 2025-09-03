@@ -28,9 +28,9 @@ const ChapterDetail: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO 
-        title={`${chapter.title} - Classroom`}
-        description={`Cours sur "${chapter.title}" du module "${module.title}".`}
-        keywords={`cours mannequinat, ${chapter.title}, ${module.title}, PMM classroom`}
+        title={`${chapter.title} | PMM Classroom`}
+        description={`Leçon détaillée sur "${chapter.title}" du module "${module.title}". Maîtrisez les compétences essentielles du mannequinat avec le programme de formation de Perfect Models Management.`}
+        keywords={`apprendre le mannequinat, cours ${chapter.title}, formation ${module.title}, pmm classroom`}
       />
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="flex justify-between items-center mb-8 print-hide">

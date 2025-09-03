@@ -6,9 +6,10 @@ interface SEOProps {
   description?: string;
   keywords?: string;
   image?: string;
+  noIndex?: boolean;
 }
 
-const SEO: React.FC<SEOProps> = ({ title, description, keywords, image }) => {
+const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, noIndex }) => {
   useEffect(() => {
     const defaultTitle = 'Perfect Models Management';
     const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
@@ -29,20 +30,32 @@ const SEO: React.FC<SEOProps> = ({ title, description, keywords, image }) => {
       element.setAttribute('content', content);
     };
 
-    const defaultDescription = "The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services.";
+    const defaultDescription = "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
     const defaultKeywords = "mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting";
     const defaultImage = siteConfig.logo;
+    const siteUrl = window.location.href;
+    const siteName = 'Perfect Models Management';
 
     setMeta('description', description || defaultDescription);
     setMeta('keywords', keywords || defaultKeywords);
+    setMeta('author', siteName);
+    setMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
 
     // Open Graph
     setMeta('og:title', pageTitle, true);
     setMeta('og:description', description || defaultDescription, true);
     setMeta('og:image', image || defaultImage, true);
+    setMeta('og:url', siteUrl, true);
+    setMeta('og:site_name', siteName, true);
     setMeta('og:type', 'website', true);
 
-  }, [title, description, keywords, image]);
+    // Twitter Card
+    setMeta('twitter:card', 'summary_large_image', false);
+    setMeta('twitter:title', pageTitle, false);
+    setMeta('twitter:description', description || defaultDescription, false);
+    setMeta('twitter:image', image || defaultImage, false);
+
+  }, [title, description, keywords, image, noIndex]);
 
   return null;
 };

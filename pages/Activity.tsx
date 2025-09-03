@@ -227,9 +227,9 @@ const Formations: React.FC = () => {
     return (
         <>
             <SEO 
-              title="Classroom"
-              description="Accès à la plateforme de formation privée pour les mannequins de l'agence Perfect Models Management. Programme de 40 chapitres théoriques."
-              keywords="formation mannequin, cours mannequinat, devenir mannequin, PMM classroom"
+              title="PMM Classroom | Formation Mannequin Professionnel"
+              description="Accès exclusif à la plateforme de formation PMM Classroom. Un programme complet pour les mannequins de l'agence, couvrant toutes les facettes du métier pour une carrière réussie."
+              keywords="formation mannequin gabon, cours de mannequinat, devenir mannequin professionnel, pmm classroom, école mannequin"
             />
             <StudentView onLogout={handleLogout} courseData={data.courseData} siteImages={data.siteImages} />
         </>

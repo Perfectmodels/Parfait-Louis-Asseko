@@ -24,8 +24,8 @@ const ModelDetail: React.FC = () => {
     <>
       <SEO
         title={model.name}
-        description={`Découvrez le profil complet de ${model.name}, mannequin chez Perfect Models Management. Taille : ${model.height}. ${model.distinctions ? 'Palmarès : ' + model.distinctions.join(', ') : ''}`}
-        keywords={`${model.name}, mannequin, modèle photo, mannequin défilé, Perfect Models Management`}
+        description={`Découvrez ${model.name}, talentueux mannequin de l'agence Perfect Models Management. Profil complet, mensurations (${model.height}), et palmarès. Prêt(e) à illuminer votre prochain projet.`}
+        keywords={`${model.name}, mannequin ${model.gender}, modèle photo gabon, agence pmm, booker ${model.name}, mensurations mannequin`}
         image={model.imageUrl}
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
