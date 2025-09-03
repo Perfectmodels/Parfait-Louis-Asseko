@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Model } from '../types';
 import SEO from '../components/SEO';
@@ -8,33 +7,44 @@ import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/rea
 
 const AdminModels: React.FC = () => {
   const { data, saveData } = useData();
+  const [models, setModels] = useState<Model[]>([]);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleSave = (modelToSave: Model) => {
-    if (!data) return;
+  useEffect(() => {
+    // Initialize local state from global context
+    if (data) {
+      setModels([...data.models]);
+    }
+  }, [data]);
 
+  const handleFormSave = (modelToSave: Model) => {
     let updatedModels;
     if (isCreating) {
-      // Simple ID generation for the example
       const newModel = { ...modelToSave, id: modelToSave.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now() };
-      updatedModels = [...data.models, newModel];
+      updatedModels = [...models, newModel];
     } else {
-      updatedModels = data.models.map(m => m.id === modelToSave.id ? modelToSave : m);
+      updatedModels = models.map(m => m.id === modelToSave.id ? modelToSave : m);
     }
-    saveData({ ...data, models: updatedModels });
+    setModels(updatedModels);
     setEditingModel(null);
     setIsCreating(false);
   };
 
   const handleDelete = (modelId: string) => {
-    if (!data) return;
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce mannequin ?")) {
-      const updatedModels = data.models.filter(m => m.id !== modelId);
-      saveData({ ...data, models: updatedModels });
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce mannequin ? Cette action affectera la liste locale. N'oubliez pas de sauvegarder les changements.")) {
+      setModels(prevModels => prevModels.filter(m => m.id !== modelId));
     }
   };
-  
+
+  const handleSaveChanges = () => {
+    if (!data) return;
+    if (window.confirm("Sauvegarder toutes les modifications apportées aux mannequins ?")) {
+      saveData({ ...data, models: models });
+      alert("Mannequins mis à jour avec succès !");
+    }
+  };
+
   const handleStartCreate = () => {
       setEditingModel({
           id: '',
@@ -47,22 +57,29 @@ const AdminModels: React.FC = () => {
   };
 
   if (editingModel) {
-    return <ModelForm model={editingModel} onSave={handleSave} onCancel={() => { setEditingModel(null); setIsCreating(false); }} isCreating={isCreating} />;
+    return <ModelForm model={editingModel} onSave={handleFormSave} onCancel={() => { setEditingModel(null); setIsCreating(false); }} isCreating={isCreating} />;
   }
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO title="Admin - Gérer les Mannequins" />
       <div className="container mx-auto px-6">
-        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
-            <ChevronLeftIcon className="w-5 h-5" />
-            Retour au Dashboard
-        </Link>
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
+          <div>
+            <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+              <ChevronLeftIcon className="w-5 h-5" />
+              Retour au Dashboard
+            </Link>
             <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Mannequins</h1>
-            <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white">
-                <PlusIcon className="w-5 h-5"/> Ajouter un mannequin
+          </div>
+          <div className="flex items-center gap-4">
+            <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+              <PlusIcon className="w-5 h-5"/> Ajouter Mannequin
             </button>
+            <button onClick={handleSaveChanges} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
+              Sauvegarder les Changements
+            </button>
+          </div>
         </div>
 
         <div className="bg-black border border-pm-gold/20 p-6">
@@ -78,7 +95,7 @@ const AdminModels: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data?.models.map(model => (
+                        {models.map(model => (
                             <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark">
                                 <td className="p-4"><img src={model.imageUrl} alt={model.name} className="w-12 h-16 object-cover"/></td>
                                 <td className="p-4">{model.name}</td>
