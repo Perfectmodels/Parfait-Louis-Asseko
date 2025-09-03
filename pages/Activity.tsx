@@ -1,153 +1,157 @@
-import React, { useState, useEffect } from 'react';
-import { CalendarIcon, ClockIcon, MapPinIcon, AcademicCapIcon, CameraIcon, SparklesIcon, PhoneIcon } from '@heroicons/react/24/outline';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
-import BackToTopButton from '../components/BackToTopButton';
-import CountdownTimer from '../components/CountdownTimer';
 
-const Activity: React.FC = () => {
-  const modules = [
-    { name: "La démarche (catwalk)", description: "Maîtrisez l'art de défiler avec assurance et élégance." },
-    { name: "La posture", description: "Adoptez une posture parfaite pour valoriser chaque tenue." },
-    { name: "Les expressions faciales", description: "Apprenez à communiquer des émotions avec votre visage." },
-    { name: "Les techniques de poses photo", description: "Découvrez les secrets pour captiver l'objectif." },
-    { name: "La confiance en soi", description: "Développez une assurance inébranlable sur et hors du podium." },
-  ];
+import React, { useState } from 'react';
+import { PhoneIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
-  const benefits = [
-    { icon: AcademicCapIcon, text: "Attestation de participation" },
-    { icon: CameraIcon, text: "Shooting photo professionnel" },
-    { icon: SparklesIcon, text: "Suivi post-formation" },
-  ];
-  
-  const [shareUrl, setShareUrl] = useState('');
-  const workshopDate = "2024-07-27T10:00:00";
+const formationModules = [
+  {
+    title: "Module 1: Les Fondamentaux du Mannequinat",
+    chapters: [
+      "Histoire et évolution du mannequinat",
+      "Les différents types de mannequinat (podium, photo, commercial)",
+      "Comprendre les agences et le rôle de l'agent",
+      "L'importance de l'image et du personal branding",
+      "Les mensurations et standards de l'industrie",
+      "Le vocabulaire de la mode",
+      "Hygiène de vie et nutrition du mannequin",
+      "Éthique et professionnalisme dans le métier"
+    ]
+  },
+  {
+    title: "Module 2: Techniques de Podium (Catwalk)",
+    chapters: [
+      "Maîtrise de la démarche et de la posture",
+      "Les différents types de défilés (Haute Couture, Prêt-à-porter)",
+      "Gestion du rythme et synchronisation avec la musique",
+      "Les demi-tours (turns) et poses en bout de podium",
+      "Défiler avec des accessoires (sacs, chapeaux, etc.)",
+      "Défiler avec des tenues complexes (robes longues, traînes)",
+      "Expression et attitude sur le podium",
+      "Préparation en backstage et gestion du stress"
+    ]
+  },
+  {
+    title: "Module 3: Photographie & Expression Corporelle",
+    chapters: [
+      "Les bases de la pose photographique",
+      "Maîtriser ses expressions faciales (le 'smize')",
+      "L'art du portrait, du gros plan et du plan américain",
+      "Poses en pied et gestion de l'espace",
+      "Travailler avec la lumière en studio et en extérieur",
+      "Le mannequinat éditorial vs commercial",
+      "Raconter une histoire à travers la pose",
+      "Créer et développer son book photo professionnel"
+    ]
+  },
+    {
+    title: "Module 4: Industrie de la Mode & Professionnalisme",
+    chapters: [
+      "Le fonctionnement d'un shooting et d'un défilé",
+      "Collaborer avec les stylistes, photographes et maquilleurs",
+      "Comprendre un contrat de mannequin",
+      "La gestion financière et la facturation",
+      "Les castings : préparation, attitude et suivi",
+      "L'importance des réseaux sociaux pour un mannequin",
+      "Les capitales de la mode et les marchés internationaux",
+      "S'adapter aux tendances et évolutions de l'industrie"
+    ]
+  },
+  {
+    title: "Module 5: Carrière & Développement Personnel",
+    chapters: [
+      "Définir ses objectifs et son plan de carrière",
+      "Développer sa confiance en soi et son charisme",
+      "Techniques de communication et d'interview",
+      "Gestion de l'image publique et e-réputation",
+      "Le networking et la construction de son réseau professionnel",
+      "Santé mentale et bien-être dans un milieu exigeant",
+      "Se diversifier : comédie, influence, entrepreneuriat",
+      "Planifier sa carrière sur le long terme et sa reconversion"
+    ]
+  },
+];
 
-  useEffect(() => {
-    setShareUrl(window.location.href);
-  }, []);
+const Formations: React.FC = () => {
+    const [openModule, setOpenModule] = useState<number | null>(0);
 
-  const shareTitle = "Découvrez l'atelier de formation au mannequinat de Perfect Models Management ! Une journée pour révéler le top model en vous. #PerfectModels #Mannequinat #Formation #ModeGabon";
+    const toggleModule = (index: number) => {
+        setOpenModule(openModule === index ? null : index);
+    };
 
-  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-  const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`;
-  const whatsappShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTitle + " " + shareUrl)}`;
-
-  return (
-    <div className="bg-pm-dark text-pm-off-white">
-      {/* Hero Section */}
-      <section 
-        className="relative min-h-[60vh] flex items-center justify-center text-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('https://i.ibb.co/8nq5gBTW/485976709-640513238697791-5779836737383586501-n.jpg')" }}
-        aria-labelledby="activity-title"
-      >
-        <div className="absolute inset-0 bg-pm-dark/80 backdrop-blur-sm"></div>
-        <div className="relative z-10 p-6">
-          <h1 id="activity-title" className="text-4xl md:text-6xl font-playfair text-pm-gold font-extrabold" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
-            Atelier de Formation au Mannequinat Professionnel
-          </h1>
-          <p className="mt-4 text-lg md:text-xl text-pm-off-white/90">
-            Une journée immersive pour révéler le top model qui est en vous.
-          </p>
-        </div>
-      </section>
-
-      <div className="container mx-auto px-6 py-20">
-        <div className="space-y-20">
-            {/* Event Info Section */}
-            <section aria-label="Informations sur l'événement" className="bg-black p-8 border border-pm-gold/20 -mt-40 relative z-20 max-w-5xl mx-auto shadow-2xl shadow-pm-gold/10">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <InfoItem icon={CalendarIcon} title="Date" content="Samedi 27 Juillet 2024" />
-                    <InfoItem icon={ClockIcon} title="Heure" content="10h - 17h" />
-                    <InfoItem icon={MapPinIcon} title="Lieu" content="Ancien Sobraga, Libreville" />
+    return (
+        <div className="bg-pm-dark text-pm-off-white">
+            {/* Hero Section */}
+            <section 
+                className="relative min-h-[50vh] flex items-center justify-center text-center bg-cover bg-center"
+                style={{ backgroundImage: "url('https://i.ibb.co/b5LgVZgr/DSC-0090.jpg')" }}
+                aria-labelledby="formations-title"
+            >
+                <div className="absolute inset-0 bg-pm-dark/80"></div>
+                <div className="relative z-10 p-6">
+                    <h1 id="formations-title" className="text-4xl md:text-6xl font-playfair text-pm-gold font-extrabold" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
+                        Programme de Formation
+                    </h1>
+                    <p className="mt-4 text-lg md:text-xl text-pm-off-white/90 max-w-3xl mx-auto">
+                        40 chapitres théoriques pour maîtriser l'art du mannequinat et lancer une carrière à succès.
+                    </p>
                 </div>
             </section>
-            
-            {/* Countdown Timer Section */}
-            <section aria-labelledby="countdown-title" className="text-center">
-                <h2 id="countdown-title" className="text-2xl font-playfair text-pm-gold mb-6">Le workshop commence dans...</h2>
-                <CountdownTimer targetDate={workshopDate} />
-            </section>
 
-            {/* Modules Section */}
-            <section aria-labelledby="modules-title">
-              <h2 id="modules-title" className="text-4xl font-playfair text-pm-gold text-center mb-12">Modules de Formation</h2>
-              <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-                {modules.map((module, index) => (
-                  <div key={index} className="bg-black p-6 border-l-4 border-pm-gold">
-                    <h3 className="text-xl font-bold text-pm-off-white">{module.name}</h3>
-                    <p className="mt-2 text-pm-off-white/70">{module.description}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Benefits Section */}
-            <section aria-labelledby="benefits-title" className="bg-black p-12 border-t border-b border-pm-gold/10">
-                <h2 id="benefits-title" className="text-4xl font-playfair text-pm-gold text-center mb-12">Ce que vous obtiendrez</h2>
-                <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {benefits.map((benefit, index) => (
-                        <div key={index} className="bg-pm-dark p-8 border border-pm-gold/20 text-center flex flex-col items-center transition-all duration-300 hover:border-pm-gold hover:-translate-y-2 hover:shadow-xl hover:shadow-pm-gold/10">
-                            <benefit.icon className="w-16 h-16 text-pm-gold mb-4" aria-hidden="true" />
-                            <p className="text-lg font-semibold">{benefit.text}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Registration/CTA Section */}
-            <section aria-labelledby="registration-title">
-              <div className="max-w-3xl mx-auto bg-pm-gold text-pm-dark p-8 text-center shadow-lg shadow-pm-gold/30">
-                <h2 id="registration-title" className="text-4xl font-playfair font-bold mb-4">Inscrivez-vous !</h2>
-                <p className="text-xl font-semibold mb-2">Tarif unique : <span className="text-3xl font-bold">15.000 FCFA</span></p>
-                <p className="mb-6 bg-pm-dark text-pm-gold font-bold inline-block px-3 py-1">Offre spéciale : 10.000 FCFA jusqu'au 20 Juillet !</p>
+            <div className="container mx-auto px-6 py-20">
+                <div className="max-w-4xl mx-auto">
+                    {/* Introduction */}
+                    <section className="text-center mb-16">
+                         <h2 className="text-3xl font-playfair text-pm-gold mb-4">De l'Aspiration à la Professionnalisation</h2>
+                         <p className="text-pm-off-white/80 leading-relaxed">
+                            Notre programme complet est conçu pour vous doter de toutes les connaissances théoriques indispensables pour exceller. Chaque module explore en profondeur un aspect crucial du métier, vous préparant à naviguer avec confiance dans l'industrie de la mode.
+                         </p>
+                    </section>
                 
-                <p className="text-lg mb-6">Les places sont limitées. Réservez la vôtre dès maintenant.</p>
-                <a href="tel:+241074066461" className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-pm-dark text-pm-gold font-bold uppercase tracking-widest transition-transform duration-300 hover:scale-105">
-                    <PhoneIcon className="w-6 h-6" aria-hidden="true" />
-                    Contactez-nous : 074 06 64 61
-                </a>
-              </div>
-            </section>
-        </div>
-        
-        {/* Social Share Section */}
-        <section aria-labelledby="share-title" className="pt-20">
-            <div className="max-w-3xl mx-auto text-center border-t border-pm-gold/20 pt-12">
-                <h2 id="share-title" className="text-2xl font-playfair text-pm-gold mb-6">Partagez l'événement</h2>
-                <p className="text-pm-off-white/70 mb-8">
-                    Aidez-nous à faire connaître cette opportunité unique. Partagez avec vos amis et sur vos réseaux !
-                </p>
-                <div className="flex justify-center items-center gap-8">
-                    <a href={facebookShareUrl} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Partager sur Facebook">
-                        <FacebookIcon className="w-8 h-8"/>
-                    </a>
-                    <a href={twitterShareUrl} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Partager sur Twitter">
-                        <TwitterIcon className="w-8 h-8"/>
-                    </a>
-                    <a href={whatsappShareUrl} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Partager sur WhatsApp">
-                        <WhatsAppIcon className="w-8 h-8"/>
-                    </a>
+                    {/* Accordion Modules */}
+                    <section aria-label="Modules de formation">
+                        <div className="space-y-4">
+                            {formationModules.map((module, index) => (
+                                <div key={index} className="bg-black border border-pm-gold/20 overflow-hidden">
+                                    <button
+                                        onClick={() => toggleModule(index)}
+                                        className="w-full flex justify-between items-center p-5 text-left text-xl font-bold text-pm-gold hover:bg-pm-gold/5"
+                                        aria-expanded={openModule === index}
+                                        aria-controls={`module-content-${index}`}
+                                    >
+                                        <span>{module.title}</span>
+                                        <ChevronDownIcon className={`w-6 h-6 transition-transform duration-300 ${openModule === index ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    <div
+                                        id={`module-content-${index}`}
+                                        className={`transition-all duration-500 ease-in-out ${openModule === index ? 'max-h-[500px] visible' : 'max-h-0 invisible'}`}
+                                    >
+                                        <div className="p-5 border-t border-pm-gold/20">
+                                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-pm-off-white/80">
+                                                {module.chapters.map((chapter, chapIndex) => (
+                                                    <li key={chapIndex} className="py-1">{chapter}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                    
+                    {/* CTA Section */}
+                    <section aria-labelledby="registration-title" className="mt-20">
+                      <div className="max-w-3xl mx-auto bg-pm-gold text-pm-dark p-8 text-center shadow-lg shadow-pm-gold/30">
+                        <h2 id="registration-title" className="text-4xl font-playfair font-bold mb-4">Prêt à commencer ?</h2>
+                        <p className="text-lg mb-6">Contactez-nous pour en savoir plus sur nos sessions de formation, les modalités d'inscription et les prochaines dates.</p>
+                        <a href="tel:+241074066461" className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-pm-dark text-pm-gold font-bold uppercase tracking-widest transition-transform duration-300 hover:scale-105">
+                            <PhoneIcon className="w-6 h-6" aria-hidden="true" />
+                            Inscriptions : 074 06 64 61
+                        </a>
+                      </div>
+                    </section>
                 </div>
             </div>
-        </section>
-
-      </div>
-      <BackToTopButton />
-    </div>
-  );
+        </div>
+    );
 };
 
-interface InfoItemProps {
-    icon: React.ElementType;
-    title: string;
-    content: string;
-}
-const InfoItem: React.FC<InfoItemProps> = ({ icon: Icon, title, content }) => (
-    <div className="flex flex-col items-center">
-        <Icon className="w-10 h-10 text-pm-gold mb-3" aria-hidden="true" />
-        <h3 className="font-bold text-lg uppercase tracking-wider text-pm-off-white/80">{title}</h3>
-        <p className="text-pm-off-white">{content}</p>
-    </div>
-);
-
-export default Activity;
+export default Formations;
