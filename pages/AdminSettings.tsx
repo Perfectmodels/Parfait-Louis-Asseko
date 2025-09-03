@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
@@ -30,11 +31,9 @@ const AdminSettings: React.FC = () => {
     
     const handleSave = () => {
         if (!data || !localData) return;
-        if (window.confirm("Sauvegarder tous les paramètres du site ?")) {
-            const newData: AppData = { ...data, ...localData };
-            saveData(newData);
-            alert("Paramètres sauvegardés !");
-        }
+        const newData: AppData = { ...data, ...localData };
+        saveData(newData);
+        alert("Changements enregistrés pour la session actuelle. N'oubliez pas d'exporter le code depuis le dashboard pour les rendre permanents.");
     };
 
     const handleSimpleChange = (section: keyof EditableData, key: string, value: any) => {

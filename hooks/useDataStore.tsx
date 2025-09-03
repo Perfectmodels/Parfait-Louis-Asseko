@@ -20,8 +20,6 @@ import {
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
 
-const DATA_STORAGE_KEY = 'pmm_site_data_v2';
-
 export interface AppData {
   models: Model[];
   articles: Article[];
@@ -61,31 +59,16 @@ export const useDataStore = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem(DATA_STORAGE_KEY);
-      if (storedData) {
-        setData(JSON.parse(storedData));
-      } else {
-        const initialData = getInitialData();
-        setData(initialData);
-        localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(initialData));
-      }
-    } catch (error) {
-      console.error("Failed to load or parse data from localStorage", error);
-      // Fallback to initial data if localStorage fails
-      setData(getInitialData());
-    } finally {
-        setIsInitialized(true);
-    }
+    // Initialize data from constants on every app load.
+    // This makes the data store session-based.
+    setData(getInitialData());
+    setIsInitialized(true);
   }, []);
 
   const saveData = useCallback((newData: AppData) => {
-    try {
-      localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(newData));
-      setData(newData);
-    } catch (error) {
-      console.error("Failed to save data to localStorage", error);
-    }
+    // This now only updates the state for the current session.
+    // It does not persist to localStorage anymore.
+    setData(newData);
   }, []);
 
   return { data, saveData, isInitialized };
