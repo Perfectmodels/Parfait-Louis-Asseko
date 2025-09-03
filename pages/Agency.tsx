@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { agencyTimeline, agencyInfo, modelDistinctions, agencyServices, agencyAchievements, agencyPartners } from '../constants/data';
-import { MapPinIcon, DevicePhoneMobileIcon, EnvelopeIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
+import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction, Service } from '../types';
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -81,32 +83,17 @@ const Agency: React.FC = () => {
           </div>
         </section>
 
-        {/* Contact */}
+        {/* Contact CTA */}
         <section>
           <SectionTitle>Contactez-Nous</SectionTitle>
-          <div className="bg-black p-8 md:p-12 border border-pm-gold/20">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="md:w-1/2">
-                <h3 className="text-2xl font-playfair text-pm-gold mb-6">Envoyez-nous un message</h3>
-                <form className="space-y-4">
-                  <input type="text" placeholder="Votre nom" className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors" />
-                  <input type="email" placeholder="Votre email" className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors" />
-                  <textarea placeholder="Votre message" rows={5} className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors"></textarea>
-                  <button type="submit" className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-lg transition-all duration-300 hover:bg-white">Envoyer</button>
-                </form>
-              </div>
-              <div className="md:w-1/2">
-                <h3 className="text-2xl font-playfair text-pm-gold mb-6">Nos Coordonnées</h3>
-                <div className="space-y-4 text-pm-off-white/90">
-                  <p className="flex items-center gap-4"><EnvelopeIcon className="w-6 h-6 text-pm-gold"/> Contact@perfectmodels.ga</p>
-                  <p className="flex items-center gap-4"><DevicePhoneMobileIcon className="w-6 h-6 text-pm-gold"/> +241 074066461</p>
-                  <p className="flex items-center gap-4"><MapPinIcon className="w-6 h-6 text-pm-gold"/> Ancien Sobraga (Libreville)</p>
-                </div>
-                <div className="mt-6 h-64 bg-pm-dark border border-pm-gold/50 flex items-center justify-center text-pm-gold/50">
-                   Google Maps Stylisé Doré
-                </div>
-              </div>
-            </div>
+          <div className="text-center bg-black p-12 border border-pm-gold/20">
+            <h3 className="text-2xl font-playfair text-pm-gold mb-4">Une question ? Un projet ?</h3>
+            <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
+                Nous serions ravis d'échanger avec vous. Visitez notre page de contact pour nous envoyer un message ou trouver nos coordonnées.
+            </p>
+            <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
+                Nous Contacter
+            </Link>
           </div>
         </section>
 
