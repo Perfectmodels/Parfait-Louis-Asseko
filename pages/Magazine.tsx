@@ -33,7 +33,7 @@ const Magazine: React.FC = () => {
               excerpt="Les moments forts, les coulisses et les plus belles créations de l'événement qui a marqué les esprits."
             />
             <ArticleCard
-              image="https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg"
+              image="https://i.ibb.co/Rk1fGph/farelmd-37.jpg"
               category="Tendance"
               title="L'audace du sur-mesure masculin"
               excerpt="Analyse du style affirmé des créateurs comme Farel MD et Miguel Fashion Style, stars de notre dernier défilé."
@@ -89,7 +89,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ image, category, title, excer
             <p className="text-sm uppercase tracking-widest text-pm-gold font-bold">{category}</p>
             <h2 className="text-3xl font-playfair my-2 text-pm-dark">{title}</h2>
             <p className="text-pm-dark/70">{excerpt}</p>
-            <a href="#" className="inline-block mt-4 text-pm-gold font-bold group-hover:underline">Lire la suite...</a>
         </div>
     </div>
 );

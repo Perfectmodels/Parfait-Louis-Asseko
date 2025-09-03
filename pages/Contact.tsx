@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MapPinIcon, DevicePhoneMobileIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 
 const Contact: React.FC = () => {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO 
@@ -20,12 +27,19 @@ const Contact: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-12">
             <div className="md:w-1/2">
               <h3 className="text-2xl font-playfair text-pm-gold mb-6">Envoyez-nous un message</h3>
-              <form className="space-y-4">
-                <input type="text" placeholder="Votre nom" className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors" />
-                <input type="email" placeholder="Votre email" className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors" />
-                <textarea placeholder="Votre message" rows={5} className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors"></textarea>
-                <button type="submit" className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-lg transition-all duration-300 hover:bg-white">Envoyer</button>
-              </form>
+              {submitted ? (
+                <div className="flex flex-col justify-center items-center h-full text-center p-8 bg-pm-dark border border-pm-gold rounded-lg">
+                    <h3 className="text-2xl font-playfair text-pm-gold">Merci !</h3>
+                    <p className="mt-2 text-pm-off-white/80">Votre message a bien été envoyé. Nous vous répondrons bientôt.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <input required type="text" placeholder="Votre nom" className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors" />
+                  <input required type="email" placeholder="Votre email" className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors" />
+                  <textarea required placeholder="Votre message" rows={5} className="w-full bg-pm-dark border border-pm-off-white/20 rounded-lg p-3 focus:outline-none focus:border-pm-gold transition-colors"></textarea>
+                  <button type="submit" className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-lg transition-all duration-300 hover:bg-white">Envoyer</button>
+                </form>
+              )}
             </div>
             <div className="md:w-1/2">
               <h3 className="text-2xl font-playfair text-pm-gold mb-6">Nos Coordonnées</h3>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
-import { siteConfig } from '../constants/data';
+import { siteConfig, navLinks } from '../constants/data';
 
 const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => {
   const activeLinkStyle = {
@@ -12,14 +12,17 @@ const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => {
 
   return (
     <>
-      <NavLink to="/" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Accueil</NavLink>
-      <NavLink to="/agence" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">L'Agence</NavLink>
-      <NavLink to="/mannequins" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Mannequins</NavLink>
-      <NavLink to="/fashion-day" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Perfect Fashion Day</NavLink>
-      <NavLink to="/magazine" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Magazine</NavLink>
-      <NavLink to="/formations" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Classroom</NavLink>
-      <NavLink to="/casting" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Casting</NavLink>
-      <NavLink to="/contact" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Contact</NavLink>
+      {navLinks.map(link => (
+        <NavLink 
+          key={link.path}
+          to={link.path} 
+          style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} 
+          onClick={onLinkClick} 
+          className="hover:text-pm-gold transition-colors duration-300"
+        >
+          {link.label}
+        </NavLink>
+      ))}
     </>
   );
 };

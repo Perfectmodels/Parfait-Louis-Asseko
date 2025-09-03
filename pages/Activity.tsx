@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
+import BackToTopButton from '../components/BackToTopButton';
 
 const formationModules = [
   {
@@ -284,6 +285,7 @@ const Formations: React.FC = () => {
                     </main>
                 </div>
             </div>
+            <BackToTopButton />
         </div>
     );
 };
