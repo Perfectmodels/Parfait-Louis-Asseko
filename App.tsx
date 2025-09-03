@@ -8,8 +8,9 @@ import Models from './pages/Models';
 import ModelDetail from './pages/ModelDetail';
 import FashionDay from './pages/FashionDay';
 import Magazine from './pages/Magazine';
-import Application from './pages/Application';
 import Activity from './pages/Activity';
+import Contact from './pages/Contact';
+import Casting from './pages/Casting';
 import NotFound from './pages/NotFound';
 
 const ScrollToTop: React.FC = () => {
@@ -35,7 +36,8 @@ const App: React.FC = () => {
           <Route path="/fashion-day" element={<FashionDay />} />
           <Route path="/magazine" element={<Magazine />} />
           <Route path="/activite" element={<Activity />} />
-          <Route path="/candidature" element={<Application />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/casting" element={<Casting />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>

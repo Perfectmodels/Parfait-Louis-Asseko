@@ -18,7 +18,8 @@ const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => {
       <NavLink to="/fashion-day" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Perfect Fashion Day</NavLink>
       <NavLink to="/magazine" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Magazine</NavLink>
       <NavLink to="/activite" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Activité</NavLink>
-      <NavLink to="/candidature" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Candidature</NavLink>
+      <NavLink to="/casting" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Casting</NavLink>
+      <NavLink to="/contact" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} onClick={onLinkClick} className="hover:text-pm-gold transition-colors duration-300">Contact</NavLink>
     </>
   );
 };

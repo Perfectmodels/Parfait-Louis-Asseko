@@ -46,7 +46,7 @@ const Home: React.FC = () => {
              <Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
                 Découvrir nos mannequins
             </Link>
-            <Link to="/candidature" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+            <Link to="/casting" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
                 Rejoindre l'agence
             </Link>
           </div>
@@ -140,7 +140,7 @@ const Home: React.FC = () => {
                 <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
                     Prêt à lancer votre carrière ? Nous sommes toujours à la recherche de nouveaux talents.
                 </p>
-                <Link to="/candidature" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
+                <Link to="/casting" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
                     Postuler maintenant
                 </Link>
             </div>

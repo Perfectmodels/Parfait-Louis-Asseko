@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CalendarIcon, ClockIcon, MapPinIcon, AcademicCapIcon, CameraIcon, SparklesIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
+import BackToTopButton from '../components/BackToTopButton';
+import CountdownTimer from '../components/CountdownTimer';
 
 const Activity: React.FC = () => {
   const modules = [
@@ -17,7 +19,13 @@ const Activity: React.FC = () => {
     { icon: SparklesIcon, text: "Suivi post-formation" },
   ];
   
-  const shareUrl = "https://perfectmodels.ga/#/activite";
+  const [shareUrl, setShareUrl] = useState('');
+  const workshopDate = "2024-07-27T10:00:00";
+
+  useEffect(() => {
+    setShareUrl(window.location.href);
+  }, []);
+
   const shareTitle = "Découvrez l'atelier de formation au mannequinat de Perfect Models Management ! Une journée pour révéler le top model en vous. #PerfectModels #Mannequinat #Formation #ModeGabon";
 
   const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
@@ -53,6 +61,12 @@ const Activity: React.FC = () => {
                     <InfoItem icon={MapPinIcon} title="Lieu" content="Ancien Sobraga, Libreville" />
                 </div>
             </section>
+            
+            {/* Countdown Timer Section */}
+            <section aria-labelledby="countdown-title" className="text-center">
+                <h2 id="countdown-title" className="text-2xl font-playfair text-pm-gold mb-6">Le workshop commence dans...</h2>
+                <CountdownTimer targetDate={workshopDate} />
+            </section>
 
             {/* Modules Section */}
             <section aria-labelledby="modules-title">
@@ -68,11 +82,11 @@ const Activity: React.FC = () => {
             </section>
 
             {/* Benefits Section */}
-            <section aria-labelledby="benefits-title" className="bg-black p-12 border border-pm-gold/10">
+            <section aria-labelledby="benefits-title" className="bg-black p-12 border-t border-b border-pm-gold/10">
                 <h2 id="benefits-title" className="text-4xl font-playfair text-pm-gold text-center mb-12">Ce que vous obtiendrez</h2>
-                <div className="flex flex-col md:flex-row justify-center items-center gap-12">
+                <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
                     {benefits.map((benefit, index) => (
-                        <div key={index} className="flex flex-col items-center text-center">
+                        <div key={index} className="bg-pm-dark p-8 border border-pm-gold/20 text-center flex flex-col items-center transition-all duration-300 hover:border-pm-gold hover:-translate-y-2 hover:shadow-xl hover:shadow-pm-gold/10">
                             <benefit.icon className="w-16 h-16 text-pm-gold mb-4" aria-hidden="true" />
                             <p className="text-lg font-semibold">{benefit.text}</p>
                         </div>
@@ -118,6 +132,7 @@ const Activity: React.FC = () => {
         </section>
 
       </div>
+      <BackToTopButton />
     </div>
   );
 };
