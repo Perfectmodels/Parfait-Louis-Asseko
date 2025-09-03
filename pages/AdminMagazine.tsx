@@ -165,7 +165,7 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
                     })}/>
                     <div className="text-xs text-pm-off-white/50">
                         <p>Format: tableau d'objets. Types: 'paragraph', 'heading' (avec level: 2 ou 3), 'quote' (avec author?).</p>
-                        <p>Ex: [{"type": "paragraph", "text": "Bonjour."}]</p>
+                        <p>{'Ex: [{"type": "paragraph", "text": "Bonjour."}]'}</p>
                     </div>
 
                     <div className="flex justify-end gap-4 pt-4">

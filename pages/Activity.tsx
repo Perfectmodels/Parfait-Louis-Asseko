@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, EyeIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
 import { QuizQuestion, Module } from '../types';
@@ -203,97 +203,15 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = (
     );
 };
 
-// --- ADMIN VIEW ---
-const AdminView: React.FC<{ onLogout: () => void; courseData: Module[] }> = ({ onLogout, courseData }) => {
-    return (
-        <div className="container mx-auto px-6 py-20">
-            <div className="flex justify-between items-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-playfair text-pm-gold">Tableau de Bord Admin</h1>
-                <div className="flex items-center gap-4">
-                     <Link to="/admin" className="text-pm-gold font-bold hover:underline">
-                        Gérer le Site
-                     </Link>
-                    <button onClick={onLogout} className="inline-flex items-center gap-2 text-pm-gold/70 hover:text-pm-gold text-sm transition-colors">
-                        <ArrowLeftOnRectangleIcon className="w-5 h-5"/>
-                        <span>Déconnexion</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Dashboard Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                <div className="bg-black p-6 border border-pm-gold/20 flex items-center gap-4">
-                    <AcademicCapIcon className="w-10 h-10 text-pm-gold"/>
-                    <div>
-                        <div className="text-3xl font-bold">{courseData.length}</div>
-                        <div className="text-pm-off-white/70">Modules</div>
-                    </div>
-                </div>
-                <div className="bg-black p-6 border border-pm-gold/20 flex items-center gap-4">
-                    <EyeIcon className="w-10 h-10 text-pm-gold"/>
-                    <div>
-                        <div className="text-3xl font-bold">{courseData.reduce((acc, module) => acc + module.chapters.length, 0)}</div>
-                        <div className="text-pm-off-white/70">Chapitres</div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Course Overview */}
-            <h2 className="text-3xl font-playfair text-pm-gold mb-8">Aperçu du Cours</h2>
-            <div className="space-y-8">
-                {courseData.map((module, index) => (
-                    <div key={index} className="bg-black border border-pm-gold/20 p-6">
-                        <h3 className="text-2xl font-bold text-pm-gold mb-4">{module.title}</h3>
-                        <div className="space-y-4 mb-6">
-                            <ul className="space-y-2 list-disc list-inside">
-                                {module.chapters.map(chapter => (
-                                    <li key={chapter.slug}>
-                                        <Link to={`/formations/${module.slug}/${chapter.slug}`} className="text-pm-off-white/80 hover:text-pm-gold hover:underline">
-                                            {chapter.title} (Voir le cours)
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        {module.quiz && module.quiz.length > 0 && 
-                            <div className="border-t border-pm-gold/20 pt-4">
-                                <h4 className="font-semibold text-pm-gold mb-2">Quiz du Module</h4>
-                                <div className="space-y-4">
-                                    {module.quiz.map(q => (
-                                        <div key={q.question}>
-                                            <p className="font-bold text-sm">{q.question}</p>
-                                            <ul className="text-xs list-disc list-inside pl-4">
-                                                {q.options.map(opt => (
-                                                    <li key={opt} className={`${opt === q.correctAnswer ? 'text-green-400 font-bold' : 'text-pm-off-white/70'}`}>
-                                                        {opt} {opt === q.correctAnswer && '(Réponse correcte)'}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        }
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
 // --- MAIN COMPONENT ---
 const Formations: React.FC = () => {
     const { data, isInitialized } = useData();
-    const [role, setRole] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         const hasAccess = sessionStorage.getItem('classroom_access');
-        const userRole = sessionStorage.getItem('classroom_role');
-        if (hasAccess !== 'granted' || !userRole) {
+        if (hasAccess !== 'granted') {
             navigate('/login', { replace: true });
-        } else {
-            setRole(userRole);
         }
     }, [navigate]);
 
@@ -314,7 +232,7 @@ const Formations: React.FC = () => {
               description="Accès à la plateforme de formation privée pour les mannequins de l'agence Perfect Models Management. Programme de 40 chapitres théoriques."
               keywords="formation mannequin, cours mannequinat, devenir mannequin, PMM classroom"
             />
-            {role === 'admin' ? <AdminView onLogout={handleLogout} courseData={data.courseData} /> : <StudentView onLogout={handleLogout} courseData={data.courseData} />}
+            <StudentView onLogout={handleLogout} courseData={data.courseData} />
         </>
     );
 };

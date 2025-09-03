@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
         <div className="container mx-auto px-6 text-center text-xs text-pm-off-white/50">
           <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
            <Link to="/login" className="mt-2 inline-block hover:text-pm-gold transition-colors text-pm-off-white/40">
-            Connexion Admin
+            Accès Classroom
           </Link>
         </div>
       </div>
