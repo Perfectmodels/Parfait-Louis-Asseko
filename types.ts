@@ -74,8 +74,15 @@ export interface QuizQuestion {
   correctAnswer: string;
 }
 
-export interface Module {
+export interface Chapter {
+  slug: string;
   title: string;
-  chapters: { title: string; content: string }[];
+  content: string;
+}
+
+export interface Module {
+  slug: string;
+  title: string;
+  chapters: Chapter[];
   quiz: QuizQuestion[];
 }

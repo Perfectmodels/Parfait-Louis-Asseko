@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, EyeIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
@@ -33,23 +33,23 @@ const StudentView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             </section>
 
             <div className="container mx-auto px-4 sm:px-6 py-20">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    {/* Sidebar */}
-                    <aside className="lg:col-span-3 lg:sticky lg:top-24 self-start">
+                <div className="lg:grid lg:grid-cols-12 lg:gap-12">
+                     {/* Sidebar - Note: Simplified for better mobile experience first */}
+                    <aside className="lg:col-span-3 lg:sticky lg:top-32 self-start mb-12 lg:mb-0">
                         <div className="bg-black p-6 border border-pm-gold/20">
                           <h3 className="text-xl font-playfair text-pm-gold mb-4">Navigation du Cours</h3>
                           <nav>
                             {courseData.map((module, moduleIndex) => (
                               <div key={moduleIndex} className="mb-3">
-                                <a href={`#module-${moduleIndex}`} onClick={() => setOpenModule(moduleIndex)} className="font-bold text-pm-off-white mb-2 text-sm hover:text-pm-gold">
+                                <a href={`#module-${moduleIndex}`} onClick={(e) => { e.preventDefault(); toggleModule(moduleIndex); document.getElementById(`module-${moduleIndex}`)?.scrollIntoView(); }} className="font-bold text-pm-off-white mb-2 text-sm hover:text-pm-gold">
                                     {module.title}
                                 </a>
                                 <ul className="mt-2 space-y-1 pl-2 border-l border-pm-gold/30">
                                   {module.chapters.map((chapter, chapterIndex) => (
                                     <li key={chapterIndex}>
-                                      <a href={`#module-${moduleIndex}`} onClick={() => setOpenModule(moduleIndex)} className="block text-xs text-pm-off-white/70 hover:text-pm-gold">
+                                      <Link to={`/formations/${module.slug}/${chapter.slug}`} className="block text-xs text-pm-off-white/70 hover:text-pm-gold">
                                         {chapter.title}
-                                      </a>
+                                      </Link>
                                     </li>
                                   ))}
                                 </ul>
@@ -92,14 +92,15 @@ const StudentView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                                         className={`transition-all duration-500 ease-in-out ${openModule === index ? 'max-h-full visible' : 'max-h-0 invisible'}`}
                                     >
                                         <div className="p-5 border-t border-pm-gold/20">
-                                            <div className="space-y-6">
-                                                {module.chapters.map((chapter, chapIndex) => (
-                                                    <div key={chapIndex}>
-                                                        <h4 className="font-bold text-pm-gold">{chapter.title}</h4>
-                                                        <p className="mt-1 text-pm-off-white/80">{chapter.content}</p>
-                                                    </div>
+                                            <ul className="space-y-3 list-disc list-inside">
+                                                {module.chapters.map((chapter) => (
+                                                    <li key={chapter.slug}>
+                                                        <Link to={`/formations/${module.slug}/${chapter.slug}`} className="text-pm-off-white/80 hover:text-pm-gold hover:underline">
+                                                            {chapter.title}
+                                                        </Link>
+                                                    </li>
                                                 ))}
-                                            </div>
+                                            </ul>
                                             <QuizComponent quiz={module.quiz} moduleIndex={index} />
                                         </div>
                                     </div>
@@ -113,6 +114,7 @@ const StudentView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         </>
     );
 };
+
 
 // --- QUIZ COMPONENT for StudentView ---
 const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = ({ quiz, moduleIndex }) => {
@@ -239,12 +241,15 @@ const AdminView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     <div key={index} className="bg-black border border-pm-gold/20 p-6">
                         <h3 className="text-2xl font-bold text-pm-gold mb-4">{module.title}</h3>
                         <div className="space-y-4 mb-6">
-                            {module.chapters.map(chapter => (
-                                <div key={chapter.title}>
-                                    <h4 className="font-semibold text-pm-off-white">{chapter.title}</h4>
-                                    <p className="text-sm text-pm-off-white/70">{chapter.content}</p>
-                                </div>
-                            ))}
+                            <ul className="space-y-2 list-disc list-inside">
+                                {module.chapters.map(chapter => (
+                                    <li key={chapter.slug}>
+                                        <Link to={`/formations/${module.slug}/${chapter.slug}`} className="text-pm-off-white/80 hover:text-pm-gold hover:underline">
+                                            {chapter.title} (Voir le cours)
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                         <div className="border-t border-pm-gold/20 pt-4">
                            <h4 className="font-semibold text-pm-gold mb-2">Quiz du Module</h4>
