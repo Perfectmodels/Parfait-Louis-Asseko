@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
@@ -35,6 +36,13 @@ const ArticleDetail: React.FC = () => {
                 {content.author && <cite className="block text-right mt-2 text-sm not-italic text-pm-gold/80">- {content.author}</cite>}
             </blockquote>
         );
+      case 'image':
+        return (
+          <figure key={index} className="my-8">
+            <img src={content.src} alt={content.alt} className="w-full h-auto object-cover rounded-md border-2 border-pm-gold/50 p-1" />
+            {content.caption && <figcaption className="text-center text-sm italic text-pm-off-white/70 mt-2">{content.caption}</figcaption>}
+          </figure>
+        );
       default:
         return null;
     }
@@ -45,7 +53,7 @@ const ArticleDetail: React.FC = () => {
       <SEO 
         title={`${article.title} | Focus Model 241`}
         description={article.excerpt}
-        keywords={`${article.category}, ${article.title}, magazine mode, PMM`}
+        keywords={`${article.category}, ${article.title}, magazine mode, PMM, ${(article.tags || []).join(', ')}`}
         image={article.imageUrl}
       />
       <div className="container mx-auto px-6 max-w-4xl">
@@ -65,6 +73,18 @@ const ArticleDetail: React.FC = () => {
           <div className="prose prose-invert lg:prose-xl max-w-none">
             {article.content.map(renderContent)}
           </div>
+           {article.tags && article.tags.length > 0 && (
+              <footer className="mt-12 pt-6 border-t border-pm-gold/20">
+                <h3 className="text-lg font-bold text-pm-off-white/80 mb-3">Tags:</h3>
+                <div className="flex flex-wrap gap-2">
+                  {article.tags.map((tag, index) => (
+                    <span key={index} className="px-3 py-1 bg-black text-pm-gold text-xs font-semibold rounded-full border border-pm-gold/50">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </footer>
+            )}
         </article>
       </div>
     </div>

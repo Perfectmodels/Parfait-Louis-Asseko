@@ -1,4 +1,6 @@
+
 import React, { useState } from 'react';
+// FIX: Replaced v5 `useHistory` with v6 `useNavigate` to fix module export errors.
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -6,6 +8,7 @@ import SEO from '../components/SEO';
 const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  // FIX: Swapped v5 `useHistory` for v6 `useNavigate`.
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
@@ -13,10 +16,12 @@ const Login: React.FC = () => {
     if (password === 'admin2025') {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
+      // FIX: Updated navigation to v6 `navigate`.
       navigate('/admin');
     } else if (password === 'pmm2025' || password === 'mannequins2025') {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'student');
+      // FIX: Updated navigation to v6 `navigate`.
       navigate('/formations');
     } else {
       setError('Mot de passe incorrect.');

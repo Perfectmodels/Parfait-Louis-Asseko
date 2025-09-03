@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
+// FIX: Replaced v5's `useHistory` with v6's `useNavigate` to fix module export errors.
 import { useNavigate, Link } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -205,11 +207,13 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = (
 // --- MAIN COMPONENT ---
 const Formations: React.FC = () => {
     const { data, isInitialized } = useData();
+    // FIX: Replaced v5 `useHistory` with v6 `useNavigate`.
     const navigate = useNavigate();
 
     useEffect(() => {
         const hasAccess = sessionStorage.getItem('classroom_access');
         if (hasAccess !== 'granted') {
+            // FIX: Updated navigation to v6 `navigate`.
             navigate('/login', { replace: true });
         }
     }, [navigate]);
@@ -217,6 +221,7 @@ const Formations: React.FC = () => {
     const handleLogout = () => {
         sessionStorage.removeItem('classroom_access');
         sessionStorage.removeItem('classroom_role');
+        // FIX: Updated navigation to v6 `navigate`.
         navigate('/login');
     };
 

@@ -1,6 +1,6 @@
 
-
 import React from 'react';
+// FIX: The library version is v6+, so updated routing syntax from v5 to v6.
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -47,6 +47,7 @@ const App: React.FC = () => {
       <HashRouter>
         <ScrollToTop />
         <Layout>
+          {/* FIX: Updated routing from v5 to v6 syntax. */}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/agence" element={<Agency />} />
