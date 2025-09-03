@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -24,6 +25,8 @@ import AdminClassroom from './pages/AdminClassroom';
 import AdminSettings from './pages/AdminSettings';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminCasting from './pages/AdminCasting';
+import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
+import AdminFashionDay from './pages/AdminFashionDay';
 
 
 const ScrollToTop: React.FC = () => {
@@ -55,6 +58,7 @@ const App: React.FC = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/casting" element={<Casting />} />
             <Route path="/casting-formulaire" element={<CastingForm />} />
+            <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
             <Route path="/login" element={<Login />} />
 
             {/* Admin Routes */}
@@ -64,6 +68,7 @@ const App: React.FC = () => {
             <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
             <Route path="/admin/parametres" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
             <Route path="/admin/candidatures" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
+            <Route path="/admin/fashion-day" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

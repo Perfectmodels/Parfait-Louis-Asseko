@@ -1,5 +1,8 @@
 
+
+
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import ImageCarousel from '../components/ImageCarousel';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -65,6 +68,21 @@ const FashionDay: React.FC = () => {
               <InfoPill icon={SparklesIcon} title="Promoteur" content={selectedEdition.promoter || 'Parfait Asseko'} />
             </div>
           )}
+          
+          {selectedEdition.edition === 2 && (
+            <div className="text-center my-12 py-8 border-y border-pm-gold/10 bg-black/30">
+                <h3 className="text-3xl font-playfair text-pm-gold mb-4">Rejoignez l'Aventure de l'Édition 2</h3>
+                <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+                    Pour cette nouvelle édition, nous recherchons des talents visionnaires pour donner vie au thème "L’Art de Se Révéler". Que vous soyez mannequin, styliste, partenaire, photographe ou que vous ayez un autre talent à partager, nous vous invitons à rejoindre cette célébration de la mode.
+                </p>
+                <div className="mt-8">
+                    <Link to="/fashion-day-application" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20">
+                        Participer à l'événement
+                    </Link>
+                </div>
+            </div>
+          )}
+
 
           {/* Featured Artists and Models */}
           {selectedEdition.artists && selectedEdition.featuredModels && (

@@ -229,11 +229,11 @@ const CastingForm: React.FC = () => {
             <div className="flex justify-between items-center">
                 {steps.map((step, index) => (
                     <React.Fragment key={step.number}>
-                        <div className="flex flex-col items-center text-center">
+                        <div className="flex flex-col items-center text-center w-1/4">
                             <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${currentStep >= step.number ? 'bg-pm-gold border-pm-gold text-pm-dark' : 'bg-black border-pm-gold/50 text-pm-gold'}`}>
                                 <step.icon className="w-6 h-6"/>
                             </div>
-                            <p className={`mt-2 text-xs uppercase tracking-wider font-bold ${currentStep >= step.number ? 'text-pm-gold' : 'text-pm-off-white/60'}`}>{step.title}</p>
+                            <p className={`mt-2 text-[10px] sm:text-xs uppercase tracking-wider font-bold ${currentStep >= step.number ? 'text-pm-gold' : 'text-pm-off-white/60'}`}>{step.title}</p>
                         </div>
                         {index < steps.length - 1 && <div className={`flex-1 h-1 mx-2 transition-colors duration-300 ${currentStep > step.number ? 'bg-pm-gold' : 'bg-pm-gold/30'}`}></div>}
                     </React.Fragment>

@@ -1,8 +1,9 @@
 
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 const Admin: React.FC = () => {
   return (
@@ -14,7 +15,7 @@ const Admin: React.FC = () => {
           Gérez le contenu du site web de Perfect Models Management. Les modifications sont sauvegardées en temps réel dans la base de données Firebase.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           <AdminCard
             icon={UserGroupIcon}
             title="Gérer les Mannequins"
@@ -38,6 +39,12 @@ const Admin: React.FC = () => {
             title="Candidatures Casting"
             description="Consulter et gérer les candidatures des mannequins."
             link="/admin/candidatures"
+          />
+          <AdminCard
+            icon={SparklesIcon}
+            title="Candidatures Fashion Day"
+            description="Gérer les postulants pour l'événement (stylistes, partenaires...)."
+            link="/admin/fashion-day"
           />
            <AdminCard
             icon={Cog6ToothIcon}

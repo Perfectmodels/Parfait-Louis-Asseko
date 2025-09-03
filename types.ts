@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 export interface Model {
@@ -150,6 +151,20 @@ export interface CastingApplication {
   photoPortraitUrl: string | null;
   photoFullBodyUrl: string | null;
   photoProfileUrl: string | null;
+}
+
+export type FashionDayApplicationRole = 'Mannequin' | 'Styliste' | 'Partenaire' | 'Photographe' | 'MUA' | 'Autre';
+export type FashionDayApplicationStatus = 'Nouveau' | 'En attente' | 'Accepté' | 'Refusé';
+
+export interface FashionDayApplication {
+  id: string;
+  submissionDate: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: FashionDayApplicationRole;
+  message: string;
+  status: FashionDayApplicationStatus;
 }
 
 // FIX: Added missing AIAssistantProps interface to resolve import errors.

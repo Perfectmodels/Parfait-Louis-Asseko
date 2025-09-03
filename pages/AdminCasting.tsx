@@ -74,7 +74,7 @@ const AdminCasting: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-4 mb-8 flex-wrap">
                     {(['Toutes', 'Nouveau', 'Présélectionné', 'Refusé'] as const).map(f => (
                         <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all duration-300 ${filter === f ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
                             {f}
@@ -88,9 +88,9 @@ const AdminCasting: React.FC = () => {
                             <thead className="bg-pm-dark/50">
                                 <tr className="border-b border-pm-gold/20">
                                     <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Nom</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Âge</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Taille</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Date</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Âge</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Taille</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden sm:table-cell">Date</th>
                                     <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Statut</th>
                                     <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 text-right">Actions</th>
                                 </tr>
@@ -99,9 +99,9 @@ const AdminCasting: React.FC = () => {
                                 {filteredApps.map(app => (
                                     <tr key={app.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
                                         <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
-                                        <td className="p-4 text-pm-off-white/80">{calculateAge(app.birthDate)}</td>
-                                        <td className="p-4 text-pm-off-white/80">{app.height} cm</td>
-                                        <td className="p-4 text-pm-off-white/80 text-sm">{new Date(app.submissionDate).toLocaleDateString()}</td>
+                                        <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{calculateAge(app.birthDate)}</td>
+                                        <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{app.height} cm</td>
+                                        <td className="p-4 text-pm-off-white/80 text-sm hidden sm:table-cell">{new Date(app.submissionDate).toLocaleDateString()}</td>
                                         <td className="p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
                                         <td className="p-4">
                                             <div className="flex items-center justify-end gap-4">
@@ -160,7 +160,7 @@ const ApplicationModal: React.FC<{app: CastingApplication, onClose: () => void, 
                         </div>
                         <div className="space-y-4">
                             <Section title="Statut">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
                                     {(['Nouveau', 'Présélectionné', 'Refusé'] as const).map(status => (
                                         <button key={status} onClick={() => onUpdateStatus(app.id, status)} className={`px-2 py-0.5 text-xs font-bold rounded-full border transition-all ${app.status === status ? getStatusColor(status) : 'border-pm-off-white/50 text-pm-off-white/80 hover:bg-pm-dark'}`}>
                                             {status}
