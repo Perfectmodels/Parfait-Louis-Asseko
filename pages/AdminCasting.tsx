@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus } from '../types';
@@ -68,7 +69,7 @@ const AdminCasting: React.FC = () => {
                     <div>
                         <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                             <ChevronLeftIcon className="w-5 h-5" />
-                            Retour au Dashboard
+                            Retour au Tableau de Bord
                         </Link>
                         <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Candidatures Casting</h1>
                     </div>

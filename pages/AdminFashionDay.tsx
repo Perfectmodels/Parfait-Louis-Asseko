@@ -8,7 +8,7 @@ import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
-const AdminFashionDay: React.FC = () => {
+const AdminFashionDayApps: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localApps, setLocalApps] = useState<FashionDayApplication[]>([]);
     const [statusFilter, setStatusFilter] = useState<FashionDayApplicationStatus | 'Toutes'>('Toutes');
@@ -68,7 +68,7 @@ const AdminFashionDay: React.FC = () => {
             <div className="container mx-auto px-6">
                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
-                    Retour au Dashboard
+                    Retour au Tableau de Bord
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">Candidatures Perfect Fashion Day</h1>
 
@@ -173,4 +173,4 @@ const InfoItem: React.FC<{label: string, value: React.ReactNode}> = ({label, val
     </div>
 );
 
-export default AdminFashionDay;
+export default AdminFashionDayApps;
