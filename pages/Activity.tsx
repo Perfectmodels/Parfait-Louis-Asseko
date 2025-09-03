@@ -3,11 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, EyeIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
-import { courseData } from '../constants/courseData';
-import { QuizQuestion } from '../types';
+import { QuizQuestion, Module } from '../types';
+import { useData } from '../contexts/DataContext';
 
 // --- STUDENT VIEW ---
-const StudentView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
+const StudentView: React.FC<{ onLogout: () => void; courseData: Module[] }> = ({ onLogout, courseData }) => {
     const [openModule, setOpenModule] = useState<number | null>(0);
 
     const toggleModule = (index: number) => {
@@ -34,7 +34,7 @@ const StudentView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
             <div className="container mx-auto px-4 sm:px-6 py-20">
                 <div className="lg:grid lg:grid-cols-12 lg:gap-12">
-                     {/* Sidebar - Note: Simplified for better mobile experience first */}
+                     {/* Sidebar */}
                     <aside className="lg:col-span-3 lg:sticky lg:top-32 self-start mb-12 lg:mb-0">
                         <div className="bg-black p-6 border border-pm-gold/20">
                           <h3 className="text-xl font-playfair text-pm-gold mb-4">Navigation du Cours</h3>
@@ -114,7 +114,6 @@ const StudentView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         </>
     );
 };
-
 
 // --- QUIZ COMPONENT for StudentView ---
 const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = ({ quiz, moduleIndex }) => {
@@ -203,21 +202,25 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = (
     );
 };
 
-
 // --- ADMIN VIEW ---
-const AdminView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
+const AdminView: React.FC<{ onLogout: () => void; courseData: Module[] }> = ({ onLogout, courseData }) => {
     return (
         <div className="container mx-auto px-6 py-20">
             <div className="flex justify-between items-center mb-12">
                 <h1 className="text-4xl md:text-5xl font-playfair text-pm-gold">Tableau de Bord Admin</h1>
-                <button onClick={onLogout} className="inline-flex items-center gap-2 text-pm-gold/70 hover:text-pm-gold text-sm transition-colors">
-                    <ArrowLeftOnRectangleIcon className="w-5 h-5"/>
-                    <span>Déconnexion</span>
-                </button>
+                <div className="flex items-center gap-4">
+                     <Link to="/admin" className="text-pm-gold font-bold hover:underline">
+                        Gérer le Site
+                     </Link>
+                    <button onClick={onLogout} className="inline-flex items-center gap-2 text-pm-gold/70 hover:text-pm-gold text-sm transition-colors">
+                        <ArrowLeftOnRectangleIcon className="w-5 h-5"/>
+                        <span>Déconnexion</span>
+                    </button>
+                </div>
             </div>
 
             {/* Dashboard Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                 <div className="bg-black p-6 border border-pm-gold/20 flex items-center gap-4">
                     <AcademicCapIcon className="w-10 h-10 text-pm-gold"/>
                     <div>
@@ -277,6 +280,7 @@ const AdminView: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
 // --- MAIN COMPONENT ---
 const Formations: React.FC = () => {
+    const { data, isInitialized } = useData();
     const [role, setRole] = useState<string | null>(null);
     const navigate = useNavigate();
 
@@ -296,7 +300,7 @@ const Formations: React.FC = () => {
         navigate('/login');
     };
 
-    if (!role) {
+    if (!isInitialized || !data) {
         return <div className="min-h-screen bg-pm-dark"></div>; 
     }
 
@@ -307,7 +311,7 @@ const Formations: React.FC = () => {
               description="Accès à la plateforme de formation privée pour les mannequins de l'agence Perfect Models Management. Programme de 40 chapitres théoriques."
               keywords="formation mannequin, cours mannequinat, devenir mannequin, PMM classroom"
             />
-            {role === 'admin' ? <AdminView onLogout={handleLogout} /> : <StudentView onLogout={handleLogout} />}
+            {role === 'admin' ? <AdminView onLogout={handleLogout} courseData={data.courseData} /> : <StudentView onLogout={handleLogout} courseData={data.courseData} />}
         </>
     );
 };

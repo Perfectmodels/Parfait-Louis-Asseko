@@ -1,12 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { articles } from '../constants/magazineData';
 import { Article } from '../types';
+import { useData } from '../contexts/DataContext';
 
 const Magazine: React.FC = () => {
+  const { data, isInitialized } = useData();
+  const articles = data?.articles || [];
+
   const featuredArticle = articles[0];
   const otherArticles = articles.slice(1);
+
+  if (!isInitialized) {
+      return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement du magazine...</div>;
+  }
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">

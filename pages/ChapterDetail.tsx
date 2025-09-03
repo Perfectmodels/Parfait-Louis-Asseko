@@ -1,15 +1,20 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { courseData } from '../constants/courseData';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { useData } from '../contexts/DataContext';
 
 const ChapterDetail: React.FC = () => {
+  const { data, isInitialized } = useData();
   const { moduleSlug, chapterSlug } = useParams<{ moduleSlug: string, chapterSlug: string }>();
   
-  const module = courseData.find(m => m.slug === moduleSlug);
+  const module = data?.courseData.find(m => m.slug === moduleSlug);
   const chapter = module?.chapters.find(c => c.slug === chapterSlug);
+
+  if (!isInitialized) {
+    return <div className="min-h-screen bg-pm-dark"></div>;
+  }
 
   if (!chapter || !module) {
     return <NotFound />;
