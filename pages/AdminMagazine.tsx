@@ -6,18 +6,36 @@ import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import AIAssistant from '../components/AIAssistant';
 import ImageInput from '../components/ImageInput';
+import ArticleGenerator from '../components/ArticleGenerator';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
   const [localArticles, setLocalArticles] = useState<Article[]>([]);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
   useEffect(() => {
     if (data?.articles) {
       setLocalArticles([...data.articles]);
     }
   }, [data?.articles, isInitialized]);
+  
+  const handleArticleGenerated = (generatedData: Partial<Article>) => {
+    setIsCreating(true);
+    setEditingArticle({
+        slug: '',
+        title: generatedData.title || 'Titre généré',
+        category: generatedData.category || 'Interview',
+        excerpt: generatedData.excerpt || '',
+        imageUrl: '', // Laissé vide pour que l'utilisateur l'ajoute
+        author: generatedData.author || 'Focus Model 241',
+        date: generatedData.date || new Date().toISOString().split('T')[0],
+        content: generatedData.content || [{ type: 'paragraph', text: '' }],
+        tags: generatedData.tags || [],
+    });
+    setIsGeneratorOpen(false);
+  };
 
   const handleFormSave = async (articleToSave: Article) => {
     if (!data) return;
@@ -64,43 +82,55 @@ const AdminMagazine: React.FC = () => {
   }
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO title="Admin - Gérer le Magazine" noIndex />
-      <div className="container mx-auto px-6">
-        <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
-            <div>
-                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                    <ChevronLeftIcon className="w-5 h-5" />
-                    Retour au Dashboard
-                </Link>
-                <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Magazine</h1>
-            </div>
-            <div className="flex items-center gap-4">
-                 <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                    <PlusIcon className="w-5 h-5"/> Ajouter Article
-                </button>
-            </div>
-        </div>
-
-        <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
-          {localArticles.map(article => (
-            <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
+    <>
+      <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <SEO title="Admin - Gérer le Magazine" noIndex />
+        <div className="container mx-auto px-6">
+          <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
+              <div>
+                   <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                      <ChevronLeftIcon className="w-5 h-5" />
+                      Retour au Dashboard
+                  </Link>
+                  <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Magazine</h1>
+              </div>
               <div className="flex items-center gap-4">
-                <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover rounded"/>
-                <div>
-                  <h2 className="font-bold">{article.title}</h2>
-                  <p className="text-sm text-pm-off-white/70">{article.category} - {article.date}</p>
+                  <button onClick={() => setIsGeneratorOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
+                      <SparklesIcon className="w-5 h-5"/> Générer avec l'IA
+                  </button>
+                   <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                      <PlusIcon className="w-5 h-5"/> Ajouter Article
+                  </button>
+              </div>
+          </div>
+
+          <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
+            {localArticles.map(article => (
+              <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
+                <div className="flex items-center gap-4">
+                  <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover rounded"/>
+                  <div>
+                    <h2 className="font-bold">{article.title}</h2>
+                    <p className="text-sm text-pm-off-white/70">{article.category} - {article.date}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button onClick={() => { setEditingArticle(article); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
+                  <button onClick={() => handleDelete(article.slug)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <button onClick={() => { setEditingArticle(article); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
-                <button onClick={() => handleDelete(article.slug)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+      {isGeneratorOpen && (
+          <ArticleGenerator 
+              isOpen={isGeneratorOpen}
+              onClose={() => setIsGeneratorOpen(false)}
+              onArticleGenerated={handleArticleGenerated}
+          />
+      )}
+    </>
   );
 };
 
@@ -122,6 +152,11 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
     const [formData, setFormData] = useState(article);
     const [contentJson, setContentJson] = useState(JSON.stringify(article.content, null, 2));
     const [assistantProps, setAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'> | null>(null);
+
+    useEffect(() => {
+        setFormData(article);
+        setContentJson(JSON.stringify(article.content, null, 2));
+    }, [article]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -167,9 +202,10 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
                         jsonSchema: articleContentSchema
                     })}/>
                     <div className="text-xs text-pm-off-white/50">
-                        <p>Format: tableau d'objets. Types: 'paragraph', 'heading' (avec level: 2 ou 3), 'quote' (avec author?).</p>
+                        <p>Format: tableau d'objets. Types: 'paragraph', 'heading' (avec level: 2 ou 3), 'quote' (avec author?), 'image' (avec src, alt, caption?).</p>
                         <p>{'Ex: [{"type": "paragraph", "text": "Bonjour."}]'}</p>
                     </div>
+                     <FormInput label="Tags (séparés par des virgules)" name="tags" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : ''} onChange={(e) => setFormData(p => ({...p, tags: e.target.value.split(',').map(tag => tag.trim())}))} />
 
                     <div className="flex justify-end gap-4 pt-4">
                         <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>

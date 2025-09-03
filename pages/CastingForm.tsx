@@ -1,10 +1,9 @@
 
+
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, PhotoIcon, UserIcon, ArrowsRightLeftIcon, DocumentCheckIcon, EnvelopeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { storage } from '../firebaseConfig';
 import { useData } from '../contexts/DataContext';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { CastingApplication } from '../types';
 
 const initialFormData = {
@@ -26,14 +25,13 @@ const initialFormData = {
   experience: 'none',
   instagram: '',
   portfolioLink: '',
-  photoPortrait: null as File | null,
-  photoFullBody: null as File | null,
-  photoProfile: null as File | null,
+  photoPortraitUrl: '',
+  photoFullBodyUrl: '',
+  photoProfileUrl: '',
   agreedToTerms: false,
 };
 
 type FormData = typeof initialFormData;
-type PhotoUrls = { photoPortraitUrl: string | null; photoFullBodyUrl: string | null; photoProfileUrl: string | null };
 
 
 const CastingForm: React.FC = () => {
@@ -63,15 +61,8 @@ const CastingForm: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, files } = e.target;
-    if (files && files.length > 0) {
-      setFormData(prev => ({ ...prev, [name]: files[0] }));
-    }
-  };
   
-  const createHtmlBody = (data: FormData, photoUrls: PhotoUrls): string => {
+  const createHtmlBody = (data: FormData): string => {
       return `
         <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
             <h1 style="color: #D4AF37;">Nouvelle Candidature Casting</h1>
@@ -107,9 +98,9 @@ const CastingForm: React.FC = () => {
             </table>
 
             <h2 style="color: #D4AF37; border-bottom: 1px solid #eee; padding-bottom: 5px;">Photos</h2>
-            <p><strong>Portrait:</strong> ${photoUrls.photoPortraitUrl ? `<a href="${photoUrls.photoPortraitUrl}">Voir la photo</a>` : 'Non fournie'}</p>
-            <p><strong>Plein-pied:</strong> ${photoUrls.photoFullBodyUrl ? `<a href="${photoUrls.photoFullBodyUrl}">Voir la photo</a>` : 'Non fournie'}</p>
-            <p><strong>Profil:</strong> ${photoUrls.photoProfileUrl ? `<a href="${photoUrls.photoProfileUrl}">Voir la photo</a>` : 'Non fournie'}</p>
+            <p><strong>Portrait:</strong> ${data.photoPortraitUrl ? `<a href="${data.photoPortraitUrl}">Voir la photo</a>` : 'Non fournie'}</p>
+            <p><strong>Plein-pied:</strong> ${data.photoFullBodyUrl ? `<a href="${data.photoFullBodyUrl}">Voir la photo</a>` : 'Non fournie'}</p>
+            <p><strong>Profil:</strong> ${data.photoProfileUrl ? `<a href="${data.photoProfileUrl}">Voir la photo</a>` : 'Non fournie'}</p>
         </div>
       `;
   }
@@ -130,33 +121,12 @@ const CastingForm: React.FC = () => {
     setError(null);
 
     try {
-        const uploadFile = async (file: File | null): Promise<string | null> => {
-            if (!file) return null;
-            const storageRef = ref(storage, `casting-uploads/${Date.now()}-${file.name}`);
-            const snapshot = await uploadBytes(storageRef, file);
-            return await getDownloadURL(snapshot.ref);
-        };
-
-        const [photoPortraitUrl, photoFullBodyUrl, photoProfileUrl] = await Promise.all([
-            uploadFile(formData.photoPortrait),
-            uploadFile(formData.photoFullBody),
-            uploadFile(formData.photoProfile),
-        ]);
-
         const newApplication: Omit<CastingApplication, 'agreedToTerms'> = {
             id: Date.now().toString(),
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
             ...formData,
-            photoPortraitUrl,
-            photoFullBodyUrl,
-            photoProfileUrl,
         };
-        
-        // Remove file objects before saving to db
-        delete (newApplication as any).photoPortrait;
-        delete (newApplication as any).photoFullBody;
-        delete (newApplication as any).photoProfile;
 
         const currentApplications = data.castingApplications ? Object.values(data.castingApplications) : [];
         const updatedApplications = [...currentApplications, newApplication];
@@ -164,7 +134,7 @@ const CastingForm: React.FC = () => {
         await saveData({ ...data, castingApplications: updatedApplications });
 
 
-        const htmlContent = createHtmlBody(formData, { photoPortraitUrl, photoFullBodyUrl, photoProfileUrl });
+        const htmlContent = createHtmlBody(formData);
 
         const payload = {
             from: 'casting@perfectmodels.ga',
@@ -245,7 +215,7 @@ const CastingForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="bg-black border border-pm-gold/20 p-8 md:p-12 shadow-lg shadow-black/30">
             {currentStep === 1 && <Step1 formData={formData} handleChange={handleChange} />}
             {currentStep === 2 && <Step2 formData={formData} handleChange={handleChange} />}
-            {currentStep === 3 && <Step3 formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} />}
+            {currentStep === 3 && <Step3 formData={formData} handleChange={handleChange} />}
             {currentStep === 4 && <Step4 formData={formData} handleChange={handleChange} />}
             
             {error && (
@@ -279,10 +249,11 @@ const CastingForm: React.FC = () => {
 };
 
 // --- FORM COMPONENTS ---
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: any) => void, type?: string, required?: boolean, placeholder?: string}> = ({label, name, value, onChange, type="text", required=true, placeholder}) => (
+const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: any) => void, type?: string, required?: boolean, placeholder?: string, helpText?: string}> = ({label, name, value, onChange, type="text", required=true, placeholder, helpText}) => (
     <div>
         <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
         <input type={type} id={name} name={name} value={value} onChange={onChange} required={required} placeholder={placeholder} className="admin-input" />
+        {helpText && <p className="mt-1 text-xs text-pm-off-white/60">{helpText}</p>}
     </div>
 );
 const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: any) => void, children: React.ReactNode}> = ({label, name, value, onChange, children}) => (
@@ -291,18 +262,6 @@ const FormSelect: React.FC<{label: string, name: string, value: string, onChange
         <select id={name} name={name} value={value} onChange={onChange} className="admin-input">
             {children}
         </select>
-    </div>
-);
-const FileInput: React.FC<{label: string, name: string, file: File | null, onChange: (e: any) => void, required?: boolean, helpText: string}> = ({label, name, file, onChange, required=true, helpText}) => (
-    <div>
-        <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-        <div className={`mt-1 flex items-center gap-4 p-3 border rounded-md ${file ? 'border-green-500 bg-green-900/20' : 'border-pm-off-white/20 bg-pm-dark/50'}`}>
-            <div className="flex-1">
-                <input type="file" id={name} name={name} onChange={onChange} required={required} accept="image/jpeg, image/png, image/webp" className="block w-full text-sm text-pm-off-white/80 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pm-gold file:text-pm-dark hover:file:bg-white"/>
-            </div>
-            {file && <span className="text-xs text-green-400 truncate max-w-xs">{file.name}</span>}
-        </div>
-        <p className="mt-1 text-xs text-pm-off-white/60">{helpText}</p>
     </div>
 );
 
@@ -342,7 +301,7 @@ const Step2: React.FC<{formData: FormData, handleChange: any}> = ({formData, han
     </div>
 );
 
-const Step3: React.FC<{formData: FormData, handleChange: any, handleFileChange: any}> = ({formData, handleChange, handleFileChange}) => (
+const Step3: React.FC<{formData: FormData, handleChange: any}> = ({formData, handleChange}) => (
     <div className="space-y-6">
         <h2 className="text-2xl font-playfair text-pm-gold border-b border-pm-gold/20 pb-3">Étape 3: Expérience & Photos</h2>
         <div className="space-y-6">
@@ -357,12 +316,13 @@ const Step3: React.FC<{formData: FormData, handleChange: any, handleFileChange: 
         </div>
         <div className="space-y-6 pt-6 border-t border-pm-gold/20">
             <h3 className="text-lg font-bold text-pm-off-white">Vos Photos</h3>
-            <p className="text-sm text-pm-off-white/70">
-                Photos récentes (moins de 3 mois), sans maquillage, sans retouches, sur fond neutre et avec des vêtements près du corps (ex: jean slim et débardeur).
+             <p className="text-sm text-pm-off-white/70">
+                Photos récentes (moins de 3 mois), sans maquillage, sans retouches, sur fond neutre et avec des vêtements près du corps (ex: jean slim et débardeur). 
+                Utilisez un service comme <a href="https://postimages.org/" target="_blank" rel="noopener noreferrer" className="underline text-pm-gold">Postimages</a> pour héberger vos photos et collez les liens ci-dessous.
             </p>
-            <FileInput label="Photo Portrait" name="photoPortrait" file={formData.photoPortrait} onChange={handleFileChange} helpText="Visage de face, cheveux tirés en arrière." />
-            <FileInput label="Photo Plein-pied" name="photoFullBody" file={formData.photoFullBody} onChange={handleFileChange} helpText="Corps entier, de face." />
-            <FileInput label="Photo de Profil" name="photoProfile" file={formData.photoProfile} onChange={handleFileChange} helpText="Corps entier, de profil." />
+            <FormInput label="URL Photo Portrait" name="photoPortraitUrl" value={formData.photoPortraitUrl} onChange={handleChange} helpText="Visage de face, cheveux tirés en arrière." />
+            <FormInput label="URL Photo Plein-pied" name="photoFullBodyUrl" value={formData.photoFullBodyUrl} onChange={handleChange} helpText="Corps entier, de face." />
+            <FormInput label="URL Photo de Profil" name="photoProfileUrl" value={formData.photoProfileUrl} onChange={handleChange} helpText="Corps entier, de profil." />
         </div>
     </div>
 );
@@ -374,7 +334,7 @@ const Step4: React.FC<{formData: FormData, handleChange: any}> = ({formData, han
             <p><strong>Nom:</strong> {formData.firstName} {formData.lastName}</p>
             <p><strong>Email:</strong> {formData.email}</p>
             <p><strong>Taille:</strong> {formData.height} cm</p>
-            <p><strong>Photos:</strong> {formData.photoPortrait ? 'Portrait ✅' : 'Portrait ❌'} | {formData.photoFullBody ? 'Plein-pied ✅' : 'Plein-pied ❌'} | {formData.photoProfile ? 'Profil ✅' : 'Profil ❌'}</p>
+            <p><strong>Photos:</strong> {formData.photoPortraitUrl ? 'Portrait ✅' : 'Portrait ❌'} | {formData.photoFullBodyUrl ? 'Plein-pied ✅' : 'Plein-pied ❌'} | {formData.photoProfileUrl ? 'Profil ✅' : 'Profil ❌'}</p>
         </div>
         <div className="pt-4">
              <label htmlFor="agreedToTerms" className="flex items-start gap-3 cursor-pointer">

@@ -1,5 +1,6 @@
 
 import React from 'react';
+// FIX: Replaced v5 `Redirect` with v6 `Navigate` to fix module export errors.
 import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
@@ -13,9 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const hasAccess = sessionStorage.getItem('classroom_access') === 'granted';
 
   if (!hasAccess || userRole !== role) {
-    // Redirect them to the /login page, but save the current location they were
-    // trying to go to. This allows us to send them along to that page after a
-    // successful login.
+    // FIX: Replaced v5 `<Redirect>` component with v6 `<Navigate>`.
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

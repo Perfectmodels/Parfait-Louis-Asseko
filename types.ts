@@ -55,7 +55,8 @@ export interface ModelDistinction {
 export type ArticleContent = 
   | { type: 'heading'; level: 2 | 3; text: string }
   | { type: 'paragraph'; text: string }
-  | { type: 'quote'; text: string; author?: string };
+  | { type: 'quote'; text: string; author?: string }
+  | { type: 'image'; src: string; alt: string; caption?: string };
 
 export interface Article {
   slug: string;
@@ -66,6 +67,7 @@ export interface Article {
   author: string;
   date: string;
   content: ArticleContent[];
+  tags?: string[];
 }
 
 
