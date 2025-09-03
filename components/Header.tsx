@@ -26,7 +26,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }>
   );
 };
 
-const NavLinks: React.FC<{ onLinkClick?: () => void; isAdmin: boolean; navLinks: any[] }> = ({ onLinkClick, isAdmin, navLinks }) => {
+const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: any[] }> = ({ onLinkClick, navLinks }) => {
   return (
     <>
       {navLinks.map(link => (
@@ -37,15 +37,6 @@ const NavLinks: React.FC<{ onLinkClick?: () => void; isAdmin: boolean; navLinks:
           onClick={onLinkClick}
         />
       ))}
-      {isAdmin && (
-        <NavLink 
-          to="/admin" 
-          onClick={onLinkClick} 
-          className={({ isActive }) => `px-4 py-2 text-sm uppercase tracking-widest rounded-md transition-colors duration-300 ${isActive ? 'bg-pm-gold text-pm-dark' : 'bg-pm-gold/10 text-pm-gold hover:bg-pm-gold/20'}`}
-        >
-          Admin
-        </NavLink>
-      )}
     </>
   );
 };
@@ -53,16 +44,10 @@ const NavLinks: React.FC<{ onLinkClick?: () => void; isAdmin: boolean; navLinks:
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const { data } = useData();
   const navLinks = data?.navLinks || [];
   const siteConfig = data?.siteConfig;
-
-  useEffect(() => {
-    const userRole = sessionStorage.getItem('classroom_role');
-    setIsAdmin(userRole === 'admin');
-  }, [location]);
 
   useEffect(() => {
     if (isOpen) {
@@ -95,7 +80,7 @@ const Header: React.FC = () => {
             {siteConfig?.logo && <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />}
           </Link>
           <nav className="hidden md:flex items-center space-x-8">
-            <NavLinks isAdmin={isAdmin} navLinks={navLinks} />
+            <NavLinks navLinks={navLinks} />
           </nav>
           <div className="md:hidden">
             <button onClick={() => setIsOpen(true)} className="text-pm-gold focus:outline-none" aria-label="Ouvrir le menu">
@@ -122,7 +107,7 @@ const Header: React.FC = () => {
               </button>
             </div>
             <nav className="flex flex-col space-y-6 text-pm-off-white text-lg uppercase tracking-wider flex-grow">
-              <NavLinks onLinkClick={() => setIsOpen(false)} isAdmin={isAdmin} navLinks={navLinks} />
+              <NavLinks onLinkClick={() => setIsOpen(false)} navLinks={navLinks} />
             </nav>
             <div className="mt-auto">
                <Link to="/casting" onClick={() => setIsOpen(false)} className="block w-full text-center px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full shadow-lg shadow-pm-gold/30 transition-all duration-300 hover:bg-white hover:scale-105">
