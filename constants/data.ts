@@ -1,8 +1,8 @@
-import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction } from '../types';
+import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial } from '../types';
 import { AcademicCapIcon, CameraIcon, FilmIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 export const siteConfig = {
-  logo: "https://scontent.flbv4-1.fna.fbcdn.net/v/t39.30808-6/480946208_616728137878198_6925216743970681454_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=Xdd3awvCFt0Q7kNvwHpuuDQ&_nc_oc=Adm_abWZUBmndkqPgQqAANPoVYJr_cywMJ4f46IymB8i5WdaMTmXujfCfavpMkxdXUY&nc_zt=23&nc_ht=scontent.flbv4-1.fna&_nc_gid=NXsz3tNyennzi34_OegkXQ&oh=00_AfYFEt2IZUh-gUou3D3EJeOcW8i2LMHJ2z6rB7fWGrvwZA&oe=68BD499C"
+  logo: "https://i.ibb.co/dKqY7b4/PMM-logo-2024.png"
 };
 
 export const navLinks = [
@@ -139,3 +139,42 @@ export const agencyAchievements: AchievementCategory[] = [
 ];
 
 export const agencyPartners: string[] = ["Akile Tabarna", "Chouchou Lazare", "LB Design", "Tito Style", "Les Kabas de Tamar", "Le Pagne de Paris", "K’Elle Collection", "Dimbu Van", "Edele A", "House Of Design / Mystic Création"];
+
+export const testimonials: Testimonial[] = [
+  {
+    name: 'Noemi Kim',
+    role: 'Mannequin Phare',
+    quote: "Perfect Models Management n'est pas juste une agence, c'est une famille. L'encadrement et les formations m'ont permis de prendre confiance en moi et de viser l'international. Je leur dois beaucoup.",
+    imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg'
+  },
+  {
+    name: 'Donatien Bonoukpo Anani',
+    role: 'Mannequin Homme',
+    quote: "Grâce à la discipline et au professionnalisme inculqués par l'agence, j'ai pu participer à des défilés majeurs. C'est un tremplin incroyable pour tout jeune qui veut réussir dans ce métier.",
+    imageUrl: 'https://i.ibb.co/b5LgVZgr/DSC-0090.jpg'
+  },
+  {
+    name: 'Farel MD',
+    role: 'Styliste Partenaire',
+    quote: "Collaborer avec Perfect Models Management sur le Perfect Fashion Day a été une expérience exceptionnelle. Leurs mannequins sont d'un professionnalisme rare et savent sublimer chaque création.",
+    imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg'
+  },
+  {
+    name: 'AJ Caramela',
+    role: 'Mannequin Femme',
+    quote: "L'agence nous pousse à donner le meilleur de nous-mêmes, tout en veillant à notre bien-être. Le Classroom est un outil de formation incroyable qui nous prépare à tous les aspects du métier.",
+    imageUrl: 'https://i.ibb.co/WpyDyqGM/480764039-617423107808701-5578356664870683876-n.jpg'
+  },
+  {
+    name: 'La Gare du Nord',
+    role: 'Partenaire Événementiel',
+    quote: "Accueillir le Perfect Fashion Day a été un honneur. L'organisation était impeccable et l'événement a apporté un vent de fraîcheur et d'élégance. Nous sommes fiers de soutenir PMM.",
+    imageUrl: 'https://i.ibb.co/LDm73BY2/ventex-44.jpg'
+  },
+  {
+    name: 'Kendra Mebiame',
+    role: 'Meilleur Mannequin Espoir 2022',
+    quote: "Être reconnue 'Meilleur Mannequin Espoir' a été possible grâce au soutien constant de l'agence. Ils croient en nous et nous donnent les outils pour réaliser nos rêves.",
+    imageUrl: 'https://i.ibb.co/ksdXSfpY/474134983-590912627126416-4665446951991920838-n.jpg'
+  }
+];

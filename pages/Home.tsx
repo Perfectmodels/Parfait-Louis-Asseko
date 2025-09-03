@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { models, agencyInfo, agencyPartners, fashionDayEvents } from '../constants/data';
-import ModelCard from '../components/ModelCard';
+import { agencyInfo, agencyPartners, fashionDayEvents } from '../constants/data';
 import SEO from '../components/SEO';
+import TestimonialCarousel from '../components/TestimonialCarousel';
 
 // Dummy data for magazine articles since it's hardcoded in Magazine.tsx
 const magazineArticles = [
@@ -28,7 +28,6 @@ const magazineArticles = [
 
 
 const Home: React.FC = () => {
-  const featuredModels = models.filter(m => m.distinctions && m.distinctions.length > 0).slice(0, 4);
 
   return (
     <div className="text-pm-off-white">
@@ -79,21 +78,14 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Models */}
+      {/* Testimonials Carousel */}
       <section className="py-20 bg-pm-dark">
         <div className="container mx-auto px-6">
-           <h2 className="text-4xl font-playfair text-pm-gold text-center mb-4">Nos Talents Vedettes</h2>
-            <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
-                Fierté de l'agence, nos mannequins se distinguent sur les podiums nationaux et internationaux.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {featuredModels.map(model => <ModelCard key={model.id} model={model} />)}
-            </div>
-             <div className="text-center mt-12">
-                <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                    Voir tous les mannequins
-                </Link>
-            </div>
+          <h2 className="text-4xl font-playfair text-pm-gold text-center mb-4">Ce qu'ils disent de nous</h2>
+          <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
+            La confiance et le succès de nos talents et partenaires sont notre plus grande fierté.
+          </p>
+          <TestimonialCarousel />
         </div>
       </section>
       

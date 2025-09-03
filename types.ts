@@ -86,3 +86,10 @@ export interface Module {
   chapters: Chapter[];
   quiz: QuizQuestion[];
 }
+
+export interface Testimonial {
+  name: string;
+  role: string;
+  quote: string;
+  imageUrl: string;
+}
