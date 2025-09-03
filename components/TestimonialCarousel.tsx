@@ -4,7 +4,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useData } from '../contexts/DataContext';
 
 const TestimonialCarousel: React.FC = () => {
-  const { data } = useData();
+  const { data, isInitialized } = useData();
   const testimonials = data?.testimonials || [];
   
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -24,12 +24,12 @@ const TestimonialCarousel: React.FC = () => {
   };
   
   useEffect(() => {
-    if (testimonials.length === 0) return;
+    if (testimonials.length === 0 || testimonials.length < 2) return;
     const interval = setInterval(goToNext, 7000); // Change slide every 7 seconds
     return () => clearInterval(interval);
   }, [currentIndex, testimonials.length]);
 
-  if (testimonials.length === 0) {
+  if (!isInitialized || testimonials.length === 0) {
     return null;
   }
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Module, Chapter } from '../types';
 import SEO from '../components/SEO';
@@ -6,12 +7,19 @@ import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const AdminClassroom: React.FC = () => {
-  const { data, saveData } = useData();
-  const [course, setCourse] = useState<Module[] | null>(data ? [...data.courseData] : null);
-  const [openModule, setOpenModule] = useState<number | null>(0);
+  const { data, saveData, isInitialized } = useData();
+  const [course, setCourse] = useState<Module[] | null>(null);
+  const [openModule, setOpenModule] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isInitialized && data?.courseData) {
+      setCourse(JSON.parse(JSON.stringify(data.courseData))); // Deep copy
+      setOpenModule(0);
+    }
+  }, [isInitialized, data?.courseData]);
 
   if (!course || !data) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement...</div>;
   }
 
   const generateSlug = (text: string) => {
@@ -60,7 +68,8 @@ const AdminClassroom: React.FC = () => {
   const handleModuleChange = (moduleIndex: number, field: keyof Module, value: any) => {
     const updatedCourse = [...course];
     if (field === 'title') {
-        updatedCourse[moduleIndex] = { ...updatedCourse[moduleIndex], [field]: value, slug: generateSlug(value) };
+        const newSlug = generateSlug(value);
+        updatedCourse[moduleIndex] = { ...updatedCourse[moduleIndex], title: value, slug: newSlug };
     } else {
         (updatedCourse[moduleIndex] as any)[field] = value;
     }
@@ -71,7 +80,8 @@ const AdminClassroom: React.FC = () => {
     const updatedCourse = [...course];
     const updatedChapters = [...updatedCourse[moduleIndex].chapters];
     if (field === 'title') {
-        updatedChapters[chapterIndex] = { ...updatedChapters[chapterIndex], [field]: value, slug: generateSlug(value) };
+        const newSlug = generateSlug(value);
+        updatedChapters[chapterIndex] = { ...updatedChapters[chapterIndex], title: value, content: updatedChapters[chapterIndex].content, slug: newSlug };
     } else {
         (updatedChapters[chapterIndex] as any)[field] = value;
     }
@@ -110,7 +120,7 @@ const AdminClassroom: React.FC = () => {
 
         <div className="space-y-4">
           {course.map((module, moduleIndex) => (
-            <div key={moduleIndex} className="bg-black border border-pm-gold/20 overflow-hidden">
+            <div key={module.slug} className="bg-black border border-pm-gold/20 overflow-hidden">
                  <button
                     onClick={() => setOpenModule(openModule === moduleIndex ? null : moduleIndex)}
                     className="w-full flex justify-between items-center p-4 text-left text-xl font-bold text-pm-gold hover:bg-pm-gold/5"
@@ -135,7 +145,7 @@ const AdminClassroom: React.FC = () => {
                                 </button>
                              </div>
                             {module.chapters.map((chapter, chapterIndex) => (
-                                <div key={chapterIndex} className="p-4 bg-pm-dark space-y-3 border border-pm-off-white/10 mb-4">
+                                <div key={chapter.slug} className="p-4 bg-pm-dark space-y-3 border border-pm-off-white/10 mb-4">
                                     <div className="flex justify-between items-center">
                                         <h4 className="text-md font-semibold text-pm-off-white/80">Chapitre {chapterIndex + 1}</h4>
                                         <button onClick={() => handleDeleteChapter(moduleIndex, chapterIndex)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>

@@ -1,9 +1,18 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { socialLinks, siteConfig, navLinks } from '../constants/data';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
+import { useData } from '../contexts/DataContext';
 
 const Footer: React.FC = () => {
+  const { data } = useData();
+
+  if (!data) {
+    return <footer className="bg-black border-t border-pm-gold/20"></footer>;
+  }
+  
+  const { navLinks, socialLinks, siteConfig } = data;
+
   return (
     <footer className="bg-black border-t border-pm-gold/20 text-pm-off-white/70">
       <div className="container mx-auto px-6 py-12">

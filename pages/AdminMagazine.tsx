@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Article } from '../types';
@@ -6,40 +7,40 @@ import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 const AdminMagazine: React.FC = () => {
-  const { data, saveData } = useData();
-  const [articles, setArticles] = useState<Article[]>([]);
+  const { data, saveData, isInitialized } = useData();
+  const [localArticles, setLocalArticles] = useState<Article[]>([]);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    if (data) {
-      setArticles([...data.articles]);
+    if (data?.articles) {
+      setLocalArticles([...data.articles]);
     }
-  }, [data]);
+  }, [data?.articles, isInitialized]);
 
   const handleFormSave = (articleToSave: Article) => {
     let updatedArticles;
     if (isCreating) {
         const newArticle = { ...articleToSave, slug: articleToSave.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') + '-' + Date.now() };
-        updatedArticles = [...articles, newArticle];
+        updatedArticles = [...localArticles, newArticle];
     } else {
-        updatedArticles = articles.map(a => a.slug === articleToSave.slug ? articleToSave : a);
+        updatedArticles = localArticles.map(a => a.slug === articleToSave.slug ? articleToSave : a);
     }
-    setArticles(updatedArticles);
+    setLocalArticles(updatedArticles);
     setEditingArticle(null);
     setIsCreating(false);
   };
 
   const handleDelete = (slug: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ? Cette action affectera la liste locale. N'oubliez pas de sauvegarder les changements.")) {
-      setArticles(prevArticles => prevArticles.filter(a => a.slug !== slug));
+      setLocalArticles(prevArticles => prevArticles.filter(a => a.slug !== slug));
     }
   };
   
   const handleSaveChanges = () => {
     if (!data) return;
     if (window.confirm("Sauvegarder toutes les modifications apportées au magazine ?")) {
-      saveData({ ...data, articles: articles });
+      saveData({ ...data, articles: localArticles });
       alert("Magazine mis à jour avec succès !");
     }
   };
@@ -85,7 +86,7 @@ const AdminMagazine: React.FC = () => {
         </div>
 
         <div className="bg-black border border-pm-gold/20 p-6 space-y-4">
-          {articles.map(article => (
+          {localArticles.map(article => (
             <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark">
               <div className="flex items-center gap-4">
                 <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover"/>

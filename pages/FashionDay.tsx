@@ -4,12 +4,13 @@ import ImageCarousel from '../components/ImageCarousel';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { FashionDayEvent } from '../types';
 
 const FashionDay: React.FC = () => {
   const { data, isInitialized } = useData();
   const fashionDayEvents = data?.fashionDayEvents || [];
   
-  const [selectedEdition, setSelectedEdition] = useState(fashionDayEvents[0]);
+  const [selectedEdition, setSelectedEdition] = useState<FashionDayEvent | null>(null);
 
   React.useEffect(() => {
     if (fashionDayEvents.length > 0) {
@@ -21,7 +22,7 @@ const FashionDay: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
   
-  if (fashionDayEvents.length === 0) {
+  if (fashionDayEvents.length === 0 || !selectedEdition) {
     return <div className="min-h-screen flex items-center justify-center">Aucun événement à afficher.</div>;
   }
 

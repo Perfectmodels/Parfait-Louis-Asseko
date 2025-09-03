@@ -3,9 +3,9 @@ import React from 'react';
 import { useData } from '../contexts/DataContext';
 
 const Marquee: React.FC = () => {
-  const { data } = useData();
+  const { data, isInitialized } = useData();
 
-  if (!data) {
+  if (!isInitialized || !data) {
     return <div className="fixed top-0 left-0 right-0 z-50 h-8 bg-black"></div>;
   }
 

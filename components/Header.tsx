@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
-import { siteConfig, navLinks } from '../constants/data';
+import { useData } from '../contexts/DataContext';
 
-const NavLinks: React.FC<{ onLinkClick?: () => void; isAdmin: boolean }> = ({ onLinkClick, isAdmin }) => {
+const NavLinks: React.FC<{ onLinkClick?: () => void; isAdmin: boolean; navLinks: any[] }> = ({ onLinkClick, isAdmin, navLinks }) => {
   const activeLinkStyle = {
     color: '#D4AF37',
     textShadow: '0 0 5px #D4AF37',
@@ -43,6 +43,9 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
+  const { data } = useData();
+  const navLinks = data?.navLinks || [];
+  const siteConfig = data?.siteConfig;
 
   useEffect(() => {
     const userRole = sessionStorage.getItem('classroom_role');
@@ -81,10 +84,10 @@ const Header: React.FC = () => {
       <header className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-pm-dark/95 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'}`}>
         <div className="container mx-auto px-6 py-2 flex justify-between items-center">
           <Link to="/">
-            <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />
+            {siteConfig?.logo && <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />}
           </Link>
           <nav className="hidden md:flex items-center space-x-8 text-pm-off-white uppercase text-sm tracking-widest">
-            <NavLinks isAdmin={isAdmin} />
+            <NavLinks isAdmin={isAdmin} navLinks={navLinks} />
           </nav>
           <div className="md:hidden">
             <button onClick={() => setIsOpen(true)} className="text-pm-gold focus:outline-none" aria-label="Ouvrir le menu">
@@ -114,7 +117,7 @@ const Header: React.FC = () => {
               </button>
             </div>
             <nav className="flex flex-col space-y-4 text-pm-off-white text-lg uppercase tracking-wider flex-grow">
-              <NavLinks onLinkClick={() => setIsOpen(false)} isAdmin={isAdmin} />
+              <NavLinks onLinkClick={() => setIsOpen(false)} isAdmin={isAdmin} navLinks={navLinks} />
             </nav>
             <div className="mt-auto">
                <Link to="/casting" onClick={() => setIsOpen(false)} className="block w-full text-center px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white">
