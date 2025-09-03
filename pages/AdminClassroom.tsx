@@ -1,29 +1,81 @@
-
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Module } from '../types';
+import { Module, Chapter } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const AdminClassroom: React.FC = () => {
   const { data, saveData } = useData();
-  const [course, setCourse] = useState<Module[] | null>(data?.courseData || null);
-  const [openModule, setOpenModule] = useState<number | null>(null);
+  const [course, setCourse] = useState<Module[] | null>(data ? [...data.courseData] : null);
+  const [openModule, setOpenModule] = useState<number | null>(0);
 
   if (!course || !data) {
     return <div>Loading...</div>;
   }
 
-  const handleModuleChange = (moduleIndex: number, field: string, value: string) => {
+  const generateSlug = (text: string) => {
+      return text.toLowerCase()
+                 .replace(/[^a-z0-9\s-]/g, '')
+                 .replace(/\s+/g, '-')
+                 .slice(0, 50) + '-' + Date.now();
+  }
+
+  const handleAddModule = () => {
+      const newModule: Module = {
+          slug: generateSlug('nouveau-module'),
+          title: 'Nouveau Module',
+          chapters: [],
+          quiz: []
+      };
+      setCourse([...course, newModule]);
+  };
+
+  const handleDeleteModule = (moduleIndex: number) => {
+      if (window.confirm(`Êtes-vous sûr de vouloir supprimer le module "${course[moduleIndex].title}" ? Cette action est irréversible.`)) {
+          const updatedCourse = course.filter((_, index) => index !== moduleIndex);
+          setCourse(updatedCourse);
+      }
+  };
+
+  const handleAddChapter = (moduleIndex: number) => {
+      const newChapter: Chapter = {
+          slug: generateSlug('nouveau-chapitre'),
+          title: 'Nouveau Chapitre',
+          content: 'Contenu à rédiger...'
+      };
+      const updatedCourse = [...course];
+      updatedCourse[moduleIndex].chapters.push(newChapter);
+      setCourse(updatedCourse);
+  };
+
+  const handleDeleteChapter = (moduleIndex: number, chapterIndex: number) => {
+      if (window.confirm(`Êtes-vous sûr de vouloir supprimer le chapitre "${course[moduleIndex].chapters[chapterIndex].title}" ?`)) {
+          const updatedCourse = [...course];
+          updatedCourse[moduleIndex].chapters = updatedCourse[moduleIndex].chapters.filter((_, index) => index !== chapterIndex);
+          setCourse(updatedCourse);
+      }
+  };
+
+  const handleModuleChange = (moduleIndex: number, field: keyof Module, value: any) => {
     const updatedCourse = [...course];
-    updatedCourse[moduleIndex] = { ...updatedCourse[moduleIndex], [field]: value };
+    if (field === 'title') {
+        updatedCourse[moduleIndex] = { ...updatedCourse[moduleIndex], [field]: value, slug: generateSlug(value) };
+    } else {
+        (updatedCourse[moduleIndex] as any)[field] = value;
+    }
     setCourse(updatedCourse);
   };
   
-  const handleChapterChange = (moduleIndex: number, chapterIndex: number, field: string, value: string) => {
+  const handleChapterChange = (moduleIndex: number, chapterIndex: number, field: keyof Chapter, value: string) => {
     const updatedCourse = [...course];
-    updatedCourse[moduleIndex].chapters[chapterIndex] = { ...updatedCourse[moduleIndex].chapters[chapterIndex], [field]: value };
+    const updatedChapters = [...updatedCourse[moduleIndex].chapters];
+    if (field === 'title') {
+        updatedChapters[chapterIndex] = { ...updatedChapters[chapterIndex], [field]: value, slug: generateSlug(value) };
+    } else {
+        (updatedChapters[chapterIndex] as any)[field] = value;
+    }
+    updatedCourse[moduleIndex].chapters = updatedChapters;
     setCourse(updatedCourse);
   };
 
@@ -38,7 +90,7 @@ const AdminClassroom: React.FC = () => {
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO title="Admin - Gérer le Classroom" />
       <div className="container mx-auto px-6">
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
             <div>
                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
@@ -46,9 +98,14 @@ const AdminClassroom: React.FC = () => {
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Classroom</h1>
             </div>
-            <button onClick={handleSave} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
-                Sauvegarder les Changements
-            </button>
+            <div className="flex items-center gap-4">
+                 <button onClick={handleAddModule} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                    <PlusIcon className="w-5 h-5"/> Ajouter un Module
+                </button>
+                <button onClick={handleSave} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
+                    Sauvegarder les Changements
+                </button>
+            </div>
         </div>
 
         <div className="space-y-4">
@@ -63,15 +120,31 @@ const AdminClassroom: React.FC = () => {
                 </button>
                  <div className={`transition-all duration-500 ease-in-out ${openModule === moduleIndex ? 'max-h-full visible' : 'max-h-0 invisible'}`}>
                     <div className="p-4 border-t border-pm-gold/20 space-y-6">
-                        <FormInput label="Titre du Module" value={module.title} onChange={(e) => handleModuleChange(moduleIndex, 'title', e.target.value)} />
-                        
-                        <h3 className="text-lg font-bold text-pm-gold pt-4 border-t border-pm-dark">Chapitres</h3>
-                        {module.chapters.map((chapter, chapterIndex) => (
-                            <div key={chapterIndex} className="p-4 bg-pm-dark space-y-3">
-                                <FormInput label={`Titre du Chapitre ${chapterIndex + 1}`} value={chapter.title} onChange={(e) => handleChapterChange(moduleIndex, chapterIndex, 'title', e.target.value)} />
-                                <FormTextArea label="Contenu du Chapitre" value={chapter.content} onChange={(e) => handleChapterChange(moduleIndex, chapterIndex, 'content', e.target.value)} />
+                        <div className="flex justify-between items-end gap-4">
+                            <div className="flex-grow">
+                                <FormInput label="Titre du Module" value={module.title} onChange={(e) => handleModuleChange(moduleIndex, 'title', e.target.value)} />
                             </div>
-                        ))}
+                            <button onClick={() => handleDeleteModule(moduleIndex)} className="text-red-500/70 hover:text-red-500 p-2"><TrashIcon className="w-5 h-5"/> Supprimer Module</button>
+                        </div>
+                        
+                        <div className="pt-4 border-t border-pm-dark">
+                             <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-bold text-pm-gold">Chapitres</h3>
+                                <button onClick={() => handleAddChapter(moduleIndex)} className="inline-flex items-center gap-2 px-3 py-1 bg-pm-dark border border-pm-gold/50 text-pm-gold/80 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                                    <PlusIcon className="w-4 h-4"/> Ajouter Chapitre
+                                </button>
+                             </div>
+                            {module.chapters.map((chapter, chapterIndex) => (
+                                <div key={chapterIndex} className="p-4 bg-pm-dark space-y-3 border border-pm-off-white/10 mb-4">
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-md font-semibold text-pm-off-white/80">Chapitre {chapterIndex + 1}</h4>
+                                        <button onClick={() => handleDeleteChapter(moduleIndex, chapterIndex)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                                    </div>
+                                    <FormInput label={`Titre du Chapitre`} value={chapter.title} onChange={(e) => handleChapterChange(moduleIndex, chapterIndex, 'title', e.target.value)} />
+                                    <FormTextArea label="Contenu du Chapitre" value={chapter.content} onChange={(e) => handleChapterChange(moduleIndex, chapterIndex, 'content', e.target.value)} />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

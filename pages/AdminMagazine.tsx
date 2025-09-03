@@ -1,36 +1,46 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Article, ArticleContent } from '../types';
+import { Article } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData } = useData();
+  const [articles, setArticles] = useState<Article[]>([]);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleSave = (articleToSave: Article) => {
-    if (!data) return;
-    
+  useEffect(() => {
+    if (data) {
+      setArticles([...data.articles]);
+    }
+  }, [data]);
+
+  const handleFormSave = (articleToSave: Article) => {
     let updatedArticles;
     if (isCreating) {
-        const newArticle = { ...articleToSave, slug: articleToSave.title.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now() };
-        updatedArticles = [...data.articles, newArticle];
+        const newArticle = { ...articleToSave, slug: articleToSave.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') + '-' + Date.now() };
+        updatedArticles = [...articles, newArticle];
     } else {
-        updatedArticles = data.articles.map(a => a.slug === articleToSave.slug ? articleToSave : a);
+        updatedArticles = articles.map(a => a.slug === articleToSave.slug ? articleToSave : a);
     }
-    saveData({ ...data, articles: updatedArticles });
+    setArticles(updatedArticles);
     setEditingArticle(null);
     setIsCreating(false);
   };
 
   const handleDelete = (slug: string) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ? Cette action affectera la liste locale. N'oubliez pas de sauvegarder les changements.")) {
+      setArticles(prevArticles => prevArticles.filter(a => a.slug !== slug));
+    }
+  };
+  
+  const handleSaveChanges = () => {
     if (!data) return;
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
-      const updatedArticles = data.articles.filter(a => a.slug !== slug);
-      saveData({ ...data, articles: updatedArticles });
+    if (window.confirm("Sauvegarder toutes les modifications apportées au magazine ?")) {
+      saveData({ ...data, articles: articles });
+      alert("Magazine mis à jour avec succès !");
     }
   };
 
@@ -49,26 +59,33 @@ const AdminMagazine: React.FC = () => {
   };
 
   if (editingArticle) {
-    return <ArticleForm article={editingArticle} onSave={handleSave} onCancel={() => {setEditingArticle(null); setIsCreating(false);}} isCreating={isCreating}/>
+    return <ArticleForm article={editingArticle} onSave={handleFormSave} onCancel={() => {setEditingArticle(null); setIsCreating(false);}} isCreating={isCreating}/>
   }
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO title="Admin - Gérer le Magazine" />
       <div className="container mx-auto px-6">
-        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
-          <ChevronLeftIcon className="w-5 h-5" />
-          Retour au Dashboard
-        </Link>
-        <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Magazine</h1>
-            <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white">
-                <PlusIcon className="w-5 h-5"/> Ajouter un article
-            </button>
+        <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
+            <div>
+                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                    <ChevronLeftIcon className="w-5 h-5" />
+                    Retour au Dashboard
+                </Link>
+                <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Magazine</h1>
+            </div>
+            <div className="flex items-center gap-4">
+                 <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                    <PlusIcon className="w-5 h-5"/> Ajouter Article
+                </button>
+                <button onClick={handleSaveChanges} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
+                    Sauvegarder les Changements
+                </button>
+            </div>
         </div>
 
         <div className="bg-black border border-pm-gold/20 p-6 space-y-4">
-          {data?.articles.map(article => (
+          {articles.map(article => (
             <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark">
               <div className="flex items-center gap-4">
                 <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover"/>
@@ -91,7 +108,6 @@ const AdminMagazine: React.FC = () => {
 
 const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => void, onCancel: () => void, isCreating: boolean }> = ({ article, onSave, onCancel, isCreating }) => {
     const [formData, setFormData] = useState(article);
-    // For simplicity, we'll edit raw JSON for the structured content.
     const [contentJson, setContentJson] = useState(JSON.stringify(article.content, null, 2));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -146,6 +162,5 @@ const FormTextArea: React.FC<{label: string, name: string, value: any, onChange:
         <textarea id={name} name={name} value={value} onChange={onChange} rows={5} className="w-full bg-pm-dark border border-pm-off-white/20 p-2 focus:outline-none focus:border-pm-gold font-mono text-sm" />
     </div>
 );
-
 
 export default AdminMagazine;
