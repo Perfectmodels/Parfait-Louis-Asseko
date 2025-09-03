@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfect Models Management - MongoDB Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 2px solid #d4af37;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: #cccccc;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #d4af37;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: #cccccc;
+        }
+        
+        .actions-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .actions-title {
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #1a1a1a;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+        
+        .data-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #d4af37;
+            padding-bottom: 10px;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .data-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .data-card:hover {
+            border-color: #d4af37;
+        }
+        
+        .data-card h3 {
+            color: #d4af37;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .data-card p {
+            color: #cccccc;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #d4af37;
+            font-size: 1.2rem;
+            padding: 40px;
+        }
+        
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #51cf66;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Perfect Models Management</h1>
+            <p>Tableau de Bord MongoDB - Gestion des Données</p>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="modelsCount">-</div>
+                <div class="stat-label">Mannequins</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="articlesCount">-</div>
+                <div class="stat-label">Articles</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="eventsCount">-</div>
+                <div class="stat-label">Événements</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="modulesCount">-</div>
+                <div class="stat-label">Modules</div>
+            </div>
+        </div>
+        
+        <div class="actions-section">
+            <div class="actions-title">Actions Rapides</div>
+            <div class="actions-grid">
+                <button class="action-btn" onclick="loadStats()">📊 Actualiser Stats</button>
+                <button class="action-btn" onclick="loadModels()">👥 Charger Mannequins</button>
+                <button class="action-btn" onclick="loadArticles()">📰 Charger Articles</button>
+                <button class="action-btn" onclick="loadEvents()">🎭 Charger Événements</button>
+                <button class="action-btn" onclick="seedDatabase()">🌱 Peupler Base</button>
+                <button class="action-btn" onclick="testAPI()">🔧 Test API</button>
+            </div>
+        </div>
+        
+        <div id="modelsSection" class="data-section hidden">
+            <div class="section-title">👥 Mannequins</div>
+            <div id="modelsData" class="data-grid"></div>
+        </div>
+        
+        <div id="articlesSection" class="data-section hidden">
+            <div class="section-title">📰 Articles</div>
+            <div id="articlesData" class="data-grid"></div>
+        </div>
+        
+        <div id="eventsSection" class="data-section hidden">
+            <div class="section-title">🎭 Événements Fashion Day</div>
+            <div id="eventsData" class="data-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        
+        // Utility functions
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        function showLoading(elementId) {
+            document.getElementById(elementId).innerHTML = '<div class="loading">⏳ Chargement...</div>';
+        }
+        
+        function hideSection(sectionId) {
+            document.getElementById(sectionId).classList.add('hidden');
+        }
+        
+        function showSection(sectionId) {
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+        
+        // API functions
+        async function apiCall(endpoint) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+        
+        // Load statistics
+        async function loadStats() {
+            try {
+                showMessage('Chargement des statistiques...', 'success');
+                const stats = await apiCall('/stats');
+                
+                document.getElementById('modelsCount').textContent = stats.models || 0;
+                document.getElementById('articlesCount').textContent = stats.articles || 0;
+                document.getElementById('eventsCount').textContent = stats.events || 0;
+                document.getElementById('modulesCount').textContent = stats.modules || 0;
+                
+                showMessage('✅ Statistiques mises à jour!', 'success');
+            } catch (error) {
+                showMessage(`❌ Erreur lors du chargement des stats: ${error.message}`, 'error');
+            }
+        }
+        
+        // Load models
+        async function loadModels() {
+            try {
+                showSection('modelsSection');
+                showLoading('modelsData');
+                
+                const models = await apiCall('/models');
+                
+                if (models.length === 0) {
+                    document.getElementById('modelsData').innerHTML = '<p style="text-align: center; color: #cccccc;">Aucun mannequin trouvé</p>';
+                    return;
+                }
+                
+                const modelsHTML = models.map(model => `
+                    <div class="data-card">
+                        <h3>${model.name}</h3>
+                        <p><strong>Âge:</strong> ${model.age || 'N/A'} ans</p>
+                        <p><strong>Taille:</strong> ${model.height}</p>
+                        <p><strong>Genre:</strong> ${model.gender}</p>
+                        <p><strong>Lieu:</strong> ${model.location || 'N/A'}</p>
+                        <p><strong>Distinctions:</strong> ${model.distinctions ? model.distinctions.join(', ') : 'Aucune'}</p>
+                        <p><strong>Statut:</strong> ${model.status}</p>
+                    </div>
+                `).join('');
+                
+                document.getElementById('modelsData').innerHTML = modelsHTML;
+                showMessage(`✅ ${models.length} mannequins chargés!`, 'success');
+            } catch (error) {
+                document.getElementById('modelsData').innerHTML = `<div class="error">Erreur: ${error.message}</div>`;
+                showMessage(`❌ Erreur lors du chargement des mannequins: ${error.message}`, 'error');
+            }
+        }
+        
+        // Load articles
+        async function loadArticles() {
+            try {
+                showSection('articlesSection');
+                showLoading('articlesData');
+                
+                const articles = await apiCall('/articles');
+                
+                if (articles.length === 0) {
+                    document.getElementById('articlesData').innerHTML = '<p style="text-align: center; color: #cccccc;">Aucun article trouvé</p>';
+                    return;
+                }
+                
+                const articlesHTML = articles.map(article => `
+                    <div class="data-card">
+                        <h3>${article.title}</h3>
+                        <p><strong>Catégorie:</strong> ${article.category}</p>
+                        <p><strong>Auteur:</strong> ${article.author}</p>
+                        <p><strong>Date:</strong> ${article.date}</p>
+                        <p><strong>Vues:</strong> ${article.views || 0}</p>
+                        <p><strong>Likes:</strong> ${article.likes || 0}</p>
+                        <p><strong>Extrait:</strong> ${article.excerpt}</p>
+                    </div>
+                `).join('');
+                
+                document.getElementById('articlesData').innerHTML = articlesHTML;
+                showMessage(`✅ ${articles.length} articles chargés!`, 'success');
+            } catch (error) {
+                document.getElementById('articlesData').innerHTML = `<div class="error">Erreur: ${error.message}</div>`;
+                showMessage(`❌ Erreur lors du chargement des articles: ${error.message}`, 'error');
+            }
+        }
+        
+        // Load events
+        async function loadEvents() {
+            try {
+                showSection('eventsSection');
+                showLoading('eventsData');
+                
+                const events = await apiCall('/fashion-day-events');
+                
+                if (events.length === 0) {
+                    document.getElementById('eventsData').innerHTML = '<p style="text-align: center; color: #cccccc;">Aucun événement trouvé</p>';
+                    return;
+                }
+                
+                const eventsHTML = events.map(event => `
+                    <div class="data-card">
+                        <h3>Perfect Fashion Day ${event.edition}</h3>
+                        <p><strong>Date:</strong> ${event.date}</p>
+                        <p><strong>Thème:</strong> ${event.theme}</p>
+                        <p><strong>Lieu:</strong> ${event.location || 'N/A'}</p>
+                        <p><strong>MC:</strong> ${event.mc || 'N/A'}</p>
+                        <p><strong>Mannequins:</strong> ${event.featuredModels ? event.featuredModels.join(', ') : 'N/A'}</p>
+                        <p><strong>Artistes:</strong> ${event.artists ? event.artists.join(', ') : 'N/A'}</p>
+                    </div>
+                `).join('');
+                
+                document.getElementById('eventsData').innerHTML = eventsHTML;
+                showMessage(`✅ ${events.length} événements chargés!`, 'success');
+            } catch (error) {
+                document.getElementById('eventsData').innerHTML = `<div class="error">Erreur: ${error.message}</div>`;
+                showMessage(`❌ Erreur lors du chargement des événements: ${error.message}`, 'error');
+            }
+        }
+        
+        // Seed database
+        async function seedDatabase() {
+            try {
+                showMessage('🌱 Peuplement de la base de données en cours...', 'success');
+                
+                // Create sample data
+                const sampleModel = {
+                    name: 'Test Model ' + Date.now(),
+                    height: '1m75',
+                    gender: 'Femme',
+                    imageUrl: 'https://i.ibb.co/placeholder.jpg',
+                    distinctions: ['Test Distinction'],
+                    location: 'Libreville'
+                };
+                
+                const response = await fetch(`${API_BASE}/models`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(sampleModel)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                showMessage(`✅ Mannequin test créé: ${result.name}`, 'success');
+                
+                // Refresh stats
+                await loadStats();
+                
+            } catch (error) {
+                showMessage(`❌ Erreur lors du peuplement: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test API
+        async function testAPI() {
+            try {
+                showMessage('🔧 Test de l\'API en cours...', 'success');
+                
+                const health = await apiCall('/health');
+                
+                if (health.status === 'healthy') {
+                    showMessage('✅ API fonctionnelle! Base de données connectée.', 'success');
+                } else {
+                    showMessage('⚠️ API accessible mais problème de base de données.', 'error');
+                }
+                
+            } catch (error) {
+                showMessage(`❌ API non accessible: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            showMessage('🚀 Dashboard MongoDB initialisé!', 'success');
+            loadStats();
+        });
+    </script>
+</body>
+</html>
