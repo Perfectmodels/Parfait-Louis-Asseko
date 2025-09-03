@@ -1,14 +1,20 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CountdownTimer from '../components/CountdownTimer';
 import { CalendarDaysIcon, ClockIcon, MapPinIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
-import { siteConfig } from '../constants/data';
+import { useData } from '../contexts/DataContext';
 
 const Casting: React.FC = () => {
+  const { data, isInitialized } = useData();
   const castingDate = "2025-09-06T14:00:00";
-  const posterUrl = "https://scontent.flbv4-1.fna.fbcdn.net/v/t39.30808-6/514264614_759289996955344_5265340269840402279_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_ohc=sHlbDXhATdoQ7kNvwFNMON0&_nc_oc=Adn6E0CBc-ktIORu8wXsZYEVX2NHwhr-i6a8_-HrnHG7KFvZmBwwipx9U-45LsTgHQQ&_nc_zt=23&_nc_ht=scontent.flbv4-1.fna&_nc_gid=U7zZZJjuuJK94I7YBa38Dw&oh=00_AfYPvNJbdSgcqD19D2NYVeRiIXkPGj0hzkoDVL8VDw49Dg&oe=68BD4C7A";
+  
+  if (!isInitialized || !data) {
+    return <div className="min-h-screen bg-pm-dark" />;
+  }
+  
+  const { siteImages } = data;
+  const posterUrl = siteImages.castingBg;
 
   const conditionsFilles = [
     "Âge : 16 à 28 ans",

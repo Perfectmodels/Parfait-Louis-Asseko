@@ -1,10 +1,11 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction, Service } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { AcademicCapIcon, CameraIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <h2 className="text-4xl font-playfair text-pm-gold text-center mb-12">{children}</h2>
@@ -17,7 +18,7 @@ const Agency: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
   
-  const { agencyInfo, modelDistinctions, agencyTimeline, agencyServices, agencyAchievements, agencyPartners } = data;
+  const { agencyInfo, modelDistinctions, agencyTimeline, agencyServices, agencyAchievements, agencyPartners, siteImages } = data;
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20">
@@ -33,7 +34,7 @@ const Agency: React.FC = () => {
           <SectionTitle>Notre Histoire</SectionTitle>
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2 p-4 border-2 border-pm-gold">
-              <img src="https://i.ibb.co/hR9Sfy5Q/agstyle-15.jpg" alt="L'équipe Perfect Models" className="w-full h-full object-cover"/>
+              <img src={siteImages.agencyHistory} alt="L'équipe Perfect Models" className="w-full h-full object-cover"/>
             </div>
             <div className="md:w-1/2 text-lg leading-relaxed text-pm-off-white/90">
               <p className="mb-4">{agencyInfo.about.p1}</p>
@@ -92,7 +93,7 @@ const Agency: React.FC = () => {
           <SectionTitle>Nos Partenaires Clé</SectionTitle>
           <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
             {agencyPartners.map((partner, index) => (
-                <p key={index} className="text-xl font-semibold text-pm-off-white/80 border-b-2 border-pm-gold/30 pb-1">{partner}</p>
+                <p key={index} className="text-xl font-semibold text-pm-off-white/80 border-b-2 border-pm-gold/30 pb-1">{partner.name}</p>
             ))}
           </div>
         </section>
@@ -126,19 +127,17 @@ const DistinctionCard: React.FC<{ distinction: ModelDistinction }> = ({ distinct
     </div>
 );
 
-// Note: The icon mapping is tricky. This is a simplified approach.
-// For a full CMS, you would store the icon name and map it.
-import { AcademicCapIcon, CameraIcon, FilmIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
-const icons: { [key: string]: React.ElementType } = {
-  "Développement de carrière": UserGroupIcon,
-  "Formations & Coaching": AcademicCapIcon,
-  "Production Photo & Vidéo": CameraIcon,
-  "Événementiel & Défilés": SparklesIcon,
-  "Services aux Entreprises": ScaleIcon,
-  "International & Prestige": GlobeAltIcon,
+const iconMap: { [key: string]: React.ElementType } = {
+  UserGroupIcon,
+  AcademicCapIcon,
+  CameraIcon,
+  SparklesIcon,
+  ScaleIcon,
+  GlobeAltIcon,
 };
+
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
-    const Icon = icons[service.title] || HeartIcon;
+    const Icon = iconMap[service.icon] || HeartIcon;
     return (
         <div className="bg-black p-8 text-center border border-transparent transition-all duration-300 hover:border-pm-gold/50 hover:shadow-2xl hover:shadow-pm-gold/10 hover:-translate-y-2">
             <Icon className="w-12 h-12 text-pm-gold mx-auto mb-4" />

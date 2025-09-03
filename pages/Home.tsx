@@ -12,7 +12,7 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, agencyPartners, fashionDayEvents, articles } = data;
+  const { agencyInfo, agencyPartners, fashionDayEvents, articles, siteImages } = data;
 
   const magazineArticlesPreview = articles.slice(0, 3).map(article => ({
       image: article.imageUrl,
@@ -30,7 +30,10 @@ const Home: React.FC = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-[url('https://i.ibb.co/vvc0k6TQ/titostyle-36.jpg')] bg-fixed">
+      <section 
+        className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed" 
+        style={{ backgroundImage: `url('${siteImages.hero}')`}}
+      >
         <div className="absolute inset-0 bg-pm-dark/80"></div>
         <div className="relative z-10 p-6">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
@@ -55,7 +58,7 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
-              <img src="https://i.ibb.co/hR9Sfy5Q/agstyle-15.jpg" alt="Perfect Models Management" className="w-full h-full object-cover"/>
+              <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
             </div>
             <div className="md:w-1/2 text-center md:text-left">
               <h2 className="text-4xl font-playfair text-pm-gold mb-4">Perfect Models Management</h2>
@@ -82,7 +85,10 @@ const Home: React.FC = () => {
       </section>
       
       {/* Perfect Fashion Day Preview */}
-      <section className="py-24 bg-cover bg-center bg-fixed bg-[url('https://i.ibb.co/LDm73BY2/ventex-44.jpg')]">
+      <section 
+        className="py-24 bg-cover bg-center bg-fixed" 
+        style={{ backgroundImage: `url('${siteImages.fashionDayBg}')`}}
+      >
         <div className="container mx-auto px-6 text-center bg-black/80 py-12 backdrop-blur-sm">
             <h2 className="text-4xl font-playfair text-pm-gold mb-4">Perfect Fashion Day</h2>
             <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
@@ -142,7 +148,7 @@ const Home: React.FC = () => {
               <h3 className="text-sm uppercase tracking-widest text-pm-off-white/50 mb-8">Nos Partenaires de Confiance</h3>
               <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-4">
                   {agencyPartners.slice(0, 5).map(partner => (
-                      <p key={partner} className="text-lg font-semibold text-pm-off-white/70 transition-colors hover:text-pm-gold">{partner}</p>
+                      <p key={partner.name} className="text-lg font-semibold text-pm-off-white/70 transition-colors hover:text-pm-gold">{partner.name}</p>
                   ))}
               </div>
           </div>

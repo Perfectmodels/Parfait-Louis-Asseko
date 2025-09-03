@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
-import { AIAssistantProps } from '../types';
+import { AIAssistantProps, Testimonial, Partner, ApiKeys } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import AIAssistant from '../components/AIAssistant';
+import ImageInput from '../components/ImageInput';
 
 type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData'>;
 
@@ -27,6 +28,9 @@ const AdminSettings: React.FC = () => {
                 agencyAchievements: data.agencyAchievements,
                 agencyPartners: data.agencyPartners,
                 testimonials: data.testimonials,
+                contactInfo: data.contactInfo,
+                siteImages: data.siteImages,
+                apiKeys: data.apiKeys,
             })));
         }
     }, [isInitialized, data]);
@@ -35,7 +39,7 @@ const AdminSettings: React.FC = () => {
         if (!data || !localData) return;
         const newData: AppData = { ...data, ...localData };
         saveData(newData);
-        alert("Changements enregistrés pour la session actuelle. N'oubliez pas d'exporter le code depuis le dashboard pour les rendre permanents.");
+        alert("Changements enregistrés avec succès dans la base de données.");
     };
 
     const handleSimpleChange = (section: keyof EditableData, key: string, value: any) => {
@@ -72,8 +76,27 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 <div className="space-y-8">
-                    <SectionWrapper title="Configuration Générale">
-                        <FormInput label="URL du Logo" value={localData.siteConfig.logo} onChange={e => handleSimpleChange('siteConfig', 'logo', e.target.value)} />
+                    <SectionWrapper title="Clés API (Services Externes)">
+                        <FormInput label="Clé API Octopus Mail (pour les formulaires)" value={localData.apiKeys.emailApiKey} onChange={e => handleSimpleChange('apiKeys', 'emailApiKey', e.target.value)} />
+                         <p className="text-xs text-pm-off-white/60 p-2 bg-pm-dark/50 border border-pm-off-white/10 rounded-md">
+                           Cette clé est requise pour que les formulaires de Contact et de Casting fonctionnent. Sans elle, les emails ne seront pas envoyés.
+                        </p>
+                    </SectionWrapper>
+                    
+                    <SectionWrapper title="Informations de Contact">
+                        <FormInput label="Email" value={localData.contactInfo.email} onChange={e => handleSimpleChange('contactInfo', 'email', e.target.value)} />
+                        <FormInput label="Téléphone" value={localData.contactInfo.phone} onChange={e => handleSimpleChange('contactInfo', 'phone', e.target.value)} />
+                        <FormInput label="Adresse" value={localData.contactInfo.address} onChange={e => handleSimpleChange('contactInfo', 'address', e.target.value)} />
+                    </SectionWrapper>
+
+                    <SectionWrapper title="Images du Site">
+                        <ImageInput label="Logo" value={localData.siteConfig.logo} onChange={value => handleSimpleChange('siteConfig', 'logo', value)} />
+                        <ImageInput label="Image Héros (Accueil)" value={localData.siteImages.hero} onChange={value => handleSimpleChange('siteImages', 'hero', value)} />
+                        <ImageInput label="Image 'À Propos' (Accueil)" value={localData.siteImages.about} onChange={value => handleSimpleChange('siteImages', 'about', value)} />
+                        <ImageInput label="Fond 'Fashion Day' (Accueil)" value={localData.siteImages.fashionDayBg} onChange={value => handleSimpleChange('siteImages', 'fashionDayBg', value)} />
+                        <ImageInput label="Image 'Notre Histoire' (Agence)" value={localData.siteImages.agencyHistory} onChange={value => handleSimpleChange('siteImages', 'agencyHistory', value)} />
+                        <ImageInput label="Fond 'Classroom'" value={localData.siteImages.classroomBg} onChange={value => handleSimpleChange('siteImages', 'classroomBg', value)} />
+                        <ImageInput label="Affiche 'Casting'" value={localData.siteImages.castingBg} onChange={value => handleSimpleChange('siteImages', 'castingBg', value)} />
                     </SectionWrapper>
                     
                      <SectionWrapper title="Réseaux Sociaux">
@@ -83,10 +106,16 @@ const AdminSettings: React.FC = () => {
                     </SectionWrapper>
                     
                     <SectionWrapper title="Partenaires de l'Agence">
-                        <FormTextArea 
-                            label="Liste des partenaires (un par ligne)" 
-                            value={localData.agencyPartners.join('\n')} 
-                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setLocalData(p => ({...p!, agencyPartners: e.target.value.split('\n')}))} 
+                        <ArrayEditor 
+                            items={localData.agencyPartners}
+                            setItems={newItems => setLocalData(p => ({...p!, agencyPartners: newItems}))}
+                            renderItem={(item: Partner, onChange) => (
+                                <>
+                                    <FormInput label="Nom du partenaire" value={item.name} onChange={e => onChange('name', e.target.value)} />
+                                </>
+                            )}
+                            getNewItem={() => ({ name: 'Nouveau Partenaire' })}
+                            getItemTitle={item => item.name}
                         />
                     </SectionWrapper>
                     
@@ -94,11 +123,11 @@ const AdminSettings: React.FC = () => {
                         <ArrayEditor 
                             items={localData.testimonials}
                             setItems={newItems => setLocalData(p => ({...p!, testimonials: newItems}))}
-                            renderItem={(item, onChange) => (
+                            renderItem={(item: Testimonial, onChange) => (
                                 <>
                                     <FormInput label="Nom" value={item.name} onChange={e => onChange('name', e.target.value)} />
                                     <FormInput label="Rôle" value={item.role} onChange={e => onChange('role', e.target.value)} />
-                                    <FormInput label="URL Image" value={item.imageUrl} onChange={e => onChange('imageUrl', e.target.value)} />
+                                    <ImageInput label="Photo" value={item.imageUrl} onChange={value => onChange('imageUrl', value)} />
                                     <FormTextArea 
                                         label="Citation" 
                                         value={item.quote} 

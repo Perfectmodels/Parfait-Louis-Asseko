@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
@@ -8,7 +7,7 @@ import { QuizQuestion, Module } from '../types';
 import { useData } from '../contexts/DataContext';
 
 // --- STUDENT VIEW ---
-const StudentView: React.FC<{ onLogout: () => void; courseData: Module[] }> = ({ onLogout, courseData }) => {
+const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteImages: any; }> = ({ onLogout, courseData, siteImages }) => {
     const [openModule, setOpenModule] = useState<number | null>(0);
 
     const toggleModule = (index: number) => {
@@ -19,7 +18,7 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[] }> = ({
         <>
             <section 
                 className="relative min-h-[50vh] flex items-center justify-center text-center bg-cover bg-center"
-                style={{ backgroundImage: "url('https://i.ibb.co/b5LgVZgr/DSC-0090.jpg')" }}
+                style={{ backgroundImage: `url('${siteImages.classroomBg}')` }}
                 aria-labelledby="formations-title"
             >
                 <div className="absolute inset-0 bg-pm-dark/80"></div>
@@ -232,7 +231,7 @@ const Formations: React.FC = () => {
               description="Accès à la plateforme de formation privée pour les mannequins de l'agence Perfect Models Management. Programme de 40 chapitres théoriques."
               keywords="formation mannequin, cours mannequinat, devenir mannequin, PMM classroom"
             />
-            <StudentView onLogout={handleLogout} courseData={data.courseData} />
+            <StudentView onLogout={handleLogout} courseData={data.courseData} siteImages={data.siteImages} />
         </>
     );
 };

@@ -104,7 +104,7 @@ const AdminClassroom: React.FC = () => {
   const handleSave = () => {
     if (!data || !course) return;
     saveData({ ...data, courseData: course });
-    alert("Changements enregistrés pour la session actuelle. N'oubliez pas d'exporter le code depuis le dashboard pour les rendre permanents.");
+    alert("Changements enregistrés avec succès dans la base de données.");
   };
 
   return (

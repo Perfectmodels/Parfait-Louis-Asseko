@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
     return <footer className="bg-black border-t border-pm-gold/20"></footer>;
   }
   
-  const { navLinks, socialLinks, siteConfig } = data;
+  const { navLinks, socialLinks, siteConfig, contactInfo } = data;
 
   return (
     <footer className="bg-black border-t border-pm-gold/20 text-pm-off-white/70">
@@ -55,9 +55,9 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-base font-bold text-pm-off-white mb-4 uppercase tracking-wider">Contact</h3>
             <ul className="space-y-2 text-sm">
-              <li>📧 Contact@perfectmodels.ga</li>
-              <li>📱 +241 074066461</li>
-              <li>📍 Ancien Sobraga, Libreville, Gabon</li>
+              <li>📧 {contactInfo.email}</li>
+              <li>📱 {contactInfo.phone}</li>
+              <li>📍 {contactInfo.address}</li>
             </ul>
           </div>
         </div>
@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
         <div className="container mx-auto px-6 text-center text-xs text-pm-off-white/50">
           <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
            <Link to="/login" className="mt-2 inline-block hover:text-pm-gold transition-colors text-pm-off-white/40">
-            Accès Classroom
+            Accès Admin
           </Link>
         </div>
       </div>

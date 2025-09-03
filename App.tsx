@@ -17,6 +17,13 @@ import CastingForm from './pages/CastingForm';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import { DataProvider } from './contexts/DataContext';
+import Admin from './pages/Admin';
+import AdminModels from './pages/AdminModels';
+import AdminMagazine from './pages/AdminMagazine';
+import AdminClassroom from './pages/AdminClassroom';
+import AdminSettings from './pages/AdminSettings';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminCasting from './pages/AdminCasting';
 
 
 const ScrollToTop: React.FC = () => {
@@ -50,6 +57,14 @@ const App: React.FC = () => {
             <Route path="/casting-formulaire" element={<CastingForm />} />
             <Route path="/login" element={<Login />} />
 
+            {/* Admin Routes */}
+            <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
+            <Route path="/admin/mannequins" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
+            <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
+            <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
+            <Route path="/admin/parametres" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
+            <Route path="/admin/candidatures" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
