@@ -38,9 +38,9 @@ const Casting: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white">
       <SEO 
-        title="Grand Casting National 2025"
-        description="Participez au grand casting national de Perfect Models Management le 6 septembre 2025. Toutes les informations et conditions de participation."
-        keywords="casting mannequin Gabon, devenir mannequin Libreville, casting PMM 2025, agence de casting"
+        title="Grand Casting National | Devenez Mannequin PMM"
+        description="Saisissez votre chance ! Participez au grand casting national de Perfect Models Management pour devenir notre prochain visage. Découvrez les dates, lieux et conditions pour lancer votre carrière."
+        keywords="casting mannequin gabon 2025, devenir mannequin libreville, casting pmm, agence de casting gabon, comment devenir mannequin"
         image={posterUrl}
       />
       {/* Hero Section */}

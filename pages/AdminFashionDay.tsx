@@ -64,7 +64,7 @@ const AdminFashionDay: React.FC = () => {
     return (
         <>
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Admin - Candidatures Fashion Day" />
+            <SEO title="Admin - Candidatures Fashion Day" noIndex />
             <div className="container mx-auto px-6">
                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />

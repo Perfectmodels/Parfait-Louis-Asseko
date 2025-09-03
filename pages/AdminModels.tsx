@@ -62,7 +62,7 @@ const AdminModels: React.FC = () => {
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO title="Admin - Gérer les Mannequins" />
+      <SEO title="Admin - Gérer les Mannequins" noIndex />
       <div className="container mx-auto px-6">
         <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
           <div>

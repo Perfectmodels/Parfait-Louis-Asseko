@@ -101,8 +101,9 @@ const FashionDayApplicationForm: React.FC = () => {
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO 
-                title="Candidature Perfect Fashion Day"
-                description="Postulez pour participer à la prochaine édition du Perfect Fashion Day en tant que mannequin, styliste, ou partenaire."
+                title="Participer au Perfect Fashion Day | Candidature"
+                description="Vous êtes mannequin, styliste, partenaire ou photographe ? Postulez pour participer à la prochaine édition du Perfect Fashion Day et contribuez au plus grand événement mode du Gabon."
+                keywords="participer défilé de mode, postuler fashion day, candidature styliste gabon, inscription événement mode"
             />
             <div className="container mx-auto px-6 max-w-2xl">
                 <header className="text-center mb-12">

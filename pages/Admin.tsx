@@ -8,7 +8,7 @@ import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, Clipboard
 const Admin: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO title="Admin Dashboard" description="Admin panel for Perfect Models Management." />
+      <SEO title="Admin Dashboard" description="Admin panel for Perfect Models Management." noIndex />
       <div className="container mx-auto px-6">
         <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Panel d'Administration</h1>
         <p className="text-center max-w-3xl mx-auto text-pm-off-white/80 mb-12">

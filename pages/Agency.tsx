@@ -23,9 +23,9 @@ const Agency: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white py-20">
       <SEO 
-        title="L'Agence"
-        description="Découvrez l'histoire, les valeurs, les services et les réalisations de Perfect Models Management, l'agence qui façonne l'avenir de la mode au Gabon."
-        keywords="histoire agence mannequin, services mannequinat, valeurs PMM, agence de mode Gabon"
+        title="L'Agence | Notre Histoire et Nos Valeurs"
+        description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence, et les services qui font de nous un leader de la mode au Gabon."
+        keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
       />
       <div className="container mx-auto px-6 space-y-24">
 

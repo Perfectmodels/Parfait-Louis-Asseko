@@ -24,9 +24,9 @@ const Home: React.FC = () => {
   return (
     <div className="text-pm-off-white">
       <SEO 
-        title="Accueil"
-        description="Agence de mannequins à Libreville, Gabon. Découvrez nos talents, événements exclusifs comme le Perfect Fashion Day, et notre magazine Focus Model 241."
-        keywords="agence de mannequins, mannequin Gabon, Perfect Models Management, mode Libreville, casting mannequin"
+        title="Accueil | L'Élégance Redéfinie"
+        description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
+        keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
       />
 
       {/* Hero Section */}
