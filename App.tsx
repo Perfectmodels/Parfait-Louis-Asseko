@@ -10,6 +10,7 @@ import FashionDay from './pages/FashionDay';
 import Magazine from './pages/Magazine';
 import ArticleDetail from './pages/ArticleDetail';
 import Formations from './pages/Activity';
+import ChapterDetail from './pages/ChapterDetail';
 import Contact from './pages/Contact';
 import Casting from './pages/Casting';
 import Login from './pages/Login';
@@ -39,6 +40,7 @@ const App: React.FC = () => {
           <Route path="/magazine" element={<Magazine />} />
           <Route path="/magazine/:slug" element={<ArticleDetail />} />
           <Route path="/formations" element={<Formations />} />
+          <Route path="/formations/:moduleSlug/:chapterSlug" element={<ChapterDetail />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/casting" element={<Casting />} />
           <Route path="/login" element={<Login />} />
