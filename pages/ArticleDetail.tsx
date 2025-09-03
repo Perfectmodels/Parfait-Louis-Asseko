@@ -1,14 +1,20 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { articles } from '../constants/magazineData';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { ArticleContent } from '../types';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { useData } from '../contexts/DataContext';
 
 const ArticleDetail: React.FC = () => {
+  const { data, isInitialized } = useData();
   const { slug } = useParams<{ slug: string }>();
-  const article = articles.find(a => a.slug === slug);
+  
+  const article = data?.articles.find(a => a.slug === slug);
+
+  if (!isInitialized) {
+      return <div className="min-h-screen bg-pm-dark"></div>;
+  }
 
   if (!article) {
     return <NotFound />;

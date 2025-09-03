@@ -1,7 +1,15 @@
 import React from 'react';
-import { models, fashionDayEvents, agencyPartners } from '../constants/data';
+import { useData } from '../contexts/DataContext';
 
 const Marquee: React.FC = () => {
+  const { data } = useData();
+
+  if (!data) {
+    return <div className="fixed top-0 left-0 right-0 z-50 h-8 bg-black"></div>;
+  }
+
+  const { models, fashionDayEvents, agencyPartners } = data;
+
   // Consolidate all names into one array
   const allItems = [
     ...new Set([

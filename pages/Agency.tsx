@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { agencyTimeline, agencyInfo, modelDistinctions, agencyServices, agencyAchievements, agencyPartners } from '../constants/data';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction, Service } from '../types';
 import SEO from '../components/SEO';
+import { useData } from '../contexts/DataContext';
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <h2 className="text-4xl font-playfair text-pm-gold text-center mb-12">{children}</h2>
 );
 
 const Agency: React.FC = () => {
+  const { data, isInitialized } = useData();
+
+  if (!isInitialized || !data) {
+    return <div className="min-h-screen bg-pm-dark"></div>;
+  }
+  
+  const { agencyInfo, modelDistinctions, agencyTimeline, agencyServices, agencyAchievements, agencyPartners } = data;
+
   return (
     <div className="bg-pm-dark text-pm-off-white py-20">
       <SEO 
@@ -117,13 +125,27 @@ const DistinctionCard: React.FC<{ distinction: ModelDistinction }> = ({ distinct
     </div>
 );
 
-const ServiceCard: React.FC<{ service: Service }> = ({ service }) => (
-  <div className="bg-black p-8 text-center border border-transparent transition-all duration-300 hover:border-pm-gold/50 hover:shadow-2xl hover:shadow-pm-gold/10 hover:-translate-y-2">
-    <service.icon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
-    <h3 className="text-xl font-bold text-pm-gold mb-2">{service.title}</h3>
-    <p className="text-pm-off-white/70">{service.description}</p>
-  </div>
-);
+// Note: The icon mapping is tricky. This is a simplified approach.
+// For a full CMS, you would store the icon name and map it.
+import { AcademicCapIcon, CameraIcon, FilmIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+const icons: { [key: string]: React.ElementType } = {
+  "Développement de carrière": UserGroupIcon,
+  "Formations & Coaching": AcademicCapIcon,
+  "Production Photo & Vidéo": CameraIcon,
+  "Événementiel & Défilés": SparklesIcon,
+  "Services aux Entreprises": ScaleIcon,
+  "International & Prestige": GlobeAltIcon,
+};
+const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
+    const Icon = icons[service.title] || HeartIcon;
+    return (
+        <div className="bg-black p-8 text-center border border-transparent transition-all duration-300 hover:border-pm-gold/50 hover:shadow-2xl hover:shadow-pm-gold/10 hover:-translate-y-2">
+            <Icon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-pm-gold mb-2">{service.title}</h3>
+            <p className="text-pm-off-white/70">{service.description}</p>
+        </div>
+    );
+};
 
 const AchievementsTabs: React.FC<{ achievements: AchievementCategory[] }> = ({ achievements }) => {
     const [activeTab, setActiveTab] = useState(0);

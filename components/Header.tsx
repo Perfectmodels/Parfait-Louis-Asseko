@@ -4,7 +4,7 @@ import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
 import { siteConfig, navLinks } from '../constants/data';
 
-const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => {
+const NavLinks: React.FC<{ onLinkClick?: () => void; isAdmin: boolean }> = ({ onLinkClick, isAdmin }) => {
   const activeLinkStyle = {
     color: '#D4AF37',
     textShadow: '0 0 5px #D4AF37',
@@ -23,6 +23,16 @@ const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => {
           {link.label}
         </NavLink>
       ))}
+      {isAdmin && (
+         <NavLink 
+          to="/admin" 
+          style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} 
+          onClick={onLinkClick} 
+          className="hover:text-pm-gold transition-colors duration-300 bg-pm-gold/10 px-3 py-1 rounded-md"
+        >
+          Admin
+        </NavLink>
+      )}
     </>
   );
 };
@@ -30,7 +40,13 @@ const NavLinks: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => {
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const userRole = sessionStorage.getItem('classroom_role');
+    setIsAdmin(userRole === 'admin');
+  }, [location]);
 
   // Handle body scroll lock for mobile menu
   useEffect(() => {
@@ -67,7 +83,7 @@ const Header: React.FC = () => {
             <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center space-x-8 text-pm-off-white uppercase text-sm tracking-widest">
-            <NavLinks />
+            <NavLinks isAdmin={isAdmin} />
           </nav>
           <div className="md:hidden">
             <button onClick={() => setIsOpen(true)} className="text-pm-gold focus:outline-none" aria-label="Ouvrir le menu">
@@ -97,7 +113,7 @@ const Header: React.FC = () => {
               </button>
             </div>
             <nav className="flex flex-col space-y-4 text-pm-off-white text-lg uppercase tracking-wider flex-grow">
-              <NavLinks onLinkClick={() => setIsOpen(false)} />
+              <NavLinks onLinkClick={() => setIsOpen(false)} isAdmin={isAdmin} />
             </nav>
             <div className="mt-auto">
                <Link to="/casting" onClick={() => setIsOpen(false)} className="block w-full text-center px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white">

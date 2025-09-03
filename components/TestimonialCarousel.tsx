@@ -1,27 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { testimonials } from '../constants/data';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { useData } from '../contexts/DataContext';
 
 const TestimonialCarousel: React.FC = () => {
+  const { data } = useData();
+  const testimonials = data?.testimonials || [];
+  
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevious = () => {
+    if (testimonials.length === 0) return;
     const isFirstSlide = currentIndex === 0;
     const newIndex = isFirstSlide ? testimonials.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
   };
 
   const goToNext = () => {
+    if (testimonials.length === 0) return;
     const isLastSlide = currentIndex === testimonials.length - 1;
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
   };
   
   useEffect(() => {
+    if (testimonials.length === 0) return;
     const interval = setInterval(goToNext, 7000); // Change slide every 7 seconds
     return () => clearInterval(interval);
-  }, [currentIndex]);
+  }, [currentIndex, testimonials.length]);
 
+  if (testimonials.length === 0) {
+    return null;
+  }
 
   const currentTestimonial = testimonials[currentIndex];
 

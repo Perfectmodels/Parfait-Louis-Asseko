@@ -1,33 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { agencyInfo, agencyPartners, fashionDayEvents } from '../constants/data';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
-
-// Dummy data for magazine articles since it's hardcoded in Magazine.tsx
-const magazineArticles = [
-  {
-    image: "https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg",
-    category: "Interview",
-    title: "Noemi Kim : Au-delà du podium",
-    link: "/magazine"
-  },
-  {
-    image: "https://i.ibb.co/C5rcPJHz/titostyle-53.jpg",
-    category: "Événement",
-    title: "Retour sur le Perfect Fashion Day",
-    link: "/magazine"
-  },
-  {
-    image: "https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg",
-    category: "Tendance",
-    title: "L'audace du sur-mesure masculin",
-    link: "/magazine"
-  }
-];
+import { useData } from '../contexts/DataContext';
 
 
 const Home: React.FC = () => {
+  const { data, isInitialized } = useData();
+
+  if (!isInitialized || !data) {
+    return <div className="min-h-screen bg-pm-dark"></div>;
+  }
+
+  const { agencyInfo, agencyPartners, fashionDayEvents, articles } = data;
+
+  // Recreate magazine articles preview data from the dynamic source
+  const magazineArticlesPreview = articles.slice(0, 3).map(article => ({
+      image: article.imageUrl,
+      category: article.category,
+      title: article.title,
+      link: `/magazine/${article.slug}`
+  }));
 
   return (
     <div className="text-pm-off-white">
@@ -110,7 +103,7 @@ const Home: React.FC = () => {
               Plongez dans l'univers de la mode avec nos articles exclusifs, interviews et analyses de tendances.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {magazineArticles.map(article => (
+            {magazineArticlesPreview.map(article => (
               <Link to={article.link} key={article.title} className="group block bg-black border border-pm-gold/20 overflow-hidden transition-all duration-300 hover:border-pm-gold hover:shadow-lg hover:shadow-pm-gold/20">
                 <div className="relative h-64 overflow-hidden">
                   <img src={article.image} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />

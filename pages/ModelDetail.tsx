@@ -1,13 +1,19 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { models } from '../constants/data';
 import NotFound from './NotFound';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
+import { useData } from '../contexts/DataContext';
 
 const ModelDetail: React.FC = () => {
+  const { data, isInitialized } = useData();
   const { id } = useParams<{ id: string }>();
-  const model = models.find(m => m.id === id);
+  
+  const model = data?.models.find(m => m.id === id);
+
+  if (!isInitialized) {
+    return <div className="min-h-screen bg-pm-dark"></div>;
+  }
 
   if (!model) {
     return <NotFound />;

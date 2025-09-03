@@ -1,20 +1,22 @@
 import React, { useState, useMemo } from 'react';
-import { models } from '../constants/data';
 import ModelCard from '../components/ModelCard';
-import { Model } from '../types';
 import SEO from '../components/SEO';
+import { useData } from '../contexts/DataContext';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
 
 const Models: React.FC = () => {
+  const { data, isInitialized } = useData();
   const [filter, setFilter] = useState<GenderFilter>('Tous');
   const [searchTerm, setSearchTerm] = useState('');
+
+  const models = data?.models || [];
 
   const filteredModels = useMemo(() => {
     return models
       .filter(model => filter === 'Tous' || model.gender === filter)
       .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [filter, searchTerm]);
+  }, [filter, searchTerm, models]);
 
   const FilterButton: React.FC<{ gender: GenderFilter }> = ({ gender }) => (
     <button
@@ -24,6 +26,10 @@ const Models: React.FC = () => {
       {gender}
     </button>
   );
+
+  if (!isInitialized) {
+      return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement des mannequins...</div>;
+  }
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
