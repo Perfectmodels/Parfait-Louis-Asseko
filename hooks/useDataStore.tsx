@@ -13,12 +13,14 @@ import {
     agencyAchievements as initialAgencyAchievements, 
     agencyPartners as initialAgencyPartners, 
     testimonials as initialTestimonials, 
-    socialLinks as initialSocialLinks 
+    socialLinks as initialSocialLinks,
+    siteConfig as initialSiteConfig,
+    navLinks as initialNavLinks
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
 
-const DATA_STORAGE_KEY = 'pmm_site_data_v1';
+const DATA_STORAGE_KEY = 'pmm_site_data_v2';
 
 export interface AppData {
   models: Model[];
@@ -33,6 +35,8 @@ export interface AppData {
   agencyAchievements: AchievementCategory[];
   agencyPartners: string[];
   socialLinks: { facebook: string; instagram: string; youtube: string; };
+  siteConfig: { logo: string; };
+  navLinks: any[];
 }
 
 const getInitialData = (): AppData => ({
@@ -47,7 +51,9 @@ const getInitialData = (): AppData => ({
   agencyServices: initialAgencyServices,
   agencyAchievements: initialAgencyAchievements,
   agencyPartners: initialAgencyPartners,
-  socialLinks: initialSocialLinks
+  socialLinks: initialSocialLinks,
+  siteConfig: initialSiteConfig,
+  navLinks: initialNavLinks
 });
 
 export const useDataStore = () => {

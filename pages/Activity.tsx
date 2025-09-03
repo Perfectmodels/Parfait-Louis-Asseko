@@ -102,7 +102,7 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[] }> = ({
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <QuizComponent quiz={module.quiz} moduleIndex={index} />
+                                            {module.quiz && module.quiz.length > 0 && <QuizComponent quiz={module.quiz} moduleIndex={index} />}
                                         </div>
                                     </div>
                                 </div>
@@ -255,23 +255,25 @@ const AdminView: React.FC<{ onLogout: () => void; courseData: Module[] }> = ({ o
                                 ))}
                             </ul>
                         </div>
-                        <div className="border-t border-pm-gold/20 pt-4">
-                           <h4 className="font-semibold text-pm-gold mb-2">Quiz du Module</h4>
-                           <div className="space-y-4">
-                               {module.quiz.map(q => (
-                                   <div key={q.question}>
-                                       <p className="font-bold text-sm">{q.question}</p>
-                                       <ul className="text-xs list-disc list-inside pl-4">
-                                           {q.options.map(opt => (
-                                               <li key={opt} className={`${opt === q.correctAnswer ? 'text-green-400 font-bold' : 'text-pm-off-white/70'}`}>
-                                                   {opt} {opt === q.correctAnswer && '(Réponse correcte)'}
-                                               </li>
-                                           ))}
-                                       </ul>
-                                   </div>
-                               ))}
-                           </div>
-                        </div>
+                        {module.quiz && module.quiz.length > 0 && 
+                            <div className="border-t border-pm-gold/20 pt-4">
+                                <h4 className="font-semibold text-pm-gold mb-2">Quiz du Module</h4>
+                                <div className="space-y-4">
+                                    {module.quiz.map(q => (
+                                        <div key={q.question}>
+                                            <p className="font-bold text-sm">{q.question}</p>
+                                            <ul className="text-xs list-disc list-inside pl-4">
+                                                {q.options.map(opt => (
+                                                    <li key={opt} className={`${opt === q.correctAnswer ? 'text-green-400 font-bold' : 'text-pm-off-white/70'}`}>
+                                                        {opt} {opt === q.correctAnswer && '(Réponse correcte)'}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        }
                     </div>
                 ))}
             </div>

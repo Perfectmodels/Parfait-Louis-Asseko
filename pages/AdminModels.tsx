@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Model } from '../types';
@@ -6,41 +7,41 @@ import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 const AdminModels: React.FC = () => {
-  const { data, saveData } = useData();
-  const [models, setModels] = useState<Model[]>([]);
+  const { data, saveData, isInitialized } = useData();
+  const [localModels, setLocalModels] = useState<Model[]>([]);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    // Initialize local state from global context
-    if (data) {
-      setModels([...data.models]);
+    // Initialize local state from global context when it's ready
+    if (data?.models) {
+      setLocalModels([...data.models]);
     }
-  }, [data]);
+  }, [data?.models, isInitialized]);
 
   const handleFormSave = (modelToSave: Model) => {
     let updatedModels;
     if (isCreating) {
       const newModel = { ...modelToSave, id: modelToSave.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now() };
-      updatedModels = [...models, newModel];
+      updatedModels = [...localModels, newModel];
     } else {
-      updatedModels = models.map(m => m.id === modelToSave.id ? modelToSave : m);
+      updatedModels = localModels.map(m => m.id === modelToSave.id ? modelToSave : m);
     }
-    setModels(updatedModels);
+    setLocalModels(updatedModels);
     setEditingModel(null);
     setIsCreating(false);
   };
 
   const handleDelete = (modelId: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce mannequin ? Cette action affectera la liste locale. N'oubliez pas de sauvegarder les changements.")) {
-      setModels(prevModels => prevModels.filter(m => m.id !== modelId));
+      setLocalModels(prevModels => prevModels.filter(m => m.id !== modelId));
     }
   };
 
   const handleSaveChanges = () => {
     if (!data) return;
     if (window.confirm("Sauvegarder toutes les modifications apportées aux mannequins ?")) {
-      saveData({ ...data, models: models });
+      saveData({ ...data, models: localModels });
       alert("Mannequins mis à jour avec succès !");
     }
   };
@@ -95,7 +96,7 @@ const AdminModels: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {models.map(model => (
+                        {localModels.map(model => (
                             <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark">
                                 <td className="p-4"><img src={model.imageUrl} alt={model.name} className="w-12 h-16 object-cover"/></td>
                                 <td className="p-4">{model.name}</td>
