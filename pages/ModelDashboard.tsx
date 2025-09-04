@@ -2,14 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-import { Link, useNavigate } from 'react-router-dom';
+// FIX: Using react-router-dom v5 syntax. Replaced useNavigate with useHistory.
+import { Link, useHistory } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon } from '@heroicons/react/24/outline';
 import { Model } from '../types';
 import ModelForm from '../components/ModelForm';
 
 const ModelDashboard: React.FC = () => {
     const { data, saveData } = useData();
-    const navigate = useNavigate();
+    // FIX: Using useHistory hook from react-router-dom v5.
+    const history = useHistory();
     const userId = sessionStorage.getItem('userId');
     const [editableModel, setEditableModel] = useState<Model | null>(null);
 
@@ -42,7 +44,8 @@ const ModelDashboard: React.FC = () => {
 
     const handleLogout = () => {
         sessionStorage.clear();
-        navigate('/login');
+        // FIX: Using history.push for navigation in v5.
+        history.push('/login');
     };
 
     if (!editableModel) {

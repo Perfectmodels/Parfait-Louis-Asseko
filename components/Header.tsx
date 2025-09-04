@@ -1,33 +1,37 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+// FIX: Updated react-router-dom imports for v5 compatibility. Replaced useNavigate with useHistory and added useRouteMatch.
+import { Link, NavLink, useLocation, useHistory, useRouteMatch } from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
 import { useData } from '../contexts/DataContext';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
+// FIX: Rewrote NavLinkItem for v5 compatibility. It now uses useRouteMatch to determine active state
+// instead of the v6 function-as-a-child or function-as-a-className patterns.
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }> = ({ to, label, onClick }) => {
+  const match = useRouteMatch({
+    path: to,
+    exact: to === '/'
+  });
+  const isActive = !!match;
+
   return (
-    <NavLink
-      end={to === '/'}
+    <Link
       to={to}
       onClick={onClick}
-      className={({ isActive }) => 
+      className={
         "relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold " +
         (isActive ? "text-pm-gold" : "")
       }
     >
-      {({ isActive }) => (
-        <>
-          {label}
-          <span 
-            className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${
-              isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-            }`} 
-          />
-        </>
-      )}
-    </NavLink>
+      {label}
+      <span 
+        className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${
+          isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+        }`} 
+      />
+    </Link>
   );
 };
 
@@ -62,7 +66,8 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
+  // FIX: Using useHistory hook from react-router-dom v5.
+  const history = useHistory();
   const { data } = useData();
   const siteConfig = data?.siteConfig;
   
@@ -91,7 +96,8 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     sessionStorage.clear();
-    navigate('/login');
+    // FIX: Using history.push for navigation in v5.
+    history.push('/login');
   };
 
   useEffect(() => {
