@@ -1,7 +1,7 @@
 
 
 import { useState, useEffect, useCallback } from 'react';
-import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication } from '../types';
+import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem } from '../types';
 import { db } from '../firebaseConfig';
 // FIX: Removed Firebase v9 imports (ref, get, set) as they are incompatible with the v8 SDK syntax.
 // import { ref, get, set } from 'firebase/database';
@@ -24,7 +24,8 @@ import {
     siteImages as initialSiteImages,
     apiKeys as initialApiKeys,
     castingApplications as initialCastingApplications,
-    fashionDayApplications as initialFashionDayApplications
+    fashionDayApplications as initialFashionDayApplications,
+    newsItems as initialNewsItems
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -32,6 +33,7 @@ import { courseData as initialCourseData } from '../constants/courseData';
 export interface AppData {
   models: Model[];
   articles: Article[];
+  newsItems: NewsItem[];
   courseData: Module[];
   testimonials: Testimonial[];
   fashionDayEvents: FashionDayEvent[];
@@ -54,6 +56,7 @@ export interface AppData {
 const getSeedData = (): AppData => ({
   models: initialModels,
   articles: initialArticles,
+  newsItems: initialNewsItems,
   courseData: initialCourseData,
   testimonials: initialTestimonials,
   fashionDayEvents: initialFashionDayEvents,
@@ -147,6 +150,7 @@ export const useDataStore = () => {
             ...fetchedData,
             castingApplications: fetchedData.castingApplications ? Object.values(fetchedData.castingApplications) : [],
             fashionDayApplications: fetchedData.fashionDayApplications ? Object.values(fetchedData.fashionDayApplications) : [],
+            newsItems: fetchedData.newsItems ? Object.values(fetchedData.newsItems) : seedData.newsItems,
             siteConfig: { ...seedData.siteConfig, ...fetchedData.siteConfig },
             socialLinks: { ...seedData.socialLinks, ...fetchedData.socialLinks },
             agencyInfo: { ...seedData.agencyInfo, ...fetchedData.agencyInfo },

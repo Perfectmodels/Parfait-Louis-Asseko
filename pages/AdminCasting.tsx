@@ -1,10 +1,13 @@
 
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus } from '../types';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
+// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
+const { Link } = ReactRouterDOM;
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const AdminCasting: React.FC = () => {

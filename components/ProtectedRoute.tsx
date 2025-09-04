@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
+const { Navigate, useLocation } = ReactRouterDOM;
 
 interface ProtectedRouteProps {
   children: React.ReactElement;

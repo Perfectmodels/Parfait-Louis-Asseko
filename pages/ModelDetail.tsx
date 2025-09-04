@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
+const { useParams, Link } = ReactRouterDOM;
 import NotFound from './NotFound';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';

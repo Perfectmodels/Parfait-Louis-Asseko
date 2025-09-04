@@ -1,8 +1,12 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
+const { Link } = ReactRouterDOM;
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
+import { NewsItem } from '../types';
 
 
 const Home: React.FC = () => {
@@ -12,7 +16,9 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, agencyPartners, fashionDayEvents, articles, siteImages } = data;
+  const { agencyInfo, agencyPartners, fashionDayEvents, articles, newsItems, siteImages } = data;
+
+  const latestNews = newsItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 3);
 
   const magazineArticlesPreview = articles.slice(0, 3).map(article => ({
       image: article.imageUrl,
@@ -100,6 +106,21 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* News & Events Section */}
+      <section className="py-20 bg-black">
+        <div className="container mx-auto px-6">
+          <h2 className="text-4xl font-playfair text-pm-gold text-center mb-4">Actualités & Événements</h2>
+          <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
+            Restez informés des derniers événements, collaborations et annonces de l'agence.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {latestNews.map(item => (
+              <NewsCard key={item.id} item={item} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Magazine Preview */}
       <section className="py-20 bg-pm-dark">
         <div className="container mx-auto px-6">
@@ -158,5 +179,28 @@ const Home: React.FC = () => {
     </div>
   );
 };
+
+const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
+  const content = (
+    <div className="group block bg-pm-dark border border-pm-gold/20 overflow-hidden shadow-lg shadow-black/30 hover:border-pm-gold hover:shadow-xl hover:shadow-pm-gold/20 transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col">
+      <div className="relative h-64 overflow-hidden">
+        <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      </div>
+      <div className="p-6 flex flex-col flex-grow">
+        <p className="text-xs uppercase tracking-widest text-pm-off-white/60 font-semibold">{new Date(item.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+        <h3 className="text-xl font-playfair text-pm-off-white mt-2 mb-2 group-hover:text-pm-gold transition-colors flex-grow">{item.title}</h3>
+        <p className="text-sm text-pm-off-white/70 mb-4">{item.excerpt}</p>
+        {item.link && (
+          <span className="inline-block text-sm font-bold text-pm-gold group-hover:underline mt-auto">
+            En savoir plus →
+          </span>
+        )}
+      </div>
+    </div>
+  );
+
+  return item.link ? <Link to={item.link}>{content}</Link> : <div>{content}</div>;
+};
+
 
 export default Home;

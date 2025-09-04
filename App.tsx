@@ -1,6 +1,9 @@
 
+
 import React from 'react';
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
+const { HashRouter, Routes, Route, useLocation } = ReactRouterDOM;
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Agency from './pages/Agency';
@@ -31,6 +34,7 @@ import AdminFashionDayEvents from './pages/AdminFashionDayEvents';
 import ModelDashboard from './pages/ModelDashboard';
 import AdminClassroomProgress from './pages/AdminClassroomProgress';
 import AdminModelAccess from './pages/AdminModelAccess';
+import AdminNews from './pages/AdminNews';
 
 
 const ScrollToTop: React.FC = () => {
@@ -73,6 +77,7 @@ const App: React.FC = () => {
             <Route path="/admin/mannequins" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
             <Route path="/admin/acces-mannequins" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
             <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
+            <Route path="/admin/actualites" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
             <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
             <Route path="/admin/suivi-classroom" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
             <Route path="/admin/candidatures-casting" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />

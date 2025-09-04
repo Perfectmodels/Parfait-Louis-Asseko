@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-import { Link, useNavigate } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
+const { Link, useNavigate } = ReactRouterDOM;
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon } from '@heroicons/react/24/outline';
 import { Model } from '../types';
 import ModelForm from '../components/ModelForm';

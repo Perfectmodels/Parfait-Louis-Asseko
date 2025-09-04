@@ -111,6 +111,15 @@ export interface Testimonial {
   imageUrl: string;
 }
 
+export interface NewsItem {
+  id: string;
+  title: string;
+  date: string;
+  imageUrl: string;
+  excerpt: string;
+  link?: string;
+}
+
 // Types for Site Settings
 export interface ContactInfo {
   email: string;

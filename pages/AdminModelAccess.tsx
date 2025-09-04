@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
+const { Link } = ReactRouterDOM;
 import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 const AdminModelAccess: React.FC = () => {
