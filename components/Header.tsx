@@ -128,7 +128,7 @@ const Header: React.FC = () => {
       <header className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-pm-dark/95 backdrop-blur-md shadow-lg shadow-pm-gold/10' : 'bg-transparent'}`}>
         <div className="container mx-auto px-6 py-2 flex justify-between items-center">
           <Link to="/">
-            {siteConfig?.logo && <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />}
+            <img src="https://i.ibb.co/4ZkBXbSX/logopmm.png" alt="Perfect Models Management Logo" className="h-14 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center space-x-8">
             <NavLinks navLinks={currentNavLinks} />
