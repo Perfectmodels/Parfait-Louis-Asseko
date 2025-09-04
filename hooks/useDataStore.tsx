@@ -1,7 +1,5 @@
-
-
 import { useState, useEffect, useCallback } from 'react';
-import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem } from '../types';
+import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, CastingApplicationStatus, FashionDayApplicationStatus } from '../types';
 import { db } from '../firebaseConfig';
 // FIX: Removed Firebase v9 imports (ref, get, set) as they are incompatible with the v8 SDK syntax.
 // import { ref, get, set } from 'firebase/database';
@@ -134,6 +132,12 @@ export const useDataStore = () => {
                       updatedModel.measurements = { chest: '', waist: '', hips: '', shoeSize: '' };
                   }
   
+                  // FIX: Add migration for gender to prevent save errors on models with missing/undefined gender.
+                  if (typeof updatedModel.gender === 'undefined' || !['Homme', 'Femme'].includes(updatedModel.gender)) {
+                    dataWasMigrated = true;
+                    updatedModel.gender = 'Femme'; // Assign a safe default value
+                  }
+
                   return updatedModel;
               });
 
@@ -148,8 +152,21 @@ export const useDataStore = () => {
           const finalData: AppData = {
             ...seedData,
             ...fetchedData,
-            castingApplications: fetchedData.castingApplications ? Object.values(fetchedData.castingApplications) : [],
-            fashionDayApplications: fetchedData.fashionDayApplications ? Object.values(fetchedData.fashionDayApplications) : [],
+            castingApplications: fetchedData.castingApplications 
+                ? (Object.values(fetchedData.castingApplications) as any[]).map(app => {
+                    const sanitizedApp = { ...app };
+                    // Ensure status is correctly typed
+                    sanitizedApp.status = app.status as CastingApplicationStatus;
+                    // FIX: Ensure gender exists and is valid for old applications, preventing crashes.
+                    if (typeof app.gender === 'undefined' || !['Homme', 'Femme'].includes(app.gender)) {
+                        sanitizedApp.gender = 'Femme'; // Default for old applications
+                    }
+                    return sanitizedApp;
+                  })
+                : [],
+            fashionDayApplications: fetchedData.fashionDayApplications 
+                ? (Object.values(fetchedData.fashionDayApplications) as any[]).map(app => ({...app, status: app.status as FashionDayApplicationStatus})) 
+                : [],
             newsItems: fetchedData.newsItems ? Object.values(fetchedData.newsItems) : seedData.newsItems,
             siteConfig: { ...seedData.siteConfig, ...fetchedData.siteConfig },
             socialLinks: { ...seedData.socialLinks, ...fetchedData.socialLinks },

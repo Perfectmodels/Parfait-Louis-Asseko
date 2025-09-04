@@ -1,7 +1,6 @@
+
 import React from 'react';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link } = ReactRouterDOM;
+import { Link } from 'react-router-dom';
 import CountdownTimer from '../components/CountdownTimer';
 import { CalendarDaysIcon, ClockIcon, MapPinIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';

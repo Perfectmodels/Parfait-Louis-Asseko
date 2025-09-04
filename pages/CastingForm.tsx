@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, PhotoIcon, UserIcon, ArrowsRightLeftIcon, DocumentCheckIcon } from '@heroicons/react/24/outline';
@@ -13,6 +14,7 @@ const initialFormData = {
   phone: '',
   nationality: '',
   city: '',
+  gender: 'Femme' as 'Homme' | 'Femme',
   height: '',
   weight: '',
   chest: '',
@@ -27,7 +29,7 @@ const initialFormData = {
   agreedToTerms: false,
 };
 
-type FormData = Omit<typeof initialFormData, 'agreedToTerms'> & { agreedToTerms: boolean };
+type FormData = typeof initialFormData;
 
 
 const CastingForm: React.FC = () => {
@@ -80,6 +82,7 @@ const CastingForm: React.FC = () => {
             phone: formData.phone,
             nationality: formData.nationality,
             city: formData.city,
+            gender: formData.gender,
             height: formData.height,
             weight: formData.weight,
             chest: formData.chest,
@@ -113,6 +116,7 @@ const CastingForm: React.FC = () => {
   *Téléphone:* ${formData.phone}
   *Nationalité:* ${formData.nationality}
   *Ville:* ${formData.city}
+  *Genre:* ${formData.gender}
 
 *📏 MENSURATIONS*
   *Taille:* ${formData.height} cm
@@ -254,6 +258,10 @@ const Step1: React.FC<{formData: FormData, handleChange: any}> = ({formData, han
             <FormInput label="Prénom" name="firstName" value={formData.firstName} onChange={handleChange} />
             <FormInput label="Nom de famille" name="lastName" value={formData.lastName} onChange={handleChange} />
             <FormInput label="Date de naissance" name="birthDate" value={formData.birthDate} onChange={handleChange} type="date" />
+             <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange}>
+                <option value="Femme">Femme</option>
+                <option value="Homme">Homme</option>
+            </FormSelect>
             <FormInput label="Email" name="email" value={formData.email} onChange={handleChange} type="email" />
             <FormInput label="Téléphone" name="phone" value={formData.phone} onChange={handleChange} type="tel" />
             <FormInput label="Nationalité" name="nationality" value={formData.nationality} onChange={handleChange} />

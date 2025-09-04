@@ -1,9 +1,6 @@
 
-
 import React from 'react';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { HashRouter, Routes, Route, useLocation } = ReactRouterDOM;
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Agency from './pages/Agency';

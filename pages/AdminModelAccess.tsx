@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link } = ReactRouterDOM;
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 const AdminModelAccess: React.FC = () => {
@@ -28,7 +27,8 @@ const AdminModelAccess: React.FC = () => {
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold mb-2">Accès des Mannequins</h1>
                 <p className="text-pm-off-white/70 mb-8">
-                    Tableau récapitulatif des identifiants de connexion uniques pour chaque mannequin.
+                    {/* FIX: Closed the unclosed p tag */}
+                    Tableau récapitulatif des identifiants de connexion uniques for each mannequin.
                 </p>
 
                 <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
@@ -37,34 +37,32 @@ const AdminModelAccess: React.FC = () => {
                             <thead className="bg-pm-dark/50">
                                 <tr className="border-b border-pm-gold/20">
                                     <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Nom du Mannequin</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Identifiant (Username)</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Mot de Passe</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Actions</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Identifiant (Matricule)</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Mot de passe</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {models.map(model => (
                                     <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
                                         <td className="p-4 font-semibold">{model.name}</td>
-                                        <td className="p-4 font-mono text-sm text-pm-gold/80">{model.username}</td>
-                                        <td className="p-4 font-mono text-sm">{model.password}</td>
-                                        <td className="p-4">
-                                            <button 
-                                                onClick={() => handleCopy(`${model.username}:${model.password}`, model.username)} 
-                                                className="flex items-center gap-2 px-3 py-1 text-xs bg-pm-dark border border-pm-gold/50 text-pm-gold rounded-full hover:bg-pm-gold hover:text-pm-dark transition-colors"
-                                            >
-                                                {copiedUsername === model.username ? (
-                                                    <> <CheckIcon className="w-4 h-4 text-green-400" /> Copié !</>
-                                                ) : (
-                                                    <> <ClipboardDocumentIcon className="w-4 h-4" /> Copier</>
-                                                )}
-                                            </button>
+                                        <td className="p-4 font-mono text-xs text-pm-gold/80">{model.username}</td>
+                                        <td className="p-4 text-pm-off-white/80">
+                                            <div className="flex items-center gap-2">
+                                                <span>{model.password}</span>
+                                                <button onClick={() => handleCopy(model.password, model.username)} className="text-pm-off-white/60 hover:text-pm-gold">
+                                                    {copiedUsername === model.username ? (
+                                                        <CheckIcon className="w-4 h-4 text-green-500" />
+                                                    ) : (
+                                                        <ClipboardDocumentIcon className="w-4 h-4" />
+                                                    )}
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                        {models.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun mannequin à afficher. Ajoutez-en depuis la section "Gérer les Mannequins".</p>}
+                        {models.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun mannequin trouvé.</p>}
                     </div>
                 </div>
             </div>

@@ -20,8 +20,8 @@ const Contact: React.FC = () => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!apiKeys?.emailApiKey) {
-      setError("La configuration du service d'envoi d'email (Clé API) est manquante. Veuillez la configurer dans le panel d'administration (Paramètres du Site > Clés API).");
+    if (!apiKeys?.resendApiKey) {
+      setError("La configuration du service d'envoi d'email (Clé API Resend) est manquante. Veuillez la configurer dans le panel d'administration (Paramètres > Clés API).");
       return;
     }
     
@@ -30,37 +30,38 @@ const Contact: React.FC = () => {
 
     try {
       const payload = {
-        from: `contact@perfectmodels.ga`,
-        to: contactInfo?.email || 'contact@perfectmodels.ga',
+        from: `Perfect Models <contact@perfectmodels.ga>`,
+        to: [contactInfo?.email || 'contact@perfectmodels.ga'],
+        reply_to: formData.email,
         subject: `Nouveau message de contact de ${formData.name}`,
         html: `<div style="font-family: sans-serif;">
                         <h2>Nouveau Message de Contact</h2>
                         <p><strong>Nom:</strong> ${formData.name}</p>
                         <p><strong>Email (à utiliser pour répondre):</strong> ${formData.email}</p>
                         <p><strong>Message:</strong></p>
-                        <p style="white-space: pre-wrap; background: #f4f4f4; padding: 15px; border-radius: 5px;">${formData.message}</p>
+                        <p style="white-space: pre-wrap; background: #f4f4f4; padding: 15px; border-radius: 5px; color: #333;">${formData.message}</p>
                       </div>`,
       };
 
-      const response = await fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
+      const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
-          'content-type': 'application/json',
-          'x-rapidapi-host': 'octopus-mail.p.rapidapi.com',
-          'x-rapidapi-key': apiKeys.emailApiKey,
+          'Authorization': `Bearer ${apiKeys.resendApiKey}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Une erreur est survenue lors de l\'envoi.');
+        const errorMessage = errorData.message || errorData.error?.message || 'Une erreur est survenue lors de l\'envoi.';
+        throw new Error(errorMessage);
       }
       
       setSubmitted(true);
 
     } catch (err: any) {
-      setError(err.message || "Impossible d'envoyer le message. Veuillez réessayer plus tard.");
+      setError(err.message || "Impossible d'envoyer le message. Assurez-vous que votre domaine d'envoi est vérifié sur Resend et que la clé API est valide. Veuillez réessayer plus tard.");
     } finally {
       setIsLoading(false);
     }

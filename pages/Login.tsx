@@ -1,10 +1,6 @@
 
-
-
 import React, { useState } from 'react';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { useNavigate } = ReactRouterDOM;
+import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';

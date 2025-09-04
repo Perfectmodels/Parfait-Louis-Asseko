@@ -141,10 +141,10 @@ export interface Partner {
 }
 
 export interface ApiKeys {
-  emailApiKey: string;
+  resendApiKey: string;
 }
 
-export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Refusé';
+export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
 
 export interface CastingApplication {
   id: string;
@@ -159,6 +159,7 @@ export interface CastingApplication {
   phone: string;
   nationality: string;
   city: string;
+  gender: 'Homme' | 'Femme';
   height: string;
   weight: string;
   chest: string;

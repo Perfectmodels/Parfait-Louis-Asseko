@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { NewsItem } from '../types';
 import SEO from '../components/SEO';
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link } = ReactRouterDOM;
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
 

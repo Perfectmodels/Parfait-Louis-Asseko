@@ -1,7 +1,6 @@
+
 import React from 'react';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link } = ReactRouterDOM;
+import { Link } from 'react-router-dom';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
 import { useData } from '../contexts/DataContext';
 

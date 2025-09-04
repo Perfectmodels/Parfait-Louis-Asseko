@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link, NavLink, useLocation, useNavigate } = ReactRouterDOM;
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
 import { useData } from '../contexts/DataContext';
@@ -154,16 +152,16 @@ const Header: React.FC = () => {
                 <CloseIcon />
               </button>
             </div>
-            <nav className="flex flex-col space-y-6 text-pm-off-white text-lg uppercase tracking-wider flex-grow">
+            <nav className="flex flex-col space-y-5 text-pm-off-white text-base uppercase tracking-wider flex-grow">
               <NavLinks onLinkClick={() => setIsOpen(false)} navLinks={currentNavLinks} />
             </nav>
             <div className="mt-auto">
               {userRole ? (
-                 <button onClick={() => { handleLogout(); setIsOpen(false); }} className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                 <button onClick={() => { handleLogout(); setIsOpen(false); }} className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
                    <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
                  </button>
               ) : (
-                <Link to="/casting" onClick={() => setIsOpen(false)} className="block w-full text-center px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full shadow-lg shadow-pm-gold/30 transition-all duration-300 hover:bg-white hover:scale-105">
+                <Link to="/casting" onClick={() => setIsOpen(false)} className="block w-full text-center px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full shadow-lg shadow-pm-gold/30 transition-all duration-300 hover:bg-white hover:scale-105">
                    Rejoindre l'agence
                 </Link>
               )}

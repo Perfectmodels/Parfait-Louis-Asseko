@@ -4,8 +4,7 @@ import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
 import { FashionDayEvent, Stylist, Partner } from '../types';
 import SEO from '../components/SEO';
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link } = ReactRouterDOM;
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
 
