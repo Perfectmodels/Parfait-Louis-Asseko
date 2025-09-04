@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication } from '../types';
 import { db } from '../firebaseConfig';
-import { ref, get, set } from 'firebase/database';
+// FIX: Removed Firebase v9 imports (ref, get, set) as they are incompatible with the v8 SDK syntax.
+// import { ref, get, set } from 'firebase/database';
 
 // Import initial data from the constants files for seeding purposes
 import { 
@@ -78,15 +79,17 @@ export const useDataStore = () => {
 
   useEffect(() => {
     const initializeAndFetchData = async () => {
-      const dbRef = ref(db, '/');
+      // FIX: Use Firebase v8 syntax to get a database reference.
+      const dbRef = db.ref('/');
       try {
-        const snapshot = await get(dbRef);
+        // FIX: Use Firebase v8 'get()' method to fetch data.
+        const snapshot = await dbRef.get();
         if (snapshot.exists()) {
           const fetchedData = snapshot.val();
           let dataWasMigrated = false;
 
           // --- SCRIPT DE MIGRATION DES DONNÉES ---
-          // Vérifie si les mannequins dans Firebase ont des identifiants/mots de passe et les génère si nécessaire.
+          // This script checks for and fixes missing credentials and quizScores on models.
           if (fetchedData.models) {
               const currentYear = new Date().getFullYear();
               const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\u0027]/g, "").replace(/[^a-z0-9-]/g, "");
@@ -94,7 +97,7 @@ export const useDataStore = () => {
               const modelsArray: Model[] = Array.isArray(fetchedData.models) ? fetchedData.models : Object.values(fetchedData.models);
               const initialCounts: { [key: string]: number } = {};
 
-              // Pré-calculer les comptes des matricules existants pour éviter les doublons
+              // Pre-calculate existing matricule numbers to avoid duplicates
               modelsArray.forEach(model => {
                   if (model.username && model.username.startsWith('Man-PMM')) {
                       const match = model.username.match(/^Man-PMM([A-Z])(\d+)$/);
@@ -107,21 +110,26 @@ export const useDataStore = () => {
               });
 
               const migratedModels = modelsArray.map(model => {
-                  // Si les identifiants sont déjà valides, on ne touche à rien
-                  if (model.username && model.password && model.username.startsWith('Man-PMM')) {
-                      return model;
+                  const updatedModel = { ...model };
+
+                  // Migrate username/password if needed
+                  if (!updatedModel.username || !updatedModel.password || !updatedModel.username.startsWith('Man-PMM')) {
+                      dataWasMigrated = true;
+                      const firstName = updatedModel.name.split(' ')[0];
+                      const initial = firstName.charAt(0).toUpperCase();
+  
+                      initialCounts[initial] = (initialCounts[initial] || 0) + 1;
+                      updatedModel.username = `Man-PMM${initial}${String(initialCounts[initial]).padStart(2, '0')}`;
+                      updatedModel.password = `${sanitizeForPassword(firstName)}${currentYear}`;
                   }
 
-                  dataWasMigrated = true; // On marque qu'une migration a lieu
-
-                  const firstName = model.name.split(' ')[0];
-                  const initial = firstName.charAt(0).toUpperCase();
-
-                  initialCounts[initial] = (initialCounts[initial] || 0) + 1;
-                  const username = `Man-PMM${initial}${String(initialCounts[initial]).padStart(2, '0')}`;
-                  const password = `${sanitizeForPassword(firstName)}${currentYear}`;
-
-                  return { ...model, username, password };
+                  // Migrate quizScores if missing
+                  if (!updatedModel.quizScores) {
+                      dataWasMigrated = true;
+                      updatedModel.quizScores = {};
+                  }
+  
+                  return updatedModel;
               });
 
               if (dataWasMigrated) {
@@ -147,25 +155,27 @@ export const useDataStore = () => {
 
           setData(finalData as AppData);
           
-          // Si une migration a eu lieu, on sauvegarde les données corrigées dans Firebase
+          // If a migration took place, save the corrected data back to Firebase
           if (dataWasMigrated) {
-              console.log("Migration des données des mannequins en ajoutant les accès manquants. Sauvegarde vers Firebase...");
-              await set(dbRef, finalData); 
-              console.log("Migration terminée.");
+              console.log("Migrating model data structure. Saving to Firebase...");
+              // FIX: Use Firebase v8 'set()' method to save data.
+              await db.ref('/').set(finalData); 
+              console.log("Migration complete.");
           }
 
         } else {
-          console.log("Aucune donnée dans Firebase. Initialisation avec les données locales...");
+          console.log("No data in Firebase. Initializing with local data...");
           const seedData = getSeedData();
-          await set(dbRef, seedData);
+          // FIX: Use Firebase v8 'set()' method to save data.
+          await dbRef.set(seedData);
           setData(seedData);
         }
       } catch (error: any) {
-        console.error("Erreur de fetch Firebase:", error);
+        console.error("Firebase fetch error:", error);
         if (error.code === "PERMISSION_DENIED") {
-            alert("Erreur Firebase: Permission Refusée.\n\nCeci est un problème de configuration, pas un bug. Vos règles de sécurité de la base de données Firebase sont trop restrictives.\n\nVeuillez mettre à jour vos règles dans la console Firebase pour autoriser l'accès public.");
+            alert("Firebase Error: Permission Denied.\\n\\nThis is a configuration issue, not a bug. Your Firebase Realtime Database security rules are too restrictive.\\n\\nPlease update your rules in the Firebase Console to allow public access.");
         }
-        console.log("Retour aux données locales suite à une erreur Firebase.");
+        console.log("Falling back to local data due to Firebase error.");
         setData(getSeedData());
       } finally {
         setIsInitialized(true);
@@ -176,15 +186,17 @@ export const useDataStore = () => {
   }, []);
 
   const saveData = useCallback(async (newData: AppData) => {
-    const dbRef = ref(db, '/');
+    // FIX: Use Firebase v8 syntax to get a database reference.
+    const dbRef = db.ref('/');
     try {
-        await set(dbRef, newData);
+        // FIX: Use Firebase v8 'set()' method to save data.
+        await dbRef.set(newData);
         setData(newData);
     } catch (error) {
-        console.error("Erreur de sauvegarde Firebase:", error);
-        alert("Une erreur est survenue lors de la sauvegarde des données.");
+        console.error("Firebase save error:", error);
+        alert("An error occurred while saving the data.");
     }
-  }, []);
+  }, [setData]);
 
   return { data, saveData, isInitialized };
 };

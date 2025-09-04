@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
@@ -45,7 +46,7 @@ const AdminClassroomProgress: React.FC = () => {
                                     <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
                                         <td className="p-4 font-semibold sticky left-0 bg-black group-hover:bg-pm-dark/50">{model.name}</td>
                                         {courseModulesWithQuizzes.map(module => {
-                                            const score = model.quizScores[module.slug];
+                                            const score = model.quizScores?.[module.slug];
                                             return (
                                                 <td key={module.slug} className="p-4 text-center">
                                                     {score !== undefined ? (
