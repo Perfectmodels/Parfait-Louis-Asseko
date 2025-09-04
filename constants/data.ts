@@ -1,6 +1,6 @@
 
 
-import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication } from '../types';
+import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem } from '../types';
 import { AcademicCapIcon, CameraIcon, FilmIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 export const siteConfig = {
@@ -29,6 +29,33 @@ export const apiKeys: ApiKeys = {
 export const castingApplications: CastingApplication[] = [];
 
 export const fashionDayApplications: FashionDayApplication[] = [];
+
+export const newsItems: NewsItem[] = [
+  {
+    id: 'casting-2025-annonce',
+    title: 'Annonce du Grand Casting National 2025',
+    date: '2024-08-01',
+    imageUrl: 'https://scontent.flbv4-1.fna.fbcdn.net/v/t39.30808-6/514264614_759289996955344_5265340269840402279_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_ohc=sHlbDXhATdoQ7kNvwFNMON0&_nc_oc=Adn6E0CBc-ktIORu8wXsZYEVX2NHwhr-i6a8_-HrnHG7KFvZmBwwipx9U-45LsTgHQQ&_nc_zt=23&_nc_ht=scontent.flbv4-1.fna&_nc_gid=U7zZZJjuuJK94I7YBa38Dw&oh=00_AfYPvNJbdSgcqD19D2NYVeRiIXkPGj0hzkoDVL8VDw49Dg&oe=68BD4C7A',
+    excerpt: 'Les inscriptions sont officiellement ouvertes pour notre grand casting annuel ! Nous recherchons les prochains visages qui définiront la mode de demain. Préparez-vous.',
+    link: '/casting'
+  },
+  {
+    id: 'aj-caramela-nr-picture',
+    title: 'Collaboration Explosive : AJ Caramela & NR Picture',
+    date: '2024-07-28',
+    imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+    excerpt: 'Notre mannequin AJ Caramela a participé à une séance photo iconique avec le célèbre studio NR Picture. Découvrez les clichés dans notre dernier article de magazine.',
+    link: '/magazine/aj-caramela-nr-picture-collaboration'
+  },
+  {
+    id: 'fashion-day-2-annonce',
+    title: 'Perfect Fashion Day 2 : L’Art de Se Révéler',
+    date: '2024-07-15',
+    imageUrl: 'https://i.ibb.co/LDm73BY2/ventex-44.jpg',
+    excerpt: "La deuxième édition de notre événement phare est annoncée. Stylistes, mannequins, partenaires : rejoignez-nous pour une célébration inoubliable de la mode.",
+    link: '/fashion-day'
+  }
+];
 
 export const navLinks = [
   { path: '/', label: 'Accueil', inFooter: false },

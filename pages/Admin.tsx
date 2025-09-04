@@ -1,9 +1,12 @@
 
 
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
+const { Link } = ReactRouterDOM;
 import SEO from '../components/SEO';
-import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon, SparklesIcon, BuildingStorefrontIcon, CalendarDaysIcon, PresentationChartLineIcon, KeyIcon } from '@heroicons/react/24/outline';
+import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon, SparklesIcon, BuildingStorefrontIcon, CalendarDaysIcon, PresentationChartLineIcon, KeyIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
 const Admin: React.FC = () => {
@@ -64,6 +67,12 @@ const Admin: React.FC = () => {
             title="Gérer le Magazine"
             description="Créer, éditer ou supprimer des articles du magazine."
             link="/admin/magazine"
+          />
+           <AdminCard
+            icon={MegaphoneIcon}
+            title="Gérer les Actualités"
+            description="Ajouter des actualités et événements sur la page d'accueil."
+            link="/admin/actualites"
           />
           <AdminCard
             icon={AcademicCapIcon}

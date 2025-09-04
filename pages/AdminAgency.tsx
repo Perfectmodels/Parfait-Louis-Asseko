@@ -1,10 +1,13 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
 import { Service, AchievementCategory } from '../types';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
+// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
+const { Link } = ReactRouterDOM;
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 type EditableData = Pick<AppData, 'agencyInfo' | 'agencyTimeline' | 'agencyServices' | 'agencyAchievements'>;
