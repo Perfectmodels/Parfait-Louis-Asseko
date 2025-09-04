@@ -3,7 +3,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon, SparklesIcon, BuildingStorefrontIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
+import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon, SparklesIcon, BuildingStorefrontIcon, CalendarDaysIcon, PresentationChartLineIcon, KeyIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
 const Admin: React.FC = () => {
@@ -41,6 +41,12 @@ const Admin: React.FC = () => {
             description="Ajouter, modifier ou supprimer des profils de mannequins."
             link="/admin/mannequins"
           />
+          <AdminCard
+            icon={KeyIcon}
+            title="Accès Mannequins"
+            description="Consulter les identifiants de connexion de chaque mannequin."
+            link="/admin/acces-mannequins"
+          />
            <AdminCard
             icon={BuildingStorefrontIcon}
             title="Gérer l'Agence"
@@ -64,6 +70,12 @@ const Admin: React.FC = () => {
             title="Gérer le Classroom"
             description="Mettre à jour le contenu des modules et chapitres de formation."
             link="/admin/classroom"
+          />
+           <AdminCard
+            icon={PresentationChartLineIcon}
+            title="Suivi Classroom"
+            description="Consulter les notes et la progression des mannequins."
+            link="/admin/suivi-classroom"
           />
            <AdminCard
             icon={ClipboardDocumentListIcon}

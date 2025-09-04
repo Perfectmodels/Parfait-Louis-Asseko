@@ -107,16 +107,12 @@ const CastingForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     if (!formData.agreedToTerms) {
         alert("Vous devez accepter les termes pour soumettre votre candidature.");
         return;
     }
 
-    if (!data?.apiKeys?.emailApiKey) {
-        setError("La configuration du service d'envoi d'email (Clé API) est manquante. Veuillez la configurer dans le panel d'administration (Paramètres du Site > Clés API).");
-        return;
-    }
-    
     setIsLoading(true);
     setError(null);
 
@@ -128,14 +124,21 @@ const CastingForm: React.FC = () => {
             ...formData,
         };
 
-        const currentApplications = data.castingApplications ? Object.values(data.castingApplications) : [];
-        const updatedApplications = [...currentApplications, newApplication];
+        const updatedApplications = [...data!.castingApplications, newApplication];
+        
+        // Priorité 1: Sauvegarder dans la base de données.
+        await saveData({ ...data!, castingApplications: updatedApplications });
 
-        await saveData({ ...data, castingApplications: updatedApplications });
+        // Priorité 2: Confirmer le succès à l'utilisateur (ce qui change la vue).
+        setIsSubmitted(true);
 
+        // Action secondaire (non bloquante): Envoyer l'email de notification.
+        if (!data!.apiKeys?.emailApiKey) {
+            console.warn("Clé API Octopus Mail manquante. L'email de notification n'a pas été envoyé, mais la candidature est enregistrée.");
+            return;
+        }
 
         const htmlContent = createHtmlBody(formData);
-
         const payload = {
             from: 'casting@perfectmodels.ga',
             to: 'contact@perfectmodels.ga',
@@ -143,25 +146,27 @@ const CastingForm: React.FC = () => {
             html: htmlContent,
         };
 
-        const response = await fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
+        // L'envoi de l'email est "fire-and-forget" pour ne pas bloquer l'UI.
+        fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
                 'x-rapidapi-host': 'octopus-mail.p.rapidapi.com',
-                'x-rapidapi-key': data.apiKeys.emailApiKey,
+                'x-rapidapi-key': data!.apiKeys.emailApiKey,
             },
             body: JSON.stringify(payload),
+        }).then(response => {
+            if (!response.ok) {
+                response.text().then(text => {
+                    console.error("L'envoi de l'email de notification a échoué, mais la candidature a été sauvegardée.", text);
+                });
+            }
+        }).catch(emailError => {
+            console.error("Erreur réseau lors de l'envoi de l'email de notification.", emailError);
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Une erreur est survenue lors de l\'envoi de l\'email de notification.');
-        }
-
-        setIsSubmitted(true);
     } catch (err: any) {
-        setError(err.message || 'Impossible d\'envoyer la candidature. Veuillez réessayer plus tard.');
-    } finally {
+        setError(err.message || 'Une erreur est survenue lors de la sauvegarde de votre candidature. Veuillez réessayer.');
         setIsLoading(false);
     }
   };
@@ -178,6 +183,14 @@ const CastingForm: React.FC = () => {
             </div>
         </div>
       );
+  }
+
+  if (!data) {
+    return (
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen flex items-center justify-center">
+            <p className="text-pm-gold animate-pulse">Chargement du formulaire...</p>
+        </div>
+    );
   }
 
   return (

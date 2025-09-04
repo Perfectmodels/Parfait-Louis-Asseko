@@ -83,16 +83,60 @@ export const useDataStore = () => {
         const snapshot = await get(dbRef);
         if (snapshot.exists()) {
           const fetchedData = snapshot.val();
+          let dataWasMigrated = false;
+
+          // --- SCRIPT DE MIGRATION DES DONNÉES ---
+          // Vérifie si les mannequins dans Firebase ont des identifiants/mots de passe et les génère si nécessaire.
+          if (fetchedData.models) {
+              const currentYear = new Date().getFullYear();
+              const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\u0027]/g, "").replace(/[^a-z0-9-]/g, "");
+              
+              const modelsArray: Model[] = Array.isArray(fetchedData.models) ? fetchedData.models : Object.values(fetchedData.models);
+              const initialCounts: { [key: string]: number } = {};
+
+              // Pré-calculer les comptes des matricules existants pour éviter les doublons
+              modelsArray.forEach(model => {
+                  if (model.username && model.username.startsWith('Man-PMM')) {
+                      const match = model.username.match(/^Man-PMM([A-Z])(\d+)$/);
+                      if (match) {
+                          const initial = match[1];
+                          const num = parseInt(match[2], 10);
+                          initialCounts[initial] = Math.max(initialCounts[initial] || 0, num);
+                      }
+                  }
+              });
+
+              const migratedModels = modelsArray.map(model => {
+                  // Si les identifiants sont déjà valides, on ne touche à rien
+                  if (model.username && model.password && model.username.startsWith('Man-PMM')) {
+                      return model;
+                  }
+
+                  dataWasMigrated = true; // On marque qu'une migration a lieu
+
+                  const firstName = model.name.split(' ')[0];
+                  const initial = firstName.charAt(0).toUpperCase();
+
+                  initialCounts[initial] = (initialCounts[initial] || 0) + 1;
+                  const username = `Man-PMM${initial}${String(initialCounts[initial]).padStart(2, '0')}`;
+                  const password = `${sanitizeForPassword(firstName)}${currentYear}`;
+
+                  return { ...model, username, password };
+              });
+
+              if (dataWasMigrated) {
+                  fetchedData.models = migratedModels;
+              }
+          }
+          // --- FIN DU SCRIPT DE MIGRATION ---
+
           const seedData = getSeedData();
           
-          // Safely merge fetched data with seed data to ensure all properties exist.
           const finalData: AppData = {
             ...seedData,
             ...fetchedData,
-            // Convert Firebase objects to arrays where necessary
             castingApplications: fetchedData.castingApplications ? Object.values(fetchedData.castingApplications) : [],
             fashionDayApplications: fetchedData.fashionDayApplications ? Object.values(fetchedData.fashionDayApplications) : [],
-            // Explicitly merge nested objects to prevent them from being completely overwritten
             siteConfig: { ...seedData.siteConfig, ...fetchedData.siteConfig },
             socialLinks: { ...seedData.socialLinks, ...fetchedData.socialLinks },
             agencyInfo: { ...seedData.agencyInfo, ...fetchedData.agencyInfo },
@@ -102,19 +146,26 @@ export const useDataStore = () => {
           };
 
           setData(finalData as AppData);
+          
+          // Si une migration a eu lieu, on sauvegarde les données corrigées dans Firebase
+          if (dataWasMigrated) {
+              console.log("Migration des données des mannequins en ajoutant les accès manquants. Sauvegarde vers Firebase...");
+              await set(dbRef, finalData); 
+              console.log("Migration terminée.");
+          }
+
         } else {
-          console.log("No data found in Firebase. Seeding with initial data...");
+          console.log("Aucune donnée dans Firebase. Initialisation avec les données locales...");
           const seedData = getSeedData();
           await set(dbRef, seedData);
           setData(seedData);
         }
       } catch (error: any) {
-        console.error("Firebase fetch error:", error);
+        console.error("Erreur de fetch Firebase:", error);
         if (error.code === "PERMISSION_DENIED") {
-            alert("Firebase Error: Permission Denied.\n\nThis is a configuration issue, not a code bug. Your Firebase Realtime Database security rules are too restrictive.\n\nPlease update your rules in the Firebase Console to allow public access. See the conversational response for detailed, step-by-step instructions.");
+            alert("Erreur Firebase: Permission Refusée.\n\nCeci est un problème de configuration, pas un bug. Vos règles de sécurité de la base de données Firebase sont trop restrictives.\n\nVeuillez mettre à jour vos règles dans la console Firebase pour autoriser l'accès public.");
         }
-        // Fallback to local data if Firebase fails
-        console.log("Falling back to local data due to Firebase error.");
+        console.log("Retour aux données locales suite à une erreur Firebase.");
         setData(getSeedData());
       } finally {
         setIsInitialized(true);
@@ -128,9 +179,9 @@ export const useDataStore = () => {
     const dbRef = ref(db, '/');
     try {
         await set(dbRef, newData);
-        setData(newData); // Update local state for immediate UI feedback
+        setData(newData);
     } catch (error) {
-        console.error("Firebase save error:", error);
+        console.error("Erreur de sauvegarde Firebase:", error);
         alert("Une erreur est survenue lors de la sauvegarde des données.");
     }
   }, []);

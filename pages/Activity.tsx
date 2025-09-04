@@ -1,6 +1,6 @@
 
+
 import React, { useState, useEffect } from 'react';
-// FIX: Replaced v5's `useHistory` with v6's `useNavigate` to fix module export errors.
 import { useNavigate, Link } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -103,7 +103,7 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                                                     </li>
                                                 ))}
                                             </ul>
-                                            {module.quiz && module.quiz.length > 0 && <QuizComponent quiz={module.quiz} moduleIndex={index} />}
+                                            {module.quiz && module.quiz.length > 0 && <QuizComponent quiz={module.quiz} moduleSlug={module.slug} />}
                                         </div>
                                     </div>
                                 </div>
@@ -118,31 +118,61 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
 };
 
 // --- QUIZ COMPONENT for StudentView ---
-const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = ({ quiz, moduleIndex }) => {
+const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleSlug: string }> = ({ quiz, moduleSlug }) => {
+    const { data, saveData } = useData();
+    const userId = sessionStorage.getItem('userId');
+    const userRole = sessionStorage.getItem('classroom_role');
+    const quizId = moduleSlug;
+
     const [answers, setAnswers] = useState<{ [key: number]: string }>({});
     const [submitted, setSubmitted] = useState(false);
     const [score, setScore] = useState(0);
+
+    // Check if the quiz was already taken
+    useEffect(() => {
+        if (userRole === 'model' && userId && data?.models) {
+            const model = data.models.find(m => m.id === userId);
+            if (model && model.quizScores && model.quizScores[quizId] !== undefined) {
+                setScore(model.quizScores[quizId]);
+                setSubmitted(true);
+            }
+        }
+    }, [data, userId, userRole, quizId]);
+
 
     const handleAnswerChange = (questionIndex: number, answer: string) => {
         if (submitted) return;
         setAnswers(prev => ({ ...prev, [questionIndex]: answer }));
     };
 
-    const handleSubmitQuiz = () => {
+    const handleSubmitQuiz = async () => {
         let newScore = 0;
         quiz.forEach((q, index) => {
             if (answers[index] === q.correctAnswer) {
                 newScore++;
             }
         });
-        setScore(newScore);
+        const scorePercentage = Math.round((newScore / quiz.length) * 100);
+        setScore(scorePercentage);
         setSubmitted(true);
+        
+        // Save score if the user is a model
+        if (userRole === 'model' && userId && data?.models) {
+            const updatedModels = data.models.map(m => {
+                if (m.id === userId) {
+                    const newQuizScores = { ...m.quizScores, [quizId]: scorePercentage };
+                    return { ...m, quizScores: newQuizScores };
+                }
+                return m;
+            });
+            await saveData({ ...data, models: updatedModels });
+        }
     };
 
     return (
-        <section aria-labelledby={`quiz-title-${moduleIndex}`} className="mt-12 pt-8 border-t border-pm-gold/30">
+        <section aria-labelledby={`quiz-title-${moduleSlug}`} className="mt-12 pt-8 border-t border-pm-gold/30">
             <div className="bg-pm-dark border border-pm-gold/20 p-8">
-                <h3 id={`quiz-title-${moduleIndex}`} className="text-2xl font-playfair text-pm-gold text-center mb-8">Testez vos connaissances</h3>
+                <h3 id={`quiz-title-${moduleSlug}`} className="text-2xl font-playfair text-pm-gold text-center mb-8">Testez vos connaissances</h3>
                 <div className="space-y-8">
                     {quiz.map((q, index) => (
                         <div key={index}>
@@ -168,7 +198,7 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = (
                                         <label key={optionIndex} className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition-colors ${optionClass}`}>
                                             <input
                                                 type="radio"
-                                                name={`quiz-${moduleIndex}-question-${index}`}
+                                                name={`quiz-${moduleSlug}-question-${index}`}
                                                 value={option}
                                                 checked={isSelected}
                                                 onChange={() => handleAnswerChange(index, option)}
@@ -187,7 +217,7 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = (
                 <div className="mt-8 text-center">
                     {submitted ? (
                         <div className="text-2xl font-bold">
-                            <p className="text-pm-gold">Votre score : <span className="text-white">{score} / {quiz.length}</span></p>
+                            <p className="text-pm-gold">Votre score : <span className="text-white">{score}%</span></p>
                         </div>
                     ) : (
                         <button 
@@ -207,13 +237,11 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleIndex: number }> = (
 // --- MAIN COMPONENT ---
 const Formations: React.FC = () => {
     const { data, isInitialized } = useData();
-    // FIX: Replaced v5 `useHistory` with v6 `useNavigate`.
     const navigate = useNavigate();
 
     useEffect(() => {
         const hasAccess = sessionStorage.getItem('classroom_access');
         if (hasAccess !== 'granted') {
-            // FIX: Updated navigation to v6 `navigate`.
             navigate('/login', { replace: true });
         }
     }, [navigate]);
@@ -221,7 +249,7 @@ const Formations: React.FC = () => {
     const handleLogout = () => {
         sessionStorage.removeItem('classroom_access');
         sessionStorage.removeItem('classroom_role');
-        // FIX: Updated navigation to v6 `navigate`.
+        sessionStorage.removeItem('userId');
         navigate('/login');
     };
 
