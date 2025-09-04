@@ -48,13 +48,13 @@ const FashionDayApplicationForm: React.FC = () => {
             setIsSubmitted(true);
 
             // Action secondaire (non bloquante): Envoyer l'email.
-            if (!data!.apiKeys?.emailApiKey) {
-                console.warn("Clé API Octopus Mail manquante. L'email de notification PFD n'a pas été envoyé, mais la candidature est enregistrée.");
+            if (!data!.apiKeys?.resendApiKey) {
+                console.warn("Clé API Resend manquante. L'email de notification PFD n'a pas été envoyé, mais la candidature est enregistrée.");
                 return;
             }
 
             const emailHtmlBody = `
-                <div style="font-family: sans-serif;">
+                <div style="font-family: sans-serif; color: #333;">
                     <h2>Nouvelle Candidature - Perfect Fashion Day</h2>
                     <p><strong>Nom:</strong> ${formData.name}</p>
                     <p><strong>Email:</strong> ${formData.email}</p>
@@ -65,23 +65,23 @@ const FashionDayApplicationForm: React.FC = () => {
                 </div>`;
             
             const payload = {
-                from: 'event@perfectmodels.ga',
-                to: data!.contactInfo.email,
+                from: 'Perfect Models Events <event@perfectmodels.ga>',
+                to: [data!.contactInfo.email],
+                reply_to: formData.email,
                 subject: `Nouvelle Candidature PFD - ${formData.role}: ${formData.name}`,
                 html: emailHtmlBody,
             };
 
-            fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
+            fetch('https://api.resend.com/emails', {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json',
-                    'x-rapidapi-host': 'octopus-mail.p.rapidapi.com',
-                    'x-rapidapi-key': data!.apiKeys.emailApiKey,
+                    'Authorization': `Bearer ${data!.apiKeys.resendApiKey}`,
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
             }).then(response => {
                 if (!response.ok) {
-                   response.text().then(text => console.error("PFD Email notification failed:", text));
+                   response.json().then(data => console.error("PFD Email notification failed:", data.message || data.error?.message));
                 }
             }).catch(err => {
                 console.error("PFD Email network error:", err);

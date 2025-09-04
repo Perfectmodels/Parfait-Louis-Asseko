@@ -1,10 +1,6 @@
 
-
-
 import React from 'react';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link } = ReactRouterDOM;
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon, SparklesIcon, BuildingStorefrontIcon, CalendarDaysIcon, PresentationChartLineIcon, KeyIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';

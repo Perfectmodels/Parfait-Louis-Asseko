@@ -1,10 +1,6 @@
 
-
-
 import React, { useState, useEffect } from 'react';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { useNavigate, Link } = ReactRouterDOM;
+import { useNavigate, Link } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';

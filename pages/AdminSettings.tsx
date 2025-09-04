@@ -1,11 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
 import { AIAssistantProps, Testimonial, Partner, ApiKeys } from '../types';
 import SEO from '../components/SEO';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link } = ReactRouterDOM;
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import AIAssistant from '../components/AIAssistant';
 import ImageInput from '../components/ImageInput';
@@ -79,9 +78,9 @@ const AdminSettings: React.FC = () => {
 
                 <div className="space-y-8">
                     <SectionWrapper title="Clés API (Services Externes)">
-                        <FormInput label="Clé API Octopus Mail (pour les formulaires)" value={localData.apiKeys.emailApiKey} onChange={e => handleSimpleChange('apiKeys', 'emailApiKey', e.target.value)} />
+                        <FormInput label="Clé API Resend (pour les formulaires)" value={localData.apiKeys.resendApiKey} onChange={e => handleSimpleChange('apiKeys', 'resendApiKey', e.target.value)} />
                          <p className="text-xs text-pm-off-white/60 p-2 bg-pm-dark/50 border border-pm-off-white/10 rounded-md">
-                           Cette clé est requise pour que les formulaires de Contact et de Casting fonctionnent. Sans elle, les emails ne seront pas envoyés.
+                           Cette clé est requise pour que les formulaires de Contact et de Candidature fonctionnent. L'adresse email d'envoi (ex: 'contact@votre-domaine.com') doit être un domaine vérifié sur Resend.
                         </p>
                     </SectionWrapper>
                     

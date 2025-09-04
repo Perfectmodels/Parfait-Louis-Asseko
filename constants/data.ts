@@ -23,7 +23,7 @@ export const siteImages: SiteImages = {
 };
 
 export const apiKeys: ApiKeys = {
-    emailApiKey: ""
+    resendApiKey: ""
 };
 
 export const castingApplications: CastingApplication[] = [];

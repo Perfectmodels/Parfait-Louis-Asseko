@@ -1,13 +1,9 @@
 
-
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus } from '../types';
+import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
-// FIX: Changed react-router-dom import to use a namespace import to fix module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-const { Link } = ReactRouterDOM;
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const AdminCasting: React.FC = () => {
@@ -18,11 +14,7 @@ const AdminCasting: React.FC = () => {
 
     useEffect(() => {
         if (data?.castingApplications) {
-            // FIX: Explicitly type appsArray as CastingApplication[] to resolve type inference issues with Object.values and the sort method.
-            const appsArray: CastingApplication[] = Array.isArray(data.castingApplications) 
-                ? data.castingApplications 
-                : Object.values(data.castingApplications);
-            setLocalApps(appsArray.sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()));
+            setLocalApps([...data.castingApplications].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()));
         }
     }, [data?.castingApplications, isInitialized]);
     
@@ -41,17 +33,91 @@ const AdminCasting: React.FC = () => {
 
     const handleUpdateStatus = async (appId: string, newStatus: CastingApplicationStatus) => {
         if (!data) return;
-        const updatedApps = localApps.map(app => app.id === appId ? { ...app, status: newStatus } : app);
+        // FIX: Add explicit type annotation to resolve type inference issue.
+        const updatedApps: CastingApplication[] = localApps.map(app => app.id === appId ? { ...app, status: newStatus } : app);
         await saveData({ ...data, castingApplications: updatedApps });
         if (selectedApp?.id === appId) {
             setSelectedApp({ ...selectedApp, status: newStatus });
+        }
+    };
+
+    const handleValidateAndCreateModel = async (app: CastingApplication) => {
+        if (!data) return;
+
+        const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
+        if (modelExists) {
+            alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
+            return;
+        }
+
+        const currentYear = new Date().getFullYear();
+        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\u0027]/g, "").replace(/[^a-z0-9-]/g, "");
+
+        const initial = app.firstName.charAt(0).toUpperCase();
+        const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
+        const existingNumbers = modelsWithSameInitial.map(m => {
+            const numPart = m.username.replace(`Man-PMM${initial}`, '');
+            return parseInt(numPart, 10) || 0;
+        });
+        const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+        const username = `Man-PMM${initial}${String(nextNumber).padStart(2, '0')}`;
+        const password = `${sanitizeForPassword(app.firstName)}${currentYear}`;
+        const id = `${app.lastName.toLowerCase()}-${app.firstName.toLowerCase()}`.replace(/[^a-z0-9-]/g, '') + `-${app.id}`;
+
+        let experienceText = "Expérience à renseigner par l'administrateur.";
+        switch (app.experience) {
+            case 'none': experienceText = "Débutant(e) sans expérience préalable, prêt(e) à apprendre les bases du métier."; break;
+            case 'beginner': experienceText = "A déjà participé à quelques shootings photo en amateur ou pour de petites marques."; break;
+            case 'intermediate': experienceText = "A une expérience préalable en agence et a participé à des défilés ou des campagnes locales."; break;
+            case 'professional': experienceText = "Carrière de mannequin professionnel(le) établie avec un portfolio solide."; break;
+        }
+        
+        const age = app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : undefined;
+
+        const newModel: Model = {
+            id: id,
+            name: `${app.firstName} ${app.lastName}`,
+            username: username,
+            password: password,
+            email: app.email,
+            phone: app.phone,
+            age: age,
+            height: `${app.height}cm`,
+            gender: app.gender,
+            location: app.city,
+            imageUrl: `https://picsum.photos/seed/${id}/800/1200`,
+            distinctions: [],
+            measurements: {
+                chest: `${app.chest || '0'}cm`,
+                waist: `${app.waist || '0'}cm`,
+                hips: `${app.hips || '0'}cm`,
+                shoeSize: `${app.shoeSize || '0'}`,
+            },
+            categories: ['Défilé', 'Commercial'],
+            experience: experienceText,
+            journey: "Parcours à renseigner par l'administrateur.",
+            quizScores: {}
+        };
+
+        const updatedModels = [...data.models, newModel];
+        // FIX: Add explicit type annotation to resolve type inference issue.
+        const updatedApps: CastingApplication[] = localApps.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
+
+        try {
+            await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+            alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`);
+            setSelectedApp(null);
+        } catch (error) {
+            console.error("Erreur lors de la création du mannequin:", error);
+            alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
     
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
-            case 'Présélectionné': return 'bg-green-500/20 text-green-300 border-green-500';
+            case 'Présélectionné': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500';
+            case 'Accepté': return 'bg-green-500/20 text-green-300 border-green-500';
             case 'Refusé': return 'bg-red-500/20 text-red-300 border-red-500';
             default: return 'bg-gray-500/20 text-gray-300';
         }
@@ -79,7 +145,7 @@ const AdminCasting: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-4 mb-8 flex-wrap">
-                    {(['Toutes', 'Nouveau', 'Présélectionné', 'Refusé'] as const).map(f => (
+                    {(['Toutes', 'Nouveau', 'Présélectionné', 'Accepté', 'Refusé'] as const).map(f => (
                         <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all duration-300 ${filter === f ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
                             {f}
                         </button>
@@ -122,12 +188,15 @@ const AdminCasting: React.FC = () => {
                 </div>
             </div>
         </div>
-        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} />}
+        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} onValidateAndCreateModel={handleValidateAndCreateModel} getStatusColor={getStatusColor} />}
         </>
     );
 };
 
-const ApplicationModal: React.FC<{app: CastingApplication, onClose: () => void, onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, getStatusColor: (status: CastingApplicationStatus) => string}> = ({ app, onClose, onUpdateStatus, getStatusColor }) => {
+const ApplicationModal: React.FC<{app: CastingApplication, onClose: () => void, onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, onValidateAndCreateModel: (app: CastingApplication) => void, getStatusColor: (status: CastingApplicationStatus) => string}> = ({ app, onClose, onUpdateStatus, onValidateAndCreateModel, getStatusColor }) => {
+    
+    const actionButtonClasses = "w-full text-center p-2 rounded-md font-bold uppercase text-xs tracking-wider border transition-colors hover:bg-opacity-30";
+
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl shadow-pm-gold/10 w-full max-w-4xl max-h-[90vh] flex flex-col">
@@ -143,6 +212,7 @@ const ApplicationModal: React.FC<{app: CastingApplication, onClose: () => void, 
                                 <InfoItem label="Email" value={app.email} />
                                 <InfoItem label="Téléphone" value={app.phone} />
                                 <InfoItem label="Date de Naissance" value={app.birthDate} />
+                                <InfoItem label="Genre" value={app.gender} />
                                 <InfoItem label="Nationalité" value={app.nationality} />
                                 <InfoItem label="Ville" value={app.city} />
                              </Section>
@@ -163,13 +233,26 @@ const ApplicationModal: React.FC<{app: CastingApplication, onClose: () => void, 
                              </Section>
                         </div>
                         <div className="space-y-4">
-                            <Section title="Statut">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    {(['Nouveau', 'Présélectionné', 'Refusé'] as const).map(status => (
-                                        <button key={status} onClick={() => onUpdateStatus(app.id, status)} className={`px-2 py-0.5 text-xs font-bold rounded-full border transition-all ${app.status === status ? getStatusColor(status) : 'border-pm-off-white/50 text-pm-off-white/80 hover:bg-pm-dark'}`}>
-                                            {status}
+                            <Section title="Actions">
+                                <div className="flex flex-col gap-2">
+                                    {app.status === 'Nouveau' && (
+                                        <button onClick={() => onUpdateStatus(app.id, 'Présélectionné')} className={`${actionButtonClasses} bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20`}>
+                                            Présélectionner
                                         </button>
-                                    ))}
+                                    )}
+                                    {app.status === 'Présélectionné' && (
+                                        <button onClick={() => onValidateAndCreateModel(app)} className={`${actionButtonClasses} bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20`}>
+                                            Accepter & Créer Profil Mannequin
+                                        </button>
+                                    )}
+                                    {app.status !== 'Refusé' && app.status !== 'Accepté' && (
+                                        <button onClick={() => onUpdateStatus(app.id, 'Refusé')} className={`${actionButtonClasses} bg-red-500/10 text-red-300 border-red-500/50 hover:bg-red-500/20`}>
+                                            Refuser
+                                        </button>
+                                    )}
+                                    <p className="text-xs text-center text-pm-off-white/60 pt-2">
+                                        Statut actuel: <span className={`font-bold px-2 py-1 rounded ${getStatusColor(app.status).replace('border', '')}`}>{app.status}</span>
+                                    </p>
                                 </div>
                             </Section>
                             <Section title="Photos">
