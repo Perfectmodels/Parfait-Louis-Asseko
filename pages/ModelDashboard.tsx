@@ -67,7 +67,7 @@ const ModelDashboard: React.FC = () => {
                         {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
                              <ul className="space-y-3">
                                 {courseModulesWithQuizzes.map(module => {
-                                    const score = model.quizScores[module.slug];
+                                    const score = model.quizScores?.[module.slug];
                                     return (
                                         <li key={module.slug} className="flex justify-between items-center bg-pm-dark p-3 text-sm">
                                             <span className="text-pm-off-white/80">{module.title}</span>
