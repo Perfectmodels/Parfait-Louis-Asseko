@@ -122,7 +122,7 @@ const AdminAgency: React.FC = () => {
                                     <FormInput label="Nom de la catégorie" value={item.name} onChange={e => onChange('name', e.target.value)} />
                                     <FormTextArea 
                                         label="Éléments (un par ligne)" 
-                                        value={item.items.join('\n')} 
+                                        value={(item.items || []).join('\n')} 
                                         onChange={e => onChange('items', e.target.value.split('\n'))} 
                                     />
                                 </>
