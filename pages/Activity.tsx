@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+// FIX: Using react-router-dom v5 syntax. Replaced useNavigate with useHistory.
+import { useHistory, Link } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
@@ -236,20 +237,23 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleSlug: string }> = ({
 // --- MAIN COMPONENT ---
 const Formations: React.FC = () => {
     const { data, isInitialized } = useData();
-    const navigate = useNavigate();
+    // FIX: Using useHistory hook from react-router-dom v5.
+    const history = useHistory();
 
     useEffect(() => {
         const hasAccess = sessionStorage.getItem('classroom_access');
         if (hasAccess !== 'granted') {
-            navigate('/login', { replace: true });
+            // FIX: Using history.replace for navigation in v5.
+            history.replace('/login');
         }
-    }, [navigate]);
+    }, [history]);
 
     const handleLogout = () => {
         sessionStorage.removeItem('classroom_access');
         sessionStorage.removeItem('classroom_role');
         sessionStorage.removeItem('userId');
-        navigate('/login');
+        // FIX: Using history.push for navigation in v5.
+        history.push('/login');
     };
 
     if (!isInitialized || !data) {
