@@ -65,7 +65,7 @@ const ModelDetail: React.FC = () => {
                     <InfoItem label="Hanches" value={model.measurements?.hips || 'N/A'} />
                     <InfoItem label="Pointure" value={model.measurements?.shoeSize || 'N/A'} />
                     <div className="col-span-full">
-                        <InfoItem label="Catégories" value={model.categories.join(', ')} />
+                        <InfoItem label="Catégories" value={(model.categories || []).join(', ')} />
                     </div>
                      {model.distinctions && model.distinctions.length > 0 && (
                         <div className="col-span-full mt-4">
