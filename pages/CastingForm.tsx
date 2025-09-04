@@ -1,8 +1,7 @@
 
-
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
-import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, PhotoIcon, UserIcon, ArrowsRightLeftIcon, DocumentCheckIcon, EnvelopeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, PhotoIcon, UserIcon, ArrowsRightLeftIcon, DocumentCheckIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 
@@ -25,13 +24,10 @@ const initialFormData = {
   experience: 'none',
   instagram: '',
   portfolioLink: '',
-  photoPortraitUrl: '',
-  photoFullBodyUrl: '',
-  photoProfileUrl: '',
   agreedToTerms: false,
 };
 
-type FormData = typeof initialFormData;
+type FormData = Omit<typeof initialFormData, 'agreedToTerms'> & { agreedToTerms: boolean };
 
 
 const CastingForm: React.FC = () => {
@@ -40,12 +36,12 @@ const CastingForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
 
   const steps = [
     { number: 1, title: 'Infos Personnelles', icon: UserIcon },
     { number: 2, title: 'Mensurations', icon: ArrowsRightLeftIcon },
-    { number: 3, title: 'Expérience & Photos', icon: PhotoIcon },
+    { number: 3, title: 'Expérience', icon: PhotoIcon },
     { number: 4, title: 'Confirmation', icon: DocumentCheckIcon },
   ];
   
@@ -62,111 +58,89 @@ const CastingForm: React.FC = () => {
     }
   };
   
-  const createHtmlBody = (data: FormData): string => {
-      return `
-        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-            <h1 style="color: #D4AF37;">Nouvelle Candidature Casting</h1>
-            <p>Une nouvelle candidature a été soumise via le site web et sauvegardée dans le panel d'administration.</p>
-            
-            <h2 style="color: #D4AF37; border-bottom: 1px solid #eee; padding-bottom: 5px;">Informations Personnelles</h2>
-            <table cellpadding="5">
-                <tr><td><strong>Nom complet:</strong></td><td>${data.firstName} ${data.lastName}</td></tr>
-                <tr><td><strong>Date de naissance:</strong></td><td>${data.birthDate}</td></tr>
-                <tr><td><strong>Email:</strong></td><td>${data.email}</td></tr>
-                <tr><td><strong>Téléphone:</strong></td><td>${data.phone}</td></tr>
-                <tr><td><strong>Nationalité:</strong></td><td>${data.nationality}</td></tr>
-                <tr><td><strong>Ville:</strong></td><td>${data.city}</td></tr>
-            </table>
-
-            <h2 style="color: #D4AF37; border-bottom: 1px solid #eee; padding-bottom: 5px;">Mensurations</h2>
-            <table cellpadding="5">
-                <tr><td><strong>Taille:</strong></td><td>${data.height} cm</td></tr>
-                <tr><td><strong>Poids:</strong></td><td>${data.weight} kg</td></tr>
-                <tr><td><strong>Pointure:</strong></td><td>${data.shoeSize} EU</td></tr>
-                <tr><td><strong>Poitrine:</strong></td><td>${data.chest || 'N/A'} cm</td></tr>
-                <tr><td><strong>Tour de taille:</strong></td><td>${data.waist || 'N/A'} cm</td></tr>
-                <tr><td><strong>Hanches:</strong></td><td>${data.hips || 'N/A'} cm</td></tr>
-                <tr><td><strong>Couleur des yeux:</strong></td><td>${data.eyeColor}</td></tr>
-                <tr><td><strong>Couleur des cheveux:</strong></td><td>${data.hairColor}</td></tr>
-            </table>
-
-            <h2 style="color: #D4AF37; border-bottom: 1px solid #eee; padding-bottom: 5px;">Expérience & Liens</h2>
-             <table cellpadding="5">
-                <tr><td><strong>Niveau d'expérience:</strong></td><td>${data.experience}</td></tr>
-                <tr><td><strong>Instagram:</strong></td><td><a href="https://instagram.com/${data.instagram.replace('@','')}">${data.instagram || 'N/A'}</a></td></tr>
-                <tr><td><strong>Portfolio:</strong></td><td><a href="${data.portfolioLink}">${data.portfolioLink || 'N/A'}</a></td></tr>
-            </table>
-
-            <h2 style="color: #D4AF37; border-bottom: 1px solid #eee; padding-bottom: 5px;">Photos</h2>
-            <p><strong>Portrait:</strong> ${data.photoPortraitUrl ? `<a href="${data.photoPortraitUrl}">Voir la photo</a>` : 'Non fournie'}</p>
-            <p><strong>Plein-pied:</strong> ${data.photoFullBodyUrl ? `<a href="${data.photoFullBodyUrl}">Voir la photo</a>` : 'Non fournie'}</p>
-            <p><strong>Profil:</strong> ${data.photoProfileUrl ? `<a href="${data.photoProfileUrl}">Voir la photo</a>` : 'Non fournie'}</p>
-        </div>
-      `;
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLoading) return;
     if (!formData.agreedToTerms) {
         alert("Vous devez accepter les termes pour soumettre votre candidature.");
         return;
     }
+    if (isLoading) return;
 
     setIsLoading(true);
-    setError(null);
 
     try {
-        const newApplication: Omit<CastingApplication, 'agreedToTerms'> = {
+        const newApplication: CastingApplication = {
             id: Date.now().toString(),
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
-            ...formData,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            birthDate: formData.birthDate,
+            email: formData.email,
+            phone: formData.phone,
+            nationality: formData.nationality,
+            city: formData.city,
+            height: formData.height,
+            weight: formData.weight,
+            chest: formData.chest,
+            waist: formData.waist,
+            hips: formData.hips,
+            shoeSize: formData.shoeSize,
+            eyeColor: formData.eyeColor,
+            hairColor: formData.hairColor,
+            experience: formData.experience,
+            instagram: formData.instagram,
+            portfolioLink: formData.portfolioLink,
+            photoPortraitUrl: null,
+            photoFullBodyUrl: null,
+            photoProfileUrl: null,
         };
-
-        const updatedApplications = [...data!.castingApplications, newApplication];
         
-        // Priorité 1: Sauvegarder dans la base de données.
+        // 1. Sauvegarde prioritaire dans la base de données
+        const updatedApplications = [...data!.castingApplications, newApplication];
         await saveData({ ...data!, castingApplications: updatedApplications });
 
-        // Priorité 2: Confirmer le succès à l'utilisateur (ce qui change la vue).
+        // 2. Préparation du message WhatsApp avec emojis
+        const phoneNumber = "+24177507950";
+        const message = `
+*✨ Nouvelle Candidature Casting ✨*
+
+*👤 INFOS PERSONNELLES*
+  *Prénom:* ${formData.firstName}
+  *Nom:* ${formData.lastName}
+  *Date de naissance:* ${formData.birthDate}
+  *Email:* ${formData.email}
+  *Téléphone:* ${formData.phone}
+  *Nationalité:* ${formData.nationality}
+  *Ville:* ${formData.city}
+
+*📏 MENSURATIONS*
+  *Taille:* ${formData.height} cm
+  *Poids:* ${formData.weight} kg
+  *Pointure:* ${formData.shoeSize} EU
+  *Poitrine:* ${formData.chest || 'N/A'} cm
+  *Tour de taille:* ${formData.waist || 'N/A'} cm
+  *Hanches:* ${formData.hips || 'N/A'} cm
+  *Yeux:* ${formData.eyeColor}
+  *Cheveux:* ${formData.hairColor}
+
+*🏆 EXPÉRIENCE*
+  *Niveau:* ${formData.experience}
+  *Instagram:* ${formData.instagram || 'N/A'}
+  *Portfolio:* ${formData.portfolioLink || 'N/A'}
+        `.trim().replace(/^\s+/gm, '');
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+        // 3. Redirection vers WhatsApp et mise à jour de l'interface
+        window.open(whatsappUrl, '_blank');
         setIsSubmitted(true);
 
-        // Action secondaire (non bloquante): Envoyer l'email de notification.
-        if (!data!.apiKeys?.emailApiKey) {
-            console.warn("Clé API Octopus Mail manquante. L'email de notification n'a pas été envoyé, mais la candidature est enregistrée.");
-            return;
-        }
-
-        const htmlContent = createHtmlBody(formData);
-        const payload = {
-            from: 'casting@perfectmodels.ga',
-            to: 'contact@perfectmodels.ga',
-            subject: `Nouvelle Candidature Casting - ${formData.firstName} ${formData.lastName}`,
-            html: htmlContent,
-        };
-
-        // L'envoi de l'email est "fire-and-forget" pour ne pas bloquer l'UI.
-        fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-                'x-rapidapi-host': 'octopus-mail.p.rapidapi.com',
-                'x-rapidapi-key': data!.apiKeys.emailApiKey,
-            },
-            body: JSON.stringify(payload),
-        }).then(response => {
-            if (!response.ok) {
-                response.text().then(text => {
-                    console.error("L'envoi de l'email de notification a échoué, mais la candidature a été sauvegardée.", text);
-                });
-            }
-        }).catch(emailError => {
-            console.error("Erreur réseau lors de l'envoi de l'email de notification.", emailError);
-        });
-
-    } catch (err: any) {
-        setError(err.message || 'Une erreur est survenue lors de la sauvegarde de votre candidature. Veuillez réessayer.');
+    } catch (error) {
+        console.error("Erreur lors de la soumission :", error);
+        alert("Une erreur est survenue. Votre candidature n'a pas pu être enregistrée. Veuillez réessayer.");
+    } finally {
         setIsLoading(false);
     }
   };
@@ -176,9 +150,9 @@ const CastingForm: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen flex items-center justify-center">
             <div className="text-center bg-black p-12 border border-pm-gold/30 shadow-lg shadow-pm-gold/10">
                 <CheckCircleIcon className="w-20 h-20 text-pm-gold mx-auto mb-6"/>
-                <h1 className="text-4xl font-playfair text-pm-gold">Candidature Envoyée !</h1>
+                <h1 className="text-4xl font-playfair text-pm-gold">Candidature Enregistrée !</h1>
                 <p className="mt-4 text-pm-off-white/80 max-w-md">
-                    Merci d'avoir postulé. Votre candidature a été envoyée avec succès. Nous l'examinerons attentivement et vous contacterons si votre profil correspond.
+                    Vos informations ont bien été sauvegardées. Un onglet WhatsApp s'est ouvert pour que vous puissiez nous envoyer le récapitulatif.
                 </p>
             </div>
         </div>
@@ -231,27 +205,20 @@ const CastingForm: React.FC = () => {
             {currentStep === 3 && <Step3 formData={formData} handleChange={handleChange} />}
             {currentStep === 4 && <Step4 formData={formData} handleChange={handleChange} />}
             
-            {error && (
-                <div className="mt-6 p-4 bg-red-900/50 border border-red-500 text-red-300 text-sm rounded-md flex items-center gap-3">
-                    <ExclamationTriangleIcon className="w-5 h-5" />
-                    <p>{error}</p>
-                </div>
-            )}
-
             {/* Navigation */}
             <div className="mt-12 pt-6 border-t border-pm-gold/20 flex justify-between items-center">
-                <button type="button" onClick={handlePrev} disabled={currentStep === 1 || isLoading} className="inline-flex items-center gap-2 px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="button" onClick={handlePrev} disabled={currentStep === 1} className="inline-flex items-center gap-2 px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white disabled:opacity-50 disabled:cursor-not-allowed">
                     <ArrowLeftIcon className="w-4 h-4" />
                     Précédent
                 </button>
                 {currentStep < steps.length ? (
-                     <button type="button" onClick={handleNext} disabled={isLoading} className="inline-flex items-center gap-2 px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30 disabled:opacity-50">
+                     <button type="button" onClick={handleNext} className="inline-flex items-center gap-2 px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30 disabled:opacity-50">
                         Suivant
                         <ArrowRightIcon className="w-4 h-4" />
                     </button>
                 ) : (
                     <button type="submit" disabled={!formData.agreedToTerms || isLoading} className="px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full hover:bg-white shadow-lg shadow-pm-gold/30 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {isLoading ? 'Envoi en cours...' : 'Soumettre la Candidature'}
+                        {isLoading ? 'Enregistrement...' : 'Soumettre'}
                     </button>
                 )}
             </div>
@@ -316,7 +283,7 @@ const Step2: React.FC<{formData: FormData, handleChange: any}> = ({formData, han
 
 const Step3: React.FC<{formData: FormData, handleChange: any}> = ({formData, handleChange}) => (
     <div className="space-y-6">
-        <h2 className="text-2xl font-playfair text-pm-gold border-b border-pm-gold/20 pb-3">Étape 3: Expérience & Photos</h2>
+        <h2 className="text-2xl font-playfair text-pm-gold border-b border-pm-gold/20 pb-3">Étape 3: Expérience</h2>
         <div className="space-y-6">
              <FormSelect label="Niveau d'expérience" name="experience" value={formData.experience} onChange={handleChange}>
                 <option value="none">Aucune expérience</option>
@@ -326,16 +293,6 @@ const Step3: React.FC<{formData: FormData, handleChange: any}> = ({formData, han
             </FormSelect>
             <FormInput label="Lien Instagram" name="instagram" value={formData.instagram} onChange={handleChange} required={false} placeholder="@votreprofil"/>
             <FormInput label="Lien Book/Portfolio en ligne" name="portfolioLink" value={formData.portfolioLink} onChange={handleChange} required={false} />
-        </div>
-        <div className="space-y-6 pt-6 border-t border-pm-gold/20">
-            <h3 className="text-lg font-bold text-pm-off-white">Vos Photos</h3>
-             <p className="text-sm text-pm-off-white/70">
-                Photos récentes (moins de 3 mois), sans maquillage, sans retouches, sur fond neutre et avec des vêtements près du corps (ex: jean slim et débardeur). 
-                Utilisez un service comme <a href="https://postimages.org/" target="_blank" rel="noopener noreferrer" className="underline text-pm-gold">Postimages</a> pour héberger vos photos et collez les liens ci-dessous.
-            </p>
-            <FormInput label="URL Photo Portrait" name="photoPortraitUrl" value={formData.photoPortraitUrl} onChange={handleChange} helpText="Visage de face, cheveux tirés en arrière." />
-            <FormInput label="URL Photo Plein-pied" name="photoFullBodyUrl" value={formData.photoFullBodyUrl} onChange={handleChange} helpText="Corps entier, de face." />
-            <FormInput label="URL Photo de Profil" name="photoProfileUrl" value={formData.photoProfileUrl} onChange={handleChange} helpText="Corps entier, de profil." />
         </div>
     </div>
 );
@@ -347,13 +304,12 @@ const Step4: React.FC<{formData: FormData, handleChange: any}> = ({formData, han
             <p><strong>Nom:</strong> {formData.firstName} {formData.lastName}</p>
             <p><strong>Email:</strong> {formData.email}</p>
             <p><strong>Taille:</strong> {formData.height} cm</p>
-            <p><strong>Photos:</strong> {formData.photoPortraitUrl ? 'Portrait ✅' : 'Portrait ❌'} | {formData.photoFullBodyUrl ? 'Plein-pied ✅' : 'Plein-pied ❌'} | {formData.photoProfileUrl ? 'Profil ✅' : 'Profil ❌'}</p>
         </div>
         <div className="pt-4">
              <label htmlFor="agreedToTerms" className="flex items-start gap-3 cursor-pointer">
                 <input type="checkbox" id="agreedToTerms" name="agreedToTerms" checked={formData.agreedToTerms} onChange={handleChange} className="mt-1 h-4 w-4 rounded border-gray-300 text-pm-gold focus:ring-pm-gold bg-pm-dark"/>
                 <span className="text-sm text-pm-off-white/80">
-                    Je certifie que les informations fournies sont exactes et j'autorise Perfect Models Management à conserver mes données pour une durée de 2 ans dans le cadre de leur processus de casting.
+                    Je certifie que les informations fournies sont exactes et j'autorise Perfect Models Management à me contacter via les informations fournies.
                 </span>
             </label>
         </div>
