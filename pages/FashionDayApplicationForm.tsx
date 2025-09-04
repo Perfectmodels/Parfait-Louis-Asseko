@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -25,10 +26,7 @@ const FashionDayApplicationForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!data?.apiKeys?.emailApiKey) {
-            setError("La configuration du service d'envoi d'email est manquante. Veuillez contacter l'administrateur.");
-            return;
-        }
+        if (isLoading) return;
 
         setIsLoading(true);
         setError(null);
@@ -40,11 +38,20 @@ const FashionDayApplicationForm: React.FC = () => {
                 status: 'Nouveau',
                 ...formData
             };
-
-            const currentApplications = data.fashionDayApplications ? Object.values(data.fashionDayApplications) : [];
-            const updatedApplications = [...currentApplications, newApplication];
             
-            await saveData({ ...data, fashionDayApplications: updatedApplications });
+            const updatedApplications = [...data!.fashionDayApplications, newApplication];
+            
+            // Priorité 1: Sauvegarder dans la base de données.
+            await saveData({ ...data!, fashionDayApplications: updatedApplications });
+
+            // Priorité 2: Confirmer le succès à l'utilisateur.
+            setIsSubmitted(true);
+
+            // Action secondaire (non bloquante): Envoyer l'email.
+            if (!data!.apiKeys?.emailApiKey) {
+                console.warn("Clé API Octopus Mail manquante. L'email de notification PFD n'a pas été envoyé, mais la candidature est enregistrée.");
+                return;
+            }
 
             const emailHtmlBody = `
                 <div style="font-family: sans-serif;">
@@ -59,27 +66,29 @@ const FashionDayApplicationForm: React.FC = () => {
             
             const payload = {
                 from: 'event@perfectmodels.ga',
-                to: data.contactInfo.email,
+                to: data!.contactInfo.email,
                 subject: `Nouvelle Candidature PFD - ${formData.role}: ${formData.name}`,
                 html: emailHtmlBody,
             };
 
-            const response = await fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
+            fetch('https://octopus-mail.p.rapidapi.com/mail/send', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json',
                     'x-rapidapi-host': 'octopus-mail.p.rapidapi.com',
-                    'x-rapidapi-key': data.apiKeys.emailApiKey,
+                    'x-rapidapi-key': data!.apiKeys.emailApiKey,
                 },
                 body: JSON.stringify(payload),
+            }).then(response => {
+                if (!response.ok) {
+                   response.text().then(text => console.error("PFD Email notification failed:", text));
+                }
+            }).catch(err => {
+                console.error("PFD Email network error:", err);
             });
 
-            if (!response.ok) throw new Error("L'envoi de l'email de notification a échoué.");
-
-            setIsSubmitted(true);
         } catch (err: any) {
-            setError(err.message || 'Une erreur est survenue. Veuillez réessayer.');
-        } finally {
+            setError(err.message || 'Une erreur est survenue lors de la sauvegarde. Veuillez réessayer.');
             setIsLoading(false);
         }
     };
@@ -95,6 +104,14 @@ const FashionDayApplicationForm: React.FC = () => {
                   </p>
               </div>
           </div>
+        );
+    }
+
+    if (!data) {
+        return (
+            <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen flex items-center justify-center">
+                <p className="text-pm-gold animate-pulse">Chargement du formulaire...</p>
+            </div>
         );
     }
 

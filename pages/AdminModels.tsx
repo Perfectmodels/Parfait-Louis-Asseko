@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Model, AIAssistantProps } from '../types';
@@ -23,7 +25,24 @@ const AdminModels: React.FC = () => {
     if (!data) return;
     let updatedModels;
     if (isCreating) {
-      const newModel = { ...modelToSave, id: modelToSave.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now() };
+      const id = modelToSave.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+      const firstName = modelToSave.name.split(' ')[0];
+      const initial = firstName.charAt(0).toUpperCase();
+
+      // Calculate next matricule number
+      const modelsWithSameInitial = localModels.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
+      const existingNumbers = modelsWithSameInitial.map(m => {
+          const numPart = m.username.replace(`Man-PMM${initial}`, '');
+          return parseInt(numPart, 10) || 0;
+      });
+      const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+      const username = `Man-PMM${initial}${String(nextNumber).padStart(2, '0')}`;
+
+      // Generate simple password
+      const year = new Date().getFullYear();
+      const password = `${firstName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9-]/g, "")}${year}`;
+      
+      const newModel = { ...modelToSave, id, username, password };
       updatedModels = [...localModels, newModel];
     } else {
       updatedModels = localModels.map(m => m.id === modelToSave.id ? modelToSave : m);
@@ -49,9 +68,16 @@ const AdminModels: React.FC = () => {
       setEditingModel({
           id: '',
           name: '',
+          username: '',
+          password: '',
           height: '',
           gender: 'Femme',
           imageUrl: '',
+          measurements: { chest: '', waist: '', hips: '', shoeSize: '' },
+          categories: [],
+          experience: '',
+          journey: '',
+          quizScores: {}
       });
       setIsCreating(true);
   };
@@ -86,6 +112,7 @@ const AdminModels: React.FC = () => {
                         <tr className="border-b border-pm-gold/20">
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Photo</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Nom</th>
+                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Matricule</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Taille</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Genre</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 text-right">Actions</th>
@@ -96,6 +123,7 @@ const AdminModels: React.FC = () => {
                             <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
                                 <td className="p-2"><img src={model.imageUrl} alt={model.name} className="w-12 h-16 object-cover rounded-md"/></td>
                                 <td className="p-4 font-semibold">{model.name}</td>
+                                <td className="p-4 font-mono text-xs text-pm-gold/80 hidden md:table-cell">{model.username}</td>
                                 <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{model.height}</td>
                                 <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{model.gender}</td>
                                 <td className="p-4">
@@ -123,7 +151,10 @@ interface ModelFormProps {
 }
 
 const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreating }) => {
-    const [formData, setFormData] = useState<Model>(model);
+    const [formData, setFormData] = useState<Model>({
+        ...model,
+        measurements: model.measurements || { chest: '', waist: '', hips: '', shoeSize: '' }
+    });
     const [assistantProps, setAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'> | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -131,8 +162,25 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
         setFormData(prev => ({ ...prev, [name]: value }));
     };
     
+    const handleMeasurementsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, measurements: { ...prev.measurements, [name]: value } }));
+    };
+
     const handleImageChange = (value: string) => {
         setFormData(prev => ({ ...prev, imageUrl: value }));
+    };
+
+    const handleRegeneratePassword = () => {
+        if (!formData.name) {
+            alert("Veuillez d'abord renseigner le nom du mannequin.");
+            return;
+        }
+        const firstName = formData.name.split(' ')[0];
+        const year = new Date().getFullYear();
+        const newPassword = `${firstName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9-]/g, "")}${year}`;
+        setFormData(prev => ({ ...prev, password: newPassword }));
+        alert(`Nouveau mot de passe généré : ${newPassword}. N'oubliez pas de sauvegarder.`);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -143,26 +191,78 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
     return (
         <>
          <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <div className="container mx-auto px-6 max-w-2xl">
+            <div className="container mx-auto px-6 max-w-3xl">
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Ajouter un mannequin' : 'Modifier le mannequin'}</h1>
                 <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
-                    <FormInput label="Nom" name="name" value={formData.name} onChange={handleChange} />
-                    <ImageInput label="Photo" value={formData.imageUrl} onChange={handleImageChange} />
+                    <FormInput label="Nom Complet" name="name" value={formData.name} onChange={handleChange} />
+                     {isCreating ? (
+                        <p className="text-xs text-pm-off-white/60 -mt-4">L'identifiant de connexion (matricule) et le mot de passe seront générés automatiquement lors de la sauvegarde.</p>
+                    ) : (
+                        <div>
+                            <label className="block text-sm font-medium text-pm-off-white/70 mb-1">Identifiant (Matricule)</label>
+                            <input type="text" readOnly value={formData.username} className="admin-input bg-pm-dark/50" />
+                        </div>
+                    )}
+                    <ImageInput label="Photo Principale" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
                     <FormInput label="Âge" name="age" type="number" value={formData.age || ''} onChange={handleChange} />
                     <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange} options={['Femme', 'Homme']} />
-                    <FormInput label="Lieu" name="location" value={formData.location || ''} onChange={handleChange} />
+                    <FormInput label="Lieu de résidence" name="location" value={formData.location || ''} onChange={handleChange} />
+                    
+                    <h3 className="text-xl font-playfair text-pm-gold pt-4 border-t border-pm-gold/20">Mensurations</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementsChange} />
+                        <FormInput label="Taille (cm)" name="waist" value={formData.measurements.waist} onChange={handleMeasurementsChange} />
+                        <FormInput label="Hanches (cm)" name="hips" value={formData.measurements.hips} onChange={handleMeasurementsChange} />
+                        <FormInput label="Pointure (EU)" name="shoeSize" value={formData.measurements.shoeSize} onChange={handleMeasurementsChange} />
+                    </div>
+
+                    <h3 className="text-xl font-playfair text-pm-gold pt-4 border-t border-pm-gold/20">Accès</h3>
+                    {!isCreating ? (
+                        <div>
+                            <label className="block text-sm font-medium text-pm-off-white/70 mb-1">Mot de passe</label>
+                            <div className="flex items-center gap-2">
+                                <input type="text" readOnly value={formData.password} className="admin-input flex-grow bg-pm-dark/50" />
+                                <button type="button" onClick={handleRegeneratePassword} className="px-4 py-2 text-xs border border-pm-gold text-pm-gold rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                                    Régénérer
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                         <p className="text-xs text-pm-off-white/60">Un mot de passe simple (ex: prenom{new Date().getFullYear()}) sera généré automatiquement.</p>
+                    )}
+
+                    <h3 className="text-xl font-playfair text-pm-gold pt-4 border-t border-pm-gold/20">Portfolio</h3>
+                    <FormInput label="Catégories (séparées par des virgules)" name="categories" value={Array.isArray(formData.categories) ? formData.categories.join(', ') : ''} onChange={(e) => setFormData(p => ({...p, categories: e.target.value.split(',').map(c => c.trim())}))} />
+                    <FormTextArea 
+                        label="Expérience" 
+                        name="experience" 
+                        value={formData.experience} 
+                        onChange={handleChange}
+                        onAssistantClick={() => setAssistantProps({
+                            fieldName: 'Expérience',
+                            initialPrompt: `Rédige un paragraphe de 3-4 phrases décrivant l'expérience d'un mannequin nommé ${formData.name}. Mets en avant ses points forts et ses participations notables.`,
+                            onInsertContent: (content) => setFormData(p => ({...p, experience: content}))
+                        })}
+                    />
+                     <FormTextArea 
+                        label="Parcours" 
+                        name="journey" 
+                        value={formData.journey} 
+                        onChange={handleChange}
+                        onAssistantClick={() => setAssistantProps({
+                            fieldName: 'Parcours',
+                            initialPrompt: `Rédige un paragraphe de 3-4 phrases racontant le parcours de ${formData.name}, de sa découverte à son statut actuel dans l'agence. Sois inspirant et professionnel.`,
+                            onInsertContent: (content) => setFormData(p => ({...p, journey: content}))
+                        })}
+                    />
                     <FormTextArea 
                         label="Distinctions (une par ligne)" 
                         name="distinctions" 
                         value={Array.isArray(formData.distinctions) ? formData.distinctions.join('\n') : ''} 
                         onChange={(e) => setFormData(p => ({...p, distinctions: e.target.value.split('\n').filter(line => line.trim() !== '')}))}
-                        onAssistantClick={() => setAssistantProps({
-                            fieldName: 'Distinctions',
-                            initialPrompt: `Génère une liste de 2 à 3 distinctions ou titres prestigieux pour un mannequin nommé ${formData.name}. Sois créatif et professionnel.`,
-                            onInsertContent: (content) => setFormData(p => ({...p, distinctions: content.split('\n').filter(line => line.trim() !== '')}))
-                        })}
                     />
+
 
                     <div className="flex justify-end gap-4 pt-4">
                         <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>

@@ -5,6 +5,8 @@ import React from 'react';
 export interface Model {
   id: string;
   name: string;
+  username: string;
+  password: string;
   email?: string;
   phone?: string;
   age?: number;
@@ -13,6 +15,17 @@ export interface Model {
   location?: string;
   imageUrl: string;
   distinctions?: string[];
+  // New portfolio fields
+  measurements: {
+    chest: string;
+    waist: string;
+    hips: string;
+    shoeSize: string;
+  };
+  categories: string[];
+  experience: string;
+  journey: string;
+  quizScores: { [quizId: string]: number };
 }
 
 export interface Stylist {

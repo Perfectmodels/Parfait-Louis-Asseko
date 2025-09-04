@@ -1,6 +1,5 @@
 
 import React from 'react';
-// FIX: The library version is v6+, so updated routing syntax from v5 to v6.
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -29,6 +28,9 @@ import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
 import AdminFashionDayApps from './pages/AdminFashionDay';
 import AdminAgency from './pages/AdminAgency';
 import AdminFashionDayEvents from './pages/AdminFashionDayEvents';
+import ModelDashboard from './pages/ModelDashboard';
+import AdminClassroomProgress from './pages/AdminClassroomProgress';
+import AdminModelAccess from './pages/AdminModelAccess';
 
 
 const ScrollToTop: React.FC = () => {
@@ -47,7 +49,6 @@ const App: React.FC = () => {
       <HashRouter>
         <ScrollToTop />
         <Layout>
-          {/* FIX: Updated routing from v5 to v6 syntax. */}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/agence" element={<Agency />} />
@@ -64,11 +65,16 @@ const App: React.FC = () => {
             <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
             <Route path="/login" element={<Login />} />
 
+            {/* Model Routes */}
+            <Route path="/profil" element={<ProtectedRoute role="model"><ModelDashboard /></ProtectedRoute>} />
+
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
             <Route path="/admin/mannequins" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
+            <Route path="/admin/acces-mannequins" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
             <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
             <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
+            <Route path="/admin/suivi-classroom" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
             <Route path="/admin/candidatures-casting" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
             <Route path="/admin/fashion-day-apps" element={<ProtectedRoute role="admin"><AdminFashionDayApps /></ProtectedRoute>} />
             <Route path="/admin/agence" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />

@@ -1,29 +1,28 @@
 
 import React, { useState, useEffect } from 'react';
-// FIX: Using NavLink with functional props for v6 compatibility.
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
 import { useData } from '../contexts/DataContext';
 
-// FIX: Rewrote NavLinkItem to use react-router-dom v6 features, which support functional className and children props.
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }> = ({ to, label, onClick }) => {
   return (
     <NavLink
+      end={to === '/'}
       to={to}
       onClick={onClick}
-      end={to === '/'}
-      className={({ isActive }) => `relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group ${
-        isActive ? 'text-pm-gold' : 'hover:text-pm-gold'
-      }`}
+      className={({ isActive }) => 
+        "relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold " +
+        (isActive ? "text-pm-gold" : "")
+      }
     >
       {({ isActive }) => (
         <>
           {label}
-          <span
-            className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out group-hover:scale-x-100 ${
-              isActive ? 'scale-x-100' : 'scale-x-0'
-            }`}
+          <span 
+            className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${
+              isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+            }`} 
           />
         </>
       )}
