@@ -1,7 +1,5 @@
 
-
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
@@ -12,8 +10,15 @@ const ModelDetail: React.FC = () => {
   const { data, isInitialized } = useData();
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState('details');
+  const [isViewingOwnProfile, setIsViewingOwnProfile] = useState(false);
   
   const model = data?.models.find(m => m.id === id);
+
+  useEffect(() => {
+    const userRole = sessionStorage.getItem('classroom_role');
+    const userId = sessionStorage.getItem('userId');
+    setIsViewingOwnProfile(userRole === 'model' && userId === id);
+  }, [id]);
 
   if (!isInitialized) {
     return <div className="min-h-screen bg-pm-dark"></div>;
@@ -92,9 +97,11 @@ const ModelDetail: React.FC = () => {
               </div>
 
                <div className="mt-10">
-                  <Link to="/contact" className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                      Booker ce mannequin
-                  </Link>
+                  {!isViewingOwnProfile && (
+                    <Link to="/contact" className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                        Booker ce mannequin
+                    </Link>
+                  )}
                </div>
             </div>
           </div>

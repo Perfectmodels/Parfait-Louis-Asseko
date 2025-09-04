@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { Model, AIAssistantProps } from '../types';
 import AIAssistant from './AIAssistant';
@@ -55,7 +56,11 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, mode, is
     const [assistantProps, setAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'> | null>(null);
 
     useEffect(() => {
-        setFormData(JSON.parse(JSON.stringify(model)));
+        const modelData = JSON.parse(JSON.stringify(model));
+        if (!modelData.measurements) {
+            modelData.measurements = { chest: '', waist: '', hips: '', shoeSize: '' };
+        }
+        setFormData(modelData);
     }, [model]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -65,7 +70,13 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, mode, is
     
     const handleMeasurementsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, measurements: { ...prev.measurements, [name]: value } }));
+        setFormData(prev => ({ 
+            ...prev, 
+            measurements: { 
+                ...(prev.measurements || { chest: '', waist: '', hips: '', shoeSize: '' }), 
+                [name]: value 
+            } 
+        }));
     };
 
     const handleImageChange = (value: string) => {
@@ -133,10 +144,10 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, mode, is
                     
                     <h3 className="text-xl font-playfair text-pm-gold pt-4 border-t border-pm-gold/20">Mensurations</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementsChange} />
-                        <FormInput label="Taille (cm)" name="waist" value={formData.measurements.waist} onChange={handleMeasurementsChange} />
-                        <FormInput label="Hanches (cm)" name="hips" value={formData.measurements.hips} onChange={handleMeasurementsChange} />
-                        <FormInput label="Pointure (EU)" name="shoeSize" value={formData.measurements.shoeSize} onChange={handleMeasurementsChange} />
+                        <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements?.chest || ''} onChange={handleMeasurementsChange} />
+                        <FormInput label="Taille (cm)" name="waist" value={formData.measurements?.waist || ''} onChange={handleMeasurementsChange} />
+                        <FormInput label="Hanches (cm)" name="hips" value={formData.measurements?.hips || ''} onChange={handleMeasurementsChange} />
+                        <FormInput label="Pointure (EU)" name="shoeSize" value={formData.measurements?.shoeSize || ''} onChange={handleMeasurementsChange} />
                     </div>
 
                     {mode === 'model' && (

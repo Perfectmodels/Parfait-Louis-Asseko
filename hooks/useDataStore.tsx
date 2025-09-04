@@ -89,7 +89,6 @@ export const useDataStore = () => {
           let dataWasMigrated = false;
 
           // --- SCRIPT DE MIGRATION DES DONNÉES ---
-          // This script checks for and fixes missing credentials and quizScores on models.
           if (fetchedData.models) {
               const currentYear = new Date().getFullYear();
               const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\u0027]/g, "").replace(/[^a-z0-9-]/g, "");
@@ -97,7 +96,6 @@ export const useDataStore = () => {
               const modelsArray: Model[] = Array.isArray(fetchedData.models) ? fetchedData.models : Object.values(fetchedData.models);
               const initialCounts: { [key: string]: number } = {};
 
-              // Pre-calculate existing matricule numbers to avoid duplicates
               modelsArray.forEach(model => {
                   if (model.username && model.username.startsWith('Man-PMM')) {
                       const match = model.username.match(/^Man-PMM([A-Z])(\d+)$/);
@@ -112,7 +110,6 @@ export const useDataStore = () => {
               const migratedModels = modelsArray.map(model => {
                   const updatedModel = { ...model };
 
-                  // Migrate username/password if needed
                   if (!updatedModel.username || !updatedModel.password || !updatedModel.username.startsWith('Man-PMM')) {
                       dataWasMigrated = true;
                       const firstName = updatedModel.name.split(' ')[0];
@@ -123,10 +120,15 @@ export const useDataStore = () => {
                       updatedModel.password = `${sanitizeForPassword(firstName)}${currentYear}`;
                   }
 
-                  // Migrate quizScores if missing
                   if (!updatedModel.quizScores) {
                       dataWasMigrated = true;
                       updatedModel.quizScores = {};
+                  }
+                  
+                  // FIX: Add migration for measurements to prevent crashes on profiles with missing data.
+                  if (!updatedModel.measurements) {
+                      dataWasMigrated = true;
+                      updatedModel.measurements = { chest: '', waist: '', hips: '', shoeSize: '' };
                   }
   
                   return updatedModel;
@@ -155,10 +157,8 @@ export const useDataStore = () => {
 
           setData(finalData as AppData);
           
-          // If a migration took place, save the corrected data back to Firebase
           if (dataWasMigrated) {
               console.log("Migrating model data structure. Saving to Firebase...");
-              // FIX: Use Firebase v8 'set()' method to save data.
               await db.ref('/').set(finalData); 
               console.log("Migration complete.");
           }
@@ -166,7 +166,6 @@ export const useDataStore = () => {
         } else {
           console.log("No data in Firebase. Initializing with local data...");
           const seedData = getSeedData();
-          // FIX: Use Firebase v8 'set()' method to save data.
           await dbRef.set(seedData);
           setData(seedData);
         }
@@ -186,10 +185,8 @@ export const useDataStore = () => {
   }, []);
 
   const saveData = useCallback(async (newData: AppData) => {
-    // FIX: Use Firebase v8 syntax to get a database reference.
     const dbRef = db.ref('/');
     try {
-        // FIX: Use Firebase v8 'set()' method to save data.
         await dbRef.set(newData);
         setData(newData);
     } catch (error) {
