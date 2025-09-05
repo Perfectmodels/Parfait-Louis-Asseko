@@ -8,8 +8,13 @@ const Magazine: React.FC = () => {
   const { data, isInitialized } = useData();
   const articles = data?.articles || [];
 
-  const featuredArticle = articles[0];
-  const otherArticles = articles.slice(1);
+  let featuredArticle = articles.find(a => a.isFeatured);
+  if (!featuredArticle && articles.length > 0) {
+    featuredArticle = articles[0]; // Fallback to the first article if none is featured
+  }
+  
+  const otherArticles = articles.filter(a => a.slug !== featuredArticle?.slug);
+
 
   if (!isInitialized) {
       return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement du magazine...</div>;

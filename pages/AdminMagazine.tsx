@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Article } from '../types';
 import SEO from '../components/SEO';
-// FIX: Switched to namespace import for 'react-router-dom' to resolve potential module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon, ArrowUpIcon, ArrowDownIcon, StarIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
 
 const AdminMagazine: React.FC = () => {
@@ -25,7 +23,7 @@ const AdminMagazine: React.FC = () => {
     let updatedArticles;
     if (isCreating) {
         const newArticle = { ...articleToSave, slug: articleToSave.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') + '-' + Date.now() };
-        updatedArticles = [...localArticles, newArticle];
+        updatedArticles = [newArticle, ...localArticles];
     } else {
         updatedArticles = localArticles.map(a => a.slug === articleToSave.slug ? articleToSave : a);
     }
@@ -44,6 +42,27 @@ const AdminMagazine: React.FC = () => {
       await saveData({ ...data, articles: updatedArticles });
       alert("Article supprimé avec succès.");
     }
+  };
+
+  const handleSetFeatured = async (slugToFeature: string) => {
+    if (!data) return;
+    const updatedArticles = localArticles.map(article => ({
+      ...article,
+      isFeatured: article.slug === slugToFeature
+    }));
+    await saveData({ ...data, articles: updatedArticles });
+    alert(`L'article a été mis à la une.`);
+  };
+
+  const handleMove = async (index: number, direction: 'up' | 'down') => {
+    if (!data) return;
+    const newArticles = [...localArticles];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newArticles.length) return;
+
+    [newArticles[index], newArticles[targetIndex]] = [newArticles[targetIndex], newArticles[index]];
+    
+    await saveData({ ...data, articles: newArticles });
   };
   
   const handleStartCreate = () => {
@@ -71,10 +90,10 @@ const AdminMagazine: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
               <div>
-                   <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                   <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                       <ChevronLeftIcon className="w-5 h-5" />
                       Retour au Dashboard
-                  </ReactRouterDOM.Link>
+                  </Link>
                   <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Magazine</h1>
               </div>
               <div className="flex items-center gap-4">
@@ -85,9 +104,10 @@ const AdminMagazine: React.FC = () => {
           </div>
 
           <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
-            {localArticles.map(article => (
+            {localArticles.map((article, index) => (
               <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
                 <div className="flex items-center gap-4">
+                  {article.isFeatured && <StarIcon className="w-6 h-6 text-pm-gold flex-shrink-0" title="Article à la une"/>}
                   <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover rounded"/>
                   <div>
                     <h2 className="font-bold">{article.title}</h2>
@@ -95,8 +115,13 @@ const AdminMagazine: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <button onClick={() => { setEditingArticle(article); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
-                  <button onClick={() => handleDelete(article.slug)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                  <button onClick={() => handleSetFeatured(article.slug)} className="text-pm-gold/70 hover:text-pm-gold" title="Mettre à la une">
+                      <StarIcon className="w-5 h-5"/>
+                  </button>
+                  <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="disabled:opacity-30" title="Monter"><ArrowUpIcon className="w-5 h-5"/></button>
+                  <button onClick={() => handleMove(index, 'down')} disabled={index === localArticles.length - 1} className="disabled:opacity-30" title="Descendre"><ArrowDownIcon className="w-5 h-5"/></button>
+                  <button onClick={() => { setEditingArticle(article); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
+                  <button onClick={() => handleDelete(article.slug)} className="text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
                 </div>
               </div>
             ))}

@@ -3,7 +3,7 @@ import { useData } from '../contexts/DataContext';
 import { NewsItem } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
 
 const AdminNews: React.FC = () => {
@@ -11,24 +11,12 @@ const AdminNews: React.FC = () => {
   const [localNews, setLocalNews] = useState<NewsItem[]>([]);
   const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [sortOrder, setSortOrder] = useState<'date' | 'title'>('date');
 
   useEffect(() => {
     if (data?.newsItems) {
       setLocalNews([...data.newsItems]);
     }
   }, [data?.newsItems]);
-  
-  const sortedNews = useMemo(() => {
-    const newsCopy = [...localNews];
-    if (sortOrder === 'date') {
-      return newsCopy.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    }
-    if (sortOrder === 'title') {
-      return newsCopy.sort((a, b) => a.title.localeCompare(b.title));
-    }
-    return newsCopy;
-  }, [localNews, sortOrder]);
 
   const handleFormSave = async (itemToSave: NewsItem) => {
     if (!data) return;
@@ -54,6 +42,17 @@ const AdminNews: React.FC = () => {
       await saveData({ ...data, newsItems: updatedNews });
       alert("Actualité supprimée avec succès.");
     }
+  };
+
+  const handleMove = async (index: number, direction: 'up' | 'down') => {
+    if (!data) return;
+    const newItems = [...localNews];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newItems.length) return;
+
+    [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
+    
+    await saveData({ ...data, newsItems: newItems });
   };
   
   const handleStartCreate = () => {
@@ -85,18 +84,6 @@ const AdminNews: React.FC = () => {
                 <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Actualités</h1>
             </div>
              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                    <label htmlFor="sort-order" className="text-sm text-pm-off-white/70">Trier par :</label>
-                    <select 
-                      id="sort-order"
-                      value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value as 'date' | 'title')}
-                      className="admin-input !w-auto !inline-block text-sm !py-1.5"
-                    >
-                      <option value="date">Date (plus récent)</option>
-                      <option value="title">Titre (A-Z)</option>
-                    </select>
-                </div>
                 <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
                     <PlusIcon className="w-5 h-5"/> Ajouter une Actualité
                 </button>
@@ -104,7 +91,7 @@ const AdminNews: React.FC = () => {
         </div>
 
         <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
-          {sortedNews.map(item => (
+          {localNews.map((item, index) => (
             <div key={item.id} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
               <div className="flex items-center gap-4">
                 <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded"/>
@@ -114,6 +101,8 @@ const AdminNews: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center gap-4">
+                <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="disabled:opacity-30" title="Monter"><ArrowUpIcon className="w-5 h-5"/></button>
+                <button onClick={() => handleMove(index, 'down')} disabled={index === localNews.length - 1} className="disabled:opacity-30" title="Descendre"><ArrowDownIcon className="w-5 h-5"/></button>
                 <button onClick={() => { setEditingItem(item); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
                 <button onClick={() => handleDelete(item.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
               </div>

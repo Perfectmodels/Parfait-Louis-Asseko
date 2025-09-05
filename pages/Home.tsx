@@ -15,7 +15,7 @@ const Home: React.FC = () => {
 
   const { agencyInfo, agencyPartners, fashionDayEvents, articles, newsItems, siteImages } = data;
 
-  const latestNews = newsItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 3);
+  const latestNews = newsItems.slice(0, 3);
 
   const magazineArticlesPreview = articles.slice(0, 3).map(article => ({
       image: article.imageUrl,

@@ -77,15 +77,24 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (!data?.navLinks) return;
 
-    let newNavLinks = [...data.navLinks];
+    const baseNavLinks = [...data.navLinks];
+    const classroomLinkIndex = baseNavLinks.findIndex(link => link.path === '/formations');
 
-    if (userRole === 'model') {
-        const formationsIndex = newNavLinks.findIndex(link => link.path === '/formations');
-        if (formationsIndex !== -1) {
-            newNavLinks[formationsIndex] = { ...newNavLinks[formationsIndex], label: 'Mon Profil', path: '/profil' };
+    if (userRole === 'admin') {
+        if (classroomLinkIndex !== -1) {
+            baseNavLinks[classroomLinkIndex] = { ...baseNavLinks[classroomLinkIndex], path: '/admin/classroom' };
         }
+        setCurrentNavLinks(baseNavLinks);
+    } else if (userRole === 'model') {
+        if (classroomLinkIndex !== -1) {
+            baseNavLinks[classroomLinkIndex] = { ...baseNavLinks[classroomLinkIndex], label: 'Mon Profil', path: '/profil' };
+        }
+        setCurrentNavLinks(baseNavLinks);
+    } else {
+        // Not logged in, remove the classroom link
+        const filteredLinks = baseNavLinks.filter(link => link.path !== '/formations');
+        setCurrentNavLinks(filteredLinks);
     }
-    setCurrentNavLinks(newNavLinks);
   }, [userRole, data?.navLinks]);
 
   const handleLogout = () => {
