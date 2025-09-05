@@ -3,7 +3,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
+// FIX: Switched to namespace import for 'react-router-dom' to resolve potential module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const AdminCasting: React.FC = () => {
@@ -136,10 +137,10 @@ const AdminCasting: React.FC = () => {
             <div className="container mx-auto px-6">
                 <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
                     <div>
-                        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                        <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                             <ChevronLeftIcon className="w-5 h-5" />
                             Retour au Tableau de Bord
-                        </Link>
+                        </ReactRouterDOM.Link>
                         <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Candidatures Casting</h1>
                     </div>
                 </div>

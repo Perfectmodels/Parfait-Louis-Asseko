@@ -1,13 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility.
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
 import { useData } from '../contexts/DataContext';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
-// FIX: Rewrote NavLinkItem for v6 compatibility using NavLink's isActive property.
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }> = ({ to, label, onClick }) => {
   return (
     <NavLink
@@ -64,7 +61,6 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  // FIX: Using useNavigate hook from react-router-dom v6.
   const navigate = useNavigate();
   const { data } = useData();
   const siteConfig = data?.siteConfig;
@@ -94,7 +90,6 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     sessionStorage.clear();
-    // FIX: Using navigate for navigation in v6.
     navigate('/login');
   };
 

@@ -3,7 +3,6 @@ import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import Marquee from './Marquee';
-import { useLocation } from 'react-router-dom';
 
 interface LayoutProps {
   children: React.ReactNode;

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// FIX: Using react-router-dom v6 syntax. Replaced useNavigate with useHistory.
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -9,7 +8,6 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  // FIX: Using useNavigate hook from react-router-dom v6.
   const navigate = useNavigate();
   const { data, isInitialized } = useData();
 
@@ -21,7 +19,6 @@ const Login: React.FC = () => {
     if (username.toLowerCase() === 'admin' && password === 'admin2025') {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
-      // FIX: Using navigate for navigation in v6.
       navigate('/admin');
       return;
     }
@@ -33,7 +30,6 @@ const Login: React.FC = () => {
             sessionStorage.setItem('classroom_access', 'granted');
             sessionStorage.setItem('classroom_role', 'model');
             sessionStorage.setItem('userId', loggedInModel.id);
-            // FIX: Using navigate for navigation in v6.
             navigate('/profil');
             return;
         }

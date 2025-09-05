@@ -1,15 +1,17 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { ArticleContent } from '../types';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { useData } from '../contexts/DataContext';
+import { FacebookIcon, WhatsAppIcon, TikTokIcon } from '../components/icons/SocialIcons';
+
 
 const ArticleDetail: React.FC = () => {
   const { data, isInitialized } = useData();
   const { slug } = useParams<{ slug: string }>();
+  const [isCopied, setIsCopied] = useState(false);
   
   const article = data?.articles.find(a => a.slug === slug);
 
@@ -21,6 +23,16 @@ const ArticleDetail: React.FC = () => {
     return <NotFound />;
   }
   
+  const pageUrl = window.location.href;
+  const shareText = `Découvrez cet article de Perfect Models Management : ${article.title}`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(pageUrl).then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+    });
+  };
+
   const renderContent = (content: ArticleContent, index: number) => {
     switch (content.type) {
       case 'heading':
@@ -72,8 +84,9 @@ const ArticleDetail: React.FC = () => {
           <div className="prose prose-invert lg:prose-xl max-w-none">
             {article.content.map(renderContent)}
           </div>
-           {article.tags && article.tags.length > 0 && (
-              <footer className="mt-12 pt-6 border-t border-pm-gold/20">
+          <footer className="mt-12 pt-6 border-t border-pm-gold/20 space-y-8">
+            {article.tags && article.tags.length > 0 && (
+              <div>
                 <h3 className="text-lg font-bold text-pm-off-white/80 mb-3">Tags:</h3>
                 <div className="flex flex-wrap gap-2">
                   {article.tags.map((tag, index) => (
@@ -82,8 +95,24 @@ const ArticleDetail: React.FC = () => {
                     </span>
                   ))}
                 </div>
-              </footer>
+              </div>
             )}
+             <div>
+                <h3 className="text-lg font-bold text-pm-off-white/80 mb-4">Partager l'article :</h3>
+                <div className="flex flex-wrap items-center gap-4">
+                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/60 hover:text-pm-gold hover:drop-shadow-[0_0_5px_#D4AF37] transition-all" aria-label="Partager sur Facebook">
+                        <FacebookIcon />
+                    </a>
+                    <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + pageUrl)}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/60 hover:text-pm-gold hover:drop-shadow-[0_0_5px_#D4AF37] transition-all" aria-label="Partager sur WhatsApp">
+                        <WhatsAppIcon />
+                    </a>
+                    <button onClick={handleCopy} className="text-pm-off-white/60 hover:text-pm-gold hover:drop-shadow-[0_0_5px_#D4AF37] transition-all flex items-center gap-2" aria-label="Copier le lien pour TikTok">
+                        <TikTokIcon />
+                        {isCopied && <span className="text-xs text-pm-gold animate-pulse">Copié !</span>}
+                    </button>
+                </div>
+            </div>
+          </footer>
         </article>
       </div>
     </div>
