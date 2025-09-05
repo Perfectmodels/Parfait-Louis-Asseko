@@ -1,77 +1,81 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
 import { useData } from '../contexts/DataContext';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
 
 const Footer: React.FC = () => {
-  const { data } = useData();
+    const { data } = useData();
+    const siteConfig = data?.siteConfig;
+    const navLinks = data?.navLinks || [];
+    const socialLinks = data?.socialLinks;
+    const contactInfo = data?.contactInfo;
+    
+    const footerLinks = navLinks.filter(link => link.inFooter);
 
-  if (!data) {
-    return <footer className="bg-black border-t border-pm-gold/20"></footer>;
-  }
-  
-  const { navLinks, socialLinks, siteConfig, contactInfo } = data;
+    return (
+        <footer className="bg-black text-pm-off-white/70 border-t-2 border-pm-gold">
+            <div className="container mx-auto px-6 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {/* Logo and About */}
+                    <div className="md:col-span-1">
+                        {siteConfig?.logo && (
+                            <Link to="/">
+                                <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-16 w-auto mb-4" />
+                            </Link>
+                        )}
+                        <p className="text-sm">L'élégance redéfinie. Berceau de talents et plateforme dédiée à l'avenir de la mode africaine.</p>
+                    </div>
 
-  return (
-    <footer className="bg-black border-t border-pm-gold/20 text-pm-off-white/70">
-      <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* About Section */}
-          <div className="md:col-span-2">
-            <Link to="/">
-              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto mb-4" />
-            </Link>
-            <p className="text-sm max-w-md">
-              Fondée en 2021 à Libreville, notre agence se consacre à la formation, la valorisation et l'accompagnement des talents de la mode africaine.
-            </p>
-             <div className="flex space-x-4 mt-6">
-              <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/60 hover:text-pm-gold hover:drop-shadow-[0_0_5px_#D4AF37]" aria-label="Facebook">
-                <FacebookIcon />
-              </a>
-              <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/60 hover:text-pm-gold hover:drop-shadow-[0_0_5px_#D4AF37]" aria-label="Instagram">
-                <InstagramIcon />
-              </a>
-              <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/60 hover:text-pm-gold hover:drop-shadow-[0_0_5px_#D4AF37]" aria-label="YouTube">
-                <YoutubeIcon />
-              </a>
+                    {/* Quick Links */}
+                    <div>
+                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Navigation</h3>
+                        <ul className="space-y-2">
+                            {footerLinks.map(link => (
+                                <li key={link.path}>
+                                    <Link to={link.path} className="hover:text-pm-gold transition-colors text-sm">
+                                        {link.footerLabel || link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Contact Info */}
+                    <div>
+                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Contact</h3>
+                        {contactInfo && (
+                            <ul className="space-y-2 text-sm">
+                                <li>{contactInfo.address}</li>
+                                <li>{contactInfo.phone}</li>
+                                <li><a href={`mailto:${contactInfo.email}`} className="hover:text-pm-gold transition-colors">{contactInfo.email}</a></li>
+                            </ul>
+                        )}
+                    </div>
+                    
+                    {/* Social Media */}
+                    <div>
+                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Suivez-nous</h3>
+                         {socialLinks && (
+                            <div className="flex space-x-4">
+                                {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="Facebook"><FacebookIcon className="w-6 h-6" /></a>}
+                                {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="Instagram"><InstagramIcon className="w-6 h-6" /></a>}
+                                {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="YouTube"><YoutubeIcon className="w-6 h-6" /></a>}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="mt-12 pt-8 border-t border-pm-off-white/10 text-center text-sm">
+                    <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
+                     <div className="mt-2 space-x-4">
+                        <Link to="/terms-of-use" className="hover:text-pm-gold">Conditions d'Utilisation</Link>
+                        <span>|</span>
+                        <Link to="/privacy-policy" className="hover:text-pm-gold">Politique de Confidentialité</Link>
+                    </div>
+                </div>
             </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-base font-bold text-pm-off-white mb-4 uppercase tracking-wider">Liens Rapides</h3>
-            <ul className="space-y-2 text-sm">
-              {navLinks.filter(link => link.inFooter).map(link => (
-                <li key={link.path}>
-                  <Link to={link.path} className="hover:text-pm-gold transition-colors">
-                    {link.footerLabel}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="text-base font-bold text-pm-off-white mb-4 uppercase tracking-wider">Contact</h3>
-            <ul className="space-y-2 text-sm">
-              <li>📧 {contactInfo.email}</li>
-              <li>📱 {contactInfo.phone}</li>
-              <li>📍 {contactInfo.address}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div className="bg-pm-dark py-4 border-t border-pm-gold/10">
-        <div className="container mx-auto px-6 text-center text-xs text-pm-off-white/50">
-          <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
-           <Link to="/login" className="mt-2 inline-block hover:text-pm-gold transition-colors text-pm-off-white/40">
-            Accès Admin
-          </Link>
-        </div>
-      </div>
-    </footer>
-  );
+        </footer>
+    );
 };
 
 export default Footer;
