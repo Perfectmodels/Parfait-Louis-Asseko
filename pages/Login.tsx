@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 // FIX: Using react-router-dom v6 syntax. Replaced useNavigate with useHistory.
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +11,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   // FIX: Using useNavigate hook from react-router-dom v6.
   const navigate = useNavigate();
-  const { data } = useData();
+  const { data, isInitialized } = useData();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,9 +101,10 @@ const Login: React.FC = () => {
             {error && <p className="text-red-500 text-sm !mt-6">{error}</p>}
             <button
               type="submit"
-              className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-lg transition-all duration-300 hover:bg-white !mt-8"
+              disabled={!isInitialized}
+              className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-lg transition-all duration-300 hover:bg-white !mt-8 disabled:opacity-50 disabled:cursor-wait"
             >
-              Entrer
+              {isInitialized ? 'Entrer' : 'Chargement...'}
             </button>
           </form>
         </div>
