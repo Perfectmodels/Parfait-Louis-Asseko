@@ -143,9 +143,11 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                                 {formData.distinctions.map((d, i) => (
                                     <div key={i}>
                                         <p className="font-semibold">{d.name}</p>
-                                        <ul className="list-disc list-inside text-sm text-pm-off-white/80 pl-2">
-                                            {d.titles.map((t, ti) => <li key={ti}>{t}</li>)}
-                                        </ul>
+                                        {d.titles && d.titles.length > 0 && (
+                                            <ul className="list-disc list-inside text-sm text-pm-off-white/80 pl-2">
+                                                {d.titles.map((t, ti) => <li key={ti}>{t}</li>)}
+                                            </ul>
+                                        )}
                                     </div>
                                 ))}
                             </div>

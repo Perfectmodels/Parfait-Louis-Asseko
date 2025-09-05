@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { DataProvider } from './contexts/DataContext';
@@ -106,6 +107,22 @@ const AppContent: React.FC = () => {
 
 
 const App: React.FC = () => {
+  // Register the service worker when the app mounts
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swUrl = `${window.location.origin}/sw.js`;
+        navigator.serviceWorker.register(swUrl)
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(error => {
+            console.error('ServiceWorker registration failed: ', error);
+          });
+      });
+    }
+  }, []);
+
   return (
     <DataProvider>
       <Router>
