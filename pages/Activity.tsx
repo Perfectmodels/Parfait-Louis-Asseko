@@ -1,8 +1,9 @@
 
+
 import React, { useState, useEffect } from 'react';
-// FIX: Using react-router-dom v5 syntax. Replaced useNavigate with useHistory.
-import { useHistory, Link } from 'react-router-dom';
-import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+// FIX: Using react-router-dom v6 syntax. Replaced useHistory with useNavigate.
+import { useNavigate, Link } from 'react-router-dom';
+import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
 import { QuizQuestion, Module } from '../types';
@@ -76,6 +77,18 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                                  <span className="hidden md:inline">Déconnexion</span>
                              </button>
                         </section>
+                        
+                        <div className="mb-12">
+                            <Link to="/formations/forum" className="group block w-full text-left p-6 bg-pm-gold/10 border-2 border-dashed border-pm-gold/30 hover:border-pm-gold hover:bg-pm-gold/20 transition-all duration-300">
+                                <div className="flex items-center gap-4">
+                                    <ChatBubbleBottomCenterTextIcon className="w-10 h-10 text-pm-gold flex-shrink-0" />
+                                    <div>
+                                        <h3 className="text-xl font-bold text-pm-gold">Rejoindre le Forum de Discussion</h3>
+                                        <p className="text-sm text-pm-off-white/80">Échangez avec les autres mannequins, posez vos questions et partagez votre expérience.</p>
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
                     
                         <section aria-label="Modules de formation" className="space-y-4">
                             {courseData.map((module, index) => (
@@ -237,23 +250,23 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleSlug: string }> = ({
 // --- MAIN COMPONENT ---
 const Formations: React.FC = () => {
     const { data, isInitialized } = useData();
-    // FIX: Using useHistory hook from react-router-dom v5.
-    const history = useHistory();
+    // FIX: Using useNavigate hook from react-router-dom v6.
+    const navigate = useNavigate();
 
     useEffect(() => {
         const hasAccess = sessionStorage.getItem('classroom_access');
         if (hasAccess !== 'granted') {
-            // FIX: Using history.replace for navigation in v5.
-            history.replace('/login');
+            // FIX: Using navigate for navigation in v6.
+            navigate('/login', { replace: true });
         }
-    }, [history]);
+    }, [navigate]);
 
     const handleLogout = () => {
         sessionStorage.removeItem('classroom_access');
         sessionStorage.removeItem('classroom_role');
         sessionStorage.removeItem('userId');
-        // FIX: Using history.push for navigation in v5.
-        history.push('/login');
+        // FIX: Using navigate for navigation in v6.
+        navigate('/login');
     };
 
     if (!isInitialized || !data) {

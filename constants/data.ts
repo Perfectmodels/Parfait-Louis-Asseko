@@ -1,10 +1,10 @@
 
 
-import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem } from '../types';
+import { Model, Stylist, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumMessage } from '../types';
 import { AcademicCapIcon, CameraIcon, FilmIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 export const siteConfig = {
-  logo: "https://i.ibb.co/dKqY7b4/PMM-logo-2024.png"
+  logo: "https://i.ibb.co/4ZkBXbSX/logopmm.png"
 };
 
 export const contactInfo: ContactInfo = {
@@ -29,6 +29,8 @@ export const apiKeys: ApiKeys = {
 export const castingApplications: CastingApplication[] = [];
 
 export const fashionDayApplications: FashionDayApplication[] = [];
+
+export const classroomForumMessages: ForumMessage[] = [];
 
 export const newsItems: NewsItem[] = [
   {
