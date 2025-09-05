@@ -13,16 +13,9 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, agencyPartners, fashionDayEvents, articles, newsItems, siteImages } = data;
+  const { agencyInfo, agencyPartners, fashionDayEvents, newsItems, siteImages } = data;
 
   const latestNews = newsItems.slice(0, 3);
-
-  const magazineArticlesPreview = articles.slice(0, 3).map(article => ({
-      image: article.imageUrl,
-      category: article.category,
-      title: article.title,
-      link: `/magazine/${article.slug}`
-  }));
 
   return (
     <div className="text-pm-off-white">
@@ -49,7 +42,7 @@ const Home: React.FC = () => {
              <Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
                 Découvrir nos mannequins
             </Link>
-            <Link to="/casting" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
+            <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
                 Rejoindre l'agence
             </Link>
           </div>
@@ -118,45 +111,14 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Magazine Preview */}
-      <section className="py-20 bg-pm-dark">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-playfair text-pm-gold text-center mb-4">Magazine Focus</h2>
-          <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
-              Plongez dans l'univers de la mode avec nos articles exclusifs, interviews et analyses de tendances.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {magazineArticlesPreview.map(article => (
-              <Link to={article.link} key={article.title} className="group block bg-black border border-pm-gold/20 overflow-hidden shadow-lg shadow-black/30 hover:border-pm-gold hover:shadow-xl hover:shadow-pm-gold/20 transition-all duration-300 transform hover:-translate-y-2">
-                <div className="relative h-80 overflow-hidden">
-                  <img src={article.image} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                </div>
-                <div className="p-6">
-                  <p className="text-sm uppercase tracking-widest text-pm-gold font-bold">{article.category}</p>
-                  <h3 className="text-xl font-playfair text-pm-off-white mt-2 mb-4 group-hover:text-pm-gold transition-colors">{article.title}</h3>
-                  <span className="inline-block text-sm font-bold text-pm-gold group-hover:underline">
-                    Lire la suite →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-           <div className="text-center mt-12">
-              <Link to="/magazine" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                  Lire le magazine
-              </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Join Us CTA */}
-       <section className="py-20 bg-black text-center">
+       <section className="py-20 bg-pm-dark text-center">
             <div className="container mx-auto px-6">
                 <h2 className="text-4xl font-playfair text-pm-gold mb-4">Devenez le Prochain Visage de la Mode</h2>
                 <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
                     Prêt à lancer votre carrière ? Nous sommes toujours à la recherche de nouveaux talents.
                 </p>
-                <Link to="/casting" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+                <Link to="/casting-formulaire" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
                     Postuler maintenant
                 </Link>
             </div>

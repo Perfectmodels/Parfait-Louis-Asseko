@@ -169,7 +169,7 @@ const Header: React.FC = () => {
                    <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
                  </button>
               ) : (
-                <Link to="/casting" onClick={() => setIsOpen(false)} className="block w-full text-center px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full shadow-lg shadow-pm-gold/30 transition-all duration-300 hover:bg-white hover:scale-105">
+                <Link to="/casting-formulaire" onClick={() => setIsOpen(false)} className="block w-full text-center px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full shadow-lg shadow-pm-gold/30 transition-all duration-300 hover:bg-white hover:scale-105">
                    Rejoindre l'agence
                 </Link>
               )}

@@ -172,9 +172,9 @@ export interface CastingApplication {
   portfolioLink: string;
 
   // Photo URLs from storage
-  photoPortraitUrl: string | null;
-  photoFullBodyUrl: string | null;
-  photoProfileUrl: string | null;
+  photoPortraitUrl?: string | null;
+  photoFullBodyUrl?: string | null;
+  photoProfileUrl?: string | null;
 }
 
 export type FashionDayApplicationRole = 'Mannequin' | 'Styliste' | 'Partenaire' | 'Photographe' | 'MUA' | 'Autre';

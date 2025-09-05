@@ -10,7 +10,6 @@ import FashionDay from './pages/FashionDay';
 import Magazine from './pages/Magazine';
 import ArticleDetail from './pages/ArticleDetail';
 import Contact from './pages/Contact';
-import Casting from './pages/Casting';
 import CastingForm from './pages/CastingForm';
 import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
 import Activity from './pages/Activity'; // Named Formations in nav
@@ -38,6 +37,7 @@ import ForumThread from './pages/ForumThread';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfUse from './pages/TermsOfUse';
 import { useEffect } from 'react';
+import Services from './pages/Services';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -64,8 +64,8 @@ const AppContent: React.FC = () => {
                     <Route path="/fashion-day" element={<FashionDay />} />
                     <Route path="/magazine" element={<Magazine />} />
                     <Route path="/magazine/:slug" element={<ArticleDetail />} />
+                    <Route path="/services" element={<Services />} />
                     <Route path="/contact" element={<Contact />} />
-                    <Route path="/casting" element={<Casting />} />
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                     <Route path="/login" element={<Login />} />
