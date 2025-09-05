@@ -2,11 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
-import { AIAssistantProps, Testimonial, Partner, ApiKeys } from '../types';
+import { Testimonial, Partner } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import AIAssistant from '../components/AIAssistant';
 import ImageInput from '../components/ImageInput';
 
 type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData'>;
@@ -14,7 +13,6 @@ type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData'>;
 const AdminSettings: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localData, setLocalData] = useState<EditableData | null>(null);
-    const [assistantProps, setAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'> | null>(null);
 
     useEffect(() => {
         if (isInitialized && data) {
@@ -132,12 +130,7 @@ const AdminSettings: React.FC = () => {
                                     <FormTextArea 
                                         label="Citation" 
                                         value={item.quote} 
-                                        onChange={e => onChange('quote', e.target.value)} 
-                                        onAssistantClick={() => setAssistantProps({
-                                            fieldName: `Témoignage de ${item.name}`,
-                                            initialPrompt: `Rédige un témoignage court, authentique et positif pour ${item.name}, qui est "${item.role}" chez nous. Le témoignage doit mettre en avant le professionnalisme, l'esprit de famille ou les opportunités offertes par l'agence.`,
-                                            onInsertContent: (content) => onChange('quote', content)
-                                        })}
+                                        onChange={e => onChange('quote', e.target.value)}
                                     />
                                 </>
                             )}
@@ -148,7 +141,6 @@ const AdminSettings: React.FC = () => {
                 </div>
             </div>
         </div>
-        {assistantProps && <AIAssistant isOpen={!!assistantProps} onClose={() => setAssistantProps(null)} {...assistantProps} />}
         </>
     );
 };
@@ -160,28 +152,18 @@ const SectionWrapper: React.FC<{ title: string, children: React.ReactNode }> = (
     </div>
 );
 
-const FormInput: React.FC<{label: string, value: any, onChange: any, onAssistantClick?: () => void}> = ({label, value, onChange, onAssistantClick}) => (
+const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-            {onAssistantClick && (
-                <button type="button" onClick={onAssistantClick} className="flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
-                    <SparklesIcon className="w-4 h-4" /> Assister
-                </button>
-            )}
         </div>
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, value: any, onChange: any, onAssistantClick?: () => void}> = ({label, value, onChange, onAssistantClick}) => (
+const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-            {onAssistantClick && (
-                <button type="button" onClick={onAssistantClick} className="flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
-                    <SparklesIcon className="w-4 h-4" /> Assister
-                </button>
-            )}
         </div>
         <textarea value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
     </div>

@@ -1,17 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Module, Chapter, AIAssistantProps } from '../types';
+import { Module, Chapter } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import AIAssistant from '../components/AIAssistant';
 
 const AdminClassroom: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
   const [course, setCourse] = useState<Module[] | null>(null);
   const [openModule, setOpenModule] = useState<number | null>(null);
-  const [assistantProps, setAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'> | null>(null);
 
   useEffect(() => {
     if (isInitialized && data?.courseData) {
@@ -90,17 +88,6 @@ const AdminClassroom: React.FC = () => {
     updatedCourse[moduleIndex].chapters = updatedChapters;
     setCourse(updatedCourse);
   };
-  
-  const openAIAssistant = (moduleIndex: number, chapterIndex: number) => {
-    const chapter = course[moduleIndex].chapters[chapterIndex];
-    setAssistantProps({
-        fieldName: `Contenu : ${chapter.title}`,
-        initialPrompt: `Rédige un cours de niveau universitaire, détaillé, riche et structuré pour un chapitre de formation de mannequinat intitulé "${chapter.title}". Le contenu doit être complet, avec des exemples concrets et des conseils professionnels. Sépare les paragraphes par un saut de ligne.`,
-        onInsertContent: (content) => {
-            handleChapterChange(moduleIndex, chapterIndex, 'content', content);
-        }
-    });
-  }
 
   const handleSave = () => {
     if (!data || !course) return;
@@ -164,7 +151,7 @@ const AdminClassroom: React.FC = () => {
                                         <button onClick={() => handleDeleteChapter(moduleIndex, chapterIndex)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
                                     </div>
                                     <FormInput label={`Titre du Chapitre`} value={chapter.title} onChange={(e) => handleChapterChange(moduleIndex, chapterIndex, 'title', e.target.value)} />
-                                    <FormTextArea label="Contenu du Chapitre" value={chapter.content} onChange={(e) => handleChapterChange(moduleIndex, chapterIndex, 'content', e.target.value)} onAssistantClick={() => openAIAssistant(moduleIndex, chapterIndex)} />
+                                    <FormTextArea label="Contenu du Chapitre" value={chapter.content} onChange={(e) => handleChapterChange(moduleIndex, chapterIndex, 'content', e.target.value)} />
                                 </div>
                             ))}
                         </div>
@@ -175,7 +162,6 @@ const AdminClassroom: React.FC = () => {
         </div>
       </div>
     </div>
-    {assistantProps && <AIAssistant isOpen={!!assistantProps} onClose={() => setAssistantProps(null)} {...assistantProps} />}
     </>
   );
 };
@@ -186,15 +172,10 @@ const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label,
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, value: any, onChange: any, onAssistantClick?: () => void}> = ({label, value, onChange, onAssistantClick}) => (
+const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-            {onAssistantClick && (
-                <button type="button" onClick={onAssistantClick} className="flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
-                    <SparklesIcon className="w-4 h-4" /> Assister
-                </button>
-            )}
         </div>
         <textarea value={value} onChange={onChange} rows={10} className="admin-input admin-textarea" />
     </div>

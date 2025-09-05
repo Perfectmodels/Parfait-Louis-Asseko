@@ -16,7 +16,7 @@ const ModelDashboard: React.FC = () => {
     const [editableModel, setEditableModel] = useState<Model | null>(null);
 
     const originalModel = data?.models.find(m => m.id === userId);
-    const courseModulesWithQuizzes = data?.courseData.filter(m => m.quiz && m.quiz.length > 0);
+    const courseModulesWithQuizzes = data?.courseData?.filter(m => m.quiz && m.quiz.length > 0) || [];
 
     useEffect(() => {
         if (originalModel) {

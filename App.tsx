@@ -16,7 +16,6 @@ import Contact from './pages/Contact';
 import Casting from './pages/Casting';
 import CastingForm from './pages/CastingForm';
 import Login from './pages/Login';
-import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
 import { DataProvider } from './contexts/DataContext';
 import Admin from './pages/Admin';
@@ -68,7 +67,6 @@ const App: React.FC = () => {
             <Route path="/casting" element={<Casting />} />
             <Route path="/casting-formulaire" element={<CastingForm />} />
             <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
-            <Route path="/chat" element={<Chat />} />
             <Route path="/login" element={<Login />} />
 
             {/* Model Routes */}

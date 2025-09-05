@@ -192,7 +192,14 @@ export interface FashionDayApplication {
   status: FashionDayApplicationStatus;
 }
 
-// FIX: Added missing AIAssistantProps interface to resolve import errors.
+export interface ForumMessage {
+  id: string;
+  userId: string; // Corresponds to Model.id
+  userName: string;
+  text: string;
+  timestamp: string; // ISO 8601 format
+}
+// FIX: Add missing AIAssistantProps interface to fix type error
 export interface AIAssistantProps {
   isOpen: boolean;
   onClose: () => void;
@@ -200,12 +207,4 @@ export interface AIAssistantProps {
   fieldName: string;
   initialPrompt: string;
   jsonSchema?: any;
-}
-
-export interface ForumMessage {
-  id: string;
-  userId: string; // Corresponds to Model.id
-  userName: string;
-  text: string;
-  timestamp: string; // ISO 8601 format
 }
