@@ -38,6 +38,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfUse from './pages/TermsOfUse';
 import { useEffect } from 'react';
 import Services from './pages/Services';
+import AdminRecovery from './pages/AdminRecovery';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -93,6 +94,7 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/suivi-classroom" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/acces-mannequins" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
                     <Route path="/admin/actualites" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
+                    <Route path="/admin/recuperation" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
                     
                     <Route path="*" element={<NotFound />} />
                 </Routes>

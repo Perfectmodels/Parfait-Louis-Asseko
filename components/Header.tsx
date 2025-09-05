@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
@@ -53,131 +53,96 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string }> = ({ o
         aria-label="Déconnexion"
     >
         <ArrowRightOnRectangleIcon className="w-5 h-5" />
-        <span className="hidden md:inline">Déconnexion</span>
+        <span className="hidden sm:inline">Déconnexion</span>
     </button>
 );
+
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { data } = useData();
   const location = useLocation();
   const navigate = useNavigate();
-  const { data } = useData();
-  const siteConfig = data?.siteConfig;
-  
-  const [currentNavLinks, setCurrentNavLinks] = useState(data?.navLinks || []);
+
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const role = sessionStorage.getItem('classroom_role');
-    const hasAccess = sessionStorage.getItem('classroom_access') === 'granted';
-    setUserRole(hasAccess ? role : null);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (!data?.navLinks) return;
-
-    const baseNavLinks = [...data.navLinks];
-    const classroomLinkIndex = baseNavLinks.findIndex(link => link.path === '/formations');
-
-    if (userRole === 'admin') {
-        if (classroomLinkIndex !== -1) {
-            baseNavLinks[classroomLinkIndex] = { ...baseNavLinks[classroomLinkIndex], path: '/admin/classroom' };
-        }
-        setCurrentNavLinks(baseNavLinks);
-    } else if (userRole === 'model') {
-        if (classroomLinkIndex !== -1) {
-            baseNavLinks[classroomLinkIndex] = { ...baseNavLinks[classroomLinkIndex], label: 'Mon Profil', path: '/profil' };
-        }
-        setCurrentNavLinks(baseNavLinks);
-    } else {
-        // Not logged in, remove the classroom link
-        const filteredLinks = baseNavLinks.filter(link => link.path !== '/formations');
-        setCurrentNavLinks(filteredLinks);
-    }
-  }, [userRole, data?.navLinks]);
+    const access = sessionStorage.getItem('classroom_access') === 'granted';
+    setUserRole(role);
+    setIsLoggedIn(access);
+    
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 30);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [location]);
 
   const handleLogout = () => {
     sessionStorage.clear();
+    setIsLoggedIn(false);
+    setUserRole(null);
     navigate('/login');
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  
-  useEffect(() => {
     setIsOpen(false);
-  }, [location]);
+  };
+  
+  const siteConfig = data?.siteConfig;
+  const navLinksFromData = data?.navLinks || [];
+
+  const processedNavLinks = useMemo(() => {
+    return navLinksFromData.map(link => {
+        if (link.label === 'Classroom') {
+            if (userRole === 'model') {
+                return { ...link, label: 'Mon Profil', path: '/profil' };
+            }
+            if (userRole === 'admin') {
+                return { ...link, path: '/admin/classroom' };
+            }
+            return null;
+        }
+        return link;
+    }).filter((link): link is { path: string; label: string; inFooter: boolean; footerLabel?: string; } => link !== null);
+  }, [navLinksFromData, userRole]);
 
   return (
-    <>
-      <header className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-pm-dark/95 backdrop-blur-md shadow-lg shadow-pm-gold/10' : 'bg-transparent'}`}>
-        <div className="container mx-auto px-6 py-2 flex justify-between items-center">
-          <Link to="/">
-            {siteConfig?.logo && <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />}
+    <header 
+      className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
+        isScrolled ? 'bg-black/80 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'
+      }`}
+    >
+      <div className="container mx-auto px-6 h-20 flex justify-between items-center">
+        {siteConfig?.logo && (
+          <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+            <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />
           </Link>
-          <nav className="hidden md:flex items-center space-x-8">
-            <NavLinks navLinks={currentNavLinks} />
-            {userRole && <LogoutButton onClick={handleLogout} />}
-          </nav>
-          <div className="md:hidden">
-            <button onClick={() => setIsOpen(true)} className="text-pm-gold focus:outline-none" aria-label="Ouvrir le menu">
-              <MenuIcon />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <div className={`md:hidden fixed inset-0 z-50 ${isOpen ? 'block' : 'hidden'}`} role="dialog" aria-modal="true">
-        <div 
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
-          onClick={() => setIsOpen(false)}
-          aria-hidden="true"
-        ></div>
+        )}
         
-        <div 
-          className={`fixed top-0 right-0 h-full w-4/5 max-w-xs bg-pm-dark transform shadow-2xl shadow-pm-gold/20 ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out`}
-        >
-          <div className="p-6 h-full flex flex-col">
-            <div className="flex justify-end items-center mb-10">
-              <button onClick={() => setIsOpen(false)} className="text-pm-gold focus:outline-none" aria-label="Fermer le menu">
-                <CloseIcon />
-              </button>
-            </div>
-            <nav className="flex flex-col space-y-5 text-pm-off-white text-base uppercase tracking-wider flex-grow">
-              <NavLinks onLinkClick={() => setIsOpen(false)} navLinks={currentNavLinks} />
-            </nav>
-            <div className="mt-auto">
-              {userRole ? (
-                 <button onClick={() => { handleLogout(); setIsOpen(false); }} className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                   <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
-                 </button>
-              ) : (
-                <Link to="/casting-formulaire" onClick={() => setIsOpen(false)} className="block w-full text-center px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full shadow-lg shadow-pm-gold/30 transition-all duration-300 hover:bg-white hover:scale-105">
-                   Rejoindre l'agence
-                </Link>
-              )}
-            </div>
-          </div>
+        <nav className="hidden lg:flex items-center gap-8">
+          <NavLinks navLinks={processedNavLinks} />
+          {isLoggedIn && <LogoutButton onClick={handleLogout} />}
+        </nav>
+
+        <div className="lg:hidden flex items-center">
+            {isLoggedIn && <LogoutButton onClick={handleLogout} className="mr-4" />}
+            <button onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50">
+                {isOpen ? <CloseIcon /> : <MenuIcon />}
+            </button>
         </div>
       </div>
-    </>
+      
+      <div 
+        className={`lg:hidden fixed top-0 left-0 w-full h-full bg-black/95 backdrop-blur-lg transition-transform duration-300 ease-in-out z-40 ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <nav className="h-full flex flex-col items-center justify-center gap-8 pt-28">
+          <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} />
+        </nav>
+      </div>
+    </header>
   );
 };
 

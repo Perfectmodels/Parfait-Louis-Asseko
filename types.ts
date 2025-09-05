@@ -50,6 +50,7 @@ export interface Service {
   icon: string;
   title: string;
   description: string;
+  isComingSoon?: boolean;
 }
 
 export interface AchievementCategory {
@@ -215,6 +216,14 @@ export interface ArticleComment {
   authorName: string; // "Anonyme" or model name
   createdAt: string;
   content: string;
+}
+
+export interface RecoveryRequest {
+  id: string;
+  modelName: string;
+  phone: string;
+  timestamp: string;
+  status: 'Nouveau' | 'Traité';
 }
 
 // FIX: Add missing AIAssistantProps interface to fix type error

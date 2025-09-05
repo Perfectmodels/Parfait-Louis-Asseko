@@ -1,8 +1,6 @@
-
-
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -16,6 +14,7 @@ import {
     forumThreads as initialForumThreads,
     forumReplies as initialForumReplies,
     articleComments as initialArticleComments,
+    recoveryRequests as initialRecoveryRequests,
     newsItems as initialNewsItems, 
     navLinks as initialNavLinks, 
     fashionDayEvents as initialFashionDayEvents, 
@@ -65,6 +64,7 @@ export interface AppData {
     forumThreads: ForumThread[];
     forumReplies: ForumReply[];
     articleComments: ArticleComment[];
+    recoveryRequests: RecoveryRequest[];
 }
 
 export const useDataStore = () => {
@@ -82,6 +82,7 @@ export const useDataStore = () => {
         forumThreads: initialForumThreads,
         forumReplies: initialForumReplies,
         articleComments: initialArticleComments,
+        recoveryRequests: initialRecoveryRequests,
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,
@@ -102,14 +103,15 @@ export const useDataStore = () => {
         
         const listener = dbRef.on('value', (snapshot) => {
             const dbData = snapshot.val();
+            const initialData = getInitialData();
             if (dbData) {
-                // Ensure all fields from initialData are present, useful for schema updates
-                const initialData = getInitialData();
                 const mergedData = { ...initialData, ...dbData };
+                // Definitive fix: Always use the navigation links from the code.
+                // This prevents stale database data from overriding the app's structure.
+                mergedData.navLinks = initialData.navLinks;
                 setData(mergedData);
             } else {
                 // If DB is empty, seed it with initial data
-                const initialData = getInitialData();
                 dbRef.set(initialData).then(() => {
                     setData(initialData);
                     console.log("Firebase database seeded with initial data.");

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon, SparklesIcon, BuildingStorefrontIcon, CalendarDaysIcon, PresentationChartLineIcon, KeyIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
+import { UserGroupIcon, NewspaperIcon, AcademicCapIcon, Cog6ToothIcon, ClipboardDocumentListIcon, SparklesIcon, BuildingStorefrontIcon, CalendarDaysIcon, PresentationChartLineIcon, KeyIcon, MegaphoneIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
 const Admin: React.FC = () => {
@@ -14,6 +14,7 @@ const Admin: React.FC = () => {
   const modelCount = data.models.length;
   const newCastingCount = data.castingApplications.filter(app => app.status === 'Nouveau').length;
   const newFashionDayCount = data.fashionDayApplications.filter(app => app.status === 'Nouveau').length;
+  const newRecoveryCount = data.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -25,10 +26,11 @@ const Admin: React.FC = () => {
         </p>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             <StatCard icon={UserGroupIcon} value={modelCount} label="Mannequins Actifs" />
-            <StatCard icon={ClipboardDocumentListIcon} value={newCastingCount} label="Nouvelles Candidatures Casting" link="/admin/candidatures-casting" />
-            <StatCard icon={SparklesIcon} value={newFashionDayCount} label="Nouvelles Candidatures PFD" link="/admin/fashion-day-apps" />
+            <StatCard icon={ClipboardDocumentListIcon} value={newCastingCount} label="Candidatures Casting" link="/admin/candidatures-casting" />
+            <StatCard icon={SparklesIcon} value={newFashionDayCount} label="Candidatures PFD" link="/admin/fashion-day-apps" />
+            <StatCard icon={QuestionMarkCircleIcon} value={newRecoveryCount} label="Demandes Récupération" link="/admin/recuperation" />
         </div>
 
         {/* Management Section */}
@@ -94,6 +96,12 @@ const Admin: React.FC = () => {
             link="/admin/fashion-day-apps"
           />
            <AdminCard
+            icon={QuestionMarkCircleIcon}
+            title="Demandes Récupération"
+            description="Traiter les demandes de coordonnées oubliées des mannequins."
+            link="/admin/recuperation"
+          />
+           <AdminCard
             icon={Cog6ToothIcon}
             title="Paramètres Généraux"
             description="Modifier logo, images, contact, partenaires et témoignages."
@@ -114,8 +122,8 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ icon: Icon, value, label, link }) => {
     const content = (
-        <div className="bg-black p-6 border border-pm-gold/20 text-center shadow-lg shadow-black/30 h-full flex flex-col justify-center items-center transform transition-transform duration-300 hover:-translate-y-2">
-            <Icon className="w-12 h-12 text-pm-gold mb-4" />
+        <div className="group bg-black p-6 border border-pm-gold/20 text-center shadow-lg shadow-black/30 h-full flex flex-col justify-center items-center transform transition-transform duration-300 hover:-translate-y-2">
+            <Icon className="w-12 h-12 text-pm-gold mb-4 transition-transform duration-300 group-hover:scale-110" />
             <p className="text-5xl font-playfair text-white font-bold">{value}</p>
             <p className="text-sm uppercase tracking-wider text-pm-off-white/60 mt-2">{label}</p>
         </div>
