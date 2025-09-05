@@ -9,8 +9,7 @@ const CastingForm: React.FC = () => {
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
-        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: '',
-        photoPortraitUrl: '', photoFullBodyUrl: '', photoProfileUrl: ''
+        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
@@ -34,9 +33,6 @@ const CastingForm: React.FC = () => {
             id: `casting-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
-            photoPortraitUrl: formData.photoPortraitUrl || null,
-            photoFullBodyUrl: formData.photoFullBodyUrl || null,
-            photoProfileUrl: formData.photoProfileUrl || null,
         };
 
         try {
@@ -48,8 +44,7 @@ const CastingForm: React.FC = () => {
             setFormData({ // Reset form
                 firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
                 gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
-                eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: '',
-                photoPortraitUrl: '', photoFullBodyUrl: '', photoProfileUrl: ''
+                eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
             });
 
         } catch (error) {
@@ -107,7 +102,7 @@ const CastingForm: React.FC = () => {
                         </div>
                     </Section>
                     
-                     <Section title="Expérience & Photos">
+                     <Section title="Expérience & Portfolio">
                         <FormSelect label="Niveau d'expérience" name="experience" value={formData.experience} onChange={handleChange} required>
                             <option value="none">Aucune expérience</option>
                             <option value="beginner">Débutant(e) (shootings amateurs)</option>
@@ -118,10 +113,9 @@ const CastingForm: React.FC = () => {
                             <FormInput label="Profil Instagram" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="@pseudo" />
                             <FormInput label="Lien vers portfolio (optionnel)" name="portfolioLink" value={formData.portfolioLink} onChange={handleChange} />
                         </div>
-                        <p className="text-xs text-pm-off-white/60">Pour les photos, veuillez héberger vos images sur un service comme <a href="https://postimages.org/" target="_blank" rel="noopener noreferrer" className="underline text-pm-gold">Postimages</a> et coller les liens directs ci-dessous.</p>
-                        <FormInput label="URL Photo Portrait (visage)" name="photoPortraitUrl" value={formData.photoPortraitUrl} onChange={handleChange} required />
-                        <FormInput label="URL Photo Plein-pied" name="photoFullBodyUrl" value={formData.photoFullBodyUrl} onChange={handleChange} required />
-                        <FormInput label="URL Photo de Profil" name="photoProfileUrl" value={formData.photoProfileUrl} onChange={handleChange} required />
+                        <p className="text-sm text-pm-off-white/60 bg-pm-dark/50 p-3 rounded-md border border-pm-off-white/10">
+                            Note : Pour simplifier cette première étape, nous ne demandons pas de photos immédiatement. Si votre profil est présélectionné, nous vous contacterons par email pour vous demander de nous envoyer vos polas (photos naturelles).
+                        </p>
                     </Section>
 
                     <div className="pt-6">
