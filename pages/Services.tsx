@@ -1,8 +1,34 @@
 import React from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import ServiceCard from '../components/ServiceCard';
 import { Link } from 'react-router-dom';
+import { AcademicCapIcon, CameraIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { Service } from '../types';
+
+const iconMap: { [key: string]: React.ElementType } = {
+  UserGroupIcon, AcademicCapIcon, CameraIcon, SparklesIcon, ScaleIcon, GlobeAltIcon
+};
+
+const ServiceDetail: React.FC<{ service: Service }> = ({ service }) => {
+    const Icon = iconMap[service.icon] || HeartIcon;
+    return (
+        <div className="bg-black p-8 border border-pm-gold/10 flex flex-col md:flex-row items-center gap-8 rounded-lg shadow-lg">
+            <div className="flex-shrink-0 text-center">
+                <Icon className="w-20 h-20 text-pm-gold mx-auto mb-4" />
+            </div>
+            <div className="flex-grow text-center md:text-left">
+                <h3 className="text-3xl font-playfair text-pm-gold mb-3">{service.title}</h3>
+                <p className="text-pm-off-white/80 mb-6">{service.description}</p>
+                <Link 
+                    to={`/contact?service=${encodeURIComponent(service.title)}`}
+                    className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-md shadow-pm-gold/20"
+                >
+                    Demander un devis
+                </Link>
+            </div>
+        </div>
+    );
+};
 
 const Services: React.FC = () => {
     const { data } = useData();
@@ -17,32 +43,17 @@ const Services: React.FC = () => {
             />
             <div className="container mx-auto px-6">
                 <div className="text-center mb-16">
-                    <h1 className="text-5xl font-playfair text-pm-gold mb-4">Nos Services</h1>
+                    <h1 className="text-5xl font-playfair text-pm-gold mb-4">Nos Services sur Mesure</h1>
                     <p className="max-w-3xl mx-auto text-pm-off-white/80">
-                        De la gestion de carrière à la production d'événements, notre expertise couvre tous les aspects de l'industrie de la mode pour garantir le succès de nos talents et de nos clients.
+                        Nous offrons une gamme complète de services pour répondre aux besoins spécifiques de nos clients et pour assurer le développement de carrière de nos mannequins.
                     </p>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="space-y-8 max-w-5xl mx-auto">
                     {services.map((service, index) => (
-                        <ServiceCard key={index} service={service} />
+                        <ServiceDetail key={index} service={service} />
                     ))}
                 </div>
-
-                <section className="mt-24 text-center bg-black p-12 border border-pm-gold/20 rounded-lg shadow-lg">
-                    <h2 className="text-3xl font-playfair text-pm-gold mb-4">Prêt à collaborer ?</h2>
-                    <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
-                        Que vous soyez un talent en devenir ou une marque à la recherche de visages d'exception, nous avons une solution pour vous.
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                            Devenir Mannequin
-                        </Link>
-                         <Link to="/contact" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                            Booker un Mannequin
-                        </Link>
-                    </div>
-                </section>
             </div>
         </div>
     );

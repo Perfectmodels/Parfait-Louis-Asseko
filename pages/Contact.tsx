@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -6,12 +7,22 @@ import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/So
 
 const Contact: React.FC = () => {
     const { data } = useData();
+    const location = useLocation();
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
     
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
+    
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const service = params.get('service');
+        if (service) {
+            setFormData(prev => ({ ...prev, subject: `Demande de devis pour : ${service}` }));
+        }
+    }, [location.search]);
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
