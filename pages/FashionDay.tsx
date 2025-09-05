@@ -28,20 +28,20 @@ const FashionDay: React.FC = () => {
 
   return (
     <>
-      <div className="bg-pm-dark text-pm-off-white py-20">
+      <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24">
         <SEO 
           title="Perfect Fashion Day | L'Événement Mode de Référence"
           description="Vibrez au rythme du Perfect Fashion Day, l'événement mode incontournable à Libreville. Revivez les éditions, découvrez les créateurs gabonais et les moments forts qui célèbrent la mode africaine."
           keywords="perfect fashion day, défilé de mode gabon, événement mode libreville, créateurs gabonais, mode africaine, fashion week gabon"
         />
         <div className="container mx-auto px-6">
-          <h1 className="text-6xl font-playfair text-pm-gold text-center mb-4">Perfect Fashion Day</h1>
-          <p className="text-center text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-12">
+          <h1 className="text-5xl md:text-6xl font-playfair text-pm-gold text-center mb-4">Perfect Fashion Day</h1>
+          <p className="text-center text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-10 lg:mb-14">
             Plus qu'un défilé, une célébration de la créativité, de la culture et de l'identité gabonaise.
           </p>
 
           {/* Edition Selector */}
-          <div className="flex justify-center gap-4 mb-12">
+          <div className="flex justify-center gap-4 mb-10 lg:mb-14">
             {fashionDayEvents.map(event => (
               <button
                 key={event.edition}

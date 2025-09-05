@@ -114,10 +114,10 @@ const Header: React.FC = () => {
           isScrolled ? 'bg-black/80 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'
         }`}
       >
-        <div className="container mx-auto px-6 h-20 flex justify-between items-center">
+        <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
             <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
-              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />
+              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
             </Link>
           )}
           

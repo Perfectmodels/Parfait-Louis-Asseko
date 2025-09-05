@@ -50,7 +50,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* About Us Preview */}
-      <section className="py-20 bg-black">
+      <section className="py-16 lg:py-24 bg-black">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
@@ -70,7 +70,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Testimonials Carousel */}
-      <section className="py-20 bg-pm-dark">
+      <section className="py-16 lg:py-24 bg-pm-dark">
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-playfair text-pm-gold text-center mb-4">Ce qu'ils disent de nous</h2>
           <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
@@ -82,10 +82,10 @@ const Home: React.FC = () => {
       
       {/* Perfect Fashion Day Preview */}
       <section 
-        className="py-24 bg-cover bg-center bg-fixed" 
+        className="py-20 lg:py-28 bg-cover bg-center bg-fixed" 
         style={{ backgroundImage: `url('${siteImages.fashionDayBg}')`}}
       >
-        <div className="container mx-auto px-6 text-center bg-black/80 py-12 backdrop-blur-sm">
+        <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm">
             <h2 className="text-4xl font-playfair text-pm-gold mb-4">Perfect Fashion Day</h2>
             <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
                 {fashionDayEvents.find(e => e.edition === 2)?.description}
@@ -97,7 +97,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* News & Events Section */}
-      <section className="py-20 bg-black">
+      <section className="py-16 lg:py-24 bg-black">
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-playfair text-pm-gold text-center mb-4">Actualités & Événements</h2>
           <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
@@ -112,7 +112,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Join Us CTA */}
-       <section className="py-20 bg-pm-dark text-center">
+       <section className="py-16 lg:py-24 bg-pm-dark text-center">
             <div className="container mx-auto px-6">
                 <h2 className="text-4xl font-playfair text-pm-gold mb-4">Devenez le Prochain Visage de la Mode</h2>
                 <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">

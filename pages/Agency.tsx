@@ -8,7 +8,7 @@ import ServiceCard from '../components/ServiceCard';
 
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <h2 className="text-4xl font-playfair text-pm-gold text-center mb-12">{children}</h2>
+  <h2 className="text-4xl font-playfair text-pm-gold text-center mb-10 lg:mb-14">{children}</h2>
 );
 
 const Agency: React.FC = () => {
@@ -21,13 +21,13 @@ const Agency: React.FC = () => {
   const { agencyInfo, modelDistinctions, agencyTimeline, agencyServices, agencyAchievements, agencyPartners, siteImages } = data;
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-20">
+    <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24">
       <SEO 
         title="L'Agence | Notre Histoire et Nos Valeurs"
         description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence, et les services qui font de nous un leader de la mode au Gabon."
         keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
       />
-      <div className="container mx-auto px-6 space-y-24">
+      <div className="container mx-auto px-6 space-y-20 lg:space-y-28">
 
         {/* À Propos */}
         <section>

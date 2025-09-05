@@ -158,23 +158,23 @@ const AdminCasting: React.FC = () => {
                         <table className="w-full text-left">
                             <thead className="bg-pm-dark/50">
                                 <tr className="border-b border-pm-gold/20">
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Nom</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Âge</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Taille</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden sm:table-cell">Date</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Statut</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 text-right">Actions</th>
+                                    <th className="p-3 md:p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Nom</th>
+                                    <th className="p-3 md:p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Âge</th>
+                                    <th className="p-3 md:p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Taille</th>
+                                    <th className="p-3 md:p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden sm:table-cell">Date</th>
+                                    <th className="p-3 md:p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Statut</th>
+                                    <th className="p-3 md:p-4 uppercase text-xs tracking-wider text-pm-off-white/70 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredApps.map(app => (
                                     <tr key={app.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
-                                        <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
-                                        <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{calculateAge(app.birthDate)}</td>
-                                        <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{app.height} cm</td>
-                                        <td className="p-4 text-pm-off-white/80 text-sm hidden sm:table-cell">{new Date(app.submissionDate).toLocaleDateString()}</td>
-                                        <td className="p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
-                                        <td className="p-4">
+                                        <td className="p-3 md:p-4 font-semibold">{app.firstName} {app.lastName}</td>
+                                        <td className="p-3 md:p-4 text-pm-off-white/80 hidden md:table-cell">{calculateAge(app.birthDate)}</td>
+                                        <td className="p-3 md:p-4 text-pm-off-white/80 hidden md:table-cell">{app.height} cm</td>
+                                        <td className="p-3 md:p-4 text-pm-off-white/80 text-sm hidden sm:table-cell">{new Date(app.submissionDate).toLocaleDateString()}</td>
+                                        <td className="p-3 md:p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
+                                        <td className="p-3 md:p-4">
                                             <div className="flex items-center justify-end gap-4">
                                                 <button onClick={() => setSelectedApp(app)} className="text-pm-gold/70 hover:text-pm-gold"><EyeIcon className="w-5 h-5"/></button>
                                                 <button onClick={() => handleDelete(app.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
