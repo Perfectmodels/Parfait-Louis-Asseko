@@ -1,45 +1,47 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { DataProvider } from './contexts/DataContext';
-import Layout from './components/Layout';
-import Home from './pages/Home';
-import Agency from './pages/Agency';
-import Models from './pages/Models';
-import ModelDetail from './pages/ModelDetail';
-import FashionDay from './pages/FashionDay';
-import Magazine from './pages/Magazine';
-import ArticleDetail from './pages/ArticleDetail';
-import Contact from './pages/Contact';
-import CastingForm from './pages/CastingForm';
-import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
-import Activity from './pages/Activity'; // Named Formations in nav
-import ChapterDetail from './pages/ChapterDetail';
-import Login from './pages/Login';
-import ModelDashboard from './pages/ModelDashboard';
-import Admin from './pages/Admin';
-import AdminModels from './pages/AdminModels';
-import AdminMagazine from './pages/AdminMagazine';
-import AdminClassroom from './pages/AdminClassroom';
-import AdminSettings from './pages/AdminSettings';
-import AdminCasting from './pages/AdminCasting';
-import AdminFashionDay from './pages/AdminFashionDay';
-import AdminAgency from './pages/AdminAgency';
-import AdminFashionDayEvents from './pages/AdminFashionDayEvents';
-import AdminClassroomProgress from './pages/AdminClassroomProgress';
-import AdminModelAccess from './pages/AdminModelAccess';
-import AdminNews from './pages/AdminNews';
-import ProtectedRoute from './components/ProtectedRoute';
-import NotFound from './pages/NotFound';
-import Chat from './pages/Chat';
 import AIAssistantIcon from './components/AIAssistantIcon';
-import ClassroomForum from './pages/ClassroomForum';
-import ForumThread from './pages/ForumThread';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfUse from './pages/TermsOfUse';
-import { useEffect } from 'react';
-import Services from './pages/Services';
+import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
+import { DataProvider } from './contexts/DataContext';
+import Activity from './pages/Activity'; // Named Formations in nav
+import Admin from './pages/Admin';
+import AdminAgency from './pages/AdminAgency';
+import AdminCasting from './pages/AdminCasting';
+import AdminClassroom from './pages/AdminClassroom';
+import AdminClassroomProgress from './pages/AdminClassroomProgress';
+import AdminFashionDay from './pages/AdminFashionDay';
+import AdminFashionDayEvents from './pages/AdminFashionDayEvents';
+import AdminMagazine from './pages/AdminMagazine';
+import AdminModelAccess from './pages/AdminModelAccess';
+import AdminModels from './pages/AdminModels';
+import AdminNews from './pages/AdminNews';
 import AdminRecovery from './pages/AdminRecovery';
+import AdminSettings from './pages/AdminSettings';
+import Agency from './pages/Agency';
+import ArticleDetail from './pages/ArticleDetail';
+import CastingForm from './pages/CastingForm';
+import ChapterDetail from './pages/ChapterDetail';
+import Chat from './pages/Chat';
+import ClassroomForum from './pages/ClassroomForum';
+import Contact from './pages/Contact';
+import FashionDay from './pages/FashionDay';
+import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
+import ForumThread from './pages/ForumThread';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Magazine from './pages/Magazine';
+import ModelDashboard from './pages/ModelDashboard';
+import ModelDetail from './pages/ModelDetail';
+import Models from './pages/Models';
+import NotFound from './pages/NotFound';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Services from './pages/Services';
+import TermsOfUse from './pages/TermsOfUse';
+import JuryCasting from './pages/JuryCasting';
+import RegistrationCasting from './pages/RegistrationCasting';
+
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -53,7 +55,7 @@ const ScrollToTop = () => {
 // Component to decide whether to show AI icon
 const AppContent: React.FC = () => {
     const location = useLocation();
-    const hideAIAssistant = location.pathname.startsWith('/admin') || location.pathname === '/chat';
+    const hideAIAssistant = location.pathname.startsWith('/admin') || location.pathname.startsWith('/jury') || location.pathname.startsWith('/enregistrement') || location.pathname === '/chat';
 
     return (
         <>
@@ -81,6 +83,12 @@ const AppContent: React.FC = () => {
                     <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="model"><ChapterDetail /></ProtectedRoute>} />
                     <Route path="/formations/forum" element={<ProtectedRoute role="model"><ClassroomForum /></ProtectedRoute>} />
                     <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="model"><ForumThread /></ProtectedRoute>} />
+
+                    {/* Protected Jury Routes */}
+                    <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
+                    
+                    {/* Protected Registration Staff Routes */}
+                    <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
 
                     {/* Protected Admin Routes */}
                     <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
@@ -111,13 +119,12 @@ const App: React.FC = () => {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        const swUrl = `${window.location.origin}/sw.js`;
-        navigator.serviceWorker.register(swUrl)
+        navigator.serviceWorker.register('/sw.js')
           .then(registration => {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            console.log('Service Worker registered:', registration);
           })
           .catch(error => {
-            console.error('ServiceWorker registration failed: ', error);
+            console.error('Service Worker registration failed:', error);
           });
       });
     }

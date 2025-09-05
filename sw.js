@@ -2,8 +2,7 @@ const CACHE_NAME = 'pmm-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  'https://i.ibb.co/L9hVbYf/logo-pm-gold.png',
-  'https://i.ibb.co/4ZkBXbSX/logopmm.png',
+  'https://i.ibb.co/fVBxPNTP/T-shirt.png',
   'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
   'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500&display=swap',
 ];

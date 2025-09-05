@@ -40,7 +40,39 @@ const Login: React.FC = () => {
             return;
         }
     }
+
+    // Jury Login
+    if (data?.juryMembers) {
+        const loggedInJury = data.juryMembers.find(j => 
+            j.username.toLowerCase() === username.toLowerCase()
+        );
+        
+        if (loggedInJury && loggedInJury.password === password) {
+            sessionStorage.setItem('classroom_access', 'granted');
+            sessionStorage.setItem('classroom_role', 'jury');
+            sessionStorage.setItem('userId', loggedInJury.id);
+            sessionStorage.setItem('userName', loggedInJury.name); // Store name for display
+            navigate('/jury/casting');
+            return;
+        }
+    }
     
+    // Registration Staff Login
+    if (data?.registrationStaff) {
+        const loggedInStaff = data.registrationStaff.find(s => 
+            s.username.toLowerCase() === username.toLowerCase()
+        );
+        
+        if (loggedInStaff && loggedInStaff.password === password) {
+            sessionStorage.setItem('classroom_access', 'granted');
+            sessionStorage.setItem('classroom_role', 'registration');
+            sessionStorage.setItem('userId', loggedInStaff.id);
+            sessionStorage.setItem('userName', loggedInStaff.name);
+            navigate('/enregistrement/casting');
+            return;
+        }
+    }
+
     setError('Identifiant ou mot de passe incorrect.');
     setPassword('');
   };

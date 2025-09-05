@@ -147,6 +147,29 @@ export interface ApiKeys {
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
 
+export interface JuryScore {
+  physique: number;
+  presence: number;
+  photogenie: number;
+  potentiel: number;
+  notes?: string;
+  overall: number;
+}
+
+export interface JuryMember {
+  id: string;
+  name: string;
+  username: string;
+  password: string;
+}
+
+export interface RegistrationStaff {
+  id: string;
+  name: string;
+  username: string;
+  password: string;
+}
+
 export interface CastingApplication {
   id: string;
   submissionDate: string;
@@ -177,6 +200,12 @@ export interface CastingApplication {
   photoPortraitUrl?: string | null;
   photoFullBodyUrl?: string | null;
   photoProfileUrl?: string | null;
+
+  scores?: {
+    [juryId: string]: JuryScore;
+  };
+  
+  passageNumber?: number;
 }
 
 export type FashionDayApplicationRole = 'Mannequin' | 'Styliste' | 'Partenaire' | 'Photographe' | 'MUA' | 'Autre';
