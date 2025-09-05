@@ -1,8 +1,8 @@
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff } from '../types';
 import { NavLink } from '../hooks/useDataStore';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/L9hVbYf/logo-pm-gold.png',
+  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
 };
 
 export const navLinks: NavLink[] = [
@@ -40,6 +40,19 @@ export const siteImages: SiteImages = {
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
 };
+
+export const juryMembers: JuryMember[] = [
+    { id: 'jury1', name: 'Martelly', username: 'jury1', password: 'password2025' },
+    { id: 'jury2', name: 'Darain', username: 'jury2', password: 'password2025' },
+    { id: 'jury3', name: 'David', username: 'jury3', password: 'password2025' },
+    { id: 'jury4', name: 'Sadia', username: 'jury4', password: 'password2025' },
+];
+
+export const registrationStaff: RegistrationStaff[] = [
+    { id: 'reg1', name: 'Chloé', username: 'enregistrement1', password: 'password2025' },
+    { id: 'reg2', name: 'Lucas', username: 'enregistrement2', password: 'password2025' },
+    { id: 'reg3', name: 'Manon', username: 'enregistrement3', password: 'password2025' },
+];
 
 export const models: Model[] = [
     {

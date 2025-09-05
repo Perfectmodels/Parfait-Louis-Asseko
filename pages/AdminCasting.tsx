@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
+import { AppData } from '../hooks/useDataStore';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
-// FIX: Switched to namespace import for 'react-router-dom' to resolve potential module resolution issues.
 import * as ReactRouterDOM from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -34,7 +34,6 @@ const AdminCasting: React.FC = () => {
 
     const handleUpdateStatus = async (appId: string, newStatus: CastingApplicationStatus) => {
         if (!data) return;
-        // FIX: Add explicit type annotation to resolve type inference issue.
         const updatedApps: CastingApplication[] = localApps.map(app => app.id === appId ? { ...app, status: newStatus } : app);
         await saveData({ ...data, castingApplications: updatedApps });
         if (selectedApp?.id === appId) {
@@ -101,7 +100,6 @@ const AdminCasting: React.FC = () => {
         };
 
         const updatedModels = [...data.models, newModel];
-        // FIX: Add explicit type annotation to resolve type inference issue.
         const updatedApps: CastingApplication[] = localApps.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
 
         try {
@@ -189,14 +187,18 @@ const AdminCasting: React.FC = () => {
                 </div>
             </div>
         </div>
-        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} onValidateAndCreateModel={handleValidateAndCreateModel} getStatusColor={getStatusColor} />}
+        {selectedApp && <ApplicationModal app={selectedApp} data={data} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} onValidateAndCreateModel={handleValidateAndCreateModel} getStatusColor={getStatusColor} />}
         </>
     );
 };
 
-const ApplicationModal: React.FC<{app: CastingApplication, onClose: () => void, onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, onValidateAndCreateModel: (app: CastingApplication) => void, getStatusColor: (status: CastingApplicationStatus) => string}> = ({ app, onClose, onUpdateStatus, onValidateAndCreateModel, getStatusColor }) => {
+const ApplicationModal: React.FC<{app: CastingApplication, data: AppData | null, onClose: () => void, onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, onValidateAndCreateModel: (app: CastingApplication) => void, getStatusColor: (status: CastingApplicationStatus) => string}> = ({ app, data, onClose, onUpdateStatus, onValidateAndCreateModel, getStatusColor }) => {
     
     const actionButtonClasses = "w-full text-center p-2 rounded-md font-bold uppercase text-xs tracking-wider border transition-colors hover:bg-opacity-30";
+    
+    const juryScores = app.scores ? Object.entries(app.scores) : [];
+    const overallScores = juryScores.map(([, score]) => score.overall);
+    const averageScore = overallScores.length > 0 ? (overallScores.reduce((a, b) => a + b, 0) / overallScores.length).toFixed(1) : null;
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
@@ -209,6 +211,7 @@ const ApplicationModal: React.FC<{app: CastingApplication, onClose: () => void, 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="md:col-span-2 space-y-4">
                              <Section title="Informations Personnelles">
+                                {app.passageNumber && <InfoItem label="N° de Passage" value={`#${String(app.passageNumber).padStart(3, '0')}`} />}
                                 <InfoItem label="Nom" value={`${app.firstName} ${app.lastName}`} />
                                 <InfoItem label="Email" value={app.email} />
                                 <InfoItem label="Téléphone" value={app.phone} />
@@ -256,10 +259,27 @@ const ApplicationModal: React.FC<{app: CastingApplication, onClose: () => void, 
                                     </p>
                                 </div>
                             </Section>
-                            <Section title="Photos">
-                                <PhotoItem label="Portrait" url={app.photoPortraitUrl} />
-                                <PhotoItem label="Plein-pied" url={app.photoFullBodyUrl} />
-                                <PhotoItem label="Profil" url={app.photoProfileUrl} />
+                            <Section title={`Notes du Jury ${averageScore ? `(Moyenne: ${averageScore}/10)` : ''}`}>
+                                {juryScores.length > 0 ? (
+                                    juryScores.map(([juryId, score]) => {
+                                        const juryMember = data?.juryMembers.find(j => j.id === juryId);
+                                        return (
+                                            <div key={juryId} className="p-2 bg-pm-dark/50 rounded mt-2">
+                                                <p className="font-bold text-pm-off-white/80">{juryMember?.name || juryId}</p>
+                                                <div className="text-xs grid grid-cols-2 gap-x-2">
+                                                    <span>Physique: {score.physique}/10</span>
+                                                    <span>Présence: {score.presence}/10</span>
+                                                    <span>Photogénie: {score.photogenie}/10</span>
+                                                    <span>Potentiel: {score.potentiel}/10</span>
+                                                </div>
+                                                {score.notes && <p className="text-xs italic mt-1 text-pm-off-white/60">Notes: {score.notes}</p>}
+                                                <p className="text-right font-bold text-pm-gold">Note Globale: {score.overall.toFixed(1)}/10</p>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <p className="text-sm text-pm-off-white/60">Aucune note n'a encore été attribuée.</p>
+                                )}
                             </Section>
                         </div>
                     </div>
@@ -279,16 +299,6 @@ const InfoItem: React.FC<{label: string, value: React.ReactNode}> = ({label, val
     <div className="grid grid-cols-2 text-sm">
         <strong className="text-pm-off-white/70">{label}:</strong>
         <span className="truncate">{value}</span>
-    </div>
-);
-const PhotoItem: React.FC<{label: string, url: string | null}> = ({label, url}) => (
-    <div>
-        <p className="text-sm font-bold mb-1">{label}</p>
-        {url ? (
-            <a href={url} target="_blank" rel="noreferrer">
-                <img src={url} alt={label} className="w-full h-auto object-cover rounded-md border-2 border-pm-gold/50 hover:border-pm-gold" />
-            </a>
-        ) : <p className="text-xs text-pm-off-white/60">Non fournie</p>}
     </div>
 );
 

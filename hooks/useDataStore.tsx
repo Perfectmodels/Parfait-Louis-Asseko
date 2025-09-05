@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -25,7 +25,9 @@ import {
     agencyServices as initialAgencyServices, 
     agencyAchievements as initialAgencyAchievements, 
     agencyPartners as initialAgencyPartners, 
-    testimonials as initialTestimonials 
+    testimonials as initialTestimonials,
+    juryMembers as initialJuryMembers,
+    registrationStaff as initialRegistrationStaff
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -65,6 +67,8 @@ export interface AppData {
     forumReplies: ForumReply[];
     articleComments: ArticleComment[];
     recoveryRequests: RecoveryRequest[];
+    juryMembers: JuryMember[];
+    registrationStaff: RegistrationStaff[];
 }
 
 export const useDataStore = () => {
@@ -96,6 +100,8 @@ export const useDataStore = () => {
         testimonials: initialTestimonials,
         articles: initialArticles,
         courseData: initialCourseData,
+        juryMembers: initialJuryMembers,
+        registrationStaff: initialRegistrationStaff,
     }), []);
     
     useEffect(() => {

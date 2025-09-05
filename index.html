@@ -1,215 +1,106 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+<head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="https://i.ibb.co/fVBxPNTP/T-shirt.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfect Models Management</title>
     
-    <!-- SEO & Social Sharing Meta Tags -->
-    <meta name="description" content="Perfect Models Management : l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine." />
-    <meta name="keywords" content="mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting" />
-    <meta name="author" content="Perfect Models Management">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:title" content="Perfect Models Management | L'Élégance Redéfinie" />
-    <meta property="og:description" content="L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://perfectmodels.ga/" />
-    <meta property="og:image" content="https://i.ibb.co/4ZkBXbSX/logopmm.png" />
-    <meta property="og:image:secure_url" content="https://i.ibb.co/4ZkBXbSX/logopmm.png" />
-    <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Un mannequin défilant sur le podium lors d'un événement de Perfect Models Management" />
-    <meta property="og:site_name" content="Perfect Models Management" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://perfectmodels.ga/">
-    <meta name="twitter:title" content="Perfect Models Management | L'Élégance Redéfinie">
-    <meta name="twitter:description" content="L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine.">
-    <meta name="twitter:image" content="https://i.ibb.co/4ZkBXbSX/logopmm.png" />
-    <meta name="twitter:image:alt" content="Un mannequin défilant sur le podium lors d'un événement de Perfect Models Management">
-
-    <!-- PWA & Mobile App Settings -->
-    <meta name="theme-color" content="#D4AF37" />
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="PMM" />
-    <link rel="apple-touch-icon" href="https://i.ibb.co/4ZkBXbSX/logopmm.png" />
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://i.ibb.co/4ZkBXbSX/logopmm.png" />
-    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- ES Module Imports -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://aistudiocdn.com/react@^19.1.1/",
+        "react": "https://aistudiocdn.com/react@^19.1.1",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+        "firebase/": "https://aistudiocdn.com/firebase@^12.2.1/",
+        "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.8.2",
+        "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/"
+      }
+    }
+    </script>
+    
+    <!-- Custom Styles & Tailwind Config -->
+    <style type="text/tailwindcss">
+      @layer base {
+        body {
+          font-family: 'Montserrat', sans-serif;
+        }
+        .font-playfair {
+          font-family: 'Playfair Display', serif;
+        }
+      }
+      .admin-input {
+        @apply w-full bg-pm-dark border border-pm-off-white/30 rounded-lg p-3 text-pm-off-white focus:outline-none focus:border-pm-gold transition-colors;
+      }
+      .admin-textarea {
+        @apply resize-y;
+      }
+      .animate-marquee {
+        animation: marquee 60s linear infinite;
+      }
+      @keyframes marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      @media print {
+        body * { visibility: hidden; }
+        .printable-content, .printable-content * { visibility: visible; }
+        .printable-content { position: absolute; left: 0; top: 0; width: 100%; }
+        .print-hide { display: none; }
+      }
+    </style>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              'pm-gold': '#D4AF37',
               'pm-dark': '#111111',
-              'pm-off-white': '#F4F4F4',
+              'pm-gold': '#D4AF37',
+              'pm-off-white': '#f0f0f0',
             },
             fontFamily: {
               'playfair': ['"Playfair Display"', 'serif'],
               'montserrat': ['"Montserrat"', 'sans-serif'],
             },
             animation: {
-              'marquee': 'marquee 150s linear infinite',
-              'pulse-slow': 'pulse-slow 3s infinite',
+                'marquee': 'marquee 60s linear infinite',
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'fade-in': 'fadeIn 0.5s ease-in-out',
             },
             keyframes: {
-              marquee: {
-                'from': { transform: 'translateX(0)' },
-                'to': { transform: 'translateX(-100%)' },
-              },
-              'pulse-slow': {
-                '0%, 100%': {
-                  transform: 'scale(1)',
-                  boxShadow: '0 0 0 0 rgba(212, 175, 55, 0.7)',
+                marquee: {
+                    '0%': { transform: 'translateX(0%)' },
+                    '100%': { transform: 'translateX(-50%)' },
                 },
-                '50%': {
-                  transform: 'scale(1.05)',
-                  boxShadow: '0 0 0 10px rgba(212, 175, 55, 0)',
+                fadeIn: {
+                    '0%': { opacity: 0 },
+                    '100%': { opacity: 1 },
                 },
-              }
             }
           }
         }
       }
     </script>
-    <style>
-      html {
-        scroll-behavior: smooth;
-      }
-      body {
-        background-color: #111111;
-        color: #F4F4F4;
-        font-family: 'Montserrat', sans-serif;
-      }
-      
-      /* Global Transitions */
-      *, *::before, *::after {
-        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
-      }
-      
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #1a1a1a;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #D4AF37;
-        border-radius: 5px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #e6c35c;
-      }
-      
-      /* Improved Admin Form Styles */
-      .admin-input {
-          width: 100%;
-          background-color: #000;
-          border: 1px solid rgba(244, 244, 244, 0.2);
-          padding: 0.75rem;
-          border-radius: 0.25rem;
-          outline: none;
-          box-shadow: none;
-      }
-      .admin-input:focus {
-          border-color: #D4AF37;
-          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
-      }
-      .admin-textarea {
-          min-height: 120px;
-      }
-      
-      @media print {
-        @page {
-          size: A4;
-          margin: 2cm 1.5cm;
-        }
-
-        body {
-          background-color: #FFFFFF !important;
-          color: #000000 !important;
-        }
-
-        /* Robust printing: Hide everything by default */
-        body * {
-          visibility: hidden;
-        }
-        
-        /* Make only the designated printable area and its children visible */
-        .printable-content, .printable-content * {
-          visibility: visible;
-        }
-        
-        /* Position the printable content to fill the page */
-        .printable-content {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-        }
-
-        /* Reset and apply print-specific styles to the article content */
-        article {
-          border: none !important;
-          padding: 0 !important;
-          box-shadow: none !important;
-          color: #000000 !important;
-          font-family: serif;
-          font-size: 12pt;
-          line-height: 1.4;
-        }
-        
-        article *, article p {
-          color: #000000 !important;
-        }
-
-        article header p {
-          font-size: 10pt;
-          color: #555 !important;
-        }
-
-        article h1 {
-          font-family: serif !important;
-          font-size: 24pt;
-          font-weight: bold;
-          margin-bottom: 1cm;
-        }
-
-        article div p {
-          margin-bottom: 0.5cm;
-        }
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "react/": "https://aistudiocdn.com/react@^19.1.1/",
-    "react": "https://aistudiocdn.com/react@^19.1.1",
-    "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^6.23.1",
-    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js",
-    "firebase/database": "https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js",
-    "firebase/": "https://aistudiocdn.com/firebase@^12.2.1/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0"
-  }
-}
-</script>
 </head>
-  <body>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
-  </body>
+</body>
 </html>
