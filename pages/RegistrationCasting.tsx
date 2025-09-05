@@ -6,7 +6,12 @@ import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const RegistrationCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
-    const [formData, setFormData] = useState({ firstName: '', lastName: '', phone: '' });
+    const initialFormState = {
+        firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
+        gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
+        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
+    };
+    const [formData, setFormData] = useState(initialFormState);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const staffName = sessionStorage.getItem('userName');
@@ -17,7 +22,7 @@ const RegistrationCasting: React.FC = () => {
             .sort((a, b) => a.passageNumber! - b.passageNumber!) || [];
     }, [data?.castingApplications]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
@@ -33,25 +38,19 @@ const RegistrationCasting: React.FC = () => {
         
         const nextPassageNumber = existingPassageNumbers.length > 0 ? Math.max(...existingPassageNumbers) + 1 : 1;
 
-        const newApplicant: Partial<CastingApplication> = {
+        const newApplicant: CastingApplication = {
+            ...formData,
             id: `reg-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Présélectionné', // Automatically prescreened as they are on-site
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phone: formData.phone,
             passageNumber: nextPassageNumber,
-            // Fill with default/empty values
-            birthDate: '', email: '', nationality: '', city: '', gender: 'Femme', height: '', weight: '',
-            chest: '', waist: '', hips: '', shoeSize: '', eyeColor: '', hairColor: '', experience: 'none',
-            instagram: '', portfolioLink: ''
         };
 
-        const updatedApplications = [...data.castingApplications, newApplicant as CastingApplication];
+        const updatedApplications = [...data.castingApplications, newApplicant];
 
         try {
             await saveData({ ...data, castingApplications: updatedApplications });
-            setFormData({ firstName: '', lastName: '', phone: '' });
+            setFormData(initialFormState); // Reset form
         } catch (error) {
             console.error(error);
             alert("Erreur lors de l'enregistrement.");
@@ -79,16 +78,44 @@ const RegistrationCasting: React.FC = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Registration Form */}
                         <div className="lg:col-span-1">
-                            <form onSubmit={handleRegister} className="bg-black p-6 border border-pm-gold/20 rounded-lg space-y-4">
+                            <form onSubmit={handleRegister} className="bg-black p-6 border border-pm-gold/20 rounded-lg space-y-6">
                                 <h2 className="text-2xl font-playfair text-pm-gold flex items-center gap-2">
                                     <UserPlusIcon className="w-6 h-6" />
                                     Ajouter un Postulant
                                 </h2>
-                                <FormInput label="Prénom" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
-                                <FormInput label="Nom" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
-                                <FormInput label="Téléphone (Optionnel)" name="phone" value={formData.phone} onChange={handleInputChange} />
+                                
+                                <Section title="Informations Personnelles">
+                                    <FormInput label="Prénom" name="firstName" value={formData.firstName} onChange={handleChange} required />
+                                    <FormInput label="Nom" name="lastName" value={formData.lastName} onChange={handleChange} required />
+                                    <FormInput label="Date de Naissance" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} />
+                                    <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange}>
+                                        <option value="Femme">Femme</option>
+                                        <option value="Homme">Homme</option>
+                                    </FormSelect>
+                                    <FormInput label="Téléphone" name="phone" value={formData.phone} onChange={handleChange} />
+                                    <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
+                                </Section>
+
+                                <Section title="Mensurations">
+                                    <FormInput label="Taille (cm)" name="height" type="number" value={formData.height} onChange={handleChange} />
+                                    <FormInput label="Poids (kg)" name="weight" type="number" value={formData.weight} onChange={handleChange} />
+                                    <FormInput label="Pointure (EU)" name="shoeSize" type="number" value={formData.shoeSize} onChange={handleChange} />
+                                    <FormInput label="Poitrine (cm)" name="chest" type="number" value={formData.chest} onChange={handleChange} />
+                                    <FormInput label="Taille (vêtement, cm)" name="waist" type="number" value={formData.waist} onChange={handleChange} />
+                                    <FormInput label="Hanches (cm)" name="hips" type="number" value={formData.hips} onChange={handleChange} />
+                                </Section>
+
+                                <Section title="Expérience">
+                                    <FormSelect label="Niveau d'expérience" name="experience" value={formData.experience} onChange={handleChange}>
+                                        <option value="none">Aucune expérience</option>
+                                        <option value="beginner">Débutant(e)</option>
+                                        <option value="intermediate">Intermédiaire</option>
+                                        <option value="professional">Professionnel(le)</option>
+                                    </FormSelect>
+                                </Section>
+
                                 <button type="submit" disabled={isSubmitting} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
-                                    {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+                                    {isSubmitting ? 'Enregistrement...' : 'Enregistrer et Attribuer Numéro'}
                                 </button>
                             </form>
                         </div>
@@ -136,10 +163,23 @@ const RegistrationCasting: React.FC = () => {
     );
 };
 
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, required?: boolean}> = (props) => (
+// Reusable components
+const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
+    <div className="space-y-4 pt-4 border-t border-pm-gold/10 first:pt-0 first:border-none">
+        <h3 className="text-lg font-playfair text-pm-gold">{title}</h3>
+        {children}
+    </div>
+);
+const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-2">{props.label}</label>
-        <input {...props} id={props.name} type="text" className="admin-input" />
+        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{props.label}</label>
+        <input {...props} id={props.name} className="admin-input" />
+    </div>
+);
+const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, children: React.ReactNode}> = (props) => (
+    <div>
+        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{props.label}</label>
+        <select {...props} id={props.name} className="admin-input">{props.children}</select>
     </div>
 );
 
