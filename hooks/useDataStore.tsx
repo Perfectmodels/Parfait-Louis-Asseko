@@ -1,135 +1,138 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, CastingApplicationStatus, FashionDayApplicationStatus, ForumMessage } from '../types';
-import { db } from '../firebaseConfig';
 
-// Import initial data from the constants files for seeding purposes
+import { useState, useEffect, useCallback } from 'react';
+import { db } from '../firebaseConfig';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumMessage, Article, Module } from '../types';
+
+// Import initial data to seed the database if it's empty
 import { 
     models as initialModels, 
+    siteConfig as initialSiteConfig, 
+    contactInfo as initialContactInfo, 
+    siteImages as initialSiteImages, 
+    apiKeys as initialApiKeys, 
+    castingApplications as initialCastingApplications, 
+    fashionDayApplications as initialFashionDayApplications, 
+    classroomForumMessages as initialClassroomForumMessages, 
+    newsItems as initialNewsItems, 
+    navLinks as initialNavLinks, 
     fashionDayEvents as initialFashionDayEvents, 
+    socialLinks as initialSocialLinks, 
     agencyTimeline as initialAgencyTimeline, 
     agencyInfo as initialAgencyInfo, 
-    // FIX: Corrected typo in import name from 'modelDistinction' to 'modelDistinctions'.
     modelDistinctions as initialModelDistinctions, 
     agencyServices as initialAgencyServices, 
     agencyAchievements as initialAgencyAchievements, 
     agencyPartners as initialAgencyPartners, 
-    testimonials as initialTestimonials, 
-    socialLinks as initialSocialLinks,
-    siteConfig as initialSiteConfig,
-    navLinks as initialNavLinks,
-    contactInfo as initialContactInfo,
-    siteImages as initialSiteImages,
-    apiKeys as initialApiKeys,
-    castingApplications as initialCastingApplications,
-    fashionDayApplications as initialFashionDayApplications,
-    newsItems as initialNewsItems,
-    classroomForumMessages as initialClassroomForumMessages
+    testimonials as initialTestimonials 
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
 
-export interface AppData {
-  models: Model[];
-  articles: Article[];
-  newsItems: NewsItem[];
-  courseData: Module[];
-  testimonials: Testimonial[];
-  fashionDayEvents: FashionDayEvent[];
-  agencyInfo: any; 
-  agencyTimeline: { year: string; event: string }[];
-  modelDistinctions: ModelDistinction[];
-  agencyServices: Service[];
-  agencyAchievements: AchievementCategory[];
-  agencyPartners: Partner[];
-  socialLinks: { facebook: string; instagram: string; youtube: string; };
-  siteConfig: { logo: string; };
-  navLinks: any[];
-  contactInfo: ContactInfo;
-  siteImages: SiteImages;
-  apiKeys: ApiKeys;
-  castingApplications: CastingApplication[];
-  fashionDayApplications: FashionDayApplication[];
-  classroomForumMessages: ForumMessage[];
+export interface NavLink {
+    path: string;
+    label: string;
+    inFooter: boolean;
+    footerLabel?: string;
 }
 
-const getSeedData = (): AppData => ({
-  models: initialModels,
-  articles: initialArticles,
-  newsItems: initialNewsItems,
-  courseData: initialCourseData,
-  testimonials: initialTestimonials,
-  fashionDayEvents: initialFashionDayEvents,
-  agencyInfo: initialAgencyInfo,
-  agencyTimeline: initialAgencyTimeline,
-  modelDistinctions: initialModelDistinctions,
-  agencyServices: initialAgencyServices,
-  agencyAchievements: initialAgencyAchievements,
-  agencyPartners: initialAgencyPartners,
-  socialLinks: initialSocialLinks,
-  siteConfig: initialSiteConfig,
-  navLinks: initialNavLinks,
-  contactInfo: initialContactInfo,
-  siteImages: initialSiteImages,
-  apiKeys: initialApiKeys,
-  castingApplications: initialCastingApplications,
-  fashionDayApplications: initialFashionDayApplications,
-  classroomForumMessages: initialClassroomForumMessages,
-});
+export interface AppData {
+    siteConfig: { logo: string };
+    navLinks: NavLink[];
+    socialLinks: { facebook: string; instagram: string; youtube: string; };
+    agencyTimeline: { year: string; event: string; }[];
+    agencyInfo: {
+        about: { p1: string; p2: string; };
+        values: { name: string; description: string; }[];
+    };
+    modelDistinctions: ModelDistinction[];
+    agencyServices: Service[];
+    agencyAchievements: AchievementCategory[];
+    agencyPartners: Partner[];
+    models: Model[];
+    fashionDayEvents: FashionDayEvent[];
+    testimonials: Testimonial[];
+    articles: Article[];
+    courseData: Module[];
+    contactInfo: ContactInfo;
+    siteImages: SiteImages;
+    apiKeys: ApiKeys;
+    castingApplications: CastingApplication[];
+    fashionDayApplications: FashionDayApplication[];
+    newsItems: NewsItem[];
+    classroomForumMessages: ForumMessage[];
+}
 
 export const useDataStore = () => {
-  const [data, setData] = useState<AppData | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+    const [data, setData] = useState<AppData | null>(null);
+    const [isInitialized, setIsInitialized] = useState(false);
 
-  useEffect(() => {
-    const loadData = async () => {
-      console.log("Attempting to load data from Firebase...");
-      const dbRef = db.ref('/');
-      try {
-        const snapshot = await dbRef.get();
-        const seedData = getSeedData();
+    const getInitialData = useCallback((): AppData => ({
+        models: initialModels,
+        siteConfig: initialSiteConfig,
+        contactInfo: initialContactInfo,
+        siteImages: initialSiteImages,
+        apiKeys: initialApiKeys,
+        castingApplications: initialCastingApplications,
+        fashionDayApplications: initialFashionDayApplications,
+        classroomForumMessages: initialClassroomForumMessages,
+        newsItems: initialNewsItems,
+        navLinks: initialNavLinks,
+        fashionDayEvents: initialFashionDayEvents,
+        socialLinks: initialSocialLinks,
+        agencyTimeline: initialAgencyTimeline,
+        agencyInfo: initialAgencyInfo,
+        modelDistinctions: initialModelDistinctions,
+        agencyServices: initialAgencyServices,
+        agencyAchievements: initialAgencyAchievements,
+        agencyPartners: initialAgencyPartners,
+        testimonials: initialTestimonials,
+        articles: initialArticles,
+        courseData: initialCourseData,
+    }), []);
+    
+    useEffect(() => {
+        const dbRef = db.ref('/');
+        
+        const listener = dbRef.on('value', (snapshot) => {
+            const dbData = snapshot.val();
+            if (dbData) {
+                // Ensure all fields from initialData are present, useful for schema updates
+                const initialData = getInitialData();
+                const mergedData = { ...initialData, ...dbData };
+                setData(mergedData);
+            } else {
+                // If DB is empty, seed it with initial data
+                const initialData = getInitialData();
+                dbRef.set(initialData).then(() => {
+                    setData(initialData);
+                    console.log("Firebase database seeded with initial data.");
+                }).catch(error => {
+                    console.error("Error seeding database:", error);
+                });
+            }
+            setIsInitialized(true);
+        }, (error) => {
+            console.error("Firebase read failed: " + error.name);
+            // Fallback to local data if Firebase fails
+            setData(getInitialData());
+            setIsInitialized(true);
+        });
 
-        if (snapshot.exists() && snapshot.val() !== null) {
-          const firebaseData = snapshot.val();
-          // Check if models (users) data is missing or invalid in Firebase
-          if (!firebaseData.models || !Array.isArray(firebaseData.models) || firebaseData.models.length === 0) {
-              console.warn("INFO: Firebase data exists but is missing the 'models' (users) array. Restoring default models to the database...");
-              const mergedData = { ...firebaseData, models: seedData.models };
-              await dbRef.set(mergedData); // Save the merged data back to Firebase
-              setData(mergedData);
-              console.log("SUCCESS: Default models have been restored and merged with existing data.");
-          } else {
-              console.log("SUCCESS: Data found and loaded from Firebase, including existing models.");
-              setData(firebaseData);
-          }
-        } else {
-          console.warn("INFO: Firebase database is empty or contains null. Seeding with initial site data.");
-          await dbRef.set(seedData);
-          setData(seedData);
-          console.log("SUCCESS: Database has been seeded with initial data.");
+        // Detach the listener when the component unmounts
+        return () => dbRef.off('value', listener);
+    }, [getInitialData]);
+
+    const saveData = useCallback(async (newData: AppData) => {
+        try {
+            await db.ref('/').set(newData);
+            // The local state will be updated by the 'on' listener,
+            // but we can set it here for immediate UI feedback if desired.
+            setData(newData);
+        } catch (error) {
+            console.error("Error saving data to Firebase:", error);
+            throw error; // Re-throw to be caught by the caller
         }
-      } catch (error: any) {
-        console.error("FATAL: Firebase connection error. Could not read from or write to the database.", error);
-        console.log("FALLBACK: Using local data as a temporary fallback.");
-        setData(getSeedData());
-      } finally {
-        setIsInitialized(true);
-        console.log("Data initialization complete.");
-      }
-    };
+    }, []);
 
-    loadData();
-  }, []);
-
-  const saveData = useCallback(async (newData: AppData) => {
-    const dbRef = db.ref('/');
-    try {
-        await dbRef.set(newData);
-        setData(newData);
-    } catch (error) {
-        console.error("Firebase save error:", error);
-        alert("An error occurred while saving the data.");
-    }
-  }, []);
-
-  return { data, saveData, isInitialized };
+    return { data, saveData, isInitialized };
 };
