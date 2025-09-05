@@ -1,7 +1,7 @@
 
 import React from 'react';
-// FIX: Replaced Navigate with Redirect for react-router-dom v5 compatibility.
-import { Redirect, useLocation } from 'react-router-dom';
+// FIX: Replaced Redirect with Navigate for react-router-dom v6 compatibility.
+import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
@@ -17,8 +17,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     return children;
   }
   
-  // FIX: Using Redirect component for v5.
-  return <Redirect to={{ pathname: "/login", state: { from: location } }} />;
+  // FIX: Using Navigate component for v6.
+  return <Navigate to="/login" state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;

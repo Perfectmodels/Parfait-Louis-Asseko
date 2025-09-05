@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-// FIX: Using react-router-dom v5 syntax. Replaced useNavigate with useHistory.
-import { useHistory } from 'react-router-dom';
+// FIX: Using react-router-dom v6 syntax. Replaced useNavigate with useHistory.
+import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -10,8 +10,8 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  // FIX: Using useHistory hook from react-router-dom v5.
-  const history = useHistory();
+  // FIX: Using useNavigate hook from react-router-dom v6.
+  const navigate = useNavigate();
   const { data } = useData();
 
   const handleLogin = (e: React.FormEvent) => {
@@ -22,18 +22,9 @@ const Login: React.FC = () => {
     if (username.toLowerCase() === 'admin' && password === 'admin2025') {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
-      // FIX: Using history.push for navigation in v5.
-      history.push('/admin');
+      // FIX: Using navigate for navigation in v6.
+      navigate('/admin');
       return;
-    }
-
-    // Generic Student Login
-    if (username.toLowerCase() === 'etudiant' && password === 'mannequins2025') {
-       sessionStorage.setItem('classroom_access', 'granted');
-       sessionStorage.setItem('classroom_role', 'student');
-       // FIX: Using history.push for navigation in v5.
-       history.push('/formations');
-       return;
     }
 
     // Model Login
@@ -43,8 +34,8 @@ const Login: React.FC = () => {
             sessionStorage.setItem('classroom_access', 'granted');
             sessionStorage.setItem('classroom_role', 'model');
             sessionStorage.setItem('userId', loggedInModel.id);
-            // FIX: Using history.push for navigation in v5.
-            history.push('/profil');
+            // FIX: Using navigate for navigation in v6.
+            navigate('/profil');
             return;
         }
     }

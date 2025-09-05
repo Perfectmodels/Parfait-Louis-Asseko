@@ -201,3 +201,11 @@ export interface AIAssistantProps {
   initialPrompt: string;
   jsonSchema?: any;
 }
+
+export interface ForumMessage {
+  id: string;
+  userId: string; // Corresponds to Model.id
+  userName: string;
+  text: string;
+  timestamp: string; // ISO 8601 format
+}

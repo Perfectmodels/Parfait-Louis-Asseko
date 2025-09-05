@@ -27,8 +27,7 @@ const AdminModelAccess: React.FC = () => {
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold mb-2">Accès des Mannequins</h1>
                 <p className="text-pm-off-white/70 mb-8">
-                    {/* FIX: Closed the unclosed p tag */}
-                    Tableau récapitulatif des identifiants de connexion uniques for each mannequin.
+                    Tableau récapitulatif des identifiants de connexion uniques pour chaque mannequin.
                 </p>
 
                 <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">

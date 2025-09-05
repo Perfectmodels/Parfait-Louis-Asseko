@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, CastingApplicationStatus, FashionDayApplicationStatus } from '../types';
+import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, CastingApplicationStatus, FashionDayApplicationStatus, ForumMessage } from '../types';
 import { db } from '../firebaseConfig';
 // FIX: Removed Firebase v9 imports (ref, get, set) as they are incompatible with the v8 SDK syntax.
 // import { ref, get, set } from 'firebase/database';
@@ -23,7 +23,8 @@ import {
     apiKeys as initialApiKeys,
     castingApplications as initialCastingApplications,
     fashionDayApplications as initialFashionDayApplications,
-    newsItems as initialNewsItems
+    newsItems as initialNewsItems,
+    classroomForumMessages as initialClassroomForumMessages
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -49,6 +50,7 @@ export interface AppData {
   apiKeys: ApiKeys;
   castingApplications: CastingApplication[];
   fashionDayApplications: FashionDayApplication[];
+  classroomForumMessages: ForumMessage[];
 }
 
 const getSeedData = (): AppData => ({
@@ -72,6 +74,7 @@ const getSeedData = (): AppData => ({
   apiKeys: initialApiKeys,
   castingApplications: initialCastingApplications,
   fashionDayApplications: initialFashionDayApplications,
+  classroomForumMessages: initialClassroomForumMessages,
 });
 
 export const useDataStore = () => {
@@ -80,123 +83,20 @@ export const useDataStore = () => {
 
   useEffect(() => {
     const initializeAndFetchData = async () => {
-      // FIX: Use Firebase v8 syntax to get a database reference.
       const dbRef = db.ref('/');
       try {
-        // FIX: Use Firebase v8 'get()' method to fetch data.
-        const snapshot = await dbRef.get();
-        if (snapshot.exists()) {
-          const fetchedData = snapshot.val();
-          let dataWasMigrated = false;
-
-          // --- SCRIPT DE MIGRATION DES DONNÉES ---
-          if (fetchedData.models) {
-              const currentYear = new Date().getFullYear();
-              const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\u0027]/g, "").replace(/[^a-z0-9-]/g, "");
-              
-              const modelsArray: Model[] = Array.isArray(fetchedData.models) ? fetchedData.models : Object.values(fetchedData.models);
-              const initialCounts: { [key: string]: number } = {};
-
-              modelsArray.forEach(model => {
-                  if (model.username && model.username.startsWith('Man-PMM')) {
-                      const match = model.username.match(/^Man-PMM([A-Z])(\d+)$/);
-                      if (match) {
-                          const initial = match[1];
-                          const num = parseInt(match[2], 10);
-                          initialCounts[initial] = Math.max(initialCounts[initial] || 0, num);
-                      }
-                  }
-              });
-
-              const migratedModels = modelsArray.map(model => {
-                  const updatedModel = { ...model };
-
-                  if (!updatedModel.username || !updatedModel.password || !updatedModel.username.startsWith('Man-PMM')) {
-                      dataWasMigrated = true;
-                      const firstName = updatedModel.name.split(' ')[0];
-                      const initial = firstName.charAt(0).toUpperCase();
-  
-                      initialCounts[initial] = (initialCounts[initial] || 0) + 1;
-                      updatedModel.username = `Man-PMM${initial}${String(initialCounts[initial]).padStart(2, '0')}`;
-                      updatedModel.password = `${sanitizeForPassword(firstName)}${currentYear}`;
-                  }
-
-                  if (!updatedModel.quizScores) {
-                      dataWasMigrated = true;
-                      updatedModel.quizScores = {};
-                  }
-                  
-                  // FIX: Add migration for measurements to prevent crashes on profiles with missing data.
-                  if (!updatedModel.measurements) {
-                      dataWasMigrated = true;
-                      updatedModel.measurements = { chest: '', waist: '', hips: '', shoeSize: '' };
-                  }
-  
-                  // FIX: Add migration for gender to prevent save errors on models with missing/undefined gender.
-                  if (typeof updatedModel.gender === 'undefined' || !['Homme', 'Femme'].includes(updatedModel.gender)) {
-                    dataWasMigrated = true;
-                    updatedModel.gender = 'Femme'; // Assign a safe default value
-                  }
-
-                  return updatedModel;
-              });
-
-              if (dataWasMigrated) {
-                  fetchedData.models = migratedModels;
-              }
-          }
-          // --- FIN DU SCRIPT DE MIGRATION ---
-
-          const seedData = getSeedData();
-          
-          const finalData: AppData = {
-            ...seedData,
-            ...fetchedData,
-            castingApplications: fetchedData.castingApplications 
-                ? (Object.values(fetchedData.castingApplications) as any[]).map(app => {
-                    const sanitizedApp = { ...app };
-                    // Ensure status is correctly typed
-                    sanitizedApp.status = app.status as CastingApplicationStatus;
-                    // FIX: Ensure gender exists and is valid for old applications, preventing crashes.
-                    if (typeof app.gender === 'undefined' || !['Homme', 'Femme'].includes(app.gender)) {
-                        sanitizedApp.gender = 'Femme'; // Default for old applications
-                    }
-                    return sanitizedApp;
-                  })
-                : [],
-            fashionDayApplications: fetchedData.fashionDayApplications 
-                ? (Object.values(fetchedData.fashionDayApplications) as any[]).map(app => ({...app, status: app.status as FashionDayApplicationStatus})) 
-                : [],
-            newsItems: fetchedData.newsItems ? Object.values(fetchedData.newsItems) : seedData.newsItems,
-            siteConfig: { ...seedData.siteConfig, ...fetchedData.siteConfig },
-            socialLinks: { ...seedData.socialLinks, ...fetchedData.socialLinks },
-            agencyInfo: { ...seedData.agencyInfo, ...fetchedData.agencyInfo },
-            contactInfo: { ...seedData.contactInfo, ...fetchedData.contactInfo },
-            siteImages: { ...seedData.siteImages, ...fetchedData.siteImages },
-            apiKeys: { ...seedData.apiKeys, ...fetchedData.apiKeys },
-          };
-
-          setData(finalData as AppData);
-          
-          if (dataWasMigrated) {
-              console.log("Migrating model data structure. Saving to Firebase...");
-              await db.ref('/').set(finalData); 
-              console.log("Migration complete.");
-          }
-
-        } else {
-          console.log("No data in Firebase. Initializing with local data...");
-          const seedData = getSeedData();
-          await dbRef.set(seedData);
-          setData(seedData);
-        }
+        // --- FORCE DATABASE RESET ---
+        // This will overwrite all data in Firebase with the default seed data.
+        console.log("Forcing database reset as requested by the user...");
+        const seedData = getSeedData();
+        await dbRef.set(seedData);
+        setData(seedData);
+        console.log("Database has been reset to its initial state.");
+        // We add an alert to make sure the user is aware of this one-time action.
+        alert("La base de données a été réinitialisée avec les données par défaut, comme demandé. Pour éviter une nouvelle réinitialisation, demandez à l'assistant de 'restaurer le comportement normal de chargement des données'.");
       } catch (error: any) {
-        console.error("Firebase fetch error:", error);
-        if (error.code === "PERMISSION_DENIED") {
-            alert("Firebase Error: Permission Denied.\\n\\nThis is a configuration issue, not a bug. Your Firebase Realtime Database security rules are too restrictive.\\n\\nPlease update your rules in the Firebase Console to allow public access.");
-        }
-        console.log("Falling back to local data due to Firebase error.");
-        setData(getSeedData());
+        console.error("Firebase reset error:", error);
+        alert("Une erreur est survenue lors de la réinitialisation de la base de données.");
       } finally {
         setIsInitialized(true);
       }
