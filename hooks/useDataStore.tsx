@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, CastingApplicationStatus, FashionDayApplicationStatus, ForumMessage } from '../types';
 import { db } from '../firebaseConfig';
@@ -9,6 +8,7 @@ import {
     fashionDayEvents as initialFashionDayEvents, 
     agencyTimeline as initialAgencyTimeline, 
     agencyInfo as initialAgencyInfo, 
+    // FIX: Corrected typo in import name from 'modelDistinction' to 'modelDistinctions'.
     modelDistinctions as initialModelDistinctions, 
     agencyServices as initialAgencyServices, 
     agencyAchievements as initialAgencyAchievements, 
@@ -86,12 +86,23 @@ export const useDataStore = () => {
       const dbRef = db.ref('/');
       try {
         const snapshot = await dbRef.get();
+        const seedData = getSeedData();
+
         if (snapshot.exists() && snapshot.val() !== null) {
-          console.log("SUCCESS: Data found and loaded from Firebase.");
-          setData(snapshot.val());
+          const firebaseData = snapshot.val();
+          // Check if models (users) data is missing or invalid in Firebase
+          if (!firebaseData.models || !Array.isArray(firebaseData.models) || firebaseData.models.length === 0) {
+              console.warn("INFO: Firebase data exists but is missing the 'models' (users) array. Restoring default models to the database...");
+              const mergedData = { ...firebaseData, models: seedData.models };
+              await dbRef.set(mergedData); // Save the merged data back to Firebase
+              setData(mergedData);
+              console.log("SUCCESS: Default models have been restored and merged with existing data.");
+          } else {
+              console.log("SUCCESS: Data found and loaded from Firebase, including existing models.");
+              setData(firebaseData);
+          }
         } else {
           console.warn("INFO: Firebase database is empty or contains null. Seeding with initial site data.");
-          const seedData = getSeedData();
           await dbRef.set(seedData);
           setData(seedData);
           console.log("SUCCESS: Database has been seeded with initial data.");
