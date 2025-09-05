@@ -49,9 +49,10 @@ export const juryMembers: JuryMember[] = [
 ];
 
 export const registrationStaff: RegistrationStaff[] = [
-    { id: 'reg1', name: 'Chloé', username: 'enregistrement1', password: 'password2025' },
-    { id: 'reg2', name: 'Lucas', username: 'enregistrement2', password: 'password2025' },
-    { id: 'reg3', name: 'Manon', username: 'enregistrement3', password: 'password2025' },
+    { id: 'reg1', name: 'Sephora', username: 'enregistrement1', password: 'password2025' },
+    { id: 'reg2', name: 'Aimée', username: 'enregistrement2', password: 'password2025' },
+    { id: 'reg3', name: 'Duchesse', username: 'enregistrement3', password: 'password2025' },
+    { id: 'reg4', name: 'Sephra', username: 'enregistrement4', password: 'password2025' },
 ];
 
 export const models: Model[] = [

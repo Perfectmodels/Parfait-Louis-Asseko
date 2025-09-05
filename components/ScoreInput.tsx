@@ -6,36 +6,60 @@ interface ScoreInputProps {
     onChange: (value: number) => void;
 }
 
+const SCORES = Array.from({ length: 21 }, (_, i) => i * 0.5); // [0, 0.5, 1, ..., 10]
+
 const ScoreInput: React.FC<ScoreInputProps> = ({ label, value, onChange }) => {
     
-    const handleIncrement = () => onChange(Math.min(10, value + 0.5));
-    const handleDecrement = () => onChange(Math.max(0, value - 0.5));
-
     const description = useMemo(() => {
         if (value >= 9) return 'Excellent';
-        if (value >= 7) return 'Bon';
-        if (value >= 4) return 'Moyen';
+        if (value >= 7.5) return 'Très Bon';
+        if (value >= 6) return 'Bon';
+        if (value >= 5) return 'Moyen';
+        if (value >= 3) return 'Faible';
         return 'Insuffisant';
+    }, [value]);
+    
+    const descriptionColor = useMemo(() => {
+        if (value >= 9) return 'text-green-400';
+        if (value >= 7.5) return 'text-yellow-400';
+        if (value >= 6) return 'text-orange-400';
+        return 'text-red-400';
     }, [value]);
 
     return (
-        <div className="bg-pm-dark p-4 rounded-lg border border-pm-off-white/10">
-            <div className="flex justify-between items-center mb-2">
-                <label className="font-semibold text-pm-off-white/80">{label}</label>
-                <p className={`text-sm font-medium ${
-                    value >= 9 ? 'text-green-400' :
-                    value >= 7 ? 'text-yellow-400' :
-                    value >= 4 ? 'text-orange-400' :
-                    'text-red-400'
-                }`}>{description}</p>
+        <div className="bg-pm-dark/50 p-4 rounded-lg border border-pm-off-white/10">
+            <div className="flex justify-between items-center mb-3">
+                <div>
+                    <label className="font-semibold text-pm-off-white/90 text-lg">{label}</label>
+                    <p className={`text-sm font-medium ${descriptionColor}`}>{description}</p>
+                </div>
+                <p className="text-3xl font-bold text-pm-gold tabular-nums">{value.toFixed(1)}</p>
             </div>
-            <div className="flex items-center gap-4">
-                <button type="button" onClick={handleDecrement} disabled={value <= 0} className="px-3 py-1 bg-black rounded-full disabled:opacity-50 text-lg font-bold">-</button>
-                <span className="flex-grow text-center text-2xl font-bold text-pm-gold tabular-nums">{value.toFixed(1)}</span>
-                <button type="button" onClick={handleIncrement} disabled={value >= 10} className="px-3 py-1 bg-black rounded-full disabled:opacity-50 text-lg font-bold">+</button>
-            </div>
-            <div className="w-full bg-black rounded-full h-1.5 mt-2">
-                <div className="bg-pm-gold h-1.5 rounded-full" style={{ width: `${(value / 10) * 100}%` }}></div>
+
+            <div className="flex flex-wrap gap-1.5 justify-center">
+                {SCORES.map(score => {
+                    const isSelected = value === score;
+                    const isHalfPoint = score % 1 !== 0;
+
+                    return (
+                        <button
+                            key={score}
+                            type="button"
+                            onClick={() => onChange(score)}
+                            className={`w-9 h-9 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-xs font-mono transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-pm-gold focus:ring-offset-2 focus:ring-offset-pm-dark ${
+                                isSelected 
+                                    ? 'bg-pm-gold text-pm-dark font-bold shadow-lg shadow-pm-gold/30' 
+                                    : isHalfPoint 
+                                        ? 'bg-black text-pm-off-white/50 border border-pm-off-white/20' 
+                                        : 'bg-pm-dark text-pm-off-white border border-pm-off-white/30'
+                            }`}
+                            aria-label={`Note ${score}`}
+                            aria-pressed={isSelected}
+                        >
+                            {isHalfPoint ? '' : score}
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );
