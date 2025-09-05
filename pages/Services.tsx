@@ -9,21 +9,33 @@ const iconMap: { [key: string]: React.ElementType } = {
   UserGroupIcon, AcademicCapIcon, CameraIcon, SparklesIcon, ScaleIcon, GlobeAltIcon
 };
 
-const ServiceDetail: React.FC<{ service: Service }> = ({ service }) => {
+const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
     const Icon = iconMap[service.icon] || HeartIcon;
     return (
-        <div className="bg-black p-8 border border-pm-gold/10 flex flex-col md:flex-row items-center gap-8 rounded-lg shadow-lg">
-            <div className="flex-shrink-0 text-center">
-                <Icon className="w-20 h-20 text-pm-gold mx-auto mb-4" />
+        <div className="relative bg-black p-8 border border-pm-gold/20 rounded-lg flex flex-col h-full shadow-lg hover:border-pm-gold hover:-translate-y-2 transition-all duration-300">
+            {service.isComingSoon && (
+                <span className="absolute top-4 right-4 bg-pm-dark text-pm-gold text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-pm-gold/50">
+                    Bientôt disponible
+                </span>
+            )}
+            <div className="flex-shrink-0 text-center mb-4">
+                <Icon className="w-16 h-16 text-pm-gold mx-auto" />
             </div>
-            <div className="flex-grow text-center md:text-left">
-                <h3 className="text-3xl font-playfair text-pm-gold mb-3">{service.title}</h3>
+            <div className="flex-grow text-center">
+                <h3 className="text-2xl font-playfair text-pm-gold mb-3">{service.title}</h3>
                 <p className="text-pm-off-white/80 mb-6">{service.description}</p>
+            </div>
+            <div className="mt-auto pt-6 text-center">
                 <Link 
-                    to={`/contact?service=${encodeURIComponent(service.title)}`}
-                    className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-md shadow-pm-gold/20"
+                    to={!service.isComingSoon ? `/contact?service=${encodeURIComponent(service.title)}` : '#'}
+                    onClick={(e) => { if (service.isComingSoon) e.preventDefault(); }}
+                    className={`inline-block px-8 py-3 font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 shadow-md ${
+                        service.isComingSoon 
+                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600' 
+                        : 'bg-pm-gold text-pm-dark hover:bg-white hover:scale-105 shadow-pm-gold/20'
+                    }`}
                 >
-                    Demander un devis
+                    {service.isComingSoon ? 'En Développement' : 'Demander un devis'}
                 </Link>
             </div>
         </div>
@@ -45,13 +57,13 @@ const Services: React.FC = () => {
                 <div className="text-center mb-16">
                     <h1 className="text-5xl font-playfair text-pm-gold mb-4">Nos Services sur Mesure</h1>
                     <p className="max-w-3xl mx-auto text-pm-off-white/80">
-                        Nous offrons une gamme complète de services pour répondre aux besoins spécifiques de nos clients et pour assurer le développement de carrière de nos mannequins.
+                        De la révélation de talents à la production d'événements d'envergure, notre expertise couvre tous les aspects de l'écosystème de la mode.
                     </p>
                 </div>
                 
-                <div className="space-y-8 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
                     {services.map((service, index) => (
-                        <ServiceDetail key={index} service={service} />
+                        <ServiceCard key={index} service={service} />
                     ))}
                 </div>
             </div>

@@ -37,6 +37,11 @@ const Footer: React.FC = () => {
                                     </Link>
                                 </li>
                             ))}
+                             <li>
+                                <Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
+                                    Accès Panel
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 

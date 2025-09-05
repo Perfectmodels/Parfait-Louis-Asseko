@@ -1,4 +1,4 @@
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest } from '../types';
 import { NavLink } from '../hooks/useDataStore';
 
 export const siteConfig = {
@@ -117,6 +117,7 @@ export const fashionDayApplications: FashionDayApplication[] = [];
 export const forumThreads: ForumThread[] = [];
 export const forumReplies: ForumReply[] = [];
 export const articleComments: ArticleComment[] = [];
+export const recoveryRequests: RecoveryRequest[] = [];
 
 export const newsItems: NewsItem[] = [
     { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
@@ -175,12 +176,12 @@ export const modelDistinctions: ModelDistinction[] = [
 ];
 
 export const agencyServices: Service[] = [
-    { icon: 'UserGroupIcon', title: 'Gestion de Carrière', description: 'Nous développons et gérons la carrière de nos mannequins avec une stratégie personnalisée.' },
-    { icon: 'AcademicCapIcon', title: 'Formation & Coaching', description: 'Notre "PMM Classroom" offre une formation complète sur tous les aspects du métier.' },
-    { icon: 'CameraIcon', title: 'Production de Shootings', description: 'Nous organisons des séances photo professionnelles, du concept à la post-production.' },
-    { icon: 'SparklesIcon', title: 'Direction de Casting', description: 'Nous trouvons les visages parfaits pour vos campagnes publicitaires, défilés et projets audiovisuels.' },
-    { icon: 'ScaleIcon', title: 'Conseil en Image', description: 'Nous aidons nos talents à construire une marque personnelle forte et cohérente.' },
-    { icon: 'GlobeAltIcon', title: 'Placement International', description: 'Nous connectons nos meilleurs profils à un réseau d\'agences partenaires à travers le monde.' },
+    { icon: 'UserGroupIcon', title: 'Gestion de Carrière de Mannequins', description: 'Nous offrons un management complet et personnalisé, de la création du book à la négociation des contrats. Notre objectif est de construire des carrières durables en identifiant les meilleures opportunités nationales et internationales pour nos talents.' },
+    { icon: 'AcademicCapIcon', title: 'Formation & Coaching (PMM Classroom)', description: 'Notre programme exclusif "PMM Classroom" dispense une formation théorique et pratique de haut niveau. Nous couvrons tous les aspects du métier : démarche, pose, nutrition, gestion d\'image et éthique professionnelle pour former des mannequins complets.' },
+    { icon: 'CameraIcon', title: 'Production de Shootings & Éditoriaux', description: 'Nous gérons l\'intégralité de vos productions visuelles, du concept créatif à la post-production. Nous assemblons les meilleures équipes (photographes, stylistes, MUA) pour créer des campagnes publicitaires, lookbooks et éditoriaux percutants.' },
+    { icon: 'SparklesIcon', title: 'Direction de Casting & Événementiel', description: 'Nous trouvons les visages parfaits pour vos projets. Que ce soit pour un défilé, une campagne publicitaire ou un film, nous gérons le processus de casting de A à Z. Nous organisons également des événements mode clés en main, comme le Perfect Fashion Day.' },
+    { icon: 'ScaleIcon', title: 'Prestige & Conseil en Image', description: 'Nous façonnons des marques personnelles fortes pour nos talents et clients. Ce service inclut le media training, le développement du style personnel et des stratégies de communication pour un positionnement haut de gamme et une visibilité accrue.', isComingSoon: true },
+    { icon: 'GlobeAltIcon', title: 'Placement International', description: 'Grâce à notre réseau en expansion, nous préparons et positionnons nos mannequins les plus prometteurs sur les marchés internationaux. Notre objectif est de leur ouvrir les portes des grandes capitales de la mode : Paris, Milan, New York et Londres.', isComingSoon: true },
 ];
 
 export const agencyAchievements: AchievementCategory[] = [
