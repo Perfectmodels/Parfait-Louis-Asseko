@@ -1,7 +1,8 @@
 
+
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumMessage, Article, Module } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -12,7 +13,9 @@ import {
     apiKeys as initialApiKeys, 
     castingApplications as initialCastingApplications, 
     fashionDayApplications as initialFashionDayApplications, 
-    classroomForumMessages as initialClassroomForumMessages, 
+    forumThreads as initialForumThreads,
+    forumReplies as initialForumReplies,
+    articleComments as initialArticleComments,
     newsItems as initialNewsItems, 
     navLinks as initialNavLinks, 
     fashionDayEvents as initialFashionDayEvents, 
@@ -59,7 +62,9 @@ export interface AppData {
     castingApplications: CastingApplication[];
     fashionDayApplications: FashionDayApplication[];
     newsItems: NewsItem[];
-    classroomForumMessages: ForumMessage[];
+    forumThreads: ForumThread[];
+    forumReplies: ForumReply[];
+    articleComments: ArticleComment[];
 }
 
 export const useDataStore = () => {
@@ -74,7 +79,9 @@ export const useDataStore = () => {
         apiKeys: initialApiKeys,
         castingApplications: initialCastingApplications,
         fashionDayApplications: initialFashionDayApplications,
-        classroomForumMessages: initialClassroomForumMessages,
+        forumThreads: initialForumThreads,
+        forumReplies: initialForumReplies,
+        articleComments: initialArticleComments,
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,

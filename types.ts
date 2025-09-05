@@ -191,13 +191,32 @@ export interface FashionDayApplication {
   status: FashionDayApplicationStatus;
 }
 
-export interface ForumMessage {
+export interface ForumThread {
   id: string;
-  userId: string; // Corresponds to Model.id
-  userName: string;
-  text: string;
-  timestamp: string; // ISO 8601 format
+  title: string;
+  authorId: string;
+  authorName: string;
+  createdAt: string;
+  initialPost: string;
 }
+
+export interface ForumReply {
+  id: string;
+  threadId: string;
+  authorId: string;
+  authorName: string;
+  createdAt: string;
+  content: string;
+}
+
+export interface ArticleComment {
+  id: string;
+  articleSlug: string;
+  authorName: string; // "Anonyme" or model name
+  createdAt: string;
+  content: string;
+}
+
 // FIX: Add missing AIAssistantProps interface to fix type error
 export interface AIAssistantProps {
   isOpen: boolean;
