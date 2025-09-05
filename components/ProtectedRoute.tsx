@@ -1,6 +1,4 @@
-
 import React from 'react';
-// FIX: Replaced Redirect with Navigate for react-router-dom v6 compatibility.
 import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
@@ -17,7 +15,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     return children;
   }
   
-  // FIX: Using Navigate component for v6.
   return <Navigate to="/login" state={{ from: location }} replace />;
 };
 

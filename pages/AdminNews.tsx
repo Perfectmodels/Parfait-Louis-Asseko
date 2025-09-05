@@ -7,7 +7,7 @@ import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/rea
 import ImageInput from '../components/ImageInput';
 
 const AdminNews: React.FC = () => {
-  const { data, saveData, isInitialized } = useData();
+  const { data, saveData } = useData();
   const [localNews, setLocalNews] = useState<NewsItem[]>([]);
   const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -106,14 +106,14 @@ const AdminNews: React.FC = () => {
         <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
           {sortedNews.map(item => (
             <div key={item.id} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
-              <div className="flex items-center gap-4 overflow-hidden">
-                <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded flex-shrink-0"/>
-                <div className="overflow-hidden">
-                  <h2 className="font-bold truncate">{item.title}</h2>
-                  <p className="text-sm text-pm-off-white/70">{new Date(item.date).toLocaleDateString('fr-FR')}</p>
+              <div className="flex items-center gap-4">
+                <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded"/>
+                <div>
+                  <h2 className="font-bold">{item.title}</h2>
+                  <p className="text-sm text-pm-off-white/70">{item.date}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 flex-shrink-0">
+              <div className="flex items-center gap-4">
                 <button onClick={() => { setEditingItem(item); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
                 <button onClick={() => handleDelete(item.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
               </div>
@@ -127,6 +127,10 @@ const AdminNews: React.FC = () => {
 
 const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onCancel: () => void, isCreating: boolean }> = ({ item, onSave, onCancel, isCreating }) => {
     const [formData, setFormData] = useState(item);
+
+    useEffect(() => {
+        setFormData(item);
+    }, [item]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -143,36 +147,35 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
     };
 
     return (
-       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-          <div className="container mx-auto px-6 max-w-3xl">
-              <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvelle Actualité' : 'Modifier l\'Actualité'}</h1>
-              <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
-                  <FormInput label="Titre" name="title" value={formData.title} onChange={handleChange} />
-                  <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
-                  <ImageInput label="Image" value={formData.imageUrl} onChange={handleImageChange} />
-                  <FormTextArea label="Extrait / Description" name="excerpt" value={formData.excerpt} onChange={handleChange} />
-                  <FormInput label="Lien (optionnel, ex: /casting)" name="link" value={formData.link || ''} onChange={handleChange} required={false} />
-                  
-                  <div className="flex justify-end gap-4 pt-4">
-                      <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
-                      <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
-                  </div>
-              </form>
-          </div>
-      </div>
-    )
-}
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+            <div className="container mx-auto px-6 max-w-3xl">
+                <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvelle Actualité' : "Modifier l'Actualité"}</h1>
+                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
+                    <FormInput label="Titre" name="title" value={formData.title} onChange={handleChange} />
+                    <ImageInput label="Image" value={formData.imageUrl} onChange={handleImageChange} />
+                    <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
+                    <FormTextArea label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}/>
+                    <FormInput label="Lien (optionnel)" name="link" value={formData.link || ''} onChange={handleChange} />
+                    <div className="flex justify-end gap-4 pt-4">
+                        <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
+                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, required?: boolean}> = ({label, name, value, onChange, type="text", required = true}) => (
+const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string}> = ({label, name, value, onChange, type="text"}) => (
     <div>
         <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" required={required} />
+        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" />
     </div>
 );
 const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any}> = ({label, name, value, onChange}) => (
     <div>
         <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <textarea id={name} name={name} value={value} onChange={onChange} rows={4} className="admin-input admin-textarea" required />
+        <textarea id={name} name={name} value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
     </div>
 );
 

@@ -1,6 +1,4 @@
-
 import React from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility.
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -52,7 +50,6 @@ const App: React.FC = () => {
       <HashRouter>
         <ScrollToTop />
         <Layout>
-          {/* FIX: Using Routes and v6 Route syntax */}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/agence" element={<Agency />} />

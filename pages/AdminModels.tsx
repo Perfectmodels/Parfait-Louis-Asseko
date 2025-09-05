@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Model } from '../types';
@@ -38,10 +37,23 @@ const AdminModels: React.FC = () => {
 
       // Generate simple password
       const year = new Date().getFullYear();
-      const password = `${firstName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9-]/g, "")}${year}`;
+      const password = `${firstName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '')}${year}`;
       
-      const newModel = { ...modelToSave, id, username, password, quizScores: {} };
-      updatedModels = [...localModels, newModel];
+      const newModel = {
+          ...modelToSave,
+          id: id,
+          username: username,
+          password: password,
+          // ensure defaults
+          measurements: modelToSave.measurements || { chest: '0cm', waist: '0cm', hips: '0cm', shoeSize: '0' },
+          categories: modelToSave.categories || ['Défilé', 'Commercial'],
+          experience: modelToSave.experience || "Expérience à renseigner par l'administrateur.",
+          journey: modelToSave.journey || "Parcours à renseigner par l'administrateur.",
+          quizScores: modelToSave.quizScores || {},
+          distinctions: modelToSave.distinctions || [],
+      };
+
+      updatedModels = [newModel, ...localModels];
     } else {
       updatedModels = localModels.map(m => m.id === modelToSave.id ? modelToSave : m);
     }
@@ -52,70 +64,56 @@ const AdminModels: React.FC = () => {
     setEditingModel(null);
     setIsCreating(false);
   };
-  
-  const handleSaveOrder = async () => {
-    if (!data) return;
-    try {
-        await saveData({ ...data, models: localModels });
-        alert("L'ordre des mannequins a été sauvegardé avec succès.");
-    } catch (error) {
-        console.error("Erreur lors de la sauvegarde de l'ordre :", error);
-        alert("Une erreur est survenue lors de la sauvegarde.");
-    }
-  };
 
-  const handleMove = (index: number, direction: 'up' | 'down') => {
-    const newModels = [...localModels];
-    if (direction === 'up' && index > 0) {
-      [newModels[index], newModels[index - 1]] = [newModels[index - 1], newModels[index]];
-    } else if (direction === 'down' && index < newModels.length - 1) {
-      [newModels[index], newModels[index + 1]] = [newModels[index + 1], newModels[index]];
-    }
-    setLocalModels(newModels);
-  };
-
-  const handleDelete = async (modelId: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce mannequin ?")) {
       if (!data) return;
-      const updatedModels = localModels.filter(m => m.id !== modelId);
+      const updatedModels = localModels.filter(m => m.id !== id);
       await saveData({ ...data, models: updatedModels });
       alert("Mannequin supprimé avec succès.");
     }
   };
+  
+  const handleMove = async (index: number, direction: 'up' | 'down') => {
+    if (!data) return;
+    const newModels = [...localModels];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newModels.length) return;
 
+    [newModels[index], newModels[targetIndex]] = [newModels[targetIndex], newModels[index]]; // Swap
+    
+    await saveData({ ...data, models: newModels });
+  };
+  
   const handleStartCreate = () => {
-      setEditingModel({
-          id: '',
-          name: '',
-          username: '',
-          password: '',
-          height: '',
-          gender: 'Femme',
-          imageUrl: '',
-          measurements: { chest: '', waist: '', hips: '', shoeSize: '' },
-          categories: [],
-          experience: '',
-          journey: '',
-          quizScores: {}
-      });
-      setIsCreating(true);
+    setIsCreating(true);
+    const currentYear = new Date().getFullYear();
+    setEditingModel({
+      id: '',
+      name: '',
+      username: '',
+      password: `changeme${currentYear}`,
+      height: '',
+      gender: 'Femme',
+      imageUrl: '',
+      measurements: { chest: '', waist: '', hips: '', shoeSize: '' },
+      categories: [],
+      experience: '',
+      journey: '',
+      quizScores: {},
+      distinctions: [],
+    });
   };
 
   if (editingModel) {
-    return <ModelForm 
-        model={editingModel} 
-        onSave={handleFormSave} 
-        onCancel={() => { setEditingModel(null); setIsCreating(false); }} 
-        isCreating={isCreating}
-        mode="admin"
-    />;
+    return <ModelForm model={editingModel} onSave={handleFormSave} onCancel={() => {setEditingModel(null); setIsCreating(false);}} isCreating={isCreating} mode="admin" />
   }
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO title="Admin - Gérer les Mannequins" noIndex />
       <div className="container mx-auto px-6">
-        <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
+        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <div>
             <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
               <ChevronLeftIcon className="w-5 h-5" />
@@ -123,55 +121,29 @@ const AdminModels: React.FC = () => {
             </Link>
             <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Mannequins</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <button onClick={handleSaveOrder} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-              Sauvegarder l'ordre
-            </button>
-            <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-              <PlusIcon className="w-5 h-5"/> Ajouter Mannequin
-            </button>
-          </div>
+          <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+            <PlusIcon className="w-5 h-5"/> Ajouter un mannequin
+          </button>
         </div>
 
-        <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
-            <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead className="bg-pm-dark/50">
-                        <tr className="border-b border-pm-gold/20">
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Photo</th>
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Nom</th>
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Matricule</th>
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Ordre</th>
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {localModels.map((model, index) => (
-                            <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
-                                <td className="p-2"><img src={model.imageUrl} alt={model.name} className="w-12 h-16 object-cover rounded-md"/></td>
-                                <td className="p-4 font-semibold">{model.name}</td>
-                                <td className="p-4 font-mono text-xs text-pm-gold/80 hidden md:table-cell">{model.username}</td>
-                                <td className="p-4">
-                                    <div className="flex items-center gap-2">
-                                        <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="text-pm-off-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
-                                            <ArrowUpIcon className="w-5 h-5"/>
-                                        </button>
-                                        <button onClick={() => handleMove(index, 'down')} disabled={index === localModels.length - 1} className="text-pm-off-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
-                                            <ArrowDownIcon className="w-5 h-5"/>
-                                        </button>
-                                    </div>
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex items-center justify-end gap-4">
-                                        <button onClick={() => { setEditingModel(model); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
-                                        <button onClick={() => handleDelete(model.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+        <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
+          {localModels.map((model, index) => (
+            <div key={model.id} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
+              <div className="flex items-center gap-4">
+                <img src={model.imageUrl} alt={model.name} className="w-16 h-20 object-cover rounded"/>
+                <div>
+                  <h2 className="font-bold">{model.name}</h2>
+                  <p className="text-sm text-pm-off-white/70">{model.username}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="disabled:opacity-30"><ArrowUpIcon className="w-5 h-5"/></button>
+                <button onClick={() => handleMove(index, 'down')} disabled={index === localModels.length - 1} className="disabled:opacity-30"><ArrowDownIcon className="w-5 h-5"/></button>
+                <button onClick={() => { setEditingModel(model); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
+                <button onClick={() => handleDelete(model.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
+              </div>
             </div>
+          ))}
         </div>
       </div>
     </div>

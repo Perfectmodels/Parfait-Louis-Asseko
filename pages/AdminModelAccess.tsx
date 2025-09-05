@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
+// FIX: Switched to namespace import for 'react-router-dom' to resolve potential module resolution issues.
+import * as ReactRouterDOM from 'react-router-dom';
 import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 const AdminModelAccess: React.FC = () => {
@@ -21,10 +22,10 @@ const AdminModelAccess: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Accès Mannequins" noIndex />
             <div className="container mx-auto px-6">
-                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Tableau de Bord
-                </Link>
+                </ReactRouterDOM.Link>
                 <h1 className="text-4xl font-playfair text-pm-gold mb-2">Accès des Mannequins</h1>
                 <p className="text-pm-off-white/70 mb-8">
                     Tableau récapitulatif des identifiants de connexion uniques pour chaque mannequin.
