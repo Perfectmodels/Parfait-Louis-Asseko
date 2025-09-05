@@ -5,6 +5,7 @@ import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon, ArrowUpIcon, ArrowDownIcon, StarIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
+import { FacebookIcon } from '../components/icons/SocialIcons';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -104,7 +105,11 @@ const AdminMagazine: React.FC = () => {
           </div>
 
           <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
-            {localArticles.map((article, index) => (
+            {localArticles.map((article, index) => {
+              const articleUrl = `${window.location.origin}${window.location.pathname}#/magazine/${article.slug}`;
+              const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`;
+              
+              return (
               <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
                 <div className="flex items-center gap-4">
                   {article.isFeatured && <StarIcon className="w-6 h-6 text-pm-gold flex-shrink-0" title="Article à la une"/>}
@@ -115,6 +120,9 @@ const AdminMagazine: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
+                  <a href={facebookShareUrl} target="_blank" rel="noopener noreferrer" className="text-pm-gold/70 hover:text-pm-gold" title="Partager sur Facebook">
+                      <FacebookIcon className="w-5 h-5"/>
+                  </a>
                   <button onClick={() => handleSetFeatured(article.slug)} className="text-pm-gold/70 hover:text-pm-gold" title="Mettre à la une">
                       <StarIcon className="w-5 h-5"/>
                   </button>
@@ -124,7 +132,7 @@ const AdminMagazine: React.FC = () => {
                   <button onClick={() => handleDelete(article.slug)} className="text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </div>
