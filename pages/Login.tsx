@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon } from '@heroicons/react/24/outline';
@@ -25,7 +26,11 @@ const Login: React.FC = () => {
 
     // Model Login
     if (data?.models) {
-        const loggedInModel = data.models.find(m => m.username.toLowerCase() === username.toLowerCase());
+        const loggedInModel = data.models.find(m => 
+            m.username.toLowerCase() === username.toLowerCase() || 
+            m.name.toLowerCase() === username.toLowerCase()
+        );
+        
         if (loggedInModel && loggedInModel.password === password) {
             sessionStorage.setItem('classroom_access', 'granted');
             sessionStorage.setItem('classroom_role', 'model');
@@ -64,7 +69,7 @@ const Login: React.FC = () => {
                         setUsername(e.target.value);
                         setError('');
                       }}
-                      placeholder="Identifiant"
+                      placeholder="Identifiant ou Nom complet"
                       className="w-full bg-pm-dark border border-pm-off-white/30 rounded-lg p-3 pl-10 text-center focus:outline-none focus:border-pm-gold transition-colors"
                       aria-label="Identifiant"
                       autoFocus
