@@ -15,15 +15,5 @@ root.render(
   </React.StrictMode>
 );
 
-// Register the service worker for PWA capabilities
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      })
-      .catch(error => {
-        console.log('ServiceWorker registration failed: ', error);
-      });
-  });
-}
+// Service worker registration has been moved to App.tsx to tie it to the React component lifecycle, 
+// which may resolve timing issues in certain sandboxed environments.
