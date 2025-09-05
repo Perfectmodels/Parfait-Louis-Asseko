@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
-import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 
@@ -10,6 +10,7 @@ const ModelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState('details');
   const [isViewingOwnProfile, setIsViewingOwnProfile] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
   const model = data?.models.find(m => m.id === id);
 
@@ -73,10 +74,19 @@ const ModelDetail: React.FC = () => {
                     </div>
                      {model.distinctions && model.distinctions.length > 0 && (
                         <div className="col-span-full mt-4">
-                            <h3 className="font-bold text-pm-off-white/60">Palmarès</h3>
-                            <ul className="list-disc list-inside text-pm-off-white/90">
-                                {model.distinctions.map((d, i) => <li key={i}>{d}</li>)}
-                            </ul>
+                            <h3 className="font-bold text-pm-off-white/60">Palmarès & Distinctions</h3>
+                            <div className="space-y-3 mt-2">
+                                {model.distinctions.map((distinction, index) => (
+                                    <div key={index}>
+                                        <h4 className="font-semibold text-pm-off-white/80">{distinction.name}</h4>
+                                        <ul className="list-disc list-inside text-pm-off-white/90 pl-4">
+                                            {distinction.titles.map((title, titleIndex) => (
+                                                <li key={titleIndex}>{title}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                      )}
                   </div>
@@ -104,8 +114,45 @@ const ModelDetail: React.FC = () => {
                </div>
             </div>
           </div>
+
+          {model.portfolioImages && model.portfolioImages.length > 0 && (
+            <section className="mt-16">
+              <h2 className="text-3xl font-playfair text-pm-gold text-center mb-8">Portfolio</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {model.portfolioImages.map((img, index) => (
+                  <button key={index} onClick={() => setSelectedImage(img)} className="group block aspect-[3/4] bg-pm-dark overflow-hidden transition-all duration-300 hover:scale-105 border-2 border-transparent hover:border-pm-gold">
+                    <img src={img} alt={`${model.name} portfolio image ${index + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
+
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 cursor-pointer"
+          onClick={() => setSelectedImage(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <button 
+            className="absolute top-4 right-4 text-white hover:text-pm-gold transition-colors z-10 p-2 bg-black/50 rounded-full" 
+            aria-label="Fermer"
+            onClick={() => setSelectedImage(null)}
+          >
+            <XMarkIcon className="w-8 h-8"/>
+          </button>
+          <div className="relative max-w-5xl max-h-[90vh] cursor-default" onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={selectedImage} 
+              alt="Vue agrandie" 
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl shadow-pm-gold/20" 
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };

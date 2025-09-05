@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
-import { Model } from '../types';
+import { Model, ModelDistinction } from '../types';
 import ImageInput from './ImageInput';
-import { SparklesIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
     model: Model;
@@ -37,11 +36,25 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
         }));
     };
 
-    const handleArrayChange = (name: 'distinctions' | 'categories', value: string) => {
+    const handleArrayChange = (name: 'categories', value: string) => {
         setFormData(prev => ({
             ...prev,
             [name]: value.split(',').map(item => item.trim()).filter(Boolean)
         }));
+    };
+
+    const handlePortfolioImagesChange = (index: number, value: string) => {
+        const newImages = [...(formData.portfolioImages || [])];
+        newImages[index] = value;
+        setFormData(prev => ({ ...prev, portfolioImages: newImages }));
+    };
+
+    const handleAddPortfolioImage = () => {
+        setFormData(prev => ({ ...prev, portfolioImages: [...(prev.portfolioImages || []), ''] }));
+    };
+
+    const handleRemovePortfolioImage = (index: number) => {
+        setFormData(prev => ({ ...prev, portfolioImages: (prev.portfolioImages || []).filter((_, i) => i !== index) }));
     };
 
     const handleImageChange = (value: string) => {
@@ -101,10 +114,68 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
 
                 <Section title="Carrière & Portfolio">
-                    <FormTextArea label="Distinctions (séparées par des virgules)" name="distinctions" value={(formData.distinctions || []).join(', ')} onChange={(e) => handleArrayChange('distinctions', e.target.value)} disabled={!isAdmin} />
+                    {isAdmin && (
+                        <div>
+                            <label className="block text-sm font-medium text-pm-off-white/70 mb-2">Distinctions</label>
+                            <ArrayEditor
+                                items={formData.distinctions || []}
+                                setItems={newItems => setFormData(p => ({...p, distinctions: newItems}))}
+                                renderItem={(item: ModelDistinction, onChange) => (
+                                    <>
+                                        <FormInput label="Nom de la distinction" name="name" value={item.name} onChange={e => onChange('name', e.target.value)} />
+                                        <FormTextArea 
+                                            label="Titres (un par ligne)" 
+                                            name="titles"
+                                            value={(item.titles || []).join('\n')} 
+                                            onChange={e => onChange('titles', e.target.value.split('\n').filter(Boolean))} 
+                                        />
+                                    </>
+                                )}
+                                getNewItem={() => ({ name: 'Nouveau Palmarès', titles: [] })}
+                                getItemTitle={item => item.name}
+                            />
+                        </div>
+                    )}
+                    {!isAdmin && formData.distinctions && formData.distinctions.length > 0 && (
+                        <div>
+                            <label className="block text-sm font-medium text-pm-off-white/70 mb-2">Distinctions (non modifiable)</label>
+                            <div className="p-4 bg-pm-dark rounded-md border border-pm-off-white/10 space-y-2">
+                                {formData.distinctions.map((d, i) => (
+                                    <div key={i}>
+                                        <p className="font-semibold">{d.name}</p>
+                                        <ul className="list-disc list-inside text-sm text-pm-off-white/80 pl-2">
+                                            {d.titles.map((t, ti) => <li key={ti}>{t}</li>)}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
                     <FormTextArea label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5} />
                     <FormTextArea label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} />
+                </Section>
+                
+                <Section title="Photos du Portfolio">
+                    <div className="space-y-4">
+                        {(formData.portfolioImages || []).map((url, index) => (
+                            <div key={index} className="flex items-end gap-2">
+                                <div className="flex-grow">
+                                    <ImageInput 
+                                        label={`Photo ${index + 1}`} 
+                                        value={url} 
+                                        onChange={(value) => handlePortfolioImagesChange(index, value)} 
+                                    />
+                                </div>
+                                <button type="button" onClick={() => handleRemovePortfolioImage(index)} className="p-2 text-red-500/80 hover:text-red-500 bg-black rounded-md border border-pm-off-white/10 mb-2">
+                                    <TrashIcon className="w-5 h-5" />
+                                </button>
+                            </div>
+                        ))}
+                        <button type="button" onClick={handleAddPortfolioImage} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-2">
+                            <PlusIcon className="w-4 h-4" /> Ajouter une photo
+                        </button>
+                    </div>
                 </Section>
 
                 <div className="flex justify-end gap-4 pt-4">
@@ -147,5 +218,56 @@ const FormTextArea: React.FC<{label: string, name: string, value: any, onChange:
         <textarea id={name} name={name} value={value} onChange={onChange} rows={rows} className="admin-input admin-textarea" disabled={disabled} />
     </div>
 );
+
+const ArrayEditor: React.FC<{
+    items: any[];
+    setItems: (items: any[]) => void;
+    renderItem: (item: any, onChange: (key: string, value: any) => void, index: number) => React.ReactNode;
+    getNewItem: () => any;
+    getItemTitle: (item: any) => string;
+}> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+    const handleItemChange = (index: number, key: string, value: any) => {
+        const newItems = [...items];
+        newItems[index] = { ...newItems[index], [key]: value };
+        setItems(newItems);
+    };
+
+    const handleAddItem = () => {
+        setItems([...items, getNewItem()]);
+        setOpenIndex(items.length);
+    };
+
+    const handleDeleteItem = (index: number) => {
+        if (window.confirm(`Supprimer "${getItemTitle(items[index])}" ?`)) {
+            setItems(items.filter((_, i) => i !== index));
+        }
+    };
+    
+    return (
+        <div className="space-y-3">
+            {items.map((item, index) => (
+                <div key={index} className="bg-pm-dark/50 border border-pm-off-white/10 rounded-md overflow-hidden">
+                    <button type="button" onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full p-3 text-left font-bold flex justify-between items-center hover:bg-pm-gold/5">
+                        <span className="truncate pr-4">{getItemTitle(item)}</span>
+                        <ChevronDownIcon className={`w-5 h-5 transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`} />
+                    </button>
+                    {openIndex === index && (
+                        <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
+                            {renderItem(item, (key, value) => handleItemChange(index, key, value), index)}
+                            <div className="text-right pt-2">
+                                <button type="button" onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            ))}
+            <button type="button" onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
+                <PlusIcon className="w-4 h-4"/> Ajouter une distinction
+            </button>
+        </div>
+    );
+};
 
 export default ModelForm;

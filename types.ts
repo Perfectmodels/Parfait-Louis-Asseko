@@ -12,7 +12,8 @@ export interface Model {
   gender: 'Homme' | 'Femme';
   location?: string;
   imageUrl: string;
-  distinctions?: string[];
+  portfolioImages?: string[];
+  distinctions?: ModelDistinction[];
   // New portfolio fields
   measurements: {
     chest: string;

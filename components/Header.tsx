@@ -53,7 +53,7 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string }> = ({ o
         aria-label="Déconnexion"
     >
         <ArrowRightOnRectangleIcon className="w-5 h-5" />
-        <span className="hidden sm:inline">Déconnexion</span>
+        <span>Déconnexion</span>
     </button>
 );
 
@@ -108,41 +108,57 @@ const Header: React.FC = () => {
   }, [navLinksFromData, userRole]);
 
   return (
-    <header 
-      className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
-        isScrolled ? 'bg-black/80 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'
-      }`}
-    >
-      <div className="container mx-auto px-6 h-20 flex justify-between items-center">
-        {siteConfig?.logo && (
-          <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
-            <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />
-          </Link>
-        )}
-        
-        <nav className="hidden lg:flex items-center gap-8">
-          <NavLinks navLinks={processedNavLinks} />
-          {isLoggedIn && <LogoutButton onClick={handleLogout} />}
-        </nav>
-
-        <div className="lg:hidden flex items-center">
-            {isLoggedIn && <LogoutButton onClick={handleLogout} className="mr-4" />}
-            <button onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50">
-                {isOpen ? <CloseIcon /> : <MenuIcon />}
-            </button>
-        </div>
-      </div>
-      
-      <div 
-        className={`lg:hidden fixed top-0 left-0 w-full h-full bg-black/95 backdrop-blur-lg transition-transform duration-300 ease-in-out z-40 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+    <>
+      <header 
+        className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
+          isScrolled ? 'bg-black/80 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'
         }`}
       >
-        <nav className="h-full flex flex-col items-center justify-center gap-8 pt-28">
+        <div className="container mx-auto px-6 h-20 flex justify-between items-center">
+          {siteConfig?.logo && (
+            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-14 w-auto" />
+            </Link>
+          )}
+          
+          <nav className="hidden lg:flex items-center gap-8">
+            <NavLinks navLinks={processedNavLinks} />
+            {isLoggedIn && <LogoutButton onClick={handleLogout} />}
+          </nav>
+
+          <div className="lg:hidden flex items-center">
+              <button onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50">
+                  {isOpen ? <CloseIcon /> : <MenuIcon />}
+              </button>
+          </div>
+        </div>
+      </header>
+      
+      {/* Mobile Menu Backdrop */}
+      <div 
+        className={`lg:hidden fixed inset-0 z-30 transition-opacity duration-300 ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
+        onClick={() => setIsOpen(false)}
+        aria-hidden={!isOpen}
+      />
+      
+      {/* Mobile Menu Panel */}
+      <div 
+        className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-300 ease-in-out z-40 transform ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobile-menu-title"
+      >
+        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20">
+             <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
+        </div>
+        <nav className="flex flex-col p-8 gap-6">
           <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} />
+          {isLoggedIn && <LogoutButton onClick={handleLogout} />}
         </nav>
       </div>
-    </header>
+    </>
   );
 };
 
