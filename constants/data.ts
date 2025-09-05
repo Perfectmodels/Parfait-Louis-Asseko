@@ -9,7 +9,7 @@ export const navLinks: NavLink[] = [
   { path: '/', label: 'Accueil', inFooter: true },
   { path: '/agence', label: 'Agence', inFooter: true },
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
-  { path: '/fashion-day', label: 'Fashion Day', inFooter: true, footerLabel: 'Perfect Fashion Day' },
+  { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
@@ -54,7 +54,14 @@ export const models: Model[] = [
         gender: 'Femme',
         location: 'Libreville',
         imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
-        distinctions: ["Miss Gabon 2022", "Top Model Afrique Centrale 2023"],
+        portfolioImages: [
+            'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+            'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+            'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+        ],
+        distinctions: [
+            { name: "Palmarès National & International", titles: ["Miss Gabon 2022", "Top Model Afrique Centrale 2023"] }
+        ],
         measurements: { chest: '85cm', waist: '62cm', hips: '90cm', shoeSize: '40' },
         categories: ['Défilé', 'Éditorial', 'Beauté'],
         experience: "Mannequin vedette de l'agence, Noemi a défilé pour les plus grands créateurs gabonais et a été le visage de plusieurs campagnes nationales. Son professionnalisme et sa démarche captivante en font une référence.",
@@ -69,6 +76,11 @@ export const models: Model[] = [
         height: '1m75',
         gender: 'Femme',
         imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+        portfolioImages: [
+            'https://i.postimg.cc/Xv24Dvp1/NR-09484.jpg',
+            'https://i.postimg.cc/59Qbnb1p/NR-09503-Modifier.jpg',
+            'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+        ],
         measurements: { chest: '82cm', waist: '60cm', hips: '88cm', shoeSize: '39' },
         categories: ['Défilé', 'Commercial', 'Éditorial'],
         experience: "Avec son regard perçant et sa polyvalence, AJ excelle dans les shootings éditoriaux et les campagnes publicitaires. Elle a collaboré avec de nombreuses marques locales et photographes de renom.",
@@ -83,6 +95,9 @@ export const models: Model[] = [
         height: '1m88',
         gender: 'Homme',
         imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+        portfolioImages: [
+             'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+        ],
         measurements: { chest: '98cm', waist: '78cm', hips: '95cm', shoeSize: '44' },
         categories: ['Défilé', 'Costume', 'Sportswear'],
         experience: "Spécialiste du prêt-à-porter masculin, Yann est reconnu pour sa démarche puissante et son élégance naturelle. Il est un choix privilégié pour les défilés de créateurs de costumes.",
