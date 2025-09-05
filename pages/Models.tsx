@@ -32,20 +32,20 @@ const Models: React.FC = () => {
   }
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+    <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24 min-h-screen">
       <SEO 
         title="Nos Mannequins | Le Visage de la Mode Gabonaise"
         description="Découvrez le portfolio complet des mannequins hommes et femmes de Perfect Models Management. Des visages uniques et professionnels prêts à incarner votre marque et vos créations."
         keywords="mannequins hommes gabon, mannequins femmes gabon, book mannequins, agence de modèles photo, casting modèles libreville"
       />
       <div className="container mx-auto px-6">
-        <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Nos Mannequins</h1>
-        <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
+        <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold text-center mb-4">Nos Mannequins</h1>
+        <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-10 lg:mb-14">
           Découvrez les visages qui définissent l'avenir de la mode. Des talents uniques, prêts à donner vie à vos créations.
         </p>
 
         {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 lg:mb-14">
           <div className="flex items-center gap-4">
             <FilterButton gender="Tous" />
             <FilterButton gender="Femme" />

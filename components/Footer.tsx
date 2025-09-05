@@ -62,9 +62,9 @@ const Footer: React.FC = () => {
                         <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Suivez-nous</h3>
                          {socialLinks && (
                             <div className="flex space-x-4">
-                                {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="Facebook"><FacebookIcon className="w-6 h-6" /></a>}
-                                {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="Instagram"><InstagramIcon className="w-6 h-6" /></a>}
-                                {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="YouTube"><YoutubeIcon className="w-6 h-6" /></a>}
+                                {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="Facebook"><FacebookIcon className="w-6 h-6 md:w-7 md:h-7" /></a>}
+                                {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="Instagram"><InstagramIcon className="w-6 h-6 md:w-7 md:h-7" /></a>}
+                                {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="YouTube"><YoutubeIcon className="w-6 h-6 md:w-7 md:h-7" /></a>}
                             </div>
                         )}
                     </div>

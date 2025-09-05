@@ -29,15 +29,15 @@ const Magazine: React.FC = () => {
       />
       <header className="bg-black py-8 border-b-2 border-pm-gold">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl font-playfair text-pm-gold tracking-widest">FOCUS MODEL 241</h1>
+          <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold tracking-widest">FOCUS MODEL 241</h1>
           <p className="text-pm-off-white/80 mt-2">Le magazine de la mode et des talents gabonais.</p>
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-16">
+      <div className="container mx-auto px-6 py-12 md:py-16">
         {/* Featured Article */}
         {featuredArticle && (
-          <section className="mb-16">
+          <section className="mb-12 md:mb-16">
             <Link to={`/magazine/${featuredArticle.slug}`} className="group block md:grid md:grid-cols-2 gap-8 items-center bg-black border border-pm-gold/20 p-6 shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-pm-gold/10">
               <div className="overflow-hidden">
                 <img src={featuredArticle.imageUrl} alt={featuredArticle.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />

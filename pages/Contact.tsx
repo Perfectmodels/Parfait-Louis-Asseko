@@ -47,7 +47,7 @@ const Contact: React.FC = () => {
     };
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24 min-h-screen">
             <SEO 
                 title="Contact | Perfect Models Management"
                 description="Contactez-nous pour toute demande de booking, de partenariat ou d'information. L'équipe de Perfect Models Management est à votre disposition à Libreville, Gabon."
@@ -55,13 +55,13 @@ const Contact: React.FC = () => {
             />
             <div className="container mx-auto px-6">
                 <div className="text-center">
-                    <h1 className="text-5xl font-playfair text-pm-gold mb-4">Contactez-nous</h1>
+                    <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold mb-4">Contactez-nous</h1>
                     <p className="max-w-2xl mx-auto text-pm-off-white/80">
                         Une question, un projet de collaboration ou une demande de booking ? Notre équipe est à votre écoute.
                     </p>
                 </div>
 
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                <div className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
                     {/* Contact Info */}
                     <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
                         <h2 className="text-3xl font-playfair text-pm-gold mb-6">Nos Coordonnées</h2>
