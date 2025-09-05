@@ -2,18 +2,31 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
-import { ArticleContent } from '../types';
-import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { ArticleContent, ArticleComment } from '../types';
+import { ChevronLeftIcon, UserCircleIcon } from '@heroicons/react/24/solid';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, WhatsAppIcon, TikTokIcon } from '../components/icons/SocialIcons';
 
 
 const ArticleDetail: React.FC = () => {
-  const { data, isInitialized } = useData();
+  const { data, saveData, isInitialized } = useData();
   const { slug } = useParams<{ slug: string }>();
   const [isCopied, setIsCopied] = useState(false);
-  
+  const [newComment, setNewComment] = useState('');
+  const [authorName, setAuthorName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const article = data?.articles.find(a => a.slug === slug);
+  const comments = data?.articleComments.filter(c => c.articleSlug === slug).sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
+
+  const userId = sessionStorage.getItem('userId');
+  const loggedInModel = data?.models.find(m => m.id === userId);
+
+  React.useEffect(() => {
+    if (loggedInModel) {
+      setAuthorName(loggedInModel.name);
+    }
+  }, [loggedInModel]);
 
   if (!isInitialized) {
       return <div className="min-h-screen bg-pm-dark"></div>;
@@ -32,6 +45,33 @@ const ArticleDetail: React.FC = () => {
         setTimeout(() => setIsCopied(false), 2000);
     });
   };
+  
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim() || !authorName.trim() || !data) return;
+
+    setIsSubmitting(true);
+    const comment: ArticleComment = {
+      id: Date.now().toString(),
+      articleSlug: article.slug,
+      authorName: loggedInModel ? loggedInModel.name : authorName,
+      createdAt: new Date().toISOString(),
+      content: newComment,
+    };
+
+    const updatedComments = [...data.articleComments, comment];
+    try {
+      await saveData({ ...data, articleComments: updatedComments });
+      setNewComment('');
+      if (!loggedInModel) setAuthorName('');
+    } catch (error) {
+      console.error("Failed to save comment", error);
+      alert("Erreur lors de l'envoi du commentaire.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   const renderContent = (content: ArticleContent, index: number) => {
     switch (content.type) {
@@ -114,6 +154,57 @@ const ArticleDetail: React.FC = () => {
             </div>
           </footer>
         </article>
+
+        {/* Comments Section */}
+        <section className="mt-16 pt-8 border-t border-pm-gold/20">
+          <h2 className="text-3xl font-playfair text-pm-gold mb-6">{comments.length} Commentaire{comments.length === 1 ? '' : 's'}</h2>
+
+          <div className="bg-black p-6 border border-pm-gold/10 rounded-lg mb-8">
+            <h3 className="text-xl font-bold mb-4">Laisser un commentaire</h3>
+            <form onSubmit={handleCommentSubmit} className="space-y-4">
+              {!loggedInModel && (
+                <input
+                  type="text"
+                  placeholder="Votre nom"
+                  value={authorName}
+                  onChange={(e) => setAuthorName(e.target.value)}
+                  className="admin-input"
+                  required
+                />
+              )}
+              <textarea
+                placeholder={loggedInModel ? `Commentez en tant que ${loggedInModel.name}...` : "Votre commentaire..."}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="admin-input admin-textarea"
+                rows={4}
+                required
+              />
+              <div className="text-right">
+                <button type="submit" disabled={isSubmitting} className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white disabled:opacity-50">
+                  {isSubmitting ? 'Envoi...' : 'Commenter'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="space-y-6">
+            {comments.map(comment => (
+              <div key={comment.id} className="flex gap-4">
+                <div className="flex-shrink-0 bg-pm-dark rounded-full h-12 w-12 flex items-center justify-center">
+                  <UserCircleIcon className="h-8 w-8 text-pm-gold/50" />
+                </div>
+                <div className="flex-grow bg-black p-4 border border-pm-gold/10 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <p className="font-bold text-pm-gold">{comment.authorName}</p>
+                    <p className="text-xs text-pm-off-white/50">{new Date(comment.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  </div>
+                  <p className="mt-2 text-pm-off-white/90">{comment.content}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );

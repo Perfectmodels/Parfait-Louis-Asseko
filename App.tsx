@@ -32,6 +32,7 @@ import AdminClassroomProgress from './pages/AdminClassroomProgress';
 import AdminModelAccess from './pages/AdminModelAccess';
 import AdminNews from './pages/AdminNews';
 import ClassroomForum from './pages/ClassroomForum';
+import ForumThread from './pages/ForumThread';
 
 
 const ScrollToTop: React.FC = () => {
@@ -73,6 +74,10 @@ const App: React.FC = () => {
             <Route path="/formations/forum" element={
               <ProtectedRoute role="model"><ClassroomForum /></ProtectedRoute>
             } />
+            <Route path="/formations/forum/:threadId" element={
+              <ProtectedRoute role="model"><ForumThread /></ProtectedRoute>
+            } />
+
 
             {/* Admin Routes */}
             <Route path="/admin" element={
