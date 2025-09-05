@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { NewsItem } from '../types';
 import SEO from '../components/SEO';
@@ -11,13 +11,25 @@ const AdminNews: React.FC = () => {
   const [localNews, setLocalNews] = useState<NewsItem[]>([]);
   const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'date' | 'title'>('date');
 
   useEffect(() => {
     if (data?.newsItems) {
-      setLocalNews([...data.newsItems].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      setLocalNews([...data.newsItems]);
     }
-  }, [data?.newsItems, isInitialized]);
+  }, [data?.newsItems]);
   
+  const sortedNews = useMemo(() => {
+    const newsCopy = [...localNews];
+    if (sortOrder === 'date') {
+      return newsCopy.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }
+    if (sortOrder === 'title') {
+      return newsCopy.sort((a, b) => a.title.localeCompare(b.title));
+    }
+    return newsCopy;
+  }, [localNews, sortOrder]);
+
   const handleFormSave = async (itemToSave: NewsItem) => {
     if (!data) return;
     let updatedNews;
@@ -64,7 +76,7 @@ const AdminNews: React.FC = () => {
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO title="Admin - Gérer les Actualités" noIndex />
       <div className="container mx-auto px-6">
-        <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
+        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
             <div>
                  <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
@@ -72,22 +84,36 @@ const AdminNews: React.FC = () => {
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Actualités</h1>
             </div>
-            <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                <PlusIcon className="w-5 h-5"/> Ajouter une Actualité
-            </button>
+             <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                    <label htmlFor="sort-order" className="text-sm text-pm-off-white/70">Trier par :</label>
+                    <select 
+                      id="sort-order"
+                      value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value as 'date' | 'title')}
+                      className="admin-input !w-auto !inline-block text-sm !py-1.5"
+                    >
+                      <option value="date">Date (plus récent)</option>
+                      <option value="title">Titre (A-Z)</option>
+                    </select>
+                </div>
+                <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                    <PlusIcon className="w-5 h-5"/> Ajouter une Actualité
+                </button>
+            </div>
         </div>
 
         <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
-          {localNews.map(item => (
+          {sortedNews.map(item => (
             <div key={item.id} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
-              <div className="flex items-center gap-4">
-                <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded"/>
-                <div>
-                  <h2 className="font-bold">{item.title}</h2>
+              <div className="flex items-center gap-4 overflow-hidden">
+                <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded flex-shrink-0"/>
+                <div className="overflow-hidden">
+                  <h2 className="font-bold truncate">{item.title}</h2>
                   <p className="text-sm text-pm-off-white/70">{new Date(item.date).toLocaleDateString('fr-FR')}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-shrink-0">
                 <button onClick={() => { setEditingItem(item); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
                 <button onClick={() => handleDelete(item.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
               </div>
@@ -125,7 +151,7 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
                   <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
                   <ImageInput label="Image" value={formData.imageUrl} onChange={handleImageChange} />
                   <FormTextArea label="Extrait / Description" name="excerpt" value={formData.excerpt} onChange={handleChange} />
-                  <FormInput label="Lien (optionnel)" name="link" value={formData.link || ''} onChange={handleChange} />
+                  <FormInput label="Lien (optionnel, ex: /casting)" name="link" value={formData.link || ''} onChange={handleChange} required={false} />
                   
                   <div className="flex justify-end gap-4 pt-4">
                       <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
@@ -137,10 +163,10 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
     )
 }
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string}> = ({label, name, value, onChange, type="text"}) => (
+const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, required?: boolean}> = ({label, name, value, onChange, type="text", required = true}) => (
     <div>
         <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" required />
+        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" required={required} />
     </div>
 );
 const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any}> = ({label, name, value, onChange}) => (
