@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
@@ -9,7 +8,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 const AdminClassroomProgress: React.FC = () => {
     const { data } = useData();
     const models = data?.models || [];
-    const courseModulesWithQuizzes = data?.courseData.filter(m => m.quiz && m.quiz.length > 0) || [];
+    const courseModulesWithQuizzes = data?.courseData?.filter(m => m.quiz && m.quiz.length > 0) || [];
 
     const getScoreColor = (score: number) => {
         if (score >= 80) return 'text-green-400 bg-green-500/10';

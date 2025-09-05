@@ -1,7 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import { Model, AIAssistantProps } from '../types';
+import { Model } from '../types';
 import ImageInput from './ImageInput';
-import AIAssistant from './AIAssistant';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
@@ -14,7 +14,6 @@ interface ModelFormProps {
 
 const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreating, mode }) => {
     const [formData, setFormData] = useState<Model>(model);
-    const [assistantProps, setAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'> | null>(null);
 
     useEffect(() => {
         setFormData(model);
@@ -74,6 +73,14 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     </div>
                     <FormInput label="Lieu de résidence" name="location" value={formData.location || ''} onChange={handleChange} />
                 </Section>
+                
+                {isAdmin && (
+                    <Section title="Accès & Sécurité (Admin)">
+                        <FormInput label="Identifiant (Matricule)" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
+                        <FormInput label="Mot de passe" name="password" value={formData.password} onChange={handleChange} />
+                        <p className="text-xs text-pm-off-white/60 -mt-2">L'identifiant est généré automatiquement à la création. Le mot de passe peut être modifié ici.</p>
+                    </Section>
+                )}
 
                 <Section title="Contact">
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -94,22 +101,10 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
 
                 <Section title="Carrière & Portfolio">
-                    <FormTextArea label="Distinctions (séparées par des virgules)" name="distinctions" value={(formData.distinctions || []).join(', ')} onChange={(e) => handleArrayChange('distinctions', e.target.value)} disabled={!isAdmin} onAssistantClick={isAdmin ? () => setAssistantProps({
-                        fieldName: 'Distinctions',
-                        initialPrompt: `Génère 3 suggestions de distinctions ou titres prestigieux pour un mannequin nommé ${formData.name}.`,
-                        onInsertContent: (content) => handleArrayChange('distinctions', (formData.distinctions || []).join(', ') + ', ' + content.split('\n').join(', '))
-                    }) : undefined} />
+                    <FormTextArea label="Distinctions (séparées par des virgules)" name="distinctions" value={(formData.distinctions || []).join(', ')} onChange={(e) => handleArrayChange('distinctions', e.target.value)} disabled={!isAdmin} />
                     <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
-                    <FormTextArea label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5} onAssistantClick={isAdmin ? () => setAssistantProps({
-                        fieldName: 'Expérience',
-                        initialPrompt: `Rédige une biographie professionnelle de 2 à 3 paragraphes décrivant l'expérience d'un mannequin. Inclus des détails sur les types de défilés, les collaborations avec des marques et les publications dans des magazines.`,
-                        onInsertContent: (content) => setFormData(p => ({...p, experience: content}))
-                    }) : undefined} />
-                    <FormTextArea label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} onAssistantClick={isAdmin ? () => setAssistantProps({
-                        fieldName: 'Parcours',
-                        initialPrompt: `Rédige une description inspirante du parcours d'un mannequin, en mettant l'accent sur ses débuts, sa détermination, les défis surmontés et sa vision pour l'avenir dans l'industrie de la mode.`,
-                        onInsertContent: (content) => setFormData(p => ({...p, journey: content}))
-                    }) : undefined} />
+                    <FormTextArea label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5} />
+                    <FormTextArea label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} />
                 </Section>
 
                 <div className="flex justify-end gap-4 pt-4">
@@ -117,7 +112,6 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
                 </div>
             </form>
-            {assistantProps && <AIAssistant isOpen={!!assistantProps} onClose={() => setAssistantProps(null)} {...assistantProps} />}
         </>
     );
 };
@@ -145,15 +139,10 @@ const FormSelect: React.FC<{label: string, name: string, value: any, onChange: a
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean, onAssistantClick?: () => void}> = ({label, name, value, onChange, rows = 3, disabled = false, onAssistantClick}) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean}> = ({label, name, value, onChange, rows = 3, disabled = false}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-            {onAssistantClick && (
-                <button type="button" onClick={onAssistantClick} className="flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
-                    <SparklesIcon className="w-4 h-4" /> Assister
-                </button>
-            )}
         </div>
         <textarea id={name} name={name} value={value} onChange={onChange} rows={rows} className="admin-input admin-textarea" disabled={disabled} />
     </div>

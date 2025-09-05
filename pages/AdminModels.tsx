@@ -4,7 +4,7 @@ import { useData } from '../contexts/DataContext';
 import { Model } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm';
 
 const AdminModels: React.FC = () => {
@@ -15,9 +15,9 @@ const AdminModels: React.FC = () => {
 
   useEffect(() => {
     if (data?.models) {
-      setLocalModels(JSON.parse(JSON.stringify(data.models)));
+      setLocalModels(data.models);
     }
-  }, [data?.models, isInitialized]);
+  }, [data?.models]);
 
   const handleFormSave = async (modelToSave: Model) => {
     if (!data) return;
@@ -51,6 +51,27 @@ const AdminModels: React.FC = () => {
 
     setEditingModel(null);
     setIsCreating(false);
+  };
+  
+  const handleSaveOrder = async () => {
+    if (!data) return;
+    try {
+        await saveData({ ...data, models: localModels });
+        alert("L'ordre des mannequins a été sauvegardé avec succès.");
+    } catch (error) {
+        console.error("Erreur lors de la sauvegarde de l'ordre :", error);
+        alert("Une erreur est survenue lors de la sauvegarde.");
+    }
+  };
+
+  const handleMove = (index: number, direction: 'up' | 'down') => {
+    const newModels = [...localModels];
+    if (direction === 'up' && index > 0) {
+      [newModels[index], newModels[index - 1]] = [newModels[index - 1], newModels[index]];
+    } else if (direction === 'down' && index < newModels.length - 1) {
+      [newModels[index], newModels[index + 1]] = [newModels[index + 1], newModels[index]];
+    }
+    setLocalModels(newModels);
   };
 
   const handleDelete = async (modelId: string) => {
@@ -103,6 +124,9 @@ const AdminModels: React.FC = () => {
             <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Mannequins</h1>
           </div>
           <div className="flex items-center gap-4">
+            <button onClick={handleSaveOrder} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+              Sauvegarder l'ordre
+            </button>
             <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
               <PlusIcon className="w-5 h-5"/> Ajouter Mannequin
             </button>
@@ -117,19 +141,26 @@ const AdminModels: React.FC = () => {
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Photo</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Nom</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Matricule</th>
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Taille</th>
-                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 hidden md:table-cell">Genre</th>
+                            <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70">Ordre</th>
                             <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {localModels.map(model => (
+                        {localModels.map((model, index) => (
                             <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
                                 <td className="p-2"><img src={model.imageUrl} alt={model.name} className="w-12 h-16 object-cover rounded-md"/></td>
                                 <td className="p-4 font-semibold">{model.name}</td>
                                 <td className="p-4 font-mono text-xs text-pm-gold/80 hidden md:table-cell">{model.username}</td>
-                                <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{model.height}</td>
-                                <td className="p-4 text-pm-off-white/80 hidden md:table-cell">{model.gender}</td>
+                                <td className="p-4">
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="text-pm-off-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
+                                            <ArrowUpIcon className="w-5 h-5"/>
+                                        </button>
+                                        <button onClick={() => handleMove(index, 'down')} disabled={index === localModels.length - 1} className="text-pm-off-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
+                                            <ArrowDownIcon className="w-5 h-5"/>
+                                        </button>
+                                    </div>
+                                </td>
                                 <td className="p-4">
                                     <div className="flex items-center justify-end gap-4">
                                         <button onClick={() => { setEditingModel(model); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>

@@ -1,8 +1,7 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { Model, Article, Module, Testimonial, FashionDayEvent, Service, AchievementCategory, ModelDistinction, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, CastingApplicationStatus, FashionDayApplicationStatus, ForumMessage } from '../types';
 import { db } from '../firebaseConfig';
-// FIX: Removed Firebase v9 imports (ref, get, set) as they are incompatible with the v8 SDK syntax.
-// import { ref, get, set } from 'firebase/database';
 
 // Import initial data from the constants files for seeding purposes
 import { 
@@ -82,27 +81,32 @@ export const useDataStore = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const initializeAndFetchData = async () => {
+    const loadData = async () => {
+      console.log("Attempting to load data from Firebase...");
       const dbRef = db.ref('/');
       try {
-        // --- FORCE DATABASE RESET ---
-        // This will overwrite all data in Firebase with the default seed data.
-        console.log("Forcing database reset as requested by the user...");
-        const seedData = getSeedData();
-        await dbRef.set(seedData);
-        setData(seedData);
-        console.log("Database has been reset to its initial state.");
-        // We add an alert to make sure the user is aware of this one-time action.
-        alert("La base de données a été réinitialisée avec les données par défaut, comme demandé. Pour éviter une nouvelle réinitialisation, demandez à l'assistant de 'restaurer le comportement normal de chargement des données'.");
+        const snapshot = await dbRef.get();
+        if (snapshot.exists() && snapshot.val() !== null) {
+          console.log("SUCCESS: Data found and loaded from Firebase.");
+          setData(snapshot.val());
+        } else {
+          console.warn("INFO: Firebase database is empty or contains null. Seeding with initial site data.");
+          const seedData = getSeedData();
+          await dbRef.set(seedData);
+          setData(seedData);
+          console.log("SUCCESS: Database has been seeded with initial data.");
+        }
       } catch (error: any) {
-        console.error("Firebase reset error:", error);
-        alert("Une erreur est survenue lors de la réinitialisation de la base de données.");
+        console.error("FATAL: Firebase connection error. Could not read from or write to the database.", error);
+        console.log("FALLBACK: Using local data as a temporary fallback.");
+        setData(getSeedData());
       } finally {
         setIsInitialized(true);
+        console.log("Data initialization complete.");
       }
     };
 
-    initializeAndFetchData();
+    loadData();
   }, []);
 
   const saveData = useCallback(async (newData: AppData) => {
@@ -114,7 +118,7 @@ export const useDataStore = () => {
         console.error("Firebase save error:", error);
         alert("An error occurred while saving the data.");
     }
-  }, [setData]);
+  }, []);
 
   return { data, saveData, isInitialized };
 };
