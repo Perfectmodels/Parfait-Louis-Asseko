@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 
 export interface Model {
@@ -81,6 +79,7 @@ export interface Article {
   date: string;
   content: ArticleContent[];
   tags?: string[];
+  isFeatured?: boolean;
 }
 
 
