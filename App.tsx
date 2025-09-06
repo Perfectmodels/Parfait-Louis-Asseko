@@ -1,7 +1,6 @@
-
 import React, { useEffect } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { DataProvider } from './contexts/DataContext';
+import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
@@ -65,9 +64,41 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
     const location = useLocation();
+    const { data } = useData();
     const hideAIAssistant = [
         '/login', '/admin', '/jury', '/enregistrement', '/profil', '/chat'
     ].some(path => location.pathname.startsWith(path));
+
+    // Notification logic for browser tab title
+    useEffect(() => {
+        const originalTitle = "Perfect Models Management";
+        if (data && location.pathname.startsWith('/admin')) {
+            const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
+            const newFashionDayApps = data.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
+            const newRecoveryRequests = data.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
+            const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
+            const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
+
+            const totalNotifications = newCastingApps + newFashionDayApps + newRecoveryRequests + newBookingRequests + newMessages;
+
+            if (totalNotifications > 0) {
+                document.title = `(${totalNotifications}) Admin | ${originalTitle}`;
+            } else {
+                document.title = `Admin | ${originalTitle}`;
+            }
+        } else {
+            // Restore title if not on an admin page (this will be handled by SEO component for other pages)
+            if (document.title.startsWith('(') || document.title.startsWith('Admin |')) {
+                 document.title = originalTitle;
+            }
+        }
+        
+        // Cleanup function to restore original title on component unmount
+        return () => {
+            document.title = originalTitle;
+        };
+    }, [location.pathname, data]);
+
 
     return (
         <>
