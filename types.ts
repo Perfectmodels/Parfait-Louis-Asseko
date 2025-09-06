@@ -256,6 +256,19 @@ export interface RecoveryRequest {
   status: 'Nouveau' | 'Traité';
 }
 
+export interface BookingRequest {
+  id: string;
+  submissionDate: string;
+  status: 'Nouveau' | 'Confirmé' | 'Annulé';
+  clientName: string;
+  clientEmail: string;
+  clientCompany?: string;
+  requestedModels: string;
+  startDate?: string;
+  endDate?: string;
+  message: string;
+}
+
 // FIX: Add missing AIAssistantProps interface to fix type error
 export interface AIAssistantProps {
   isOpen: boolean;

@@ -5,6 +5,7 @@ import NotFound from './NotFound';
 import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import BookingForm from '../components/BookingForm';
 
 const ModelDetail: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -12,6 +13,7 @@ const ModelDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState('details');
   const [isViewingOwnProfile, setIsViewingOwnProfile] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   
   const model = data?.models.find(m => m.id === id);
 
@@ -108,9 +110,9 @@ const ModelDetail: React.FC = () => {
 
                <div className="mt-10">
                   {!isViewingOwnProfile && (
-                    <ReactRouterDOM.Link to="/contact" className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                    <button onClick={() => setIsBookingModalOpen(true)} className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                         Booker ce mannequin
-                    </ReactRouterDOM.Link>
+                    </button>
                   )}
                </div>
             </div>
@@ -130,6 +132,29 @@ const ModelDetail: React.FC = () => {
           )}
         </div>
       </div>
+
+      {isBookingModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <header className="p-4 flex justify-between items-center border-b border-pm-gold/20 flex-shrink-0">
+                <h2 className="text-2xl font-playfair text-pm-gold">Booking: {model.name}</h2>
+                <button onClick={() => setIsBookingModalOpen(false)} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
+            </header>
+            <main className="p-6 overflow-y-auto flex-grow">
+              <BookingForm 
+                prefilledModelName={model.name}
+                onSuccess={() => {
+                  setTimeout(() => setIsBookingModalOpen(false), 3000);
+                }}
+              />
+            </main>
+          </div>
+        </div>
+      )}
 
       {selectedImage && (
         <div 
