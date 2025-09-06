@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useMemo } from 'react';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
-import MenuIcon from './icons/MenuIcon';
-import CloseIcon from './icons/CloseIcon';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import AnimatedHamburgerIcon from './icons/AnimatedHamburgerIcon';
 
-const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }> = ({ to, label, onClick }) => {
+const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
+  const mobileAnimationClasses = isMobile
+    ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
+    : '';
+
   return (
-    <ReactRouterDOM.NavLink
+    <NavLink
       to={to}
       onClick={onClick}
       end={to === '/'}
       className={({ isActive }) =>
-        "relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold " +
+        `relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold ${mobileAnimationClasses} ` +
         (isActive ? "text-pm-gold" : "")
       }
+      style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
       {({ isActive }) => (
         <>
@@ -27,44 +30,54 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }>
           />
         </>
       )}
-    </ReactRouterDOM.NavLink>
+    </NavLink>
   );
 };
 
 
-const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: any[] }> = ({ onLinkClick, navLinks }) => {
+const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: any[]; isMobile?: boolean; isOpen?: boolean; }> = ({ onLinkClick, navLinks, isMobile = false, isOpen = false }) => {
   return (
     <>
-      {navLinks.map(link => (
+      {navLinks.map((link, index) => (
         <NavLinkItem 
           key={link.path}
           to={link.path} 
           label={link.label}
           onClick={onLinkClick}
+          isMobile={isMobile}
+          isOpen={isOpen}
+          delay={isMobile ? 150 + index * 50 : 0}
         />
       ))}
     </>
   );
 };
 
-const LogoutButton: React.FC<{ onClick: () => void, className?: string }> = ({ onClick, className = "" }) => (
-    <button
-        onClick={onClick}
-        className={`flex items-center gap-2 py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 hover:text-pm-gold ${className}`}
-        aria-label="Déconnexion"
-    >
-        <ArrowRightOnRectangleIcon className="w-5 h-5" />
-        <span>Déconnexion</span>
-    </button>
-);
+const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ onClick, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
+    const mobileAnimationClasses = isMobile
+    ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
+    : '';
+
+    return (
+        <button
+            onClick={onClick}
+            className={`flex items-center gap-2 py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 hover:text-pm-gold ${className} ${mobileAnimationClasses}`}
+            aria-label="Déconnexion"
+            style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
+        >
+            <ArrowRightOnRectangleIcon className="w-5 h-5" />
+            <span>Déconnexion</span>
+        </button>
+    );
+};
 
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
-  const location = ReactRouterDOM.useLocation();
-  const navigate = ReactRouterDOM.useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -81,13 +94,20 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location]);
+  
+  // Close mobile menu on navigation change
+  useEffect(() => {
+    if (isOpen) {
+        setIsOpen(false);
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
+    setIsOpen(false); // Ensure menu closes on logout
     sessionStorage.clear();
     setIsLoggedIn(false);
     setUserRole(null);
     navigate('/login');
-    setIsOpen(false);
   };
   
   const siteConfig = data?.siteConfig;
@@ -117,9 +137,9 @@ const Header: React.FC = () => {
       >
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
-            <ReactRouterDOM.Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
               <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
-            </ReactRouterDOM.Link>
+            </Link>
           )}
           
           <nav className="hidden lg:flex items-center gap-8">
@@ -128,8 +148,8 @@ const Header: React.FC = () => {
           </nav>
 
           <div className="lg:hidden flex items-center">
-              <button onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50">
-                  {isOpen ? <CloseIcon /> : <MenuIcon />}
+              <button onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu">
+                  <AnimatedHamburgerIcon isOpen={isOpen} />
               </button>
           </div>
         </div>
@@ -137,26 +157,26 @@ const Header: React.FC = () => {
       
       {/* Mobile Menu Backdrop */}
       <div 
-        className={`lg:hidden fixed inset-0 z-30 transition-opacity duration-300 ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
+        className={`lg:hidden fixed inset-0 z-30 transition-opacity duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
         aria-hidden={!isOpen}
       />
       
       {/* Mobile Menu Panel */}
       <div 
-        className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-300 ease-in-out z-40 transform ${
+        className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
       >
-        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20">
+        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24">
              <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
         </div>
         <nav className="flex flex-col p-8 gap-6">
-          <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} />
-          {isLoggedIn && <LogoutButton onClick={handleLogout} />}
+          <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen}/>
+          {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={150 + processedNavLinks.length * 50} />}
         </nav>
       </div>
     </>

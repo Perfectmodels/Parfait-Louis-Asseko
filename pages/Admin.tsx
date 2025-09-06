@@ -1,6 +1,6 @@
+
 import React from 'react';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
     UsersIcon, 
@@ -17,12 +17,13 @@ import {
     BuildingStorefrontIcon,
     SparklesIcon,
     ChatBubbleLeftRightIcon,
-    BriefcaseIcon
+    BriefcaseIcon,
+    EnvelopeIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
 const Admin: React.FC = () => {
-    const navigate = ReactRouterDOM.useNavigate();
+    const navigate = useNavigate();
     const { data } = useData();
 
     const handleLogout = () => {
@@ -34,6 +35,7 @@ const Admin: React.FC = () => {
     const newFashionDayApps = data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
     const newRecoveryRequests = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
     const newBookingRequests = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
+    const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -61,6 +63,13 @@ const Admin: React.FC = () => {
                         icon={NewspaperIcon} 
                         link="/admin/magazine"
                         description="Créer et administrer les articles du magazine Focus Model 241."
+                    />
+                    <DashboardCard 
+                        title="Messages de Contact" 
+                        icon={EnvelopeIcon} 
+                        link="/admin/messages"
+                        description="Lire et gérer les messages reçus via le formulaire de contact."
+                        notificationCount={newMessages}
                     />
                     <DashboardCard 
                         title="Modérer les Commentaires" 
@@ -158,7 +167,7 @@ interface DashboardCardProps {
     notificationCount?: number;
 }
 const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, description, notificationCount }) => (
-    <ReactRouterDOM.Link to={link} className="relative group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-2 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
+    <Link to={link} className="relative group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-2 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
         {notificationCount && notificationCount > 0 && (
             <span className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-pulse">
                 {notificationCount}
@@ -167,7 +176,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, 
         <Icon className="w-10 h-10 text-pm-gold mb-4" />
         <h2 className="text-xl font-playfair text-pm-off-white group-hover:text-pm-gold transition-colors">{title}</h2>
         <p className="text-sm text-pm-off-white/70 mt-2">{description}</p>
-    </ReactRouterDOM.Link>
+    </Link>
 );
 
 export default Admin;

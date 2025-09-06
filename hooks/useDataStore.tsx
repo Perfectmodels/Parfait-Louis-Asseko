@@ -1,6 +1,7 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -16,6 +17,7 @@ import {
     articleComments as initialArticleComments,
     recoveryRequests as initialRecoveryRequests,
     bookingRequests as initialBookingRequests,
+    contactMessages as initialContactMessages,
     newsItems as initialNewsItems, 
     navLinks as initialNavLinks, 
     fashionDayEvents as initialFashionDayEvents, 
@@ -69,6 +71,7 @@ export interface AppData {
     articleComments: ArticleComment[];
     recoveryRequests: RecoveryRequest[];
     bookingRequests: BookingRequest[];
+    contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
 }
@@ -90,6 +93,7 @@ export const useDataStore = () => {
         articleComments: initialArticleComments,
         recoveryRequests: initialRecoveryRequests,
         bookingRequests: initialBookingRequests,
+        contactMessages: initialContactMessages,
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,

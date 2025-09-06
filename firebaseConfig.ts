@@ -1,4 +1,3 @@
-// FIX: Use Firebase v9 compat imports to support the v8 syntax used throughout the application.
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 

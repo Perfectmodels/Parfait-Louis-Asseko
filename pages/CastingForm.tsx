@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -128,7 +128,7 @@ const CastingForm: React.FC = () => {
                     {statusMessage && (
                         <p className={`text-center text-sm p-4 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
                             {statusMessage}
-                            {status === 'success' && <ReactRouterDOM.Link to="/" className="underline ml-2">Retour à l'accueil</ReactRouterDOM.Link>}
+                            {status === 'success' && <Link to="/" className="underline ml-2">Retour à l'accueil</Link>}
                         </p>
                     )}
                 </form>

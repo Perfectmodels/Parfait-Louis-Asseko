@@ -1,18 +1,20 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Article } from '../types';
 import SEO from '../components/SEO';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon, ArrowUpIcon, ArrowDownIcon, StarIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
 import { FacebookIcon } from '../components/icons/SocialIcons';
+import ArticleGenerator from '../components/ArticleGenerator';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
   const [localArticles, setLocalArticles] = useState<Article[]>([]);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
   useEffect(() => {
     if (data?.articles) {
@@ -78,7 +80,28 @@ const AdminMagazine: React.FC = () => {
       author: 'Focus Model 241',
       date: new Date().toISOString().split('T')[0],
       content: [{ type: 'paragraph', text: '' }],
+      viewCount: 0,
+      reactions: { likes: 0, dislikes: 0 },
     });
+  };
+  
+  const handleArticleGenerated = (articleData: Partial<Article>) => {
+      setIsCreating(true);
+      setEditingArticle({
+          slug: '',
+          title: articleData.title || '',
+          category: articleData.category || 'Interview',
+          excerpt: articleData.excerpt || '',
+          imageUrl: '', // User needs to add this
+          author: articleData.author || 'Focus Model 241',
+          date: articleData.date || new Date().toISOString().split('T')[0],
+          content: articleData.content || [{ type: 'paragraph', text: '' }],
+          tags: articleData.tags || [],
+          isFeatured: false,
+          viewCount: articleData.viewCount || 0,
+          reactions: articleData.reactions || { likes: 0, dislikes: 0 },
+      });
+      setIsGeneratorOpen(false);
   };
 
   if (editingArticle) {
@@ -87,18 +110,26 @@ const AdminMagazine: React.FC = () => {
 
   return (
     <>
+      <ArticleGenerator
+          isOpen={isGeneratorOpen}
+          onClose={() => setIsGeneratorOpen(false)}
+          onArticleGenerated={handleArticleGenerated}
+      />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <SEO title="Admin - Gérer le Magazine" noIndex />
         <div className="container mx-auto px-6">
           <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
               <div>
-                   <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                   <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                       <ChevronLeftIcon className="w-5 h-5" />
                       Retour au Dashboard
-                  </ReactRouterDOM.Link>
+                  </Link>
                   <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Magazine</h1>
               </div>
               <div className="flex items-center gap-4">
+                  <button onClick={() => setIsGeneratorOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/20">
+                      <SparklesIcon className="w-5 h-5"/> Générer avec IA
+                  </button>
                    <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
                       <PlusIcon className="w-5 h-5"/> Ajouter Article
                   </button>
@@ -107,7 +138,7 @@ const AdminMagazine: React.FC = () => {
 
           <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
             {localArticles.map((article, index) => {
-              const articleUrl = `${window.location.origin}${window.location.pathname}#/magazine/${article.slug}`;
+              const articleUrl = `${window.location.origin}/magazine/${article.slug}`;
               const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`;
               
               return (

@@ -1,6 +1,6 @@
+
 import React from 'react';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
@@ -8,7 +8,7 @@ import { useData } from '../contexts/DataContext';
 
 const ChapterDetail: React.FC = () => {
   const { data, isInitialized } = useData();
-  const { moduleSlug, chapterSlug } = ReactRouterDOM.useParams<{ moduleSlug: string, chapterSlug: string }>();
+  const { moduleSlug, chapterSlug } = useParams<{ moduleSlug: string, chapterSlug: string }>();
   
   const module = data?.courseData.find(m => m.slug === moduleSlug);
   const chapter = module?.chapters.find(c => c.slug === chapterSlug);
@@ -34,10 +34,10 @@ const ChapterDetail: React.FC = () => {
       />
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="flex justify-between items-center mb-8 print-hide">
-          <ReactRouterDOM.Link to="/formations" className="inline-flex items-center gap-2 text-pm-gold hover:underline">
+          <Link to="/formations" className="inline-flex items-center gap-2 text-pm-gold hover:underline">
             <ChevronLeftIcon className="w-5 h-5" />
             Retour au Classroom
-          </ReactRouterDOM.Link>
+          </Link>
           <button
             onClick={handlePrint}
             className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"

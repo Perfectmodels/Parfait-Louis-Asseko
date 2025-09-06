@@ -1,8 +1,7 @@
 import React from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AcademicCapIcon, CameraIcon, GlobeAltIcon, HeartIcon, ScaleIcon, SparklesIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { Service } from '../types';
 
@@ -27,7 +26,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
                 <p className="text-pm-off-white/80 mb-6">{service.description}</p>
             </div>
             <div className="mt-auto pt-6 text-center">
-                <ReactRouterDOM.Link 
+                <Link 
                     to={!service.isComingSoon ? `/contact?service=${encodeURIComponent(service.title)}` : '#'}
                     onClick={(e) => { if (service.isComingSoon) e.preventDefault(); }}
                     className={`inline-block px-8 py-3 font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 shadow-md ${
@@ -37,7 +36,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
                     }`}
                 >
                     {service.isComingSoon ? 'En Développement' : 'Demander un devis'}
-                </ReactRouterDOM.Link>
+                </Link>
             </div>
         </div>
     );

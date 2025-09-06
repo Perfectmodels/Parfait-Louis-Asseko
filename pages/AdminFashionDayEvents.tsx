@@ -4,8 +4,7 @@ import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
 import { FashionDayEvent, Stylist, Partner } from '../types';
 import SEO from '../components/SEO';
-// FIX: Switched to namespace import for 'react-router-dom' to resolve potential module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
 
@@ -38,10 +37,10 @@ const AdminFashionDayEvents: React.FC = () => {
             <div className="container mx-auto px-6">
                  <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
                     <div>
-                        <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                             <ChevronLeftIcon className="w-5 h-5" />
                             Retour au Tableau de Bord
-                        </ReactRouterDOM.Link>
+                        </Link>
                         <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Événements Perfect Fashion Day</h1>
                     </div>
                     <button onClick={handleSave} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/30">

@@ -1,15 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/SocialIcons';
 import BookingForm from '../components/BookingForm';
+import { ContactMessage } from '../types';
 
 const Contact: React.FC = () => {
-    const { data } = useData();
-    const location = ReactRouterDOM.useLocation();
+    const { data, saveData } = useData();
+    const location = useLocation();
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
     
@@ -31,17 +32,34 @@ const Contact: React.FC = () => {
         setStatus('loading');
         setStatusMessage('');
 
-        // Mock submission for demonstration without a real backend
-        setTimeout(() => {
-            if (formData.email.includes('error')) {
-                setStatus('error');
-                setStatusMessage('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.');
-            } else {
-                setStatus('success');
-                setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
-                setFormData({ name: '', email: '', subject: '', message: '' });
-            }
-        }, 1500);
+        if (!data) {
+            setStatus('error');
+            setStatusMessage('Erreur: Impossible de charger les données de l\'application.');
+            return;
+        }
+
+        const newContactMessage: ContactMessage = {
+            id: `contact-${Date.now()}`,
+            submissionDate: new Date().toISOString(),
+            status: 'Nouveau',
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+        };
+
+        try {
+            const updatedMessages = [...(data.contactMessages || []), newContactMessage];
+            await saveData({ ...data, contactMessages: updatedMessages });
+            
+            setStatus('success');
+            setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
+            setFormData({ name: '', email: '', subject: '', message: '' });
+        } catch (error) {
+            setStatus('error');
+            setStatusMessage('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.');
+            console.error("Error saving contact message:", error);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

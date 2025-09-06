@@ -2,11 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, StarIcon, UsersIcon, UserPlusIcon, UserMinusIcon } from '@heroicons/react/24/outline';
 
-// FIX: Renamed `status` to `liveStatus` to avoid conflict with `CastingApplication.status`
 type ApplicantWithScore = CastingApplication & {
     averageScore: number;
     juryCount: number;
@@ -33,7 +31,6 @@ const AdminCastingLive: React.FC = () => {
                 const scoresArray = Object.values(app.scores!);
                 const averageScore = scoresArray.reduce((acc, score) => acc + score.overall, 0) / scoresArray.length;
                 const juryCount = scoresArray.length;
-                // FIX: Explicitly type `liveStatus` to prevent TypeScript from widening it to a generic `string` and ensure it matches the `ApplicantWithScore` type.
                 const liveStatus: 'Présélectionné' | 'Recalé' = averageScore >= 5 ? 'Présélectionné' : 'Recalé';
                 return { ...app, averageScore, juryCount, liveStatus };
             })
@@ -58,10 +55,10 @@ const AdminCastingLive: React.FC = () => {
         <div className="bg-black text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Résultats Casting Live" noIndex />
             <div className="container mx-auto px-6">
-                <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Tableau de Bord
-                </ReactRouterDOM.Link>
+                </Link>
                 <div className="flex justify-between items-center mb-4">
                     <div>
                         <h1 className="text-4xl font-playfair text-pm-gold">Résultats du Casting en Direct</h1>
