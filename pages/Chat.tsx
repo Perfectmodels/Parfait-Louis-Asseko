@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI, Chat as GenAIChat } from '@google/genai';
+// FIX: Renamed imported `Chat` to `GeminiChat` to avoid conflict with the component's name.
+import { GoogleGenAI, Chat as GeminiChat } from '@google/genai';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, SparklesIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
@@ -10,7 +12,8 @@ interface Message {
 }
 
 const Chat: React.FC = () => {
-  const [chat, setChat] = useState<GenAIChat | null>(null);
+  // FIX: Use the renamed `GeminiChat` type for the state.
+  const [chat, setChat] = useState<GeminiChat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
