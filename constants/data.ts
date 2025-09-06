@@ -1,4 +1,3 @@
-
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage } from '../types';
 import { NavLink } from '../hooks/useDataStore';
 
@@ -27,6 +26,7 @@ export const contactInfo: ContactInfo = {
     email: 'contact@perfectmodels.ga',
     phone: '+241 077 00 00 00',
     address: 'Libreville, Gabon',
+    notificationEmail: 'contact@perfectmodels.ga',
 };
 
 export const siteImages: SiteImages = {
@@ -40,6 +40,7 @@ export const siteImages: SiteImages = {
 
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
+    formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
 };
 
 export const juryMembers: JuryMember[] = [

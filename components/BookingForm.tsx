@@ -42,6 +42,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
             return;
         }
 
+        // 1. Save to Firebase Database
         const newRequest: BookingRequest = {
             id: `booking-${Date.now()}`,
             submissionDate: new Date().toISOString(),
@@ -52,6 +53,27 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
         try {
             const updatedRequests = [...(data.bookingRequests || []), newRequest];
             await saveData({ ...data, bookingRequests: updatedRequests });
+
+            // 2. Send email via Formspree if configured
+            const endpoint = data.apiKeys.formspreeEndpoint;
+            if (endpoint && !endpoint.includes('VOTRE_ENDPOINT_PERSONNEL_ICI')) {
+                 try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({
+                            ...formData, 
+                            _subject: `Nouvelle Demande de Booking: ${formData.requestedModels}` 
+                        }),
+                    });
+                    if (!response.ok) {
+                        throw new Error('La notification par email a échoué.');
+                    }
+                } catch (emailError) {
+                    console.warn("Email notification failed, but data was saved to DB:", emailError);
+                }
+            }
+
             setStatus('success');
             setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');
             setFormData({

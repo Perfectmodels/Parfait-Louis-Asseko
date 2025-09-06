@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
@@ -75,15 +74,29 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 <div className="space-y-8">
-                    <SectionWrapper title="Clés API (Services Externes)">
-                        <FormInput label="Clé API Resend (pour les formulaires)" value={localData.apiKeys.resendApiKey} onChange={e => handleSimpleChange('apiKeys', 'resendApiKey', e.target.value)} />
-                         <p className="text-xs text-pm-off-white/60 p-2 bg-pm-dark/50 border border-pm-off-white/10 rounded-md">
-                           Cette clé est requise pour que les formulaires de Contact et de Candidature fonctionnent. L'adresse email d'envoi (ex: 'contact@votre-domaine.com') doit être un domaine vérifié sur Resend.
+                    <SectionWrapper title="Notifications par Email (via service externe)">
+                        <FormInput 
+                            label="Endpoint de Soumission de Formulaire (ex: Formspree)" 
+                            value={localData.apiKeys.formspreeEndpoint || ''} 
+                            onChange={e => handleSimpleChange('apiKeys', 'formspreeEndpoint', e.target.value)} 
+                        />
+                        <p className="text-xs text-pm-off-white/60 p-3 bg-pm-dark/50 border border-yellow-500/30 rounded-md">
+                           <strong className="text-yellow-400">Configuration Requise pour les Emails :</strong>
+                           <br/><br/>
+                           Pour recevoir les soumissions de formulaires par e-mail de manière sécurisée sans serveur, nous utilisons un service externe comme <a href="https://formspree.io/" target="_blank" rel="noopener noreferrer" className="underline font-bold">Formspree</a>.
+                           <br/><br/>
+                           <strong>1.</strong> Créez un compte gratuit sur <a href="https://formspree.io/" target="_blank" rel="noopener noreferrer" className="underline font-bold">Formspree</a> et créez un nouveau formulaire.
+                           <br/>
+                           <strong>2.</strong> Formspree vous donnera une URL unique (endpoint).
+                           <br/>
+                           <strong>3.</strong> Copiez cette URL et collez-la dans le champ ci-dessus.
+                           <br/><br/>
+                           Chaque soumission de formulaire sera alors envoyée à la fois dans le panel d'administration et à votre adresse e-mail via Formspree.
                         </p>
                     </SectionWrapper>
                     
                     <SectionWrapper title="Informations de Contact">
-                        <FormInput label="Email" value={localData.contactInfo.email} onChange={e => handleSimpleChange('contactInfo', 'email', e.target.value)} />
+                        <FormInput label="Email public" value={localData.contactInfo.email} onChange={e => handleSimpleChange('contactInfo', 'email', e.target.value)} />
                         <FormInput label="Téléphone" value={localData.contactInfo.phone} onChange={e => handleSimpleChange('contactInfo', 'phone', e.target.value)} />
                         <FormInput label="Adresse" value={localData.contactInfo.address} onChange={e => handleSimpleChange('contactInfo', 'address', e.target.value)} />
                     </SectionWrapper>

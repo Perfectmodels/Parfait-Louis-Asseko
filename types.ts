@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export interface Model {
@@ -132,6 +131,7 @@ export interface ContactInfo {
   email: string;
   phone: string;
   address: string;
+  notificationEmail?: string;
 }
 
 export interface SiteImages {
@@ -149,6 +149,7 @@ export interface Partner {
 
 export interface ApiKeys {
   resendApiKey: string;
+  formspreeEndpoint: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
