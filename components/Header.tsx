@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
@@ -77,6 +78,7 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
   const location = useLocation();
+  // FIX: Use useNavigate for react-router-dom v6 compatibility.
   const navigate = useNavigate();
 
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -107,6 +109,7 @@ const Header: React.FC = () => {
     sessionStorage.clear();
     setIsLoggedIn(false);
     setUserRole(null);
+    // FIX: Use navigate for navigation in react-router-dom v6.
     navigate('/login');
   };
   

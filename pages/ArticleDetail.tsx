@@ -48,7 +48,7 @@ const ArticleDetail: React.FC = () => {
     };
 
     incrementViewCount();
-  }, [slug, data, isInitialized]);
+  }, [slug, data, isInitialized, saveData, article]);
 
   const comments = data?.articleComments
     .filter(c => c.articleSlug === slug)
