@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
+import { ref, onValue, set } from 'firebase/database';
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage } from '../types';
 
 // Import initial data to seed the database if it's empty
@@ -112,9 +113,9 @@ export const useDataStore = () => {
     }), []);
     
     useEffect(() => {
-        const dbRef = db.ref('/');
+        const dbRef = ref(db, '/');
         
-        const listener = dbRef.on('value', (snapshot) => {
+        const unsubscribe = onValue(dbRef, (snapshot) => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
             if (dbData) {
@@ -125,7 +126,7 @@ export const useDataStore = () => {
                 setData(mergedData);
             } else {
                 // If DB is empty, seed it with initial data
-                dbRef.set(initialData).then(() => {
+                set(dbRef, initialData).then(() => {
                     setData(initialData);
                     console.log("Firebase database seeded with initial data.");
                 }).catch(error => {
@@ -134,19 +135,19 @@ export const useDataStore = () => {
             }
             setIsInitialized(true);
         }, (error) => {
-            console.error("Firebase read failed: " + error.name);
+            console.error("Firebase read failed: " + error.message);
             // Fallback to local data if Firebase fails
             setData(getInitialData());
             setIsInitialized(true);
         });
 
         // Detach the listener when the component unmounts
-        return () => dbRef.off('value', listener);
+        return () => unsubscribe();
     }, [getInitialData]);
 
     const saveData = useCallback(async (newData: AppData) => {
         try {
-            await db.ref('/').set(newData);
+            await set(ref(db, '/'), newData);
             // The local state will be updated by the 'on' listener,
             // but we can set it here for immediate UI feedback if desired.
             setData(newData);
