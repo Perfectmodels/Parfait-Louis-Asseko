@@ -14,6 +14,7 @@ export interface Model {
   imageUrl: string;
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
+  isPublic?: boolean; // True if the model profile is visible on the public site
   // New portfolio fields
   measurements: {
     chest: string;

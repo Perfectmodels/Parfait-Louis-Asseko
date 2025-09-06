@@ -14,6 +14,7 @@ const Models: React.FC = () => {
 
   const filteredModels = useMemo(() => {
     return models
+      .filter(model => model.isPublic === true) // Only show public models
       .filter(model => filter === 'Tous' || model.gender === filter)
       .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [filter, searchTerm, models]);

@@ -18,7 +18,8 @@ import {
     SparklesIcon,
     ChatBubbleLeftRightIcon,
     BriefcaseIcon,
-    EnvelopeIcon
+    EnvelopeIcon,
+    ClipboardDocumentCheckIcon // Nouvelle icône
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
@@ -93,6 +94,12 @@ const Admin: React.FC = () => {
                         notificationCount={newCastingApps}
                     />
                     <DashboardCard 
+                        title="Résultats & Validation Casting" 
+                        icon={ClipboardDocumentCheckIcon} 
+                        link="/admin/casting-results"
+                        description="Valider les candidats et créer leurs profils de mannequin."
+                    />
+                    <DashboardCard 
                         title="Demandes de Booking" 
                         icon={BriefcaseIcon} 
                         link="/admin/bookings"
@@ -142,12 +149,6 @@ const Admin: React.FC = () => {
                         link="/admin/recovery-requests"
                         description="Traiter les demandes de coordonnées oubliées."
                         notificationCount={newRecoveryRequests}
-                    />
-                     <DashboardCard 
-                        title="Casting Live View" 
-                        icon={PresentationChartLineIcon} 
-                        link="/admin/casting-live"
-                        description="Afficher les notes des jurys en temps réel."
                     />
                     <DashboardCard 
                         title="Paramètres du Site" 

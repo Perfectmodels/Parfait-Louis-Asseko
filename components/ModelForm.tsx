@@ -19,10 +19,15 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
     }, [model]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        const target = e.target as HTMLInputElement;
-        const isNumber = target.type === 'number';
-        setFormData(prev => ({ ...prev, [name]: isNumber && value !== '' ? Number(value) : value }));
+        const { name, value, type } = e.target;
+        
+        if (type === 'checkbox') {
+            const { checked } = e.target as HTMLInputElement;
+            setFormData(prev => ({ ...prev, [name]: checked }));
+        } else {
+            const isNumber = type === 'number';
+            setFormData(prev => ({ ...prev, [name]: isNumber && value !== '' ? Number(value) : value }));
+        }
     };
 
     const handleMeasurementChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,10 +93,23 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
                 
                 {isAdmin && (
-                    <Section title="Accès & Sécurité (Admin)">
+                    <Section title="Accès & Visibilité (Admin)">
                         <FormInput label="Identifiant (Matricule)" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
                         <FormInput label="Mot de passe" name="password" value={formData.password} onChange={handleChange} />
-                        <p className="text-xs text-pm-off-white/60 -mt-2">L'identifiant est généré automatiquement à la création. Le mot de passe peut être modifié ici.</p>
+                        <div className="flex items-center gap-3 pt-2">
+                            <input 
+                                type="checkbox"
+                                id="isPublic"
+                                name="isPublic"
+                                checked={!!formData.isPublic}
+                                onChange={handleChange}
+                                className="h-5 w-5 rounded bg-pm-dark border-pm-gold text-pm-gold focus:ring-pm-gold"
+                            />
+                            <label htmlFor="isPublic" className="text-sm font-medium text-pm-off-white/80">
+                                Rendre le profil public sur le site
+                            </label>
+                        </div>
+                        <p className="text-xs text-pm-off-white/60 -mt-2">L'identifiant est généré automatiquement. La visibilité publique rend le mannequin visible dans la section `/mannequins`.</p>
                     </Section>
                 )}
 
