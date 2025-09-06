@@ -14,7 +14,8 @@ import {
     ExclamationTriangleIcon,
     PresentationChartLineIcon,
     BuildingStorefrontIcon,
-    SparklesIcon
+    SparklesIcon,
+    ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
@@ -57,6 +58,12 @@ const Admin: React.FC = () => {
                         icon={NewspaperIcon} 
                         link="/admin/magazine"
                         description="Créer et administrer les articles du magazine Focus Model 241."
+                    />
+                    <DashboardCard 
+                        title="Modérer les Commentaires" 
+                        icon={ChatBubbleLeftRightIcon} 
+                        link="/admin/comments"
+                        description="Gérer les commentaires laissés sur les articles du magazine."
                     />
                     <DashboardCard 
                         title="Gérer le Classroom" 
