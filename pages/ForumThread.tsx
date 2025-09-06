@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -8,7 +9,7 @@ import NotFound from './NotFound';
 
 const ForumThread: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
-    const { threadId } = useParams<{ threadId: string }>();
+    const { threadId } = ReactRouterDOM.useParams<{ threadId: string }>();
     const [newReply, setNewReply] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     
@@ -64,9 +65,9 @@ const ForumThread: React.FC = () => {
              <div className="bg-pm-dark text-pm-off-white h-screen flex flex-col pt-28">
                 <div className="container mx-auto px-4 sm:px-6 flex-grow flex flex-col h-full overflow-hidden">
                     <header className="flex items-center gap-4 mb-4 flex-shrink-0">
-                        <Link to="/formations/forum" className="text-pm-gold hover:underline p-2">
+                        <ReactRouterDOM.Link to="/formations/forum" className="text-pm-gold hover:underline p-2">
                             <ArrowLeftIcon className="w-6 h-6" />
-                        </Link>
+                        </ReactRouterDOM.Link>
                         <div>
                             <h1 className="text-2xl font-playfair text-pm-gold truncate">{thread.title}</h1>
                             <p className="text-xs text-pm-off-white/60">Lancé par {thread.authorName}</p>

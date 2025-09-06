@@ -1,5 +1,6 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
@@ -9,13 +10,13 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const userRole = sessionStorage.getItem('classroom_role');
   const hasAccess = sessionStorage.getItem('classroom_access') === 'granted';
-  const location = useLocation();
+  const location = ReactRouterDOM.useLocation();
 
   if (hasAccess && userRole === role) {
     return children;
   }
   
-  return <Navigate to="/login" state={{ from: location }} replace />;
+  return <ReactRouterDOM.Navigate to="/login" state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;

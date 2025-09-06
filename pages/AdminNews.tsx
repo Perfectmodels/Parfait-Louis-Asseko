@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { NewsItem } from '../types';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
 
@@ -77,10 +78,10 @@ const AdminNews: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
             <div>
-                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                 <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Dashboard
-                </Link>
+                </ReactRouterDOM.Link>
                 <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Actualités</h1>
             </div>
              <div className="flex items-center gap-4">

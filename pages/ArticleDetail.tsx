@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -7,7 +8,7 @@ import { ArticleContent, ArticleComment } from '../types';
 import { ChevronLeftIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 
 const ArticleDetail: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug } = ReactRouterDOM.useParams<{ slug: string }>();
   const { data, saveData, isInitialized } = useData();
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,10 +95,10 @@ const ArticleDetail: React.FC = () => {
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6 max-w-4xl">
-          <Link to="/magazine" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
+          <ReactRouterDOM.Link to="/magazine" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
             <ChevronLeftIcon className="w-5 h-5" />
             Retour au Magazine
-          </Link>
+          </ReactRouterDOM.Link>
 
           <article className="bg-black p-4 sm:p-8 border border-pm-gold/20">
             <header>
@@ -157,7 +158,7 @@ const ArticleDetail: React.FC = () => {
               ) : (
                 <div className="text-center p-4">
                   <p className="text-pm-off-white/70">
-                    <Link to="/login" className="text-pm-gold underline">Connectez-vous</Link> en tant que mannequin pour laisser un commentaire.
+                    <ReactRouterDOM.Link to="/login" className="text-pm-gold underline">Connectez-vous</ReactRouterDOM.Link> en tant que mannequin pour laisser un commentaire.
                   </p>
                 </div>
               )}

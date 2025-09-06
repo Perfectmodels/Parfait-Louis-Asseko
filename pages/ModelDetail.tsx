@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import NotFound from './NotFound';
 import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
@@ -7,7 +8,7 @@ import { useData } from '../contexts/DataContext';
 
 const ModelDetail: React.FC = () => {
   const { data, isInitialized } = useData();
-  const { id } = useParams<{ id: string }>();
+  const { id } = ReactRouterDOM.useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState('details');
   const [isViewingOwnProfile, setIsViewingOwnProfile] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -38,10 +39,10 @@ const ModelDetail: React.FC = () => {
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6">
-          <Link to="/mannequins" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
+          <ReactRouterDOM.Link to="/mannequins" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
             <ChevronLeftIcon className="w-5 h-5" />
             Retour au catalogue
-          </Link>
+          </ReactRouterDOM.Link>
           <div className="flex flex-col lg:flex-row gap-12 bg-black p-4 sm:p-8 border border-pm-gold/20">
             <div className="lg:w-1/3">
               <div className="aspect-[3/4] border-2 border-pm-gold p-2">
@@ -107,9 +108,9 @@ const ModelDetail: React.FC = () => {
 
                <div className="mt-10">
                   {!isViewingOwnProfile && (
-                    <Link to="/contact" className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                    <ReactRouterDOM.Link to="/contact" className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                         Booker ce mannequin
-                    </Link>
+                    </ReactRouterDOM.Link>
                   )}
                </div>
             </div>

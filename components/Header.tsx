@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import MenuIcon from './icons/MenuIcon';
 import CloseIcon from './icons/CloseIcon';
 import { useData } from '../contexts/DataContext';
@@ -7,7 +8,7 @@ import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }> = ({ to, label, onClick }) => {
   return (
-    <NavLink
+    <ReactRouterDOM.NavLink
       to={to}
       onClick={onClick}
       end={to === '/'}
@@ -26,7 +27,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void }>
           />
         </>
       )}
-    </NavLink>
+    </ReactRouterDOM.NavLink>
   );
 };
 
@@ -62,8 +63,8 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = ReactRouterDOM.useLocation();
+  const navigate = ReactRouterDOM.useNavigate();
 
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -116,9 +117,9 @@ const Header: React.FC = () => {
       >
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
-            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+            <ReactRouterDOM.Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
               <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
-            </Link>
+            </ReactRouterDOM.Link>
           )}
           
           <nav className="hidden lg:flex items-center gap-8">

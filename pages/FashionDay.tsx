@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -74,9 +75,9 @@ const FashionDay: React.FC = () => {
                       Pour cette nouvelle édition, nous recherchons des talents visionnaires pour donner vie au thème "L’Art de Se Révéler". Que vous soyez mannequin, styliste, partenaire, photographe ou que vous ayez un autre talent à partager, nous vous invitons à rejoindre cette célébration de la mode.
                   </p>
                   <div className="mt-8">
-                      <Link to="/fashion-day-application" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20">
+                      <ReactRouterDOM.Link to="/fashion-day-application" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20">
                           Participer à l'événement
-                      </Link>
+                      </ReactRouterDOM.Link>
                   </div>
               </div>
             )}

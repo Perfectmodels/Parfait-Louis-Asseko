@@ -21,16 +21,17 @@ const JuryCasting: React.FC = () => {
     
     const applications = useMemo(() => {
         return data?.castingApplications
-            .filter(app => app.status === 'Présélectionné')
-            .sort((a, b) => {
-                const aScored = a.scores && a.scores[juryId!];
-                const bScored = b.scores && b.scores[juryId!];
-                if (aScored && !bScored) return 1;
-                if (!aScored && bScored) return -1;
-                // Sort by submission date if both are scored or not scored
-                return new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime();
-            }) || [];
-    }, [data?.castingApplications, juryId]);
+            .filter(app => app.status === 'Présélectionné' && app.passageNumber)
+            .sort((a, b) => (a.passageNumber || 0) - (b.passageNumber || 0)) || [];
+    }, [data?.castingApplications]);
+
+    const candidatesToGrade = useMemo(() => {
+        return applications.filter(app => !(app.scores && app.scores[juryId!]));
+    }, [applications, juryId]);
+
+    const gradedCandidates = useMemo(() => {
+        return applications.filter(app => app.scores && app.scores[juryId!]);
+    }, [applications, juryId]);
 
     const openScoringModal = (app: CastingApplication) => {
         setSelectedApp(app);
@@ -44,7 +45,6 @@ const JuryCasting: React.FC = () => {
                 notes: existingScores.notes || '',
             });
         } else {
-            // Reset to default scores for a new applicant
             setCurrentScores({
                 physique: 5,
                 presence: 5,
@@ -92,6 +92,12 @@ const JuryCasting: React.FC = () => {
         }
     };
     
+    const calculateAge = (birthDate: string): string => {
+        if (!birthDate) return 'N/A';
+        const age = new Date().getFullYear() - new Date(birthDate).getFullYear();
+        return `${age} ans`;
+    };
+
     if (!isInitialized) {
         return <div className="min-h-screen flex items-center justify-center bg-pm-dark text-pm-gold">Chargement...</div>;
     }
@@ -108,51 +114,75 @@ const JuryCasting: React.FC = () => {
                     <h1 className="text-4xl font-playfair text-pm-gold">Panel de Notation du Jury</h1>
                     <p className="text-pm-off-white/80 mb-8">Bonjour, {juryName}. Veuillez évaluer les candidats présélectionnés.</p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {applications.map(app => {
-                            const hasScored = app.scores && app.scores[juryId!];
-                            const overallScore = hasScored ? app.scores![juryId!].overall : null;
-
-                            return (
-                                <button 
-                                    key={app.id} 
-                                    onClick={() => openScoringModal(app)}
-                                    className={`group block bg-black border ${hasScored ? 'border-pm-gold/50' : 'border-pm-gold/20'} overflow-hidden transition-all duration-300 hover:border-pm-gold hover:shadow-lg hover:shadow-pm-gold/10`}
-                                >
-                                    <div className="relative aspect-[3/4] overflow-hidden">
-                                        {app.photoPortraitUrl ? (
-                                            <img src={app.photoPortraitUrl} alt={`${app.firstName} ${app.lastName}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                                        ) : (
-                                            <div className="w-full h-full bg-pm-dark flex items-center justify-center">
-                                                <span className="text-pm-off-white/20 text-sm">Photo non dispo.</span>
-                                            </div>
-                                        )}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                                        {hasScored && (
-                                            <div className="absolute top-2 right-2 bg-pm-gold text-pm-dark rounded-full p-2 flex items-center gap-1 text-xs font-bold">
-                                                <CheckCircleIcon className="w-4 h-4" />
-                                                <span>{overallScore?.toFixed(1)}/10</span>
-                                            </div>
-                                        )}
-                                         {!hasScored && (
-                                            <div className="absolute top-2 right-2 bg-pm-dark text-pm-gold rounded-full p-2 text-xs font-bold border border-pm-gold/50">
-                                                À Noter
-                                            </div>
-                                        )}
-                                        <div className="absolute bottom-0 left-0 p-3 w-full">
-                                            <h3 className="text-lg font-playfair text-pm-off-white group-hover:text-pm-gold">{app.firstName} {app.lastName}</h3>
-                                            <p className="text-xs text-pm-off-white/70">{app.height} cm - {new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans</p>
+                    <section className="mb-16">
+                        <h2 className="text-3xl font-playfair text-pm-gold border-b-2 border-pm-gold/20 pb-2 mb-6">
+                            Candidats à Noter ({candidatesToGrade.length})
+                        </h2>
+                        {candidatesToGrade.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {candidatesToGrade.map(app => (
+                                    <button 
+                                        key={app.id} 
+                                        onClick={() => openScoringModal(app)}
+                                        className="group block bg-black border border-pm-gold/30 p-4 text-left overflow-hidden transition-all duration-300 hover:border-pm-gold hover:shadow-lg hover:shadow-pm-gold/10 hover:-translate-y-1"
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <h3 className="text-2xl font-bold text-pm-off-white group-hover:text-pm-gold transition-colors duration-300">{app.firstName} {app.lastName}</h3>
+                                            <p className="text-3xl font-playfair font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</p>
                                         </div>
-                                    </div>
-                                </button>
-                            )
-                        })}
-                    </div>
-                     {applications.length === 0 && (
-                        <div className="text-center col-span-full py-20">
-                            <p className="text-pm-off-white/70">Aucune candidature à noter pour le moment.</p>
-                        </div>
-                    )}
+                                        <div className="mt-4 border-t border-pm-gold/20 pt-3 space-y-2 text-sm text-pm-off-white/80">
+                                            <p><strong>Âge:</strong> {calculateAge(app.birthDate)}</p>
+                                            <p><strong>Taille:</strong> {app.height} cm</p>
+                                            <p><strong>Genre:</strong> {app.gender}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                             <div className="text-center py-10 bg-black border border-pm-gold/10 rounded-lg">
+                                <CheckCircleIcon className="w-12 h-12 mx-auto text-green-500 mb-2" />
+                                <p className="text-pm-off-white/80">Tous les candidats ont été notés. Excellent travail !</p>
+                            </div>
+                        )}
+                    </section>
+                    
+                    <section>
+                        <h2 className="text-3xl font-playfair text-pm-gold border-b-2 border-pm-gold/20 pb-2 mb-6">
+                            Candidats Notés ({gradedCandidates.length})
+                        </h2>
+                        {gradedCandidates.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {gradedCandidates.map(app => {
+                                    const myScore = app.scores![juryId!].overall;
+                                    return (
+                                        <button 
+                                            key={app.id} 
+                                            onClick={() => openScoringModal(app)}
+                                            className="group block bg-pm-dark border border-pm-gold/50 p-4 text-left overflow-hidden transition-all duration-300 opacity-70 hover:opacity-100"
+                                        >
+                                            <div className="flex justify-between items-start">
+                                                <h3 className="text-2xl font-bold text-pm-off-white">{app.firstName} {app.lastName}</h3>
+                                                <p className="text-3xl font-playfair font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</p>
+                                            </div>
+                                            <div className="mt-4 border-t border-pm-gold/20 pt-3 space-y-2 text-sm text-pm-off-white/80">
+                                                <p><strong>Âge:</strong> {calculateAge(app.birthDate)}</p>
+                                                <p><strong>Taille:</strong> {app.height} cm</p>
+                                                <p><strong>Genre:</strong> {app.gender}</p>
+                                            </div>
+                                            <div className="mt-4 bg-pm-gold/10 p-2 rounded-md text-center">
+                                                <p className="text-xs text-pm-gold uppercase tracking-wider">Votre Note</p>
+                                                <p className="text-2xl font-bold text-pm-gold">{myScore.toFixed(1)}/10</p>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                             <div className="text-center py-10 bg-black border border-pm-gold/10 rounded-lg">
+                                <p className="text-pm-off-white/70">Aucun candidat noté pour le moment.</p>
+                            </div>
+                        )}
+                    </section>
                 </div>
             </div>
 
