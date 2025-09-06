@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+// FIX: Updated react-router-dom imports for v6 compatibility. `Switch` is replaced by `Routes`.
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/Layout';
@@ -103,6 +104,7 @@ const AppContent = () => {
     return (
         <>
             <Layout>
+                {/* FIX: Replaced Switch with Routes and children prop with element for v6 compatibility */}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/agence" element={<Agency />} />
@@ -123,10 +125,10 @@ const AppContent = () => {
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
-                    <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
-                    <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
                     <Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
                     <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
+                    <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
+                    <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
                     
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />

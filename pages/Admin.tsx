@@ -1,4 +1,5 @@
 import React from 'react';
+// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
@@ -22,11 +23,13 @@ import {
 import { useData } from '../contexts/DataContext';
 
 const Admin: React.FC = () => {
+    // FIX: Use useNavigate for react-router-dom v6 compatibility.
     const navigate = useNavigate();
     const { data } = useData();
 
     const handleLogout = () => {
         sessionStorage.clear();
+        // FIX: Use navigate for navigation in react-router-dom v6.
         navigate('/login');
     };
 

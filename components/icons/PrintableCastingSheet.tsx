@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-// FIX: Imported JuryScore to correctly type the scores.
 import { CastingApplication, JuryMember, JuryScore } from '../../types';
 import { useData } from '../../contexts/DataContext';
 
@@ -35,7 +34,6 @@ const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, jury
         return `${age} ans`;
     };
     
-    // FIX: Explicitly typed juryScores to resolve type inference issues where 'score' was 'unknown'.
     const juryScores: [string, JuryScore][] = app.scores ? Object.entries(app.scores) : [];
     const overallScores = juryScores.map(([, score]) => score.overall);
     const averageScore = overallScores.length > 0 ? (overallScores.reduce((a, b) => a + b, 0) / overallScores.length) : 0;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -10,6 +11,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
+  // FIX: Use useNavigate for react-router-dom v6 compatibility.
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
@@ -21,6 +23,7 @@ const Login: React.FC = () => {
     if (username.toLowerCase() === 'admin' && password === 'admin2025') {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
+      // FIX: Use navigate for navigation in react-router-dom v6.
       navigate('/admin');
       return;
     }
@@ -36,6 +39,7 @@ const Login: React.FC = () => {
             sessionStorage.setItem('classroom_access', 'granted');
             sessionStorage.setItem('classroom_role', 'student');
             sessionStorage.setItem('userId', loggedInModel.id);
+            // FIX: Use navigate for navigation in react-router-dom v6.
             navigate('/profil');
             return;
         }
@@ -53,6 +57,7 @@ const Login: React.FC = () => {
             sessionStorage.setItem('classroom_role', 'jury');
             sessionStorage.setItem('userId', loggedInJury.id);
             sessionStorage.setItem('userName', loggedInJury.name); // Store name for display
+            // FIX: Use navigate for navigation in react-router-dom v6.
             navigate('/jury/casting');
             return;
         }
@@ -70,6 +75,7 @@ const Login: React.FC = () => {
             sessionStorage.setItem('classroom_role', 'registration');
             sessionStorage.setItem('userId', loggedInStaff.id);
             sessionStorage.setItem('userName', loggedInStaff.name);
+            // FIX: Use navigate for navigation in react-router-dom v6.
             navigate('/enregistrement/casting');
             return;
         }
