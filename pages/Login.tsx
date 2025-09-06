@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react/24/outline';
@@ -35,7 +34,7 @@ const Login: React.FC = () => {
         
         if (loggedInModel && loggedInModel.password === password) {
             sessionStorage.setItem('classroom_access', 'granted');
-            sessionStorage.setItem('classroom_role', 'model');
+            sessionStorage.setItem('classroom_role', 'student');
             sessionStorage.setItem('userId', loggedInModel.id);
             navigate('/profil');
             return;

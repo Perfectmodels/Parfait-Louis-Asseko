@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
@@ -20,7 +19,7 @@ const ModelDetail: React.FC = () => {
   useEffect(() => {
     const userRole = sessionStorage.getItem('classroom_role');
     const userId = sessionStorage.getItem('userId');
-    setIsViewingOwnProfile(userRole === 'model' && userId === id);
+    setIsViewingOwnProfile(userRole === 'student' && userId === id);
   }, [id]);
 
   if (!isInitialized) {

@@ -122,11 +122,11 @@ const AppContent = () => {
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
 
                     {/* Protected Routes */}
-                    <Route path="/formations" element={<ProtectedRoute role="model"><Activity /></ProtectedRoute>} />
-                    <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="model"><ChapterDetail /></ProtectedRoute>} />
-                    <Route path="/profil" element={<ProtectedRoute role="model"><ModelDashboard /></ProtectedRoute>} />
-                    <Route path="/formations/forum" element={<ProtectedRoute role="model"><ClassroomForum /></ProtectedRoute>} />
-                    <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="model"><ForumThread /></ProtectedRoute>} />
+                    <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
+                    <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
+                    <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
+                    <Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
+                    <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                     
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
