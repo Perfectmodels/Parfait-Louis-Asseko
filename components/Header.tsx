@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './icons/AnimatedHamburgerIcon';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
   const mobileAnimationClasses = isMobile
@@ -72,6 +73,27 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile
     );
 };
 
+const SocialLinksComponent: React.FC<{ socialLinks: any; className?: string; isMobile?: boolean; isOpen?: boolean; delay?: number }> = ({ socialLinks, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
+    const mobileAnimationClasses = isMobile
+    ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
+    : '';
+
+    if (!socialLinks || (!socialLinks.facebook && !socialLinks.instagram && !socialLinks.youtube)) {
+        return null;
+    }
+
+    return (
+        <div 
+            className={`flex items-center gap-5 ${className} ${mobileAnimationClasses}`}
+            style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
+        >
+            {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Facebook"><FacebookIcon className="w-6 h-6" /></a>}
+            {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Instagram"><InstagramIcon className="w-6 h-6" /></a>}
+            {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="YouTube"><YoutubeIcon className="w-6 h-6" /></a>}
+        </div>
+    );
+};
+
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -115,6 +137,7 @@ const Header: React.FC = () => {
   
   const siteConfig = data?.siteConfig;
   const navLinksFromData = data?.navLinks || [];
+  const socialLinks = data?.socialLinks;
 
   const processedNavLinks = useMemo(() => {
     return navLinksFromData.map(link => {
@@ -147,7 +170,12 @@ const Header: React.FC = () => {
           
           <nav className="hidden lg:flex items-center gap-8">
             <NavLinks navLinks={processedNavLinks} />
-            {isLoggedIn && <LogoutButton onClick={handleLogout} />}
+            {(isLoggedIn || socialLinks) && (
+              <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
+                  <SocialLinksComponent socialLinks={socialLinks} />
+                  {isLoggedIn && <LogoutButton onClick={handleLogout} />}
+              </div>
+            )}
           </nav>
 
           <div className="lg:hidden flex items-center">
@@ -167,20 +195,31 @@ const Header: React.FC = () => {
       
       {/* Mobile Menu Panel */}
       <div 
-        className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform ${
+        className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
       >
-        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24">
+        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24 flex-shrink-0">
              <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
         </div>
-        <nav className="flex flex-col p-8 gap-6">
-          <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen}/>
-          {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={150 + processedNavLinks.length * 50} />}
-        </nav>
+        <div className="flex-grow overflow-y-auto">
+            <nav className="flex flex-col p-8 gap-6">
+              <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen}/>
+              {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={150 + processedNavLinks.length * 50} />}
+            </nav>
+        </div>
+        <div className="p-8 border-t border-pm-gold/20 flex-shrink-0">
+             <SocialLinksComponent 
+                socialLinks={socialLinks} 
+                className="justify-center"
+                isMobile={true}
+                isOpen={isOpen}
+                delay={150 + (isLoggedIn ? processedNavLinks.length + 1 : processedNavLinks.length) * 50}
+             />
+        </div>
       </div>
     </>
   );
