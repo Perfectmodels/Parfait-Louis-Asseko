@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { AIAssistantProps } from '../types';
 import CloseIcon from './icons/CloseIcon';
@@ -94,11 +93,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             let response;
+            const model = 'gemini-2.5-flash';
 
             if (jsonSchema) {
                 const typedSchema = convertSchema(jsonSchema);
                 response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
+                    model,
                     contents: prompt,
                     config: {
                         responseMimeType: "application/json",
@@ -107,7 +107,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
                 });
             } else {
                  response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
+                    model,
                     contents: prompt
                 });
             }
