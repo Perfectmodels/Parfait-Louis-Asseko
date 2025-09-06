@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Model } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm';
 
 const AdminModels: React.FC = () => {
@@ -45,6 +44,7 @@ const AdminModels: React.FC = () => {
           id: id,
           username: username,
           password: password,
+          isPublic: modelToSave.isPublic || false, // Default to private
           // ensure defaults
           measurements: modelToSave.measurements || { chest: '0cm', waist: '0cm', hips: '0cm', shoeSize: '0' },
           categories: modelToSave.categories || ['Défilé', 'Commercial'],
@@ -86,6 +86,14 @@ const AdminModels: React.FC = () => {
     await saveData({ ...data, models: newModels });
   };
   
+  const handleTogglePublicStatus = async (modelId: string) => {
+    if (!data) return;
+    const updatedModels = localModels.map(m => 
+        m.id === modelId ? { ...m, isPublic: !m.isPublic } : m
+    );
+    await saveData({ ...data, models: updatedModels });
+  };
+
   const handleStartCreate = () => {
     setIsCreating(true);
     const currentYear = new Date().getFullYear();
@@ -97,6 +105,7 @@ const AdminModels: React.FC = () => {
       height: '',
       gender: 'Femme',
       imageUrl: '',
+      isPublic: false,
       measurements: { chest: '', waist: '', hips: '', shoeSize: '' },
       categories: [],
       experience: '',
@@ -135,9 +144,17 @@ const AdminModels: React.FC = () => {
                 <div>
                   <h2 className="font-bold">{model.name}</h2>
                   <p className="text-sm text-pm-off-white/70">{model.username}</p>
+                   {model.isPublic ? (
+                        <span className="text-xs font-bold text-green-400">Public</span>
+                    ) : (
+                        <span className="text-xs font-bold text-yellow-400">Privé</span>
+                    )}
                 </div>
               </div>
               <div className="flex items-center gap-4">
+                 <button onClick={() => handleTogglePublicStatus(model.id)} title={model.isPublic ? 'Rendre privé' : 'Rendre public'} className="text-pm-gold/70 hover:text-pm-gold">
+                    {model.isPublic ? <EyeSlashIcon className="w-5 h-5"/> : <EyeIcon className="w-5 h-5"/>}
+                 </button>
                 <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="disabled:opacity-30"><ArrowUpIcon className="w-5 h-5"/></button>
                 <button onClick={() => handleMove(index, 'down')} disabled={index === localModels.length - 1} className="disabled:opacity-30"><ArrowDownIcon className="w-5 h-5"/></button>
                 <button onClick={() => { setEditingModel(model); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>

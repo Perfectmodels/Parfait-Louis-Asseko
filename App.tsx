@@ -31,7 +31,7 @@ import Chat from './pages/Chat';
 import Admin from './pages/Admin';
 import AdminAgency from './pages/AdminAgency';
 import AdminCasting from './pages/AdminCasting';
-import AdminCastingLive from './pages/AdminCastingLive';
+import AdminCastingResults from './pages/AdminCastingResults'; // Nouvelle page
 import AdminClassroom from './pages/AdminClassroom';
 import AdminClassroomProgress from './pages/AdminClassroomProgress';
 import AdminFashionDay from './pages/AdminFashionDay';
@@ -140,13 +140,13 @@ const AppContent = () => {
                     <Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
                     <Route path="/admin/agency" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />
                     <Route path="/admin/casting-applications" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
+                    <Route path="/admin/casting-results" element={<ProtectedRoute role="admin"><AdminCastingResults /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
                     <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                     <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
                     <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
-                    <Route path="/admin/casting-live" element={<ProtectedRoute role="admin"><AdminCastingLive /></ProtectedRoute>} />
                     <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                     <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
                     <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
