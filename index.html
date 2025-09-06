@@ -59,10 +59,63 @@
         animation: fadeIn 0.5s ease-in-out;
       }
       @media print {
-        body * { visibility: hidden; }
-        .printable-content, .printable-content * { visibility: visible; }
-        .printable-content { position: absolute; left: 0; top: 0; width: 100%; }
-        .print-hide { display: none; }
+        body * {
+          visibility: hidden;
+        }
+        .printable-content, .printable-content * {
+          visibility: visible;
+        }
+        .printable-content {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          padding: 1rem;
+        }
+        .print-hide {
+          display: none;
+        }
+        @page {
+          size: A4;
+          margin: 0;
+        }
+        body {
+          margin: 0;
+        }
+        .printable-sheet {
+          background-color: white !important;
+          color: black !important;
+          font-family: 'Montserrat', sans-serif;
+          -webkit-print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+        .printable-sheet h1, .printable-sheet h2, .printable-sheet h3, .printable-sheet .font-playfair {
+          color: black !important;
+          font-family: 'Playfair Display', serif;
+        }
+        .printable-sheet .text-pm-gold {
+          color: #8B5A0D !important; /* Darker gold for print */
+        }
+        .printable-sheet .border-pm-gold {
+           border-color: #8B5A0D !important;
+        }
+        .printable-sheet .bg-black, .printable-sheet .bg-pm-dark, .printable-sheet .bg-pm-dark\/50 {
+          background-color: #f0f0f0 !important;
+          border-color: #ccc !important;
+        }
+        .printable-sheet .border {
+          border-width: 1px !important;
+        }
+         .printable-sheet .text-green-600 {
+            color: #059669 !important;
+        }
+        .printable-sheet .text-red-600 {
+            color: #DC2626 !important;
+        }
+        .printable-sheet a {
+            text-decoration: none;
+            color: black !important;
+        }
       }
     </style>
     <script>

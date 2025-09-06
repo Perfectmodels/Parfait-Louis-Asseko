@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-import { useNavigate, Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { Model } from '../types';
 import ModelForm from '../components/ModelForm';
@@ -10,7 +11,7 @@ type ActiveTab = 'profile' | 'results';
 
 const ModelDashboard: React.FC = () => {
     const { data, saveData } = useData();
-    const navigate = useNavigate();
+    const navigate = ReactRouterDOM.useNavigate();
     const userId = sessionStorage.getItem('userId');
     const [editableModel, setEditableModel] = useState<Model | null>(null);
     const [activeTab, setActiveTab] = useState<ActiveTab>('profile');
@@ -78,16 +79,16 @@ const ModelDashboard: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Sidebar / Quick Links */}
                     <aside className="lg:col-span-1 space-y-4">
-                         <Link to="/formations" className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
+                         <ReactRouterDOM.Link to="/formations" className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
                              <BookOpenIcon className="w-8 h-8 text-pm-gold mb-3" />
                             <h2 className="text-xl font-playfair text-pm-gold mb-1">Accéder au Classroom</h2>
                             <p className="text-sm text-pm-off-white/70">Continuez votre formation.</p>
-                        </Link>
-                        <Link to={`/mannequins/${editableModel.id}`} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
+                        </ReactRouterDOM.Link>
+                        <ReactRouterDOM.Link to={`/mannequins/${editableModel.id}`} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
                              <UserIcon className="w-8 h-8 text-pm-gold mb-3" />
                             <h2 className="text-xl font-playfair text-pm-gold mb-1">Voir mon Portfolio Public</h2>
                             <p className="text-sm text-pm-off-white/70">Consultez votre profil public.</p>
-                        </Link>
+                        </ReactRouterDOM.Link>
                     </aside>
                     
                     {/* Main Content with Tabs */}

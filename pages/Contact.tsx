@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -7,7 +8,7 @@ import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/So
 
 const Contact: React.FC = () => {
     const { data } = useData();
-    const location = useLocation();
+    const location = ReactRouterDOM.useLocation();
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
     

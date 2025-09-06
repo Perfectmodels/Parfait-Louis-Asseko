@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
     UsersIcon, 
@@ -20,7 +21,7 @@ import {
 import { useData } from '../contexts/DataContext';
 
 const Admin: React.FC = () => {
-    const navigate = useNavigate();
+    const navigate = ReactRouterDOM.useNavigate();
     const { data } = useData();
 
     const handleLogout = () => {
@@ -148,7 +149,7 @@ interface DashboardCardProps {
     notificationCount?: number;
 }
 const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, description, notificationCount }) => (
-    <Link to={link} className="relative group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-2 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
+    <ReactRouterDOM.Link to={link} className="relative group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-2 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
         {notificationCount && notificationCount > 0 && (
             <span className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-pulse">
                 {notificationCount}
@@ -157,7 +158,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, 
         <Icon className="w-10 h-10 text-pm-gold mb-4" />
         <h2 className="text-xl font-playfair text-pm-off-white group-hover:text-pm-gold transition-colors">{title}</h2>
         <p className="text-sm text-pm-off-white/70 mt-2">{description}</p>
-    </Link>
+    </ReactRouterDOM.Link>
 );
 
 export default Admin;

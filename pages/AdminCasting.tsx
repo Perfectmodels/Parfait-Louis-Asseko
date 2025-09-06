@@ -5,13 +5,15 @@ import { AppData } from '../hooks/useDataStore';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
 import * as ReactRouterDOM from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import PrintableCastingSheet from '../components/PrintableCastingSheet';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Toutes');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
+    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     useEffect(() => {
         if (data?.castingApplications) {
@@ -128,9 +130,13 @@ const AdminCasting: React.FC = () => {
         return age > 0 ? `${age} ans` : 'N/A';
     };
 
+    if (printingApp) {
+        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
+    }
+
     return (
         <>
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen print-hide">
             <SEO title="Admin - Gérer les Candidatures" noIndex />
             <div className="container mx-auto px-6">
                 <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
@@ -187,12 +193,23 @@ const AdminCasting: React.FC = () => {
                 </div>
             </div>
         </div>
-        {selectedApp && <ApplicationModal app={selectedApp} data={data} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} onValidateAndCreateModel={handleValidateAndCreateModel} getStatusColor={getStatusColor} />}
+        {selectedApp && <ApplicationModal 
+            app={selectedApp} 
+            data={data} 
+            onClose={() => setSelectedApp(null)} 
+            onUpdateStatus={handleUpdateStatus} 
+            onValidateAndCreateModel={handleValidateAndCreateModel} 
+            getStatusColor={getStatusColor}
+            onPrint={() => {
+                setSelectedApp(null);
+                setPrintingApp(selectedApp);
+            }}
+        />}
         </>
     );
 };
 
-const ApplicationModal: React.FC<{app: CastingApplication, data: AppData | null, onClose: () => void, onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, onValidateAndCreateModel: (app: CastingApplication) => void, getStatusColor: (status: CastingApplicationStatus) => string}> = ({ app, data, onClose, onUpdateStatus, onValidateAndCreateModel, getStatusColor }) => {
+const ApplicationModal: React.FC<{app: CastingApplication, data: AppData | null, onClose: () => void, onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, onValidateAndCreateModel: (app: CastingApplication) => void, getStatusColor: (status: CastingApplicationStatus) => string, onPrint: () => void}> = ({ app, data, onClose, onUpdateStatus, onValidateAndCreateModel, getStatusColor, onPrint }) => {
     
     const actionButtonClasses = "w-full text-center p-2 rounded-md font-bold uppercase text-xs tracking-wider border transition-colors hover:bg-opacity-30";
     
@@ -203,7 +220,7 @@ const ApplicationModal: React.FC<{app: CastingApplication, data: AppData | null,
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl shadow-pm-gold/10 w-full max-w-4xl max-h-[90vh] flex flex-col">
-                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
+                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20 flex-shrink-0">
                     <h2 className="text-2xl font-playfair text-pm-gold">Candidature de {app.firstName} {app.lastName}</h2>
                     <button onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
                 </header>
@@ -284,6 +301,17 @@ const ApplicationModal: React.FC<{app: CastingApplication, data: AppData | null,
                         </div>
                     </div>
                 </main>
+                <footer className="p-4 flex justify-between items-center border-t border-pm-gold/20 flex-shrink-0 flex-wrap gap-2">
+                    <button
+                        onClick={onPrint}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark"
+                    >
+                        <PrinterIcon className="w-5 h-5"/> Télécharger la Fiche
+                    </button>
+                    <button onClick={onClose} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-xs rounded-full hover:border-white">
+                        Fermer
+                    </button>
+                </footer>
             </div>
         </div>
     );

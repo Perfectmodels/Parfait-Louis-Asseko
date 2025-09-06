@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 // FIX: Renamed imported 'Chat' type to 'GenAIChat' to avoid conflict with the component name.
 import { GoogleGenAI, Chat as GenAIChat } from '@google/genai';
-import { Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, SparklesIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
 
@@ -97,9 +98,9 @@ const Chat: React.FC = () => {
       <div className="bg-pm-dark text-pm-off-white h-screen flex flex-col pt-28">
          <div className="container mx-auto px-6 flex-grow flex flex-col h-full overflow-hidden">
             <div className="flex items-center gap-4 mb-4">
-                <Link to="/" className="text-pm-gold hover:underline">
+                <ReactRouterDOM.Link to="/" className="text-pm-gold hover:underline">
                     <ArrowLeftIcon className="w-6 h-6" />
-                </Link>
+                </ReactRouterDOM.Link>
                 <div className="flex items-center gap-2">
                     <SparklesIcon className="w-8 h-8 text-pm-gold" />
                     <h1 className="text-3xl font-playfair text-pm-gold">Assistant PMM</h1>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import { ChatBubbleLeftRightIcon, PlusIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -91,13 +92,13 @@ const ClassroomForum: React.FC = () => {
 
                     <div className="space-y-4">
                         {threads.map(thread => (
-                            <Link to={`/formations/forum/${thread.id}`} key={thread.id} className="block bg-black p-4 border border-pm-gold/10 rounded-lg hover:border-pm-gold hover:bg-pm-dark transition-all duration-300">
+                            <ReactRouterDOM.Link to={`/formations/forum/${thread.id}`} key={thread.id} className="block bg-black p-4 border border-pm-gold/10 rounded-lg hover:border-pm-gold hover:bg-pm-dark transition-all duration-300">
                                 <h3 className="text-xl font-bold text-pm-gold">{thread.title}</h3>
                                 <div className="flex items-center justify-between text-xs text-pm-off-white/60 mt-2">
                                     <p>Par <span className="font-semibold">{thread.authorName}</span></p>
                                     <p>{new Date(thread.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                                 </div>
-                            </Link>
+                            </ReactRouterDOM.Link>
                         ))}
                          {threads.length === 0 && !isCreating && (
                             <div className="text-center py-16">

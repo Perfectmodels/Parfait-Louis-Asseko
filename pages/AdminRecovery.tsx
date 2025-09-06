@@ -1,7 +1,8 @@
 import React from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
+// FIX: Fix react-router-dom imports by using a namespace import
+import * as ReactRouterDOM from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon, XCircleIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { RecoveryRequest } from '../types';
 
@@ -33,10 +34,10 @@ const AdminRecovery: React.FC = () => {
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO title="Admin - Demandes de Récupération" noIndex />
       <div className="container mx-auto px-6">
-        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+        <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
           <ChevronLeftIcon className="w-5 h-5" />
           Retour au Dashboard
-        </Link>
+        </ReactRouterDOM.Link>
         <h1 className="text-4xl font-playfair text-pm-gold">Demandes de Récupération</h1>
         <p className="text-pm-off-white/70 mt-2 mb-8">
           Gérez les demandes de coordonnées oubliées soumises par les mannequins.
