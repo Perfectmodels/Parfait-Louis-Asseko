@@ -44,7 +44,8 @@ const Login: React.FC = () => {
     // Jury Login
     if (data?.juryMembers) {
         const loggedInJury = data.juryMembers.find(j => 
-            j.username.toLowerCase() === username.toLowerCase()
+            j.username.toLowerCase() === username.toLowerCase() ||
+            j.name.toLowerCase() === username.toLowerCase()
         );
         
         if (loggedInJury && loggedInJury.password === password) {
@@ -60,7 +61,8 @@ const Login: React.FC = () => {
     // Registration Staff Login
     if (data?.registrationStaff) {
         const loggedInStaff = data.registrationStaff.find(s => 
-            s.username.toLowerCase() === username.toLowerCase()
+            s.username.toLowerCase() === username.toLowerCase() ||
+            s.name.toLowerCase() === username.toLowerCase()
         );
         
         if (loggedInStaff && loggedInStaff.password === password) {
