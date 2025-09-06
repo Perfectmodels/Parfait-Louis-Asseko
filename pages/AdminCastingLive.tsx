@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
@@ -33,7 +34,8 @@ const AdminCastingLive: React.FC = () => {
                 const scoresArray = Object.values(app.scores!);
                 const averageScore = scoresArray.reduce((acc, score) => acc + score.overall, 0) / scoresArray.length;
                 const juryCount = scoresArray.length;
-                const liveStatus = averageScore >= 5 ? 'Présélectionné' : 'Recalé';
+                // FIX: Explicitly type `liveStatus` to prevent TypeScript from widening it to a generic `string` and ensure it matches the `ApplicantWithScore` type.
+                const liveStatus: 'Présélectionné' | 'Recalé' = averageScore >= 5 ? 'Présélectionné' : 'Recalé';
                 return { ...app, averageScore, juryCount, liveStatus };
             })
             .sort((a, b) => b.averageScore - a.averageScore);

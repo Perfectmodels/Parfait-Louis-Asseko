@@ -41,6 +41,7 @@ import AdminModels from './pages/AdminModels';
 import AdminNews from './pages/AdminNews';
 import AdminRecovery from './pages/AdminRecovery';
 import AdminSettings from './pages/AdminSettings';
+import AdminComments from './pages/AdminComments';
 
 // Role-specific pages
 import JuryCasting from './pages/JuryCasting';
@@ -110,6 +111,7 @@ const AppContent = () => {
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
                     <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
                     <Route path="/admin/casting-live" element={<ProtectedRoute role="admin"><AdminCastingLive /></ProtectedRoute>} />
+                    <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>
