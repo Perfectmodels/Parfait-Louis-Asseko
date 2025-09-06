@@ -2,8 +2,7 @@ import React from 'react';
 import { useData } from '../contexts/DataContext';
 import { ArticleComment } from '../types';
 import SEO from '../components/SEO';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 
 const AdminComments: React.FC = () => {
@@ -24,10 +23,10 @@ const AdminComments: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Modérer les Commentaires" noIndex />
             <div className="container mx-auto px-6">
-                <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Tableau de Bord
-                </ReactRouterDOM.Link>
+                </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold">Modérer les Commentaires</h1>
                 <p className="text-pm-off-white/70 mt-2 mb-8">
                     Gérez les commentaires laissés sur les articles du magazine.
@@ -43,9 +42,9 @@ const AdminComments: React.FC = () => {
                                         <h2 className="font-bold text-lg text-pm-off-white">{comment.authorName}</h2>
                                         <span className="text-xs text-pm-off-white/50">a commenté sur</span>
                                         {article ? (
-                                            <ReactRouterDOM.Link to={`/magazine/${article.slug}`} className="text-xs text-pm-gold underline truncate" target="_blank" rel="noopener noreferrer">
+                                            <Link to={`/magazine/${article.slug}`} className="text-xs text-pm-gold underline truncate" target="_blank" rel="noopener noreferrer">
                                                 {article.title}
-                                            </ReactRouterDOM.Link>
+                                            </Link>
                                         ) : (
                                             <span className="text-xs text-pm-off-white/50">Article inconnu</span>
                                         )}

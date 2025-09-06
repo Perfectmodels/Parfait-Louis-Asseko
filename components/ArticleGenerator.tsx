@@ -83,6 +83,7 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
                             alt: { type: Type.STRING, description: "Pour le type 'image'" },
                             caption: { type: Type.STRING, description: "Pour le type 'image'" }
                         },
+                        required: ["type"]
                     }
                 },
                 tags: {

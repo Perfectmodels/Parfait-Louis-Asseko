@@ -3,8 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationStatus, FashionDayApplicationRole } from '../types';
 import SEO from '../components/SEO';
-// FIX: Switched to namespace import for 'react-router-dom' to resolve potential module resolution issues.
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const AdminFashionDayApps: React.FC = () => {
@@ -61,10 +60,10 @@ const AdminFashionDayApps: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Candidatures Fashion Day" noIndex />
             <div className="container mx-auto px-6">
-                <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Tableau de Bord
-                </ReactRouterDOM.Link>
+                </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">Candidatures Perfect Fashion Day</h1>
 
                 <div className="flex flex-wrap items-center gap-4 mb-8">

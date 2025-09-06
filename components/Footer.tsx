@@ -1,6 +1,6 @@
+
 import React from 'react';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
 
@@ -20,9 +20,9 @@ const Footer: React.FC = () => {
                     {/* Logo and About */}
                     <div className="md:col-span-1">
                         {siteConfig?.logo && (
-                            <ReactRouterDOM.Link to="/">
+                            <Link to="/">
                                 <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-16 w-auto mb-4" />
-                            </ReactRouterDOM.Link>
+                            </Link>
                         )}
                         <p className="text-sm">L'élégance redéfinie. Berceau de talents et plateforme dédiée à l'avenir de la mode africaine.</p>
                     </div>
@@ -33,15 +33,15 @@ const Footer: React.FC = () => {
                         <ul className="space-y-2">
                             {footerLinks.map(link => (
                                 <li key={link.path}>
-                                    <ReactRouterDOM.Link to={link.path} className="hover:text-pm-gold transition-colors text-sm">
+                                    <Link to={link.path} className="hover:text-pm-gold transition-colors text-sm">
                                         {link.footerLabel || link.label}
-                                    </ReactRouterDOM.Link>
+                                    </Link>
                                 </li>
                             ))}
                              <li>
-                                <ReactRouterDOM.Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
+                                <Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
                                     Accès Panel
-                                </ReactRouterDOM.Link>
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -74,9 +74,9 @@ const Footer: React.FC = () => {
                 <div className="mt-12 pt-8 border-t border-pm-off-white/10 text-center text-sm">
                     <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
                      <div className="mt-2 space-x-4">
-                        <ReactRouterDOM.Link to="/terms-of-use" className="hover:text-pm-gold">Conditions d'Utilisation</ReactRouterDOM.Link>
+                        <Link to="/terms-of-use" className="hover:text-pm-gold">Conditions d'Utilisation</Link>
                         <span>|</span>
-                        <ReactRouterDOM.Link to="/privacy-policy" className="hover:text-pm-gold">Politique de Confidentialité</ReactRouterDOM.Link>
+                        <Link to="/privacy-policy" className="hover:text-pm-gold">Politique de Confidentialité</Link>
                     </div>
                 </div>
             </div>

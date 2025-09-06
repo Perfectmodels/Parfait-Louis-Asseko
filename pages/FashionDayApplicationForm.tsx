@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationRole } from '../types';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const FashionDayApplicationForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -99,7 +99,7 @@ const FashionDayApplicationForm: React.FC = () => {
                     {statusMessage && (
                         <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
                             {statusMessage}
-                            {status === 'success' && <ReactRouterDOM.Link to="/fashion-day" className="underline ml-2">Retour à la page de l'événement</ReactRouterDOM.Link>}
+                            {status === 'success' && <Link to="/fashion-day" className="underline ml-2">Retour à la page de l'événement</Link>}
                         </p>
                     )}
                 </form>

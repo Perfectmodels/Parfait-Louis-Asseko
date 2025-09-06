@@ -6,9 +6,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfect Models Management</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
+    <!-- Default Social Media Meta Tags -->
+    <meta name="description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services."/>
+    <meta property="og:title" content="Perfect Models Management" />
+    <meta property="og:description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services." />
+    <meta property="og:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://perfectmodelsmanagement.com" />
+    <meta property="og:site_name" content="Perfect Models Management" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Perfect Models Management" />
+    <meta name="twitter:description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services." />
+    <meta name="twitter:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
+
+    <!-- Pre-render script for article pages -->
+    <script>
+      (async function setMetaForCrawler() {
+        try {
+          const path = window.location.pathname;
+          if (!path.startsWith('/magazine/')) return;
+          
+          const slug = path.substring('/magazine/'.length).split('/')[0];
+          if (!slug) return;
+
+          const firebaseUrl = `https://pmmdb-89a3f-default-rtdb.firebaseio.com/articles.json?orderBy="slug"&equalTo="${slug}"`;
+          const response = await fetch(firebaseUrl);
+          if (!response.ok) return;
+          
+          const articlesBySlug = await response.json();
+          const articleKey = Object.keys(articlesBySlug)[0];
+          const article = articleKey ? articlesBySlug[articleKey] : null;
+
+          if (article) {
+            document.title = article.title + ' | Perfect Models Management';
+            
+            const setTag = (attr, key, content) => {
+              let el = document.querySelector(`meta[${attr}='${key}']`);
+              if (!el) {
+                el = document.createElement('meta');
+                el.setAttribute(attr, key);
+                document.head.appendChild(el);
+              }
+              el.setAttribute('content', content);
+            };
+
+            setTag('name', 'description', article.excerpt);
+            setTag('property', 'og:title', article.title);
+            setTag('property', 'og:description', article.excerpt);
+            setTag('property', 'og:image', article.imageUrl);
+            setTag('property', 'og:type', 'article');
+            setTag('property', 'og:url', window.location.href);
+            setTag('name', 'twitter:title', article.title);
+            setTag('name', 'twitter:description', article.excerpt);
+            setTag('name', 'twitter:image', article.imageUrl);
+          }
+        } catch (e) {
+          console.error('Meta tag pre-rendering failed:', e);
+        }
+      })();
+    </script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,6 +90,7 @@
     </script>
     
     <!-- Custom Styles & Tailwind Config -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style type="text/tailwindcss">
       @layer base {
         body {

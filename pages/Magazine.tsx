@@ -1,6 +1,6 @@
+
 import React from 'react';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { Article } from '../types';
 import { useData } from '../contexts/DataContext';
@@ -39,7 +39,7 @@ const Magazine: React.FC = () => {
         {/* Featured Article */}
         {featuredArticle && (
           <section className="mb-12 md:mb-16">
-            <ReactRouterDOM.Link to={`/magazine/${featuredArticle.slug}`} className="group block md:grid md:grid-cols-2 gap-8 items-center bg-black border border-pm-gold/20 p-6 shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-pm-gold/10">
+            <Link to={`/magazine/${featuredArticle.slug}`} className="group block md:grid md:grid-cols-2 gap-8 items-center bg-black border border-pm-gold/20 p-6 shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-pm-gold/10">
               <div className="overflow-hidden">
                 <img src={featuredArticle.imageUrl} alt={featuredArticle.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               </div>
@@ -49,7 +49,7 @@ const Magazine: React.FC = () => {
                 <p className="text-pm-off-white/70 mb-4">{featuredArticle.excerpt}</p>
                 <span className="font-bold text-pm-gold group-hover:underline">Lire la suite...</span>
               </div>
-            </ReactRouterDOM.Link>
+            </Link>
           </section>
         )}
 
@@ -67,7 +67,7 @@ const Magazine: React.FC = () => {
 };
 
 const ArticleCard: React.FC<{ article: Article }> = ({ article }) => (
-  <ReactRouterDOM.Link to={`/magazine/${article.slug}`} className="group block bg-black border border-pm-gold/20 overflow-hidden relative shadow-lg shadow-black/30 hover:border-pm-gold hover:shadow-xl hover:shadow-pm-gold/20">
+  <Link to={`/magazine/${article.slug}`} className="group block bg-black border border-pm-gold/20 overflow-hidden relative shadow-lg shadow-black/30 hover:border-pm-gold hover:shadow-xl hover:shadow-pm-gold/20">
     <div className="relative h-80 overflow-hidden">
       <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
@@ -79,7 +79,7 @@ const ArticleCard: React.FC<{ article: Article }> = ({ article }) => (
         {article.excerpt}
       </p>
     </div>
-  </ReactRouterDOM.Link>
+  </Link>
 );
 
 export default Magazine;

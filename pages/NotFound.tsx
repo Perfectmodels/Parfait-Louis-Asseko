@@ -1,6 +1,6 @@
+
 import React from 'react';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const NotFound: React.FC = () => {
   return (
@@ -9,9 +9,9 @@ const NotFound: React.FC = () => {
         <h1 className="text-8xl font-playfair text-pm-gold">404</h1>
         <p className="text-2xl mt-4 text-pm-off-white">Page non trouvée</p>
         <p className="mt-2 text-pm-off-white/70">Désolé, la page que vous recherchez n'existe pas.</p>
-        <ReactRouterDOM.Link to="/" className="inline-block mt-8 px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+        <Link to="/" className="inline-block mt-8 px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
           Retour à l'accueil
-        </ReactRouterDOM.Link>
+        </Link>
       </div>
     </div>
   );

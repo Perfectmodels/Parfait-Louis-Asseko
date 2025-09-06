@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export interface Model {
@@ -82,6 +83,11 @@ export interface Article {
   content: ArticleContent[];
   tags?: string[];
   isFeatured?: boolean;
+  viewCount?: number;
+  reactions?: {
+    likes: number;
+    dislikes: number;
+  };
 }
 
 
@@ -269,7 +275,16 @@ export interface BookingRequest {
   message: string;
 }
 
-// FIX: Add missing AIAssistantProps interface to fix type error
+export interface ContactMessage {
+  id: string;
+  submissionDate: string;
+  status: 'Nouveau' | 'Lu' | 'Archivé';
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 export interface AIAssistantProps {
   isOpen: boolean;
   onClose: () => void;

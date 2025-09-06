@@ -1,6 +1,6 @@
+
 import React, { useState } from 'react';
-// FIX: Fix react-router-dom imports by using a namespace import
-import * as ReactRouterDOM from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -11,7 +11,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
-  const navigate = ReactRouterDOM.useNavigate();
+  const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
   const handleLogin = (e: React.FormEvent) => {
