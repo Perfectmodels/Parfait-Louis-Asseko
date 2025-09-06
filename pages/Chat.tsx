@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 // FIX: Renamed imported `Chat` to `GeminiChat` to avoid conflict with the component's name.
 import { GoogleGenAI, Chat as GeminiChat } from '@google/genai';
