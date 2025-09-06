@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { BookingRequest } from '../types';
 import SEO from '../components/SEO';
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 type StatusFilter = 'Toutes' | 'Nouveau' | 'Confirmé' | 'Annulé';
@@ -45,10 +45,10 @@ const AdminBookings: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Demandes de Booking" noIndex />
             <div className="container mx-auto px-6">
-                <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Dashboard
-                </ReactRouterDOM.Link>
+                </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold">Demandes de Booking</h1>
                 <p className="text-pm-off-white/70 mt-2 mb-8">Gérez les demandes de réservation des clients.</p>
 

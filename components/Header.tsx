@@ -116,7 +116,7 @@ const Header: React.FC = () => {
   const processedNavLinks = useMemo(() => {
     return navLinksFromData.map(link => {
         if (link.label === 'Classroom') {
-            if (userRole === 'model') {
+            if (userRole === 'student') {
                 return { ...link, label: 'Mon Profil', path: '/profil' };
             }
             if (userRole === 'admin') {
