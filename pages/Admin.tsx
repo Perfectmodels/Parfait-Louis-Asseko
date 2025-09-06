@@ -16,7 +16,8 @@ import {
     PresentationChartLineIcon,
     BuildingStorefrontIcon,
     SparklesIcon,
-    ChatBubbleLeftRightIcon
+    ChatBubbleLeftRightIcon,
+    BriefcaseIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
@@ -32,6 +33,7 @@ const Admin: React.FC = () => {
     const newCastingApps = data?.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
     const newFashionDayApps = data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
     const newRecoveryRequests = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
+    const newBookingRequests = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -78,6 +80,13 @@ const Admin: React.FC = () => {
                         link="/admin/casting-applications"
                         description="Consulter et traiter les candidatures pour les castings."
                         notificationCount={newCastingApps}
+                    />
+                    <DashboardCard 
+                        title="Demandes de Booking" 
+                        icon={BriefcaseIcon} 
+                        link="/admin/bookings"
+                        description="Consulter et gérer les demandes de booking des clients."
+                        notificationCount={newBookingRequests}
                     />
                     <DashboardCard 
                         title="Candidatures PFD" 

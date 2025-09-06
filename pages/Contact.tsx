@@ -5,6 +5,7 @@ import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/SocialIcons';
+import BookingForm from '../components/BookingForm';
 
 const Contact: React.FC = () => {
     const { data } = useData();
@@ -108,6 +109,17 @@ const Contact: React.FC = () => {
                         </form>
                     </div>
                 </div>
+
+                <div className="mt-16 max-w-6xl mx-auto">
+                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
+                        <h2 className="text-3xl font-playfair text-pm-gold mb-6 text-center">Demande de Booking</h2>
+                        <p className="text-center text-pm-off-white/80 mb-8 -mt-4">
+                            Pour un ou plusieurs mannequins, ou pour tout autre projet.
+                        </p>
+                        <BookingForm />
+                    </div>
+                </div>
+
             </div>
         </div>
     );

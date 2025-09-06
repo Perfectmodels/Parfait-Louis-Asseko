@@ -43,6 +43,7 @@ import AdminNews from './pages/AdminNews';
 import AdminRecovery from './pages/AdminRecovery';
 import AdminSettings from './pages/AdminSettings';
 import AdminComments from './pages/AdminComments';
+import AdminBookings from './pages/AdminBookings';
 
 // Role-specific pages
 import JuryCasting from './pages/JuryCasting';
@@ -113,6 +114,7 @@ const AppContent = () => {
                     <ReactRouterDOM.Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
                     <ReactRouterDOM.Route path="/admin/casting-live" element={<ProtectedRoute role="admin"><AdminCastingLive /></ProtectedRoute>} />
                     <ReactRouterDOM.Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
+                    <ReactRouterDOM.Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
 
                     <ReactRouterDOM.Route path="*" element={<NotFound />} />
                 </ReactRouterDOM.Routes>
