@@ -407,5 +407,195 @@ Une carrière de mannequin est un formidable tremplin, mais ce n'est qu'un chapi
             correctAnswer: "Pour construire un réseau de contacts professionnels qui peut ouvrir des portes"
         }
     ]
+  },
+  {
+    slug: "module-6-contrats-droit-image-finance",
+    title: "Module 6: Contrats, Droit à l'Image et Gestion Financière",
+    chapters: [
+      { 
+        slug: "decrypter-un-contrat-de-mannequin",
+        title: "Décrypter un contrat de mannequin", 
+        content: `Le contrat est le document qui régit votre relation professionnelle avec un client. Comprendre ses clauses est essentiel pour protéger vos intérêts. Les points clés à examiner sont : le cachet (votre rémunération pour la journée de travail), les droits d'utilisation ou "buyouts" (qui définissent comment, où et pour combien de temps les photos peuvent être utilisées), la durée et le territoire de diffusion, les supports (presse, digital, affichage), et les clauses d'exclusivité qui peuvent vous empêcher de travailler pour des marques concurrentes. Votre agent est votre meilleur allié pour négocier ces termes, mais il est crucial que vous en compreniez la portée.` 
+      },
+      { 
+        slug: "comprendre-le-droit-a-l-image",
+        title: "Comprendre le droit à l'image", 
+        content: `Votre image est votre capital le plus précieux. Le droit à l'image est le droit pour toute personne de s'opposer à la reproduction et à la diffusion de son image sans son autorisation expresse. Dans le mannequinat, vous cédez ce droit de manière contrôlée et rémunérée via votre contrat. Il est vital de s'assurer que l'utilisation faite par le client correspond exactement à ce qui a été convenu. Toute utilisation non autorisée (par exemple, une photo de magazine utilisée sur un packaging de produit) constitue une violation de votre droit à l'image et doit donner lieu à une renégociation financière.`
+      },
+      { 
+        slug: "gerer-ses-finances-de-mannequin",
+        title: "Gérer ses finances de mannequin", 
+        content: `Les revenus d'un mannequin sont souvent irréguliers. Une gestion financière prudente est la clé de la stabilité. Apprenez à établir un budget, en séparant vos dépenses professionnelles (book, composites, déplacements) de vos dépenses personnelles. Mettez systématiquement de l'argent de côté pendant les périodes fastes pour couvrir les mois plus calmes. L'épargne et l'investissement sont vos meilleurs amis pour construire un avenir financier solide au-delà des podiums.` 
+      },
+      { 
+        slug: "impots-taxes-et-statut-juridique",
+        title: "Impôts, taxes et statut juridique", 
+        content: `En tant que mannequin, vous êtes généralement considéré comme un travailleur indépendant. Cela signifie que vous êtes responsable de la déclaration de vos revenus et du paiement de vos propres impôts et cotisations sociales. Il est fortement recommandé de faire appel à un comptable spécialisé dans les métiers artistiques. Il vous aidera à optimiser votre situation fiscale, à comprendre quelles dépenses sont déductibles et à vous assurer que vous êtes en règle avec l'administration fiscale. Anticipez toujours vos impôts en provisionnant un pourcentage de chaque revenu.` 
+      }
+    ],
+    quiz: [
+      {
+        question: "Quelle est la partie la plus importante d'un contrat de mannequin en termes de rémunération à long terme ?",
+        options: ["Le cachet de la journée", "Les droits d'utilisation (buyouts)", "Les frais de déplacement", "La clause de repas"],
+        correctAnswer: "Les droits d'utilisation (buyouts)"
+      },
+      {
+        question: "Que signifie une clause d'exclusivité ?",
+        options: ["Vous êtes le seul mannequin sur le shooting", "Vous ne pouvez pas travailler pour des marques concurrentes pendant une période donnée", "Vous ne pouvez travailler qu'avec un seul photographe", "L'agence ne représente que vous"],
+        correctAnswer: "Vous ne pouvez pas travailler pour des marques concurrentes pendant une période donnée"
+      }
+    ]
+  },
+  {
+    slug: "module-7-sante-mentale-et-bien-etre",
+    title: "Module 7: Santé Mentale et Bien-être",
+    chapters: [
+      { 
+        slug: "gerer-le-rejet-et-la-critique",
+        title: "Gérer le rejet et la critique", 
+        content: `Le rejet fait partie intégrante du métier de mannequin. Vous essuierez d'innombrables "non" en casting. La clé est de ne jamais le prendre personnellement. Un refus est rarement une remise en cause de votre valeur ou de votre beauté ; il signifie simplement que votre profil ne correspondait pas à la vision spécifique du client pour ce projet précis. Apprenez à séparer votre identité de votre travail. Célébrez les "oui", et laissez les "non" glisser sur vous.` 
+      },
+      { 
+        slug: "le-syndrome-de-l-imposteur",
+        title: "Le syndrome de l'imposteur", 
+        content: `Beaucoup de mannequins, même au sommet de leur carrière, souffrent du syndrome de l'imposteur : le sentiment de ne pas être légitime, de ne pas mériter son succès. Reconnaître ce sentiment est la première étape pour le combattre. Tenez un journal de vos réussites, même les plus petites. Parlez-en à d'autres mannequins ou à votre agent ; vous réaliserez que vous n'êtes pas seul. Rappelez-vous que si vous êtes là, c'est que des professionnels ont cru en vous.`
+      },
+      { 
+        slug: "techniques-de-gestion-du-stress",
+        title: "Techniques de gestion du stress", 
+        content: `L'attente en casting, la pression en backstage, l'incertitude du lendemain... le stress est omniprésent. Développez une boîte à outils de techniques de gestion du stress : la respiration profonde (cohérence cardiaque), la méditation (même 5 minutes par jour via une application), la visualisation positive (imaginez votre passage réussi sur le podium), ou encore l'activité physique pour évacuer les tensions. Trouvez ce qui fonctionne pour vous et pratiquez régulièrement.` 
+      },
+      { 
+        slug: "l-importance-du-reseau-de-soutien",
+        title: "L'importance du réseau de soutien", 
+        content: `Ne restez jamais isolé. Cultivez des relations solides et saines en dehors de l'industrie de la mode. Votre famille, vos amis d'enfance sont votre ancre dans la réalité. Au sein de l'agence, considérez les autres mannequins comme des collègues et non des rivaux. Partager vos expériences et vos doutes avec des personnes qui comprennent votre réalité est incroyablement précieux. Votre agent est aussi une personne ressource importante pour votre bien-être.` 
+      }
+    ],
+    quiz: [
+      {
+        question: "Quelle est la meilleure réaction face à un rejet en casting ?",
+        options: ["Le prendre personnellement et douter de soi", "Se plaindre à l'agence", "Comprendre que cela ne remet pas en cause sa valeur et passer au suivant", "Arrêter les castings"],
+        correctAnswer: "Comprendre que cela ne remet pas en cause sa valeur et passer au suivant"
+      },
+      {
+        question: "Pourquoi est-il important d'avoir des centres d'intérêt en dehors du mannequinat ?",
+        options: ["Pour avoir l'air plus intéressant en interview", "Pour maintenir une estime de soi qui ne dépend pas que de son apparence", "Pour se reposer entre deux contrats", "Pour dépenser l'argent gagné"],
+        correctAnswer: "Pour maintenir une estime de soi qui ne dépend pas que de son apparence"
+      }
+    ]
+  },
+  {
+    slug: "module-8-networking-et-branding-avance",
+    title: "Module 8: Networking & Personal Branding Avancé",
+    chapters: [
+      { 
+        slug: "strategies-de-networking-efficaces",
+        title: "Stratégies de networking efficaces", 
+        content: `Le networking ne consiste pas à demander quelque chose, mais à offrir quelque chose : votre professionnalisme, votre énergie, votre intérêt sincère. Sur un shooting, intéressez-vous au travail de chacun. Retenez les noms. Après un travail que vous avez apprécié, envoyez un court message de remerciement. Le but est de laisser une impression positive et mémorable. Les gens auront envie de retravailler avec ceux qu'ils apprécient.`
+      },
+      { 
+        slug: "optimiser-son-profil-instagram",
+        title: "Optimiser son profil Instagram", 
+        content: `Votre compte Instagram est votre magazine personnel. Votre biographie doit être claire : nom, agence(s), contact pro. Votre feed doit être un mélange équilibré de photos professionnelles (éditos, campagnes), de polas récents, de vidéos de votre démarche, et de contenu plus personnel qui révèle votre personnalité et vos centres d'intérêt. Utilisez les Stories pour montrer les coulisses de votre métier de manière authentique. La qualité des images est primordiale.` 
+      },
+      { 
+        slug: "collaborer-avec-les-marques",
+        title: "Collaborer avec les marques", 
+        content: `Au-delà des contrats de mannequinat traditionnels, votre image peut vous permettre de devenir ambassadeur de marque. Choisissez des marques qui correspondent à vos valeurs et à votre image. Une collaboration réussie est authentique. Ne faites pas la promotion de produits que vous n'aimez pas. Votre crédibilité auprès de votre communauté est votre plus grand atout.`
+      },
+      { 
+        slug: "gerer-son-e-reputation",
+        title: "Gérer son e-réputation", 
+        content: `Votre réputation en ligne vous précède. Tout ce que vous postez, commentez ou "likez" peut être vu par des clients potentiels. Évitez les polémiques, les contenus négatifs ou dégradants. En cas de commentaires haineux, la meilleure stratégie est souvent de ne pas répondre, de bloquer et de signaler. Gardez une communication positive et professionnelle. Votre e-réputation est une composante essentielle de votre marque personnelle.` 
+      }
+    ],
+    quiz: [
+      {
+        question: "Quelle est la règle d'or du networking ?",
+        options: ["Collectionner le plus de cartes de visite possible", "Parler uniquement aux personnes les plus célèbres", "Créer des relations authentiques basées sur un intérêt mutuel", "Demander un travail dès la première rencontre"],
+        correctAnswer: "Créer des relations authentiques basées sur un intérêt mutuel"
+      },
+      {
+        question: "Pourquoi un profil Instagram soigné est-il crucial pour un mannequin aujourd'hui ?",
+        options: ["Pour montrer ses vacances à ses amis", "Car il sert d'extension au book et est consulté par les clients", "Pour obtenir des produits gratuits", "Uniquement pour les mannequins-influenceurs"],
+        correctAnswer: "Car il sert d'extension au book et est consulté par les clients"
+      }
+    ]
+  },
+  {
+    slug: "module-9-specialisations-et-marches-internationaux",
+    title: "Module 9: Spécialisations et Marchés Internationaux",
+    chapters: [
+      { 
+        slug: "les-codes-du-mannequinat-commercial",
+        title: "Les codes du mannequinat commercial", 
+        content: `Le mannequinat commercial vise à vendre un produit à un large public. L'accessibilité est le maître-mot. On recherche des sourires naturels, une énergie positive et une capacité à représenter le "client type". Les poses sont plus simples, plus directes, et l'interaction avec le produit est souvent au centre de l'image. C'est un marché très lucratif qui demande de la polyvalence et des talents d'acteur.`
+      },
+      { 
+        slug: "les-specificites-du-mannequinat-beaute",
+        title: "Les spécificités du mannequinat beauté", 
+        content: `Le mannequinat beauté se concentre sur le visage. Une peau parfaite, des traits symétriques, des lèvres bien dessinées et des yeux expressifs sont des atouts majeurs. Le travail est minutieux et exige une grande patience, car les shootings peuvent durer des heures pour obtenir le cliché parfait. Une excellente maîtrise des micro-expressions faciales est indispensable.`
+      },
+      { 
+        slug: "introduction-aux-marches-internationaux",
+        title: "Introduction aux marchés internationaux", 
+        content: `Chaque capitale de la mode a sa propre identité. Paris pour la Haute Couture, Milan pour le glamour, New York pour le commercial et le sportswear, et Londres pour l'avant-garde. Votre agent vous guidera vers le marché le plus adapté à votre profil. Préparer une carrière internationale, c'est aussi maîtriser l'anglais, être autonome et avoir une grande capacité d'adaptation.` 
+      },
+      { 
+        slug: "adapter-son-book-pour-l-international",
+        title: "Adapter son book pour l'international", 
+        content: `Votre book doit être adapté au marché que vous visez. Pour Paris, privilégiez les éditos forts et les photos en noir et blanc. Pour New York, intégrez des images plus commerciales et souriantes. Votre agence mère travaillera avec vous pour construire un book international puissant, en sélectionnant les meilleures images et en organisant des "tests" (shootings) avec des photographes locaux pour coller à l'esthétique du marché.`
+      }
+    ],
+    quiz: [
+      {
+        question: "Quelle est la principale caractéristique du mannequinat commercial ?",
+        options: ["Looks avant-gardistes et étranges", "Accessibilité, sourire et énergie positive pour vendre un produit", "Démarche lente et théâtrale", "Mensurations très strictes pour la haute couture"],
+        correctAnswer: "Accessibilité, sourire et énergie positive pour vendre un produit"
+      },
+      {
+        question: "Quelle ville est considérée comme la capitale de la mode avant-gardiste et des jeunes créateurs ?",
+        options: ["Paris", "Milan", "New York", "Londres"],
+        correctAnswer: "Londres"
+      }
+    ]
+  },
+  {
+    slug: "module-10-construire-une-carriere-durable",
+    title: "Module 10: Construire une Carrière Durable",
+    chapters: [
+      { 
+        slug: "la-transition-vers-l-international-pratique",
+        title: "La transition vers l'international : aspects pratiques", 
+        content: `Partir à l'international est une étape majeure. Cela implique des démarches administratives complexes (visas, permis de travail) que votre agence vous aidera à naviguer. Sur place, vous devrez faire preuve d'une grande autonomie : trouver un logement (souvent en "model apartment"), gérer votre budget dans une ville chère, et vous adapter rapidement à un nouveau rythme de castings et à une nouvelle culture.`
+      },
+      { 
+        slug: "se-diversifier-apres-le-mannequinat",
+        title: "Se diversifier : penser l'après-mannequinat", 
+        content: `Une carrière de mannequin est rarement éternelle. Utilisez-la comme un tremplin. Les compétences que vous acquérez (discipline, communication, connaissance de l'image) sont précieuses. Pensez à des reconversions possibles : la comédie, la photographie, le stylisme, la création de contenu, ou même l'entrepreneuriat en lançant votre propre marque. Commencez à vous former et à explorer vos passions en parallèle de votre carrière.`
+      },
+      { 
+        slug: "le-mannequin-comme-entreprise",
+        title: "Le mannequin comme une entreprise : gérer sa marque", 
+        content: `Considérez-vous comme "CEO" de votre propre entreprise : "Vous, Inc.". Votre produit, c'est votre image. Votre stratégie marketing, c'est votre personal branding. Vos finances, c'est votre gestion budgétaire. Vos investissements, ce sont vos soins, votre formation continue. Adopter cette mentalité d'entrepreneur vous donnera une vision à long terme et vous responsabilisera dans la gestion de votre carrière.`
+      },
+      { 
+        slug: "ethique-et-engagement-dans-la-mode",
+        title: "Éthique et engagement : devenir un mannequin influent", 
+        content: `Les mannequins d'aujourd'hui ont une voix et une plateforme. Utilisez-les à bon escient. Vous pouvez devenir un agent de changement en soutenant des causes qui vous tiennent à cœur : la mode durable, la diversité, la santé mentale. Un mannequin engagé est non seulement une source d'inspiration, mais aussi un profil de plus en plus recherché par les marques qui veulent associer leur image à des valeurs fortes.` 
+      }
+    ],
+    quiz: [
+      {
+        question: "Pourquoi est-il crucial de penser à sa reconversion dès le début de sa carrière ?",
+        options: ["Car le métier de mannequin est ennuyeux", "Car une carrière de mannequin a une durée limitée et il faut préparer l'avenir", "Pour gagner plus d'argent tout de suite", "Ce n'est pas important"],
+        correctAnswer: "Car une carrière de mannequin a une durée limitée et il faut préparer l'avenir"
+      },
+      {
+        question: "Quel est un exemple de diversification de carrière pour un mannequin ?",
+        options: ["Prendre sa retraite à 25 ans", "Devenir acteur/actrice ou lancer sa propre marque", "Critiquer les autres mannequins sur les réseaux sociaux", "Ne rien faire"],
+        correctAnswer: "Devenir acteur/actrice ou lancer sa propre marque"
+      }
+    ]
   }
 ];
