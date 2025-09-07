@@ -36,6 +36,10 @@
   animation: fadeIn 0.5s ease-in-out;
 }
 
+.print-only {
+  display: none;
+}
+
 @media print {
   body * {
     visibility: hidden;
@@ -49,17 +53,64 @@
     top: 0;
     width: 100%;
     padding: 1rem;
+    border: none !important;
+    box-shadow: none !important;
   }
   .print-hide {
-    display: none;
+    display: none !important;
+  }
+  .print-only {
+      display: block !important;
+      color: black !important;
   }
   @page {
     size: A4;
-    margin: 0;
+    margin: 1cm;
   }
   body {
     margin: 0;
+    background-color: white !important;
   }
+
+  .printable-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+  }
+  .printable-content th, .printable-content td {
+    border: 1px solid #ccc !important;
+    padding: 8px;
+    text-align: left;
+    color: black !important;
+  }
+  .printable-content th {
+    background-color: #f2f2f2 !important;
+  }
+  .printable-content tr:hover {
+    background-color: transparent !important;
+  }
+  .printable-content button, .printable-content .action-btn {
+    display: none !important;
+  }
+  .printable-content a {
+    text-decoration: none;
+    color: black !important;
+  }
+  .printable-content .text-pm-gold {
+      color: #8B5A0D !important;
+  }
+  .printable-content .font-bold {
+      font-weight: bold !important;
+  }
+  .printable-content .text-green-400 { color: #22c55e !important; }
+  .printable-content .text-yellow-400 { color: #facc15 !important; }
+  .printable-content .text-red-400 { color: #f87171 !important; }
+  .printable-content span[class*="bg-"] {
+      background-color: transparent !important;
+      border: 1px solid #ccc !important;
+      color: black !important;
+  }
+
   .printable-sheet {
     background-color: white !important;
     color: black !important;

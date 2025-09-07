@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 // FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
 import { useNavigate } from 'react-router-dom';
@@ -42,6 +41,21 @@ const Login: React.FC = () => {
             sessionStorage.setItem('userId', loggedInModel.id);
             // FIX: Use navigate for navigation in react-router-dom v6.
             navigate('/profil');
+            return;
+        }
+    }
+    
+    // Beginner Student Login
+    if (data?.beginnerStudents) {
+        const loggedInBeginner = data.beginnerStudents.find(bs => 
+            bs.matricule.toLowerCase() === username.toLowerCase()
+        );
+        if (loggedInBeginner && loggedInBeginner.password === password) {
+            sessionStorage.setItem('classroom_access', 'granted');
+            sessionStorage.setItem('classroom_role', 'beginner');
+            sessionStorage.setItem('userId', loggedInBeginner.id);
+            sessionStorage.setItem('userName', loggedInBeginner.name);
+            navigate('/classroom-debutant');
             return;
         }
     }
