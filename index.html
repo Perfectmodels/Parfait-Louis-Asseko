@@ -6,214 +6,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfect Models Management</title>
     
-    <!-- Default Social Media Meta Tags -->
+    <!-- Meta tags will be managed by the SEO component in React -->
     <meta name="description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services."/>
-    <meta property="og:title" content="Perfect Models Management" />
-    <meta property="og:description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services." />
-    <meta property="og:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://perfectmodelsmanagement.com" />
-    <meta property="og:site_name" content="Perfect Models Management" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Perfect Models Management" />
-    <meta name="twitter:description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services." />
-    <meta name="twitter:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
-
-    <!-- Pre-render script for article pages -->
-    <script>
-      (async function setMetaForCrawler() {
-        try {
-          const path = window.location.hash.substring(1) || '/';
-          if (!path.startsWith('/magazine/')) return;
-          
-          const slug = path.substring('/magazine/'.length).split('/')[0];
-          if (!slug) return;
-
-          const firebaseUrl = `https://pmmdb-89a3f-default-rtdb.firebaseio.com/articles.json?orderBy="slug"&equalTo="${slug}"`;
-          const response = await fetch(firebaseUrl);
-          if (!response.ok) return;
-          
-          const articlesBySlug = await response.json();
-          const articleKey = Object.keys(articlesBySlug)[0];
-          const article = articleKey ? articlesBySlug[articleKey] : null;
-
-          if (article) {
-            document.title = article.title + ' | Perfect Models Management';
-            
-            const setTag = (attr, key, content) => {
-              let el = document.querySelector(`meta[${attr}='${key}']`);
-              if (!el) {
-                el = document.createElement('meta');
-                el.setAttribute(attr, key);
-                document.head.appendChild(el);
-              }
-              el.setAttribute('content', content);
-            };
-
-            setTag('name', 'description', article.excerpt);
-            setTag('property', 'og:title', article.title);
-            setTag('property', 'og:description', article.excerpt);
-            setTag('property', 'og:image', article.imageUrl);
-            setTag('property', 'og:type', 'article');
-            setTag('property', 'og:url', window.location.href);
-            setTag('name', 'twitter:title', article.title);
-            setTag('name', 'twitter:description', article.excerpt);
-            setTag('name', 'twitter:image', article.imageUrl);
-          }
-        } catch (e) {
-          console.error('Meta tag pre-rendering failed:', e);
-        }
-      })();
-    </script>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
-    
-    <!-- ES Module Imports -->
-    <script type="importmap">
-    {
-      "imports": {
-        "react/": "https://aistudiocdn.com/react@^19.1.1/",
-        "react": "https://aistudiocdn.com/react@^19.1.1",
-        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0",
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-        "firebase/": "https://aistudiocdn.com/firebase@^12.2.1/",
-        "react-router-dom": "https://aistudiocdn.com/react-router-dom@^6.0.0",
-        "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/"
-      }
-    }
-    </script>
-    
-    <!-- Custom Styles & Tailwind Config -->
+
+    <!-- Tailwind Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style type="text/tailwindcss">
-      @layer base {
-        body {
-          font-family: 'Montserrat', sans-serif;
-        }
-        .font-playfair {
-          font-family: 'Playfair Display', serif;
-        }
-      }
-      .admin-input {
-        @apply w-full bg-pm-dark border border-pm-off-white/30 rounded-lg p-3 text-pm-off-white focus:outline-none focus:border-pm-gold transition-colors;
-      }
-      .admin-textarea {
-        @apply resize-y;
-      }
-      .animate-marquee {
-        animation: marquee 60s linear infinite;
-      }
-      @keyframes marquee {
-        from { transform: translateX(0); }
-        to { transform: translateX(-50%); }
-      }
-      .animate-fade-in {
-        animation: fadeIn 0.5s ease-in-out;
-      }
-      @media print {
-        body * {
-          visibility: hidden;
-        }
-        .printable-content, .printable-content * {
-          visibility: visible;
-        }
-        .printable-content {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-          padding: 1rem;
-        }
-        .print-hide {
-          display: none;
-        }
-        @page {
-          size: A4;
-          margin: 0;
-        }
-        body {
-          margin: 0;
-        }
-        .printable-sheet {
-          background-color: white !important;
-          color: black !important;
-          font-family: 'Montserrat', sans-serif;
-          -webkit-print-color-adjust: exact !important;
-          color-adjust: exact !important;
-        }
-        .printable-sheet h1, .printable-sheet h2, .printable-sheet h3, .printable-sheet .font-playfair {
-          color: black !important;
-          font-family: 'Playfair Display', serif;
-        }
-        .printable-sheet .text-pm-gold {
-          color: #8B5A0D !important; /* Darker gold for print */
-        }
-        .printable-sheet .border-pm-gold {
-           border-color: #8B5A0D !important;
-        }
-        .printable-sheet .bg-black, .printable-sheet .bg-pm-dark, .printable-sheet .bg-pm-dark\/50 {
-          background-color: #f0f0f0 !important;
-          border-color: #ccc !important;
-        }
-        .printable-sheet .border {
-          border-width: 1px !important;
-        }
-         .printable-sheet .text-green-600 {
-            color: #059669 !important;
-        }
-        .printable-sheet .text-red-600 {
-            color: #DC2626 !important;
-        }
-        .printable-sheet a {
-            text-decoration: none;
-            color: black !important;
-        }
-      }
-    </style>
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'pm-dark': '#111111',
-              'pm-gold': '#D4AF37',
-              'pm-off-white': '#f0f0f0',
-            },
-            fontFamily: {
-              'playfair': ['"Playfair Display"', 'serif'],
-              'montserrat': ['"Montserrat"', 'sans-serif'],
-            },
-            animation: {
-                'marquee': 'marquee 60s linear infinite',
-                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                'fade-in': 'fadeIn 0.5s ease-in-out',
-            },
-            keyframes: {
-                marquee: {
-                    '0%': { transform: 'translateX(0%)' },
-                    '100%': { transform: 'translateX(-50%)' },
-                },
-                fadeIn: {
-                    '0%': { opacity: 0 },
-                    '100%': { opacity: 1 },
-                },
-            }
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'pm-dark': '#111111',
+            'pm-gold': '#D4AF37',
+            'pm-off-white': '#f0f0f0',
+          },
+          fontFamily: {
+            'playfair': ['"Playfair Display"', 'serif'],
+            'montserrat': ['"Montserrat"', 'sans-serif'],
+          },
+          animation: {
+              'marquee': 'marquee 60s linear infinite',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'fade-in': 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+              marquee: {
+                  '0%': { transform: 'translateX(0%)' },
+                  '100%': { transform: 'translateX(-50%)' },
+              },
+              fadeIn: {
+                  '0%': { opacity: 0 },
+                  '100%': { opacity: 1 },
+              },
           }
         }
       }
+    }
     </script>
+
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.8.2",
+    "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.2.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0",
+    "vite": "https://aistudiocdn.com/vite@^7.1.4",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.0.2"
+  }
+}
+</script>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!-- Load Babel for on-the-fly TSX/JSX transformation -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel" data-presets="react,typescript" data-type="module" src="index.tsx"></script>
+    <script type="module" src="/src/index.tsx"></script>
 </body>
 </html>
