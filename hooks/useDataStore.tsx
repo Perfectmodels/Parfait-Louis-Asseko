@@ -1,8 +1,8 @@
+
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../src/firebaseConfig';
+import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-// FIX: Add BeginnerStudent to import
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../src/types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -32,7 +32,6 @@ import {
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
-    // FIX: Add beginner data imports
     beginnerStudents as initialBeginnerStudents,
     beginnerCourseData as initialBeginnerCourseData
 } from '../constants/data';
@@ -78,7 +77,6 @@ export interface AppData {
     contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
-    // FIX: Add beginner data to AppData interface
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
 }
@@ -116,7 +114,6 @@ export const useDataStore = () => {
         courseData: initialCourseData,
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
-        // FIX: Add beginner data to initial data function
         beginnerCourseData: initialBeginnerCourseData,
         beginnerStudents: initialBeginnerStudents,
     }), []);
@@ -128,9 +125,21 @@ export const useDataStore = () => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
             if (dbData) {
-                const mergedData = { ...initialData, ...dbData };
-                // Definitive fix: Always use the navigation links from the code.
-                // This prevents stale database data from overriding the app's structure.
+                // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
+                const mergedData = {
+                    ...initialData,
+                    ...dbData,
+                    models: (dbData.models && dbData.models.length > 0) ? dbData.models : initialData.models,
+                    articles: (dbData.articles && dbData.articles.length > 0) ? dbData.articles : initialData.articles,
+                    courseData: (dbData.courseData && dbData.courseData.length > 0) ? dbData.courseData : initialData.courseData,
+                    beginnerCourseData: (dbData.beginnerCourseData && dbData.beginnerCourseData.length > 0) ? dbData.beginnerCourseData : initialData.beginnerCourseData,
+                    newsItems: (dbData.newsItems && dbData.newsItems.length > 0) ? dbData.newsItems : initialData.newsItems,
+                    testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
+                    agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
+                    fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
+                };
+                
+                // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
                 setData(mergedData);
             } else {

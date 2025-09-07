@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
-import { QuizQuestion, Module } from '../src/types';
+import { QuizQuestion, Module } from '../types';
 import { useData } from '../contexts/DataContext';
 
 // --- STUDENT VIEW ---

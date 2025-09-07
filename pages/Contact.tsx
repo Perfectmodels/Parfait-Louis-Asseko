@@ -6,7 +6,7 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/SocialIcons';
 import BookingForm from '../components/BookingForm';
-import { ContactMessage } from '../src/types';
+import { ContactMessage } from '../types';
 
 const Contact: React.FC = () => {
     const { data, saveData } = useData();
