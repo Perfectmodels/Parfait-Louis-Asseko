@@ -18,14 +18,14 @@ export const navLinks: NavLink[] = [
 ];
 
 export const socialLinks = {
-    facebook: 'https://www.facebook.com/perfectmodels.ga',
-    instagram: 'https://www.instagram.com/perfectmodels.ga/',
-    youtube: 'https://www.youtube.com/@PMM241',
+    facebook: 'https://www.facebook.com/PerfectModels241',
+    instagram: 'https://www.instagram.com/perfectmodelsmanagement_/',
+    youtube: 'https://www.youtube.com/@perfectmodelsmanagement6013',
 };
 
 export const contactInfo: ContactInfo = {
     email: 'contact@perfectmodels.ga',
-    phone: '+241 077 50 79 50',
+    phone: '+241 077 00 00 00',
     address: 'Libreville, Gabon',
     notificationEmail: 'contact@perfectmodels.ga',
 };

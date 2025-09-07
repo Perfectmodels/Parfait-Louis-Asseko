@@ -28,7 +28,7 @@ export interface Model {
   quizScores: { [quizId: string]: number };
 }
 
-// FIX: Add BeginnerStudent interface
+// FIX: Add BeginnerStudent interface to be used by the beginner classroom and admin pages.
 export interface BeginnerStudent {
   id: string; // Corresponds to the CastingApplication ID
   name: string;

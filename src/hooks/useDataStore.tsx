@@ -1,37 +1,41 @@
 import { useState, useEffect, useCallback } from 'react';
-// We still need the types
+import { db } from '../firebaseConfig';
+import { ref, onValue, set } from 'firebase/database';
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
 
-// We still import the local data for fallback and for data not stored in the DB (like nav links)
-import {
-    siteConfig as initialSiteConfig,
-    contactInfo as initialContactInfo,
-    siteImages as initialSiteImages,
-    apiKeys as initialApiKeys,
-    navLinks as initialNavLinks,
-    socialLinks as initialSocialLinks,
-    agencyTimeline as initialAgencyTimeline,
-    agencyInfo as initialAgencyInfo,
-    modelDistinctions as initialModelDistinctions,
-    agencyAchievements as initialAgencyAchievements,
-    agencyPartners as initialAgencyPartners,
-    courseData as initialCourseData,
+// Import initial data to seed the database if it's empty
+import { 
+    models as initialModels, 
+    siteConfig as initialSiteConfig, 
+    contactInfo as initialContactInfo, 
+    siteImages as initialSiteImages, 
+    apiKeys as initialApiKeys, 
+    castingApplications as initialCastingApplications, 
+    fashionDayApplications as initialFashionDayApplications, 
+    forumThreads as initialForumThreads,
+    forumReplies as initialForumReplies,
+    articleComments as initialArticleComments,
+    recoveryRequests as initialRecoveryRequests,
+    bookingRequests as initialBookingRequests,
+    contactMessages as initialContactMessages,
+    newsItems as initialNewsItems, 
+    navLinks as initialNavLinks, 
+    fashionDayEvents as initialFashionDayEvents, 
+    socialLinks as initialSocialLinks, 
+    agencyTimeline as initialAgencyTimeline, 
+    agencyInfo as initialAgencyInfo, 
+    modelDistinctions as initialModelDistinctions, 
+    agencyServices as initialAgencyServices, 
+    agencyAchievements as initialAgencyAchievements, 
+    agencyPartners as initialAgencyPartners, 
+    testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
-    beginnerCourseData as initialBeginnerCourseData,
+    beginnerStudents as initialBeginnerStudents,
+    beginnerCourseData as initialBeginnerCourseData
 } from '../constants/data';
-
-// Define the structure of the data returned by our /api/data endpoint
-interface ApiData {
-    models: Model[];
-    articles: Article[];
-    testimonials: Testimonial[];
-    news: NewsItem[];
-    fashionDayEvents: FashionDayEvent[];
-    services: Service[];
-    beginnerStudents: BeginnerStudent[];
-    settings: Partial<ContactInfo & SiteImages & ApiKeys>;
-}
+import { articles as initialArticles } from '../constants/magazineData';
+import { courseData as initialCourseData } from '../constants/courseData';
 
 export interface NavLink {
     path: string;
@@ -40,7 +44,6 @@ export interface NavLink {
     footerLabel?: string;
 }
 
-// This is the final, merged data structure for the app
 export interface AppData {
     siteConfig: { logo: string };
     navLinks: NavLink[];
@@ -62,7 +65,6 @@ export interface AppData {
     contactInfo: ContactInfo;
     siteImages: SiteImages;
     apiKeys: ApiKeys;
-    // These are now managed via other, more specific API calls, so we initialize them as empty.
     castingApplications: CastingApplication[];
     fashionDayApplications: FashionDayApplication[];
     newsItems: NewsItem[];
@@ -82,97 +84,94 @@ export const useDataStore = () => {
     const [data, setData] = useState<AppData | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
 
-    // This function now assembles the static, local part of the data
-    const getLocalData = useCallback((): Omit<AppData, keyof ApiData> => ({
+    const getInitialData = useCallback((): AppData => ({
+        models: initialModels,
         siteConfig: initialSiteConfig,
+        contactInfo: initialContactInfo,
+        siteImages: initialSiteImages,
+        apiKeys: initialApiKeys,
+        castingApplications: initialCastingApplications,
+        fashionDayApplications: initialFashionDayApplications,
+        forumThreads: initialForumThreads,
+        forumReplies: initialForumReplies,
+        articleComments: initialArticleComments,
+        recoveryRequests: initialRecoveryRequests,
+        bookingRequests: initialBookingRequests,
+        contactMessages: initialContactMessages,
+        newsItems: initialNewsItems,
         navLinks: initialNavLinks,
+        fashionDayEvents: initialFashionDayEvents,
         socialLinks: initialSocialLinks,
         agencyTimeline: initialAgencyTimeline,
         agencyInfo: initialAgencyInfo,
         modelDistinctions: initialModelDistinctions,
+        agencyServices: initialAgencyServices,
         agencyAchievements: initialAgencyAchievements,
         agencyPartners: initialAgencyPartners,
+        testimonials: initialTestimonials,
+        articles: initialArticles,
         courseData: initialCourseData,
-        // The following are now fetched from the API, but we provide a default empty state
-        contactInfo: initialContactInfo, 
-        siteImages: initialSiteImages,
-        apiKeys: initialApiKeys, 
-        // The following are dynamic and will be fetched. Initialize as empty arrays.
-        castingApplications: [],
-        fashionDayApplications: [],
-        forumThreads: [],
-        forumReplies: [],
-        articleComments: [],
-        recoveryRequests: [],
-        bookingRequests: [],
-        contactMessages: [],
-        juryMembers: initialJuryMembers, // Can be local if they don't change often
-        registrationStaff: initialRegistrationStaff, // same as jury
-        beginnerCourseData: initialBeginnerCourseData,    
+        juryMembers: initialJuryMembers,
+        registrationStaff: initialRegistrationStaff,
+        beginnerCourseData: initialBeginnerCourseData,
+        beginnerStudents: initialBeginnerStudents,
     }), []);
     
     useEffect(() => {
-        const fetchData = async () => {
-            const localData = getLocalData();
-            
-            try {
-                console.log("Fetching data from /api/data...");
-                const response = await fetch('/api/data');
-                if (!response.ok) {
-                    throw new Error(`API call failed with status: ${response.status}`);
-                }
-                const apiData: ApiData = await response.json();
-                console.log("Successfully fetched data:", apiData);
-
-                // Merge API data with local static data
-                const mergedData: AppData = {
-                    ...localData,
-                    models: apiData.models || [],
-                    articles: apiData.articles || [],
-                    testimonials: apiData.testimonials || [],
-                    newsItems: apiData.news || [],
-                    fashionDayEvents: apiData.fashionDayEvents || [],
-                    agencyServices: apiData.services || [],
-                    beginnerStudents: apiData.beginnerStudents || [],
-                    // Merge settings carefully
-                    contactInfo: { ...localData.contactInfo, ...apiData.settings },
-                    siteImages: { ...localData.siteImages, ...apiData.settings },
-                    apiKeys: { ...localData.apiKeys, ...apiData.settings },
+        const dbRef = ref(db, '/');
+        
+        const unsubscribe = onValue(dbRef, (snapshot) => {
+            const dbData = snapshot.val();
+            const initialData = getInitialData();
+            if (dbData) {
+                // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
+                const mergedData = {
+                    ...initialData,
+                    ...dbData,
+                    models: (dbData.models && dbData.models.length > 0) ? dbData.models : initialData.models,
+                    articles: (dbData.articles && dbData.articles.length > 0) ? dbData.articles : initialData.articles,
+                    courseData: (dbData.courseData && dbData.courseData.length > 0) ? dbData.courseData : initialData.courseData,
+                    beginnerCourseData: (dbData.beginnerCourseData && dbData.beginnerCourseData.length > 0) ? dbData.beginnerCourseData : initialData.beginnerCourseData,
+                    newsItems: (dbData.newsItems && dbData.newsItems.length > 0) ? dbData.newsItems : initialData.newsItems,
+                    testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
+                    agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
+                    fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                 };
-
+                
+                // Always use navLinks from code to ensure route integrity
+                mergedData.navLinks = initialData.navLinks;
                 setData(mergedData);
-
-            } catch (error) {
-                console.error("Failed to fetch from API, falling back to local data.", error);
-                // If API fails, create a state with only local data
-                const fallbackData: AppData = {
-                    ...localData,
-                    models: [],
-                    articles: [],
-                    testimonials: [],
-                    newsItems: [],
-                    fashionDayEvents: [],
-                    agencyServices: [],
-                    beginnerStudents: [],
-                };
-                setData(fallbackData);
-            } finally {
-                setIsInitialized(true);
+            } else {
+                // If DB is empty, seed it with initial data
+                set(dbRef, initialData).then(() => {
+                    setData(initialData);
+                    console.log("Firebase database seeded with initial data.");
+                }).catch(error => {
+                    console.error("Error seeding database:", error);
+                });
             }
-        };
+            setIsInitialized(true);
+        }, (error) => {
+            console.error("Firebase read failed: " + error.message);
+            // Fallback to local data if Firebase fails
+            setData(getInitialData());
+            setIsInitialized(true);
+        });
 
-        fetchData();
+        // Detach the listener when the component unmounts
+        return () => unsubscribe();
+    }, [getInitialData]);
 
-        // The empty dependency array ensures this effect runs only once on mount.
-    }, [getLocalData]);
-
-    const saveData = useCallback(async (newData: Partial<AppData>) => {
-        // This function is now a placeholder. 
-        // Saving data needs to be reimplemented with specific API calls (e.g., POST /api/articles).
-        console.warn("saveData is deprecated and does not persist to the database anymore.");
-        // We can still optimistically update the local state for UI feedback.
-        setData(prevData => prevData ? { ...prevData, ...newData } : null);
-        return Promise.resolve();
+    const saveData = useCallback(async (newData: AppData) => {
+        try {
+            await set(ref(db, '/'), newData);
+            // The local state will be updated by the 'on' listener,
+            // but we can set it here for immediate UI feedback if desired.
+            setData(newData);
+        } catch (error) {
+            console.error("Error saving data to Firebase:", error);
+            throw error; // Re-throw to be caught by the caller
+        }
     }, []);
 
     return { data, saveData, isInitialized };

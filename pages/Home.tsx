@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
-import { NewsItem } from '../src/types';
+import { NewsItem } from '../types';
 
 
 const Home: React.FC = () => {
