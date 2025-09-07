@@ -1,59 +1,58 @@
 import React, { useEffect } from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility. `Switch` is replaced by `Routes`.
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { DataProvider, useData } from './contexts/DataContext';
-import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
-import AIAssistantIcon from './components/AIAssistantIcon';
+import { DataProvider, useData } from '../contexts/DataContext';
+import Layout from '../components/Layout';
+import ProtectedRoute from '../components/ProtectedRoute';
+import AIAssistantIcon from '../components/AIAssistantIcon';
 
 // Pages
-import Home from './pages/Home';
-import Agency from './pages/Agency';
-import Models from './pages/Models';
-import ModelDetail from './pages/ModelDetail';
-import FashionDay from './pages/FashionDay';
-import Magazine from './pages/Magazine';
-import ArticleDetail from './pages/ArticleDetail';
-import Contact from './pages/Contact';
-import Services from './pages/Services';
-import Casting from './pages/Casting';
-import CastingForm from './pages/CastingForm';
-import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
-import Login from './pages/Login';
-import Activity from './pages/Activity'; // Renamed Formations
-import ChapterDetail from './pages/ChapterDetail';
-import ModelDashboard from './pages/ModelDashboard'; // Profil
-import ClassroomForum from './pages/ClassroomForum';
-import ForumThread from './pages/ForumThread';
-import Chat from './pages/Chat';
+import Home from '../pages/Home';
+import Agency from '../pages/Agency';
+import Models from '../pages/Models';
+import ModelDetail from '../pages/ModelDetail';
+import FashionDay from '../pages/FashionDay';
+import Magazine from '../pages/Magazine';
+import ArticleDetail from '../pages/ArticleDetail';
+import Contact from '../pages/Contact';
+import Services from '../pages/Services';
+import Casting from '../pages/Casting';
+import CastingForm from '../pages/CastingForm';
+import FashionDayApplicationForm from '../pages/FashionDayApplicationForm';
+import Login from '../pages/Login';
+import Activity from '../pages/Activity'; // Renamed Formations
+import ChapterDetail from '../pages/ChapterDetail';
+import ModelDashboard from '../pages/ModelDashboard'; // Profil
+import ClassroomForum from '../pages/ClassroomForum';
+import ForumThread from '../pages/ForumThread';
+import Chat from '../pages/Chat';
 
 // Admin Pages
-import Admin from './pages/Admin';
-import AdminAgency from './pages/AdminAgency';
-import AdminCasting from './pages/AdminCasting';
-import AdminCastingResults from './pages/AdminCastingResults'; // Nouvelle page
-import AdminClassroom from './pages/AdminClassroom';
-import AdminClassroomProgress from './pages/AdminClassroomProgress';
-import AdminFashionDay from './pages/AdminFashionDay';
-import AdminFashionDayEvents from './pages/AdminFashionDayEvents';
-import AdminMagazine from './pages/AdminMagazine';
-import AdminModelAccess from './pages/AdminModelAccess';
-import AdminModels from './pages/AdminModels';
-import AdminNews from './pages/AdminNews';
-import AdminRecovery from './pages/AdminRecovery';
-import AdminSettings from './pages/AdminSettings';
-import AdminComments from './pages/AdminComments';
-import AdminBookings from './pages/AdminBookings';
-import AdminMessages from './pages/AdminMessages';
+import Admin from '../pages/Admin';
+import AdminAgency from '../pages/AdminAgency';
+import AdminCasting from '../pages/AdminCasting';
+import AdminCastingResults from '../pages/AdminCastingResults'; // Nouvelle page
+import AdminClassroom from '../pages/AdminClassroom';
+import AdminClassroomProgress from '../pages/AdminClassroomProgress';
+import AdminFashionDay from '../pages/AdminFashionDay';
+import AdminFashionDayEvents from '../pages/AdminFashionDayEvents';
+import AdminMagazine from '../pages/AdminMagazine';
+import AdminModelAccess from '../pages/AdminModelAccess';
+import AdminModels from '../pages/AdminModels';
+import AdminNews from '../pages/AdminNews';
+import AdminRecovery from '../pages/AdminRecovery';
+import AdminSettings from '../pages/AdminSettings';
+import AdminComments from '../pages/AdminComments';
+import AdminBookings from '../pages/AdminBookings';
+import AdminMessages from '../pages/AdminMessages';
 
 // Role-specific pages
-import JuryCasting from './pages/JuryCasting';
-import RegistrationCasting from './pages/RegistrationCasting';
+import JuryCasting from '../pages/JuryCasting';
+import RegistrationCasting from '../pages/RegistrationCasting';
 
 // Static Pages
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfUse from './pages/TermsOfUse';
-import NotFound from './pages/NotFound';
+import PrivacyPolicy from '../pages/PrivacyPolicy';
+import TermsOfUse from '../pages/TermsOfUse';
+import NotFound from '../pages/NotFound';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -104,7 +103,6 @@ const AppContent = () => {
     return (
         <>
             <Layout>
-                {/* FIX: Replaced Switch with Routes and children prop with element for v6 compatibility */}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/agence" element={<Agency />} />

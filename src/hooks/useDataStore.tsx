@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
@@ -120,9 +119,12 @@ export const useDataStore = () => {
             const initialData = getInitialData();
             if (dbData) {
                 const mergedData = { ...initialData, ...dbData };
+                // Definitive fix: Always use the navigation links from the code.
+                // This prevents stale database data from overriding the app's structure.
                 mergedData.navLinks = initialData.navLinks;
                 setData(mergedData);
             } else {
+                // If DB is empty, seed it with initial data
                 set(dbRef, initialData).then(() => {
                     setData(initialData);
                     console.log("Firebase database seeded with initial data.");
@@ -131,8 +133,9 @@ export const useDataStore = () => {
                 });
             }
             setIsInitialized(true);
-        }, (error: Error) => {
+        }, (error) => {
             console.error("Firebase read failed: " + error.message);
+            // Fallback to local data if Firebase fails
             setData(getInitialData());
             setIsInitialized(true);
         });
@@ -144,6 +147,8 @@ export const useDataStore = () => {
     const saveData = useCallback(async (newData: AppData) => {
         try {
             await set(ref(db, '/'), newData);
+            // The local state will be updated by the 'on' listener,
+            // but we can set it here for immediate UI feedback if desired.
             setData(newData);
         } catch (error) {
             console.error("Error saving data to Firebase:", error);

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Module, Chapter } from '../types';
+import { Module, Chapter } from '../src/types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon, SparklesIcon } from '@heroicons/react/24/outline';

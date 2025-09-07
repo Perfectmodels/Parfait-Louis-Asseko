@@ -6,7 +6,6 @@ const firebaseConfig = {
   storageBucket: "pmmdb-89a3f.appspot.com",
 };
 
-// FIX: Update Firebase initialization to use the v9 modular SDK to resolve compatibility errors.
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 

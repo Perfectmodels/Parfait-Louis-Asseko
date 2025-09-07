@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { Article } from '../types';
+import { Article } from '../src/types';
 import { useData } from '../contexts/DataContext';
 
 const Magazine: React.FC = () => {
