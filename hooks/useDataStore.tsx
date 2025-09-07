@@ -1,8 +1,8 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../src/firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage } from '../src/types';
+// FIX: Add BeginnerStudent to import
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../src/types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -31,7 +31,10 @@ import {
     agencyPartners as initialAgencyPartners, 
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
-    registrationStaff as initialRegistrationStaff
+    registrationStaff as initialRegistrationStaff,
+    // FIX: Add beginner data imports
+    beginnerStudents as initialBeginnerStudents,
+    beginnerCourseData as initialBeginnerCourseData
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -75,6 +78,9 @@ export interface AppData {
     contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
+    // FIX: Add beginner data to AppData interface
+    beginnerCourseData: Module[];
+    beginnerStudents: BeginnerStudent[];
 }
 
 export const useDataStore = () => {
@@ -110,6 +116,9 @@ export const useDataStore = () => {
         courseData: initialCourseData,
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
+        // FIX: Add beginner data to initial data function
+        beginnerCourseData: initialBeginnerCourseData,
+        beginnerStudents: initialBeginnerStudents,
     }), []);
     
     useEffect(() => {

@@ -4,7 +4,6 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
-  // FIX: Add 'beginner' to the list of valid roles.
   role: 'admin' | 'student' | 'jury' | 'registration' | 'beginner';
 }
 

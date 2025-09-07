@@ -19,7 +19,8 @@ import {
     ChatBubbleLeftRightIcon,
     BriefcaseIcon,
     EnvelopeIcon,
-    ClipboardDocumentCheckIcon // Nouvelle icône
+    ClipboardDocumentCheckIcon,
+    UserGroupIcon, // Nouvelle icône
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
@@ -81,10 +82,10 @@ const Admin: React.FC = () => {
                         description="Gérer les commentaires laissés sur les articles du magazine."
                     />
                     <DashboardCard 
-                        title="Gérer le Classroom" 
+                        title="Gérer le Classroom Pro" 
                         icon={BookOpenIcon} 
                         link="/admin/classroom"
-                        description="Modifier les modules et chapitres de la formation en ligne."
+                        description="Modifier les modules et chapitres de la formation avancée."
                     />
                     <DashboardCard 
                         title="Candidatures Casting" 
@@ -132,16 +133,22 @@ const Admin: React.FC = () => {
                         description="Configurer les éditions du Perfect Fashion Day."
                     />
                     <DashboardCard 
-                        title="Accès Mannequins" 
+                        title="Accès Mannequins Pro" 
                         icon={KeyIcon} 
                         link="/admin/model-access"
-                        description="Consulter les identifiants et mots de passe des mannequins."
+                        description="Consulter les identifiants des mannequins confirmés."
+                    />
+                     <DashboardCard 
+                        title="Accès Débutants" 
+                        icon={UserGroupIcon} 
+                        link="/admin/beginner-students-access"
+                        description="Consulter les identifiants des nouveaux mannequins."
                     />
                     <DashboardCard 
-                        title="Suivi Classroom" 
+                        title="Suivi Classroom Pro" 
                         icon={AcademicCapIcon} 
                         link="/admin/classroom-progress"
-                        description="Voir la progression et les scores des mannequins aux quiz."
+                        description="Voir la progression des mannequins confirmés aux quiz."
                     />
                      <DashboardCard 
                         title="Demandes de Récupération" 

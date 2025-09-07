@@ -1,7 +1,5 @@
-// FIX: Add BeginnerStudent to import
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
 import { NavLink } from '../hooks/useDataStore';
-// FIX: Import beginner course data
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
@@ -156,10 +154,9 @@ export const articleComments: ArticleComment[] = [];
 export const recoveryRequests: RecoveryRequest[] = [];
 export const bookingRequests: BookingRequest[] = [];
 export const contactMessages: ContactMessage[] = [];
-// FIX: Add beginnerStudents array and export beginnerCourseData
 export const beginnerStudents: BeginnerStudent[] = [];
-export { beginnerCourseData };
 
+export { beginnerCourseData };
 
 export const newsItems: NewsItem[] = [
     { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },

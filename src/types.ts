@@ -28,6 +28,15 @@ export interface Model {
   quizScores: { [quizId: string]: number };
 }
 
+// FIX: Add BeginnerStudent interface
+export interface BeginnerStudent {
+  id: string; // Corresponds to the CastingApplication ID
+  name: string;
+  matricule: string;
+  password: string;
+  quizScores: { [chapterSlug: string]: number }; // Score out of 20
+}
+
 export interface Stylist {
   name: string;
   description: string;
