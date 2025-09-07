@@ -155,8 +155,8 @@ const ArticleDetail: React.FC = () => {
       <SEO
         title={article.title}
         description={article.excerpt}
-        keywords={article.tags?.join(', ')}
-        image={article.imageUrl}
+        imageUrl={article.imageUrl}
+        url={articleUrl}
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6 max-w-4xl">

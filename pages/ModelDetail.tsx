@@ -37,6 +37,7 @@ const ModelDetail: React.FC = () => {
         description={`Découvrez ${model.name}, talentueux mannequin de l'agence Perfect Models Management. Portfolio complet, mensurations (${model.height}), expérience et parcours.`}
         keywords={`${model.name}, mannequin ${model.gender}, modèle photo gabon, agence pmm, booker ${model.name}, mensurations mannequin`}
         image={model.imageUrl}
+        url={`https://www.perfectmodels.ga/models/${model.id}`}
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6">

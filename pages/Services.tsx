@@ -52,6 +52,7 @@ const Services: React.FC = () => {
                 title="Nos Services | Accompagnement & Production"
                 description="Découvrez l'ensemble des services proposés par Perfect Models Management : gestion de carrière, formation, production de shootings, direction de casting et organisation d'événements mode."
                 keywords="services agence mannequin, formation mannequin, production photo mode, casting mannequin, événementiel mode gabon"
+                url="https://www.perfectmodels.ga/services"
             />
             <div className="container mx-auto px-6">
                 <div className="text-center mb-16">

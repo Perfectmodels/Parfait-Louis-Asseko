@@ -38,6 +38,7 @@ const Models: React.FC = () => {
         title="Nos Mannequins | Le Visage de la Mode Gabonaise"
         description="Découvrez le portfolio complet des mannequins hommes et femmes de Perfect Models Management. Des visages uniques et professionnels prêts à incarner votre marque et vos créations."
         keywords="mannequins hommes gabon, mannequins femmes gabon, book mannequins, agence de modèles photo, casting modèles libreville"
+        url="https://www.perfectmodels.ga/models"
       />
       <div className="container mx-auto px-6">
         <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold text-center mb-4">Nos Mannequins</h1>

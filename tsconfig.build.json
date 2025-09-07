@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+
+    /* Output Options */
+    "outDir": "./dist",
+    "rootDir": ".", // Important: preserve project structure
+    "noEmit": false, // Important: we want to emit JS files
+
+    /* Type Aliases from main config */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": [
+    "scripts/**/*.ts" // Only compile files in the scripts directory
+  ],
+  "exclude": [
+    "node_modules",
+    "src" // Exclude the main frontend source code
+  ]
+}
