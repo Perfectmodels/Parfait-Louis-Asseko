@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+// FIX: Updated react-router-dom imports for v6 compatibility. `Switch` is replaced by `Routes`.
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/Layout';
@@ -103,6 +104,7 @@ const AppContent = () => {
     return (
         <>
             <Layout>
+                {/* FIX: Replaced Switch with Routes and children prop with element for v6 compatibility */}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/agence" element={<Agency />} />

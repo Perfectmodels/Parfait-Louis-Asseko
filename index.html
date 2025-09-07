@@ -6,47 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfect Models Management</title>
     
-    <!-- Meta tags will be managed by the SEO component in React -->
+    <!-- Meta tags are now managed by the SEO component in React -->
     <meta name="description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services."/>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
-
-    <!-- Tailwind Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'pm-dark': '#111111',
-            'pm-gold': '#D4AF37',
-            'pm-off-white': '#f0f0f0',
-          },
-          fontFamily: {
-            'playfair': ['"Playfair Display"', 'serif'],
-            'montserrat': ['"Montserrat"', 'sans-serif'],
-          },
-          animation: {
-              'marquee': 'marquee 60s linear infinite',
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'fade-in': 'fadeIn 0.5s ease-in-out',
-          },
-          keyframes: {
-              marquee: {
-                  '0%': { transform: 'translateX(0%)' },
-                  '100%': { transform: 'translateX(-50%)' },
-              },
-              fadeIn: {
-                  '0%': { opacity: 0 },
-                  '100%': { opacity: 1 },
-              },
-          }
-        }
-      }
-    }
-    </script>
-
 <script type="importmap">
 {
   "imports": {
