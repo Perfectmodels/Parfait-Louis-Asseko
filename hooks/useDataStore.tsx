@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
+// FIX: Import modular Firebase functions for v9 compatibility.
 import { ref, onValue, set } from 'firebase/database';
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage } from '../types';
 
@@ -113,8 +114,10 @@ export const useDataStore = () => {
     }), []);
     
     useEffect(() => {
+        // FIX: Update to Firebase v9 modular syntax for creating a database reference.
         const dbRef = ref(db, '/');
         
+        // FIX: Use 'onValue' from v9 which returns an unsubscribe function, replacing the v8 '.on' method.
         const unsubscribe = onValue(dbRef, (snapshot) => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
@@ -126,6 +129,7 @@ export const useDataStore = () => {
                 setData(mergedData);
             } else {
                 // If DB is empty, seed it with initial data
+                // FIX: Use v9 'set' function to write data to the database.
                 set(dbRef, initialData).then(() => {
                     setData(initialData);
                     console.log("Firebase database seeded with initial data.");
@@ -134,7 +138,7 @@ export const useDataStore = () => {
                 });
             }
             setIsInitialized(true);
-        }, (error) => {
+        }, (error: Error) => {
             console.error("Firebase read failed: " + error.message);
             // Fallback to local data if Firebase fails
             setData(getInitialData());
@@ -142,11 +146,13 @@ export const useDataStore = () => {
         });
 
         // Detach the listener when the component unmounts
+        // FIX: The 'onValue' listener returns an unsubscribe function for cleanup.
         return () => unsubscribe();
     }, [getInitialData]);
 
     const saveData = useCallback(async (newData: AppData) => {
         try {
+            // FIX: Update 'saveData' to use the v9 'set' and 'ref' functions.
             await set(ref(db, '/'), newData);
             // The local state will be updated by the 'on' listener,
             // but we can set it here for immediate UI feedback if desired.
