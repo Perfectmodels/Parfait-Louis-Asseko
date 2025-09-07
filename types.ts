@@ -151,6 +151,7 @@ export interface Partner {
 export interface ApiKeys {
   resendApiKey: string;
   formspreeEndpoint: string;
+  cloudflareWorkerUrl?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
