@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Model, ModelDistinction } from '../types';
+import { Model, ModelDistinction } from '../src/types';
 import ImageInput from './ImageInput';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 

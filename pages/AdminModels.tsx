@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Model } from '../types';
+import { Model } from '../src/types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';

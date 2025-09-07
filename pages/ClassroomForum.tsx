@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChatBubbleLeftRightIcon, PlusIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { ForumThread } from '../types';
+import { ForumThread } from '../src/types';
 
 const ClassroomForum: React.FC = () => {
     const { data, saveData, isInitialized } = useData();

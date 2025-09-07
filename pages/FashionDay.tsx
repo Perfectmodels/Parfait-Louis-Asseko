@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { FashionDayEvent } from '../types';
+import { FashionDayEvent } from '../src/types';
 
 const FashionDay: React.FC = () => {
   const { data, isInitialized } = useData();

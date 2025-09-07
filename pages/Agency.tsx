@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
-import { AchievementCategory, ModelDistinction } from '../types';
+import { AchievementCategory, ModelDistinction } from '../src/types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import ServiceCard from '../components/ServiceCard';
