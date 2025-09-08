@@ -15,6 +15,7 @@ export interface Model {
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
   isPublic?: boolean; // True if the model profile is visible on the public site
+  level?: 'Pro' | 'Débutant';
   // New portfolio fields
   measurements: {
     chest: string;
@@ -55,6 +56,13 @@ export interface FashionDayEvent {
   artists?: string[];
   partners?: { type: string; name: string }[];
   description: string;
+}
+
+// FIX: Add missing SocialLinks interface
+export interface SocialLinks {
+  facebook: string;
+  instagram: string;
+  youtube: string;
 }
 
 export interface Service {
@@ -160,6 +168,7 @@ export interface Partner {
 export interface ApiKeys {
   resendApiKey: string;
   formspreeEndpoint: string;
+  cloudflareWorkerUrl?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -296,7 +305,6 @@ export interface ContactMessage {
   message: string;
 }
 
-// FIX: Add AIAssistantProps interface
 export interface AIAssistantProps {
   isOpen: boolean;
   onClose: () => void;

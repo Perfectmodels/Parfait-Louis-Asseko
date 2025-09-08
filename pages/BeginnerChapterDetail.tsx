@@ -13,7 +13,7 @@ const BeginnerChapterDetail: React.FC = () => {
   const module = data?.beginnerCourseData.find(m => m.slug === moduleSlug);
   const chapter = module?.chapters.find(c => c.slug === chapterSlug);
 
-  if (!isInitialized) {
+  if (!isInitialized || !data) {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
@@ -30,6 +30,7 @@ const BeginnerChapterDetail: React.FC = () => {
       <SEO 
         title={`${chapter.title} | Classroom Débutant`}
         description={`Leçon détaillée sur "${chapter.title}" du module "${module.title}".`}
+        image={data.siteImages.classroomBg}
         noIndex
       />
       <div className="container mx-auto px-6 max-w-4xl">

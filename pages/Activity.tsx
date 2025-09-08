@@ -277,6 +277,7 @@ const Formations: React.FC = () => {
               title="PMM Classroom | Formation Mannequin Professionnel"
               description="Accès exclusif à la plateforme de formation PMM Classroom. Un programme complet pour les mannequins de l'agence, couvrant toutes les facettes du métier pour une carrière réussie."
               keywords="formation mannequin gabon, cours de mannequinat, devenir mannequin professionnel, pmm classroom, école mannequin"
+              image={data.siteImages.classroomBg}
             />
             <StudentView onLogout={handleLogout} courseData={data.courseData} siteImages={data.siteImages} />
         </>

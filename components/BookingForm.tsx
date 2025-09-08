@@ -126,14 +126,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
 
 const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, disabled?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-2">{props.label}</label>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
 
 const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-2">{props.label}</label>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" />
     </div>
 );

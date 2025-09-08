@@ -44,18 +44,18 @@ const Admin: React.FC = () => {
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin Dashboard" noIndex />
-            <div className="container mx-auto px-6">
-                <header className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-12">
+            <div className="container mx-auto px-6 lg:px-8">
+                <header className="admin-page-header">
                     <div>
-                        <h1 className="text-4xl font-playfair text-pm-gold">Tableau de Bord Administrateur</h1>
-                        <p className="text-pm-off-white/80">Gestion complète de la plateforme Perfect Models Management.</p>
+                        <h1 className="admin-page-title">Tableau de Bord</h1>
+                        <p className="admin-page-subtitle">Gestion complète de la plateforme Perfect Models Management.</p>
                     </div>
                     <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
                         <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
                     </button>
                 </header>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     <DashboardCard 
                         title="Gérer les Mannequins" 
                         icon={UsersIcon} 
@@ -177,15 +177,15 @@ interface DashboardCardProps {
     notificationCount?: number;
 }
 const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, description, notificationCount }) => (
-    <Link to={link} className="relative group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-2 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
+    <Link to={link} className="relative group block bg-black p-8 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-2 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
         {notificationCount && notificationCount > 0 && (
             <span className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-pulse-slow">
                 {notificationCount}
             </span>
         )}
-        <Icon className="w-10 h-10 text-pm-gold mb-4" />
-        <h2 className="text-xl font-playfair text-pm-off-white group-hover:text-pm-gold transition-colors">{title}</h2>
-        <p className="text-sm text-pm-off-white/70 mt-2">{description}</p>
+        <Icon className="w-12 h-12 text-pm-gold mb-5" />
+        <h2 className="text-xl font-playfair text-pm-off-white group-hover:text-pm-gold transition-colors mb-2">{title}</h2>
+        <p className="text-sm text-pm-off-white/70 leading-relaxed">{description}</p>
     </Link>
 );
 

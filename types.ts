@@ -16,6 +16,8 @@ export interface Model {
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
   isPublic?: boolean; // True if the model profile is visible on the public site
+  // FIX: Add 'level' property to support different model tiers.
+  level?: 'Pro' | 'Débutant';
   // New portfolio fields
   measurements: {
     chest: string;

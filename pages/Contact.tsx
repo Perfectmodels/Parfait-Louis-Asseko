@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
@@ -91,6 +90,7 @@ const Contact: React.FC = () => {
                 title="Contact | Perfect Models Management"
                 description="Contactez-nous pour toute demande de booking, de partenariat ou d'information. L'équipe de Perfect Models Management est à votre disposition à Libreville, Gabon."
                 keywords="contacter agence mannequin, booking mannequin gabon, partenariat mode, pmm contact"
+                image={data?.siteImages.about}
             />
             <div className="container mx-auto px-6">
                 <div className="text-center">
@@ -177,14 +177,14 @@ const SocialLink: React.FC<{ href: string, icon: React.ElementType }> = ({ href,
 
 const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-2">{props.label}</label>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
 
 const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-2">{props.label}</label>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" />
     </div>
 );
