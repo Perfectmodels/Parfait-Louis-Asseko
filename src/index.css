@@ -4,79 +4,106 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================
+   BASE STYLES
+========================= */
 @layer base {
   body {
     font-family: 'Montserrat', sans-serif;
-    @apply bg-pm-dark;
+    @apply bg-pm-dark text-pm-off-white; /* texte principal */
   }
+
   .font-playfair {
     font-family: 'Playfair Display', serif;
   }
 }
 
+/* =========================
+   COMPONENTS
+========================= */
 @layer components {
   /* GENERAL LAYOUT & TYPOGRAPHY SYSTEM */
   .page-container {
     @apply container mx-auto px-6 py-16 lg:py-24;
   }
+
   .page-title {
-    @apply text-5xl md:text-6xl font-playfair text-pm-gold text-center;
+    @apply text-5xl md:text-6xl font-playfair text-pm-gold-dark text-center;
   }
+
   .page-subtitle {
-    @apply text-center text-lg max-w-3xl mx-auto text-pm-off-white/80 mt-4 mb-10 lg:mb-16;
+    @apply text-center text-lg max-w-3xl mx-auto text-pm-off-white/70 mt-4 mb-10 lg:mb-16;
   }
+
   .section-title {
     @apply text-4xl font-playfair text-pm-gold text-center mb-10 lg:mb-14 relative pb-2;
   }
+
   .section-title::after {
     content: '';
-    @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-pm-gold;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6rem;
+    height: 2px;
+    background-color: theme('colors.pm-gold');
   }
+
   .content-section {
-    @apply bg-black border border-pm-gold/20 p-6 sm:p-8 lg:p-12;
+    @apply bg-black border border-pm-gold/20 p-6 sm:p-8 lg:p-12 text-pm-off-white/90;
   }
 
   /* CARD BASE STYLE */
   .card-base {
-    @apply bg-black border border-pm-gold/20 transition-all duration-300;
+    @apply bg-black border border-pm-gold/20 text-pm-off-white/90 transition-all duration-300;
   }
   .card-base:hover {
-    @apply border-pm-gold shadow-2xl shadow-pm-gold/10 -translate-y-2;
+    @apply border-pm-gold shadow-2xl shadow-pm-gold/20 -translate-y-2;
   }
 
-  /* ADMIN STYLES (FROM PREVIOUS UPDATES) */
+  /* ADMIN STYLES */
   .admin-input {
-    @apply w-full bg-black border border-pm-off-white/20 rounded-lg p-3 text-pm-off-white placeholder:text-pm-off-white/40 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/50 transition-all duration-200 disabled:opacity-50 disabled:bg-pm-dark/50 disabled:border-pm-off-white/10;
+    @apply w-full bg-pm-dark border border-pm-off-white/30 rounded-lg p-3 text-pm-off-white/90 placeholder:text-pm-off-white/50 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/40 transition-all duration-200 disabled:opacity-50 disabled:bg-pm-dark/50 disabled:border-pm-off-white/20;
   }
+
   .admin-textarea {
-    @apply resize-y;
+    @apply resize-y bg-pm-dark text-pm-off-white/90 placeholder:text-pm-off-white/50;
   }
+
   .admin-label {
     @apply block text-xs font-bold text-pm-gold/90 uppercase tracking-wider mb-2;
   }
+
   .action-btn {
-    @apply p-2 rounded-md font-bold border transition-colors hover:bg-opacity-30;
+    @apply p-2 rounded-md font-bold border text-pm-off-white/90 hover:text-pm-gold transition-colors;
   }
 
-  /* ADMIN PANEL CONSISTENCY (FROM PREVIOUS UPDATES) */
+  /* ADMIN PANEL CONSISTENCY */
   .admin-page-header {
     @apply flex flex-col sm:flex-row justify-between items-start gap-4 mb-12;
   }
+
   .admin-page-title {
-    @apply text-4xl font-playfair text-pm-gold;
+    @apply text-4xl font-playfair text-pm-gold-dark;
   }
+
   .admin-page-subtitle {
-    @apply text-pm-off-white/80 mt-1;
+    @apply text-pm-off-white/70 mt-1;
   }
+
   .admin-section-wrapper {
-    @apply bg-black border border-pm-gold/20 p-6 lg:p-8 rounded-lg shadow-lg shadow-black/30;
+    @apply bg-black border border-pm-gold/20 p-6 lg:p-8 rounded-lg shadow-lg shadow-black/30 text-pm-off-white/90;
   }
+
   .admin-section-title {
     @apply text-2xl font-playfair text-pm-gold mb-6 border-b border-pm-gold/20 pb-3;
   }
 }
 
-/* PRINT STYLES */
+/* =========================
+   PRINT STYLES
+========================= */
 @media print {
   .print-hide {
     display: none;

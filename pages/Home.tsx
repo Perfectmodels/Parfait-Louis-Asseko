@@ -136,7 +136,7 @@ const Home: React.FC = () => {
         </section>
        )}
 
-      {/* 8. Call to Action */}
+      {/* 8. Call to Action */
        <section className="page-container bg-pm-dark text-center">
             <h2 className="text-4xl font-playfair text-pm-gold mb-4">Prêt(e) à lancer votre carrière ?</h2>
             <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">

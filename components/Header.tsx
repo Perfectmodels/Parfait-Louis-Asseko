@@ -40,9 +40,19 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
 
 
 const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: NavLinkType[]; isMobile?: boolean; isOpen?: boolean; }> = ({ onLinkClick, navLinks, isMobile = false, isOpen = false }) => {
+  // Définition des liens de navigation principaux
+  const mainNavLinks = [
+    { path: '/', label: 'Accueil' },
+    { path: '/services', label: 'Services' },
+    { path: '/mannequins', label: 'Mannequins' },
+    { path: '/evenements', label: 'Événements' },
+    { path: '/contact', label: 'Contact' },
+    { path: '/rejoindre', label: 'Rejoindre l\'agence' }
+  ];
+
   return (
     <>
-      {navLinks.map((link, index) => (
+      {mainNavLinks.map((link, index) => (
         <NavLinkItem 
           key={link.path}
           to={link.path} 
@@ -51,6 +61,17 @@ const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: NavLinkType[]; is
           isMobile={isMobile}
           isOpen={isOpen}
           delay={isMobile ? 150 + index * 50 : 0}
+        />
+      ))}
+      {navLinks.map((link, index) => (
+        <NavLinkItem 
+          key={link.path}
+          to={link.path} 
+          label={link.label}
+          onClick={onLinkClick}
+          isMobile={isMobile}
+          isOpen={isOpen}
+          delay={isMobile ? 150 + (mainNavLinks.length + index) * 50 : 0}
         />
       ))}
     </>
