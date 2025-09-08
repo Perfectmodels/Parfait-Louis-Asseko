@@ -12,26 +12,41 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
 
-    <!-- Tailwind CSS is included via PostCSS in the build process -->
-    <style>
-        @keyframes marquee {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); }
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'pm-dark': '#111111',
+            'pm-gold': '#D4AF37',
+            'pm-off-white': '#f0f0f0',
+            'black': '#000000',
+          },
+          fontFamily: {
+            'playfair': ['"Playfair Display"', 'serif'],
+            'montserrat': ['"Montserrat"', 'sans-serif'],
+          },
+          animation: {
+              'marquee': 'marquee 60s linear infinite',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'fade-in': 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+              marquee: {
+                  '0%': { transform: 'translateX(0%)' },
+                  '100%': { transform: 'translateX(-50%)' },
+              },
+              fadeIn: {
+                  '0%': { opacity: 0 },
+                  '100%': { opacity: 1 },
+              },
+          }
         }
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-        .animate-marquee {
-            animation: marquee 60s linear infinite;
-        }
-        .animate-pulse-slow {
-            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-    </style>
+      }
+    }
+    </script>
 
 <script type="importmap">
 {

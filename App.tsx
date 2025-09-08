@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
-import { CastingApplicationStatus } from './src/types';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import AIAssistantIcon from './components/AIAssistantIcon';
 
 // Pages
 import Home from './pages/Home';
@@ -26,6 +26,7 @@ import ChapterDetail from './pages/ChapterDetail';
 import ModelDashboard from './pages/ModelDashboard'; // Profil
 import ClassroomForum from './pages/ClassroomForum';
 import ForumThread from './pages/ForumThread';
+import Chat from './pages/Chat';
 import BeginnerClassroom from './pages/BeginnerClassroom';
 import BeginnerChapterDetail from './pages/BeginnerChapterDetail';
 
@@ -77,12 +78,11 @@ const AppContent: React.FC = () => {
     useEffect(() => {
         const originalTitle = "Perfect Models Management";
         if (data && location.pathname.startsWith('/admin')) {
-            // Use type assertions to help TypeScript understand the status types
-            const newCastingApps = data.castingApplications?.filter((app: any) => app.status === 'Nouveau').length || 0;
-            const newFashionDayApps = data.fashionDayApplications?.filter((app: any) => app.status === 'Nouveau').length || 0;
-            const newRecoveryRequests = data.recoveryRequests?.filter((req: any) => req.status === 'Nouveau').length || 0;
-            const newBookingRequests = data.bookingRequests?.filter((req: any) => req.status === 'Nouveau').length || 0;
-            const newMessages = data.contactMessages?.filter((msg: any) => msg.status === 'Nouveau').length || 0;
+            const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
+            const newFashionDayApps = data.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
+            const newRecoveryRequests = data.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
+            const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
+            const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
 
             const totalNotifications = newCastingApps + newFashionDayApps + newRecoveryRequests + newBookingRequests + newMessages;
 
@@ -123,6 +123,7 @@ const AppContent: React.FC = () => {
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/chat" element={<Chat />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
 
@@ -161,6 +162,7 @@ const AppContent: React.FC = () => {
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </Layout>
+            {!hideAIAssistant && <AIAssistantIcon />}
         </>
     );
 }
