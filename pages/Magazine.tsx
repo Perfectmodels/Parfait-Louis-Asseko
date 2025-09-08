@@ -21,7 +21,7 @@ const Magazine: React.FC = () => {
   }
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+    <div className="bg-pm-dark text-pm-off-white">
       <SEO 
         title="Magazine | Focus Model 241"
         description="Focus Model 241, le magazine en ligne de Perfect Models Management. Plongez dans les coulisses de la mode gabonaise avec des interviews exclusives, des analyses de tendances et des conseils de pro."
@@ -35,11 +35,11 @@ const Magazine: React.FC = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-12 md:py-16">
+      <div className="page-container">
         {/* Featured Article */}
         {featuredArticle && (
           <section className="mb-12 md:mb-16">
-            <Link to={`/magazine/${featuredArticle.slug}`} className="group block md:grid md:grid-cols-2 gap-8 items-center bg-black border border-pm-gold/20 p-6 shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-pm-gold/10">
+            <Link to={`/magazine/${featuredArticle.slug}`} className="group block md:grid md:grid-cols-2 gap-8 items-center content-section">
               <div className="overflow-hidden">
                 <img src={featuredArticle.imageUrl} alt={featuredArticle.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               </div>
@@ -47,7 +47,9 @@ const Magazine: React.FC = () => {
                 <p className="text-sm uppercase tracking-widest text-pm-gold font-bold">{featuredArticle.category}</p>
                 <h2 className="text-4xl font-playfair my-3 text-pm-off-white transition-colors group-hover:text-pm-gold">{featuredArticle.title}</h2>
                 <p className="text-pm-off-white/70 mb-4">{featuredArticle.excerpt}</p>
-                <span className="font-bold text-pm-gold group-hover:underline">Lire la suite...</span>
+                <span className="font-bold text-pm-gold">
+                    Lire la suite <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+                </span>
               </div>
             </Link>
           </section>
@@ -67,17 +69,19 @@ const Magazine: React.FC = () => {
 };
 
 const ArticleCard: React.FC<{ article: Article }> = ({ article }) => (
-  <Link to={`/magazine/${article.slug}`} className="group block bg-black border border-pm-gold/20 overflow-hidden relative shadow-lg shadow-black/30 hover:border-pm-gold hover:shadow-xl hover:shadow-pm-gold/20">
-    <div className="relative h-80 overflow-hidden">
+  <Link to={`/magazine/${article.slug}`} className="group card-base overflow-hidden relative">
+    <div className="relative h-96 overflow-hidden">
       <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
     </div>
-    <div className="absolute bottom-0 left-0 p-6 w-full transition-transform duration-300 group-hover:-translate-y-2">
+    <div className="absolute bottom-0 left-0 p-6 w-full">
       <p className="text-sm uppercase tracking-widest text-pm-gold font-bold">{article.category}</p>
-      <h3 className="text-xl font-playfair text-pm-off-white mt-2 transition-transform duration-300 group-hover:-translate-y-2">{article.title}</h3>
-      <p className="text-sm text-pm-off-white/70 mt-2 opacity-0 max-h-0 group-hover:opacity-100 group-hover:max-h-40 transition-all duration-300">
-        {article.excerpt}
-      </p>
+      <h3 className="text-2xl font-playfair text-pm-off-white mt-2 group-hover:text-pm-gold transition-colors">{article.title}</h3>
+      <div className="overflow-hidden max-h-0 group-hover:max-h-40 transition-all duration-500 ease-in-out">
+        <p className="text-sm text-pm-off-white/70 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200">
+          {article.excerpt}
+        </p>
+      </div>
     </div>
   </Link>
 );
