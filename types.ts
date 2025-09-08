@@ -68,13 +68,20 @@ export interface SocialLinks {
 }
 
 export interface Service {
+  id?: string;
   icon: string;
   title: string;
   description: string;
-  // FIX: Add buttonText and buttonLink to the Service interface to resolve type errors in ServiceCard.
+  category?: string;
   buttonText: string;
   buttonLink: string;
   isComingSoon?: boolean;
+  features?: string[];
+  image?: string;
+  details?: string;
+  price?: string;
+  duration?: string;
+  isPopular?: boolean;
 }
 
 export interface AchievementCategory {

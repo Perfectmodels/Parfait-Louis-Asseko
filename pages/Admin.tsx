@@ -1,26 +1,17 @@
 import React from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
-    UsersIcon, 
-    BookOpenIcon, 
-    NewspaperIcon, 
-    CalendarDaysIcon, 
-    Cog6ToothIcon, 
-    ClipboardDocumentListIcon,
-    ArrowRightOnRectangleIcon,
-    KeyIcon,
-    AcademicCapIcon,
-    ExclamationTriangleIcon,
-    PresentationChartLineIcon,
-    BuildingStorefrontIcon,
-    SparklesIcon,
+    UsersIcon,
+    NewspaperIcon,
     ChatBubbleLeftRightIcon,
     BriefcaseIcon,
     EnvelopeIcon,
-    ClipboardDocumentCheckIcon,
     UserGroupIcon,
+    Cog6ToothIcon,
+    ArrowRightOnRectangleIcon,
+    ClipboardDocumentListIcon,
+    CalendarDaysIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
@@ -33,11 +24,10 @@ const Admin: React.FC = () => {
         navigate('/login');
     };
 
+    // Compter les nouveaux éléments
     const newCastingApps = data?.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newFashionDayApps = data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newRecoveryRequests = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
-    const newBookingRequests = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
     const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
+    const newBookings = data?.bookingRequests?.filter(booking => booking.status === 'Nouveau').length || 0;
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -54,56 +44,64 @@ const Admin: React.FC = () => {
                 </header>
                 
                 <div className="space-y-12">
-                    {/* Section: Gestion des Talents */}
+                    {/* Section: Gestion Principale */}
                     <section>
-                        <h2 className="admin-section-title">Gestion des Talents</h2>
+                        <h2 className="admin-section-title">Gestion Principale</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <DashboardCard 
-                                title="Gérer les Mannequins" 
+                                title="Mannequins" 
                                 icon={UsersIcon} 
                                 link="/admin/models" 
-                                description="Ajouter, modifier ou supprimer des profils de mannequins."
+                                description="Gérer les profils des mannequins et leurs informations."
                             />
                             <DashboardCard 
-                                title="Candidatures Casting" 
+                                title="Casting" 
                                 icon={ClipboardDocumentListIcon} 
-                                link="/admin/casting-applications"
-                                description="Consulter et traiter les candidatures pour les castings."
+                                link="/admin/casting"
+                                description="Gérer les candidatures et les résultats de casting."
                                 notificationCount={newCastingApps}
                             />
                             <DashboardCard 
-                                title="Résultats & Validation Casting" 
-                                icon={ClipboardDocumentCheckIcon} 
-                                link="/admin/casting-results"
-                                description="Valider les candidats et créer leurs profils de mannequin."
+                                title="Réservations" 
+                                icon={CalendarDaysIcon} 
+                                link="/admin/bookings"
+                                description="Gérer les demandes de réservation."
+                                notificationCount={newBookings}
+                            />
+                            <DashboardCard 
+                                title="Messages" 
+                                icon={EnvelopeIcon} 
+                                link="/admin/messages"
+                                description="Voir et répondre aux messages des visiteurs."
+                                notificationCount={newMessages}
                             />
                         </div>
                     </section>
                     
-                    {/* Section: Gestion du Contenu */}
+                    {/* Section: Contenu & Médias */}
                     <section>
-                         <h2 className="admin-section-title">Gestion du Contenu</h2>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <h2 className="admin-section-title">Contenu & Médias</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <DashboardCard 
-                                title="Gérer le Magazine" 
+                                title="Magazine" 
                                 icon={NewspaperIcon} 
                                 link="/admin/magazine"
-                                description="Créer et administrer les articles du magazine Focus Model 241."
+                                description="Gérer les articles et actualités du magazine."
                             />
                             <DashboardCard 
-                                title="Modérer les Commentaires" 
+                                title="Commentaires" 
                                 icon={ChatBubbleLeftRightIcon} 
                                 link="/admin/comments"
-                                description="Gérer les commentaires laissés sur les articles du magazine."
+                                description="Modérer les commentaires des utilisateurs."
                             />
-                             <DashboardCard 
-                                title="Gérer les Actualités" 
+                            <DashboardCard 
+                                title="Actualités" 
                                 icon={PresentationChartLineIcon} 
                                 link="/admin/news"
                                 description="Publier et gérer les actualités de la page d'accueil."
                             />
                             <DashboardCard 
-                                title="Contenu de l'Agence" 
+                                title="Paramètres" 
                                 icon={BuildingStorefrontIcon} 
                                 link="/admin/agency"
                                 description="Mettre à jour les services, la chronologie et les réalisations."
