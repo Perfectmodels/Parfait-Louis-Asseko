@@ -1,4 +1,3 @@
-import React from 'react';
 
 export interface Model {
   id: string;
@@ -173,7 +172,11 @@ export interface ApiKeys {
   cloudflareWorkerUrl?: string;
 }
 
+// Application status types
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
+export type RecoveryRequestStatus = 'Nouveau' | 'Traité';
+export type BookingRequestStatus = 'Nouveau' | 'Confirmé' | 'Annulé';
+export type MessageStatus = 'Nouveau' | 'Lu' | 'Archivé';
 
 export interface JuryScore {
   physique: number;
@@ -281,13 +284,13 @@ export interface RecoveryRequest {
   modelName: string;
   phone: string;
   timestamp: string;
-  status: 'Nouveau' | 'Traité';
+  status: RecoveryRequestStatus;
 }
 
 export interface BookingRequest {
   id: string;
   submissionDate: string;
-  status: 'Nouveau' | 'Confirmé' | 'Annulé';
+  status: BookingRequestStatus;
   clientName: string;
   clientEmail: string;
   clientCompany?: string;
@@ -300,7 +303,7 @@ export interface BookingRequest {
 export interface ContactMessage {
   id: string;
   submissionDate: string;
-  status: 'Nouveau' | 'Lu' | 'Archivé';
+  status: MessageStatus;
   name: string;
   email: string;
   subject: string;
