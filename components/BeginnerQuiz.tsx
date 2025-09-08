@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { QuizQuestion, BeginnerStudent, Module } from '../types';
 import { useData } from '../contexts/DataContext';
@@ -73,14 +74,14 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug, chapterSl
 
                                     if(submitted) {
                                         if(option === q.correctAnswer) {
-                                            optionClass = "border-green-500 bg-green-500/10";
+                                            optionClass = "border-green-500 bg-green-500/10 text-green-300";
                                             icon = <CheckCircleIcon className="w-5 h-5 text-green-500"/>;
                                         } else if (isSelected) {
-                                            optionClass = "border-red-500 bg-red-500/10";
+                                            optionClass = "border-red-500 bg-red-500/10 text-red-300";
                                             icon = <XCircleIcon className="w-5 h-5 text-red-500"/>;
                                         }
                                     } else if (isSelected) {
-                                        optionClass = "border-pm-gold bg-pm-gold/10";
+                                        optionClass = "border-pm-gold bg-pm-gold/10 text-pm-gold";
                                     }
                                     return (
                                         <label key={optionIndex} className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition-colors ${optionClass}`}>

@@ -118,16 +118,14 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. Partners */}
-      <section className="py-16 bg-pm-dark">
-          <div className="container mx-auto px-6 text-center">
-              <h3 className="text-sm uppercase tracking-widest text-pm-off-white/50 mb-8">Ils nous font confiance</h3>
-              <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-4">
-                  {agencyPartners.map(partner => (
-                      <p key={partner.name} className="text-lg font-semibold text-pm-off-white/70 transition-colors hover:text-pm-gold">{partner.name}</p>
-                  ))}
-              </div>
-          </div>
+      {/* 6. Partners & Collaborations */}
+      <section className="page-container bg-pm-dark">
+        <h2 className="section-title">Partenaires & Collaborations</h2>
+        <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6">
+            {agencyPartners.map(partner => (
+                <p key={partner.name} className="text-xl font-semibold text-pm-off-white/70 transition-all duration-300 hover:text-pm-gold hover:scale-105">{partner.name}</p>
+            ))}
+        </div>
       </section>
 
       {/* 7. Testimonials */}
