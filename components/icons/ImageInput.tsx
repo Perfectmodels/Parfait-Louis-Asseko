@@ -1,6 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { PhotoIcon, ArrowUpTrayIcon, XCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import { useData } from '../contexts/DataContext';
+import React, { useState } from 'react';
+import { PhotoIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 interface ImageInputProps {
     label: string;
@@ -9,127 +8,64 @@ interface ImageInputProps {
 }
 
 const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
-    const { data } = useData();
-    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [progress, setProgress] = useState(0);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
+    const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const url = e.target.value.trim();
         setError(null);
-        setUploading(true);
-        setProgress(0);
+        onChange(url);
+    };
 
-        const workerUrl = data?.apiKeys.cloudflareWorkerUrl;
-        if (!workerUrl || workerUrl.includes('VOTRE_WORKER')) {
-            setError("L'URL du worker Cloudflare n'est pas configurée.");
-            setUploading(false);
-            return;
-        }
-
-        try {
-            // 1. Get the one-time upload URL from our worker
-            const response = await fetch(workerUrl);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Impossible d'obtenir l'URL d'upload. Serveur a répondu: ${errorText}`);
-            }
-            const { uploadURL } = await response.json();
-             if (!uploadURL) {
-                throw new Error("L'URL d'upload reçue du worker est invalide.");
-            }
-
-            // 2. Upload the file to Cloudflare Images
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            const uploadRequest = new XMLHttpRequest();
-            uploadRequest.open('POST', uploadURL, true);
-
-            uploadRequest.upload.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const percentComplete = (event.loaded / event.total) * 100;
-                    setProgress(percentComplete);
-                }
-            };
-
-            uploadRequest.onload = () => {
-                if (uploadRequest.status >= 200 && uploadRequest.status < 300) {
-                    const uploadResponse = JSON.parse(uploadRequest.responseText);
-                    const imageUrl = uploadResponse.result.variants[0]; // Get the public variant URL
-                    onChange(imageUrl);
-                } else {
-                    console.error("Cloudflare Upload Error:", uploadRequest.responseText);
-                    throw new Error(`Échec de l'upload: ${uploadRequest.statusText}`);
-                }
-                setUploading(false);
-            };
-
-            uploadRequest.onerror = () => {
-                 console.error("Network Error during upload:", uploadRequest.statusText);
-                throw new Error("Erreur réseau pendant l'upload.");
-            };
-            
-            uploadRequest.send(formData);
-
-        } catch (err: any) {
-            setError(err.message || "Une erreur est survenue.");
-            setUploading(false);
-        }
+    const handleImageError = () => {
+        setError("Impossible de charger l'image à partir de cette URL.");
     };
 
     return (
-        <div>
-            <label className="block text-sm font-medium text-pm-off-white/70 mb-2">{label}</label>
-            <div className="flex items-center gap-4">
-                <div className="w-24 h-24 flex-shrink-0 bg-black border border-pm-off-white/20 rounded-md flex items-center justify-center">
-                    {value ? (
-                        <img src={value} alt="Prévisualisation" className="w-full h-full object-cover rounded-md" />
-                    ) : (
-                        <PhotoIcon className="w-10 h-10 text-pm-off-white/30" />
-                    )}
-                </div>
-                <div className="flex-grow">
+        <div className="space-y-2">
+            <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+            
+            <div className="flex items-center space-x-4">
+                <div className="flex-1">
                     <input
-                        type="file"
-                        accept="image/png, image/jpeg, image/gif, image/webp"
-                        ref={fileInputRef}
-                        onChange={handleFileSelect}
-                        className="hidden"
+                        type="url"
+                        value={value}
+                        onChange={handleUrlChange}
+                        placeholder="https://example.com/image.jpg"
+                        className="w-full px-3 py-2 bg-pm-dark border border-gray-600 rounded-md text-pm-off-white focus:ring-2 focus:ring-pm-gold focus:border-pm-gold"
                     />
-                    <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark disabled:opacity-50 disabled:cursor-wait"
-                    >
-                        <ArrowUpTrayIcon className="w-4 h-4" />
-                        {value ? 'Changer l\'image' : 'Uploader une image'}
-                    </button>
-                    
-                    {uploading && (
-                        <div className="mt-2">
-                            <p className="text-xs text-pm-gold">Upload en cours...</p>
-                            <div className="w-full bg-pm-dark rounded-full h-2 mt-1 border border-pm-gold/20">
-                                <div className="bg-pm-gold h-full rounded-full" style={{ width: `${progress}%` }}></div>
-                            </div>
-                        </div>
-                    )}
                     {error && (
-                         <div className="mt-2 flex items-center gap-2 text-xs text-red-400">
-                            <XCircleIcon className="w-4 h-4"/> {error}
-                         </div>
-                    )}
-                     {!uploading && !error && value && (
-                         <div className="mt-2 flex items-center gap-2 text-xs text-green-400">
-                            <CheckCircleIcon className="w-4 h-4"/> Image enregistrée.
-                         </div>
+                        <p className="mt-1 text-sm text-red-400 flex items-center gap-1">
+                            <XCircleIcon className="w-4 h-4" />
+                            {error}
+                        </p>
                     )}
                 </div>
+                
+                {value && (
+                    <div className="relative group">
+                        <img
+                            src={value}
+                            alt="Preview"
+                            className="w-12 h-12 rounded-md object-cover border border-pm-gold/20"
+                            onError={handleImageError}
+                        />
+                    </div>
+                )}
             </div>
+            
+            {value && !error && (
+                <div className="mt-2">
+                    <p className="text-xs text-pm-off-white/50 mb-1">Aperçu :</p>
+                    <div className="relative border border-pm-gold/20 rounded-md overflow-hidden">
+                        <img
+                            src={value}
+                            alt="Aperçu"
+                            className="w-full max-h-64 object-contain"
+                            onError={handleImageError}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
