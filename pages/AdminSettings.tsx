@@ -8,7 +8,7 @@ import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon, SparklesIcon } f
 import ImageInput from '../components/ImageInput';
 import AIAssistant from '../components/AIAssistant';
 
-type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData'>;
+type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData' | 'beginnerCourseData' | 'beginnerStudents' | 'castingApplications' | 'fashionDayApplications' | 'newsItems' | 'forumThreads' | 'forumReplies' | 'articleComments' | 'recoveryRequests' | 'bookingRequests' | 'contactMessages' | 'juryMembers' | 'registrationStaff' >;
 
 const AdminSettings: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -25,21 +25,8 @@ const AdminSettings: React.FC = () => {
 
     useEffect(() => {
         if (isInitialized && data) {
-            setLocalData(JSON.parse(JSON.stringify({
-                siteConfig: data.siteConfig,
-                navLinks: data.navLinks,
-                socialLinks: data.socialLinks,
-                agencyTimeline: data.agencyTimeline,
-                agencyInfo: data.agencyInfo,
-                modelDistinctions: data.modelDistinctions,
-                agencyServices: data.agencyServices,
-                agencyAchievements: data.agencyAchievements,
-                agencyPartners: data.agencyPartners,
-                testimonials: data.testimonials,
-                contactInfo: data.contactInfo,
-                siteImages: data.siteImages,
-                apiKeys: data.apiKeys,
-            })));
+            const { models, articles, courseData, beginnerCourseData, beginnerStudents, castingApplications, fashionDayApplications, newsItems, forumThreads, forumReplies, articleComments, recoveryRequests, bookingRequests, contactMessages, juryMembers, registrationStaff, ...editableData } = data;
+            setLocalData(JSON.parse(JSON.stringify(editableData)));
         }
     }, [isInitialized, data]);
     
@@ -75,13 +62,14 @@ const AdminSettings: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Paramètres du Site" noIndex />
             <div className="container mx-auto px-6">
-                <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
+                <div className="admin-page-header">
                     <div>
                         <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                             <ChevronLeftIcon className="w-5 h-5" />
                             Retour au Dashboard
                         </Link>
-                        <h1 className="text-4xl font-playfair text-pm-gold">Paramètres du Site</h1>
+                        <h1 className="admin-page-title">Paramètres du Site</h1>
+                        <p className="admin-page-subtitle">Modifiez les informations globales, les images et les configurations.</p>
                     </div>
                     <button onClick={handleSave} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/30">
                         Sauvegarder les Changements
@@ -89,88 +77,82 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 <div className="space-y-8">
-                    <SectionWrapper title="Notifications par Email (via service externe)">
-                        <FormInput 
-                            label="Endpoint de Soumission de Formulaire (ex: Formspree)" 
-                            value={localData.apiKeys.formspreeEndpoint || ''} 
-                            onChange={e => handleSimpleChange('apiKeys', 'formspreeEndpoint', e.target.value)} 
-                        />
-                        <p className="text-xs text-pm-off-white/60 p-3 bg-pm-dark/50 border border-yellow-500/30 rounded-md">
-                           <strong className="text-yellow-400">Configuration Requise pour les Emails :</strong>
-                           <br/><br/>
-                           Pour recevoir les soumissions de formulaires par e-mail de manière sécurisée sans serveur, nous utilisons un service externe comme <a href="https://formspree.io/" target="_blank" rel="noopener noreferrer" className="underline font-bold">Formspree</a>.
-                           <br/><br/>
-                           <strong>1.</strong> Créez un compte gratuit sur <a href="https://formspree.io/" target="_blank" rel="noopener noreferrer" className="underline font-bold">Formspree</a> et créez un nouveau formulaire.
-                           <br/>
-                           <strong>2.</strong> Formspree vous donnera une URL unique (endpoint).
-                           <br/>
-                           <strong>3.</strong> Copiez cette URL et collez-la dans le champ ci-dessus.
-                           <br/><br/>
-                           Chaque soumission de formulaire sera alors envoyée à la fois dans le panel d'administration et à votre adresse e-mail via Formspree.
-                        </p>
-                    </SectionWrapper>
-                    
-                    <SectionWrapper title="Informations de Contact">
-                        <FormInput label="Email public" value={localData.contactInfo.email} onChange={e => handleSimpleChange('contactInfo', 'email', e.target.value)} />
-                        <FormInput label="Téléphone" value={localData.contactInfo.phone} onChange={e => handleSimpleChange('contactInfo', 'phone', e.target.value)} />
-                        <FormInput label="Adresse" value={localData.contactInfo.address} onChange={e => handleSimpleChange('contactInfo', 'address', e.target.value)} />
-                    </SectionWrapper>
+                    <div className="admin-section-wrapper">
+                        <h2 className="admin-section-title">Informations de Contact</h2>
+                        <div className="space-y-4">
+                            <FormInput label="Email public" value={localData.contactInfo.email} onChange={e => handleSimpleChange('contactInfo', 'email', e.target.value)} />
+                            <FormInput label="Téléphone" value={localData.contactInfo.phone} onChange={e => handleSimpleChange('contactInfo', 'phone', e.target.value)} />
+                            <FormInput label="Adresse" value={localData.contactInfo.address} onChange={e => handleSimpleChange('contactInfo', 'address', e.target.value)} />
+                        </div>
+                    </div>
 
-                    <SectionWrapper title="Images du Site">
-                        <ImageInput label="Logo" value={localData.siteConfig.logo} onChange={value => handleSimpleChange('siteConfig', 'logo', value)} />
-                        <ImageInput label="Image Héros (Accueil)" value={localData.siteImages.hero} onChange={value => handleSimpleChange('siteImages', 'hero', value)} />
-                        <ImageInput label="Image 'À Propos' (Accueil)" value={localData.siteImages.about} onChange={value => handleSimpleChange('siteImages', 'about', value)} />
-                        <ImageInput label="Fond 'Fashion Day' (Accueil)" value={localData.siteImages.fashionDayBg} onChange={value => handleSimpleChange('siteImages', 'fashionDayBg', value)} />
-                        <ImageInput label="Image 'Notre Histoire' (Agence)" value={localData.siteImages.agencyHistory} onChange={value => handleSimpleChange('siteImages', 'agencyHistory', value)} />
-                        <ImageInput label="Fond 'Classroom'" value={localData.siteImages.classroomBg} onChange={value => handleSimpleChange('siteImages', 'classroomBg', value)} />
-                        <ImageInput label="Affiche 'Casting'" value={localData.siteImages.castingBg} onChange={value => handleSimpleChange('siteImages', 'castingBg', value)} />
-                    </SectionWrapper>
+                    <div className="admin-section-wrapper">
+                        <h2 className="admin-section-title">Images du Site</h2>
+                        <div className="space-y-4">
+                            <ImageInput label="Logo" value={localData.siteConfig.logo} onChange={value => handleSimpleChange('siteConfig', 'logo', value)} />
+                            <ImageInput label="Image Héros (Accueil)" value={localData.siteImages.hero} onChange={value => handleSimpleChange('siteImages', 'hero', value)} />
+                            <ImageInput label="Image 'À Propos' (Accueil)" value={localData.siteImages.about} onChange={value => handleSimpleChange('siteImages', 'about', value)} />
+                            <ImageInput label="Fond 'Fashion Day' (Accueil)" value={localData.siteImages.fashionDayBg} onChange={value => handleSimpleChange('siteImages', 'fashionDayBg', value)} />
+                            <ImageInput label="Image 'Notre Histoire' (Agence)" value={localData.siteImages.agencyHistory} onChange={value => handleSimpleChange('siteImages', 'agencyHistory', value)} />
+                            <ImageInput label="Fond 'Classroom'" value={localData.siteImages.classroomBg} onChange={value => handleSimpleChange('siteImages', 'classroomBg', value)} />
+                            <ImageInput label="Affiche 'Casting'" value={localData.siteImages.castingBg} onChange={value => handleSimpleChange('siteImages', 'castingBg', value)} />
+                        </div>
+                    </div>
                     
-                     <SectionWrapper title="Réseaux Sociaux">
-                        <FormInput label="URL Facebook" value={localData.socialLinks.facebook} onChange={e => handleSimpleChange('socialLinks', 'facebook', e.target.value)} />
-                        <FormInput label="URL Instagram" value={localData.socialLinks.instagram} onChange={e => handleSimpleChange('socialLinks', 'instagram', e.target.value)} />
-                        <FormInput label="URL YouTube" value={localData.socialLinks.youtube} onChange={e => handleSimpleChange('socialLinks', 'youtube', e.target.value)} />
-                    </SectionWrapper>
+                     <div className="admin-section-wrapper">
+                        <h2 className="admin-section-title">Réseaux Sociaux</h2>
+                        <div className="space-y-4">
+                            <FormInput label="URL Facebook" value={localData.socialLinks.facebook} onChange={e => handleSimpleChange('socialLinks', 'facebook', e.target.value)} />
+                            <FormInput label="URL Instagram" value={localData.socialLinks.instagram} onChange={e => handleSimpleChange('socialLinks', 'instagram', e.target.value)} />
+                            <FormInput label="URL YouTube" value={localData.socialLinks.youtube} onChange={e => handleSimpleChange('socialLinks', 'youtube', e.target.value)} />
+                        </div>
+                    </div>
                     
-                    <SectionWrapper title="Partenaires de l'Agence">
-                        <ArrayEditor 
-                            items={localData.agencyPartners}
-                            setItems={newItems => setLocalData(p => ({...p!, agencyPartners: newItems}))}
-                            renderItem={(item: Partner, onChange) => (
-                                <>
-                                    <FormInput label="Nom du partenaire" value={item.name} onChange={e => onChange('name', e.target.value)} />
-                                </>
-                            )}
-                            getNewItem={() => ({ name: 'Nouveau Partenaire' })}
-                            getItemTitle={item => item.name}
-                        />
-                    </SectionWrapper>
+                    <div className="admin-section-wrapper">
+                        <h2 className="admin-section-title">Partenaires de l'Agence</h2>
+                        <div className="space-y-4">
+                            <ArrayEditor 
+                                items={localData.agencyPartners}
+                                setItems={newItems => setLocalData(p => ({...p!, agencyPartners: newItems}))}
+                                renderItem={(item: Partner, onChange) => (
+                                    <>
+                                        <FormInput label="Nom du partenaire" value={item.name} onChange={e => onChange('name', e.target.value)} />
+                                    </>
+                                )}
+                                getNewItem={() => ({ name: 'Nouveau Partenaire' })}
+                                getItemTitle={item => item.name}
+                            />
+                        </div>
+                    </div>
                     
-                     <SectionWrapper title="Témoignages">
-                        <ArrayEditor 
-                            items={localData.testimonials}
-                            setItems={newItems => setLocalData(p => ({...p!, testimonials: newItems}))}
-                            renderItem={(item: Testimonial, onChange) => (
-                                <>
-                                    <FormInput label="Nom" value={item.name} onChange={e => onChange('name', e.target.value)} />
-                                    <FormInput label="Rôle" value={item.role} onChange={e => onChange('role', e.target.value)} />
-                                    <ImageInput label="Photo" value={item.imageUrl} onChange={value => onChange('imageUrl', value)} />
-                                    <FormTextArea 
-                                        label="Citation" 
-                                        value={item.quote} 
-                                        onChange={e => onChange('quote', e.target.value)}
-                                        onOpenAI={() => openAIAssistant(
-                                            'Témoignage',
-                                            (content) => onChange('quote', content),
-                                            `Rédige un témoignage positif et percutant pour l'agence de la part de "${item.name}", qui est un(e) "${item.role}".`
-                                        )}
-                                    />
-                                </>
-                            )}
-                            getNewItem={() => ({ name: 'Nouveau Témoin', role: 'Rôle', quote: '', imageUrl: ''})}
-                            getItemTitle={item => item.name}
-                        />
-                    </SectionWrapper>
+                     <div className="admin-section-wrapper">
+                        <h2 className="admin-section-title">Témoignages</h2>
+                        <div className="space-y-4">
+                            <ArrayEditor 
+                                items={localData.testimonials}
+                                setItems={newItems => setLocalData(p => ({...p!, testimonials: newItems}))}
+                                renderItem={(item: Testimonial, onChange) => (
+                                    <>
+                                        <FormInput label="Nom" value={item.name} onChange={e => onChange('name', e.target.value)} />
+                                        <FormInput label="Rôle" value={item.role} onChange={e => onChange('role', e.target.value)} />
+                                        <ImageInput label="Photo" value={item.imageUrl} onChange={value => onChange('imageUrl', value)} />
+                                        <FormTextArea 
+                                            label="Citation" 
+                                            value={item.quote} 
+                                            onChange={e => onChange('quote', e.target.value)}
+                                            onOpenAI={() => openAIAssistant(
+                                                'Témoignage',
+                                                (content) => onChange('quote', content),
+                                                `Rédige un témoignage positif et percutant pour l'agence de la part de "${item.name}", qui est un(e) "${item.role}".`
+                                            )}
+                                        />
+                                    </>
+                                )}
+                                getNewItem={() => ({ name: 'Nouveau Témoin', role: 'Rôle', quote: '', imageUrl: ''})}
+                                getItemTitle={item => item.name}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -178,17 +160,10 @@ const AdminSettings: React.FC = () => {
     );
 };
 
-const SectionWrapper: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
-    <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30">
-        <h2 className="text-2xl font-playfair text-pm-gold mb-6 border-b border-pm-gold/20 pb-3">{title}</h2>
-        <div className="space-y-4">{children}</div>
-    </div>
-);
-
 const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
-            <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            <label className="admin-label !mb-0">{label}</label>
         </div>
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
@@ -196,7 +171,7 @@ const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label,
 const FormTextArea: React.FC<{label: string, value: any, onChange: any, onOpenAI?: () => void}> = ({label, value, onChange, onOpenAI}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
-            <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            <label className="admin-label !mb-0">{label}</label>
              {onOpenAI && (
                 <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
                     <SparklesIcon className="w-4 h-4" /> Assister
@@ -237,26 +212,25 @@ const ArrayEditor: React.FC<{
         <div className="space-y-3">
             {items.map((item, index) => (
                 <div key={index} className="bg-pm-dark/50 border border-pm-off-white/10 rounded-md overflow-hidden">
-                    <button onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full p-3 text-left font-bold flex justify-between items-center hover:bg-pm-gold/5">
-                        <span>{getItemTitle(item)}</span>
-                        <ChevronDownIcon className={`w-5 h-5 transition-transform ${openIndex === index ? 'rotate-180' : ''}`} />
+                    <button type="button" onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full p-3 text-left font-bold flex justify-between items-center hover:bg-pm-gold/5">
+                        <span className="truncate pr-4">{getItemTitle(item)}</span>
+                        <ChevronDownIcon className={`w-5 h-5 transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`} />
                     </button>
                     {openIndex === index && (
                         <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
                             {renderItem(item, (key, value) => handleItemChange(index, key, value), index)}
                             <div className="text-right pt-2">
-                                <button onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
+                                <button type="button" onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
                             </div>
                         </div>
                     )}
                 </div>
             ))}
-            <button onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
+            <button type="button" onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
                 <PlusIcon className="w-4 h-4"/> Ajouter un élément
             </button>
         </div>
     );
 };
-
 
 export default AdminSettings;
