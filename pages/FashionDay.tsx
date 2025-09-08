@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';

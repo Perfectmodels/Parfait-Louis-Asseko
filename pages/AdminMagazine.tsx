@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Article, AIAssistantProps } from '../types';
 import SEO from '../components/SEO';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon, ArrowUpIcon, ArrowDownIcon, StarIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';

@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 
 const Marquee: React.FC = () => {
   const { data, isInitialized } = useData();

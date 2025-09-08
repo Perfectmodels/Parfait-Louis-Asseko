@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
 import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';

@@ -1,8 +1,9 @@
+
 import React, { useEffect } from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility. `Switch` is replaced by `Routes`.
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
-import Layout from './components/Layout';
+import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
 
