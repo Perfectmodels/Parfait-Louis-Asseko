@@ -26,7 +26,6 @@ import ChapterDetail from './pages/ChapterDetail';
 import ModelDashboard from './pages/ModelDashboard'; // Profil
 import ClassroomForum from './pages/ClassroomForum';
 import ForumThread from './pages/ForumThread';
-import Chat from './pages/Chat';
 import BeginnerClassroom from './pages/BeginnerClassroom';
 import BeginnerChapterDetail from './pages/BeginnerChapterDetail';
 
@@ -123,7 +122,6 @@ const AppContent: React.FC = () => {
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/chat" element={<Chat />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
 
