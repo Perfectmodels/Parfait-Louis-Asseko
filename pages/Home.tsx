@@ -148,7 +148,7 @@ const Home: React.FC = () => {
                 </Link>
                 <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
                     Nous Contacter
-                </Link>
+                </Link>const safeUrl = siteImages.hero?.startsWith('https://') ? siteImages.hero : '/placeholder-hero.jpg';
              </div>
         </section>
 

@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
 
                     {/* Contact Info */}
                     <div>
-                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Contact</h3>
+                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Contacts</h3>
                         {contactInfo && (
                             <ul className="space-y-2 text-sm">
                                 <li>{contactInfo.address}</li>
