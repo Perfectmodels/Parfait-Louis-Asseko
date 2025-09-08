@@ -188,7 +188,7 @@ const AdminCastingResults: React.FC = () => {
                                         ? "Toutes les notes ont été enregistrées."
                                         : `Notes manquantes: ${missingJuryNames}`;
                                     return (
-                                    <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-gold/5 border-l-4 border-l-pm-gold' : ''}`}>
+                                    <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
                                         <td className="p-4 font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</td>
                                         <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
                                         <td className="p-4 text-center" title={tooltip}>
