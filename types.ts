@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export interface Model {
@@ -57,6 +58,7 @@ export interface FashionDayEvent {
   description: string;
 }
 
+// FIX: Add missing SocialLinks interface
 export interface SocialLinks {
   facebook: string;
   instagram: string;
