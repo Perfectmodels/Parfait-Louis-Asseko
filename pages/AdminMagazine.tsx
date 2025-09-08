@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Article } from '../types';
+import { Article, AIAssistantProps } from '../types';
 import SEO from '../components/SEO';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, StarIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon, ArrowUpIcon, ArrowDownIcon, StarIcon } from '@heroicons/react/24/outline';
+import ImageInput from '../components/ImageInput';
 import { FacebookIcon } from '../components/icons/SocialIcons';
 import ArticleGenerator from '../components/ArticleGenerator';
+import AIAssistant from '../components/AIAssistant';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
   const [localArticles, setLocalArticles] = useState<Article[]>([]);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
   useEffect(() => {
     if (data?.articles) {
@@ -82,6 +85,25 @@ const AdminMagazine: React.FC = () => {
       reactions: { likes: 0, dislikes: 0 },
     });
   };
+  
+  const handleArticleGenerated = (articleData: Partial<Article>) => {
+      setIsCreating(true);
+      setEditingArticle({
+          slug: '',
+          title: articleData.title || '',
+          category: articleData.category || 'Interview',
+          excerpt: articleData.excerpt || '',
+          imageUrl: '', // User needs to add this
+          author: articleData.author || 'Focus Model 241',
+          date: articleData.date || new Date().toISOString().split('T')[0],
+          content: articleData.content || [{ type: 'paragraph', text: '' }],
+          tags: articleData.tags || [],
+          isFeatured: false,
+          viewCount: articleData.viewCount || 0,
+          reactions: articleData.reactions || { likes: 0, dislikes: 0 },
+      });
+      setIsGeneratorOpen(false);
+  };
 
   if (editingArticle) {
     return <ArticleForm article={editingArticle} onSave={handleFormSave} onCancel={() => {setEditingArticle(null); setIsCreating(false);}} isCreating={isCreating}/>
@@ -89,6 +111,11 @@ const AdminMagazine: React.FC = () => {
 
   return (
     <>
+      <ArticleGenerator
+          isOpen={isGeneratorOpen}
+          onClose={() => setIsGeneratorOpen(false)}
+          onArticleGenerated={handleArticleGenerated}
+      />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <SEO title="Admin - Gérer le Magazine" noIndex />
         <div className="container mx-auto px-6">
@@ -101,6 +128,9 @@ const AdminMagazine: React.FC = () => {
                   <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Magazine</h1>
               </div>
               <div className="flex items-center gap-4">
+                  <button onClick={() => setIsGeneratorOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/20">
+                      <SparklesIcon className="w-5 h-5"/> Générer avec IA
+                  </button>
                    <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
                       <PlusIcon className="w-5 h-5"/> Ajouter Article
                   </button>
@@ -146,6 +176,15 @@ const AdminMagazine: React.FC = () => {
 const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => void, onCancel: () => void, isCreating: boolean }> = ({ article, onSave, onCancel, isCreating }) => {
     const [formData, setFormData] = useState(article);
     const [contentJson, setContentJson] = useState(JSON.stringify(article.content, null, 2));
+    const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
+    const [aiAssistantProps, setAIAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'>>({
+        onInsertContent: () => {}, fieldName: '', initialPrompt: '',
+    });
+
+    const openAIAssistant = (fieldName: string, onInsert: (content: string) => void, initialPrompt: string = '', jsonSchema?: any) => {
+        setAIAssistantProps({ fieldName, onInsertContent: onInsert, initialPrompt, jsonSchema });
+        setIsAIAssistantOpen(true);
+    };
 
     const articleContentSchema = {
         type: 'ARRAY',
@@ -188,59 +227,48 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
     };
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <>
+         <AIAssistant 
+            isOpen={isAIAssistantOpen} 
+            onClose={() => setIsAIAssistantOpen(false)}
+            {...aiAssistantProps} 
+         />
+         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <div className="container mx-auto px-6 max-w-3xl">
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvel Article' : 'Modifier l\'Article'}</h1>
                 <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
                     <FormInput 
-                        label="Titre" 
-                        name="title" 
-                        value={formData.title} 
-                        onChange={handleChange}
-                    />
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">URL de l'image</label>
-                        <div className="mt-1 flex rounded-md shadow-sm">
-                            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-700 text-gray-300 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </span>
-                            <input
-                                type="url"
-                                name="imageUrl"
-                                value={formData.imageUrl || ''}
-                                onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                                className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md bg-pm-dark border-gray-600 text-pm-off-white focus:ring-2 focus:ring-pm-gold focus:border-pm-gold sm:text-sm"
-                                placeholder="https://example.com/image.jpg"
-                            />
-                        </div>
-                        {formData.imageUrl && (
-                            <div className="mt-2">
-                                <p className="text-xs text-pm-off-white/70 mb-1">Aperçu :</p>
-                                <img 
-                                    src={formData.imageUrl} 
-                                    alt="Aperçu de l'image" 
-                                    className="h-32 w-auto object-cover rounded border border-pm-gold/20"
-                                    onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.src = 'https://via.placeholder.com/300x200?text=Image+non+disponible';
-                                    }}
-                                />
-                            </div>
+                        label="Titre" name="title" value={formData.title} onChange={handleChange}
+                        onOpenAI={() => openAIAssistant(
+                            'Titre de l\'article',
+                            (content) => setFormData(p => ({...p, title: content.replace(/"/g, '')})),
+                            `Génère 5 titres percutants pour un article de magazine de mode sur le thème : "${formData.excerpt || 'un nouveau mannequin'}". Sépare chaque titre par '|||'.`
                         )}
-                    </div>
-                    <FormInput 
-                        label="Catégorie" 
-                        name="category" 
-                        value={formData.category} 
-                        onChange={handleChange} 
                     />
+                    <ImageInput label="Image de l'article" value={formData.imageUrl} onChange={handleImageChange} />
+                    <FormInput label="Catégorie" name="category" value={formData.category} onChange={handleChange} />
                     <FormTextArea 
                         label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
+                        onOpenAI={() => openAIAssistant(
+                            'Extrait de l\'article',
+                            (content) => setFormData(p => ({...p, excerpt: content})),
+                            `Rédige un extrait engageant et concis (2 phrases maximum) pour un article de mode intitulé : "${formData.title}"`
+                        )}
                     />
                     <FormTextArea 
                         label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true}
+                        onOpenAI={() => openAIAssistant(
+                            'Contenu de l\'article',
+                            (content) => {
+                                try {
+                                    setContentJson(JSON.stringify(JSON.parse(content), null, 2));
+                                } catch {
+                                    setContentJson(content);
+                                }
+                            },
+                            `Basé sur le titre "${formData.title}" et l'extrait "${formData.excerpt}", rédige le contenu complet de l'article en respectant le format JSON. Inclus des paragraphes, des titres (headings), et une citation.`,
+                            articleContentSchema
+                        )}
                     />
                     <div className="text-xs text-pm-off-white/50">
                         <p>Format: tableau d'objets. Types: 'paragraph', 'heading' (avec level: 2 ou 3), 'quote' (avec author?), 'image' (avec src, alt, caption?).</p>
@@ -255,33 +283,34 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
                 </form>
             </div>
         </div>
+       </>
     )
 }
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string}> = ({label, name, value, onChange, type="text"}) => (
+const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, onOpenAI?: () => void}> = ({label, name, value, onChange, type="text", onOpenAI}) => (
     <div>
-        <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <input 
-            type={type} 
-            id={name} 
-            name={name} 
-            value={value} 
-            onChange={onChange} 
-            className="w-full px-3 py-2 bg-pm-dark border border-gray-600 rounded-md text-pm-off-white focus:ring-2 focus:ring-pm-gold focus:border-pm-gold" 
-        />
+        <div className="flex justify-between items-center mb-1">
+            <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            {onOpenAI && (
+                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
+        </div>
+        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, isJson?: boolean}> = ({label, name, value, onChange, isJson = false}) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, isJson?: boolean, onOpenAI?: () => void}> = ({label, name, value, onChange, isJson=false, onOpenAI}) => (
     <div>
-        <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <textarea 
-            id={name} 
-            name={name} 
-            value={value} 
-            onChange={onChange} 
-            rows={5} 
-            className="w-full px-3 py-2 bg-pm-dark border border-gray-600 rounded-md text-pm-off-white focus:ring-2 focus:ring-pm-gold focus:border-pm-gold" 
-        />
+        <div className="flex justify-between items-center mb-1">
+            <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+             {onOpenAI && (
+                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
+        </div>
+        <textarea id={name} name={name} value={value} onChange={onChange} rows={isJson ? 10 : 5} className={`admin-input admin-textarea ${isJson ? 'font-mono text-sm' : ''}`} />
     </div>
 );
 

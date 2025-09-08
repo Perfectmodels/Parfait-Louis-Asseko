@@ -5,77 +5,7 @@ import { NavLink } from '../hooks/useDataStore';
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
-  // Informations de base
-  siteName: 'Perfect Models Management',
-  title: 'Perfect Models Management - Agence de Mannequins au Gabon',
-  description: 'Agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, participez à nos castings et événements mode exclusifs.',
   logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
-  url: 'https://www.perfectmodelsgabon.com',
-  defaultLocale: 'fr',
-  locales: ['fr', 'en'],
-  
-  // Médias sociaux
-  social: {
-    facebook: 'https://www.facebook.com/PerfectModels241',
-    instagram: 'https://www.instagram.com/perfectmodelsmanagement_/',
-    youtube: 'https://www.youtube.com/@perfectmodelsmanagement6013',
-    twitter: 'https://twitter.com/perfectmodels',
-    linkedin: 'https://www.linkedin.com/company/perfectmodelsgabon',
-    tiktok: 'https://www.tiktok.com/@perfectmodelsgabon'
-  },
-  
-  // Contact
-  contact: {
-    email: 'contact@perfectmodels.ga',
-    phone: '+241 77 00 00 00',
-    whatsapp: '+241 77 00 00 00',
-    address: 'Libreville, Gabon',
-    coordinates: {
-      lat: 0.4162,
-      lng: 9.4673
-    },
-    businessHours: {
-      weekdays: '09:00 - 18:00',
-      saturday: '10:00 - 15:00',
-      sunday: 'Fermé'
-    }
-  },
-  
-  // SEO
-  seo: {
-    defaultImage: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-    twitterHandle: '@perfectmodels',
-    facebookAppId: '',
-    googleSiteVerification: '',
-    bingVerification: '',
-    yandexVerification: '',
-    googleAnalyticsId: 'G-XXXXXXXXXX',
-    googleTagManagerId: 'GTM-XXXXXXX'
-  },
-  
-  // Réseaux de distribution de contenu
-  cdn: {
-    imageBaseUrl: 'https://res.cloudinary.com/perfectmodels/image/upload',
-    videoBaseUrl: 'https://res.cloudinary.com/perfectmodels/video/upload'
-  },
-  
-  // Configuration des API
-  api: {
-    baseUrl: 'https://api.perfectmodelsgabon.com',
-    endpoints: {
-      contact: '/api/contact',
-      newsletter: '/api/newsletter',
-      casting: '/api/casting',
-      booking: '/api/booking'
-    }
-  },
-  
-  // Configuration des formulaires
-  forms: {
-    recaptcha: {
-      siteKey: '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' // Clé de test par défaut
-    }
-  }
 };
 
 export const navLinks: NavLink[] = [
