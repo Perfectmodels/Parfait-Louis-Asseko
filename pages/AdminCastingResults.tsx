@@ -3,13 +3,11 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model, JuryMember } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
-import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
+import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
-    const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
-    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
+    const [filter, setFilter] = useState<'AllScored' | CastingApplicationStatus>('AllScored');
 
     const applicantsWithScores = useMemo(() => {
         const juryMembers: JuryMember[] = data?.juryMembers || [];
@@ -44,7 +42,7 @@ const AdminCastingResults: React.FC = () => {
     const handleValidateAndCreateModel = async (app: CastingApplication) => {
         if (!data) return;
 
-        if (app.status === 'Accepté') {
+        if (app.status === 'accepted' || app.status === 'acceptee') {
             alert("Ce candidat a déjà été accepté et un profil a été créé.");
             return;
         }
@@ -52,7 +50,7 @@ const AdminCastingResults: React.FC = () => {
         const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
         if (modelExists) {
             alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
-            await handleUpdateStatus(app.id, 'Accepté'); // Mark as accepted anyway if name clash
+            await handleUpdateStatus(app.id, 'accepted'); // Mark as accepted anyway if name clash
             return;
         }
 
@@ -109,7 +107,7 @@ const AdminCastingResults: React.FC = () => {
 
         const updatedModels = [...data.models, newModel];
         // FIX: Explicitly type `updatedApps` to prevent TypeScript from widening the `status` property to a generic `string`.
-        const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
+        const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'accepted' } : localApp);
 
         try {
             await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
@@ -120,13 +118,27 @@ const AdminCastingResults: React.FC = () => {
         }
     };
     
+    const handlePrintApplication = () => {
+        window.print();
+    };
+
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
-            case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
-            case 'Présélectionné': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500';
-            case 'Accepté': return 'bg-green-500/20 text-green-300 border-green-500';
-            case 'Refusé': return 'bg-red-500/20 text-red-300 border-red-500';
-            default: return 'bg-gray-500/20 text-gray-300';
+            case 'en_attente':
+            case 'pending': 
+                return 'bg-blue-500/20 text-blue-300 border-blue-500';
+            case 'en_cours': 
+                return 'bg-yellow-500/20 text-yellow-300 border-yellow-500';
+            case 'accepted':
+            case 'acceptee':
+                return 'bg-green-500/20 text-green-300 border-green-500';
+            case 'rejected':
+            case 'refusee':
+                return 'bg-red-500/20 text-red-300 border-red-500';
+            case 'terminee':
+                return 'bg-purple-500/20 text-purple-300 border-purple-500';
+            default: 
+                return 'bg-gray-500/20 text-gray-300';
         }
     };
     
@@ -138,14 +150,12 @@ const AdminCastingResults: React.FC = () => {
 
     const filterOptions: { value: CastingApplicationStatus | 'AllScored', label: string }[] = [
         { value: 'AllScored', label: 'Tous les Notés' },
-        { value: 'Présélectionné', label: 'Présélectionnés' },
-        { value: 'Accepté', label: 'Acceptés' },
-        { value: 'Refusé', label: 'Refusés' }
+        { value: 'en_cours', label: 'En cours' },
+        { value: 'accepted', label: 'Acceptés' },
+        { value: 'rejected', label: 'Refusés' },
+        { value: 'terminee', label: 'Terminés' },
+        { value: 'en_attente', label: 'En attente' }
     ];
-
-    if (printingApp) {
-        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
-    }
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -182,60 +192,81 @@ const AdminCastingResults: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredApplicants.map(app => {
-                                    const missingJuryNames = app.missingJuries.map(j => j.name).join(', ');
-                                    const tooltip = app.isFullyScored
-                                        ? "Toutes les notes ont été enregistrées."
-                                        : `Notes manquantes: ${missingJuryNames}`;
-                                    return (
-                                    <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
-                                        <td className="p-4 font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</td>
-                                        <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
-                                        <td className="p-4 text-center" title={tooltip}>
-                                            {app.juryVotes} / {data?.juryMembers.length || 4}
-                                            {!app.isFullyScored && <span className="text-red-500 ml-1">*</span>}
-                                        </td>
-                                        <td className={`p-4 text-center font-bold text-lg ${getScoreColor(app.averageScore)}`}>{app.averageScore.toFixed(2)}</td>
-                                        <td className="p-4 text-center"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
-                                        <td className="p-4">
-                                            <div className="flex items-center justify-center gap-2">
-                                                <button
-                                                    onClick={() => setPrintingApp(app)}
-                                                    className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
-                                                    title="Télécharger la fiche PDF"
-                                                >
-                                                    <PrinterIcon className="w-5 h-5"/>
-                                                </button>
-                                                {app.status === 'Présélectionné' && (
-                                                    <>
+                                {filteredApplicants.length > 0 ? (
+                                    filteredApplicants.map(app => {
+                                        const missingJuryNames = app.missingJuries.map(j => j.name).join(', ');
+                                        const tooltip = app.isFullyScored
+                                            ? "Toutes les notes ont été enregistrées."
+                                            : `Notes manquantes: ${missingJuryNames}`;
+                                        return (
+                                            <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
+                                                <td className="p-4 font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</td>
+                                                <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
+                                                <td className="p-4 text-center" title={tooltip}>
+                                                    {app.juryVotes} / {data?.juryMembers.length || 4}
+                                                </td>
+                                                <td className="p-4 text-center">
+                                                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getScoreColor(app.averageScore)}`}>
+                                                        {app.averageScore.toFixed(1)}/10
+                                                    </span>
+                                                </td>
+                                                <td className="p-4 text-center">
+                                                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(app.status || 'en_attente')}`}>
+                                                        {app.status || 'En attente'}
+                                                    </span>
+                                                </td>
+                                                <td className="p-4 text-center">
+                                                    <div className="flex justify-center space-x-2">
                                                         <button 
-                                                            onClick={() => handleValidateAndCreateModel(app)} 
-                                                            className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                                            title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
-                                                            disabled={!app.isFullyScored}
+                                                            onClick={handlePrintApplication}
+                                                            className="p-1.5 text-pm-gold hover:bg-pm-gold/10 rounded-full"
+                                                            title="Imprimer"
                                                         >
-                                                            <CheckBadgeIcon className="w-5 h-5"/>
+                                                            <span className="w-5 h-5">🖨️</span>
                                                         </button>
-                                                        <button onClick={() => handleUpdateStatus(app.id, 'Refusé')} className="action-btn bg-red-500/10 text-red-300 border-red-500/50 hover:bg-red-500/20" title="Refuser">
+                                                        {app.isFullyScored && (
+                                                            <button 
+                                                                onClick={() => handleValidateAndCreateModel(app)}
+                                                                className="p-1.5 text-green-500 hover:bg-green-500/10 rounded-full"
+                                                                title="Valider et créer le profil"
+                                                                disabled={!app.isFullyScored}
+                                                            >
+                                                                <CheckBadgeIcon className="w-5 h-5"/>
+                                                            </button>
+                                                        )}
+                                                        <button 
+                                                            onClick={() => handleUpdateStatus(app.id, 'rejected')} 
+                                                            className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-full" 
+                                                            title="Refuser"
+                                                        >
                                                             <XCircleIcon className="w-5 h-5"/>
                                                         </button>
-                                                    </>
-                                                )}
-                                                {app.status === 'Accepté' && (
-                                                    <span className="text-xs text-green-400">Profil Créé</span>
-                                                )}
-                                                {app.status === 'Refusé' && (
-                                                    <button onClick={() => handleUpdateStatus(app.id, 'Présélectionné')} className="action-btn bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20" title="Annuler le refus">
-                                                        <ArrowPathIcon className="w-5 h-5"/>
-                                                    </button>
-                                                )}
-                                            </div>
+                                                        {(app.status === 'accepted' || app.status === 'acceptee') && (
+                                                            <span className="text-xs text-green-400">Profil Créé</span>
+                                                        )}
+                                                        {app.status === 'rejected' && (
+                                                            <button 
+                                                                onClick={() => handleUpdateStatus(app.id, 'en_cours')} 
+                                                                className="p-1.5 text-yellow-500 hover:bg-yellow-500/10 rounded-full" 
+                                                                title="Annuler le refus"
+                                                            >
+                                                                <ArrowPathIcon className="w-5 h-5"/>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan={6} className="text-center p-8 text-pm-off-white/60">
+                                            Aucun candidat ne correspond à ce filtre.
                                         </td>
                                     </tr>
-                                )})}
+                                )}
                             </tbody>
-                         </table>
-                         {filteredApplicants.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun candidat ne correspond à ce filtre.</p>}
+                        </table>
                     </div>
                 </div>
             </div>

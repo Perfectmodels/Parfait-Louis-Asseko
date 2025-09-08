@@ -183,7 +183,7 @@ export interface ApiKeys {
   cloudflareWorkerUrl?: string;
 }
 
-export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
+export type CastingApplicationStatus = 'en_attente' | 'acceptee' | 'refusee' | 'en_cours' | 'terminee' | 'accepted' | 'pending' | 'rejected';
 
 export interface JuryScore {
   physique: number;
@@ -209,41 +209,38 @@ export interface RegistrationStaff {
 }
 
 export interface CastingApplication {
-  id: string;
-  submissionDate: string;
-  status: CastingApplicationStatus;
-  
-  // From form
-  firstName: string;
-  lastName: string;
-  birthDate: string;
-  email: string;
-  phone: string;
-  nationality: string;
-  city: string;
-  gender: 'Homme' | 'Femme';
-  height: string;
-  weight: string;
-  chest: string;
-  waist: string;
-  hips: string;
-  shoeSize: string;
-  eyeColor: string;
-  hairColor: string;
-  experience: string;
-  instagram: string;
-  portfolioLink: string;
-
-  // Photo URLs from storage
-  photoPortraitUrl?: string | null;
-  photoFullBodyUrl?: string | null;
-  photoProfileUrl?: string | null;
-
-  scores?: {
-    [juryId: string]: JuryScore;
-  };
-  
-  passageNumber?: number;
+    id: string;
+    submissionDate: string;
+    status: CastingApplicationStatus;
+    firstName: string;
+    lastName: string;
+    birthDate: string;
+    email: string;
+    phone: string;
+    nationality: string;
+    city: string;
+    gender: 'Homme' | 'Femme';
+    height: string;
+    weight: string;
+    chest: string;
+    waist: string;
+    hips: string;
+    shoeSize: string;
+    eyeColor: string;
+    hairColor: string;
+    experience: string;
+    instagram: string;
+    portfolioLink: string;
+    photoPortraitUrl?: string | null;
+    photoFullBodyUrl?: string | null;
+    photoProfileUrl?: string | null;
+    photos?: string[];
+    message?: string;
+    modelId?: string;
+    scores?: {
+        [juryId: string]: JuryScore;
+    };
+    passageNumber?: number;
 }
 
 export type FashionDayApplicationRole = 'Mannequin' | 'Styliste' | 'Partenaire' | 'Photographe' | 'MUA' | 'Autre';

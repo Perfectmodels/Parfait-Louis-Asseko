@@ -5,7 +5,6 @@ import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-import AIAssistantIcon from './components/AIAssistantIcon';
 
 // Pages
 import Home from './pages/Home';
