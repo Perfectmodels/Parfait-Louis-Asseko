@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';

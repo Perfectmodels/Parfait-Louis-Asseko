@@ -1,5 +1,5 @@
 import React from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `Redirect` with `Navigate`.
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
