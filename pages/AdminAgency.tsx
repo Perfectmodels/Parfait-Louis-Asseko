@@ -1,17 +1,26 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
-import { Service, AchievementCategory } from '../types';
+import { Service, AchievementCategory, AIAssistantProps } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import AIAssistant from '../components/AIAssistant';
 
 type EditableData = Pick<AppData, 'agencyInfo' | 'agencyTimeline' | 'agencyServices' | 'agencyAchievements'>;
 
 const AdminAgency: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localData, setLocalData] = useState<EditableData | null>(null);
+    const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
+    const [aiAssistantProps, setAIAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'>>({
+        onInsertContent: () => {}, fieldName: '', initialPrompt: '',
+    });
+
+    const openAIAssistant = (fieldName: string, onInsert: (content: string) => void, initialPrompt: string = '') => {
+        setAIAssistantProps({ fieldName, onInsertContent: onInsert, initialPrompt });
+        setIsAIAssistantOpen(true);
+    };
 
     useEffect(() => {
         if (isInitialized && data) {
@@ -44,6 +53,12 @@ const AdminAgency: React.FC = () => {
     }
 
     return (
+        <>
+        <AIAssistant 
+            isOpen={isAIAssistantOpen} 
+            onClose={() => setIsAIAssistantOpen(false)}
+            {...aiAssistantProps} 
+        />
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Gérer l'Agence" noIndex />
             <div className="container mx-auto px-6">
@@ -62,8 +77,22 @@ const AdminAgency: React.FC = () => {
 
                 <div className="space-y-8">
                     <SectionWrapper title="Textes 'À Propos'">
-                        <FormTextArea label="Paragraphe 1" value={localData.agencyInfo.about.p1} onChange={(e) => handleAgencyInfoChange('p1', e.target.value)} />
-                        <FormTextArea label="Paragraphe 2" value={localData.agencyInfo.about.p2} onChange={(e) => handleAgencyInfoChange('p2', e.target.value)} />
+                        <FormTextArea 
+                            label="Paragraphe 1" value={localData.agencyInfo.about.p1} onChange={(e) => handleAgencyInfoChange('p1', e.target.value)} 
+                            onOpenAI={() => openAIAssistant(
+                                'Paragraphe d\'introduction',
+                                (content) => handleAgencyInfoChange('p1', content),
+                                "Rédige un paragraphe d'introduction percutant sur la vision et la fondation de l'agence Perfect Models Management au Gabon."
+                            )}
+                        />
+                        <FormTextArea 
+                            label="Paragraphe 2" value={localData.agencyInfo.about.p2} onChange={(e) => handleAgencyInfoChange('p2', e.target.value)}
+                             onOpenAI={() => openAIAssistant(
+                                'Paragraphe de mission',
+                                (content) => handleAgencyInfoChange('p2', content),
+                                "Rédige un paragraphe décrivant la mission de l'agence, en mettant l'accent sur la découverte de talents et le professionnalisme."
+                            )}
+                        />
                     </SectionWrapper>
 
                     <SectionWrapper title="Nos Valeurs">
@@ -73,7 +102,14 @@ const AdminAgency: React.FC = () => {
                             renderItem={(item, onChange) => (
                                 <>
                                     <FormInput label="Nom de la valeur" value={item.name} onChange={e => onChange('name', e.target.value)} />
-                                    <FormTextArea label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} />
+                                    <FormTextArea 
+                                        label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} 
+                                        onOpenAI={() => openAIAssistant(
+                                            `Description de la valeur "${item.name}"`,
+                                            (content) => onChange('description', content),
+                                            `Rédige une courte description pour la valeur d'entreprise suivante : "${item.name}".`
+                                        )}
+                                    />
                                 </>
                             )}
                             getNewItem={() => ({ name: 'Nouvelle Valeur', description: 'Description...' })}
@@ -88,7 +124,14 @@ const AdminAgency: React.FC = () => {
                             renderItem={(item, onChange) => (
                                 <>
                                     <FormInput label="Année" value={item.year} onChange={e => onChange('year', e.target.value)} />
-                                    <FormInput label="Événement" value={item.event} onChange={e => onChange('event', e.target.value)} />
+                                    <FormInput 
+                                        label="Événement" value={item.event} onChange={e => onChange('event', e.target.value)} 
+                                        onOpenAI={() => openAIAssistant(
+                                            'Événement de la chronologie',
+                                            (content) => onChange('event', content),
+                                            `Suggère un événement marquant pour une agence de mannequins pour l'année ${item.year}.`
+                                        )}
+                                    />
                                 </>
                             )}
                             getNewItem={() => ({ year: new Date().getFullYear().toString(), event: 'Nouvel événement...' })}
@@ -105,7 +148,14 @@ const AdminAgency: React.FC = () => {
                                     <FormInput label="Icône" value={item.icon} onChange={e => onChange('icon', e.target.value)} />
                                     <p className="text-xs text-pm-off-white/60 -mt-2">Noms valides: UserGroupIcon, AcademicCapIcon, CameraIcon, SparklesIcon, ScaleIcon, GlobeAltIcon, HeartIcon</p>
                                     <FormInput label="Titre" value={item.title} onChange={e => onChange('title', e.target.value)} />
-                                    <FormTextArea label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} />
+                                    <FormTextArea 
+                                        label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} 
+                                        onOpenAI={() => openAIAssistant(
+                                            'Description de service',
+                                            (content) => onChange('description', content),
+                                            `Rédige une description complète et attractive pour un service intitulé "${item.title}".`
+                                        )}
+                                    />
                                 </>
                             )}
                             getNewItem={() => ({ icon: 'HeartIcon', title: 'Nouveau Service', description: 'Description...' })}
@@ -124,6 +174,11 @@ const AdminAgency: React.FC = () => {
                                         label="Éléments (un par ligne)" 
                                         value={(item.items || []).join('\n')} 
                                         onChange={e => onChange('items', e.target.value.split('\n'))} 
+                                        onOpenAI={() => openAIAssistant(
+                                            `Éléments pour "${item.name}"`,
+                                            (content) => onChange('items', content.split('\n')),
+                                            `Suggère une liste de 5 réalisations typiques pour une agence de mannequins dans la catégorie "${item.name}". Sépare chaque élément par un retour à la ligne.`
+                                        )}
                                     />
                                 </>
                             )}
@@ -134,6 +189,7 @@ const AdminAgency: React.FC = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
 
@@ -145,16 +201,30 @@ const SectionWrapper: React.FC<{ title: string, children: React.ReactNode }> = (
     </div>
 );
 
-const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormInput: React.FC<{label: string, value: any, onChange: any, onOpenAI?: () => void}> = ({label, value, onChange, onOpenAI}) => (
     <div>
-        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+        <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            {onOpenAI && (
+                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
+        </div>
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormTextArea: React.FC<{label: string, value: any, onChange: any, onOpenAI?: () => void}> = ({label, value, onChange, onOpenAI}) => (
     <div>
-        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+        <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            {onOpenAI && (
+                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
+        </div>
         <textarea value={value} onChange={onChange} rows={4} className="admin-input admin-textarea" />
     </div>
 );

@@ -111,7 +111,7 @@ const ModelDetail: React.FC = () => {
 
                <div className="mt-10">
                   {!isViewingOwnProfile && (
-                    <button onClick={() => setIsBookingModalOpen(true)} className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                    <button onClick={() => setIsBookingModalOpen(true)} className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                         Booker ce mannequin
                     </button>
                   )}

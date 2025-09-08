@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Article } from '../types';
+import { Article, AIAssistantProps } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, SparklesIcon, ArrowUpIcon, ArrowDownIcon, StarIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
 import { FacebookIcon } from '../components/icons/SocialIcons';
 import ArticleGenerator from '../components/ArticleGenerator';
+import AIAssistant from '../components/AIAssistant';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -175,6 +175,31 @@ const AdminMagazine: React.FC = () => {
 const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => void, onCancel: () => void, isCreating: boolean }> = ({ article, onSave, onCancel, isCreating }) => {
     const [formData, setFormData] = useState(article);
     const [contentJson, setContentJson] = useState(JSON.stringify(article.content, null, 2));
+    const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
+    const [aiAssistantProps, setAIAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'>>({
+        onInsertContent: () => {}, fieldName: '', initialPrompt: '',
+    });
+
+    const openAIAssistant = (fieldName: string, onInsert: (content: string) => void, initialPrompt: string = '', jsonSchema?: any) => {
+        setAIAssistantProps({ fieldName, onInsertContent: onInsert, initialPrompt, jsonSchema });
+        setIsAIAssistantOpen(true);
+    };
+
+    const articleContentSchema = {
+        type: 'ARRAY',
+        items: {
+            type: 'OBJECT',
+            properties: {
+                type: { type: 'STRING', description: "Peut être 'heading', 'paragraph', 'quote', ou 'image'" },
+                level: { type: 'INTEGER', description: "Pour 'heading', doit être 2 ou 3" },
+                text: { type: 'STRING' },
+                author: { type: 'STRING', description: "Pour 'quote'" },
+                src: { type: 'STRING', description: "Pour 'image'" },
+                alt: { type: 'STRING', description: "Pour 'image'" },
+                caption: { type: 'STRING', description: "Pour 'image'" }
+            },
+        }
+    };
 
     useEffect(() => {
         setFormData(article);
@@ -202,15 +227,48 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
 
     return (
         <>
+         <AIAssistant 
+            isOpen={isAIAssistantOpen} 
+            onClose={() => setIsAIAssistantOpen(false)}
+            {...aiAssistantProps} 
+         />
          <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <div className="container mx-auto px-6 max-w-3xl">
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvel Article' : 'Modifier l\'Article'}</h1>
                 <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
-                    <FormInput label="Titre" name="title" value={formData.title} onChange={handleChange} />
+                    <FormInput 
+                        label="Titre" name="title" value={formData.title} onChange={handleChange}
+                        onOpenAI={() => openAIAssistant(
+                            'Titre de l\'article',
+                            (content) => setFormData(p => ({...p, title: content.replace(/"/g, '')})),
+                            `Génère 5 titres percutants pour un article de magazine de mode sur le thème : "${formData.excerpt || 'un nouveau mannequin'}". Sépare chaque titre par '|||'.`
+                        )}
+                    />
                     <ImageInput label="Image de l'article" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormInput label="Catégorie" name="category" value={formData.category} onChange={handleChange} />
-                    <FormTextArea label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}/>
-                    <FormTextArea label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true}/>
+                    <FormTextArea 
+                        label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
+                        onOpenAI={() => openAIAssistant(
+                            'Extrait de l\'article',
+                            (content) => setFormData(p => ({...p, excerpt: content})),
+                            `Rédige un extrait engageant et concis (2 phrases maximum) pour un article de mode intitulé : "${formData.title}"`
+                        )}
+                    />
+                    <FormTextArea 
+                        label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true}
+                        onOpenAI={() => openAIAssistant(
+                            'Contenu de l\'article',
+                            (content) => {
+                                try {
+                                    setContentJson(JSON.stringify(JSON.parse(content), null, 2));
+                                } catch {
+                                    setContentJson(content);
+                                }
+                            },
+                            `Basé sur le titre "${formData.title}" et l'extrait "${formData.excerpt}", rédige le contenu complet de l'article en respectant le format JSON. Inclus des paragraphes, des titres (headings), et une citation.`,
+                            articleContentSchema
+                        )}
+                    />
                     <div className="text-xs text-pm-off-white/50">
                         <p>Format: tableau d'objets. Types: 'paragraph', 'heading' (avec level: 2 ou 3), 'quote' (avec author?), 'image' (avec src, alt, caption?).</p>
                         <p>{'Ex: [{"type": "paragraph", "text": "Bonjour."}]'}</p>
@@ -228,18 +286,28 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
     )
 }
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string}> = ({label, name, value, onChange, type="text"}) => (
+const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, onOpenAI?: () => void}> = ({label, name, value, onChange, type="text", onOpenAI}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            {onOpenAI && (
+                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
         </div>
         <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, isJson?: boolean}> = ({label, name, value, onChange, isJson=false}) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, isJson?: boolean, onOpenAI?: () => void}> = ({label, name, value, onChange, isJson=false, onOpenAI}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+             {onOpenAI && (
+                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
         </div>
         <textarea id={name} name={name} value={value} onChange={onChange} rows={isJson ? 10 : 5} className={`admin-input admin-textarea ${isJson ? 'font-mono text-sm' : ''}`} />
     </div>

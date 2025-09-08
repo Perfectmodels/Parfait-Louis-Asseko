@@ -68,6 +68,7 @@ export const models: Model[] = [
         name: 'Noemi Kim',
         username: 'Man-PMMN01',
         password: 'noemi2024',
+        // FIX: Add level property for data consistency.
         level: 'Pro',
         email: 'noemi.kim@example.com',
         phone: '+241077000001',
@@ -95,6 +96,7 @@ export const models: Model[] = [
         name: 'AJ Caramela',
         username: 'Man-PMMA01',
         password: 'caramela2024',
+        // FIX: Add level property for data consistency.
         level: 'Pro',
         height: '1m75',
         gender: 'Femme',
@@ -115,6 +117,7 @@ export const models: Model[] = [
         name: 'Yann Aubin',
         username: 'Man-PMMY01',
         password: 'yann2024',
+        // FIX: Add level property for data consistency.
         level: 'Pro',
         height: '1m88',
         gender: 'Homme',
@@ -221,13 +224,113 @@ export const modelDistinctions: ModelDistinction[] = [
 ];
 
 export const agencyServices: Service[] = [
-    { icon: 'UserGroupIcon', title: 'Gestion de Carrière de Mannequins', description: 'Nous offrons un management complet et personnalisé, de la création du book à la négociation des contrats. Notre objectif est de construire des carrières durables en identifiant les meilleures opportunités nationales et internationales pour nos talents.' },
-    { icon: 'AcademicCapIcon', title: 'Formation & Coaching (PMM Classroom)', description: 'Notre programme exclusif "PMM Classroom" dispense une formation théorique et pratique de haut niveau. Nous couvrons tous les aspects du métier : démarche, pose, nutrition, gestion d\'image et éthique professionnelle pour former des mannequins complets.' },
-    { icon: 'CameraIcon', title: 'Production de Shootings & Éditoriaux', description: 'Nous gérons l\'intégralité de vos productions visuelles, du concept créatif à la post-production. Nous assemblons les meilleures équipes (photographes, stylistes, MUA) pour créer des campagnes publicitaires, lookbooks et éditoriaux percutants.' },
-    { icon: 'SparklesIcon', title: 'Direction de Casting & Événementiel', description: 'Nous trouvons les visages parfaits pour vos projets. Que ce soit pour un défilé, une campagne publicitaire ou un film, nous gérons le processus de casting de A à Z. Nous organisons également des événements mode clés en main, comme le Perfect Fashion Day.' },
-    { icon: 'ScaleIcon', title: 'Prestige & Conseil en Image', description: 'Nous façonnons des marques personnelles fortes pour nos talents et clients. Ce service inclut le media training, le développement du style personnel et des stratégies de communication pour un positionnement haut de gamme et une visibilité accrue.', isComingSoon: true },
-    { icon: 'GlobeAltIcon', title: 'Placement International', description: 'Grâce à notre réseau en expansion, nous préparons et positionnons nos mannequins les plus prometteurs sur les marchés internationaux. Notre objectif est de leur ouvrir les portes des grandes capitales de la mode : Paris, Milan, New York et Londres.', isComingSoon: true },
+  {
+    icon: 'AcademicCapIcon',
+    title: 'Formation Mannequinat',
+    description: 'Nous formons les mannequins dès le début, avec des cours sur la posture, le maintien, le défilé, l’expression corporelle et la confiance en soi. Chaque mannequin repart avec une technique professionnelle adaptée aux podiums et aux shootings photo.',
+    buttonText: 'S’inscrire',
+    buttonLink: '/contact?service=Formation+Mannequinat',
+  },
+  {
+    icon: 'CameraIcon',
+    title: 'Coaching Photo Professionnel',
+    description: 'Nos experts coachent les mannequins pour maîtriser les poses, expressions faciales et angles devant l’objectif. Idéal pour constituer un portfolio impactant et se démarquer auprès des créateurs et agences.',
+    buttonText: 'Réserver une séance',
+    buttonLink: '/contact?service=Coaching+Photo',
+  },
+  {
+    icon: 'UserGroupIcon',
+    title: 'Gestion de Carrière',
+    description: 'Nous accompagnons nos mannequins tout au long de leur carrière : placements, conseils sur les contrats, image publique et plan de développement. Un suivi personnalisé pour transformer un talent brut en professionnel accompli.',
+    buttonText: 'Rejoindre l’agence',
+    buttonLink: '/casting-formulaire',
+  },
+  {
+    icon: 'SparklesIcon',
+    title: 'Placement dans les Défilés',
+    description: 'Perfect Models Management met ses mannequins à disposition pour des événements de mode locaux et internationaux. Exposition auprès des stylistes et créateurs, participation à des événements prestigieux.',
+    buttonText: 'Demander un mannequin',
+    buttonLink: '/contact?service=Placement+Défilés',
+  },
+  {
+    icon: 'ClipboardDocumentCheckIcon',
+    title: 'Casting pour Créateurs',
+    description: 'Organisation de castings pour trouver les mannequins correspondant parfaitement à l’univers des créateurs. Gain de temps et qualité assurée grâce à notre base de talents sélectionnés.',
+    buttonText: 'Organiser un casting',
+    buttonLink: '/contact?service=Casting+pour+Créateurs',
+  },
+  {
+    icon: 'MegaphoneIcon',
+    title: 'Publicité Mode',
+    description: 'Shooting publicitaire pour magazines, réseaux sociaux, vidéos promotionnelles et campagnes de marque. Une exposition professionnelle pour les mannequins et une communication visuelle forte pour les marques.',
+    buttonText: 'Demander un devis',
+    buttonLink: '/contact?service=Publicité+Mode',
+  },
+  {
+    icon: 'IdentificationIcon',
+    title: 'Branding & Image Personnelle',
+    description: 'Nous aidons les mannequins à construire leur image publique et à créer une identité visuelle cohérente. Une image professionnelle qui attire les collaborations et opportunités dans le monde de la mode.',
+    buttonText: 'Découvrir',
+    buttonLink: '/agence',
+  },
+  {
+    icon: 'ScissorsIcon',
+    title: 'Ateliers Stylisme',
+    description: 'Sessions interactives pour découvrir les tendances, combiner les tissus, travailler les couleurs et accessoires. Permet aux mannequins de mieux comprendre le travail des créateurs et de valoriser les vêtements portés.',
+    buttonText: 'Participer',
+    buttonLink: '/fashion-day',
+  },
+  {
+    icon: 'PaintBrushIcon',
+    title: 'Maquillage & Lookbook',
+    description: 'Création de looks professionnels pour chaque mannequin, shooting de lookbooks et présentation des portfolios. Une image complète, professionnelle et séduisante pour les marques et les agences.',
+    buttonText: 'Réserver',
+    buttonLink: '/contact?service=Maquillage+Lookbook',
+  },
+  {
+    icon: 'CalendarDaysIcon',
+    title: 'Événements & Fashion Shows',
+    description: 'Organisation complète de défilés, soirées mode et événements sponsorisés. Permet aux mannequins et créateurs de se présenter devant un public et des partenaires professionnels.',
+    buttonText: 'Participer',
+    buttonLink: '/fashion-day',
+  },
+  {
+    icon: 'PresentationChartLineIcon',
+    title: 'Éducation en Marketing de Mode',
+    description: 'Formation pour apprendre à promouvoir sa carrière ou sa marque dans l’industrie de la mode. Développer ses compétences en communication, réseaux sociaux et branding.',
+    buttonText: 'S’inscrire',
+    buttonLink: '/contact?service=Marketing+de+Mode',
+  },
+  {
+    icon: 'ChatBubbleLeftRightIcon',
+    title: 'Consulting pour Marque de Mode',
+    description: 'Nous conseillons les marques pour le choix des mannequins, la scénographie des défilés et la communication visuelle. Une expertise professionnelle pour créer des collections impactantes et attractives.',
+    buttonText: 'Contactez-nous',
+    buttonLink: '/contact',
+  },
+  {
+    icon: 'VideoCameraIcon',
+    title: 'Vidéo & Réseaux Sociaux',
+    description: 'Création de contenus vidéos et photos pour TikTok, Instagram et YouTube afin de booster la visibilité des mannequins et créateurs. Développement de la notoriété et engagement sur les réseaux sociaux.',
+    buttonText: 'Commander un shooting',
+    buttonLink: '/contact?service=Vidéo+Réseaux+Sociaux',
+  },
+  {
+    icon: 'PhotoIcon',
+    title: 'Photographie de Haute Couture',
+    description: 'Shooting professionnel pour les collections, campagnes publicitaires et portfolios haute couture. Des images hautement professionnelles pour représenter au mieux les créations et les mannequins.',
+    buttonText: 'Réserver un shooting',
+    buttonLink: '/contact?service=Photographie+Haute+Couture',
+  },
+  {
+    icon: 'StarIcon',
+    title: 'Perfect Fashion Day – Événement Signature',
+    description: 'Plateforme annuelle pour présenter les créateurs, mannequins et partenaires de l’agence. Visibilité maximale, networking et mise en valeur du talent local.',
+    buttonText: 'Participer',
+    buttonLink: '/fashion-day',
+  },
 ];
+
 
 export const agencyAchievements: AchievementCategory[] = [
     { name: 'Défilés de Mode', items: ['Libreville Fashion Week', 'Black Fashion Week Paris (Représentation)', 'FIMA Niger (Représentation)'] },
