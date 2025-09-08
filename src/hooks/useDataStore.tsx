@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
+// FIX: Add BeginnerStudent to the type imports.
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
 
 // Import initial data to seed the database if it's empty
@@ -76,6 +77,7 @@ export interface AppData {
     contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
+    // FIX: Add missing properties for beginner classroom functionality.
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
 }
@@ -162,17 +164,18 @@ export const useDataStore = () => {
         return () => unsubscribe();
     }, [getInitialData]);
 
-    const saveData = useCallback(async (newData: AppData) => {
+    const saveData = useCallback(async (newData: Partial<AppData>) => {
         try {
-            await set(ref(db, '/'), newData);
+            const fullData = { ...data, ...newData } as AppData;
+            await set(ref(db, '/'), fullData);
             // The local state will be updated by the 'on' listener,
             // but we can set it here for immediate UI feedback if desired.
-            setData(newData);
+            setData(fullData);
         } catch (error) {
             console.error("Error saving data to Firebase:", error);
             throw error; // Re-throw to be caught by the caller
         }
-    }, []);
+    }, [data]);
 
     return { data, saveData, isInitialized };
 };

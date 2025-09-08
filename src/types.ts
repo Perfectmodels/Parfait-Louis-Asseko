@@ -297,6 +297,7 @@ export interface ContactMessage {
   message: string;
 }
 
+// FIX: Add AIAssistantProps interface
 export interface AIAssistantProps {
   isOpen: boolean;
   onClose: () => void;

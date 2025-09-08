@@ -1,5 +1,7 @@
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
+// FIX: Add BeginnerStudent and SocialLinks to import, and import beginnerCourseData.
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks } from '../types';
 import { NavLink } from '../hooks/useDataStore';
+// FIX: Import beginner course data
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
@@ -17,7 +19,7 @@ export const navLinks: NavLink[] = [
   { path: '/formations', label: 'Classroom', inFooter: false },
 ];
 
-export const socialLinks = {
+export const socialLinks: SocialLinks = {
     facebook: 'https://www.facebook.com/PerfectModels241',
     instagram: 'https://www.instagram.com/perfectmodelsmanagement_/',
     youtube: 'https://www.youtube.com/@perfectmodelsmanagement6013',
@@ -154,9 +156,10 @@ export const articleComments: ArticleComment[] = [];
 export const recoveryRequests: RecoveryRequest[] = [];
 export const bookingRequests: BookingRequest[] = [];
 export const contactMessages: ContactMessage[] = [];
+// FIX: Add beginnerStudents array and export beginnerCourseData
 export const beginnerStudents: BeginnerStudent[] = [];
-
 export { beginnerCourseData };
+
 
 export const newsItems: NewsItem[] = [
     { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },

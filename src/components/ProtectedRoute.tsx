@@ -1,10 +1,9 @@
 import React from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `Redirect` with `Navigate`.
 import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
-  role: 'admin' | 'student' | 'jury' | 'registration' | 'beginner';
+  role: 'admin' | 'student' | 'jury' | 'registration';
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
@@ -16,7 +15,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     return children;
   }
   
-  // FIX: Use Navigate component for react-router-dom v6.
   return <Navigate to="/login" state={{ from: location }} replace />;
 };
 

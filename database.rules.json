@@ -1,18 +1,10 @@
+
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null && auth.token.admin === true",
+    ".read": true,
+    ".write": true,
     "articles": {
       ".indexOn": "slug"
-    },
-    "models": {
-      ".indexOn": ["status", "category"]
-    },
-    "users": {
-      "$uid": {
-        ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
-        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true)"
-      }
     }
   }
 }

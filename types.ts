@@ -57,6 +57,12 @@ export interface FashionDayEvent {
   description: string;
 }
 
+export interface SocialLinks {
+  facebook: string;
+  instagram: string;
+  youtube: string;
+}
+
 export interface Service {
   icon: string;
   title: string;

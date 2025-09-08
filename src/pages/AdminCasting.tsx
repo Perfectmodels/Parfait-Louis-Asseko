@@ -4,14 +4,12 @@ import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon } from '@heroicons/react/24/outline';
-import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Toutes');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
-    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     useEffect(() => {
         if (data?.castingApplications) {
@@ -101,7 +99,6 @@ const AdminCasting: React.FC = () => {
         };
 
         const updatedModels = [...data.models, newModel];
-        // FIX: Explicitly type `updatedApps` to prevent TypeScript from widening the `status` property to a generic `string`.
         const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
 
         try {
@@ -113,10 +110,6 @@ const AdminCasting: React.FC = () => {
             alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
-    
-    if (printingApp) {
-        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
-    }
 
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
@@ -183,7 +176,7 @@ const AdminCasting: React.FC = () => {
                 </div>
             </div>
         </div>
-        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} onPrint={setPrintingApp} />}
+        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} />}
         </>
     );
 };
@@ -194,8 +187,7 @@ const ApplicationModal: React.FC<{
     onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, 
     getStatusColor: (status: CastingApplicationStatus) => string,
     onValidateAndCreateModel: (app: CastingApplication) => void,
-    onPrint: (app: CastingApplication) => void,
-}> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel, onPrint }) => {
+}> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel }) => {
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
@@ -243,9 +235,6 @@ const ApplicationModal: React.FC<{
                     </div>
                 </main>
                  <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
-                    <button onClick={() => onPrint(app)} className="flex items-center gap-2 px-4 py-2 text-sm border border-pm-off-white/50 text-pm-off-white/80 rounded-full hover:border-white">
-                        <PrinterIcon className="w-5 h-5"/> Imprimer Fiche Jury
-                    </button>
                     {app.status === 'Présélectionné' && (
                         <button onClick={() => onValidateAndCreateModel(app)} className="px-4 py-2 text-sm bg-green-600 text-white font-bold rounded-full hover:bg-green-500">
                             Valider & Créer Profil Mannequin

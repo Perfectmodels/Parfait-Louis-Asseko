@@ -5,6 +5,8 @@ import { useData } from '../contexts/DataContext';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './icons/AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
+import { NavLink as NavLinkType } from '../hooks/useDataStore';
+import { SocialLinks } from '../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
   const mobileAnimationClasses = isMobile
@@ -37,7 +39,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
 };
 
 
-const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: any[]; isMobile?: boolean; isOpen?: boolean; }> = ({ onLinkClick, navLinks, isMobile = false, isOpen = false }) => {
+const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: NavLinkType[]; isMobile?: boolean; isOpen?: boolean; }> = ({ onLinkClick, navLinks, isMobile = false, isOpen = false }) => {
   return (
     <>
       {navLinks.map((link, index) => (
@@ -73,7 +75,7 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile
     );
 };
 
-const SocialLinksComponent: React.FC<{ socialLinks: any; className?: string; isMobile?: boolean; isOpen?: boolean; delay?: number }> = ({ socialLinks, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
+const SocialLinksComponent: React.FC<{ socialLinks: SocialLinks | undefined; className?: string; isMobile?: boolean; isOpen?: boolean; delay?: number }> = ({ socialLinks, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
     const mobileAnimationClasses = isMobile
     ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
     : '';
@@ -151,7 +153,7 @@ const Header: React.FC = () => {
             return null;
         }
         return link;
-    }).filter((link): link is { path: string; label: string; inFooter: boolean; footerLabel?: string; } => link !== null);
+    }).filter((link): link is NavLinkType => link !== null);
   }, [navLinksFromData, userRole]);
 
   return (
