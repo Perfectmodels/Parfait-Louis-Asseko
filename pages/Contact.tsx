@@ -37,7 +37,6 @@ const Contact: React.FC = () => {
             return;
         }
 
-        // 1. Save to Firebase Database (as a backup)
         const newContactMessage: ContactMessage = {
             id: `contact-${Date.now()}`,
             submissionDate: new Date().toISOString(),
@@ -51,24 +50,6 @@ const Contact: React.FC = () => {
         try {
             const updatedMessages = [...(data.contactMessages || []), newContactMessage];
             await saveData({ ...data, contactMessages: updatedMessages });
-
-            // 2. Send email via Formspree if configured
-            const endpoint = data.apiKeys.formspreeEndpoint;
-            if (endpoint && !endpoint.includes('VOTRE_ENDPOINT_PERSONNEL_ICI')) {
-                try {
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData),
-                    });
-                    if (!response.ok) {
-                        throw new Error('La notification par email a échoué.');
-                    }
-                } catch (emailError) {
-                    console.warn("Email notification failed, but data was saved to DB:", emailError);
-                    // Don't show an error to the user, as the primary action (saving) succeeded.
-                }
-            }
             
             setStatus('success');
             setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');

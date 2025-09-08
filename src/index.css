@@ -7,6 +7,7 @@
 @layer base {
   body {
     font-family: 'Montserrat', sans-serif;
+    @apply bg-pm-dark;
   }
   .font-playfair {
     font-family: 'Playfair Display', serif;
@@ -14,22 +15,50 @@
 }
 
 @layer components {
-  /* Improved admin input styling for better readability */
+  /* GENERAL LAYOUT & TYPOGRAPHY SYSTEM */
+  .page-container {
+    @apply container mx-auto px-6 py-16 lg:py-24;
+  }
+  .page-title {
+    @apply text-5xl md:text-6xl font-playfair text-pm-gold text-center;
+  }
+  .page-subtitle {
+    @apply text-center text-lg max-w-3xl mx-auto text-pm-off-white/80 mt-4 mb-10 lg:mb-16;
+  }
+  .section-title {
+    @apply text-4xl font-playfair text-pm-gold text-center mb-10 lg:mb-14 relative pb-2;
+  }
+  .section-title::after {
+    content: '';
+    @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-0.5 bg-pm-gold/50;
+  }
+  .content-section {
+    @apply bg-black border border-pm-gold/20 p-6 sm:p-8 lg:p-12;
+  }
+
+  /* CARD BASE STYLE */
+  .card-base {
+    @apply bg-black border border-pm-gold/20 transition-all duration-300;
+  }
+  .card-base:hover {
+    @apply border-pm-gold shadow-2xl shadow-pm-gold/10 -translate-y-2;
+  }
+
+  /* ADMIN STYLES (FROM PREVIOUS UPDATES) */
   .admin-input {
     @apply w-full bg-pm-off-white/5 border border-pm-off-white/20 rounded-lg p-3 text-pm-off-white placeholder:text-pm-off-white/40 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/50 transition-all duration-200 disabled:opacity-50 disabled:bg-black;
   }
   .admin-textarea {
     @apply resize-y;
   }
-  /* Consistent label styling for admin forms */
   .admin-label {
     @apply block text-xs font-bold text-pm-gold/90 uppercase tracking-wider mb-2;
   }
   .action-btn {
-      @apply p-2 rounded-md font-bold border transition-colors hover:bg-opacity-30;
+    @apply p-2 rounded-md font-bold border transition-colors hover:bg-opacity-30;
   }
 
-  /* Admin Panel Consistency */
+  /* ADMIN PANEL CONSISTENCY (FROM PREVIOUS UPDATES) */
   .admin-page-header {
     @apply flex flex-col sm:flex-row justify-between items-start gap-4 mb-12;
   }
@@ -47,16 +76,7 @@
   }
 }
 
-.animate-marquee {
-  animation: marquee 60s linear infinite;
-}
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-}
+/* PRINT STYLES */
 @media print {
   .print-hide {
     display: none;

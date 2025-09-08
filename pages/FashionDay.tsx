@@ -28,16 +28,16 @@ const FashionDay: React.FC = () => {
 
   return (
     <>
-      <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24">
+      <div className="bg-pm-dark text-pm-off-white">
         <SEO 
           title="Perfect Fashion Day | L'Événement Mode de Référence"
           description="Vibrez au rythme du Perfect Fashion Day, l'événement mode incontournable à Libreville. Revivez les éditions, découvrez les créateurs gabonais et les moments forts qui célèbrent la mode africaine."
           keywords="perfect fashion day, défilé de mode gabon, événement mode libreville, créateurs gabonais, mode africaine, fashion week gabon"
           image={data?.siteImages.fashionDayBg}
         />
-        <div className="container mx-auto px-6">
-          <h1 className="text-5xl md:text-6xl font-playfair text-pm-gold text-center mb-4">Perfect Fashion Day</h1>
-          <p className="text-center text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-10 lg:mb-14">
+        <div className="page-container">
+          <h1 className="page-title">Perfect Fashion Day</h1>
+          <p className="page-subtitle">
             Plus qu'un défilé, une célébration de la créativité, de la culture et de l'identité gabonaise.
           </p>
 
@@ -55,13 +55,13 @@ const FashionDay: React.FC = () => {
           </div>
 
           {/* Event Details */}
-          <div className="bg-black border border-pm-gold/20 p-8 md:p-12">
+          <div className="content-section">
             <h2 className="text-4xl font-playfair text-center text-pm-gold mb-2">Thème : "{selectedEdition.theme}"</h2>
             <p className="text-center text-pm-off-white/70 mb-8">{selectedEdition.date}</p>
             <p className="text-center max-w-3xl mx-auto mb-12">{selectedEdition.description}</p>
             
             {selectedEdition.location && (
-              <div className="flex flex-wrap justify-center gap-8 mb-12 text-center">
+              <div className="flex flex-wrap justify-center gap-8 mb-12 text-center border-y border-pm-gold/20 py-8">
                 <InfoPill icon={CalendarDaysIcon} title="Date" content={selectedEdition.date} />
                 <InfoPill icon={MapPinIcon} title="Lieu" content={selectedEdition.location} />
                 <InfoPill icon={SparklesIcon} title="Promoteur" content={selectedEdition.promoter || 'Parfait Asseko'} />
@@ -69,10 +69,10 @@ const FashionDay: React.FC = () => {
             )}
             
             {selectedEdition.edition === 2 && (
-              <div className="text-center my-12 py-8 border-y border-pm-gold/10 bg-black/30">
+              <div className="text-center my-12 py-8 bg-pm-dark/50 rounded-lg">
                   <h3 className="text-3xl font-playfair text-pm-gold mb-4">Rejoignez l'Aventure de l'Édition 2</h3>
                   <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
-                      Pour cette nouvelle édition, nous recherchons des talents visionnaires pour donner vie au thème "L’Art de Se Révéler". Que vous soyez mannequin, styliste, partenaire, photographe ou que vous ayez un autre talent à partager, nous vous invitons à rejoindre cette célébration de la mode.
+                      Pour cette nouvelle édition, nous recherchons des talents visionnaires pour donner vie au thème "L’Art de Se Révler". Que vous soyez mannequin, styliste, partenaire, photographe ou que vous ayez un autre talent à partager, nous vous invitons à rejoindre cette célébration de la mode.
                   </p>
                   <div className="mt-8">
                       <Link to="/fashion-day-application" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20">
@@ -81,7 +81,6 @@ const FashionDay: React.FC = () => {
                   </div>
               </div>
             )}
-
 
             {/* Featured Artists and Models */}
             {selectedEdition.artists && selectedEdition.featuredModels && (
@@ -104,7 +103,7 @@ const FashionDay: React.FC = () => {
             {/* Stylists Gallery */}
             {selectedEdition.stylists && (
               <div>
-                <h3 className="text-3xl font-playfair text-pm-gold text-center my-12 pt-8 border-t border-pm-gold/10">Stylistes Participants</h3>
+                <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Stylistes Participants</h3>
                 <div className="space-y-12">
                   {selectedEdition.stylists.map((stylist) => (
                     <div key={stylist.name} className="bg-pm-dark p-6 border border-pm-gold/10 rounded-lg">
@@ -127,7 +126,7 @@ const FashionDay: React.FC = () => {
             
             {selectedEdition.partners && (
               <div className="mt-20">
-                <h3 className="text-3xl font-playfair text-pm-gold text-center my-12 pt-8 border-t border-pm-gold/10">Partenaires & Sponsors</h3>
+                <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Partenaires & Sponsors</h3>
                 <div className="flex justify-center items-center gap-12 flex-wrap">
                     {selectedEdition.partners.map(p => (
                         <div key={p.name} className="text-center">
@@ -176,10 +175,12 @@ interface InfoPillProps {
     content: string;
 }
 const InfoPill: React.FC<InfoPillProps> = ({ icon: Icon, title, content }) => (
-    <div className="flex flex-col items-center">
-        <Icon className="w-10 h-10 text-pm-gold mb-2"/>
-        <span className="font-bold">{title}</span>
-        <span>{content}</span>
+    <div className="flex items-center gap-3">
+        <Icon className="w-10 h-10 text-pm-gold"/>
+        <div>
+            <span className="font-bold block text-left">{title}</span>
+            <span className="block text-left">{content}</span>
+        </div>
     </div>
 );
 

@@ -15,7 +15,7 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
 
     return (
         <div>
-            <label className="block text-sm font-medium text-pm-off-white/70 mb-2">{label}</label>
+            <label className="admin-label">{label}</label>
             <div className="flex items-center gap-4">
                 <div className="w-24 h-24 flex-shrink-0 bg-black border border-pm-off-white/20 rounded-md flex items-center justify-center">
                     {value ? (

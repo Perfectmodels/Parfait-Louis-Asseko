@@ -51,34 +51,27 @@ const Home: React.FC = () => {
       </section>
 
       {/* About Us Preview */}
-      <section className="py-16 lg:py-24 bg-black">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
-              <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
-            </div>
-            <div className="md:w-1/2 text-center md:text-left">
-              <h2 className="text-4xl font-playfair text-pm-gold mb-4">Perfect Models Management</h2>
-              <p className="text-pm-off-white/80 mb-8 leading-relaxed">
-                {agencyInfo.about.p1}
-              </p>
-              <Link to="/agence" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                Découvrir l'agence
-              </Link>
-            </div>
+      <section className="page-container bg-black">
+        <div className="flex flex-col md:flex-row items-center gap-12">
+          <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
+            <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
+          </div>
+          <div className="md:w-1/2 text-center md:text-left">
+            <h2 className="text-4xl font-playfair text-pm-gold mb-4">Perfect Models Management</h2>
+            <p className="text-pm-off-white/80 mb-8 leading-relaxed">
+              {agencyInfo.about.p1}
+            </p>
+            <Link to="/agence" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+              Découvrir l'agence
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Testimonials Carousel */}
-      <section className="py-16 lg:py-24 bg-pm-dark">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-playfair text-pm-gold text-center mb-4">Ce qu'ils disent de nous</h2>
-          <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
-            La confiance et le succès de nos talents et partenaires sont notre plus grande fierté.
-          </p>
-          <TestimonialCarousel />
-        </div>
+      <section className="page-container bg-pm-dark">
+        <h2 className="section-title">Ce qu'ils disent de nous</h2>
+        <TestimonialCarousel />
       </section>
       
       {/* Perfect Fashion Day Preview */}
@@ -98,31 +91,24 @@ const Home: React.FC = () => {
       </section>
 
       {/* News & Events Section */}
-      <section className="py-16 lg:py-24 bg-black">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-playfair text-pm-gold text-center mb-4">Actualités & Événements</h2>
-          <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
-            Restez informés des derniers événements, collaborations et annonces de l'agence.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {latestNews.map(item => (
-              <NewsCard key={item.id} item={item} />
-            ))}
-          </div>
+      <section className="page-container bg-black">
+        <h2 className="section-title">Actualités & Événements</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {latestNews.map(item => (
+            <NewsCard key={item.id} item={item} />
+          ))}
         </div>
       </section>
 
       {/* Join Us CTA */}
-       <section className="py-16 lg:py-24 bg-pm-dark text-center">
-            <div className="container mx-auto px-6">
-                <h2 className="text-4xl font-playfair text-pm-gold mb-4">Devenez le Prochain Visage de la Mode</h2>
-                <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
-                    Prêt à lancer votre carrière ? Nous sommes toujours à la recherche de nouveaux talents.
-                </p>
-                <Link to="/casting-formulaire" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-                    Postuler maintenant
-                </Link>
-            </div>
+       <section className="page-container bg-pm-dark text-center">
+            <h2 className="text-4xl font-playfair text-pm-gold mb-4">Devenez le Prochain Visage de la Mode</h2>
+            <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
+                Prêt à lancer votre carrière ? Nous sommes toujours à la recherche de nouveaux talents.
+            </p>
+            <Link to="/casting-formulaire" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+                Postuler maintenant
+            </Link>
         </section>
 
       {/* Partners */}
@@ -142,7 +128,7 @@ const Home: React.FC = () => {
 
 const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
   const content = (
-    <div className="group block bg-pm-dark border border-pm-gold/20 overflow-hidden shadow-lg shadow-black/30 hover:border-pm-gold hover:shadow-xl hover:shadow-pm-gold/20 transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col">
+    <div className="group card-base overflow-hidden h-full flex flex-col">
       <div className="relative h-64 overflow-hidden">
         <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
       </div>
@@ -151,8 +137,8 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
         <h3 className="text-xl font-playfair text-pm-off-white mt-2 mb-2 group-hover:text-pm-gold transition-colors flex-grow">{item.title}</h3>
         <p className="text-sm text-pm-off-white/70 mb-4">{item.excerpt}</p>
         {item.link && (
-          <span className="inline-block text-sm font-bold text-pm-gold group-hover:underline mt-auto">
-            En savoir plus →
+          <span className="inline-block text-sm font-bold text-pm-gold mt-auto">
+            En savoir plus <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
           </span>
         )}
       </div>

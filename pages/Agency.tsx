@@ -6,11 +6,6 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import ServiceCard from '../components/ServiceCard';
 
-
-const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <h2 className="text-4xl font-playfair text-pm-gold text-center mb-10 lg:mb-14">{children}</h2>
-);
-
 const Agency: React.FC = () => {
   const { data, isInitialized } = useData();
 
@@ -21,20 +16,20 @@ const Agency: React.FC = () => {
   const { agencyInfo, modelDistinctions, agencyTimeline, agencyServices, agencyAchievements, agencyPartners, siteImages } = data;
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24">
+    <div className="bg-pm-dark text-pm-off-white">
       <SEO 
         title="L'Agence | Notre Histoire et Nos Valeurs"
         description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence, et les services qui font de nous un leader de la mode au Gabon."
         keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
         image={siteImages.agencyHistory}
       />
-      <div className="container mx-auto px-6 space-y-20 lg:space-y-28">
+      <div className="page-container space-y-20 lg:space-y-28">
 
         {/* À Propos */}
         <section>
-          <SectionTitle>Notre Histoire</SectionTitle>
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2 p-4 border-2 border-pm-gold">
+          <h2 className="section-title">Notre Histoire</h2>
+          <div className="content-section flex flex-col md:flex-row items-center gap-12">
+            <div className="md:w-1/2 p-2 border-2 border-pm-gold">
               <img src={siteImages.agencyHistory} alt="L'équipe Perfect Models" className="w-full h-full object-cover"/>
             </div>
             <div className="md:w-1/2 text-lg leading-relaxed text-pm-off-white/90">
@@ -46,7 +41,7 @@ const Agency: React.FC = () => {
 
         {/* Distinctions */}
         <section>
-          <SectionTitle>Distinctions de nos Mannequins</SectionTitle>
+          <h2 className="section-title">Distinctions de nos Mannequins</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {modelDistinctions.map((distinction, index) => (
               <DistinctionCard key={index} distinction={distinction} />
@@ -56,13 +51,13 @@ const Agency: React.FC = () => {
 
         {/* Parcours (Timeline) */}
         <section>
-          <SectionTitle>Notre Parcours</SectionTitle>
+          <h2 className="section-title">Notre Parcours</h2>
            <div className="relative max-w-4xl mx-auto">
                 <div className="absolute left-1/2 h-full w-0.5 bg-pm-gold/30 transform -translate-x-1/2"></div>
                 {agencyTimeline.map((item, index) => (
                     <div key={index} className={`relative flex items-center w-full my-8 ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
                         <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}>
-                            <div className="bg-black p-4 border border-pm-gold/20 rounded-lg">
+                            <div className="bg-black p-4 border border-pm-gold/20 rounded-lg card-base">
                                 <h3 className="text-xl font-bold text-pm-gold">{item.year}</h3>
                                 <p className="text-pm-off-white/80 mt-1">{item.event}</p>
                             </div>
@@ -75,7 +70,7 @@ const Agency: React.FC = () => {
 
         {/* Services */}
         <section>
-          <SectionTitle>Nos Services</SectionTitle>
+          <h2 className="section-title">Nos Services</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {agencyServices.map((service, index) => (
               <ServiceCard key={index} service={service} />
@@ -85,13 +80,13 @@ const Agency: React.FC = () => {
 
          {/* Réalisations */}
         <section>
-            <SectionTitle>Nos Réalisations</SectionTitle>
+            <h2 className="section-title">Nos Réalisations</h2>
             <AchievementsTabs achievements={agencyAchievements} />
         </section>
 
          {/* Partenaires */}
         <section>
-          <SectionTitle>Nos Partenaires Clé</SectionTitle>
+          <h2 className="section-title">Nos Partenaires Clé</h2>
           <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
             {agencyPartners.map((partner, index) => (
                 <p key={index} className="text-xl font-semibold text-pm-off-white/80 border-b-2 border-pm-gold/30 pb-1">{partner.name}</p>
@@ -100,17 +95,14 @@ const Agency: React.FC = () => {
         </section>
 
         {/* Contact CTA */}
-        <section>
-          <SectionTitle>Contactez-Nous</SectionTitle>
-          <div className="text-center bg-black p-12 border border-pm-gold/20">
-            <h3 className="text-2xl font-playfair text-pm-gold mb-4">Une question ? Un projet ?</h3>
-            <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
-                Nous serions ravis d'échanger avec vous. Visitez notre page de contact pour nous envoyer un message ou trouver nos coordonnées.
-            </p>
-            <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
-                Nous Contacter
-            </Link>
-          </div>
+        <section className="text-center content-section">
+          <h3 className="text-2xl font-playfair text-pm-gold mb-4">Une question ? Un projet ?</h3>
+          <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
+              Nous serions ravis d'échanger avec vous. Visitez notre page de contact pour nous envoyer un message ou trouver nos coordonnées.
+          </p>
+          <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
+              Nous Contacter
+          </Link>
         </section>
 
       </div>
@@ -119,9 +111,9 @@ const Agency: React.FC = () => {
 };
 
 const DistinctionCard: React.FC<{ distinction: ModelDistinction }> = ({ distinction }) => (
-    <div className="bg-black p-6 border border-pm-gold/30 text-center">
+    <div className="card-base p-6 text-center h-full flex flex-col justify-center items-center">
         <CheckBadgeIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-pm-gold">{distinction.name}</h3>
+        <h3 className="text-xl font-playfair text-pm-gold">{distinction.name}</h3>
         <ul className="mt-2 text-sm text-pm-off-white/80 space-y-1">
             {distinction.titles.map((title, index) => <li key={index}>✦ {title}</li>)}
         </ul>
@@ -138,13 +130,14 @@ const AchievementsTabs: React.FC<{ achievements: AchievementCategory[] }> = ({ a
                     <button
                         key={index}
                         onClick={() => setActiveTab(index)}
-                        className={`px-6 py-3 text-sm uppercase tracking-wider font-bold transition-colors ${activeTab === index ? 'text-pm-gold border-b-2 border-pm-gold' : 'text-pm-off-white/70 hover:text-pm-gold'}`}
+                        className={`px-6 py-3 text-sm uppercase tracking-wider font-bold transition-colors relative ${activeTab === index ? 'text-pm-gold' : 'text-pm-off-white/70 hover:text-pm-gold'}`}
                     >
                         {category.name}
+                        {activeTab === index && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold"/>}
                     </button>
                 ))}
             </div>
-            <div className="bg-black p-8 border border-pm-gold/10">
+            <div className="content-section">
                 <ul className="columns-1 md:columns-2 lg:columns-3 gap-x-8 text-pm-off-white/80">
                     {achievements[activeTab].items.map((item, index) => (
                         <li key={index} className="mb-2 break-inside-avoid">{item}</li>

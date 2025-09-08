@@ -1,11 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { useData } from '../contexts/DataContext';
 
 const NotFound: React.FC = () => {
+  const { data } = useData();
+
   return (
     <>
-      <SEO title="Page Non Trouvée" description="Désolé, la page que vous recherchez n'existe pas ou a été déplacée." noIndex />
+      <SEO 
+        title="Page Non Trouvée" 
+        description="Désolé, la page que vous recherchez n'existe pas ou a été déplacée." 
+        image={data?.siteConfig.logo} 
+        noIndex 
+      />
       <div className="flex items-center justify-center h-screen bg-pm-dark text-center">
         <div>
           <h1 className="text-8xl font-playfair text-pm-gold">404</h1>

@@ -11,13 +11,19 @@ const Models: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const models = data?.models || [];
+  
+  const publicModels = useMemo(() => models.filter(model => model.isPublic === true), [models]);
 
   const filteredModels = useMemo(() => {
-    return models
-      .filter(model => model.isPublic === true) // Only show public models
+    return publicModels
       .filter(model => filter === 'Tous' || model.gender === filter)
       .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [filter, searchTerm, models]);
+  }, [filter, searchTerm, publicModels]);
+  
+  const seoDescription = useMemo(() => {
+      const modelNames = publicModels.slice(0, 3).map(m => m.name).join(', ');
+      return `Découvrez le portfolio des mannequins de Perfect Models Management, incluant ${modelNames} et bien d'autres. Des visages uniques et professionnels prêts à incarner votre marque au Gabon.`;
+  }, [publicModels]);
 
   const FilterButton: React.FC<{ gender: GenderFilter }> = ({ gender }) => (
     <button
@@ -33,16 +39,16 @@ const Models: React.FC = () => {
   }
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24 min-h-screen">
+    <div className="bg-pm-dark text-pm-off-white min-h-screen">
       <SEO 
         title="Nos Mannequins | Le Visage de la Mode Gabonaise"
-        description="Découvrez le portfolio complet des mannequins hommes et femmes de Perfect Models Management. Des visages uniques et professionnels prêts à incarner votre marque et vos créations."
+        description={seoDescription}
         keywords="mannequins hommes gabon, mannequins femmes gabon, book mannequins, agence de modèles photo, casting modèles libreville"
-        image={data?.siteImages.about}
+        image={publicModels[0]?.imageUrl || data?.siteImages.about}
       />
-      <div className="container mx-auto px-6">
-        <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold text-center mb-4">Nos Mannequins</h1>
-        <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-10 lg:mb-14">
+      <div className="page-container">
+        <h1 className="page-title">Nos Mannequins</h1>
+        <p className="page-subtitle">
           Découvrez les visages qui définissent l'avenir de la mode. Des talents uniques, prêts à donner vie à vos créations.
         </p>
 

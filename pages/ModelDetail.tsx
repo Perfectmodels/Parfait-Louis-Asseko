@@ -30,11 +30,13 @@ const ModelDetail: React.FC = () => {
     return <NotFound />;
   }
 
+  const seoDescription = `Explorez le portfolio de ${model.name}, mannequin ${model.gender} de ${model.height} chez Perfect Models Management. Découvrez ses photos, mensurations (${model.measurements.chest}-${model.measurements.waist}-${model.measurements.hips}), et son parcours unique dans la mode.`;
+
   return (
     <>
       <SEO
         title={`${model.name} | Portfolio`}
-        description={`Découvrez ${model.name}, talentueux mannequin de l'agence Perfect Models Management. Portfolio complet, mensurations (${model.height}), expérience et parcours.`}
+        description={seoDescription}
         keywords={`${model.name}, mannequin ${model.gender}, modèle photo gabon, agence pmm, booker ${model.name}, mensurations mannequin`}
         image={model.imageUrl}
       />
@@ -54,7 +56,7 @@ const ModelDetail: React.FC = () => {
               <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold">{model.name}</h1>
               
               <div className="border-b border-pm-gold/20 mt-6 mb-6">
-                <nav className="flex space-x-4" aria-label="Tabs">
+                <nav className="flex space-x-8" aria-label="Tabs">
                   <TabButton name="Détails" isActive={activeTab === 'details'} onClick={() => setActiveTab('details')} />
                   <TabButton name="Expérience & Parcours" isActive={activeTab === 'experience'} onClick={() => setActiveTab('experience')} />
                 </nav>
@@ -62,7 +64,7 @@ const ModelDetail: React.FC = () => {
 
               <div>
                 {activeTab === 'details' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-lg animate-fade-in">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-lg animate-fade-in">
                     <InfoItem label="Taille" value={model.height} />
                     <InfoItem label="Genre" value={model.gender} />
                     {model.age && <InfoItem label="Âge" value={`${model.age} ans`} />}
@@ -76,12 +78,12 @@ const ModelDetail: React.FC = () => {
                     </div>
                      {model.distinctions && model.distinctions.length > 0 && (
                         <div className="col-span-full mt-4">
-                            <h3 className="font-bold text-pm-off-white/60">Palmarès & Distinctions</h3>
-                            <div className="space-y-3 mt-2">
+                            <h3 className="text-lg font-bold text-pm-off-white/80 border-b border-pm-gold/20 pb-1 mb-3">Palmarès & Distinctions</h3>
+                            <div className="space-y-3">
                                 {model.distinctions.map((distinction, index) => (
                                     <div key={index}>
-                                        <h4 className="font-semibold text-pm-off-white/80">{distinction.name}</h4>
-                                        <ul className="list-disc list-inside text-pm-off-white/90 pl-4">
+                                        <h4 className="font-semibold text-pm-off-white">{distinction.name}</h4>
+                                        <ul className="list-disc list-inside text-pm-off-white/90 pl-4 text-base">
                                             {distinction.titles.map((title, titleIndex) => (
                                                 <li key={titleIndex}>{title}</li>
                                             ))}
@@ -119,7 +121,7 @@ const ModelDetail: React.FC = () => {
 
           {model.portfolioImages && model.portfolioImages.length > 0 && (
             <section className="mt-16">
-              <h2 className="text-3xl font-playfair text-pm-gold text-center mb-8">Portfolio</h2>
+              <h2 className="section-title">Portfolio</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {model.portfolioImages.map((img, index) => (
                   <button key={index} onClick={() => setSelectedImage(img)} className="group block aspect-[3/4] bg-pm-dark overflow-hidden transition-all duration-300 hover:scale-105 border-2 border-transparent hover:border-pm-gold">
@@ -185,19 +187,20 @@ const ModelDetail: React.FC = () => {
 const TabButton: React.FC<{name: string, isActive: boolean, onClick: () => void}> = ({ name, isActive, onClick }) => (
     <button
         onClick={onClick}
-        className={`px-3 py-2 font-medium text-sm rounded-t-lg transition-colors ${
+        className={`relative py-2 font-medium text-lg uppercase tracking-wider transition-colors ${
             isActive 
-            ? 'bg-pm-gold text-pm-dark' 
-            : 'text-pm-off-white/70 hover:bg-pm-dark/50 hover:text-pm-gold'
+            ? 'text-pm-gold' 
+            : 'text-pm-off-white/70 hover:text-pm-gold'
         }`}
     >
         {name}
+        <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0'}`}/>
     </button>
 );
 
 const InfoItem: React.FC<{label: string, value: string}> = ({ label, value }) => (
     <div>
-        <span className="font-bold text-pm-off-white/60 block text-sm">{label}</span> 
+        <span className="font-bold text-pm-off-white/60 block text-sm uppercase tracking-wider">{label}</span> 
         <span className="text-pm-off-white/90">{value}</span>
     </div>
 );
