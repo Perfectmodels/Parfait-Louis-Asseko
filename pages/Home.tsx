@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
-import { NewsItem } from '../types';
+import ModelCard from '../components/ModelCard';
+import ServiceCard from '../components/ServiceCard';
 
 
 const Home: React.FC = () => {
@@ -13,9 +14,9 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, agencyPartners, fashionDayEvents, newsItems, siteImages } = data;
-
-  const latestNews = newsItems.slice(0, 3);
+  const { agencyInfo, agencyPartners, fashionDayEvents, models, siteImages, testimonials, agencyServices } = data;
+  const publicModels = models.filter(m => m.isPublic).slice(0, 4);
+  const featuredServices = agencyServices.slice(0, 4);
 
   return (
     <div className="text-pm-off-white">
@@ -26,7 +27,7 @@ const Home: React.FC = () => {
         image={siteImages.hero}
       />
 
-      {/* Hero Section */}
+      {/* 1. Hero Section */}
       <section 
         className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed" 
         style={{ backgroundImage: `url('${siteImages.hero}')`}}
@@ -37,20 +38,20 @@ const Home: React.FC = () => {
             L'Élégance Redéfinie
           </h1>
           <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
-            Découvrez une nouvelle ère de la mode où talent, professionnalisme et culture se rencontrent.
+             Nous révélons les talents et valorisons la beauté africaine.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-             <Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+             <Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
                 Découvrir nos mannequins
             </Link>
-            <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
-                Rejoindre l'agence
+            <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
+                Nous rejoindre
             </Link>
           </div>
         </div>
       </section>
 
-      {/* About Us Preview */}
+      {/* 2. Agency Presentation */}
       <section className="page-container bg-black">
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
@@ -58,95 +59,103 @@ const Home: React.FC = () => {
           </div>
           <div className="md:w-1/2 text-center md:text-left">
             <h2 className="text-4xl font-playfair text-pm-gold mb-4">Perfect Models Management</h2>
-            <p className="text-pm-off-white/80 mb-8 leading-relaxed">
+            <p className="text-pm-off-white/80 mb-6 leading-relaxed">
               {agencyInfo.about.p1}
             </p>
-            <Link to="/agence" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+            <div className="flex justify-center md:justify-start gap-6 font-bold text-pm-gold/90 mb-8">
+              <span>PROFESSIONNALISME</span><span>•</span><span>EXCELLENCE</span><span>•</span><span>ÉTHIQUE</span>
+            </div>
+            <Link to="/agence" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
               Découvrir l'agence
             </Link>
           </div>
         </div>
       </section>
-
-      {/* Testimonials Carousel */}
-      <section className="page-container bg-pm-dark">
-        <h2 className="section-title">Ce qu'ils disent de nous</h2>
-        <TestimonialCarousel />
-      </section>
       
-      {/* Perfect Fashion Day Preview */}
+      {/* 3. Our Services */}
+      <section className="page-container bg-pm-dark">
+        <h2 className="section-title">Nos Services</h2>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {featuredServices.map(service => (
+                <ServiceCard key={service.title} service={service} />
+            ))}
+        </div>
+        <div className="text-center mt-12">
+            <Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+              Découvrir tous nos services
+            </Link>
+        </div>
+      </section>
+
+      {/* 4. Our Models */}
+      <section className="page-container bg-black">
+        <h2 className="section-title">Nos Mannequins</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {publicModels.map(model => (
+            <ModelCard key={model.id} model={model} />
+          ))}
+        </div>
+        <div className="text-center mt-12">
+            <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+              Voir tous les mannequins
+            </Link>
+        </div>
+      </section>
+
+      {/* 5. Our Events */}
       <section 
         className="py-20 lg:py-28 bg-cover bg-center bg-fixed" 
         style={{ backgroundImage: `url('${siteImages.fashionDayBg}')`}}
       >
         <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm">
-            <h2 className="text-4xl font-playfair text-pm-gold mb-4">Perfect Fashion Day</h2>
+            <h2 className="text-4xl font-playfair text-pm-gold mb-4">Événements & Défilés</h2>
             <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
-                {fashionDayEvents.find(e => e.edition === 2)?.description}
+                {fashionDayEvents.find(e => e.edition === 2)?.description || "Nous créons des moments inoubliables où la mode prend vie. Découvrez nos événements phares."}
             </p>
-            <Link to="/fashion-day" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-                Découvrir l'événement
+            <Link to="/fashion-day" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+                Découvrir le Perfect Fashion Day
             </Link>
         </div>
       </section>
 
-      {/* News & Events Section */}
-      <section className="page-container bg-black">
-        <h2 className="section-title">Actualités & Événements</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {latestNews.map(item => (
-            <NewsCard key={item.id} item={item} />
-          ))}
-        </div>
-      </section>
-
-      {/* Join Us CTA */}
-       <section className="page-container bg-pm-dark text-center">
-            <h2 className="text-4xl font-playfair text-pm-gold mb-4">Devenez le Prochain Visage de la Mode</h2>
-            <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
-                Prêt à lancer votre carrière ? Nous sommes toujours à la recherche de nouveaux talents.
-            </p>
-            <Link to="/casting-formulaire" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-                Postuler maintenant
-            </Link>
-        </section>
-
-      {/* Partners */}
+      {/* 6. Partners */}
       <section className="py-16 bg-pm-dark">
           <div className="container mx-auto px-6 text-center">
-              <h3 className="text-sm uppercase tracking-widest text-pm-off-white/50 mb-8">Nos Partenaires de Confiance</h3>
+              <h3 className="text-sm uppercase tracking-widest text-pm-off-white/50 mb-8">Ils nous font confiance</h3>
               <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-4">
-                  {agencyPartners.slice(0, 5).map(partner => (
+                  {agencyPartners.map(partner => (
                       <p key={partner.name} className="text-lg font-semibold text-pm-off-white/70 transition-colors hover:text-pm-gold">{partner.name}</p>
                   ))}
               </div>
           </div>
       </section>
+
+      {/* 7. Testimonials */}
+       {testimonials && testimonials.length > 0 && (
+        <section className="page-container bg-black">
+            <h2 className="section-title">Témoignages</h2>
+            <TestimonialCarousel />
+        </section>
+       )}
+
+      {/* 8. Call to Action */}
+       <section className="page-container bg-pm-dark text-center">
+            <h2 className="text-4xl font-playfair text-pm-gold mb-4">Prêt(e) à lancer votre carrière ?</h2>
+            <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+                Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
+            </p>
+             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                    Postuler
+                </Link>
+                <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+                    Nous Contacter
+                </Link>
+             </div>
+        </section>
+
     </div>
   );
 };
-
-const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
-  const content = (
-    <div className="group card-base overflow-hidden h-full flex flex-col">
-      <div className="relative h-64 overflow-hidden">
-        <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-      </div>
-      <div className="p-6 flex flex-col flex-grow">
-        <p className="text-xs uppercase tracking-widest text-pm-off-white/60 font-semibold">{new Date(item.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-        <h3 className="text-xl font-playfair text-pm-off-white mt-2 mb-2 group-hover:text-pm-gold transition-colors flex-grow">{item.title}</h3>
-        <p className="text-sm text-pm-off-white/70 mb-4">{item.excerpt}</p>
-        {item.link && (
-          <span className="inline-block text-sm font-bold text-pm-gold mt-auto">
-            En savoir plus <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-          </span>
-        )}
-      </div>
-    </div>
-  );
-
-  return item.link ? <Link to={item.link}>{content}</Link> : <div>{content}</div>;
-};
-
 
 export default Home;

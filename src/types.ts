@@ -69,6 +69,8 @@ export interface Service {
   icon: string;
   title: string;
   description: string;
+  buttonText: string;
+  buttonLink: string;
   isComingSoon?: boolean;
 }
 

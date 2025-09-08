@@ -4,7 +4,6 @@ import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import ServiceCard from '../components/ServiceCard';
 
 const Agency: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -13,7 +12,7 @@ const Agency: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
   
-  const { agencyInfo, modelDistinctions, agencyTimeline, agencyServices, agencyAchievements, agencyPartners, siteImages } = data;
+  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages } = data;
 
   return (
     <div className="bg-pm-dark text-pm-off-white">
@@ -68,16 +67,6 @@ const Agency: React.FC = () => {
             </div>
         </section>
 
-        {/* Services */}
-        <section>
-          <h2 className="section-title">Nos Services</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {agencyServices.map((service, index) => (
-              <ServiceCard key={index} service={service} />
-            ))}
-          </div>
-        </section>
-
          {/* Réalisations */}
         <section>
             <h2 className="section-title">Nos Réalisations</h2>
@@ -100,7 +89,7 @@ const Agency: React.FC = () => {
           <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
               Nous serions ravis d'échanger avec vous. Visitez notre page de contact pour nous envoyer un message ou trouver nos coordonnées.
           </p>
-          <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
+          <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
               Nous Contacter
           </Link>
         </section>

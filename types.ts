@@ -71,6 +71,9 @@ export interface Service {
   icon: string;
   title: string;
   description: string;
+  // FIX: Add buttonText and buttonLink to the Service interface to resolve type errors in ServiceCard.
+  buttonText: string;
+  buttonLink: string;
   isComingSoon?: boolean;
 }
 

@@ -1,17 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
-import { Testimonial, Partner } from '../types';
+import { Testimonial, Partner, AIAssistantProps } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/ImageInput';
+import AIAssistant from '../components/AIAssistant';
 
 type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData'>;
 
 const AdminSettings: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localData, setLocalData] = useState<EditableData | null>(null);
+    const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
+    const [aiAssistantProps, setAIAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'>>({
+        onInsertContent: () => {}, fieldName: '', initialPrompt: '',
+    });
+
+     const openAIAssistant = (fieldName: string, onInsert: (content: string) => void, initialPrompt: string = '') => {
+        setAIAssistantProps({ fieldName, onInsertContent: onInsert, initialPrompt });
+        setIsAIAssistantOpen(true);
+    };
 
     useEffect(() => {
         if (isInitialized && data) {
@@ -57,6 +67,11 @@ const AdminSettings: React.FC = () => {
 
     return (
         <>
+        <AIAssistant 
+            isOpen={isAIAssistantOpen} 
+            onClose={() => setIsAIAssistantOpen(false)}
+            {...aiAssistantProps} 
+        />
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Paramètres du Site" noIndex />
             <div className="container mx-auto px-6">
@@ -144,6 +159,11 @@ const AdminSettings: React.FC = () => {
                                         label="Citation" 
                                         value={item.quote} 
                                         onChange={e => onChange('quote', e.target.value)}
+                                        onOpenAI={() => openAIAssistant(
+                                            'Témoignage',
+                                            (content) => onChange('quote', content),
+                                            `Rédige un témoignage positif et percutant pour l'agence de la part de "${item.name}", qui est un(e) "${item.role}".`
+                                        )}
                                     />
                                 </>
                             )}
@@ -173,10 +193,15 @@ const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label,
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormTextArea: React.FC<{label: string, value: any, onChange: any, onOpenAI?: () => void}> = ({label, value, onChange, onOpenAI}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+             {onOpenAI && (
+                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+                    <SparklesIcon className="w-4 h-4" /> Assister
+                </button>
+            )}
         </div>
         <textarea value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
     </div>
