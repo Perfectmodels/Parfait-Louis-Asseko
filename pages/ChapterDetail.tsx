@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
@@ -13,7 +12,7 @@ const ChapterDetail: React.FC = () => {
   const module = data?.courseData.find(m => m.slug === moduleSlug);
   const chapter = module?.chapters.find(c => c.slug === chapterSlug);
 
-  if (!isInitialized) {
+  if (!isInitialized || !data) {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
@@ -31,6 +30,7 @@ const ChapterDetail: React.FC = () => {
         title={`${chapter.title} | PMM Classroom`}
         description={`Leçon détaillée sur "${chapter.title}" du module "${module.title}". Maîtrisez les compétences essentielles du mannequinat avec le programme de formation de Perfect Models Management.`}
         keywords={`apprendre le mannequinat, cours ${chapter.title}, formation ${module.title}, pmm classroom`}
+        image={data.siteImages.classroomBg}
       />
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="flex justify-between items-center mb-8 print-hide">

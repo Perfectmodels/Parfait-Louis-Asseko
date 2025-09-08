@@ -85,6 +85,7 @@ const AdminCastingResults: React.FC = () => {
             name: `${app.firstName} ${app.lastName}`,
             username: username,
             password: password,
+            level: 'Débutant',
             email: app.email,
             phone: app.phone,
             age: age,

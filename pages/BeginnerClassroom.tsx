@@ -28,6 +28,7 @@ const BeginnerClassroom: React.FC = () => {
             <SEO 
               title="Classroom Débutant"
               description="Votre parcours commence ici. Accédez aux modules de formation de base pour les nouveaux mannequins de Perfect Models Management."
+              image={siteImages?.classroomBg}
               noIndex
             />
             <section 

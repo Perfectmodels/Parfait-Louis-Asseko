@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -27,6 +26,7 @@ const Magazine: React.FC = () => {
         title="Magazine | Focus Model 241"
         description="Focus Model 241, le magazine en ligne de Perfect Models Management. Plongez dans les coulisses de la mode gabonaise avec des interviews exclusives, des analyses de tendances et des conseils de pro."
         keywords="magazine mode gabon, focus model 241, interview mannequin, tendances mode afrique, mode libreville"
+        image={featuredArticle?.imageUrl}
       />
       <header className="bg-black py-8 border-b-2 border-pm-gold">
         <div className="container mx-auto px-6 text-center">

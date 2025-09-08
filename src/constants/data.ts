@@ -1,4 +1,4 @@
-// FIX: Add BeginnerStudent and SocialLinks to import, and import beginnerCourseData.
+// FIX: Add BeginnerStudent to import
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks } from '../types';
 import { NavLink } from '../hooks/useDataStore';
 // FIX: Import beginner course data
@@ -44,6 +44,8 @@ export const siteImages: SiteImages = {
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
+    // L'URL du Worker Cloudflare pour l'upload d'images a été configurée.
+    cloudflareWorkerUrl: 'https://asseko19.workers.dev',
 };
 
 export const juryMembers: JuryMember[] = [
@@ -66,6 +68,7 @@ export const models: Model[] = [
         name: 'Noemi Kim',
         username: 'Man-PMMN01',
         password: 'noemi2024',
+        level: 'Pro',
         email: 'noemi.kim@example.com',
         phone: '+241077000001',
         age: 22,
@@ -92,6 +95,7 @@ export const models: Model[] = [
         name: 'AJ Caramela',
         username: 'Man-PMMA01',
         password: 'caramela2024',
+        level: 'Pro',
         height: '1m75',
         gender: 'Femme',
         imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
@@ -111,6 +115,7 @@ export const models: Model[] = [
         name: 'Yann Aubin',
         username: 'Man-PMMY01',
         password: 'yann2024',
+        level: 'Pro',
         height: '1m88',
         gender: 'Homme',
         imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
@@ -27,6 +26,7 @@ const Agency: React.FC = () => {
         title="L'Agence | Notre Histoire et Nos Valeurs"
         description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence, et les services qui font de nous un leader de la mode au Gabon."
         keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
+        image={siteImages.agencyHistory}
       />
       <div className="container mx-auto px-6 space-y-20 lg:space-y-28">
 

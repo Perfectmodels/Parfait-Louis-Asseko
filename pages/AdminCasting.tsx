@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
@@ -10,7 +9,7 @@ import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
-    const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Toutes');
+    const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
     const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
@@ -155,21 +154,21 @@ const AdminCasting: React.FC = () => {
                         <table className="w-full text-left">
                             <thead className="bg-pm-dark/50">
                                 <tr className="border-b border-pm-gold/20">
-                                    <th className="p-4 uppercase text-xs tracking-wider">Nom</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Âge</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Taille</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider">Statut</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-right">Actions</th>
+                                    <th className="py-4 px-6 uppercase text-xs tracking-wider">Nom</th>
+                                    <th className="py-4 px-6 uppercase text-xs tracking-wider hidden sm:table-cell">Âge</th>
+                                    <th className="py-4 px-6 uppercase text-xs tracking-wider hidden sm:table-cell">Taille</th>
+                                    <th className="py-4 px-6 uppercase text-xs tracking-wider">Statut</th>
+                                    <th className="py-4 px-6 uppercase text-xs tracking-wider text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredApps.map(app => (
                                     <tr key={app.id} className="border-b border-pm-dark hover:bg-pm-dark/50">
-                                        <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
-                                        <td className="p-4 hidden sm:table-cell">{app.birthDate ? `${new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans` : 'N/A'}</td>
-                                        <td className="p-4 hidden sm:table-cell">{app.height} cm</td>
-                                        <td className="p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
-                                        <td className="p-4">
+                                        <td className="py-6 px-6 font-semibold">{app.firstName} {app.lastName}</td>
+                                        <td className="py-6 px-6 hidden sm:table-cell">{app.birthDate ? `${new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans` : 'N/A'}</td>
+                                        <td className="py-6 px-6 hidden sm:table-cell">{app.height} cm</td>
+                                        <td className="py-6 px-6"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
+                                        <td className="py-6 px-6">
                                             <div className="flex items-center justify-end gap-4">
                                                 <button onClick={() => setSelectedApp(app)} className="text-pm-gold/70 hover:text-pm-gold"><EyeIcon className="w-5 h-5"/></button>
                                                 <button onClick={() => handleDelete(app.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
@@ -199,51 +198,62 @@ const ApplicationModal: React.FC<{
 }> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel, onPrint }) => {
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
-                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
-                    <h2 className="text-2xl font-playfair text-pm-gold">Candidature de {app.firstName} {app.lastName}</h2>
+            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                <header className="p-6 flex justify-between items-center border-b border-pm-gold/20 flex-shrink-0">
+                    <h2 className="text-3xl font-playfair text-pm-gold">Candidature de {app.firstName} {app.lastName}</h2>
                     <button onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
                 </header>
-                <main className="p-6 overflow-y-auto flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Section title="Informations Personnelles">
-                        <InfoItem label="Nom complet" value={`${app.firstName} ${app.lastName}`} />
-                        <InfoItem label="Date de naissance" value={app.birthDate} />
-                        <InfoItem label="Email" value={app.email} />
-                        <InfoItem label="Téléphone" value={app.phone} />
-                        <InfoItem label="Nationalité" value={app.nationality} />
-                        <InfoItem label="Ville" value={app.city} />
-                        <InfoItem label="Genre" value={app.gender} />
-                    </Section>
-                     <Section title="Mensurations & Physique">
-                        <InfoItem label="Taille" value={`${app.height} cm`} />
-                        <InfoItem label="Poids" value={`${app.weight} kg`} />
-                        <InfoItem label="Poitrine" value={`${app.chest} cm`} />
-                        <InfoItem label="Taille (vêtement)" value={`${app.waist} cm`} />
-                        <InfoItem label="Hanches" value={`${app.hips} cm`} />
-                        <InfoItem label="Pointure" value={app.shoeSize} />
-                        <InfoItem label="Couleur des yeux" value={app.eyeColor} />
-                        <InfoItem label="Couleur des cheveux" value={app.hairColor} />
-                    </Section>
-                    <div className="md:col-span-2">
-                        <Section title="Expérience & Portfolio">
+                <main className="p-8 overflow-y-auto flex-grow space-y-8">
+                    <section>
+                        <h3 className="admin-section-title">Informations Personnelles</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
+                            <InfoItem label="Nom complet" value={`${app.firstName} ${app.lastName}`} />
+                            <InfoItem label="Date de naissance" value={app.birthDate} />
+                            <InfoItem label="Genre" value={app.gender} />
+                            <InfoItem label="Nationalité" value={app.nationality} />
+                            <InfoItem label="Ville" value={app.city} />
+                        </div>
+                    </section>
+                    <section>
+                        <h3 className="admin-section-title">Contact</h3>
+                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
+                            <InfoItem label="Email" value={app.email} />
+                            <InfoItem label="Téléphone" value={app.phone} />
+                        </div>
+                    </section>
+                     <section>
+                        <h3 className="admin-section-title">Mensurations & Physique</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
+                            <InfoItem label="Taille" value={`${app.height} cm`} />
+                            <InfoItem label="Poids" value={`${app.weight} kg`} />
+                            <InfoItem label="Pointure" value={app.shoeSize} />
+                            <InfoItem label="Poitrine" value={`${app.chest} cm`} />
+                            <InfoItem label="Taille (vêtement)" value={`${app.waist} cm`} />
+                            <InfoItem label="Hanches" value={`${app.hips} cm`} />
+                            <InfoItem label="Couleur des yeux" value={app.eyeColor} />
+                            <InfoItem label="Couleur des cheveux" value={app.hairColor} />
+                        </div>
+                    </section>
+                    <section>
+                        <h3 className="admin-section-title">Expérience & Portfolio</h3>
+                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
                             <InfoItem label="Niveau d'expérience" value={app.experience} />
                             <InfoItem label="Instagram" value={app.instagram} />
                             <InfoItem label="Portfolio" value={app.portfolioLink} />
-                        </Section>
-                    </div>
-                     <div className="md:col-span-2">
-                        <Section title="Statut">
-                            <div className="flex items-center gap-2 flex-wrap">
-                                {(['Nouveau', 'Présélectionné', 'Accepté', 'Refusé'] as const).map(status => (
-                                    <button key={status} onClick={() => onUpdateStatus(app.id, status)} className={`px-2 py-0.5 text-xs font-bold rounded-full border transition-all ${app.status === status ? getStatusColor(status) : 'border-pm-off-white/50 text-pm-off-white/80 hover:bg-pm-dark'}`}>
-                                        {status}
-                                    </button>
-                                ))}
-                            </div>
-                        </Section>
-                    </div>
+                        </div>
+                    </section>
+                     <section>
+                        <h3 className="admin-section-title">Statut de la Candidature</h3>
+                        <div className="flex items-center gap-2 flex-wrap">
+                            {(['Nouveau', 'Présélectionné', 'Accepté', 'Refusé'] as const).map(status => (
+                                <button key={status} onClick={() => onUpdateStatus(app.id, status)} className={`px-3 py-1 text-xs font-bold rounded-full border transition-all ${app.status === status ? getStatusColor(status) : 'border-pm-off-white/50 text-pm-off-white/80 hover:bg-pm-dark'}`}>
+                                    {status}
+                                </button>
+                            ))}
+                        </div>
+                    </section>
                 </main>
-                 <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
+                 <footer className="p-6 border-t border-pm-gold/20 flex-shrink-0 flex flex-wrap justify-end items-center gap-4">
                     <button onClick={() => onPrint(app)} className="flex items-center gap-2 px-4 py-2 text-sm border border-pm-off-white/50 text-pm-off-white/80 rounded-full hover:border-white">
                         <PrinterIcon className="w-5 h-5"/> Imprimer Fiche Jury
                     </button>
@@ -258,17 +268,10 @@ const ApplicationModal: React.FC<{
     );
 };
 
-const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
-    <div>
-        <h3 className="text-lg font-bold text-pm-gold mb-3 border-b border-pm-gold/20 pb-1">{title}</h3>
-        <div className="space-y-2">{children}</div>
-    </div>
-);
-
 const InfoItem: React.FC<{label: string, value: React.ReactNode}> = ({label, value}) => (
-    <div className="grid grid-cols-3 text-sm">
-        <strong className="text-pm-off-white/70 col-span-1">{label}:</strong>
-        <span className="truncate col-span-2">{value}</span>
+    <div>
+        <p className="text-sm font-medium text-pm-off-white/60">{label}</p>
+        <p className="text-md text-pm-off-white font-semibold">{value || 'N/A'}</p>
     </div>
 );
 
