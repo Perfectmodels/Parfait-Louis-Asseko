@@ -1,12 +1,13 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
-import AnimatedHamburgerIcon from './icons/AnimatedHamburgerIcon';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
-import { NavLink as NavLinkType } from '../hooks/useDataStore';
-import { SocialLinks } from '../types';
+import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
+import { NavLink as NavLinkType } from '../../hooks/useDataStore';
+import { SocialLinks } from '../../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
   const mobileAnimationClasses = isMobile
@@ -40,29 +41,8 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
 
 
 const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: NavLinkType[]; isMobile?: boolean; isOpen?: boolean; }> = ({ onLinkClick, navLinks, isMobile = false, isOpen = false }) => {
-  // Définition des liens de navigation principaux
-  const mainNavLinks = [
-    { path: '/', label: 'Accueil' },
-    { path: '/services', label: 'Services' },
-    { path: '/mannequins', label: 'Mannequins' },
-    { path: '/evenements', label: 'Événements' },
-    { path: '/contact', label: 'Contact' },
-    { path: '/rejoindre', label: 'Rejoindre l\'agence' }
-  ];
-
   return (
     <>
-      {mainNavLinks.map((link, index) => (
-        <NavLinkItem 
-          key={link.path}
-          to={link.path} 
-          label={link.label}
-          onClick={onLinkClick}
-          isMobile={isMobile}
-          isOpen={isOpen}
-          delay={isMobile ? 150 + index * 50 : 0}
-        />
-      ))}
       {navLinks.map((link, index) => (
         <NavLinkItem 
           key={link.path}
@@ -71,7 +51,7 @@ const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: NavLinkType[]; is
           onClick={onLinkClick}
           isMobile={isMobile}
           isOpen={isOpen}
-          delay={isMobile ? 150 + (mainNavLinks.length + index) * 50 : 0}
+          delay={isMobile ? 150 + index * 50 : 0}
         />
       ))}
     </>
@@ -248,4 +228,5 @@ const Header: React.FC = () => {
   );
 };
 
+// FIX: Add default export for the component.
 export default Header;

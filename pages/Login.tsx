@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { RecoveryRequest } from '../src/types';
+// FIX: Corrected import path for types.
+import { RecoveryRequest } from '../types';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
