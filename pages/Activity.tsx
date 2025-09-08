@@ -1,15 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 // FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
-import { QuizQuestion, Module } from '../types';
+import { QuizQuestion, Module, SiteImages } from '../types';
 import { useData } from '../contexts/DataContext';
 
 // --- STUDENT VIEW ---
-const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteImages: any; }> = ({ onLogout, courseData, siteImages }) => {
+const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteImages: SiteImages; }> = ({ onLogout, courseData, siteImages }) => {
     const [openModule, setOpenModule] = useState<number | null>(0);
 
     const toggleModule = (index: number) => {

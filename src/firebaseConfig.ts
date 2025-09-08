@@ -1,4 +1,5 @@
-import { initializeApp } from "firebase/app";
+import firebase from "firebase/compat/app";
+import "firebase/compat/database";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
@@ -7,7 +8,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
 
 // Get a reference to the database service
 export const db = getDatabase(app);

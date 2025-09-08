@@ -3,13 +3,11 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model, JuryMember } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
-import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
+import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
     const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
-    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     const applicantsWithScores = useMemo(() => {
         const juryMembers: JuryMember[] = data?.juryMembers || [];
@@ -107,7 +105,6 @@ const AdminCastingResults: React.FC = () => {
         };
 
         const updatedModels = [...data.models, newModel];
-        // FIX: Explicitly type `updatedApps` to prevent TypeScript from widening the `status` property to a generic `string`.
         const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
 
         try {
@@ -135,10 +132,6 @@ const AdminCastingResults: React.FC = () => {
         return 'text-red-400';
     };
 
-    const handlePrintList = () => {
-        window.print();
-    };
-
     const filterOptions: { value: CastingApplicationStatus | 'AllScored', label: string }[] = [
         { value: 'AllScored', label: 'Tous les Notés' },
         { value: 'Présélectionné', label: 'Présélectionnés' },
@@ -146,42 +139,28 @@ const AdminCastingResults: React.FC = () => {
         { value: 'Refusé', label: 'Refusés' }
     ];
 
-    if (printingApp) {
-        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
-    }
-
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Résultats & Validation Casting" noIndex />
             <div className="container mx-auto px-6">
-                <div className="print-hide">
-                    <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                        <ChevronLeftIcon className="w-5 h-5" />
-                        Retour au Tableau de Bord
-                    </Link>
-                    <div className="flex justify-between items-start mb-2">
-                        <div>
-                            <h1 className="text-4xl font-playfair text-pm-gold">Résultats & Validation Casting</h1>
-                            <p className="text-pm-off-white/70 mt-2 mb-8">
-                                Consultez les moyennes des candidats et validez leur entrée dans l'agence.
-                            </p>
-                        </div>
-                        <button onClick={handlePrintList} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark self-center">
-                            <PrinterIcon className="w-5 h-5"/> Imprimer la Liste
+                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                    <ChevronLeftIcon className="w-5 h-5" />
+                    Retour au Tableau de Bord
+                </Link>
+                <h1 className="text-4xl font-playfair text-pm-gold">Résultats & Validation Casting</h1>
+                <p className="text-pm-off-white/70 mt-2 mb-8">
+                    Consultez les moyennes des candidats et validez leur entrée dans l'agence.
+                </p>
+
+                <div className="flex items-center gap-4 mb-8 flex-wrap">
+                    {filterOptions.map(f => (
+                        <button key={f.value} onClick={() => setFilter(f.value)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all duration-300 ${filter === f.value ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
+                            {f.label}
                         </button>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 mb-8 flex-wrap">
-                        {filterOptions.map(f => (
-                            <button key={f.value} onClick={() => setFilter(f.value)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all duration-300 ${filter === f.value ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
-                                {f.label}
-                            </button>
-                        ))}
-                    </div>
+                    ))}
                 </div>
 
-                <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30 printable-content">
-                    <h1 className="text-3xl font-playfair text-center p-4 print-only">Résultats du Casting</h1>
+                <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
                     <div className="overflow-x-auto">
                          <table className="w-full text-left">
                             <thead className="bg-pm-dark/50">
@@ -191,7 +170,7 @@ const AdminCastingResults: React.FC = () => {
                                     <th className="p-4 uppercase text-xs tracking-wider text-center">Votes Jury</th>
                                     <th className="p-4 uppercase text-xs tracking-wider text-center">Moyenne</th>
                                     <th className="p-4 uppercase text-xs tracking-wider text-center">Statut</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-center print-hide">Actions</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -210,15 +189,8 @@ const AdminCastingResults: React.FC = () => {
                                         </td>
                                         <td className={`p-4 text-center font-bold text-lg ${getScoreColor(app.averageScore)}`}>{app.averageScore.toFixed(2)}</td>
                                         <td className="p-4 text-center"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
-                                        <td className="p-4 print-hide">
+                                        <td className="p-4">
                                             <div className="flex items-center justify-center gap-2">
-                                                <button
-                                                    onClick={() => setPrintingApp(app)}
-                                                    className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
-                                                    title="Télécharger la fiche PDF"
-                                                >
-                                                    <PrinterIcon className="w-5 h-5"/>
-                                                </button>
                                                 {app.status === 'Présélectionné' && (
                                                     <>
                                                         <button 

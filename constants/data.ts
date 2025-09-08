@@ -1,5 +1,5 @@
 // FIX: Add BeginnerStudent to import
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks } from '../types';
 import { NavLink } from '../hooks/useDataStore';
 // FIX: Import beginner course data
 import { beginnerCourseData } from './beginnerCourseData';
@@ -19,7 +19,7 @@ export const navLinks: NavLink[] = [
   { path: '/formations', label: 'Classroom', inFooter: false },
 ];
 
-export const socialLinks = {
+export const socialLinks: SocialLinks = {
     facebook: 'https://www.facebook.com/PerfectModels241',
     instagram: 'https://www.instagram.com/perfectmodelsmanagement_/',
     youtube: 'https://www.youtube.com/@perfectmodelsmanagement6013',

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
-import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { UserPlusIcon } from '@heroicons/react/24/outline';
 
 const RegistrationCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -59,10 +59,6 @@ const RegistrationCasting: React.FC = () => {
         }
     };
 
-    const handlePrint = () => {
-        window.print();
-    };
-
     if (!isInitialized) {
         return <div className="min-h-screen flex items-center justify-center bg-pm-dark text-pm-gold">Chargement...</div>;
     }
@@ -77,7 +73,7 @@ const RegistrationCasting: React.FC = () => {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Registration Form */}
-                        <div className="lg:col-span-1 print-hide">
+                        <div className="lg:col-span-1">
                             <form onSubmit={handleRegister} className="bg-black p-6 border border-pm-gold/20 rounded-lg space-y-6">
                                 <h2 className="text-2xl font-playfair text-pm-gold flex items-center gap-2">
                                     <UserPlusIcon className="w-6 h-6" />
@@ -122,14 +118,10 @@ const RegistrationCasting: React.FC = () => {
 
                         {/* Registered List */}
                         <div className="lg:col-span-2">
-                             <div className="flex justify-between items-center mb-4 print-hide">
+                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-2xl font-playfair text-pm-gold">Liste des Passages</h2>
-                                <button onClick={handlePrint} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                                    <PrinterIcon className="w-5 h-5"/> Imprimer la Liste
-                                </button>
                             </div>
-                            <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden printable-content">
-                                <h1 className="text-3xl font-playfair text-center p-4 print-only">Liste de Passage - Casting</h1>
+                            <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden">
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left">
                                         <thead className="bg-pm-dark/50">

@@ -3,7 +3,6 @@ import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from 'contexts/DataContext';
 import Layout from 'components/Layout';
 import ProtectedRoute from 'components/ProtectedRoute';
-import AIAssistantIcon from 'components/AIAssistantIcon';
 
 // Pages
 import Home from 'pages/Home';
@@ -25,8 +24,6 @@ import ModelDashboard from 'pages/ModelDashboard'; // Profil
 import ClassroomForum from 'pages/ClassroomForum';
 import ForumThread from 'pages/ForumThread';
 import Chat from 'pages/Chat';
-import BeginnerClassroom from 'pages/BeginnerClassroom';
-import BeginnerChapterDetail from 'pages/BeginnerChapterDetail';
 
 
 // Admin Pages
@@ -47,7 +44,6 @@ import AdminSettings from 'pages/AdminSettings';
 import AdminComments from 'pages/AdminComments';
 import AdminBookings from 'pages/AdminBookings';
 import AdminMessages from 'pages/AdminMessages';
-import AdminBeginnerStudents from 'pages/AdminBeginnerStudents';
 
 // Role-specific pages
 import JuryCasting from 'pages/JuryCasting';
@@ -131,9 +127,6 @@ const AppContent = () => {
                     <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                     <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
                     <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
-
-                    <Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
-                    <Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />
                     
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
@@ -151,7 +144,6 @@ const AppContent = () => {
                     <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                     <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
-                    <Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} />
                     <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
                     <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                     <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
@@ -160,7 +152,6 @@ const AppContent = () => {
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </Layout>
-            {!hideAIAssistant && <AIAssistantIcon />}
         </>
     );
 }
