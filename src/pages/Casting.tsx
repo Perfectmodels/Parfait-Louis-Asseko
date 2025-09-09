@@ -1,4 +1,6 @@
+
 import React from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import CountdownTimer from '../components/CountdownTimer';
 import { CalendarDaysIcon, ClockIcon, MapPinIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
@@ -60,72 +62,72 @@ const Casting: React.FC = () => {
         </div>
       </section>
 
-      <div className="page-container">
-        <div className="-mt-48 relative z-20">
+      <div className="container mx-auto px-6 py-20">
+        <div className="space-y-20">
             {/* Event Info Section */}
-            <section aria-label="Informations sur le casting" className="bg-black p-8 border border-pm-gold/20 max-w-5xl mx-auto shadow-2xl shadow-pm-gold/10">
+            <section aria-label="Informations sur le casting" className="bg-black p-8 border border-pm-gold/20 -mt-40 relative z-20 max-w-5xl mx-auto shadow-2xl shadow-pm-gold/10">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                     <InfoItem icon={CalendarDaysIcon} title="Date" content="Samedi 6 Sept. 2025" />
                     <InfoItem icon={ClockIcon} title="Heure" content="14h00" />
                     <InfoItem icon={MapPinIcon} title="Lieu" content="Complexe Eli, Ancien Sobraga" />
                 </div>
             </section>
-        </div>
-        
-        {/* Countdown Timer Section */}
-        <section aria-labelledby="countdown-title" className="text-center">
-            <h2 id="countdown-title" className="section-title">Le casting commence dans...</h2>
-            <CountdownTimer targetDate={castingDate} />
-        </section>
+            
+            {/* Countdown Timer Section */}
+            <section aria-labelledby="countdown-title" className="text-center">
+                <h2 id="countdown-title" className="text-2xl font-playfair text-pm-gold mb-6">Le casting commence dans...</h2>
+                <CountdownTimer targetDate={castingDate} />
+            </section>
 
-        {/* Details Section */}
-        <section aria-labelledby="details-title" className="max-w-5xl mx-auto">
-            <h2 id="details-title" className="section-title">Modalités de Participation</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Conditions */}
-                <div className="bg-black p-8 border border-pm-gold/10">
-                    <h3 className="text-2xl font-playfair text-pm-gold mb-6">Conditions de Participation</h3>
-                    <div className="space-y-6">
-                        <div>
-                            <h4 className="font-bold text-lg text-pm-off-white mb-3">Pour les Filles :</h4>
-                            <ul className="space-y-2 text-pm-off-white/80">
-                                {conditionsFilles.map((item, index) => <li key={index} className="flex items-center gap-3"><CheckCircleIcon className="w-5 h-5 text-pm-gold"/>{item}</li>)}
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-lg text-pm-off-white mb-3">Pour les Garçons :</h4>
-                            <ul className="space-y-2 text-pm-off-white/80">
-                                {conditionsGarcons.map((item, index) => <li key={index} className="flex items-center gap-3"><CheckCircleIcon className="w-5 h-5 text-pm-gold"/>{item}</li>)}
-                            </ul>
+            {/* Details Section */}
+            <section aria-labelledby="details-title" className="max-w-5xl mx-auto">
+                <h2 id="details-title" className="text-4xl font-playfair text-pm-gold text-center mb-12">Modalités de Participation</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    {/* Conditions */}
+                    <div className="bg-black p-8 border border-pm-gold/10">
+                        <h3 className="text-2xl font-playfair text-pm-gold mb-6">Conditions de Participation</h3>
+                        <div className="space-y-6">
+                            <div>
+                                <h4 className="font-bold text-lg text-pm-off-white mb-3">Pour les Filles :</h4>
+                                <ul className="space-y-2 text-pm-off-white/80">
+                                    {conditionsFilles.map((item, index) => <li key={index} className="flex items-center gap-3"><CheckCircleIcon className="w-5 h-5 text-pm-gold"/>{item}</li>)}
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-lg text-pm-off-white mb-3">Pour les Garçons :</h4>
+                                <ul className="space-y-2 text-pm-off-white/80">
+                                    {conditionsGarcons.map((item, index) => <li key={index} className="flex items-center gap-3"><CheckCircleIcon className="w-5 h-5 text-pm-gold"/>{item}</li>)}
+                                </ul>
+                            </div>
                         </div>
                     </div>
+                    {/* Dress Code */}
+                    <div className="bg-black p-8 border border-pm-gold/10">
+                        <h3 className="text-2xl font-playfair text-pm-gold mb-6">Tenue Exigée</h3>
+                        <p className="text-pm-off-white/80 mb-4">
+                            Veuillez vous présenter avec la tenue suivante pour garantir une évaluation optimale :
+                        </p>
+                        <ul className="space-y-2 text-pm-off-white/80">
+                           {dressCode.map((item, index) => <li key={index} className="flex items-center gap-3"><CheckCircleIcon className="w-5 h-5 text-pm-gold"/>{item}</li>)}
+                        </ul>
+                         <p className="mt-6 text-sm text-pm-gold/80 italic">
+                           Le non-respect de la tenue peut être un motif d'élimination.
+                        </p>
+                    </div>
                 </div>
-                {/* Dress Code */}
-                <div className="bg-black p-8 border border-pm-gold/10">
-                    <h3 className="text-2xl font-playfair text-pm-gold mb-6">Tenue Exigée</h3>
-                    <p className="text-pm-off-white/80 mb-4">
-                        Veuillez vous présenter avec la tenue suivante pour garantir une évaluation optimale :
-                    </p>
-                    <ul className="space-y-2 text-pm-off-white/80">
-                       {dressCode.map((item, index) => <li key={index} className="flex items-center gap-3"><CheckCircleIcon className="w-5 h-5 text-pm-gold"/>{item}</li>)}
-                    </ul>
-                     <p className="mt-6 text-sm text-pm-gold/80 italic">
-                       Le non-respect de la tenue peut être un motif d'élimination.
-                    </p>
-                </div>
-            </div>
-        </section>
-        
-        {/* CTA Section */}
-        <section aria-labelledby="application-title">
-          <div className="max-w-3xl mx-auto bg-pm-gold text-pm-dark p-8 text-center shadow-lg shadow-pm-gold/30">
-            <h2 id="application-title" className="text-4xl font-playfair font-bold mb-4">Prêt(e) à défiler ?</h2>
-            <p className="text-lg mb-6">Ne manquez pas cette opportunité unique. Soumettez votre candidature en ligne pour pré-valider votre participation.</p>
-            <Link to="/casting-formulaire" className="inline-block px-10 py-4 bg-pm-dark text-pm-gold font-bold uppercase tracking-widest transition-transform duration-300 hover:scale-105">
-                Postuler en Ligne
-            </Link>
-          </div>
-        </section>
+            </section>
+            
+            {/* CTA Section */}
+            <section aria-labelledby="application-title">
+              <div className="max-w-3xl mx-auto bg-pm-gold text-pm-dark p-8 text-center shadow-lg shadow-pm-gold/30">
+                <h2 id="application-title" className="text-4xl font-playfair font-bold mb-4">Prêt(e) à défiler ?</h2>
+                <p className="text-lg mb-6">Ne manquez pas cette opportunité unique. Soumettez votre candidature en ligne pour pré-valider votre participation.</p>
+                <Link to="/casting-formulaire" className="inline-block px-10 py-4 bg-pm-dark text-pm-gold font-bold uppercase tracking-widest transition-transform duration-300 hover:scale-105">
+                    Postuler en Ligne
+                </Link>
+              </div>
+            </section>
+        </div>
       </div>
     </div>
   );

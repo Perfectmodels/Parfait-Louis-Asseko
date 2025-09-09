@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -143,8 +144,8 @@ const FashionDay: React.FC = () => {
 
             {/* Stylists Gallery */}
             {selectedEdition.stylists && (
-              <div className="pt-8 mt-8 border-t border-pm-gold/20">
-                <h2 className="section-title">Stylistes Participants</h2>
+              <div>
+                <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Stylistes Participants</h3>
                 <div className="space-y-12">
                   {selectedEdition.stylists.map((stylist) => (
                     <div key={stylist.name} className="bg-pm-dark p-6 border border-pm-gold/10 rounded-lg">

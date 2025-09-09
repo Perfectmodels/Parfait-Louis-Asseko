@@ -1,3 +1,4 @@
+
 // FIX: Add BeginnerStudent to import
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks } from '../types';
 import { NavLink } from '../hooks/useDataStore';
@@ -14,7 +15,6 @@ export const navLinks: NavLink[] = [
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
-  { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
 ];
@@ -221,114 +221,288 @@ export const modelDistinctions: ModelDistinction[] = [
     { name: 'Libreville Fashion Week', titles: ['Mannequin de l\'année 2024'] }
 ];
 
+// FIX: Replace the old agencyServices array with a more detailed and categorized version for the new Services page.
 export const agencyServices: Service[] = [
+  // ----------- Services Mannequinat ----------- //
   {
-    icon: 'AcademicCapIcon',
-    title: 'Formation Mannequinat',
-    description: 'Nous formons les mannequins dès le début, avec des cours sur la posture, le maintien, le défilé, l’expression corporelle et la confiance en soi. Chaque mannequin repart avec une technique professionnelle adaptée aux podiums et aux shootings photo.',
-    buttonText: 'S’inscrire',
-    buttonLink: '/contact?service=Formation+Mannequinat',
+    title: "Casting Mannequins",
+    description: "Organisation de castings professionnels pour défilés, shootings, publicités et clips.",
+    details: {
+      title: "Avantages du service",
+      points: [
+        "Sélection rigoureuse de mannequins adaptés à votre projet",
+        "Gestion complète de la logistique et communication avec les candidats",
+        "Accès à notre base de mannequins expérimentés"
+      ]
+    },
+    icon: "UsersIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Casting+Mannequins",
+    category: "Services Mannequinat"
   },
   {
-    icon: 'CameraIcon',
-    title: 'Coaching Photo Professionnel',
-    description: 'Nos experts coachent les mannequins pour maîtriser les poses, expressions faciales et angles devant l’objectif. Idéal pour constituer un portfolio impactant et se démarquer auprès des créateurs et agences.',
-    buttonText: 'Réserver une séance',
-    buttonLink: '/contact?service=Coaching+Photo',
+    title: "Booking Mannequins",
+    description: "Réservation de mannequins pour événements, shootings ou campagnes publicitaires.",
+    details: {
+      title: "Ce que nous proposons",
+      points: [
+        "Mannequins professionnels pour tous types de projets",
+        "Flexibilité selon vos besoins (durée, lieu, type de prestation)",
+        "Suivi personnalisé avant et pendant le projet"
+      ]
+    },
+    icon: "UserGroupIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Booking+Mannequins",
+    category: "Services Mannequinat"
   },
   {
-    icon: 'UserGroupIcon',
-    title: 'Gestion de Carrière',
-    description: 'Nous accompagnons nos mannequins tout au long de leur carrière : placements, conseils sur les contrats, image publique et plan de développement. Un suivi personnalisé pour transformer un talent brut en professionnel accompli.',
-    buttonText: 'Rejoindre l’agence',
-    buttonLink: '/casting-formulaire',
+    title: "Mannequins pour Défilés",
+    description: "Des mannequins professionnels pour vos défilés, avec coaching sur la posture et la démarche.",
+    details: {
+      title: "Inclus",
+      points: [
+        "Présentation élégante et harmonieuse de vos créations",
+        "Maîtrise parfaite du passage sur podium",
+        "Coordination avec votre équipe pour un spectacle mémorable"
+      ]
+    },
+    icon: "AcademicCapIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Mannequins+pour+D%C3%A9fil%C3%A9s",
+    category: "Services Mannequinat"
   },
   {
-    icon: 'SparklesIcon',
-    title: 'Placement dans les Défilés',
-    description: 'Perfect Models Management met ses mannequins à disposition pour des événements de mode locaux et internationaux. Exposition auprès des stylistes et créateurs, participation à des événements prestigieux.',
-    buttonText: 'Demander un mannequin',
-    buttonLink: '/contact?service=Placement+Défilés',
+    title: "Mannequins Publicité / Audiovisuel",
+    description: "Mannequins pour publicité, clips et projets audiovisuels.",
+    details: {
+      title: "Inclus",
+      points: [
+        "Mise en scène adaptée à vos besoins",
+        "Mannequins expressifs et professionnels",
+        "Accompagnement par notre équipe de production si nécessaire"
+      ]
+    },
+    icon: "VideoCameraIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Mannequins+Publicit%C3%A9+%2F+Audiovisuel",
+    category: "Services Mannequinat"
   },
   {
-    icon: 'ClipboardDocumentCheckIcon',
-    title: 'Casting pour Créateurs',
-    description: 'Organisation de castings pour trouver les mannequins correspondant parfaitement à l’univers des créateurs. Gain de temps et qualité assurée grâce à notre base de talents sélectionnés.',
-    buttonText: 'Organiser un casting',
-    buttonLink: '/contact?service=Casting+pour+Créateurs',
+    title: "Mannequins Photo",
+    description: "Shooting photo pour catalogues, lookbooks ou réseaux sociaux.",
+    details: {
+      title: "Ce que nous offrons",
+      points: [
+        "Photographie en studio ou extérieur",
+        "Mannequins adaptés au style de votre marque",
+        "Collaboration avec maquilleurs, stylistes et photographes professionnels"
+      ]
+    },
+    icon: "PhotoIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Mannequins+Photo",
+    category: "Services Mannequinat"
   },
   {
-    icon: 'MegaphoneIcon',
-    title: 'Publicité Mode',
-    description: 'Shooting publicitaire pour magazines, réseaux sociaux, vidéos promotionnelles et campagnes de marque. Une exposition professionnelle pour les mannequins et une communication visuelle forte pour les marques.',
-    buttonText: 'Demander un devis',
-    buttonLink: '/contact?service=Publicité+Mode',
+    title: "Mannequins Figurants",
+    description: "Figurants pour clips, films ou événements nécessitant un public.",
+    details: {
+      title: "Avantages",
+      points: [
+        "Figurants sélectionnés selon vos besoins spécifiques",
+        "Gestion complète de la logistique et présence sur site"
+      ]
+    },
+    icon: "UsersIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Mannequins+Figurants",
+    category: "Services Mannequinat"
   },
   {
-    icon: 'IdentificationIcon',
-    title: 'Branding & Image Personnelle',
-    description: 'Nous aidons les mannequins à construire leur image publique et à créer une identité visuelle cohérente. Une image professionnelle qui attire les collaborations et opportunités dans le monde de la mode.',
-    buttonText: 'Découvrir',
-    buttonLink: '/agence',
+    title: "Formation Mannequins",
+    description: "Coaching complet pour mannequins : posture, démarche, expressions et présence scénique.",
+    details: {
+      title: "Objectifs",
+      points: [
+        "Optimisation de la performance en casting ou sur podium",
+        "Développement de confiance et professionnalisme"
+      ]
+    },
+    icon: "AcademicCapIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Formation+Mannequins",
+    category: "Services Mannequinat"
   },
   {
-    icon: 'ScissorsIcon',
-    title: 'Ateliers Stylisme',
-    description: 'Sessions interactives pour découvrir les tendances, combiner les tissus, travailler les couleurs et accessoires. Permet aux mannequins de mieux comprendre le travail des créateurs et de valoriser les vêtements portés.',
-    buttonText: 'Participer',
-    buttonLink: '/fashion-day',
+    title: "Conseil en Image et Style",
+    description: "Accompagnement pour look, coiffure, maquillage et style vestimentaire.",
+    details: {
+      title: "Avantages",
+      points: [
+        "Image cohérente et professionnelle",
+        "Adaptation au projet ou événement",
+        "Recommandations personnalisées pour un impact visuel fort"
+      ]
+    },
+    icon: "IdentificationIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Conseil+en+Image+et+Style",
+    category: "Services Mannequinat"
   },
-  {
-    icon: 'PaintBrushIcon',
-    title: 'Maquillage & Lookbook',
-    description: 'Création de looks professionnels pour chaque mannequin, shooting de lookbooks et présentation des portfolios. Une image complète, professionnelle et séduisante pour les marques et les agences.',
-    buttonText: 'Réserver',
-    buttonLink: '/contact?service=Maquillage+Lookbook',
-  },
-  {
-    icon: 'CalendarDaysIcon',
-    title: 'Événements & Fashion Shows',
-    description: 'Organisation complète de défilés, soirées mode et événements sponsorisés. Permet aux mannequins et créateurs de se présenter devant un public et des partenaires professionnels.',
-    buttonText: 'Participer',
-    buttonLink: '/fashion-day',
-  },
-  {
-    icon: 'PresentationChartLineIcon',
-    title: 'Éducation en Marketing de Mode',
-    description: 'Formation pour apprendre à promouvoir sa carrière ou sa marque dans l’industrie de la mode. Développer ses compétences en communication, réseaux sociaux et branding.',
-    buttonText: 'S’inscrire',
-    buttonLink: '/contact?service=Marketing+de+Mode',
-  },
-  {
-    icon: 'ChatBubbleLeftRightIcon',
-    title: 'Consulting pour Marque de Mode',
-    description: 'Nous conseillons les marques pour le choix des mannequins, la scénographie des défilés et la communication visuelle. Une expertise professionnelle pour créer des collections impactantes et attractives.',
-    buttonText: 'Contactez-nous',
-    buttonLink: '/contact',
-  },
-  {
-    icon: 'VideoCameraIcon',
-    title: 'Vidéo & Réseaux Sociaux',
-    description: 'Création de contenus vidéos et photos pour TikTok, Instagram et YouTube afin de booster la visibilité des mannequins et créateurs. Développement de la notoriété et engagement sur les réseaux sociaux.',
-    buttonText: 'Commander un shooting',
-    buttonLink: '/contact?service=Vidéo+Réseaux+Sociaux',
-  },
-  {
-    icon: 'PhotoIcon',
-    title: 'Photographie de Haute Couture',
-    description: 'Shooting professionnel pour les collections, campagnes publicitaires et portfolios haute couture. Des images hautement professionnelles pour représenter au mieux les créations et les mannequins.',
-    buttonText: 'Réserver un shooting',
-    buttonLink: '/contact?service=Photographie+Haute+Couture',
-  },
-  {
-    icon: 'StarIcon',
-    title: 'Perfect Fashion Day – Événement Signature',
-    description: 'Plateforme annuelle pour présenter les créateurs, mannequins et partenaires de l’agence. Visibilité maximale, networking et mise en valeur du talent local.',
-    buttonText: 'Participer',
-    buttonLink: '/fashion-day',
-  },
-];
 
+  // ----------- Services Mode et Stylisme ----------- //
+  {
+    title: "Création de Tenues Sur-Mesure",
+    description: "Tenues sur-mesure pour femmes, hommes et enfants, en accord avec vos goûts et votre identité.",
+    details: {
+      title: "Inclus",
+      points: [
+        "Couture à la main et finitions parfaites",
+        "Utilisation de tissus haut de gamme (wax, satin, mousseline, dentelle, tulle)",
+        "Designs uniques et personnalisés"
+      ]
+    },
+    icon: "ScissorsIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Cr%C3%A9ation+de+Tenues+Sur-Mesure",
+    category: "Services Mode et Stylisme"
+  },
+  {
+    title: "Location de Tenues de Mode",
+    description: "Accédez à notre collection de tenues pour vos défilés, shootings ou événements spéciaux.",
+    details: {
+      title: "Avantages",
+      points: [
+        "Choix parmi une large gamme de styles et tailles",
+        "Tenues disponibles pour une période flexible"
+      ]
+    },
+    icon: "BriefcaseIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Location+de+Tenues+de+Mode",
+    category: "Services Mode et Stylisme"
+  },
+  {
+    title: "Styling & Conseil Mode",
+    description: "Création de looks parfaits pour campagnes, shootings ou événements.",
+    details: {
+      title: "Avantages",
+      points: [
+        "Coordination totale des couleurs et accessoires",
+        "Conseils mode personnalisés selon vos objectifs"
+      ]
+    },
+    icon: "PaintBrushIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Styling+%26+Conseil+Mode",
+    category: "Services Mode et Stylisme"
+  },
+  {
+    title: "Organisation Défilés de Mode",
+    description: "Planification et exécution complète du défilé : mannequins, scénographie, musique, mise en scène.",
+    details: {
+      title: "Inclus",
+      points: [
+        "Événement professionnel et mémorable",
+        "Coordination complète avec stylistes et partenaires",
+        "Expérience exceptionnelle pour vos invités et participants"
+      ]
+    },
+    icon: "PresentationChartLineIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Organisation+D%C3%A9fil%C3%A9s+de+Mode",
+    category: "Services Mode et Stylisme"
+  },
+  {
+    title: "Conseil Créatif et Branding",
+    description: "Développement de l’identité visuelle et de la présence de votre marque.",
+    details: {
+      title: "Avantages",
+      points: [
+        "Conception de l’identité visuelle (logo, charte graphique)",
+        "Développement de votre style unique pour vos collections",
+        "Conseils sur marketing et communication"
+      ]
+    },
+    icon: "SparklesIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Conseil+Cr%C3%A9atif+et+Branding",
+    category: "Services Mode et Stylisme"
+  },
+  {
+    title: "Shooting Mode Professionnel",
+    description: "Organisation complète de shootings en studio ou extérieur avec photographe, styliste et maquilleur.",
+    details: {
+      title: "Inclus",
+      points: [
+        "Photos de haute qualité pour vos catalogues ou réseaux sociaux",
+        "Coordination totale pour un résultat harmonieux",
+        "Accompagnement personnalisé selon votre projet"
+      ]
+    },
+    icon: "CameraIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Shooting+Mode+Professionnel",
+    category: "Services Mode et Stylisme"
+  },
+  {
+    title: "Accessoires et Lookbook",
+    description: "Création ou fourniture d’accessoires pour compléter vos collections et shootings.",
+    details: {
+      title: "Inclus",
+      points: [
+        "Sélection harmonisée avec vos tenues",
+        "Conseil styling pour un look complet et percutant"
+      ]
+    },
+    icon: "StarIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Accessoires+et+Lookbook",
+    category: "Services Mode et Stylisme"
+  },
+
+  // ----------- Services Événementiels ----------- //
+  {
+    title: "Animation de Shows / Défilés",
+    description: "Animation complète de vos événements mode pour captiver votre public.",
+    details: {
+      title: "Inclus",
+      points: [
+        "Coordination des mannequins et performances artistiques",
+        "Gestion du rythme et de la mise en scène"
+      ]
+    },
+    icon: "MegaphoneIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Animation+de+Shows+%2F+D%C3%A9fil%C3%A9s",
+    category: "Services Événementiels"
+  },
+  {
+    title: "Présentateurs / Hôtes de Cérémonie",
+    description: "Hôtes professionnels pour introduire vos défilés et événements.",
+    icon: "MicrophoneIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Pr%C3%A9sentateurs+%2F+H%C3%B4tes+de+C%C3%A9r%C3%A9monie",
+    category: "Services Événementiels"
+  },
+  {
+    title: "Promotion et Communication",
+    description: "Couverture complète de vos événements et projets sur réseaux sociaux et médias partenaires.",
+    icon: "ChatBubbleLeftRightIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Promotion+et+Communication",
+    category: "Services Événementiels"
+  },
+  {
+    title: "Partenariat avec Marques",
+    description: "Mise en relation de marques avec mannequins, créateurs et stylistes pour des collaborations impactantes.",
+    icon: "BuildingStorefrontIcon",
+    buttonText: "Réserver ce service",
+    buttonLink: "/contact?service=Partenariat+avec+Marques",
+    category: "Services Événementiels"
+  }
+];
 
 export const agencyAchievements: AchievementCategory[] = [
     { name: 'Défilés de Mode', items: ['Libreville Fashion Week', 'Black Fashion Week Paris (Représentation)', 'FIMA Niger (Représentation)'] },

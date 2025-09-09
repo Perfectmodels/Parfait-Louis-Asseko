@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export interface Model {
@@ -36,7 +35,7 @@ export interface BeginnerStudent {
   name: string;
   matricule: string;
   password: string;
-  quizScores: { [chapterSlug: string]: number }; // Score out of 20
+  quizScores: { [moduleSlug: string]: number }; // Score out of 20
 }
 
 export interface Stylist {
@@ -69,7 +68,12 @@ export interface SocialLinks {
 export interface Service {
   icon: string;
   title: string;
+  category: 'Services Mannequinat' | 'Services Mode et Stylisme' | 'Services Événementiels';
   description: string;
+  details?: { 
+    title: string;
+    points: string[];
+  };
   buttonText: string;
   buttonLink: string;
   isComingSoon?: boolean;
