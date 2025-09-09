@@ -147,7 +147,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
 
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="ai-prompt" className="admin-label">Votre demande (Prompt) :</label>
+                            <label htmlFor="ai-prompt" className="block text-sm font-bold text-pm-off-white/80 mb-2">Votre demande (Prompt) :</label>
                             <textarea
                                 id="ai-prompt"
                                 value={prompt}
@@ -187,7 +187,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
 
                         {generatedContent && (
                             <div>
-                                <label className="admin-label">Résultat :</label>
+                                <label className="block text-sm font-bold text-pm-off-white/80 mb-2">Résultat :</label>
                                 <textarea
                                     readOnly
                                     value={generatedContent}

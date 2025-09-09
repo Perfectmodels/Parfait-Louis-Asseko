@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-import { NewsItem, AIAssistantProps } from '../types';
+import { NewsItem } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/ImageInput';
-import AIAssistant from '../components/AIAssistant';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import ImageInput from '../components/icons/ImageInput';
 
 const AdminNews: React.FC = () => {
   const { data, saveData } = useData();
@@ -117,15 +116,6 @@ const AdminNews: React.FC = () => {
 
 const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onCancel: () => void, isCreating: boolean }> = ({ item, onSave, onCancel, isCreating }) => {
     const [formData, setFormData] = useState(item);
-    const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
-    const [aiAssistantProps, setAIAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'>>({
-        onInsertContent: () => {}, fieldName: '', initialPrompt: '',
-    });
-
-    const openAIAssistant = (fieldName: string, onInsert: (content: string) => void, initialPrompt: string = '') => {
-        setAIAssistantProps({ fieldName, onInsertContent: onInsert, initialPrompt });
-        setIsAIAssistantOpen(true);
-    };
 
     useEffect(() => {
         setFormData(item);
@@ -147,32 +137,17 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
 
     return (
         <>
-            <AIAssistant 
-                isOpen={isAIAssistantOpen} 
-                onClose={() => setIsAIAssistantOpen(false)}
-                {...aiAssistantProps} 
-            />
             <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
                 <div className="container mx-auto px-6 max-w-3xl">
                     <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvelle Actualité' : "Modifier l'Actualité"}</h1>
                     <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
                         <FormInput 
                             label="Titre" name="title" value={formData.title} onChange={handleChange} 
-                            onOpenAI={() => openAIAssistant(
-                                'Titre de l\'actualité',
-                                (content) => setFormData(p => ({...p, title: content.replace(/"/g, '')})),
-                                `Génère 5 titres accrocheurs pour une actualité sur le thème : "${formData.excerpt || 'un événement de mode'}"`
-                            )}
                         />
                         <ImageInput label="Image" value={formData.imageUrl} onChange={handleImageChange} />
                         <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
                         <FormTextArea 
                             label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
-                             onOpenAI={() => openAIAssistant(
-                                'Extrait de l\'actualité',
-                                (content) => setFormData(p => ({...p, excerpt: content})),
-                                `Rédige une brève description (1-2 phrases) pour une actualité intitulée : "${formData.title}"`
-                            )}
                         />
                         <FormInput label="Lien (optionnel)" name="link" value={formData.link || ''} onChange={handleChange} />
                         <div className="flex justify-end gap-4 pt-4">
@@ -186,28 +161,18 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
     );
 };
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, onOpenAI?: () => void}> = ({label, name, value, onChange, type="text", onOpenAI}) => (
+const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string}> = ({label, name, value, onChange, type="text"}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-            {onOpenAI && (
-                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
-                    <SparklesIcon className="w-4 h-4" /> Assister
-                </button>
-            )}
         </div>
         <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, onOpenAI?: () => void}> = ({label, name, value, onChange, onOpenAI}) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any}> = ({label, name, value, onChange}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-             {onOpenAI && (
-                <button type="button" onClick={onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
-                    <SparklesIcon className="w-4 h-4" /> Assister
-                </button>
-            )}
         </div>
         <textarea id={name} name={name} value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
     </div>

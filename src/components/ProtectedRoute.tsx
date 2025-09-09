@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
-  role: 'admin' | 'student' | 'jury' | 'registration';
+  role: 'admin' | 'student' | 'jury' | 'registration' | 'beginner';
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {

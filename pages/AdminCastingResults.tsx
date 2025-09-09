@@ -57,7 +57,7 @@ const AdminCastingResults: React.FC = () => {
         }
 
         const currentYear = new Date().getFullYear();
-        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\u0027]/g, "").replace(/[^a-z0-9-]/g, "");
+        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
 
         const initial = app.firstName.charAt(0).toUpperCase();
         const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));

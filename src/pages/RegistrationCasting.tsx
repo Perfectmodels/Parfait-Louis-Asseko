@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
-import { UserPlusIcon } from '@heroicons/react/24/outline';
+import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const RegistrationCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -46,7 +46,7 @@ const RegistrationCasting: React.FC = () => {
             passageNumber: nextPassageNumber,
         };
 
-        const updatedApplications = [...data.castingApplications, newApplicant];
+        const updatedApplications = [...(data.castingApplications || []), newApplicant];
 
         try {
             await saveData({ ...data, castingApplications: updatedApplications });
@@ -59,6 +59,10 @@ const RegistrationCasting: React.FC = () => {
         }
     };
 
+    const handlePrint = () => {
+        window.print();
+    };
+
     if (!isInitialized) {
         return <div className="min-h-screen flex items-center justify-center bg-pm-dark text-pm-gold">Chargement...</div>;
     }
@@ -68,14 +72,18 @@ const RegistrationCasting: React.FC = () => {
             <SEO title={`Enregistrement Casting - ${staffName}`} noIndex />
             <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
                 <div className="container mx-auto px-6">
-                    <h1 className="text-4xl font-playfair text-pm-gold">Enregistrement Casting</h1>
-                    <p className="text-pm-off-white/80 mb-8">Connecté en tant que {staffName}.</p>
+                    <div className="admin-page-header">
+                        <div>
+                            <h1 className="admin-page-title">Enregistrement Casting</h1>
+                            <p className="admin-page-subtitle">Connecté en tant que {staffName}.</p>
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Registration Form */}
                         <div className="lg:col-span-1">
-                            <form onSubmit={handleRegister} className="bg-black p-6 border border-pm-gold/20 rounded-lg space-y-6">
-                                <h2 className="text-2xl font-playfair text-pm-gold flex items-center gap-2">
+                            <form onSubmit={handleRegister} className="admin-section-wrapper">
+                                <h2 className="admin-section-title flex items-center gap-2">
                                     <UserPlusIcon className="w-6 h-6" />
                                     Ajouter un Postulant
                                 </h2>
@@ -110,7 +118,7 @@ const RegistrationCasting: React.FC = () => {
                                     </FormSelect>
                                 </Section>
 
-                                <button type="submit" disabled={isSubmitting} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
+                                <button type="submit" disabled={isSubmitting} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50 mt-6">
                                     {isSubmitting ? 'Enregistrement...' : 'Enregistrer et Attribuer Numéro'}
                                 </button>
                             </form>
@@ -118,10 +126,13 @@ const RegistrationCasting: React.FC = () => {
 
                         {/* Registered List */}
                         <div className="lg:col-span-2">
-                             <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-2xl font-playfair text-pm-gold">Liste des Passages</h2>
+                             <div className="flex justify-between items-center mb-6">
+                                <h2 className="admin-page-title !text-3xl">Liste des Passages</h2>
+                                <button onClick={handlePrint} className="print-hide inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                                    <PrinterIcon className="w-5 h-5"/> Imprimer la Liste
+                                </button>
                             </div>
-                            <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden">
+                            <div className="admin-section-wrapper printable-content">
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left">
                                         <thead className="bg-pm-dark/50">
@@ -158,20 +169,20 @@ const RegistrationCasting: React.FC = () => {
 
 // Reusable components
 const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
-    <div className="space-y-4 pt-4 border-t border-pm-gold/10 first:pt-0 first:border-none">
-        <h3 className="text-lg font-playfair text-pm-gold">{title}</h3>
-        {children}
+    <div className="pt-6 border-t border-pm-gold/20 first:pt-0 first:border-none">
+        <h2 className="text-2xl font-playfair text-pm-gold mb-4">{title}</h2>
+        <div className="space-y-4">{children}</div>
     </div>
 );
 const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{props.label}</label>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
 const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, children: React.ReactNode}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{props.label}</label>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <select {...props} id={props.name} className="admin-input">{props.children}</select>
     </div>
 );

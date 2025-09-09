@@ -5,7 +5,6 @@ import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-import AIAssistantIcon from './components/AIAssistantIcon';
 
 // Pages
 import Home from './pages/Home';
@@ -26,7 +25,6 @@ import ChapterDetail from './pages/ChapterDetail';
 import ModelDashboard from './pages/ModelDashboard'; // Profil
 import ClassroomForum from './pages/ClassroomForum';
 import ForumThread from './pages/ForumThread';
-import Chat from './pages/Chat';
 import BeginnerClassroom from './pages/BeginnerClassroom';
 import BeginnerChapterDetail from './pages/BeginnerChapterDetail';
 
@@ -70,9 +68,6 @@ const ScrollToTop: React.FC = () => {
 const AppContent: React.FC = () => {
     const location = useLocation();
     const { data } = useData();
-    const hideAIAssistant = [
-        '/login', '/admin', '/jury', '/enregistrement', '/profil', '/chat'
-    ].some(path => location.pathname.startsWith(path));
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -123,7 +118,6 @@ const AppContent: React.FC = () => {
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/chat" element={<Chat />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
 
@@ -162,7 +156,6 @@ const AppContent: React.FC = () => {
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </Layout>
-            {!hideAIAssistant && <AIAssistantIcon />}
         </>
     );
 }

@@ -3,11 +3,13 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model, JuryMember } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
     const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
+    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     const applicantsWithScores = useMemo(() => {
         const juryMembers: JuryMember[] = data?.juryMembers || [];
@@ -55,7 +57,7 @@ const AdminCastingResults: React.FC = () => {
         }
 
         const currentYear = new Date().getFullYear();
-        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\u0027]/g, "").replace(/[^a-z0-9-]/g, "");
+        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
 
         const initial = app.firstName.charAt(0).toUpperCase();
         const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
@@ -83,6 +85,7 @@ const AdminCastingResults: React.FC = () => {
             name: `${app.firstName} ${app.lastName}`,
             username: username,
             password: password,
+            level: 'Débutant',
             email: app.email,
             phone: app.phone,
             age: age,
@@ -105,6 +108,7 @@ const AdminCastingResults: React.FC = () => {
         };
 
         const updatedModels = [...data.models, newModel];
+        // FIX: Explicitly type `updatedApps` to prevent TypeScript from widening the `status` property to a generic `string`.
         const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
 
         try {
@@ -138,6 +142,10 @@ const AdminCastingResults: React.FC = () => {
         { value: 'Accepté', label: 'Acceptés' },
         { value: 'Refusé', label: 'Refusés' }
     ];
+
+    if (printingApp) {
+        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
+    }
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -180,7 +188,7 @@ const AdminCastingResults: React.FC = () => {
                                         ? "Toutes les notes ont été enregistrées."
                                         : `Notes manquantes: ${missingJuryNames}`;
                                     return (
-                                    <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-gold/5 border-l-4 border-l-pm-gold' : ''}`}>
+                                    <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
                                         <td className="p-4 font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</td>
                                         <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
                                         <td className="p-4 text-center" title={tooltip}>
@@ -191,6 +199,13 @@ const AdminCastingResults: React.FC = () => {
                                         <td className="p-4 text-center"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
                                         <td className="p-4">
                                             <div className="flex items-center justify-center gap-2">
+                                                <button
+                                                    onClick={() => setPrintingApp(app)}
+                                                    className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
+                                                    title="Télécharger la fiche PDF"
+                                                >
+                                                    <PrinterIcon className="w-5 h-5"/>
+                                                </button>
                                                 {app.status === 'Présélectionné' && (
                                                     <>
                                                         <button 

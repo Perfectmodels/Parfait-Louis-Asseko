@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Model, ModelDistinction, AIAssistantProps } from '../src/types';
-import ImageInput from './ImageInput';
-import { ChevronDownIcon, PlusIcon, TrashIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import AIAssistant from './AIAssistant';
+// FIX: Corrected import path for types.
+import { Model, ModelDistinction } from '../types';
+import ImageInput from './icons/ImageInput';
+import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
     model: Model;
@@ -14,15 +14,6 @@ interface ModelFormProps {
 
 const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreating, mode }) => {
     const [formData, setFormData] = useState<Model>(model);
-    const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
-    const [aiAssistantProps, setAIAssistantProps] = useState<Omit<AIAssistantProps, 'isOpen' | 'onClose'>>({
-        onInsertContent: () => {}, fieldName: '', initialPrompt: '',
-    });
-
-    const openAIAssistant = (fieldName: string, onInsert: (content: string) => void, initialPrompt: string = '') => {
-        setAIAssistantProps({ fieldName, onInsertContent: onInsert, initialPrompt });
-        setIsAIAssistantOpen(true);
-    };
 
     useEffect(() => {
         setFormData(model);
@@ -85,11 +76,6 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
 
     return (
         <>
-            <AIAssistant 
-                isOpen={isAIAssistantOpen} 
-                onClose={() => setIsAIAssistantOpen(false)}
-                {...aiAssistantProps} 
-            />
             <h1 className="admin-page-title mb-8">
                 {isCreating ? 'Ajouter un Mannequin' : (isAdmin ? `Modifier le profil de ${model.name}` : `Mon Profil`)}
             </h1>
@@ -195,19 +181,9 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
                     <FormTextArea 
                         label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5}
-                        onOpenAI={isAdmin ? () => openAIAssistant(
-                            'Expérience Mannequin',
-                            (content) => setFormData(p => ({...p, experience: content})),
-                            `Rédige une description d'expérience professionnelle pour le mannequin ${formData.name}, spécialisé(e) dans les catégories suivantes : ${formData.categories.join(', ')}. Mets en avant sa polyvalence et son professionnalisme.`
-                        ) : undefined} 
                     />
                     <FormTextArea 
                         label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} 
-                        onOpenAI={isAdmin ? () => openAIAssistant(
-                            'Parcours Mannequin',
-                            (content) => setFormData(p => ({...p, journey: content})),
-                            `Rédige un paragraphe inspirant sur le parcours du mannequin ${formData.name}. Mentionne comment il/elle a été découvert(e) et sa passion pour la mode.`
-                        ) : undefined}
                     />
                 </Section>
                 
@@ -265,15 +241,10 @@ const FormSelect: React.FC<{label: string, name: string, value: any, onChange: a
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean, onOpenAI?: () => void}> = (props) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean}> = (props) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={props.name} className="admin-label !mb-0">{props.label}</label>
-             {props.onOpenAI && (
-                <button type="button" onClick={props.onOpenAI} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
-                    <SparklesIcon className="w-4 h-4" /> Assister
-                </button>
-            )}
         </div>
         <textarea {...props} rows={props.rows || 3} className="admin-input admin-textarea" />
     </div>

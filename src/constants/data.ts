@@ -44,8 +44,6 @@ export const siteImages: SiteImages = {
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
-    // L'URL du Worker Cloudflare pour l'upload d'images a été configurée.
-    cloudflareWorkerUrl: 'https://asseko19.workers.dev',
 };
 
 export const juryMembers: JuryMember[] = [
