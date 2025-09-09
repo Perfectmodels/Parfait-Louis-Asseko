@@ -202,7 +202,7 @@ const AdminCastingResults: React.FC = () => {
                                                 <button
                                                     onClick={() => setPrintingApp(app)}
                                                     className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
-                                                    title="Télécharger la fiche PDF"
+                                                    aria-label={`Télécharger la fiche de ${app.firstName} ${app.lastName}`}
                                                 >
                                                     <PrinterIcon className="w-5 h-5"/>
                                                 </button>
@@ -211,12 +211,12 @@ const AdminCastingResults: React.FC = () => {
                                                         <button 
                                                             onClick={() => handleValidateAndCreateModel(app)} 
                                                             className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                                            title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
+                                                            aria-label={app.isFullyScored ? `Accepter ${app.firstName} ${app.lastName} et créer le profil` : "En attente de toutes les notes"}
                                                             disabled={!app.isFullyScored}
                                                         >
                                                             <CheckBadgeIcon className="w-5 h-5"/>
                                                         </button>
-                                                        <button onClick={() => handleUpdateStatus(app.id, 'Refusé')} className="action-btn bg-red-500/10 text-red-300 border-red-500/50 hover:bg-red-500/20" title="Refuser">
+                                                        <button onClick={() => handleUpdateStatus(app.id, 'Refusé')} className="action-btn bg-red-500/10 text-red-300 border-red-500/50 hover:bg-red-500/20" aria-label={`Refuser ${app.firstName} ${app.lastName}`}>
                                                             <XCircleIcon className="w-5 h-5"/>
                                                         </button>
                                                     </>
@@ -225,7 +225,7 @@ const AdminCastingResults: React.FC = () => {
                                                     <span className="text-xs text-green-400">Profil Créé</span>
                                                 )}
                                                 {app.status === 'Refusé' && (
-                                                    <button onClick={() => handleUpdateStatus(app.id, 'Présélectionné')} className="action-btn bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20" title="Annuler le refus">
+                                                    <button onClick={() => handleUpdateStatus(app.id, 'Présélectionné')} className="action-btn bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20" aria-label={`Annuler le refus de ${app.firstName} ${app.lastName}`}>
                                                         <ArrowPathIcon className="w-5 h-5"/>
                                                     </button>
                                                 )}

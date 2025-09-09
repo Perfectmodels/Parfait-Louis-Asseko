@@ -23,7 +23,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
                 </span>
             )}
             <div className="flex-shrink-0 mb-4">
-                <Icon className="w-12 h-12 text-pm-gold" />
+                <Icon className="w-12 h-12 text-pm-gold" aria-hidden="true" />
             </div>
             <div className="flex-grow">
                 <h3 className="text-2xl font-playfair text-pm-gold mb-3">{service.title}</h3>

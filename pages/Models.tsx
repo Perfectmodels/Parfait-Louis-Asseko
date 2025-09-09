@@ -28,6 +28,7 @@ const Models: React.FC = () => {
   const FilterButton: React.FC<{ gender: GenderFilter }> = ({ gender }) => (
     <button
       onClick={() => setFilter(gender)}
+      aria-pressed={filter === gender}
       className={`px-6 py-2 text-sm uppercase tracking-widest rounded-full transition-all duration-300 transform hover:scale-105 ${filter === gender ? 'bg-pm-gold text-pm-dark shadow-md shadow-pm-gold/30' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold hover:text-pm-dark'}`}
     >
       {gender}
@@ -60,7 +61,9 @@ const Models: React.FC = () => {
             <FilterButton gender="Homme" />
           </div>
           <div className="w-full md:w-auto">
+            <label htmlFor="search-model" className="sr-only">Rechercher un mannequin</label>
             <input
+              id="search-model"
               type="text"
               placeholder="Rechercher un mannequin..."
               value={searchTerm}

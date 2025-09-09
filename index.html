@@ -47,6 +47,30 @@
       }
     }
     </script>
+    <style>
+      /* Global focus styles for accessibility */
+      :focus-visible {
+        outline: 2px solid #D4AF37;
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+      /* Utility class to remove outline for elements that have their own focus styles */
+      .focus-style-self:focus-visible {
+        outline: none;
+      }
+      /* Screen-reader only class */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    </style>
 
 <script type="importmap">
 {
