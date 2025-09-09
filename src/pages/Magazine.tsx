@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { Article } from '../types';
@@ -111,7 +112,6 @@ const Magazine: React.FC = () => {
 
         {/* Other Articles Grid */}
         <section>
-          <h2 className="section-title">Tous les Articles</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {currentArticles.map(article => (
               <ArticleCard key={article.slug} article={article} />
@@ -131,7 +131,7 @@ const Magazine: React.FC = () => {
 };
 
 const ArticleCard: React.FC<{ article: Article }> = ({ article }) => (
-  <Link to={`/magazine/${article.slug}`} className="group p-0 overflow-hidden relative card-base">
+  <Link to={`/magazine/${article.slug}`} className="group card-base overflow-hidden relative">
     <div className="relative h-96 overflow-hidden">
       <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>

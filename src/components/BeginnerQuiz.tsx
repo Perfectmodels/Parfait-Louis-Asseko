@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { QuizQuestion, BeginnerStudent, Module } from '../types';
 import { useData } from '../contexts/DataContext';
@@ -6,13 +7,12 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 interface BeginnerQuizProps {
     quiz: QuizQuestion[];
     moduleSlug: string;
-    chapterSlug: string;
 }
 
-const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug, chapterSlug }) => {
+const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
     const { data, saveData } = useData();
     const userId = sessionStorage.getItem('userId'); // This is the CastingApplication ID
-    const quizId = chapterSlug;
+    const quizId = moduleSlug;
 
     const [answers, setAnswers] = useState<{ [key: number]: string }>({});
     const [submitted, setSubmitted] = useState(false);
@@ -58,9 +58,9 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug, chapterSl
     };
 
     return (
-        <section aria-labelledby={`quiz-title-${chapterSlug}`} className="mt-12 pt-8 border-t border-pm-gold/30">
+        <section aria-labelledby={`quiz-title-${moduleSlug}`} className="mt-12 pt-8 border-t border-pm-gold/30">
             <div className="bg-pm-dark border border-pm-gold/20 p-8">
-                <h3 id={`quiz-title-${chapterSlug}`} className="text-2xl font-playfair text-pm-gold text-center mb-8">Testez vos connaissances</h3>
+                <h3 id={`quiz-title-${moduleSlug}`} className="text-2xl font-playfair text-pm-gold text-center mb-8">Testez vos connaissances</h3>
                 <div className="space-y-8">
                     {quiz.map((q, index) => (
                         <div key={index}>
@@ -73,20 +73,20 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug, chapterSl
 
                                     if(submitted) {
                                         if(option === q.correctAnswer) {
-                                            optionClass = "border-green-500 bg-green-500/10";
+                                            optionClass = "border-green-500 bg-green-500/10 text-green-300";
                                             icon = <CheckCircleIcon className="w-5 h-5 text-green-500"/>;
                                         } else if (isSelected) {
-                                            optionClass = "border-red-500 bg-red-500/10";
+                                            optionClass = "border-red-500 bg-red-500/10 text-red-300";
                                             icon = <XCircleIcon className="w-5 h-5 text-red-500"/>;
                                         }
                                     } else if (isSelected) {
-                                        optionClass = "border-pm-gold bg-pm-gold/10";
+                                        optionClass = "border-pm-gold bg-pm-gold/10 text-pm-gold";
                                     }
                                     return (
                                         <label key={optionIndex} className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition-colors ${optionClass}`}>
                                             <input
                                                 type="radio"
-                                                name={`quiz-${chapterSlug}-question-${index}`}
+                                                name={`quiz-${moduleSlug}-question-${index}`}
                                                 value={option}
                                                 checked={isSelected}
                                                 onChange={() => handleAnswerChange(index, option)}

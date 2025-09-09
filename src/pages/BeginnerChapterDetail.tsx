@@ -30,6 +30,7 @@ const BeginnerChapterDetail: React.FC = () => {
       <SEO 
         title={`${chapter.title} | Classroom Débutant`}
         description={`Leçon détaillée sur "${chapter.title}" du module "${module.title}".`}
+        image={data.siteImages.classroomBg}
         noIndex
       />
       <div className="container mx-auto px-6 max-w-4xl">
@@ -64,7 +65,7 @@ const BeginnerChapterDetail: React.FC = () => {
         </div>
         
         {module.quiz && module.quiz.length > 0 && (
-            <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} chapterSlug={chapter.slug} />
+            <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
         )}
 
       </div>

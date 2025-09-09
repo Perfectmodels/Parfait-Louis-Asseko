@@ -112,7 +112,6 @@ const AppContent: React.FC = () => {
                     <Route path="/magazine" element={<Magazine />} />
                     <Route path="/magazine/:slug" element={<ArticleDetail />} />
                     <Route path="/contact" element={<Contact />} />
-                    <Route path="/services" element={<Services />} />
                     <Route path="/casting" element={<Casting />} />
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />

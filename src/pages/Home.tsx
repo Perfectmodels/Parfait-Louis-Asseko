@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -51,58 +52,48 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      <div className="page-container">
-        {/* 2. Agency Presentation */}
-        <section>
-          <h2 className="section-title">Notre Agence</h2>
-          <div className="content-section flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
-              <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
-            </div>
-            <div className="md:w-1/2 text-center md:text-left">
-              <p className="text-pm-off-white/80 mb-6 leading-relaxed">
-                {agencyInfo.about.p1}
-              </p>
-              <div className="flex justify-center md:justify-start gap-6 font-bold text-pm-gold/90 mb-8">
-                <span>PROFESSIONNALISME</span><span>•</span><span>EXCELLENCE</span><span>•</span><span>ÉTHIQUE</span>
-              </div>
-              <Link to="/agence" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                Découvrir l'agence
-              </Link>
-            </div>
+      {/* 2. Agency Presentation */}
+      <section className="page-container bg-black">
+        <div className="flex flex-col md:flex-row items-center gap-12">
+          <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
+            <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
           </div>
-        </section>
-
-        {/* 3. Services */}
-        <section>
-          <h2 className="section-title">Nos Services</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {featuredServices.map(service => (
-              <ServiceCard key={service.title} service={service} />
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-              Découvrir tous nos services
+          <div className="md:w-1/2 text-center md:text-left">
+            <p className="text-pm-off-white/80 mb-6 leading-relaxed">
+              {agencyInfo.about.p1}
+            </p>
+            <div className="flex justify-center md:justify-start gap-6 font-bold text-pm-gold/90 mb-8">
+              <span>PROFESSIONNALISME</span><span>•</span><span>EXCELLENCE</span><span>•</span><span>ÉTHIQUE</span>
+            </div>
+            <Link to="/agence" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+              Découvrir l'agence
             </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* 4. Models */}
-        <section>
-          <h2 className="section-title">Nos Mannequins</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {publicModels.map(model => (
-              <ModelCard key={model.id} model={model} />
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-              Voir tous les mannequins
-            </Link>
-          </div>
-        </section>
-      </div>
+      {/* 3. Services */}
+      <section className="page-container bg-pm-dark">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {featuredServices.map(service => (
+            <ServiceCard key={service.title} service={service} />
+          ))}
+        </div>
+      </section>
+
+      {/* 4. Models */}
+      <section className="page-container bg-black">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {publicModels.map(model => (
+            <ModelCard key={model.id} model={model} />
+          ))}
+        </div>
+        <div className="text-center mt-12">
+          <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+            Voir tous les mannequins
+          </Link>
+        </div>
+      </section>
 
       {/* 5. Events */}
       <section 
@@ -110,7 +101,6 @@ const Home: React.FC = () => {
         style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}
       >
         <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm">
-           <h2 className="section-title">Nos Événements</h2>
           <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
             {fashionDayEvents.find(e => e.edition === 2)?.description || "Nous créons des moments inoubliables où la mode prend vie. Découvrez nos événements phares."}
           </p>
@@ -120,31 +110,28 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      <div className="page-container">
-        {/* 7. Testimonials */}
-        {testimonials && testimonials.length > 0 && (
-          <section>
-             <h2 className="section-title">Ils Nous Font Confiance</h2>
-            <TestimonialCarousel />
-          </section>
-        )}
-
-        {/* 8. Call to Action */}
-        <section className="text-center">
-          <h2 className="section-title">Rejoignez L'Aventure</h2>
-          <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
-            Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-              Postuler
-            </Link>
-            <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-              Nous Contacter
-            </Link>
-          </div>
+      {/* 7. Testimonials */}
+      {testimonials && testimonials.length > 0 && (
+        <section className="page-container bg-black">
+          <TestimonialCarousel />
         </section>
-      </div>
+      )}
+
+      {/* 8. Call to Action */}
+      <section className="page-container bg-pm-dark text-center">
+        <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+          Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+            Postuler
+          </Link>
+          <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+            Nous Contacter
+          </Link>
+        </div>
+      </section>
+
     </div>
   );
 };

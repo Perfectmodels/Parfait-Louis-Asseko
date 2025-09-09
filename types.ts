@@ -67,11 +67,16 @@ export interface SocialLinks {
   youtube: string;
 }
 
+// FIX: Update Service interface to support categories and detailed points, resolving inconsistencies.
 export interface Service {
   icon: string;
   title: string;
+  category: 'Services Mannequinat' | 'Services Mode et Stylisme' | 'Services Événementiels';
   description: string;
-  // FIX: Add buttonText and buttonLink to the Service interface to resolve type errors in ServiceCard.
+  details?: { 
+    title: string;
+    points: string[];
+  };
   buttonText: string;
   buttonLink: string;
   isComingSoon?: boolean;
