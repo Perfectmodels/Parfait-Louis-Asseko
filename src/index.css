@@ -18,7 +18,7 @@
 @layer components {
   /* Container et espacement global */
   .page-container {
-    @apply container mx-auto px-6 py-16 lg:py-24;
+    @apply container mx-auto px-6 py-16 lg:py-24 space-y-24 lg:space-y-32;
   }
 
   /* ===================== TITRES ===================== */
@@ -27,19 +27,17 @@
   }
 
   .page-subtitle {
-    @apply text-center text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/80 mt-2 mb-12;
+    @apply text-center text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/80 mt-2 mb-16;
   }
 
   .section-title {
-    @apply font-playfair font-extrabold text-center text-pm-gold mb-12 relative pb-2;
-    font-size: 2.75rem; /* harmonisé, pas trop grand */
-    letter-spacing: 0.02em;
-    text-shadow: 1px 1px 6px rgba(0,0,0,0.6); /* visibilité sur fonds sombres */
+    @apply text-4xl md:text-5xl font-playfair font-extrabold text-center text-pm-gold mb-12 relative pb-4;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
   }
 
   .section-title::after {
     content: '';
-    @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-0.5 bg-pm-gold;
+    @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-pm-gold;
   }
 
   .section-subtitle {
@@ -47,12 +45,12 @@
   }
 
   .content-section {
-    @apply bg-black border border-pm-gold/20 p-8 sm:p-10 lg:p-14 rounded-lg mb-24;
+    @apply bg-black border border-pm-gold/20 p-8 sm:p-10 lg:p-14 rounded-lg;
   }
 
   /* ===================== CARD BASE STYLE ===================== */
   .card-base {
-    @apply bg-black border border-pm-gold/20 transition-all duration-300 rounded-lg p-6;
+    @apply bg-black border border-pm-gold/20 transition-all duration-300 rounded-lg;
   }
   .card-base:hover {
     @apply border-pm-gold shadow-2xl shadow-pm-gold/20 -translate-y-2;

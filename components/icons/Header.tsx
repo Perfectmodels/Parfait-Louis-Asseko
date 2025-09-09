@@ -20,7 +20,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
       onClick={onClick}
       end={to === '/'}
       className={({ isActive }) =>
-        `relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold ${mobileAnimationClasses} ` +
+        `relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${mobileAnimationClasses} ` +
         (isActive ? "text-pm-gold" : "")
       }
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
@@ -30,7 +30,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
           {label}
           <span 
             className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${
-              isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+              isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100'
             }`} 
           />
         </>
@@ -66,7 +66,7 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile
     return (
         <button
             onClick={onClick}
-            className={`flex items-center gap-2 py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 hover:text-pm-gold ${className} ${mobileAnimationClasses}`}
+            className={`flex items-center gap-2 py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${className} ${mobileAnimationClasses}`}
             aria-label="Déconnexion"
             style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
         >
@@ -182,7 +182,7 @@ const Header: React.FC = () => {
           </nav>
 
           <div className="lg:hidden flex items-center">
-              <button onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu">
+              <button onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">
                   <AnimatedHamburgerIcon isOpen={isOpen} />
               </button>
           </div>
@@ -198,12 +198,14 @@ const Header: React.FC = () => {
       
       {/* Mobile Menu Panel */}
       <div 
+        id="mobile-menu-panel"
         className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
+        aria-hidden={!isOpen}
       >
         <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24 flex-shrink-0">
              <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
