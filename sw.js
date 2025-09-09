@@ -1,10 +1,9 @@
 const CACHE_NAME = 'pmm-v1';
+// Removed cross-origin assets that may cause CORS errors during installation.
+// The service worker will attempt to cache other assets at runtime.
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  'https://i.ibb.co/fVBxPNTP/T-shirt.png',
-  'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500&display=swap',
 ];
 
 // Install event: cache core assets
@@ -38,7 +37,7 @@ self.addEventListener('activate', (event) => {
 // Fetch event: serve from cache, fall back to network, and cache new requests
 self.addEventListener('fetch', (event) => {
   // Only process GET requests and web protocols. This will ignore chrome-extension:// requests.
-  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
+  if (event.request.method !== 'GET' || (!event.request.url.startsWith('http:') && !event.request.url.startsWith('https:'))) {
     return;
   }
   
@@ -57,8 +56,8 @@ self.addEventListener('fetch', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((response) => {
         const fetchPromise = fetch(event.request).then((networkResponse) => {
-          // Check if we received a valid response
-          if (networkResponse && networkResponse.ok) {
+          // Check if we received a valid response and if the request is for an HTTP/HTTPS scheme
+          if (networkResponse && networkResponse.ok && (event.request.url.startsWith('http:') || event.request.url.startsWith('https:'))) {
             cache.put(event.request, networkResponse.clone());
           }
           return networkResponse;

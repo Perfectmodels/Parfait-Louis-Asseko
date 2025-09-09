@@ -5,7 +5,7 @@ import { NavLink } from '../hooks/useDataStore';
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+  logo: '/assets/t-shirt.png',
 };
 
 export const navLinks: NavLink[] = [
@@ -33,12 +33,12 @@ export const contactInfo: ContactInfo = {
 };
 
 export const siteImages: SiteImages = {
-    hero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-    about: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
-    fashionDayBg: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
-    agencyHistory: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
-    classroomBg: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
-    castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+    hero: '/assets/hero-bg.jpg',
+    about: '/assets/about-img.jpg',
+    fashionDayBg: '/assets/titostyle-53.jpg',
+    agencyHistory: '/assets/agency-history.jpg',
+    classroomBg: '/assets/ajc-4630.jpg',
+    castingBg: '/assets/casting-bg.jpg',
 };
 
 export const apiKeys: ApiKeys = {
@@ -74,11 +74,11 @@ export const models: Model[] = [
         height: '1m78',
         gender: 'Femme',
         location: 'Libreville',
-        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        imageUrl: '/assets/dsc-0272.jpg',
         portfolioImages: [
-            'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
-            'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-            'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+            '/assets/casting-bg.jpg',
+            '/assets/hero-bg.jpg',
+            '/assets/titostyle-53.jpg',
         ],
         distinctions: [
             { name: "Palmarès National & International", titles: ["Miss Gabon 2022", "Top Model Afrique Centrale 2023"] }
@@ -98,11 +98,11 @@ export const models: Model[] = [
         level: 'Pro',
         height: '1m75',
         gender: 'Femme',
-        imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+        imageUrl: '/assets/nr-09474.jpg',
         portfolioImages: [
-            'https://i.postimg.cc/Xv24Dvp1/NR-09484.jpg',
-            'https://i.postimg.cc/59Qbnb1p/NR-09503-Modifier.jpg',
-            'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+            '/assets/nr-09484.jpg',
+            '/assets/nr-09503-modifier.jpg',
+            '/assets/nr-09474.jpg',
         ],
         measurements: { chest: '82cm', waist: '60cm', hips: '88cm', shoeSize: '39' },
         categories: ['Défilé', 'Commercial', 'Éditorial'],
@@ -119,9 +119,9 @@ export const models: Model[] = [
         level: 'Pro',
         height: '1m88',
         gender: 'Homme',
-        imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+        imageUrl: '/assets/farelmd-37.jpg',
         portfolioImages: [
-             'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+             '/assets/ajc-4630.jpg',
         ],
         measurements: { chest: '98cm', waist: '78cm', hips: '95cm', shoeSize: '44' },
         categories: ['Défilé', 'Costume', 'Sportswear'],
@@ -136,19 +136,19 @@ export const testimonials: Testimonial[] = [
         name: 'Franck B.',
         role: 'Créateur de Mode',
         quote: "Collaborer avec Perfect Models Management est un gage de professionnalisme. Leurs mannequins sont non seulement magnifiques mais aussi incroyablement bien formés et ponctuels. Un vrai plaisir.",
-        imageUrl: 'https://i.ibb.co/s5zW7gZ/testimonial-1.jpg',
+        imageUrl: '/assets/testimonial-1.jpg',
     },
     {
         name: 'Nadia K.',
         role: 'Directrice Artistique',
         quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond parfaitement aux besoins créatifs de nos campagnes publicitaires.",
-        imageUrl: 'https://i.ibb.co/y4x9Y8X/testimonial-2.jpg',
+        imageUrl: '/assets/testimonial-2.jpg',
     },
     {
         name: 'Noemi Kim',
         role: 'Mannequin de l\'agence',
         quote: "PMM est bien plus qu'une agence, c'est une famille qui nous pousse à donner le meilleur de nous-mêmes. La formation et l'encadrement sont exceptionnels.",
-        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        imageUrl: '/assets/dsc-0272.jpg',
     },
 ];
 
@@ -166,9 +166,9 @@ export { beginnerCourseData };
 
 
 export const newsItems: NewsItem[] = [
-    { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
-    { id: '2', title: "Perfect Fashion Day Édition 2", date: '2025-02-08', imageUrl: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
-    { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: 'https://i.ibb.co/3WfK9Xg/about-img.jpg', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
+    { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: '/assets/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
+    { id: '2', title: "Perfect Fashion Day Édition 2", date: '2025-02-08', imageUrl: '/assets/titostyle-53.jpg', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
+    { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: '/assets/about-img.jpg', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
 ];
 
 export const fashionDayEvents: FashionDayEvent[] = [
@@ -179,7 +179,7 @@ export const fashionDayEvents: FashionDayEvent[] = [
     location: 'La Gare du Nord, Libreville',
     description: 'La première édition du Perfect Fashion Day a célébré le talent des créateurs locaux et la beauté des mannequins de l\'agence dans un cadre prestigieux.',
     stylists: [
-        { name: 'AG Style', description: 'Tradition revisitée', images: ['https://i.ibb.co/3WfK9Xg/about-img.jpg'] },
+        { name: 'AG Style', description: 'Tradition revisitée', images: ['/assets/about-img.jpg'] },
         { name: 'Brand’O', description: 'Énergie flamboyante', images: [] },
         { name: 'Miguel Fashion Style', description: 'Finesse sur-mesure', images: [] }
     ],

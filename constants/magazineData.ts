@@ -6,18 +6,18 @@ export const articles: Article[] = [
     title: "AJ Caramela x NR Picture : L'Alliance Iconique",
     category: 'Shooting',
     excerpt: "Quand la présence magnétique du mannequin AJ Caramela rencontre l'œil expert de NR Picture, le résultat est une série photo qui transcende la mode pour toucher à l'art.",
-    imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+    imageUrl: '/assets/nr-09474.jpg',
     author: 'Focus Model 241',
     date: '28 Juillet 2024',
     content: [
       { type: 'paragraph', text: "Dans l'univers de la mode gabonaise, certaines collaborations sont destinées à marquer les esprits. La récente séance photo entre le mannequin vedette de Perfect Models Management, AJ Caramela, et le talentueux studio NR Picture en est la parfaite illustration. Une rencontre au sommet qui a donné naissance à une série de clichés d'une intensité rare, où la force et la grâce s'entremêlent." },
       { type: 'heading', level: 2, text: 'La Puissance Incarnée' },
       { type: 'paragraph', text: "Devant l'objectif, AJ Caramela n'est pas seulement un modèle ; elle est une histoire. Chaque pose est une affirmation, chaque regard une invitation. Sa capacité à incarner à la fois une vulnérabilité touchante et une puissance indomptable est au cœur de cette série. Elle joue avec les ombres et la lumière, transformant chaque tenue en une seconde peau, chaque accessoire en une extension de sa personnalité." },
-      { type: 'image', src: 'https://i.postimg.cc/Xv24Dvp1/NR-09484.jpg', alt: 'AJ Caramela dans une pose puissante en noir et blanc', caption: 'Une maîtrise du clair-obscur qui sculpte la silhouette.' },
+      { type: 'image', src: '/assets/nr-09484.jpg', alt: 'AJ Caramela dans une pose puissante en noir et blanc', caption: 'Une maîtrise du clair-obscur qui sculpte la silhouette.' },
       { type: 'quote', text: "Le but n'était pas de faire de belles photos, mais de capturer une âme. AJ a cette capacité à livrer une partie d'elle-même à chaque déclenchement.", author: 'NR Picture' },
       { type: 'heading', level: 2, text: "L'Œil du Maître" },
       { type: 'paragraph', text: "NR Picture, connu pour son esthétique léchée et sa direction artistique précise, a su créer un écrin parfait pour le talent d'AJ Caramela. Le choix du noir et blanc pour une grande partie de la série n'est pas anodin. Il épure le superflu pour se concentrer sur l'essentiel : les lignes, les textures, et l'émotion brute. Chaque cadrage est millimétré, chaque composition est une œuvre d'art en soi." },
-      { type: 'image', src: 'https://i.postimg.cc/59Qbnb1p/NR-09503-Modifier.jpg', alt: 'Gros plan intense sur le visage de AJ Caramela', caption: "L'intensité d'un regard capturée par NR Picture." },
+      { type: 'image', src: '/assets/nr-09503-modifier.jpg', alt: 'Gros plan intense sur le visage de AJ Caramela', caption: "L'intensité d'un regard capturée par NR Picture." },
       { type: 'paragraph', text: "Cette collaboration est bien plus qu'une simple séance photo. C'est un dialogue artistique, une fusion entre un modèle qui maîtrise son art et un photographe qui sait en extraire la quintessence. Le résultat est une série iconique qui confirme le statut d'AJ Caramela comme l'un des visages les plus captivants de sa génération et celui de NR Picture comme une référence incontournable de la photographie de mode au Gabon." }
     ],
     tags: ['AJ Caramela', 'NR Picture', 'Shooting Photo', 'Mode Gabon', 'Collaboration Artistique', 'Noir et Blanc']
@@ -27,7 +27,7 @@ export const articles: Article[] = [
     title: 'Noemi Kim : Au-delà du podium',
     category: 'Interview',
     excerpt: 'Plongez dans le parcours inspirant de notre mannequin phare, entre discipline, ambition et passion pour l\'art.',
-    imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+    imageUrl: '/assets/dsc-0272.jpg',
     author: 'Focus Model 241',
     date: '15 Juillet 2024',
     content: [
@@ -46,7 +46,7 @@ export const articles: Article[] = [
     title: 'Retour sur le Perfect Fashion Day',
     category: 'Événement',
     excerpt: 'Les moments forts, les coulisses et les plus belles créations de l\'événement qui a marqué les esprits.',
-    imageUrl: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+    imageUrl: '/assets/titostyle-53.jpg',
     author: 'La Rédaction',
     date: '10 Février 2025',
     content: [
@@ -62,7 +62,7 @@ export const articles: Article[] = [
     title: 'L\'audace du sur-mesure masculin',
     category: 'Tendance',
     excerpt: 'Analyse du style affirmé des créateurs comme Farel MD et Miguel Fashion Style, stars de notre dernier défilé.',
-    imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+    imageUrl: '/assets/farelmd-37.jpg',
     author: 'Focus Model 241',
     date: '28 Mars 2025',
     content: [
@@ -78,7 +78,7 @@ export const articles: Article[] = [
     title: 'Devenir mannequin : Les clés du succès',
     category: 'Conseils',
     excerpt: 'Nos coachs partagent leurs secrets pour réussir un casting, construire son book et développer sa carrière.',
-    imageUrl: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+    imageUrl: '/assets/ajc-4630.jpg',
     author: 'L\'équipe PMM',
     date: '05 Mai 2025',
     content: [
