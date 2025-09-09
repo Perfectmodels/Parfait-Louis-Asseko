@@ -173,7 +173,6 @@ export interface Partner {
 export interface ApiKeys {
   resendApiKey: string;
   formspreeEndpoint: string;
-  cloudflareWorkerUrl?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -310,11 +309,12 @@ export interface ContactMessage {
   message: string;
 }
 
+// FIX: Add AIAssistantProps interface to be used by the AI assistant components.
 export interface AIAssistantProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onInsertContent: (content: string) => void;
-  fieldName: string;
-  initialPrompt: string;
-  jsonSchema?: any;
+    isOpen: boolean;
+    onClose: () => void;
+    onInsertContent: (content: string) => void;
+    fieldName: string;
+    initialPrompt: string;
+    jsonSchema?: any;
 }

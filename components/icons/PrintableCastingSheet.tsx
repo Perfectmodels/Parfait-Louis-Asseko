@@ -1,6 +1,8 @@
 
+
 import React, { useEffect } from 'react';
-import { CastingApplication, JuryMember, JuryScore } from '../../types';
+// FIX: Corrected import path for types.
+import { CastingApplication, JuryMember, JuryScore } from '../types';
 import { useData } from '../../contexts/DataContext';
 
 interface PrintableCastingSheetProps {
@@ -63,8 +65,8 @@ const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, jury
                     </div>
                 </div>
                 <div className="col-span-1 text-center bg-black p-4 flex flex-col justify-center items-center">
-                    <p className="text-sm uppercase tracking-widest">Numéro de Passage</p>
-                    <p className="text-8xl font-playfair font-bold">#{String(app.passageNumber).padStart(3, '0')}</p>
+                    <p className="text-sm uppercase tracking-widest text-white">Numéro de Passage</p>
+                    <p className="text-8xl font-playfair font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</p>
                 </div>
             </section>
             
@@ -83,13 +85,13 @@ const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, jury
                 {juryScores.length > 0 ? (
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-black border-b-2 border-black">
+                            <tr className="bg-gray-200 border-b-2 border-black">
                                 <th className="p-2 font-bold">Jury</th>
                                 <th className="p-2 font-bold text-center">Physique</th>
                                 <th className="p-2 font-bold text-center">Présence</th>
                                 <th className="p-2 font-bold text-center">Photogénie</th>
                                 <th className="p-2 font-bold text-center">Potentiel</th>
-                                <th className="p-2 font-bold text-center text-pm-gold">Note Globale</th>
+                                <th className="p-2 font-bold text-center text-pm-gold bg-black">Note Globale</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -102,7 +104,7 @@ const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, jury
                                         <td className="p-2 text-center">{score.presence.toFixed(1)}</td>
                                         <td className="p-2 text-center">{score.photogenie.toFixed(1)}</td>
                                         <td className="p-2 text-center">{score.potentiel.toFixed(1)}</td>
-                                        <td className="p-2 text-center font-bold text-pm-gold">{score.overall.toFixed(1)}</td>
+                                        <td className="p-2 text-center font-bold text-pm-gold bg-black">{score.overall.toFixed(1)}</td>
                                     </tr>
                                 );
                             })}

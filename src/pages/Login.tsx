@@ -40,6 +40,21 @@ const Login: React.FC = () => {
             return;
         }
     }
+    
+    // Beginner Student Login
+    if (data?.beginnerStudents) {
+        const loggedInBeginner = data.beginnerStudents.find(bs => 
+            bs.matricule.toLowerCase() === username.toLowerCase()
+        );
+        if (loggedInBeginner && loggedInBeginner.password === password) {
+            sessionStorage.setItem('classroom_access', 'granted');
+            sessionStorage.setItem('classroom_role', 'beginner');
+            sessionStorage.setItem('userId', loggedInBeginner.id);
+            sessionStorage.setItem('userName', loggedInBeginner.name);
+            navigate('/classroom-debutant');
+            return;
+        }
+    }
 
     // Jury Login
     if (data?.juryMembers) {

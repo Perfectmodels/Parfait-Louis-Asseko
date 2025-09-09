@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Model, ModelDistinction } from '../types';
-import ImageInput from './ImageInput';
+import ImageInput from './icons/ImageInput';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
@@ -75,10 +75,10 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
 
     return (
         <>
-            <h1 className="text-4xl font-playfair text-pm-gold mb-8">
+            <h1 className="admin-page-title mb-8">
                 {isCreating ? 'Ajouter un Mannequin' : (isAdmin ? `Modifier le profil de ${model.name}` : `Mon Profil`)}
             </h1>
-            <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-8 rounded-lg shadow-lg shadow-black/30">
+            <form onSubmit={handleSubmit} className="admin-section-wrapper space-y-8">
                 
                 <Section title="Informations de Base">
                     <FormInput label="Nom Complet" name="name" value={formData.name} onChange={handleChange} disabled={!isAdmin} />
@@ -93,9 +93,15 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
                 
                 {isAdmin && (
-                    <Section title="Accès & Visibilité (Admin)">
-                        <FormInput label="Identifiant (Matricule)" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
-                        <FormInput label="Mot de passe" name="password" value={formData.password} onChange={handleChange} />
+                    <Section title="Accès, Niveau & Visibilité (Admin)">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormInput label="Identifiant (Matricule)" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
+                            <FormInput label="Mot de passe" name="password" value={formData.password} onChange={handleChange} />
+                        </div>
+                        <FormSelect label="Niveau" name="level" value={formData.level || 'Débutant'} onChange={handleChange}>
+                            <option value="Débutant">Débutant</option>
+                            <option value="Pro">Pro</option>
+                        </FormSelect>
                         <div className="flex items-center gap-3 pt-2">
                             <input 
                                 type="checkbox"
@@ -105,11 +111,11 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                                 onChange={handleChange}
                                 className="h-5 w-5 rounded bg-pm-dark border-pm-gold text-pm-gold focus:ring-pm-gold"
                             />
-                            <label htmlFor="isPublic" className="text-sm font-medium text-pm-off-white/80">
+                            <label htmlFor="isPublic" className="admin-label !mb-0">
                                 Rendre le profil public sur le site
                             </label>
                         </div>
-                        <p className="text-xs text-pm-off-white/60 -mt-2">L'identifiant est généré automatiquement. La visibilité publique rend le mannequin visible dans la section `/mannequins`.</p>
+                        <p className="text-xs text-pm-off-white/60">L'identifiant est généré automatiquement. La visibilité publique rend le mannequin visible dans la section `/mannequins`.</p>
                     </Section>
                 )}
 
@@ -134,7 +140,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 <Section title="Carrière & Portfolio">
                     {isAdmin && (
                         <div>
-                            <label className="block text-sm font-medium text-pm-off-white/70 mb-2">Distinctions</label>
+                            <label className="admin-label">Distinctions</label>
                             <ArrayEditor
                                 items={formData.distinctions || []}
                                 setItems={newItems => setFormData(p => ({...p, distinctions: newItems}))}
@@ -156,7 +162,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     )}
                     {!isAdmin && formData.distinctions && formData.distinctions.length > 0 && (
                         <div>
-                            <label className="block text-sm font-medium text-pm-off-white/70 mb-2">Distinctions (non modifiable)</label>
+                            <label className="admin-label">Distinctions (non modifiable)</label>
                             <div className="p-4 bg-pm-dark rounded-md border border-pm-off-white/10 space-y-2">
                                 {formData.distinctions.map((d, i) => (
                                     <div key={i}>
@@ -172,8 +178,12 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                         </div>
                     )}
                     <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
-                    <FormTextArea label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5} />
-                    <FormTextArea label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} />
+                    <FormTextArea 
+                        label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5}
+                    />
+                    <FormTextArea 
+                        label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} 
+                    />
                 </Section>
                 
                 <Section title="Photos du Portfolio">
@@ -208,34 +218,34 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
 };
 
 const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
-    <div className="space-y-6 pt-6 border-t border-pm-gold/10 first:pt-0 first:border-none">
-        <h2 className="text-xl font-playfair text-pm-gold">{title}</h2>
-        {children}
+    <div className="pt-8 first:pt-0">
+        <h2 className="admin-section-title">{title}</h2>
+        <div className="space-y-6">{children}</div>
     </div>
 );
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, disabled?: boolean}> = ({label, name, value, onChange, type="text", disabled = false}) => (
+const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, disabled?: boolean}> = (props) => (
     <div>
-        <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" disabled={disabled} />
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <input type={props.type || "text"} {...props} className="admin-input" />
     </div>
 );
 
-const FormSelect: React.FC<{label: string, name: string, value: any, onChange: any, children: React.ReactNode, disabled?: boolean}> = ({label, name, value, onChange, children, disabled = false}) => (
+const FormSelect: React.FC<{label: string, name: string, value: any, onChange: any, children: React.ReactNode, disabled?: boolean}> = (props) => (
      <div>
-        <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <select id={name} name={name} value={value} onChange={onChange} className="admin-input" disabled={disabled}>
-            {children}
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <select {...props} className="admin-input">
+            {props.children}
         </select>
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean}> = ({label, name, value, onChange, rows = 3, disabled = false}) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean}> = (props) => (
     <div>
         <div className="flex justify-between items-center mb-1">
-            <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            <label htmlFor={props.name} className="admin-label !mb-0">{props.label}</label>
         </div>
-        <textarea id={name} name={name} value={value} onChange={onChange} rows={rows} className="admin-input admin-textarea" disabled={disabled} />
+        <textarea {...props} rows={props.rows || 3} className="admin-input admin-textarea" />
     </div>
 );
 

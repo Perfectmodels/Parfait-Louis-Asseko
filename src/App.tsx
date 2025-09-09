@@ -1,60 +1,63 @@
+
 import React, { useEffect } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { DataProvider, useData } from 'contexts/DataContext';
-import Layout from 'components/Layout';
-import ProtectedRoute from 'components/ProtectedRoute';
+import { DataProvider, useData } from './contexts/DataContext';
+import Layout from './components/icons/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
-import Home from 'pages/Home';
-import Agency from 'pages/Agency';
-import Models from 'pages/Models';
-import ModelDetail from 'pages/ModelDetail';
-import FashionDay from 'pages/FashionDay';
-import Magazine from 'pages/Magazine';
-import ArticleDetail from 'pages/ArticleDetail';
-import Contact from 'pages/Contact';
-import Services from 'pages/Services';
-import Casting from 'pages/Casting';
-import CastingForm from 'pages/CastingForm';
-import FashionDayApplicationForm from 'pages/FashionDayApplicationForm';
-import Login from 'pages/Login';
-import Activity from 'pages/Activity'; // Renamed Formations
-import ChapterDetail from 'pages/ChapterDetail';
-import ModelDashboard from 'pages/ModelDashboard'; // Profil
-import ClassroomForum from 'pages/ClassroomForum';
-import ForumThread from 'pages/ForumThread';
-import Chat from 'pages/Chat';
+import Home from './pages/Home';
+import Agency from './pages/Agency';
+import Models from './pages/Models';
+import ModelDetail from './pages/ModelDetail';
+import FashionDay from './pages/FashionDay';
+import Magazine from './pages/Magazine';
+import ArticleDetail from './pages/ArticleDetail';
+import Contact from './pages/Contact';
+import Services from './pages/Services';
+import Casting from './pages/Casting';
+import CastingForm from './pages/CastingForm';
+import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
+import Login from './pages/Login';
+import Activity from './pages/Activity'; // Renamed Formations
+import ChapterDetail from './pages/ChapterDetail';
+import ModelDashboard from './pages/ModelDashboard'; // Profil
+import ClassroomForum from './pages/ClassroomForum';
+import ForumThread from './pages/ForumThread';
+import BeginnerClassroom from './pages/BeginnerClassroom';
+import BeginnerChapterDetail from './pages/BeginnerChapterDetail';
 
 
 // Admin Pages
-import Admin from 'pages/Admin';
-import AdminAgency from 'pages/AdminAgency';
-import AdminCasting from 'pages/AdminCasting';
-import AdminCastingResults from 'pages/AdminCastingResults'; // Nouvelle page
-import AdminClassroom from 'pages/AdminClassroom';
-import AdminClassroomProgress from 'pages/AdminClassroomProgress';
-import AdminFashionDay from 'pages/AdminFashionDay';
-import AdminFashionDayEvents from 'pages/AdminFashionDayEvents';
-import AdminMagazine from 'pages/AdminMagazine';
-import AdminModelAccess from 'pages/AdminModelAccess';
-import AdminModels from 'pages/AdminModels';
-import AdminNews from 'pages/AdminNews';
-import AdminRecovery from 'pages/AdminRecovery';
-import AdminSettings from 'pages/AdminSettings';
-import AdminComments from 'pages/AdminComments';
-import AdminBookings from 'pages/AdminBookings';
-import AdminMessages from 'pages/AdminMessages';
+import Admin from './pages/Admin';
+import AdminAgency from './pages/AdminAgency';
+import AdminCasting from './pages/AdminCasting';
+import AdminCastingResults from './pages/AdminCastingResults'; // Nouvelle page
+import AdminClassroom from './pages/AdminClassroom';
+import AdminClassroomProgress from './pages/AdminClassroomProgress';
+import AdminFashionDay from './pages/AdminFashionDay';
+import AdminFashionDayEvents from './pages/AdminFashionDayEvents';
+import AdminMagazine from './pages/AdminMagazine';
+import AdminModelAccess from './pages/AdminModelAccess';
+import AdminModels from './pages/AdminModels';
+import AdminNews from './pages/AdminNews';
+import AdminRecovery from './pages/AdminRecovery';
+import AdminSettings from './pages/AdminSettings';
+import AdminComments from './pages/AdminComments';
+import AdminBookings from './pages/AdminBookings';
+import AdminMessages from './pages/AdminMessages';
+import AdminBeginnerStudents from './pages/AdminBeginnerStudents';
 
 // Role-specific pages
-import JuryCasting from 'pages/JuryCasting';
-import RegistrationCasting from 'pages/RegistrationCasting';
+import JuryCasting from './pages/JuryCasting';
+import RegistrationCasting from './pages/RegistrationCasting';
 
 // Static Pages
-import PrivacyPolicy from 'pages/PrivacyPolicy';
-import TermsOfUse from 'pages/TermsOfUse';
-import NotFound from 'pages/NotFound';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfUse from './pages/TermsOfUse';
+import NotFound from './pages/NotFound';
 
-const ScrollToTop = () => {
+const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -62,12 +65,9 @@ const ScrollToTop = () => {
   return null;
 };
 
-const AppContent = () => {
+const AppContent: React.FC = () => {
     const location = useLocation();
     const { data } = useData();
-    const hideAIAssistant = [
-        '/login', '/admin', '/jury', '/enregistrement', '/profil', '/chat'
-    ].some(path => location.pathname.startsWith(path));
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -117,7 +117,6 @@ const AppContent = () => {
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/chat" element={<Chat />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
 
@@ -127,6 +126,9 @@ const AppContent = () => {
                     <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                     <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
                     <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
+                    
+                    <Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
+                    <Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />
                     
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
@@ -144,6 +146,7 @@ const AppContent = () => {
                     <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                     <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
+                    <Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} />
                     <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
                     <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                     <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />

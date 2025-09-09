@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
@@ -164,18 +165,17 @@ export const useDataStore = () => {
         return () => unsubscribe();
     }, [getInitialData]);
 
-    const saveData = useCallback(async (newData: Partial<AppData>) => {
+    const saveData = useCallback(async (newData: AppData) => {
         try {
-            const fullData = { ...data, ...newData } as AppData;
-            await set(ref(db, '/'), fullData);
+            await set(ref(db, '/'), newData);
             // The local state will be updated by the 'on' listener,
             // but we can set it here for immediate UI feedback if desired.
-            setData(fullData);
+            setData(newData);
         } catch (error) {
             console.error("Error saving data to Firebase:", error);
             throw error; // Re-throw to be caught by the caller
         }
-    }, [data]);
+    }, []);
 
     return { data, saveData, isInitialized };
 };

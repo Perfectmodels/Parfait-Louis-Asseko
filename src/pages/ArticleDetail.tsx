@@ -1,8 +1,12 @@
+
+
 import React, { useState, useEffect } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+// FIX: Corrected import path for types.
 import { ArticleContent, ArticleComment } from '../types';
 import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';

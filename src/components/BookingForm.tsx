@@ -42,7 +42,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
             return;
         }
 
-        // 1. Save to Firebase Database
         const newRequest: BookingRequest = {
             id: `booking-${Date.now()}`,
             submissionDate: new Date().toISOString(),
@@ -53,26 +52,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
         try {
             const updatedRequests = [...(data.bookingRequests || []), newRequest];
             await saveData({ ...data, bookingRequests: updatedRequests });
-
-            // 2. Send email via Formspree if configured
-            const endpoint = data.apiKeys.formspreeEndpoint;
-            if (endpoint && !endpoint.includes('VOTRE_ENDPOINT_PERSONNEL_ICI')) {
-                 try {
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                        body: JSON.stringify({
-                            ...formData, 
-                            _subject: `Nouvelle Demande de Booking: ${formData.requestedModels}` 
-                        }),
-                    });
-                    if (!response.ok) {
-                        throw new Error('La notification par email a échoué.');
-                    }
-                } catch (emailError) {
-                    console.warn("Email notification failed, but data was saved to DB:", emailError);
-                }
-            }
 
             setStatus('success');
             setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');
@@ -125,14 +104,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
 
 const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, disabled?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-2">{props.label}</label>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
 
 const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/70 mb-2">{props.label}</label>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" />
     </div>
 );

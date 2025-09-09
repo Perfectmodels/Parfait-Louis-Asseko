@@ -1,15 +1,19 @@
+
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
-    const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Toutes');
+    const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
+    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     useEffect(() => {
         if (data?.castingApplications) {
@@ -49,7 +53,7 @@ const AdminCasting: React.FC = () => {
         }
 
         const currentYear = new Date().getFullYear();
-        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\u0027]/g, "").replace(/[^a-z0-9-]/g, "");
+        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
 
         const initial = app.firstName.charAt(0).toUpperCase();
         const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
@@ -110,7 +114,7 @@ const AdminCasting: React.FC = () => {
             alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
-
+    
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
@@ -122,6 +126,10 @@ const AdminCasting: React.FC = () => {
     }
 
     const statusOptions: (CastingApplicationStatus | 'Toutes')[] = ['Toutes', 'Nouveau', 'Présélectionné', 'Accepté', 'Refusé'];
+
+    if (printingApp) {
+        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
+    }
 
     return (
         <>
