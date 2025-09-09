@@ -1,11 +1,13 @@
-
 import React from 'react';
 
 export interface Model {
   id: string;
-  name: string;
+  name: string; // Nom complet du modèle
+  firstName?: string; // Prénom (optionnel, peut être extrait de name si nécessaire)
+  lastName?: string;  // Nom de famille (optionnel, peut être extrait de name si nécessaire)
   username: string;
   password: string;
+  isPublic?: boolean; // Si le profil du modèle est visible publiquement
   email?: string;
   phone?: string;
   age?: number;
@@ -13,22 +15,29 @@ export interface Model {
   gender: 'Homme' | 'Femme';
   location?: string;
   imageUrl: string;
+  images?: string[]; // Pour les images supplémentaires du modèle
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
-  isPublic?: boolean; // True if the model profile is visible on the public site
-  // FIX: Add 'level' property to support different model tiers.
   level?: 'Pro' | 'Débutant';
-  // New portfolio fields
+  category?: string; // Catégorie du modèle (ex: Femme, Homme, Enfant)
+  
+  // Mesures du modèle
   measurements: {
     chest: string;
     waist: string;
     hips: string;
     shoeSize: string;
+    bust?: string; // Ajout de la propriété bust pour la poitrine
   };
+  
+  // Informations supplémentaires
   categories: string[];
   experience: string;
   journey: string;
   quizScores: { [quizId: string]: number };
+  
+  // Pour la compatibilité avec l'ancien système
+  [key: string]: any;
 }
 
 // FIX: Add BeginnerStudent interface to be used by the beginner classroom and admin pages.
@@ -37,7 +46,7 @@ export interface BeginnerStudent {
   name: string;
   matricule: string;
   password: string;
-  quizScores: { [chapterSlug: string]: number }; // Score out of 20
+  quizScores: { [moduleSlug: string]: number }; // Score out of 20
 }
 
 export interface Stylist {
@@ -60,14 +69,13 @@ export interface FashionDayEvent {
   description: string;
 }
 
-// FIX: Add missing SocialLinks interface
+// Liens vers les réseaux sociaux de l'agence
 export interface SocialLinks {
   facebook: string;
   instagram: string;
   youtube: string;
 }
 
-// FIX: Update Service interface to support categories and detailed points, resolving inconsistencies.
 export interface Service {
   icon: string;
   title: string;
