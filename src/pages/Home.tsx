@@ -110,8 +110,8 @@ const Home: React.FC = () => {
         style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}
       >
         <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm">
-          <h2 className="section-title !text-white">Nos Événements</h2>
-          <p className="page-subtitle !mb-8 !mt-0 max-w-3xl">
+           <h2 className="section-title">Nos Événements</h2>
+          <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
             {fashionDayEvents.find(e => e.edition === 2)?.description || "Nous créons des moments inoubliables où la mode prend vie. Découvrez nos événements phares."}
           </p>
           <Link to="/fashion-day" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
@@ -120,19 +120,19 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      <div className="page-container pt-16 lg:pt-24">
+      <div className="page-container">
         {/* 7. Testimonials */}
         {testimonials && testimonials.length > 0 && (
           <section>
-            <h2 className="section-title">Ils Parlent de Nous</h2>
+             <h2 className="section-title">Ils Nous Font Confiance</h2>
             <TestimonialCarousel />
           </section>
         )}
 
         {/* 8. Call to Action */}
         <section className="text-center">
-          <h2 className="section-title">Prêts à Nous Rejoindre ?</h2>
-          <p className="page-subtitle !mb-8 !mt-0 max-w-3xl">
+          <h2 className="section-title">Rejoignez L'Aventure</h2>
+          <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
             Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -145,7 +145,6 @@ const Home: React.FC = () => {
           </div>
         </section>
       </div>
-
     </div>
   );
 };
