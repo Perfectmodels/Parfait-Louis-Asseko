@@ -37,7 +37,8 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event: serve from cache, fall back to network, and cache new requests
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') {
+  // Only process GET requests and web protocols. This will ignore chrome-extension:// requests.
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
     return;
   }
   
@@ -56,7 +57,8 @@ self.addEventListener('fetch', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((response) => {
         const fetchPromise = fetch(event.request).then((networkResponse) => {
-          if (networkResponse.ok) {
+          // Check if we received a valid response
+          if (networkResponse && networkResponse.ok) {
             cache.put(event.request, networkResponse.clone());
           }
           return networkResponse;
