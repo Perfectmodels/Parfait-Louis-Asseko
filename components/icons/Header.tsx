@@ -1,9 +1,8 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
-import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
 import { NavLink as NavLinkType } from '../../hooks/useDataStore';
@@ -97,17 +96,163 @@ const SocialLinksComponent: React.FC<{ socialLinks: SocialLinks | undefined; cla
     );
 };
 
+export const Breadcrumb: React.FC = () => {
+    const location = useLocation();
+    const params = useParams();
+    const { data } = useData();
+
+    const breadcrumbNameMap: { [key: string]: string } = {
+        '/agence': 'Agence',
+        '/mannequins': 'Nos Mannequins',
+        '/fashion-day': 'PFD',
+        '/magazine': 'Magazine',
+        '/contact': 'Contact',
+        '/services': 'Services',
+        '/casting': 'Casting',
+        '/casting-formulaire': 'Postuler au Casting',
+        '/fashion-day-application': 'Candidature PFD',
+    };
+    
+    const pathnames = location.pathname.split('/').filter(Boolean);
+    
+    if (pathnames.length === 0 || location.pathname.startsWith('/login') || location.pathname.startsWith('/admin')) {
+        return null;
+    }
+
+    let crumbs = [{ label: 'Accueil', path: '/' }];
+
+    // Specific route structures
+    if (location.pathname.startsWith('/mannequins/')) {
+        crumbs.push({ label: 'Nos Mannequins', path: '/mannequins' });
+        const model = data?.models.find(m => m.id === params.id);
+        if (model) crumbs.push({ label: model.name, path: location.pathname });
+    } else if (location.pathname.startsWith('/magazine/')) {
+        crumbs.push({ label: 'Magazine', path: '/magazine' });
+        const article = data?.articles.find(a => a.slug === params.slug);
+        if (article) crumbs.push({ label: article.title, path: location.pathname });
+    } else if (location.pathname.startsWith('/formations/forum/')) {
+        crumbs.push({ label: 'Classroom', path: '/formations' });
+        crumbs.push({ label: 'Forum', path: '/formations/forum' });
+        const thread = data?.forumThreads.find(t => t.id === params.threadId);
+        if (thread) crumbs.push({ label: thread.title, path: location.pathname });
+    } else if (location.pathname.startsWith('/formations/') && params.moduleSlug && params.chapterSlug) {
+        crumbs.push({ label: 'Classroom', path: '/formations' });
+        const module = data?.courseData.find(m => m.slug === params.moduleSlug);
+        if (module) {
+            const chapter = module.chapters.find(c => c.slug === params.chapterSlug);
+            const firstChapterSlug = module.chapters[0]?.slug;
+            crumbs.push({ label: module.title, path: `/formations/${module.slug}/${firstChapterSlug}` });
+            if (chapter) crumbs.push({ label: chapter.title, path: location.pathname });
+        }
+    } else if (location.pathname.startsWith('/classroom-debutant/') && params.moduleSlug && params.chapterSlug) {
+        crumbs.push({ label: 'Classroom Débutant', path: '/classroom-debutant' });
+        const module = data?.beginnerCourseData.find(m => m.slug === params.moduleSlug);
+        if (module) {
+            const chapter = module.chapters.find(c => c.slug === params.chapterSlug);
+            const firstChapterSlug = module.chapters[0]?.slug;
+            crumbs.push({ label: module.title, path: `/classroom-debutant/${module.slug}/${firstChapterSlug}` });
+            if (chapter) crumbs.push({ label: chapter.title, path: location.pathname });
+        }
+    } else if (location.pathname === '/profil') {
+        crumbs.push({ label: 'Classroom', path: '/formations' });
+        crumbs.push({ label: 'Mon Profil', path: '/profil' });
+    } else {
+        // Generic handling for simple, non-nested routes
+        let currentPath = '';
+        pathnames.forEach(segment => {
+            currentPath += `/${segment}`;
+            if (breadcrumbNameMap[currentPath]) {
+                crumbs.push({ label: breadcrumbNameMap[currentPath], path: currentPath });
+            }
+        });
+    }
+
+    if (crumbs.length <= 1) return null;
+
+    return (
+        <div className="bg-black border-b border-pm-gold/20 print-hide">
+            <div className="container mx-auto px-6">
+                <nav aria-label="Fil d'Ariane" className="py-3">
+                    <ol className="flex items-center space-x-1 text-sm text-pm-off-white/70 overflow-x-auto whitespace-nowrap">
+                        {crumbs.map((crumb, index) => {
+                            const isLast = index === crumbs.length - 1;
+                            return (
+                                <li key={crumb.path} className="flex items-center">
+                                    {index > 0 && <ChevronRightIcon className="w-4 h-4 mx-1 text-pm-off-white/50 flex-shrink-0" />}
+                                    {isLast ? (
+                                        <span className="font-bold text-pm-gold truncate" aria-current="page">{crumb.label}</span>
+                                    ) : (
+                                        <Link to={crumb.path} className="hover:text-pm-gold transition-colors">{crumb.label}</Link>
+                                    )}
+                                </li>
+                            );
+                        })}
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    );
+};
+
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
   const location = useLocation();
-  // FIX: Use useNavigate for react-router-dom v6 compatibility.
   const navigate = useNavigate();
-
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Focus management and body scroll lock for mobile menu
+  useEffect(() => {
+    const originalBodyOverflow = window.getComputedStyle(document.body).overflow;
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+
+      const focusableElementsQuery = 'a[href], button:not([disabled])';
+      const focusableElements = mobileMenuRef.current?.querySelectorAll<HTMLElement>(focusableElementsQuery);
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setIsOpen(false);
+          return;
+        }
+        if (e.key === 'Tab') {
+          if (e.shiftKey) { // Shift + Tab
+            if (document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement.focus();
+            }
+          } else { // Tab
+            if (document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement.focus();
+            }
+          }
+        }
+      };
+      
+      const timer = setTimeout(() => firstElement.focus(), 100);
+      document.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        clearTimeout(timer);
+        document.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = originalBodyOverflow;
+        hamburgerButtonRef.current?.focus();
+      };
+    } else {
+      document.body.style.overflow = originalBodyOverflow;
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const role = sessionStorage.getItem('classroom_role');
@@ -115,26 +260,20 @@ const Header: React.FC = () => {
     setUserRole(role);
     setIsLoggedIn(access);
     
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location]);
   
-  // Close mobile menu on navigation change
   useEffect(() => {
-    if (isOpen) {
-        setIsOpen(false);
-    }
+    if (isOpen) setIsOpen(false);
   }, [location.pathname]);
 
   const handleLogout = () => {
-    setIsOpen(false); // Ensure menu closes on logout
+    setIsOpen(false);
     sessionStorage.clear();
     setIsLoggedIn(false);
     setUserRole(null);
-    // FIX: Use navigate for navigation in react-router-dom v6.
     navigate('/login');
   };
   
@@ -145,12 +284,8 @@ const Header: React.FC = () => {
   const processedNavLinks = useMemo(() => {
     return navLinksFromData.map(link => {
         if (link.label === 'Classroom') {
-            if (userRole === 'student') {
-                return { ...link, label: 'Mon Profil', path: '/profil' };
-            }
-            if (userRole === 'admin') {
-                return { ...link, path: '/admin/classroom' };
-            }
+            if (userRole === 'student') return { ...link, label: 'Mon Profil', path: '/profil' };
+            if (userRole === 'admin') return { ...link, path: '/admin/classroom' };
             return null;
         }
         return link;
@@ -160,7 +295,7 @@ const Header: React.FC = () => {
   return (
     <>
       <header 
-        className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 ${
+        className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 print-hide ${
           isScrolled ? 'bg-black/80 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'
         }`}
       >
@@ -182,23 +317,22 @@ const Header: React.FC = () => {
           </nav>
 
           <div className="lg:hidden flex items-center">
-              <button onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">
+              <button ref={hamburgerButtonRef} onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">
                   <AnimatedHamburgerIcon isOpen={isOpen} />
               </button>
           </div>
         </div>
       </header>
       
-      {/* Mobile Menu Backdrop */}
       <div 
         className={`lg:hidden fixed inset-0 z-30 transition-opacity duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
         aria-hidden={!isOpen}
       />
       
-      {/* Mobile Menu Panel */}
       <div 
         id="mobile-menu-panel"
+        ref={mobileMenuRef}
         className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
@@ -230,5 +364,4 @@ const Header: React.FC = () => {
   );
 };
 
-// FIX: Add default export for the component.
 export default Header;

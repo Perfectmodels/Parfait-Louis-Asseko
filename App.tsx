@@ -1,6 +1,5 @@
 
 import React, { useEffect } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
@@ -27,6 +26,7 @@ import ClassroomForum from './pages/ClassroomForum';
 import ForumThread from './pages/ForumThread';
 import BeginnerClassroom from './pages/BeginnerClassroom';
 import BeginnerChapterDetail from './pages/BeginnerChapterDetail';
+
 
 // Admin Pages
 import Admin from './pages/Admin';
@@ -103,7 +103,6 @@ const AppContent: React.FC = () => {
     return (
         <>
             <Layout>
-                {/* FIX: Replaced Switch with Routes and children prop with element for v6 compatibility */}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/agence" element={<Agency />} />

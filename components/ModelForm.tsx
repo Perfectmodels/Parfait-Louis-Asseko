@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// FIX: Corrected import path for types.
 import { Model, ModelDistinction } from '../types';
 import ImageInput from './icons/ImageInput';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';

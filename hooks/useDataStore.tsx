@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
+// FIX: Add BeginnerStudent to the type imports.
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
 
 // Import initial data to seed the database if it's empty
@@ -77,6 +78,7 @@ export interface AppData {
     contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
+    // FIX: Add missing properties for beginner classroom functionality.
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
 }
