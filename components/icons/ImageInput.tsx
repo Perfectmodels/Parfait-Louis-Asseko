@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 
@@ -5,11 +6,9 @@ interface ImageInputProps {
     label: string;
     value: string;
     onChange: (value: string) => void;
-    error?: string;
-    required?: boolean;
 }
 
-const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange, error, required = false }) => {
+const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
 
     const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange(e.target.value);
@@ -17,10 +16,7 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange, error, 
 
     return (
         <div>
-            <div className="flex items-center gap-1 mb-1">
-                <label className="admin-label !mb-0">{label}</label>
-                {required && <span className="text-red-500">*</span>}
-            </div>
+            <label className="admin-label">{label}</label>
             <div className="flex items-center gap-4">
                 <div className="w-24 h-24 flex-shrink-0 bg-black border border-pm-off-white/20 rounded-md flex items-center justify-center">
                     {value ? (
@@ -35,20 +31,11 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange, error, 
                         value={value}
                         onChange={handleUrlChange}
                         placeholder="Coller l'URL de l'image ici"
-                        className={`admin-input ${error ? 'border-red-500' : ''}`}
-                        aria-invalid={!!error}
-                        aria-describedby={error ? `${label}-error` : undefined}
+                        className="admin-input"
                     />
-                    <div className="mt-1">
-                        <p className="text-xs text-pm-off-white/60">
-                            Utilisez un service d'hébergement d'images comme <a href="https://imgbb.com/" target="_blank" rel="noopener noreferrer" className="underline text-pm-gold hover:text-pm-gold/80">ImgBB</a> ou <a href="https://postimages.org/" target="_blank" rel="noopener noreferrer" className="underline text-pm-gold hover:text-pm-gold/80">PostImages</a>
-                        </p>
-                        {error && (
-                            <p className="text-xs text-red-400 mt-1" id={`${label}-error`}>
-                                {error}
-                            </p>
-                        )}
-                    </div>
+                    <p className="text-xs text-pm-off-white/60 mt-1">
+                        Utilisez un service d'hébergement d'images comme <a href="https://ibb.co/" target="_blank" rel="noopener noreferrer" className="underline text-pm-gold">ibb.co</a> ou <a href="https://postimages.org/" target="_blank" rel="noopener noreferrer" className="underline text-pm-gold">Postimages</a> pour obtenir une URL.
+                    </p>
                 </div>
             </div>
         </div>
