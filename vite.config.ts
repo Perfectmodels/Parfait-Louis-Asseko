@@ -65,5 +65,16 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    strictPort: true,
+    host: true,
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+    },
+  },
+  preview: {
+    port: 3000,
+    strictPort: true,
+    host: true,
   },
 })

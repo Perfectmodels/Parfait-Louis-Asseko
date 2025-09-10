@@ -113,20 +113,50 @@ const Services: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     
+    // Log pour déboguer les données reçues
+    console.log('=== DÉBOGAGE SERVICES ===');
+    console.log('Données brutes du contexte:', data);
+    console.log('Services bruts (data?.agencyServices):', data?.agencyServices);
+    console.log('Services après déstructuration:', services);
+    console.log('isInitialized:', isInitialized);
+    
+    if (services.length > 0) {
+        console.log('Premier service:', services[0]);
+        console.log('Nombre total de services:', services.length);
+    } else {
+        console.warn('Aucun service trouvé dans les données');
+        if (data) {
+            console.log('Clés disponibles dans data:', Object.keys(data));
+        }
+    }
+    
     // Log pour déboguer les données des services
     React.useEffect(() => {
-        console.log('Données brutes des services:', data);
-        console.log('Services chargés:', services);
+        console.log('=== DÉBOGAGE SERVICES ===');
+        console.log('Données brutes du contexte:', data);
+        console.log('Données brutes des services (data?.agencyServices):', data?.agencyServices);
+        console.log('Services après déstructuration:', services);
         console.log('Nombre de services:', services.length);
+        console.log('isInitialized:', isInitialized);
+        
         if (services.length > 0) {
             console.log('Premier service:', services[0]);
+        } else {
+            console.warn('Aucun service trouvé dans les données');
+            if (data) {
+                console.log('Clés disponibles dans data:', Object.keys(data));
+            }
         }
         
         if (isInitialized) {
+            console.log('Données initialisées, mise à jour de l\'état de chargement');
             setIsLoading(false);
             if (services.length === 0) {
-                setError('Aucun service trouvé. Vérifiez la connexion à la base de données.');
+                const errorMsg = 'Aucun service trouvé. Vérifiez la connexion à la base de données.';
+                console.error(errorMsg);
+                setError(errorMsg);
             } else {
+                console.log('Services chargés avec succès');
                 setError(null);
             }
         }
@@ -168,13 +198,26 @@ const Services: React.FC = () => {
     const categories = Array.from(new Set(services.map(s => s.category)));
 
     // Filter services based on search term and selected category
-    console.log('Filtrage des services avec terme:', searchTerm, 'et catégorie:', selectedCategory);
+    console.log('=== FILTRAGE DES SERVICES ===');
+    console.log('Terme de recherche:', searchTerm);
+    console.log('Catégorie sélectionnée:', selectedCategory);
+    console.log('Services avant filtrage:', services);
     const filteredServices = services.filter(service => {
-        const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           service.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = !selectedCategory || service.category === selectedCategory;
+        if (!service) return false;
+        
+        const matchesSearch = searchTerm === '' || 
+                            (service.title && service.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                            (service.description && service.description.toLowerCase().includes(searchTerm.toLowerCase()));
+        
+        const matchesCategory = !selectedCategory || 
+                              (service.category && service.category === selectedCategory);
+        
+        console.log('Service:', service.title, '| matchesSearch:', matchesSearch, '| matchesCategory:', matchesCategory);
+        
         return matchesSearch && matchesCategory;
     });
+    
+    console.log('Services après filtrage:', filteredServices);
 
     // Group services by category
     console.log('Services filtrés:', filteredServices);

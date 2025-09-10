@@ -124,10 +124,17 @@ export const useDataStore = () => {
     
     useEffect(() => {
         console.log('useDataStore - Début de l\'effet de chargement des données');
+        console.log('Données initiales:', {
+            hasAgencyServices: !!getInitialData().agencyServices,
+            initialAgencyServicesCount: getInitialData().agencyServices?.length || 0
+        });
+        
         const dbRef = ref(db, '/');
         
         const unsubscribe = onValue(dbRef, (snapshot) => {
             console.log('useDataStore - Données reçues de Firebase:', snapshot.exists() ? 'Oui' : 'Non');
+            console.log('Snapshot complet:', snapshot.val());
+            
             if (!snapshot.exists()) {
                 console.log('useDataStore - Aucune donnée dans Firebase, utilisation des données initiales');
             }
@@ -136,6 +143,12 @@ export const useDataStore = () => {
             if (dbData) {
                 console.log('useDataStore - Données brutes de Firebase:', dbData);
                 // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
+                console.log('Données brutes de Firebase (dbData):', dbData);
+                console.log('Données initiales (initialData):', {
+                    agencyServices: initialData.agencyServices?.length || 0,
+                    keys: Object.keys(initialData)
+                });
+                
                 const mergedData = {
                     ...initialData,
                     ...dbData,
@@ -145,9 +158,15 @@ export const useDataStore = () => {
                     beginnerCourseData: (dbData.beginnerCourseData && dbData.beginnerCourseData.length > 0) ? dbData.beginnerCourseData : initialData.beginnerCourseData,
                     newsItems: (dbData.newsItems && dbData.newsItems.length > 0) ? dbData.newsItems : initialData.newsItems,
                     testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
-                    agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
+                    agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : (initialData.agencyServices || []),
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                 };
+                
+                console.log('Données fusionnées (mergedData):', {
+                    agencyServices: mergedData.agencyServices?.length || 0,
+                    hasAgencyServices: !!mergedData.agencyServices,
+                    keys: Object.keys(mergedData)
+                });
                 
                 // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
