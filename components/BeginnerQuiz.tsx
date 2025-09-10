@@ -7,12 +7,13 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 interface BeginnerQuizProps {
     quiz: QuizQuestion[];
     moduleSlug: string;
+    chapterSlug: string;
 }
 
-const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
+const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug, chapterSlug }) => {
     const { data, saveData } = useData();
     const userId = sessionStorage.getItem('userId'); // This is the CastingApplication ID
-    const quizId = moduleSlug;
+    const quizId = chapterSlug;
 
     const [answers, setAnswers] = useState<{ [key: number]: string }>({});
     const [submitted, setSubmitted] = useState(false);
@@ -58,9 +59,9 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
     };
 
     return (
-        <section aria-labelledby={`quiz-title-${moduleSlug}`} className="mt-12 pt-8 border-t border-pm-gold/30">
+        <section aria-labelledby={`quiz-title-${chapterSlug}`} className="mt-12 pt-8 border-t border-pm-gold/30">
             <div className="bg-pm-dark border border-pm-gold/20 p-8">
-                <h3 id={`quiz-title-${moduleSlug}`} className="text-2xl font-playfair text-pm-gold text-center mb-8">Testez vos connaissances</h3>
+                <h3 id={`quiz-title-${chapterSlug}`} className="text-2xl font-playfair text-pm-gold text-center mb-8">Testez vos connaissances</h3>
                 <div className="space-y-8">
                     {quiz.map((q, index) => (
                         <div key={index}>
@@ -86,7 +87,7 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
                                         <label key={optionIndex} className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition-colors ${optionClass}`}>
                                             <input
                                                 type="radio"
-                                                name={`quiz-${moduleSlug}-question-${index}`}
+                                                name={`quiz-${chapterSlug}-question-${index}`}
                                                 value={option}
                                                 checked={isSelected}
                                                 onChange={() => handleAnswerChange(index, option)}

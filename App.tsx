@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
@@ -27,7 +28,6 @@ import ForumThread from './pages/ForumThread';
 import BeginnerClassroom from './pages/BeginnerClassroom';
 import BeginnerChapterDetail from './pages/BeginnerChapterDetail';
 
-
 // Admin Pages
 import Admin from './pages/Admin';
 import AdminAgency from './pages/AdminAgency';
@@ -47,7 +47,6 @@ import AdminComments from './pages/AdminComments';
 import AdminBookings from './pages/AdminBookings';
 import AdminMessages from './pages/AdminMessages';
 import AdminBeginnerStudents from './pages/AdminBeginnerStudents';
-import AdminServices from './pages/admin/AdminServices';
 
 // Role-specific pages
 import JuryCasting from './pages/JuryCasting';
@@ -104,6 +103,7 @@ const AppContent: React.FC = () => {
     return (
         <>
             <Layout>
+                {/* FIX: Replaced Switch with Routes and children prop with element for v6 compatibility */}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/agence" element={<Agency />} />
@@ -152,7 +152,6 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                     <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
                     <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
-                    <Route path="/admin/services" element={<ProtectedRoute role="admin"><AdminServices /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>
