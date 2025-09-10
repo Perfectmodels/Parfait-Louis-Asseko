@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Animation fadeIn for model cards */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@layer base {
+  body {
+    font-family: 'Montserrat', sans-serif;
+    @apply bg-pm-dark text-pm-off-white;
+  }
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+/* Global focus styles for accessibility */
+:focus-visible {
+  @apply outline-2 outline-pm-gold outline-offset-2 rounded-sm;
+}
+
+/* Utility class to remove outline for elements that have their own focus styles */
+.focus-style-self:focus-visible {
+  @apply outline-none;
+}
+
+/* Screen-reader only class */
+.sr-only {
+  @apply absolute w-[1px] h-[1px] p-0 m-[-1px] overflow-hidden whitespace-nowrap border-0;
+  clip: rect(0, 0, 0, 0);
+}
+
+@layer components {
+  /* ===================== GENERAL LAYOUT ===================== */
+  .page-container {
+    @apply container mx-auto px-6 py-16 lg:py-24 space-y-24 lg:space-y-32;
+  }
+  
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold font-playfair text-center mb-12 text-pm-gold;
+  }
+  
+  /* ===================== BUTTONS ===================== */
+  .btn-primary {
+    @apply bg-pm-gold text-pm-dark font-medium px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300 flex items-center justify-center gap-2;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-pm-gold text-pm-gold font-medium px-6 py-3 rounded-lg hover:bg-pm-gold hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center gap-2;
+  }
+  
+  /* ===================== NAVIGATION ===================== */
+  .nav-link {
+    @apply text-pm-off-white hover:text-pm-gold transition-colors duration-300 px-3 py-2 rounded-md text-sm font-medium;
+  }
+  
+  .nav-link.active {
+    @apply text-pm-gold font-semibold;
+  }
+  
+  /* ===================== CARDS ===================== */
+  .card {
+    @apply bg-pm-dark/50 rounded-lg overflow-hidden border border-pm-gold/20 hover:border-pm-gold/40 transition-all duration-300;
+  }
+  
+  .card-header {
+    @apply bg-pm-gold/10 px-6 py-4 border-b border-pm-gold/20;
+  }
+  
+  .card-body {
+    @apply p-6;
+  }
+  
+  /* ===================== FORMS ===================== */
+  .form-input {
+    @apply w-full px-4 py-2 bg-pm-dark/50 border border-pm-gold/30 rounded-lg focus:border-pm-gold focus:ring-1 focus:ring-pm-gold/50 outline-none transition-colors duration-200 text-pm-off-white;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-pm-gold mb-1;
+  }
+  
+  /* ===================== UTILITIES ===================== */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-pm-gold to-amber-200;
+  }
+  
+  .marquee {
+    animation: marquee 60s linear infinite;
+  }
+  
+  .pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  /* ===================== PRINT STYLES ===================== */
+  @media print {
+    .print-hide {
+      display: none !important;
+    }
+    .printable-content {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    @page {
+      margin: 1cm;
+    }
+  }
+}

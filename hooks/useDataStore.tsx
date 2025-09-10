@@ -86,6 +86,8 @@ export interface AppData {
 export const useDataStore = () => {
     const [data, setData] = useState<AppData | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
+    
+    console.log('useDataStore - Initialisation du hook');
 
     const getInitialData = useCallback((): AppData => ({
         models: initialModels,
@@ -121,12 +123,18 @@ export const useDataStore = () => {
     }), []);
     
     useEffect(() => {
+        console.log('useDataStore - Début de l\'effet de chargement des données');
         const dbRef = ref(db, '/');
         
         const unsubscribe = onValue(dbRef, (snapshot) => {
+            console.log('useDataStore - Données reçues de Firebase:', snapshot.exists() ? 'Oui' : 'Non');
+            if (!snapshot.exists()) {
+                console.log('useDataStore - Aucune donnée dans Firebase, utilisation des données initiales');
+            }
             const dbData = snapshot.val();
             const initialData = getInitialData();
             if (dbData) {
+                console.log('useDataStore - Données brutes de Firebase:', dbData);
                 // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
                 const mergedData = {
                     ...initialData,
@@ -143,8 +151,13 @@ export const useDataStore = () => {
                 
                 // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
+                console.log('useDataStore - Données fusionnées avant envoi au state:', {
+                    agencyServicesLength: mergedData.agencyServices?.length || 0,
+                    modelsLength: mergedData.models?.length || 0
+                });
                 setData(mergedData);
             } else {
+                console.log('useDataStore - Base de données vide, initialisation avec les données par défaut');
                 // If DB is empty, seed it with initial data
                 set(dbRef, initialData).then(() => {
                     setData(initialData);
@@ -155,9 +168,15 @@ export const useDataStore = () => {
             }
             setIsInitialized(true);
         }, (error) => {
-            console.error("Firebase read failed: " + error.message);
+            console.error("Firebase read failed: ", error);
+            console.log('useDataStore - Erreur de lecture Firebase, utilisation des données locales');
             // Fallback to local data if Firebase fails
-            setData(getInitialData());
+            const localData = getInitialData();
+            console.log('useDataStore - Données locales chargées:', {
+                agencyServicesLength: localData.agencyServices?.length || 0,
+                modelsLength: localData.models?.length || 0
+            });
+            setData(localData);
             setIsInitialized(true);
         });
 

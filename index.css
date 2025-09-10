@@ -1,4 +1,269 @@
-/* 
-  Le contenu de ce fichier a été déplacé vers la balise <style> dans index.html 
-  pour assurer la compatibilité avec le script Tailwind Play CDN.
-*/
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-pm-dark: #0a0a0a;
+    --color-pm-gold: #d4af37;
+    --color-pm-light: #f8f8f8;
+    --color-pm-off-white: #f5f5f5;
+  }
+
+  body {
+    @apply bg-pm-dark text-pm-off-white font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-pm-gold;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply px-6 py-2 rounded-md transition-colors duration-200 font-medium flex items-center justify-center gap-2;
+  }
+  
+  .btn-primary {
+    @apply bg-pm-gold text-pm-dark hover:bg-opacity-90;
+  }
+  
+  .btn-secondary {
+    @apply bg-pm-dark/80 text-pm-off-white border border-pm-gold/30 hover:bg-pm-gold/10 hover:border-pm-gold/60;
+  }
+  
+  .btn-outline {
+    @apply border border-pm-gold text-pm-gold hover:bg-pm-gold/10;
+  }
+  
+  .btn-ghost {
+    @apply text-pm-off-white hover:bg-pm-gold/10 hover:text-pm-gold;
+  }
+  
+  /* Cards */
+  .card {
+    @apply bg-pm-dark/50 rounded-lg overflow-hidden border border-pm-gold/20 hover:border-pm-gold/40 transition-all duration-300;
+  }
+  
+  .card-header {
+    @apply bg-pm-gold/10 border-b border-pm-gold/20 p-4;
+  }
+  
+  .card-body {
+    @apply p-6;
+  }
+  
+  /* Forms */
+  .form-group {
+    @apply mb-4;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-pm-gold mb-1;
+  }
+  
+  .form-input {
+    @apply w-full px-4 py-2 bg-pm-dark/50 border border-pm-gold/30 rounded-lg 
+           focus:border-pm-gold focus:ring-1 focus:ring-pm-gold/50 
+           outline-none transition-colors duration-200 text-pm-off-white
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .form-textarea {
+    @apply form-input min-h-[100px] resize-y;
+  }
+  
+  .form-select {
+    @apply form-input pr-10 bg-pm-dark/50 bg-[url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23d4af37' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")] 
+           bg-no-repeat bg-[right_0.5rem_center] bg-[length:1.5em_1.5em];
+  }
+  
+  .form-checkbox {
+    @apply h-4 w-4 rounded border-pm-gold/50 bg-pm-dark/50 text-pm-gold 
+           focus:ring-pm-gold/50 focus:ring-offset-pm-dark/50;
+  }
+  
+  .form-radio {
+    @apply h-4 w-4 border-pm-gold/50 bg-pm-dark/50 text-pm-gold 
+           focus:ring-pm-gold/50 focus:ring-offset-pm-dark/50;
+  }
+  
+  /* Navigation */
+  .nav-link {
+    @apply text-pm-off-white hover:text-pm-gold transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium;
+  }
+  
+  .nav-link.active {
+    @apply bg-pm-gold/10 text-pm-gold;
+  }
+  
+  /* Tables */
+  .table {
+    @apply min-w-full divide-y divide-pm-gold/20;
+  }
+  
+  .table th {
+    @apply px-6 py-3 text-left text-xs font-medium text-pm-gold uppercase tracking-wider;
+  }
+  
+  .table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-pm-off-white;
+  }
+  
+  .table tr {
+    @apply hover:bg-pm-gold/5;
+  }
+  
+  /* Alerts */
+  .alert {
+    @apply p-4 rounded-md;
+  }
+  
+  .alert-success {
+    @apply bg-green-900/50 border border-green-800 text-green-100;
+  }
+  
+  .alert-error {
+    @apply bg-red-900/50 border border-red-800 text-red-100;
+  }
+  
+  .alert-warning {
+    @apply bg-yellow-900/50 border border-yellow-800 text-yellow-100;
+  }
+  
+  .alert-info {
+    @apply bg-blue-900/50 border border-blue-800 text-blue-100;
+  }
+  
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-primary {
+    @apply bg-pm-gold/20 text-pm-gold;
+  }
+  
+  .badge-secondary {
+    @apply bg-pm-off-white/10 text-pm-off-white;
+  }
+  
+  /* Tabs */
+  .tab {
+    @apply px-4 py-2 font-medium text-pm-off-white/70 border-b-2 border-transparent
+           hover:text-pm-gold hover:border-pm-gold/50 transition-colors duration-200;
+  }
+  
+  .tab-active {
+    @apply text-pm-gold border-pm-gold;
+  }
+  
+  /* Modal */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4;
+  }
+  
+  .modal-content {
+    @apply bg-pm-dark border border-pm-gold/30 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto;
+  }
+  
+  .modal-header {
+    @apply flex items-center justify-between p-4 border-b border-pm-gold/20;
+  }
+  
+  .modal-body {
+    @apply p-6;
+  }
+  
+  .modal-footer {
+    @apply flex justify-end gap-3 p-4 border-t border-pm-gold/20;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Print styles */
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  .printable-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+  
+  a {
+    color: #1a365d !important;
+    text-decoration: underline;
+  }
+  
+  @page {
+    margin: 1.5cm;
+  }
+  
+  /* Avoid breaking inside elements */
+  p, h2, h3 {
+    page-break-inside: avoid;
+  }
+  
+  /* Page break before sections */
+  section {
+    page-break-before: avoid;
+  }
+  
+  /* Footer and header */
+  @page {
+    @top-center {
+      content: none;
+    }
+    @bottom-center {
+      content: none;
+    }
+  }
+}
