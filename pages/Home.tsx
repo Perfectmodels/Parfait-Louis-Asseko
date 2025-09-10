@@ -1,12 +1,15 @@
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
 import { iconMap } from '../components/icons/iconMap';
+import { LazyImage, Loading } from '../components';
+
+// Composant chargé de manière paresseuse
+const TestimonialCarousel = lazy(() => import('../components/TestimonialCarousel'));
 
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -28,28 +31,72 @@ const Home: React.FC = () => {
         image={siteImages.hero}
       />
 
-      {/* 1. Hero Section */}
+      {/* 1. Hero Section - Version améliorée */}
       <section 
-        className="relative min-h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed" 
-        style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${siteImages.hero}')` }}
+        className="relative min-h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed overflow-hidden" 
+        style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url('${siteImages.hero}')` }}
       >
+        {/* Effet de particules d'or subtil */}
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          {[...Array(20)].map((_, i) => (
+            <div 
+              key={i}
+              className="absolute rounded-full bg-pm-gold"
+              style={{
+                width: `${Math.random() * 6 + 2}px`,
+                height: `${Math.random() * 6 + 2}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animation: `float ${Math.random() * 5 + 5}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 5}s`
+              }}
+            />
+          ))}
+        </div>
+
         <div className="relative z-10 p-6 max-w-6xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter animate-fadeIn" 
-              style={{ textShadow: '0 0 20px rgba(212, 175, 55, 0.8)' }}>
-            L'Excellence en Modélisme
-          </h1>
-          <p className="mt-6 text-xl md:text-2xl max-w-3xl mx-auto text-pm-off-white/95 font-light leading-relaxed">
-            Votre partenaire de confiance pour des prestations de modélisme professionnel, des défilés mémorables et des campagnes percutantes en Afrique et au-delà.
-          </p>
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
-            <Link to="/services" className="w-full sm:w-auto px-12 py-5 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/40 hover:scale-105 transform hover:-translate-y-1">
-              Découvrir nos services
-              <span className="block mt-1 text-xs font-normal normal-case">Solutions sur mesure pour professionnels</span>
-            </Link>
-            <Link to="/casting-formulaire" className="w-full sm:w-auto px-12 py-5 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold/10 hover:scale-105 transform hover:-translate-y-1 group">
-              Devenir mannequin
-              <span className="block mt-1 text-xs font-normal normal-case text-pm-off-white/80 group-hover:text-pm-off-white">Rejoignez nos talents</span>
-            </Link>
+          <div className="animate-fadeInUp">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-8.5xl font-playfair font-black text-pm-gold leading-tight tracking-tight" 
+                style={{ 
+                  textShadow: '0 0 15px rgba(212, 175, 55, 0.9)',
+                  lineHeight: '1.1'
+                }}>
+              L'Excellence <span className="text-white">en Modélisme</span>
+            </h1>
+            
+            <div className="w-24 h-1.5 bg-pm-gold mx-auto my-8 rounded-full"></div>
+            
+            <p className="mt-6 text-xl md:text-2xl max-w-3xl mx-auto text-pm-off-white/95 font-light leading-relaxed">
+              <span className="font-medium text-pm-gold">#1</span> Agence de mannequins au Gabon • Formation d'excellence • Événements d'envergure internationale
+            </p>
+            
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
+              <Link 
+                to="/services" 
+                className="relative w-full sm:w-auto px-12 py-5 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-500 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/50 hover:scale-105 transform hover:-translate-y-1 group overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  Découvrir nos services
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+                <span className="block mt-1 text-xs font-normal normal-case opacity-80">Solutions premium pour professionnels exigeants</span>
+              </Link>
+              
+              <Link 
+                to="/casting-formulaire" 
+                className="relative w-full sm:w-auto px-12 py-5 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-500 hover:bg-pm-gold/10 hover:scale-105 transform hover:-translate-y-1 group overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  Devenir mannequin
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </span>
+                <span className="block mt-1 text-xs font-normal normal-case opacity-80">Rejoignez nos talents d'exception</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -71,10 +118,11 @@ const Home: React.FC = () => {
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="lg:w-1/2 relative group">
               <div className="relative overflow-hidden rounded-lg shadow-2xl transform transition-all duration-700 group-hover:scale-[1.02]">
-                <img 
+                <LazyImage 
                   src={siteImages.about} 
                   alt="Perfect Models Management - Agence de Mannequins" 
                   className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
+                  containerClassName="w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
                   <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
@@ -245,10 +293,11 @@ const Home: React.FC = () => {
                 data-aos-delay={index * 100}
               >
                 <div className="relative overflow-hidden h-96">
-                  <img 
+                  <LazyImage 
                     src={model.images?.[0] || model.imageUrl || '/placeholder-model.jpg'} 
                     alt={model.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    containerClassName="w-full h-full"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
                     <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
@@ -326,10 +375,11 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="relative group">
               <div className="relative overflow-hidden rounded-xl shadow-2xl transform transition-all duration-700 group-hover:scale-[1.02]">
-                <img 
+                <LazyImage 
                   src={siteImages.fashionDayBg || '/placeholder-event.jpg'} 
                   alt="Perfect Fashion Day 2024" 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  containerClassName="w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
                 
@@ -454,7 +504,13 @@ const Home: React.FC = () => {
             
             <div className="relative max-w-6xl mx-auto">
               <div className="absolute -left-4 -top-8 text-pm-gold/10 text-9xl font-playfair font-bold select-none">"</div>
-              <TestimonialCarousel />
+              <Suspense fallback={
+                <div className="h-64 flex items-center justify-center">
+                  <Loading size="md" color="gold" />
+                </div>
+              }>
+                <TestimonialCarousel />
+              </Suspense>
               <div className="absolute -right-4 -bottom-8 text-pm-gold/10 text-9xl font-playfair font-bold select-none transform rotate-180">"</div>
             </div>
             

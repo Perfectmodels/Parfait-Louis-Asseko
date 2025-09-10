@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
+import React, { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckBadgeIcon } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
+import { CheckBadgeIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import LoadingSpinner from '../components/LoadingSpinner';
+
+// Composants chargés de manière paresseuse
+const TestimonialCarousel = lazy(() => import('../components/TestimonialCarousel'));
 
 const Agency: React.FC = () => {
   const { data, isInitialized } = useData();
 
   if (!isInitialized || !data) {
-    return <div className="min-h-screen bg-pm-dark"></div>;
+    return (
+      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+        <LoadingSpinner size="lg" color="gold" />
+      </div>
+    );
   }
   
   const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages } = data;
@@ -40,11 +48,19 @@ const Agency: React.FC = () => {
         </section>
 
         {/* Distinctions */}
-        <section>
+        <section className="overflow-hidden">
           <h2 className="section-title">Distinctions de nos Mannequins</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {modelDistinctions.map((distinction, index) => (
-              <DistinctionCard key={index} distinction={distinction} />
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <DistinctionCard distinction={distinction} />
+              </motion.div>
             ))}
           </div>
         </section>
@@ -74,15 +90,29 @@ const Agency: React.FC = () => {
             <AchievementsTabs achievements={agencyAchievements} />
         </section>
 
-         {/* Partenaires */}
+        {/* Partenaires */}
         <section>
           <h2 className="section-title">Nos Partenaires Clé</h2>
-          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-items-center">
             {agencyPartners.map((partner, index) => (
-                <p key={index} className="text-xl font-semibold text-pm-off-white/80 border-b-2 border-pm-gold/30 pb-1">{partner.name}</p>
+              <motion.div
+                key={index}
+                className="p-4 bg-black/30 rounded-lg hover:bg-black/50 transition-all duration-300"
+                whileHover={{ scale: 1.05, boxShadow: '0 10px 25px -5px rgba(212, 175, 55, 0.1)' }}
+              >
+                <p className="text-lg font-medium text-pm-off-white/80 text-center">{partner.name}</p>
+              </motion.div>
             ))}
           </div>
         </section>
+
+        {/* Témoignages */}
+        <Suspense fallback={<div className="h-64 flex items-center justify-center"><LoadingSpinner size="md" color="gold" /></div>}>
+          <section className="bg-black/30 p-8 rounded-xl">
+            <h2 className="text-2xl md:text-3xl font-playfair font-bold text-pm-gold mb-8 text-center">Ce qu'ils disent de nous</h2>
+            <TestimonialCarousel />
+          </section>
+        </Suspense>
 
         {/* Contact CTA */}
         <section className="text-center content-section">
@@ -100,15 +130,41 @@ const Agency: React.FC = () => {
   );
 };
 
-const DistinctionCard: React.FC<{ distinction: ModelDistinction }> = ({ distinction }) => (
-    <div className="card-base p-6 text-center h-full flex flex-col justify-center items-center">
-        <CheckBadgeIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" aria-hidden="true" />
-        <h3 className="text-xl font-playfair text-pm-gold">{distinction.name}</h3>
-        <ul className="mt-2 text-sm text-pm-off-white/80 space-y-1">
-            {distinction.titles.map((title, index) => <li key={index}>✦ {title}</li>)}
-        </ul>
+// Composant DistinctionCard
+const DistinctionCard = ({ distinction }: { distinction: ModelDistinction }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  return (
+    <div className="bg-gradient-to-br from-black/50 to-black/30 p-6 rounded-lg border border-pm-gold/20 h-full flex flex-col group hover:border-pm-gold/50 transition-all duration-300">
+      <div className="flex items-start gap-3 mb-3">
+        <div className="bg-pm-gold/10 p-2 rounded-lg">
+          <CheckBadgeIcon className="h-6 w-6 text-pm-gold" />
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-pm-gold">{distinction.name}</h3>
+          {distinction.titles && distinction.titles.length > 0 && (
+            <p className="text-pm-gold/80 text-sm">{distinction.titles.join(' • ')}</p>
+          )}
+        </div>
+      </div>
+      
+      <div className="relative">
+        <p className="text-pm-off-white/80">
+          {distinction.name}
+        </p>
+      </div>
+      
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="mt-3 text-pm-gold text-sm font-medium flex items-center gap-1 self-start group-hover:gap-2 transition-all duration-300"
+        aria-expanded={isExpanded}
+      >
+        {isExpanded ? 'Voir moins' : 'En savoir plus'}
+        <ChevronRightIcon className={`h-4 w-4 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
+      </button>
     </div>
-);
+  );
+};
 
 const AchievementsTabs: React.FC<{ achievements: AchievementCategory[] }> = ({ achievements }) => {
     const [activeTab, setActiveTab] = useState(0);
