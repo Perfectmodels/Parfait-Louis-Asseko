@@ -29,12 +29,13 @@ const Agency: React.FC = () => {
         <section>
           <h2 className="section-title">Notre Histoire</h2>
           <div className="content-section flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2 p-2 border-2 border-pm-gold">
+            <div className="md:w-1/2 p-2 border-2 border-pm-gold img-frame">
               <img src={siteImages.agencyHistory} alt="L'équipe Perfect Models" className="w-full h-full object-cover"/>
             </div>
             <div className="md:w-1/2 text-lg leading-relaxed text-pm-off-white/90">
-              <p className="mb-4">{agencyInfo.about.p1}</p>
-              <p>{agencyInfo.about.p2}</p>
+              <p className="mb-6">Fondée en 2021 par Parfait-Louis Asseko, Perfect Models Management est née d'une vision audacieuse : créer une agence de mannequins qui valorise authentiquement la beauté et le talent africains sur la scène internationale. Notre parcours a débuté avec une poignée de mannequins passionnés et s'est transformé en une référence incontournable dans l'industrie de la mode au Gabon.</p>
+              <p className="mb-6">Au fil des années, nous avons développé une expertise unique dans la découverte et la formation de talents exceptionnels. Notre approche holistique du mannequinat combine formation professionnelle, développement personnel et opportunités concrètes, permettant à nos modèles de briller dans un secteur exigeant tout en restant fidèles à leurs racines.</p>
+              <p>Aujourd'hui, Perfect Models Management représente l'excellence et l'innovation dans le mannequinat africain, avec une empreinte qui s'étend bien au-delà des frontières gabonaises. Notre mission reste inchangée : révéler la beauté dans toute sa diversité et redéfinir les standards de l'élégance à travers une vision authentiquement africaine.</p>
             </div>
           </div>
         </section>
@@ -74,15 +75,7 @@ const Agency: React.FC = () => {
             <AchievementsTabs achievements={agencyAchievements} />
         </section>
 
-         {/* Partenaires */}
-        <section>
-          <h2 className="section-title">Nos Partenaires Clé</h2>
-          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
-            {agencyPartners.map((partner, index) => (
-                <p key={index} className="text-xl font-semibold text-pm-off-white/80 border-b-2 border-pm-gold/30 pb-1">{partner.name}</p>
-            ))}
-          </div>
-        </section>
+         {/* Section supprimée: Partenaires */}
 
         {/* Contact CTA */}
         <section className="text-center content-section">

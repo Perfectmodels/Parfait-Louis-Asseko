@@ -68,38 +68,50 @@ const ModelDashboard: React.FC = () => {
     };
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title={`Profil de ${editableModel.name}`} noIndex />
+        <div className="bg-gradient-to-b from-pm-dark to-black text-pm-off-white py-24 min-h-screen">
+            <SEO title={`Espace Personnel - ${editableModel.name}`} noIndex />
             <div className="container mx-auto px-6 max-w-7xl">
-                <header className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
+                <header className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-12 animate-on-scroll">
                     <div>
-                        <h1 className="text-4xl font-playfair text-pm-gold">Bienvenue, {editableModel.name.split(' ')[0]}</h1>
-                        <p className="text-pm-off-white/80">Votre espace personnel pour gérer votre profil et suivre votre progression.</p>
+                        <h1 className="text-5xl font-playfair text-pm-gold mb-3 relative inline-block">
+                            Bienvenue, {editableModel.name.split(' ')[0]}
+                            <span className="absolute -bottom-2 left-0 w-24 h-[2px] bg-pm-gold/30"></span>
+                        </h1>
+                        <p className="text-pm-off-white/80 text-lg mt-4 max-w-2xl">
+                            Votre espace personnel vous permet de gérer votre profil professionnel, suivre votre progression et accéder à toutes les ressources exclusives de Perfect Models Management.
+                        </p>
                     </div>
-                     <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
+                     <button 
+                        onClick={handleLogout} 
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-black/50 border border-pm-gold/30 rounded-full text-pm-gold hover:bg-pm-gold/10 hover:border-pm-gold transition-all duration-300"
+                     >
                         <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
                      </button>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
                     {/* Sidebar / Quick Links */}
-                    <aside className="lg:col-span-1 space-y-4">
-                         <Link to="/formations" className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
-                             <BookOpenIcon className="w-8 h-8 text-pm-gold mb-3" />
-                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Accéder au Classroom</h2>
-                            <p className="text-sm text-pm-off-white/70">Continuez votre formation.</p>
+                    <aside className="lg:col-span-1 space-y-6 animate-on-scroll delay-100">
+                         <Link to="/formations" className="group block bg-gradient-to-br from-black to-pm-dark p-6 border border-pm-gold/30 hover:border-pm-gold transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10 hover:translate-y-[-5px]">
+                             <div className="bg-pm-gold/10 p-3 rounded-full inline-block mb-4 group-hover:bg-pm-gold/20 transition-all duration-300">
+                                <BookOpenIcon className="w-8 h-8 text-pm-gold" />
+                             </div>
+                            <h2 className="text-xl font-playfair text-pm-gold mb-2">Accéder au Classroom</h2>
+                            <p className="text-sm text-pm-off-white/80">Poursuivez votre formation professionnelle et accédez aux modules exclusifs de Perfect Models Management.</p>
                         </Link>
-                        <Link to={`/mannequins/${editableModel.id}`} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
-                             <UserIcon className="w-8 h-8 text-pm-gold mb-3" />
-                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Voir mon Portfolio Public</h2>
-                            <p className="text-sm text-pm-off-white/70">Consultez votre profil public.</p>
+                        <Link to={`/mannequins/${editableModel.id}`} className="group block bg-gradient-to-br from-black to-pm-dark p-6 border border-pm-gold/30 hover:border-pm-gold transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10 hover:translate-y-[-5px]">
+                             <div className="bg-pm-gold/10 p-3 rounded-full inline-block mb-4 group-hover:bg-pm-gold/20 transition-all duration-300">
+                                <UserIcon className="w-8 h-8 text-pm-gold" />
+                             </div>
+                            <h2 className="text-xl font-playfair text-pm-gold mb-2">Mon Portfolio Public</h2>
+                            <p className="text-sm text-pm-off-white/80">Visualisez votre profil public tel qu'il apparaît aux clients et directeurs de casting potentiels.</p>
                         </Link>
                     </aside>
                     
                     {/* Main Content with Tabs */}
-                    <main className="lg:col-span-3">
-                        <div className="border-b border-pm-gold/20 mb-6">
-                            <nav className="flex space-x-4" aria-label="Tabs">
+                    <main className="lg:col-span-3 animate-on-scroll delay-200">
+                        <div className="border-b border-pm-gold/30 mb-8">
+                            <nav className="flex space-x-6" aria-label="Tabs">
                                 <TabButton name="Mon Profil" icon={UserIcon} isActive={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
                                 <TabButton name="Mes Résultats" icon={PresentationChartLineIcon} isActive={activeTab === 'results'} onClick={() => setActiveTab('results')} />
                             </nav>
@@ -116,26 +128,36 @@ const ModelDashboard: React.FC = () => {
                                 />
                             )}
                             {activeTab === 'results' && (
-                                <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30">
-                                    <h2 className="text-2xl font-playfair text-pm-gold mb-6">Résultats des Quiz</h2>
+                                <div className="bg-gradient-to-br from-black to-pm-dark p-8 border border-pm-gold/30 rounded-lg shadow-lg shadow-black/30">
+                                    <div className="flex items-center mb-8">
+                                        <PresentationChartLineIcon className="w-8 h-8 text-pm-gold mr-4" />
+                                        <h2 className="text-2xl font-playfair text-pm-gold relative inline-block">
+                                            Résultats des Quiz
+                                            <span className="absolute -bottom-2 left-0 w-16 h-[2px] bg-pm-gold/30"></span>
+                                        </h2>
+                                    </div>
+                                    <p className="text-pm-off-white/80 mb-6">Suivez votre progression et vos performances aux différents modules de formation Perfect Models Management.</p>
                                     {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
-                                        <ul className="space-y-3">
+                                        <ul className="space-y-4">
                                             {courseModulesWithQuizzes.map(module => {
                                                 const score = editableModel.quizScores?.[module.slug];
                                                 return (
-                                                    <li key={module.slug} className="flex justify-between items-center bg-pm-dark p-3 rounded-md text-sm">
-                                                        <span className="text-pm-off-white/80">{module.title}</span>
+                                                    <li key={module.slug} className="flex justify-between items-center bg-black/50 p-4 border border-pm-gold/10 hover:border-pm-gold/30 transition-all duration-300 rounded-md">
+                                                        <span className="text-pm-off-white font-medium">{module.title}</span>
                                                         {score !== undefined ? (
-                                                            <span className={`font-bold text-lg ${getScoreColor(score)}`}>{score}%</span>
+                                                            <span className={`font-bold text-lg px-4 py-1 rounded-full ${getScoreColor(score)}`}>{score}%</span>
                                                         ) : (
-                                                            <span className="text-xs text-pm-off-white/50">Non complété</span>
+                                                            <span className="text-sm bg-pm-dark/80 px-4 py-1 rounded-full text-pm-off-white/50">Non complété</span>
                                                         )}
                                                     </li>
                                                 );
                                             })}
                                         </ul>
                                     ) : (
-                                        <p className="text-pm-off-white/70 text-sm">Aucun quiz disponible pour le moment.</p>
+                                        <div className="text-center py-8 bg-black/30 rounded-lg border border-pm-gold/10">
+                                            <p className="text-pm-off-white/70">Aucun quiz disponible pour le moment.</p>
+                                            <p className="text-sm text-pm-off-white/50 mt-2">Les nouveaux modules seront bientôt disponibles.</p>
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -150,14 +172,14 @@ const ModelDashboard: React.FC = () => {
 const TabButton: React.FC<{name: string, icon: React.ElementType, isActive: boolean, onClick: () => void}> = ({ name, icon: Icon, isActive, onClick }) => (
     <button
         onClick={onClick}
-        className={`flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-t-lg transition-colors border-b-2 ${
+        className={`flex items-center gap-3 px-6 py-3 font-medium text-sm transition-all duration-300 border-b-2 ${
             isActive 
-            ? 'border-pm-gold text-pm-gold' 
-            : 'border-transparent text-pm-off-white/70 hover:text-pm-gold'
+            ? 'border-pm-gold text-pm-gold bg-black/30 rounded-t-lg' 
+            : 'border-transparent text-pm-off-white/70 hover:text-pm-gold hover:bg-black/20 rounded-t-lg'
         }`}
     >
-        <Icon className="w-5 h-5" />
-        {name}
+        <Icon className={`w-5 h-5 ${isActive ? 'text-pm-gold' : 'text-pm-off-white/70'} transition-colors duration-300`} />
+        <span className="font-medium">{name}</span>
     </button>
 );
 
