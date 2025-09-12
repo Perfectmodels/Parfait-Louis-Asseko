@@ -1,4 +1,3 @@
-
 // FIX: Add BeginnerStudent to import
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks } from '../types';
 import { NavLink } from '../hooks/useDataStore';
@@ -6,40 +5,40 @@ import { NavLink } from '../hooks/useDataStore';
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+  logo: '/assets/t-shirt.png',
 };
 
 export const navLinks: NavLink[] = [
   { path: '/', label: 'Accueil', inFooter: true },
   { path: '/agence', label: 'Agence', inFooter: true },
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
-  { path: '/services', label: 'Services', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
+  { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
 ];
 
 export const socialLinks: SocialLinks = {
-    facebook: 'https://www.facebook.com/perfectmodels.ga',
-    instagram: 'https://www.instagram.com/perfectmodels.ga',
-    youtube: 'https://www.youtube.com/@PMM241'
+    facebook: 'https://www.facebook.com/PerfectModels241',
+    instagram: 'https://www.instagram.com/perfectmodelsmanagement_/',
+    youtube: 'https://www.youtube.com/@perfectmodelsmanagement6013',
 };
 
 export const contactInfo: ContactInfo = {
     email: 'contact@perfectmodels.ga',
-    phone: '+241 77 50 79 50',
+    phone: '+241 077 00 00 00',
     address: 'Libreville, Gabon',
     notificationEmail: 'contact@perfectmodels.ga',
 };
 
 export const siteImages: SiteImages = {
-    hero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-    about: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
-    fashionDayBg: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
-    agencyHistory: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
-    classroomBg: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
-    castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+    hero: '/assets/hero-bg.jpg',
+    about: '/assets/about-img.jpg',
+    fashionDayBg: '/assets/titostyle-53.jpg',
+    agencyHistory: '/assets/agency-history.jpg',
+    classroomBg: '/assets/ajc-4630.jpg',
+    castingBg: '/assets/casting-bg.jpg',
 };
 
 export const apiKeys: ApiKeys = {
@@ -75,11 +74,11 @@ export const models: Model[] = [
         height: '1m78',
         gender: 'Femme',
         location: 'Libreville',
-        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        imageUrl: '/assets/dsc-0272.jpg',
         portfolioImages: [
-            'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
-            'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-            'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+            '/assets/casting-bg.jpg',
+            '/assets/hero-bg.jpg',
+            '/assets/titostyle-53.jpg',
         ],
         distinctions: [
             { name: "Palmarès National & International", titles: ["Miss Gabon 2022", "Top Model Afrique Centrale 2023"] }
@@ -99,11 +98,11 @@ export const models: Model[] = [
         level: 'Pro',
         height: '1m75',
         gender: 'Femme',
-        imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+        imageUrl: '/assets/nr-09474.jpg',
         portfolioImages: [
-            'https://i.postimg.cc/Xv24Dvp1/NR-09484.jpg',
-            'https://i.postimg.cc/59Qbnb1p/NR-09503-Modifier.jpg',
-            'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+            '/assets/nr-09484.jpg',
+            '/assets/nr-09503-modifier.jpg',
+            '/assets/nr-09474.jpg',
         ],
         measurements: { chest: '82cm', waist: '60cm', hips: '88cm', shoeSize: '39' },
         categories: ['Défilé', 'Commercial', 'Éditorial'],
@@ -120,9 +119,9 @@ export const models: Model[] = [
         level: 'Pro',
         height: '1m88',
         gender: 'Homme',
-        imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+        imageUrl: '/assets/farelmd-37.jpg',
         portfolioImages: [
-             'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+             '/assets/ajc-4630.jpg',
         ],
         measurements: { chest: '98cm', waist: '78cm', hips: '95cm', shoeSize: '44' },
         categories: ['Défilé', 'Costume', 'Sportswear'],
@@ -137,19 +136,19 @@ export const testimonials: Testimonial[] = [
         name: 'Franck B.',
         role: 'Créateur de Mode',
         quote: "Collaborer avec Perfect Models Management est un gage de professionnalisme. Leurs mannequins sont non seulement magnifiques mais aussi incroyablement bien formés et ponctuels. Un vrai plaisir.",
-        imageUrl: 'https://i.ibb.co/s5zW7gZ/testimonial-1.jpg',
+        imageUrl: '/assets/testimonial-1.jpg',
     },
     {
         name: 'Nadia K.',
         role: 'Directrice Artistique',
         quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond parfaitement aux besoins créatifs de nos campagnes publicitaires.",
-        imageUrl: 'https://i.ibb.co/y4x9Y8X/testimonial-2.jpg',
+        imageUrl: '/assets/testimonial-2.jpg',
     },
     {
         name: 'Noemi Kim',
         role: 'Mannequin de l\'agence',
         quote: "PMM est bien plus qu'une agence, c'est une famille qui nous pousse à donner le meilleur de nous-mêmes. La formation et l'encadrement sont exceptionnels.",
-        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        imageUrl: '/assets/dsc-0272.jpg',
     },
 ];
 
@@ -167,9 +166,9 @@ export { beginnerCourseData };
 
 
 export const newsItems: NewsItem[] = [
-    { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
-    { id: '2', title: "Perfect Fashion Day Édition 2", date: '2025-02-08', imageUrl: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
-    { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: 'https://i.ibb.co/3WfK9Xg/about-img.jpg', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
+    { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: '/assets/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
+    { id: '2', title: "Perfect Fashion Day Édition 2", date: '2025-02-08', imageUrl: '/assets/titostyle-53.jpg', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
+    { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: '/assets/about-img.jpg', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
 ];
 
 export const fashionDayEvents: FashionDayEvent[] = [
@@ -180,7 +179,7 @@ export const fashionDayEvents: FashionDayEvent[] = [
     location: 'La Gare du Nord, Libreville',
     description: 'La première édition du Perfect Fashion Day a célébré le talent des créateurs locaux et la beauté des mannequins de l\'agence dans un cadre prestigieux.',
     stylists: [
-        { name: 'AG Style', description: 'Tradition revisitée', images: ['https://i.ibb.co/3WfK9Xg/about-img.jpg'] },
+        { name: 'AG Style', description: 'Tradition revisitée', images: ['/assets/about-img.jpg'] },
         { name: 'Brand’O', description: 'Énergie flamboyante', images: [] },
         { name: 'Miguel Fashion Style', description: 'Finesse sur-mesure', images: [] }
     ],
@@ -222,14 +221,14 @@ export const modelDistinctions: ModelDistinction[] = [
     { name: 'Libreville Fashion Week', titles: ['Mannequin de l\'année 2024'] }
 ];
 
-// Services de l'agence avec descriptions détaillées et boutons de réservation
+// FIX: Replace the old agencyServices array with a more detailed and categorized version for the new Services page.
 export const agencyServices: Service[] = [
   // ----------- Services Mannequinat ----------- //
   {
     title: "Casting Mannequins",
-    description: "Nous organisons des castings professionnels pour tous types de projets : défilés, shooting, publicité, clips vidéo et films.",
+    description: "Organisation de castings professionnels pour défilés, shootings, publicités et clips.",
     details: {
-      title: "Pourquoi choisir ce service ?",
+      title: "Avantages du service",
       points: [
         "Sélection rigoureuse de mannequins adaptés à votre projet",
         "Gestion complète de la logistique et communication avec les candidats",
@@ -243,9 +242,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Booking Mannequins",
-    description: "Réservez un ou plusieurs mannequins pour vos événements, shootings ou campagnes publicitaires. Nous nous occupons de tout, de la disponibilité au suivi du mannequin.",
+    description: "Réservation de mannequins pour événements, shootings ou campagnes publicitaires.",
     details: {
-      title: "Avantages :",
+      title: "Ce que nous proposons",
       points: [
         "Mannequins professionnels pour tous types de projets",
         "Flexibilité selon vos besoins (durée, lieu, type de prestation)",
@@ -259,9 +258,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Mannequins pour Défilés",
-    description: "Nous mettons à votre disposition des mannequins expérimentés pour vos défilés, avec un coaching sur la posture et la démarche.",
+    description: "Des mannequins professionnels pour vos défilés, avec coaching sur la posture et la démarche.",
     details: {
-      title: "Ce que nous garantissons :",
+      title: "Inclus",
       points: [
         "Présentation élégante et harmonieuse de vos créations",
         "Maîtrise parfaite du passage sur podium",
@@ -275,9 +274,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Mannequins Publicité / Audiovisuel",
-    description: "Besoin d'une image forte pour votre marque ? Nos mannequins sont formés pour la publicité, les clips, films ou tout projet audiovisuel.",
+    description: "Mannequins pour publicité, clips et projets audiovisuels.",
     details: {
-      title: "Inclus :",
+      title: "Inclus",
       points: [
         "Mise en scène adaptée à vos besoins",
         "Mannequins expressifs et professionnels",
@@ -291,9 +290,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Mannequins Photo",
-    description: "Pour vos campagnes, catalogues, lookbooks ou réseaux sociaux, nous fournissons des mannequins pour des shootings photo de qualité professionnelle.",
+    description: "Shooting photo pour catalogues, lookbooks ou réseaux sociaux.",
     details: {
-      title: "Nous offrons :",
+      title: "Ce que nous offrons",
       points: [
         "Photographie en studio ou extérieur",
         "Mannequins adaptés au style de votre marque",
@@ -307,9 +306,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Mannequins Figurants",
-    description: "Pour vos clips, films ou événements nécessitant des figurants professionnels, nous vous proposons un casting complet et adapté.",
+    description: "Figurants pour clips, films ou événements nécessitant un public.",
     details: {
-      title: "Nos engagements :",
+      title: "Avantages",
       points: [
         "Figurants sélectionnés selon vos besoins spécifiques",
         "Gestion complète de la logistique et présence sur site"
@@ -322,12 +321,12 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Formation Mannequins",
-    description: "Nous proposons des formations complètes pour vos mannequins, incluant : posture, démarche, expressions faciales, gestuelle et présence scénique.",
+    description: "Coaching complet pour mannequins : posture, démarche, expressions et présence scénique.",
     details: {
-      title: "Pourquoi former vos mannequins ?",
+      title: "Objectifs",
       points: [
-        "Optimisation de leur performance en casting ou sur podium",
-        "Développement de leur confiance et professionnalisme"
+        "Optimisation de la performance en casting ou sur podium",
+        "Développement de confiance et professionnalisme"
       ]
     },
     icon: "AcademicCapIcon",
@@ -337,12 +336,12 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Conseil en Image et Style",
-    description: "Notre équipe vous accompagne pour sublimer votre image et celle de vos mannequins : look, coiffure, maquillage et style vestimentaire.",
+    description: "Accompagnement pour look, coiffure, maquillage et style vestimentaire.",
     details: {
-      title: "Ce que vous obtenez :",
+      title: "Avantages",
       points: [
-        "Une image cohérente et professionnelle",
-        "Adaptation au projet ou à l'événement",
+        "Image cohérente et professionnelle",
+        "Adaptation au projet ou événement",
         "Recommandations personnalisées pour un impact visuel fort"
       ]
     },
@@ -355,9 +354,9 @@ export const agencyServices: Service[] = [
   // ----------- Services Mode et Stylisme ----------- //
   {
     title: "Création de Tenues Sur-Mesure",
-    description: "Nous concevons des tenues sur-mesure pour femmes, hommes et enfants, en accord avec vos goûts et votre identité.",
+    description: "Tenues sur-mesure pour femmes, hommes et enfants, en accord avec vos goûts et votre identité.",
     details: {
-      title: "Notre promesse :",
+      title: "Inclus",
       points: [
         "Couture à la main et finitions parfaites",
         "Utilisation de tissus haut de gamme (wax, satin, mousseline, dentelle, tulle)",
@@ -371,9 +370,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Location de Tenues de Mode",
-    description: "Accédez à notre collection de tenues pour vos défilés, shootings ou événements spéciaux, sans contraintes.",
+    description: "Accédez à notre collection de tenues pour vos défilés, shootings ou événements spéciaux.",
     details: {
-      title: "Inclus :",
+      title: "Avantages",
       points: [
         "Choix parmi une large gamme de styles et tailles",
         "Tenues disponibles pour une période flexible"
@@ -386,9 +385,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Styling & Conseil Mode",
-    description: "Notre équipe vous aide à créer des looks parfaits pour vos campagnes, photoshoots ou événements.",
+    description: "Création de looks parfaits pour campagnes, shootings ou événements.",
     details: {
-      title: "Avantages :",
+      title: "Avantages",
       points: [
         "Coordination totale des couleurs et accessoires",
         "Conseils mode personnalisés selon vos objectifs"
@@ -401,11 +400,11 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Organisation Défilés de Mode",
-    description: "Nous planifions et exécutons votre défilé de A à Z : choix des mannequins, scénographie, musique, mise en scène et logistique.",
+    description: "Planification et exécution complète du défilé : mannequins, scénographie, musique, mise en scène.",
     details: {
-      title: "Nous garantissons :",
+      title: "Inclus",
       points: [
-        "Un événement professionnel et mémorable",
+        "Événement professionnel et mémorable",
         "Coordination complète avec stylistes et partenaires",
         "Expérience exceptionnelle pour vos invités et participants"
       ]
@@ -417,11 +416,11 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Conseil Créatif et Branding",
-    description: "Nous aidons les créateurs et marques à développer leur identité visuelle et leur présence sur le marché de la mode.",
+    description: "Développement de l’identité visuelle et de la présence de votre marque.",
     details: {
-      title: "Nos services incluent :",
+      title: "Avantages",
       points: [
-        "Conception de l'identité visuelle (logo, charte graphique)",
+        "Conception de l’identité visuelle (logo, charte graphique)",
         "Développement de votre style unique pour vos collections",
         "Conseils sur marketing et communication"
       ]
@@ -433,9 +432,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Shooting Mode Professionnel",
-    description: "Nous organisons vos shootings en studio ou en extérieur avec photographe, styliste et maquilleur professionnels.",
+    description: "Organisation complète de shootings en studio ou extérieur avec photographe, styliste et maquilleur.",
     details: {
-      title: "Ce que vous obtenez :",
+      title: "Inclus",
       points: [
         "Photos de haute qualité pour vos catalogues ou réseaux sociaux",
         "Coordination totale pour un résultat harmonieux",
@@ -449,9 +448,9 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Accessoires et Lookbook",
-    description: "Nous créons ou fournissons des accessoires (bijoux, sacs, chaussures) pour compléter vos collections et vos shootings.",
+    description: "Création ou fourniture d’accessoires pour compléter vos collections et shootings.",
     details: {
-      title: "Inclus :",
+      title: "Inclus",
       points: [
         "Sélection harmonisée avec vos tenues",
         "Conseil styling pour un look complet et percutant"
@@ -466,11 +465,11 @@ export const agencyServices: Service[] = [
   // ----------- Services Événementiels ----------- //
   {
     title: "Animation de Shows / Défilés",
-    description: "Nous prenons en charge l'animation complète de vos événements mode, pour captiver votre public.",
+    description: "Animation complète de vos événements mode pour captiver votre public.",
     details: {
-      title: "Inclus :",
+      title: "Inclus",
       points: [
-        "Coordination des mannequins et des performances artistiques",
+        "Coordination des mannequins et performances artistiques",
         "Gestion du rythme et de la mise en scène"
       ]
     },
@@ -481,7 +480,7 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Présentateurs / Hôtes de Cérémonie",
-    description: "Des hôtes professionnels pour introduire vos défilés et événements, et maintenir l'attention de votre audience.",
+    description: "Hôtes professionnels pour introduire vos défilés et événements.",
     icon: "MicrophoneIcon",
     buttonText: "Réserver ce service",
     buttonLink: "/contact?service=Pr%C3%A9sentateurs+%2F+H%C3%B4tes+de+C%C3%A9r%C3%A9monie",
@@ -489,7 +488,7 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Promotion et Communication",
-    description: "Couverture complète de vos événements et projets sur les réseaux sociaux et médias partenaires pour maximiser votre visibilité.",
+    description: "Couverture complète de vos événements et projets sur réseaux sociaux et médias partenaires.",
     icon: "ChatBubbleLeftRightIcon",
     buttonText: "Réserver ce service",
     buttonLink: "/contact?service=Promotion+et+Communication",
@@ -497,7 +496,7 @@ export const agencyServices: Service[] = [
   },
   {
     title: "Partenariat avec Marques",
-    description: "Mise en relation de marques avec mannequins, créateurs et stylistes pour créer des collaborations uniques et impactantes.",
+    description: "Mise en relation de marques avec mannequins, créateurs et stylistes pour des collaborations impactantes.",
     icon: "BuildingStorefrontIcon",
     buttonText: "Réserver ce service",
     buttonLink: "/contact?service=Partenariat+avec+Marques",
