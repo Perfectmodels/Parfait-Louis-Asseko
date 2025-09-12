@@ -2,7 +2,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-// FIX: Add BeginnerStudent to the type imports.
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
 
 // Import initial data to seed the database if it's empty
@@ -78,7 +77,6 @@ export interface AppData {
     contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
-    // FIX: Add missing properties for beginner classroom functionality.
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
 }
@@ -86,8 +84,6 @@ export interface AppData {
 export const useDataStore = () => {
     const [data, setData] = useState<AppData | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
-    
-    console.log('useDataStore - Initialisation du hook');
 
     const getInitialData = useCallback((): AppData => ({
         models: initialModels,
@@ -141,7 +137,6 @@ export const useDataStore = () => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
             if (dbData) {
-                console.log('useDataStore - Données brutes de Firebase:', dbData);
                 // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
                 console.log('Données brutes de Firebase (dbData):', dbData);
                 console.log('Données initiales (initialData):', {
@@ -170,13 +165,8 @@ export const useDataStore = () => {
                 
                 // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
-                console.log('useDataStore - Données fusionnées avant envoi au state:', {
-                    agencyServicesLength: mergedData.agencyServices?.length || 0,
-                    modelsLength: mergedData.models?.length || 0
-                });
                 setData(mergedData);
             } else {
-                console.log('useDataStore - Base de données vide, initialisation avec les données par défaut');
                 // If DB is empty, seed it with initial data
                 set(dbRef, initialData).then(() => {
                     setData(initialData);
@@ -187,15 +177,9 @@ export const useDataStore = () => {
             }
             setIsInitialized(true);
         }, (error) => {
-            console.error("Firebase read failed: ", error);
-            console.log('useDataStore - Erreur de lecture Firebase, utilisation des données locales');
+            console.error("Firebase read failed: " + error.message);
             // Fallback to local data if Firebase fails
-            const localData = getInitialData();
-            console.log('useDataStore - Données locales chargées:', {
-                agencyServicesLength: localData.agencyServices?.length || 0,
-                modelsLength: localData.models?.length || 0
-            });
-            setData(localData);
+            setData(getInitialData());
             setIsInitialized(true);
         });
 
