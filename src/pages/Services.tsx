@@ -22,31 +22,33 @@ const ServiceListItem: React.FC<{ service: Service }> = ({ service }) => {
     const Icon = iconMap[service.icon] || HeartIcon;
 
     return (
-        <div className="bg-black border border-pm-gold/20 rounded-lg p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start transform transition-all duration-300 hover:border-pm-gold hover:shadow-2xl hover:shadow-pm-gold/10">
-            <div className="flex-shrink-0 bg-pm-dark p-4 rounded-full border border-pm-gold/30 mt-1">
-                <Icon className="w-10 h-10 text-pm-gold" />
+        <div className="bg-gradient-to-br from-black to-pm-dark border border-pm-gold/20 rounded-lg p-6 sm:p-8 flex flex-col sm:flex-row gap-8 items-start transform transition-all duration-300 hover:border-pm-gold hover:shadow-2xl hover:shadow-pm-gold/10 hover:translate-y-[-5px]">
+            <div className="flex-shrink-0 bg-gradient-to-br from-pm-dark to-black p-5 rounded-full border border-pm-gold/50 mt-1 shadow-lg shadow-pm-gold/10">
+                <Icon className="w-12 h-12 text-pm-gold" />
             </div>
             <div className="flex-grow">
-                <h3 className="text-3xl font-playfair text-pm-gold mb-3">{service.title}</h3>
-                <p className="text-pm-off-white/80 leading-relaxed mb-4">{service.description}</p>
+                <h3 className="text-3xl font-playfair text-pm-gold mb-4 relative">{service.title} <span className="absolute -bottom-2 left-0 w-16 h-[2px] bg-pm-gold/30"></span></h3>
+                <p className="text-pm-off-white/90 leading-relaxed mb-5 text-lg">{service.description}</p>
                 
                 {service.details && (
-                    <div className="mb-6 mt-5 bg-pm-dark/50 p-4 rounded-md border-l-4 border-pm-gold">
-                        <h4 className="font-bold text-pm-off-white mb-2">{service.details.title}</h4>
-                        <ul className="list-disc list-inside space-y-1 text-pm-off-white/70">
+                    <div className="mb-8 mt-6 bg-black/50 p-5 rounded-md border-l-4 border-pm-gold backdrop-blur-sm">
+                        <h4 className="font-bold text-pm-gold mb-3 text-lg">{service.details.title}</h4>
+                        <ul className="list-disc list-inside space-y-2 text-pm-off-white/80">
                             {service.details.points.map((point, index) => (
-                                <li key={index}>{point}</li>
+                                <li key={index} className="pl-2">{point}</li>
                             ))}
                         </ul>
                     </div>
                 )}
                 
-                <Link 
-                    to={service.buttonLink}
-                    className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20"
-                >
-                    {service.buttonText}
-                </Link>
+                <div className="mt-6">
+                    <Link 
+                        to={service.buttonLink}
+                        className="inline-block px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20"
+                    >
+                        {service.buttonText || "Réserver ce service"}
+                    </Link>
+                </div>
             </div>
         </div>
     );
@@ -138,26 +140,33 @@ const Services: React.FC = () => {
     ];
 
     return (
-        <div className="bg-pm-dark text-pm-off-white">
+        <div className="bg-gradient-to-b from-pm-dark to-black text-pm-off-white">
             <SEO
                 title="Nos Services | Accompagnement & Production"
                 description="Découvrez l'ensemble des services conçus pour répondre aux besoins des créateurs, marques, et particuliers. Réservez directement depuis notre site."
                 image={data?.siteImages.about}
             />
-            <div className="page-container">
-                <h1 className="page-title">Nos Services sur Mesure</h1>
-                <p className="page-subtitle">
-                    Découvrez l’ensemble de nos services conçus pour répondre aux besoins des créateurs, marques, entreprises et particuliers. Chaque service peut être réservé directement depuis notre site.
+            <div className="py-24 container mx-auto px-6">
+                <h1 className="section-title mb-12">Expertise & Excellence</h1>
+                <p className="text-center text-pm-off-white/80 max-w-3xl mx-auto mb-16 text-lg leading-relaxed">
+                    Perfect Models Management vous propose une gamme complète de services professionnels, conçus avec précision pour répondre aux exigences des créateurs, marques, entreprises et particuliers. Notre expertise dans l'industrie de la mode et du mannequinat nous permet d'offrir des solutions sur mesure qui valorisent votre image et concrétisent vos projets avec excellence.
                 </p>
                 
-                <div className="space-y-16">
-                    {categoryOrder.map(category => (
+                <div className="space-y-20">
+                    {categoryOrder.map((category, categoryIndex) => (
                         servicesByCategory[category] && (
-                             <section key={category}>
-                                <h2 className="section-title">{category}</h2>
-                                <div className="space-y-8">
+                             <section key={category} className={`animate-on-scroll delay-${categoryIndex * 100}`}>
+                                <h2 className="text-4xl font-playfair text-pm-gold text-center mb-12 relative after:content-[''] after:absolute after:w-24 after:h-1 after:bg-pm-gold/50 after:bottom-[-10px] after:left-1/2 after:transform after:-translate-x-1/2">{category}</h2>
+                                <p className="text-center text-pm-off-white/70 max-w-3xl mx-auto mb-10 italic">
+                                    {category === 'Services Mannequinat' && "Notre expertise en mannequinat vous offre un accompagnement personnalisé pour valoriser votre image et développer votre carrière."}
+                                    {category === 'Services Mode et Stylisme' && "Nos services de mode et stylisme transforment vos concepts créatifs en réalités visuelles captivantes et professionnelles."}
+                                    {category === 'Services Événementiels' && "Nous organisons des événements exclusifs qui mettent en valeur votre marque et créent des expériences mémorables pour votre public."}
+                                </p>
+                                <div className="space-y-10">
                                     {servicesByCategory[category].map((service, index) => (
-                                        <ServiceListItem key={index} service={service} />
+                                        <div key={index} className={`animate-on-scroll delay-${index * 150}`}>
+                                            <ServiceListItem service={service} />
+                                        </div>
                                     ))}
                                 </div>
                             </section>

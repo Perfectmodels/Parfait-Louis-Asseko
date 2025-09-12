@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { AppData } from '../hooks/useDataStore';
+import { AppData } from '@/hooks/useDataStore';
 import { Testimonial, Partner } from '../types';
 import SEO from '../components/SEO';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
