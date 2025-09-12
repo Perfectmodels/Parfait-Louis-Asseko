@@ -6,7 +6,7 @@ import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
-import { NavLink as NavLinkType } from '../../hooks/useDataStore';
+import { NavLink as NavLinkType } from '@/hooks/useDataStore';
 import { SocialLinks } from '../../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
