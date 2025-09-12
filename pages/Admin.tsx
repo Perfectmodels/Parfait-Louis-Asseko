@@ -106,7 +106,13 @@ const Admin: React.FC = () => {
                                 title="Contenu de l'Agence" 
                                 icon={BuildingStorefrontIcon} 
                                 link="/admin/agency"
-                                description="Mettre à jour les services, la chronologie et les réalisations."
+                                description="Mettre à jour la chronologie et les réalisations de l'agence."
+                            />
+                            <DashboardCard 
+                                title="Gérer les Services" 
+                                icon={SparklesIcon} 
+                                link="/admin/services"
+                                description="Ajouter, modifier ou supprimer les services proposés par l'agence."
                             />
                          </div>
                     </section>

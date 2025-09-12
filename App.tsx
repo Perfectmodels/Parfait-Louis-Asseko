@@ -47,6 +47,7 @@ import AdminComments from './pages/AdminComments';
 import AdminBookings from './pages/AdminBookings';
 import AdminMessages from './pages/AdminMessages';
 import AdminBeginnerStudents from './pages/AdminBeginnerStudents';
+import AdminServices from './pages/AdminServices';
 
 // Role-specific pages
 import JuryCasting from './pages/JuryCasting';
@@ -149,6 +150,7 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
                     <Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} />
                     <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
+                    <Route path="/admin/services" element={<ProtectedRoute role="admin"><AdminServices /></ProtectedRoute>} />
                     <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                     <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
                     <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
