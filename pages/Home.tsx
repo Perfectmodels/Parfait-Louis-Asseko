@@ -1,11 +1,93 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
-import { InstagramIcon } from '../components/icons/SocialIcons';
+import { NewsItem } from '../types';
+
+// --- News Carousel Component ---
+interface NewsCarouselProps {
+    newsItems: NewsItem[];
+}
+
+const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        if (newsItems.length < 2) return;
+        
+        const intervalId = setInterval(() => {
+            setCurrentIndex(prevIndex => (prevIndex + 1) % newsItems.length);
+        }, 30000); // 30 seconds
+
+        return () => clearInterval(intervalId);
+    }, [newsItems.length]);
+
+    const goToNews = (index: number) => {
+        setCurrentIndex(index);
+    };
+
+    const currentNews = newsItems[currentIndex];
+    if (!currentNews) return null;
+
+    return (
+        <div className="relative max-w-6xl mx-auto bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-2xl shadow-black/50">
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={currentIndex}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="relative aspect-video w-full flex items-end justify-center text-center"
+                >
+                    <img src={currentNews.imageUrl} alt={currentNews.title} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent"></div>
+                    <div className="relative z-10 p-6 md:p-8 text-white w-full">
+                        <h3 className="text-2xl md:text-4xl font-playfair text-pm-gold font-extrabold mb-3">{currentNews.title}</h3>
+                        <p className="text-sm md:text-base text-pm-off-white/90 max-w-3xl mx-auto mb-5">{currentNews.excerpt}</p>
+                        {currentNews.link && (
+                            <Link to={currentNews.link} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                                Lire la suite
+                            </Link>
+                        )}
+                    </div>
+                </motion.div>
+            </AnimatePresence>
+
+            {newsItems.length > 1 && (
+                <>
+                    {/* Navigation Dots */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+                        {newsItems.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => goToNews(index)}
+                                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${currentIndex === index ? 'bg-pm-gold scale-125' : 'bg-white/40 hover:bg-white/80'}`}
+                                aria-label={`Aller à l'actualité ${index + 1}`}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-pm-gold/20 z-10">
+                         <motion.div
+                            key={currentIndex} // Reset animation on change
+                            className="h-full bg-pm-gold"
+                            initial={{ width: '0%' }}
+                            animate={{ width: '100%' }}
+                            transition={{ duration: 30, ease: 'linear' }}
+                         />
+                    </div>
+                </>
+            )}
+        </div>
+    );
+};
+
 
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -14,18 +96,9 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices } = data;
+  const { agencyInfo, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems } = data;
   const publicModels = models.filter(m => m.isPublic).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
-
-  const instaFeedImages = [
-    models[1]?.portfolioImages?.[0], // AJ Caramela
-    models[0]?.imageUrl, // Noemi Kim
-    siteImages.about,
-    models[2]?.imageUrl, // Yann Aubin
-    testimonials[2]?.imageUrl, // Noemi testimonial
-    siteImages.agencyHistory,
-  ].filter(Boolean).slice(0, 6);
 
   return (
     <div className="text-pm-off-white">
@@ -82,8 +155,16 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* News Carousel Section */}
+      {newsItems && newsItems.length > 0 && (
+          <section className="page-container space-y-0 bg-pm-dark">
+              <h2 className="section-title">Nos Actualités</h2>
+              <NewsCarousel newsItems={newsItems} />
+          </section>
+      )}
+
       {/* 3. Services */}
-      <section className="page-container space-y-0 bg-pm-dark">
+      <section className="page-container space-y-0 bg-black">
         <h2 className="section-title">Nos Prestations</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {featuredServices.map(service => (
@@ -98,7 +179,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* 4. Models */}
-      <section className="page-container space-y-0 bg-black">
+      <section className="page-container space-y-0 bg-pm-dark">
         <h2 className="section-title">Nos Mannequins</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {publicModels.map(model => (
@@ -135,26 +216,6 @@ const Home: React.FC = () => {
           <TestimonialCarousel />
         </section>
       )}
-
-      {/* Instagram Feed */}
-      <section className="page-container space-y-0 bg-pm-dark">
-        <h2 className="section-title">Insta-Feed</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
-          {instaFeedImages.map((imgSrc, index) => (
-            <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" key={index} className="group block aspect-square overflow-hidden relative border-2 border-transparent hover:border-pm-gold transition-colors duration-300">
-              <img src={imgSrc} alt={`Publication Instagram ${index + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-all duration-300 flex items-center justify-center">
-                <InstagramIcon className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-110" />
-              </div>
-            </a>
-          ))}
-        </div>
-        <div className="text-center mt-12">
-          <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-            Suivez-nous sur Instagram
-          </a>
-        </div>
-      </section>
 
       {/* 8. Call to Action */}
       <section className="page-container space-y-0 bg-pm-dark text-center">
