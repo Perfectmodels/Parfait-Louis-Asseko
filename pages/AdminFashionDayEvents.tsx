@@ -1,9 +1,10 @@
 
 
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
-import { FashionDayEvent, Stylist, Partner } from '../types';
+import { FashionDayEvent, Stylist, Partner, Artist } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
@@ -74,13 +75,29 @@ const AdminFashionDayEvents: React.FC = () => {
                                             <>
                                                 <FormInput label="Nom du Styliste" value={stylist.name} onChange={e => onStylistChange('name', e.target.value)} />
                                                 <FormTextArea label="Description" value={stylist.description} onChange={e => onStylistChange('description', e.target.value)} />
-                                                <FormTextArea label="Images (URLs, une par ligne)" value={(stylist.images || []).join('\n')} onChange={e => onStylistChange('images', e.target.value.split('\n'))} />
+                                                {/* FIX: Add filter(Boolean) to prevent empty strings from being saved as image URLs. */}
+                                                <FormTextArea label="Images (URLs, une par ligne)" value={(stylist.images || []).join('\n')} onChange={e => onStylistChange('images', e.target.value.split('\n').filter(Boolean))} />
                                             </>
                                         )}
                                     />
                                     
                                      <FormTextArea label="Mannequins Vedettes (séparés par des virgules)" value={(item.featuredModels || []).join(', ')} onChange={e => onChange('featuredModels', e.target.value.split(',').map((s: string) => s.trim()))} />
-                                     <FormTextArea label="Artistes (un par ligne)" value={(item.artists || []).join('\n')} onChange={e => onChange('artists', e.target.value.split('\n'))} />
+                                     
+                                     {/* FIX: Replaced FormTextArea with SubArrayEditor for artists to handle complex object data correctly and prevent data corruption. */}
+                                     <SubArrayEditor
+                                        title="Artistes"
+                                        items={item.artists || []}
+                                        setItems={newArtists => onChange('artists', newArtists)}
+                                        getNewItem={() => ({ name: 'Nouvel Artiste', description: '', images: [] })}
+                                        getItemTitle={artist => artist.name}
+                                        renderItem={(artist: Artist, onArtistChange) => (
+                                            <>
+                                                <FormInput label="Nom de l'Artiste" value={artist.name} onChange={e => onArtistChange('name', e.target.value)} />
+                                                <FormTextArea label="Description" value={artist.description} onChange={e => onArtistChange('description', e.target.value)} />
+                                                <FormTextArea label="Images (URLs, une par ligne)" value={(artist.images || []).join('\n')} onChange={e => onArtistChange('images', e.target.value.split('\n').filter(Boolean))} />
+                                            </>
+                                        )}
+                                    />
                                 </div>
                             )}
                             getNewItem={() => ({ edition: (localData.fashionDayEvents.length + 1), date: '', theme: 'Nouveau Thème', description: '', stylists: [], featuredModels: [], artists: [], partners: [] })}

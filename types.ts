@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export interface Model {
@@ -16,7 +15,6 @@ export interface Model {
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
   isPublic?: boolean; // True if the model profile is visible on the public site
-  // FIX: Add 'level' property to support different model tiers.
   level?: 'Pro' | 'Débutant';
   // New portfolio fields
   measurements: {
@@ -37,10 +35,16 @@ export interface BeginnerStudent {
   name: string;
   matricule: string;
   password: string;
-  quizScores: { [chapterSlug: string]: number }; // Score out of 20
+  quizScores: { [moduleSlug: string]: number }; // Score out of 20
 }
 
 export interface Stylist {
+  name: string;
+  description: string;
+  images: string[];
+}
+
+export interface Artist {
   name: string;
   description: string;
   images: string[];
@@ -55,7 +59,7 @@ export interface FashionDayEvent {
   promoter?: string;
   stylists?: Stylist[];
   featuredModels?: string[];
-  artists?: string[];
+  artists?: Artist[];
   partners?: { type: string; name: string }[];
   description: string;
 }
@@ -67,7 +71,6 @@ export interface SocialLinks {
   youtube: string;
 }
 
-// FIX: Update Service interface to support categories and detailed points, resolving inconsistencies.
 export interface Service {
   icon: string;
   title: string;

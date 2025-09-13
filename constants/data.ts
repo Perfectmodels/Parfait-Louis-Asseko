@@ -1,5 +1,5 @@
 // FIX: Add BeginnerStudent to import
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist } from '../types';
 import { NavLink } from '../hooks/useDataStore';
 // FIX: Import beginner course data
 import { beginnerCourseData } from './beginnerCourseData';
@@ -184,7 +184,24 @@ export const fashionDayEvents: FashionDayEvent[] = [
         { name: 'Miguel Fashion Style', description: 'Finesse sur-mesure', images: [] }
     ],
     featuredModels: ['Noemi Kim', 'AJ Caramela', 'Yann Aubin'],
-    artists: ['Lady Riaba (Poésie)'],
+    artists: [
+        { 
+            name: 'Lady Riaba (Poésie)', 
+            description: 'Performance poétique envoûtante', 
+            images: [
+                'https://i.ibb.co/JRs6P128/ladyriaba-1.jpg',
+                'https://i.ibb.co/Kx1WMT87/ladyriaba-5.jpg',
+                'https://i.ibb.co/x8mGQcCG/ladyriaba-6.jpg',
+                'https://i.ibb.co/zhj0xKNN/ladyriaba-8.jpg',
+                'https://i.ibb.co/Fq4NQ0gN/ladyriaba-10.jpg',
+                'https://i.ibb.co/Cp50mQwn/ladyriaba-14.jpg',
+                'https://i.ibb.co/Cs3pHkbD/ladyriaba-20.jpg',
+                'https://i.ibb.co/hRFn9tyT/ladyriaba-22.jpg',
+                'https://i.ibb.co/rfLBb0t3/ladyriaba-26.jpg',
+                'https://i.ibb.co/WCYYHQ1/ladyriaba-28.jpg'
+            ] 
+        }
+    ],
     partners: [{type: 'Principal', name: 'G Store'}]
   },
   {
@@ -230,7 +247,7 @@ export const agencyServices: Service[] = [
     details: {
       title: "Avantages du service",
       points: [
-        "Sélection rigoureuse de mannequins adaptés à votre projet",
+        "Sélection rigourouse de mannequins adaptés à votre projet",
         "Gestion complète de la logistique et communication avec les candidats",
         "Accès à notre base de mannequins expérimentés"
       ]

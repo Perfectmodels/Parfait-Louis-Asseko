@@ -44,6 +44,12 @@ export interface Stylist {
   images: string[];
 }
 
+export interface Artist {
+  name: string;
+  description: string;
+  images: string[];
+}
+
 export interface FashionDayEvent {
   edition: number;
   date: string;
@@ -53,7 +59,7 @@ export interface FashionDayEvent {
   promoter?: string;
   stylists?: Stylist[];
   featuredModels?: string[];
-  artists?: string[];
+  artists?: Artist[];
   partners?: { type: string; name: string }[];
   description: string;
 }

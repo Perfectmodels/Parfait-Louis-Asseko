@@ -1,5 +1,6 @@
+
+
 import React, { useState, useEffect, useRef } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -130,7 +131,8 @@ const FashionDay: React.FC = () => {
                   <div>
                       <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><MicrophoneIcon className="w-6 h-6" aria-hidden="true"/> Artistes & Performances</h3>
                       <ul className="list-disc list-inside text-pm-off-white/80 space-y-2">
-                          {selectedEdition.artists.map((artist, index) => <li key={index}>{artist}</li>)}
+                          {/* FIX: Correctly render artist name and description. An Artist object cannot be rendered directly as a ReactNode. */}
+                          {selectedEdition.artists.map((artist, index) => <li key={index}>{artist.name} - <span className="text-xs text-pm-off-white/70">{artist.description}</span></li>)}
                       </ul>
                   </div>
                   <div>
