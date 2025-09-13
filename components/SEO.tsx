@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { siteConfig } from '@/constants/data';
+import { siteConfig } from '../constants/data';
 
 interface SEOProps {
   title?: string;
@@ -50,10 +50,11 @@ const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, noIndex 
     setMeta('og:type', 'website', true);
 
     // Twitter Card
-    setMeta('twitter:card', 'summary_large_image', true);
-    setMeta('twitter:title', pageTitle, true);
-    setMeta('twitter:description', description || defaultDescription, true);
-    setMeta('twitter:image', image || defaultImage, true);
+    setMeta('twitter:card', 'summary_large_image', false);
+    setMeta('twitter:title', pageTitle, false);
+    setMeta('twitter:description', description || defaultDescription, false);
+    setMeta('twitter:image', image || defaultImage, false);
+
   }, [title, description, keywords, image, noIndex]);
 
   return null;

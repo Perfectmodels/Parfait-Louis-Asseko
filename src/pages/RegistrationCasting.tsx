@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
-import SEO from '@/components/SEO';
+import SEO from '../components/SEO';
 import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const RegistrationCasting: React.FC = () => {
