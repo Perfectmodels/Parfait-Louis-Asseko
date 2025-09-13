@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
@@ -8,7 +6,7 @@ import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/re
 
 const AdminModelAccess: React.FC = () => {
     const { data } = useData();
-    const models = data?.models || [];
+    const proModels = data?.models.filter(model => model.level !== 'Débutant') || [];
     const [copiedUsername, setCopiedUsername] = useState<string | null>(null);
 
     const handleCopy = (textToCopy: string, username: string) => {
@@ -19,15 +17,15 @@ const AdminModelAccess: React.FC = () => {
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Admin - Accès Mannequins" noIndex />
+            <SEO title="Admin - Accès Mannequins Pro" noIndex />
             <div className="container mx-auto px-6">
                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Tableau de Bord
                 </Link>
-                <h1 className="text-4xl font-playfair text-pm-gold mb-2">Accès des Mannequins</h1>
+                <h1 className="text-4xl font-playfair text-pm-gold mb-2">Accès des Mannequins Professionnels</h1>
                 <p className="text-pm-off-white/70 mb-8">
-                    Tableau récapitulatif des identifiants de connexion uniques pour chaque mannequin.
+                    Tableau récapitulatif des identifiants de connexion pour chaque mannequin professionnel.
                 </p>
 
                 <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
@@ -41,7 +39,7 @@ const AdminModelAccess: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {models.map(model => (
+                                {proModels.map(model => (
                                     <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark/50 [&:nth-child(even)]:bg-pm-dark/30">
                                         <td className="p-4 font-semibold">{model.name}</td>
                                         <td className="p-4 font-mono text-xs text-pm-gold/80">{model.username}</td>
@@ -61,7 +59,7 @@ const AdminModelAccess: React.FC = () => {
                                 ))}
                             </tbody>
                         </table>
-                        {models.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun mannequin trouvé.</p>}
+                        {proModels.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun mannequin professionnel trouvé.</p>}
                     </div>
                 </div>
             </div>

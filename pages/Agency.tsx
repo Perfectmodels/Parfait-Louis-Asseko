@@ -1,10 +1,66 @@
 import React, { useState } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
-import { CheckBadgeIcon } from '@heroicons/react/24/outline';
-import { AchievementCategory, ModelDistinction } from '../types';
+import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+
+const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
+    const [openFAQ, setOpenFAQ] = useState<string | null>('0-0'); // Open the first question by default
+
+    const toggleFAQ = (id: string) => {
+        setOpenFAQ(openFAQ === id ? null : id);
+    };
+
+    if (!faqData || faqData.length === 0) {
+        return null;
+    }
+
+    return (
+        <section>
+            <h2 className="section-title">Questions Fréquemment Posées</h2>
+            <div className="max-w-4xl mx-auto space-y-8">
+                {faqData.map((category, catIndex) => (
+                    <div key={catIndex}>
+                        <h3 className="text-2xl font-playfair text-pm-gold mb-4">{category.category}</h3>
+                        <div className="space-y-3">
+                            {category.items.map((item, itemIndex) => {
+                                const faqId = `${catIndex}-${itemIndex}`;
+                                const isOpen = openFAQ === faqId;
+                                return (
+                                    <div key={itemIndex} className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden">
+                                        <button
+                                            onClick={() => toggleFAQ(faqId)}
+                                            className="w-full flex justify-between items-center p-5 text-left"
+                                            aria-expanded={isOpen}
+                                            aria-controls={`faq-answer-${faqId}`}
+                                        >
+                                            <span className="font-bold text-lg text-pm-off-white">{item.question}</span>
+                                            <ChevronDownIcon className={`w-6 h-6 text-pm-gold flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                                        </button>
+                                        <div
+                                            id={`faq-answer-${faqId}`}
+                                            className="grid transition-all duration-500 ease-in-out"
+                                            style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                                        >
+                                            <div className="overflow-hidden">
+                                                <div className="px-5 pb-5 text-pm-off-white/80">
+                                                    {item.answer}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+};
+
 
 const Agency: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -13,7 +69,7 @@ const Agency: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
   
-  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages } = data;
+  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages, faqData } = data;
 
   return (
     <div className="bg-pm-dark text-pm-off-white">
@@ -83,6 +139,9 @@ const Agency: React.FC = () => {
             ))}
           </div>
         </section>
+        
+        {/* FAQ Section */}
+        <FAQ faqData={faqData} />
 
         {/* Contact CTA */}
         <section className="text-center content-section">

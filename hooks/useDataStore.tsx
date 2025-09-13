@@ -1,8 +1,7 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -33,7 +32,8 @@ import {
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
-    beginnerCourseData as initialBeginnerCourseData
+    beginnerCourseData as initialBeginnerCourseData,
+    faqData as initialFaqData
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -79,6 +79,7 @@ export interface AppData {
     registrationStaff: RegistrationStaff[];
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
+    faqData: FAQCategory[];
 }
 
 export const useDataStore = () => {
@@ -116,6 +117,7 @@ export const useDataStore = () => {
         registrationStaff: initialRegistrationStaff,
         beginnerCourseData: initialBeginnerCourseData,
         beginnerStudents: initialBeginnerStudents,
+        faqData: initialFaqData,
     }), []);
     
     useEffect(() => {
@@ -137,6 +139,7 @@ export const useDataStore = () => {
                     testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
+                    faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
                 };
                 
                 // Always use navLinks from code to ensure route integrity
