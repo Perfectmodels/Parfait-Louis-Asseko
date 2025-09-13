@@ -9,7 +9,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 const Home = lazy(() => import('./pages/Home'));
 const Agency = lazy(() => import('./pages/Agency'));
 const Models = lazy(() => import('./pages/Models'));
-const ModelDetail = lazy(() => import('./pages/ModelDetail'));
 const FashionDay = lazy(() => import('./pages/FashionDay'));
 const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
@@ -19,7 +18,6 @@ const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
 const Login = lazy(() => import('./pages/Login'));
-const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
@@ -115,7 +113,6 @@ const AppContent: React.FC = () => {
                         <Route path="/" element={<Home />} />
                         <Route path="/agence" element={<Agency />} />
                         <Route path="/mannequins" element={<Models />} />
-                        <Route path="/mannequins/:id" element={<ModelDetail />} />
                         <Route path="/fashion-day" element={<FashionDay />} />
                         <Route path="/magazine" element={<Magazine />} />
                         <Route path="/magazine/:slug" element={<ArticleDetail />} />
@@ -129,7 +126,6 @@ const AppContent: React.FC = () => {
                         <Route path="/terms-of-use" element={<TermsOfUse />} />
 
                         {/* Protected Routes */}
-                        <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
                         <Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
                         <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                         <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
