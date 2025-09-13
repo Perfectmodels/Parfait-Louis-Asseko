@@ -7,6 +7,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        'gabon-green': '#009E60',
+        'gabon-yellow': '#FCD116',
+        'gabon-blue': '#0033A0',
         'pm-dark': '#111111',
         'pm-gold': '#D4AF37',
         'pm-off-white': '#f0f0f0',
