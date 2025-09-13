@@ -36,8 +36,8 @@ import {
     beginnerStudents as initialBeginnerStudents,
     beginnerCourseData as initialBeginnerCourseData
 } from '../constants/data';
-import { articles as initialArticles } from '@/constants/magazineData';
-import { courseData as initialCourseData } from '@/constants/courseData';
+import { articles as initialArticles } from '../constants/magazineData';
+import { courseData as initialCourseData } from '../constants/courseData';
 
 export interface NavLink {
     path: string;

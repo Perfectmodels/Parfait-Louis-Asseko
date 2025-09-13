@@ -24,23 +24,19 @@
       theme: {
         extend: {
           colors: {
-            'pm-dark': '#0A0A0A',
+            'pm-dark': '#111111',
             'pm-gold': '#D4AF37',
-            'pm-gold-light': '#E5C76B',
-            'pm-off-white': '#f5f5f5',
-            'pm-gray': '#333333',
+            'pm-off-white': '#f0f0f0',
             'black': '#000000',
           },
           fontFamily: {
-            'playfair': ["'Playfair Display'", 'serif'],
-            'montserrat': ["'Montserrat'", 'sans-serif'],
+            'playfair': ['"Playfair Display"', 'serif'],
+            'montserrat': ['"Montserrat"', 'sans-serif'],
           },
           animation: {
               'marquee': 'marquee 60s linear infinite',
               'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'fade-in': 'fadeIn 0.5s ease-in-out',
-              'slide-up': 'slideUp 0.6s ease-out',
-              'slide-in-right': 'slideInRight 0.6s ease-out',
           },
           keyframes: {
               marquee: {
@@ -51,21 +47,6 @@
                   '0%': { opacity: 0 },
                   '100%': { opacity: 1 },
               },
-              slideUp: {
-                  '0%': { transform: 'translateY(20px)', opacity: 0 },
-                  '100%': { transform: 'translateY(0)', opacity: 1 },
-              },
-              slideInRight: {
-                  '0%': { transform: 'translateX(20px)', opacity: 0 },
-                  '100%': { transform: 'translateX(0)', opacity: 1 },
-              },
-          },
-          boxShadow: {
-            'gold': '0 4px 14px -2px rgba(212, 175, 55, 0.3)',
-            'gold-lg': '0 10px 25px -5px rgba(212, 175, 55, 0.4)',
-          },
-          backgroundImage: {
-            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
           }
         }
       }
@@ -105,63 +86,21 @@
         .page-container {
           @apply container mx-auto px-6 py-16 lg:py-24 space-y-24 lg:space-y-32;
         }
-        
-        .content-section {
-          @apply animate-slide-up;
-        }
 
         /* ===================== TITRES ===================== */
         .page-title {
-          @apply text-5xl md:text-6xl font-playfair text-pm-gold text-center font-extrabold mb-8 relative;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+          @apply text-5xl md:text-6xl font-playfair text-pm-gold text-center font-extrabold mb-6;
         }
-        
-        .page-title::after {
-          @apply content-[''] absolute w-24 h-1 bg-pm-gold left-1/2 -translate-x-1/2 bottom-0 mt-4;
-        }
-        
         .page-subtitle {
-          @apply text-center text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/90 mt-6 mb-16 leading-relaxed;
+          @apply text-center text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/80 mt-2 mb-16;
         }
-        
         .section-title {
-          @apply text-4xl md:text-5xl font-playfair font-extrabold text-center text-pm-gold mb-16 relative pb-4;
+          @apply text-4xl md:text-5xl font-playfair font-extrabold text-center text-pm-gold mb-12 relative pb-4;
           text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
         }
-        
         .section-title::after {
-          @apply content-[''] absolute w-16 h-0.5 bg-pm-gold left-1/2 -translate-x-1/2 bottom-0;
-        }
-        /* Styles pour les cartes et éléments */
-        .card-base {
-          @apply bg-black/80 border border-pm-gold/20 rounded-lg p-6 transition-all duration-300 hover:shadow-gold;
-        }
-        
-        .card-hover {
-          @apply transition-all duration-300 hover:shadow-gold-lg hover:-translate-y-1;
-        }
-        
-        /* Boutons et éléments interactifs */
-        .btn-primary {
-          @apply px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-pm-gold-light hover:shadow-gold transform hover:-translate-y-0.5;
-        }
-        
-        .btn-outline {
-          @apply px-8 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-pm-gold/10 hover:shadow-gold transform hover:-translate-y-0.5;
-        }
-        
-        /* Images et médias */
-        .img-frame {
-          @apply border-2 border-pm-gold p-1 transition-all duration-300 hover:shadow-gold;
-        }
-        
-        /* Animations pour les sections */
-        .animate-on-scroll {
-          @apply opacity-0 translate-y-4 transition-all duration-700;
-        }
-        
-        .animate-on-scroll.visible {
-          @apply opacity-100 translate-y-0;
+          content: '';
+          @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-pm-gold;
         }
         .section-subtitle {
           @apply text-center text-base md:text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-8 leading-relaxed;
