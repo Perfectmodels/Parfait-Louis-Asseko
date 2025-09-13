@@ -1,5 +1,5 @@
 // FIX: Add BeginnerStudent to import
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief } from '../types';
 import { NavLink } from '../hooks/useDataStore';
 // FIX: Import beginner course data
 import { beginnerCourseData } from './beginnerCourseData';
@@ -74,6 +74,7 @@ export const models: Model[] = [
         gender: 'Femme',
         location: 'Libreville',
         imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        isPublic: true,
         portfolioImages: [
             'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
             'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
@@ -82,7 +83,6 @@ export const models: Model[] = [
         distinctions: [
             { name: "Palmarès National & International", titles: ["Miss Gabon 2022", "Top Model Afrique Centrale 2023"] }
         ],
-        isPublic: true,
         measurements: { chest: '85cm', waist: '62cm', hips: '90cm', shoeSize: '40' },
         categories: ['Défilé', 'Éditorial', 'Beauté'],
         experience: "Mannequin vedette de l'agence, Noemi a défilé pour les plus grands créateurs gabonais et a été le visage de plusieurs campagnes nationales. Son professionnalisme et sa démarche captivante en font une référence.",
@@ -141,7 +141,7 @@ export const testimonials: Testimonial[] = [
     {
         name: 'Nadia K.',
         role: 'Directrice Artistique',
-        quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond parfaitement aux besoins créatifs de nos campagnes publicitaires.",
+        quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond perfectly aux besoins créatifs de nos campagnes publicitaires.",
         imageUrl: 'https://i.ibb.co/y4x9Y8X/testimonial-2.jpg',
     },
     {
@@ -160,6 +160,9 @@ export const articleComments: ArticleComment[] = [];
 export const recoveryRequests: RecoveryRequest[] = [];
 export const bookingRequests: BookingRequest[] = [];
 export const contactMessages: ContactMessage[] = [];
+export const absences: Absence[] = [];
+export const monthlyPayments: MonthlyPayment[] = [];
+export const photoshootBriefs: PhotoshootBrief[] = [];
 export const beginnerStudents: BeginnerStudent[] = [
     {
         id: 'casting-1720000000001',

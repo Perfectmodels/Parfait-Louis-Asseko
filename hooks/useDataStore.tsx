@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -18,6 +18,9 @@ import {
     recoveryRequests as initialRecoveryRequests,
     bookingRequests as initialBookingRequests,
     contactMessages as initialContactMessages,
+    absences as initialAbsences,
+    monthlyPayments as initialMonthlyPayments,
+    photoshootBriefs as initialPhotoshootBriefs,
     newsItems as initialNewsItems, 
     navLinks as initialNavLinks, 
     fashionDayEvents as initialFashionDayEvents, 
@@ -80,6 +83,9 @@ export interface AppData {
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
     faqData: FAQCategory[];
+    absences: Absence[];
+    monthlyPayments: MonthlyPayment[];
+    photoshootBriefs: PhotoshootBrief[];
 }
 
 export const useDataStore = () => {
@@ -100,6 +106,9 @@ export const useDataStore = () => {
         recoveryRequests: initialRecoveryRequests,
         bookingRequests: initialBookingRequests,
         contactMessages: initialContactMessages,
+        absences: initialAbsences,
+        monthlyPayments: initialMonthlyPayments,
+        photoshootBriefs: initialPhotoshootBriefs,
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,

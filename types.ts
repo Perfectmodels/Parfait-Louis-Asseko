@@ -336,3 +336,38 @@ export interface FAQCategory {
   category: string;
   items: FAQItem[];
 }
+
+export interface Absence {
+  id: string;
+  modelId: string;
+  modelName: string;
+  date: string; // YYYY-MM-DD
+  reason: 'Maladie' | 'Personnel' | 'Non justifié' | 'Autre';
+  notes?: string;
+  isExcused: boolean;
+}
+
+export interface MonthlyPayment {
+  id: string; // e.g., 'modelId-YYYY-MM'
+  modelId: string;
+  modelName: string;
+  month: string; // 'YYYY-MM'
+  amount: number;
+  paymentDate: string; // YYYY-MM-DD
+  method: 'Virement' | 'Espèces' | 'Autre';
+  status: 'Payé' | 'En attente' | 'En retard';
+  notes?: string;
+}
+
+export interface PhotoshootBrief {
+  id: string;
+  modelId: string;
+  modelName: string;
+  theme: string;
+  clothingStyle: string;
+  accessories: string;
+  location: string;
+  dateTime: string; // ISO string format for date and time
+  createdAt: string; // ISO string format
+  status: 'Nouveau' | 'Lu' | 'Archivé';
+}
