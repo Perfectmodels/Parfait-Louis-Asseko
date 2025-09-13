@@ -12,6 +12,7 @@ export default {
         'gabon-blue': '#0033A0',
         'pm-dark': '#111111',
         'pm-gold': '#D4AF37',
+        'pm-gold-light': '#EACD6D',
         'pm-off-white': '#f0f0f0',
       },
       fontFamily: {
