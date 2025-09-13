@@ -62,7 +62,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* 2. Agency Presentation */}
-      <section className="page-container bg-black">
+      <section className="page-container space-y-0 bg-black">
+        <h2 className="section-title">Notre Agence</h2>
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
             <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
@@ -82,7 +83,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* 3. Services */}
-      <section className="page-container bg-pm-dark">
+      <section className="page-container space-y-0 bg-pm-dark">
+        <h2 className="section-title">Nos Prestations</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {featuredServices.map(service => (
             <ServiceCard key={service.title} service={service} />
@@ -96,7 +98,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* 4. Models */}
-      <section className="page-container bg-black">
+      <section className="page-container space-y-0 bg-black">
+        <h2 className="section-title">Nos Mannequins</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {publicModels.map(model => (
             <ModelCard key={model.id} model={model} />
@@ -115,6 +118,7 @@ const Home: React.FC = () => {
         style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}
       >
         <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm">
+          <h2 className="section-title">Notre Événement Phare</h2>
           <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
             {fashionDayEvents.find(e => e.edition === 2)?.description || "Nous créons des moments inoubliables où la mode prend vie. Découvrez nos événements phares."}
           </p>
@@ -126,13 +130,14 @@ const Home: React.FC = () => {
 
       {/* 7. Testimonials */}
       {testimonials && testimonials.length > 0 && (
-        <section className="page-container bg-black">
+        <section className="page-container space-y-0 bg-black">
+          <h2 className="section-title">Témoignages</h2>
           <TestimonialCarousel />
         </section>
       )}
 
       {/* Instagram Feed */}
-      <section className="page-container bg-pm-dark">
+      <section className="page-container space-y-0 bg-pm-dark">
         <h2 className="section-title">Insta-Feed</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
           {instaFeedImages.map((imgSrc, index) => (
@@ -152,7 +157,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* 8. Call to Action */}
-      <section className="page-container bg-pm-dark text-center">
+      <section className="page-container space-y-0 bg-pm-dark text-center">
+        <h2 className="section-title">Prêts à nous rejoindre ?</h2>
         <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
           Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
         </p>

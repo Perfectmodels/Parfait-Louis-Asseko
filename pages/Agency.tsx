@@ -79,7 +79,7 @@ const Agency: React.FC = () => {
           <h2 className="section-title">Nos Partenaires Clé</h2>
           <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
             {agencyPartners.map((partner, index) => (
-                <p key={index} className="text-xl font-semibold text-pm-off-white/80 border-b-2 border-pm-gold/30 pb-1">{partner.name}</p>
+                <p key={index} className="text-lg font-normal text-pm-off-white/80">{partner.name}</p>
             ))}
           </div>
         </section>
@@ -138,19 +138,24 @@ const AchievementsTabs: React.FC<{ achievements: AchievementCategory[] }> = ({ a
                     role="tabpanel"
                     hidden={activeTab !== index}
                     aria-labelledby={`tab-${index}`}
-                    className="content-section"
+                    className={`transition-opacity duration-300 ${activeTab === index ? 'opacity-100' : 'opacity-0'}`}
                 >
                     {activeTab === index && (
-                        <>
-                           <ul className="columns-1 md:columns-2 lg:columns-3 gap-x-8 text-pm-off-white/80">
+                        <div className="content-section animate-fade-in">
+                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-pm-off-white/90">
                                 {category.items.map((item, itemIndex) => (
-                                    <li key={itemIndex} className="mb-2 break-inside-avoid">{item}</li>
+                                    <div key={itemIndex} className="bg-pm-dark/50 p-4 rounded-lg flex items-start gap-3 border border-pm-gold/10">
+                                        <CheckBadgeIcon className="w-6 h-6 text-pm-gold flex-shrink-0 mt-0.5" />
+                                        <span>{item}</span>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                             {category.name === "Défilés de Mode" && 
-                                <p className="text-center mt-8 text-pm-gold italic">"Notre agence a participé à tous les événements de mode depuis 2021, son année de création."</p>
+                                <p className="text-center mt-10 text-pm-gold/90 italic text-sm md:text-base bg-pm-dark/50 p-4 rounded-md">
+                                    "Notre agence a participé à tous les événements de mode depuis 2021, son année de création."
+                                </p>
                             }
-                        </>
+                        </div>
                     )}
                 </div>
             ))}

@@ -127,6 +127,12 @@ export const useDataStore = () => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
             if (dbData) {
+                 // Check for valid Fashion Day events in the database to prevent data loss
+                const hasValidDbFashionDayEvents = dbData.fashionDayEvents && 
+                                                   Array.isArray(dbData.fashionDayEvents) && 
+                                                   dbData.fashionDayEvents.length > 0 && 
+                                                   dbData.fashionDayEvents.some((e: FashionDayEvent) => e.edition && e.theme);
+
                 // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
                 const mergedData = {
                     ...initialData,
@@ -138,7 +144,7 @@ export const useDataStore = () => {
                     newsItems: (dbData.newsItems && dbData.newsItems.length > 0) ? dbData.newsItems : initialData.newsItems,
                     testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
-                    fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
+                    fashionDayEvents: hasValidDbFashionDayEvents ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                 };
                 
                 // Always use navLinks from code to ensure route integrity

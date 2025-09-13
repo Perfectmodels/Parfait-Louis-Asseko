@@ -65,7 +65,7 @@ const BeginnerChapterDetail: React.FC = () => {
         </div>
         
         {module.quiz && module.quiz.length > 0 && (
-            <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} chapterSlug={chapter.slug} />
+            <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
         )}
 
       </div>
