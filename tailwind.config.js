@@ -40,6 +40,7 @@ export default {
       },
       boxShadow: {
         'gold': '0 0 20px 0px rgba(212, 175, 55, 0.5)',
+        'gold-lg': '0 0 30px 5px rgba(212, 175, 55, 0.5)',
       }
     }
   },
