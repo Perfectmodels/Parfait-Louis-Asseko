@@ -52,7 +52,7 @@ const AdminModels: React.FC = () => {
   const ITEMS_PER_PAGE = 10;
 
   const allModels = useMemo(() => data?.models || [], [data?.models]);
-  const proModels = useMemo(() => allModels.filter(m => m.level !== 'Débutant'), [allModels]);
+  const proModels = useMemo(() => allModels.filter(m => m.level !== 'Débutant').sort((a,b) => a.name.localeCompare(b.name)), [allModels]);
 
   const totalPages = Math.ceil(proModels.length / ITEMS_PER_PAGE);
   const paginatedModels = useMemo(() => {
@@ -118,7 +118,6 @@ const AdminModels: React.FC = () => {
     const handleDemote = async (modelToDemote: Model) => {
         if (!data || !window.confirm(`Êtes-vous sûr de vouloir rétrograder ${modelToDemote.name} au niveau Débutant ? Son profil et ses accès Pro seront supprimés et un nouveau profil Débutant sera créé.`)) return;
 
-        // 1. Create new BeginnerStudent
         const currentYear = new Date().getFullYear();
         const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
 
@@ -135,13 +134,9 @@ const AdminModels: React.FC = () => {
             quizScores: {},
         };
 
-        // 2. Remove model from 'models' array
         const updatedModels = data.models.filter(m => m.id !== modelToDemote.id);
-
-        // 3. Add new student to 'beginnerStudents' array
         const updatedBeginnerStudents = [...(data.beginnerStudents || []), newBeginner];
 
-        // 4. Save data
         try {
             await saveData({ ...data, models: updatedModels, beginnerStudents: updatedBeginnerStudents });
             alert(`${modelToDemote.name} a été rétrogradé(e) au statut Débutant avec succès.`);
@@ -284,12 +279,11 @@ const ModelListItem: React.FC<ModelListItemProps> = ({ model, onView, onDelete, 
             )}
         </div>
       </button>
-      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-         {/* FIX: Removed typo "_" after button tag. */}
+      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
          <button onClick={onTogglePublic} title={model.isPublic ? 'Rendre privé' : 'Rendre public'} className="action-btn">
             {model.isPublic ? <EyeSlashIcon className="w-5 h-5"/> : <EyeIcon className="w-5 h-5"/>}
          </button>
-         <button onClick={onDemote} title="Rétrograder en Débutant" className="action-btn">
+         <button onClick={onDemote} title="Rétrograder en Débutant" className="action-btn text-yellow-400/70 hover:text-yellow-400 hover:bg-yellow-400/10 border-yellow-400/50">
             <ArrowPathIcon className="w-5 h-5"/>
          </button>
         <button onClick={() => onMove(model.id, 'up')} disabled={isFirst} className="action-btn disabled:opacity-30"><ArrowUpIcon className="w-5 h-5"/></button>

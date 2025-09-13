@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon, CheckBadgeIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon, CheckBadgeIcon, TrashIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { BeginnerStudent, Model } from '../types';
 
 const AdminBeginnerStudents: React.FC = () => {
@@ -16,10 +16,43 @@ const AdminBeginnerStudents: React.FC = () => {
         setTimeout(() => setCopiedMatricule(null), 2000);
     };
 
+    const handleDownloadCSV = () => {
+        if (!students || students.length === 0) {
+            alert("Aucune donnée à télécharger.");
+            return;
+        }
+
+        const headers = ["Nom du Mannequin", "Matricule", "Mot de passe"];
+        const csvContent = [
+            headers.join(','),
+            ...students.map(student => 
+                [
+                    `"${student.name.replace(/"/g, '""')}"`, // Escape double quotes
+                    student.matricule,
+                    student.password
+                ].join(',')
+            )
+        ].join('\n');
+
+        const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' }); // Add BOM for Excel compatibility
+        const link = document.createElement("a");
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "acces-mannequins-debutants.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    };
+    
     const handlePromote = async (studentToPromote: BeginnerStudent) => {
         if (!data || !window.confirm(`Êtes-vous sûr de vouloir promouvoir ${studentToPromote.name} au niveau Professionnel ? Un nouveau profil Pro sera créé et l'étudiant sera retiré de cette liste.`)) return;
 
-        // 1. Create a new Professional Model object
+        const originalApplication = (data.castingApplications || []).find(app => app.id === studentToPromote.id);
+
         const currentYear = new Date().getFullYear();
         const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
         
@@ -44,25 +77,30 @@ const AdminBeginnerStudents: React.FC = () => {
             password,
             level: 'Pro',
             isPublic: false,
-            gender: 'Femme', // Default value
-            height: 'N/A',
-            imageUrl: 'https://i.ibb.co/fVBxPNTP/T-shirt.png', // Placeholder
-            measurements: { chest: '0cm', waist: '0cm', hips: '0cm', shoeSize: '0' },
+            gender: originalApplication?.gender || 'Femme',
+            height: originalApplication ? `${originalApplication.height}cm` : 'N/A',
+            imageUrl: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+            measurements: originalApplication ? {
+                chest: `${originalApplication.chest || '0'}cm`,
+                waist: `${originalApplication.waist || '0'}cm`,
+                hips: `${originalApplication.hips || '0'}cm`,
+                shoeSize: originalApplication.shoeSize || '0',
+            } : { chest: '0cm', waist: '0cm', hips: '0cm', shoeSize: '0' },
             categories: [],
             experience: 'Promu depuis le Classroom Débutant. Mettre à jour l\'expérience.',
             journey: 'Profil créé suite à la promotion depuis le programme débutant.',
             quizScores: {},
             distinctions: [],
             portfolioImages: [],
+            email: originalApplication?.email || '',
+            phone: originalApplication?.phone || '',
+            age: originalApplication?.birthDate ? new Date().getFullYear() - new Date(originalApplication.birthDate).getFullYear() : undefined,
+            location: originalApplication?.city || ''
         };
 
-        // 2. Remove student from beginnerStudents array
         const updatedBeginnerStudents = data.beginnerStudents.filter(s => s.id !== studentToPromote.id);
+        const updatedModels = [...(data.models || []), newProModel];
 
-        // 3. Add new model to models array
-        const updatedModels = [...data.models, newProModel];
-
-        // 4. Save data
         try {
             await saveData({ ...data, beginnerStudents: updatedBeginnerStudents, models: updatedModels });
             alert(`${studentToPromote.name} a été promu(e) au statut Professionnel avec succès !`);
@@ -89,14 +127,21 @@ const AdminBeginnerStudents: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Gérer les Débutants" noIndex />
             <div className="container mx-auto px-6">
-                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                    <ChevronLeftIcon className="w-5 h-5" />
-                    Retour au Tableau de Bord
-                </Link>
-                <h1 className="admin-page-title">Gérer les Mannequins Débutants</h1>
-                <p className="admin-page-subtitle">
-                    Gérez les profils des mannequins en formation et promouvez-les au niveau professionnel.
-                </p>
+                <div className="admin-page-header">
+                    <div>
+                        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                            <ChevronLeftIcon className="w-5 h-5" />
+                            Retour au Tableau de Bord
+                        </Link>
+                        <h1 className="admin-page-title">Gérer les Mannequins Débutants</h1>
+                        <p className="admin-page-subtitle">
+                            Gérez les profils des mannequins en formation et promouvez-les au niveau professionnel.
+                        </p>
+                    </div>
+                     <button onClick={handleDownloadCSV} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                        <ArrowDownTrayIcon className="w-5 h-5"/> Télécharger en CSV
+                    </button>
+                </div>
 
                 <div className="admin-section-wrapper !p-2 sm:!p-4 mt-8">
                      <table className="w-full text-left">
