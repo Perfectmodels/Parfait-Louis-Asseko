@@ -1,32 +1,31 @@
 
-import React, { useEffect } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
+import React, { useEffect, lazy, Suspense } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Pages
-import Home from './pages/Home';
-import Agency from './pages/Agency';
-import Models from './pages/Models';
-import ModelDetail from './pages/ModelDetail';
-import FashionDay from './pages/FashionDay';
-import Magazine from './pages/Magazine';
-import ArticleDetail from './pages/ArticleDetail';
-import Contact from './pages/Contact';
-import Services from './pages/Services';
-import Casting from './pages/Casting';
-import CastingForm from './pages/CastingForm';
-import FashionDayApplicationForm from './pages/FashionDayApplicationForm';
-import Login from './pages/Login';
-import Activity from './pages/Activity'; // Renamed Formations
-import ChapterDetail from './pages/ChapterDetail';
-import ModelDashboard from './pages/ModelDashboard'; // Profil
-import ClassroomForum from './pages/ClassroomForum';
-import ForumThread from './pages/ForumThread';
-import BeginnerClassroom from './pages/BeginnerClassroom';
-import BeginnerChapterDetail from './pages/BeginnerChapterDetail';
+// Lazy-loaded Pages
+const Home = lazy(() => import('./pages/Home'));
+const Agency = lazy(() => import('./pages/Agency'));
+const Models = lazy(() => import('./pages/Models'));
+const ModelDetail = lazy(() => import('./pages/ModelDetail'));
+const FashionDay = lazy(() => import('./pages/FashionDay'));
+const Magazine = lazy(() => import('./pages/Magazine'));
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Services = lazy(() => import('./pages/Services'));
+const Casting = lazy(() => import('./pages/Casting'));
+const CastingForm = lazy(() => import('./pages/CastingForm'));
+const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
+const Login = lazy(() => import('./pages/Login'));
+const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
+const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
+const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
+const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
+const ForumThread = lazy(() => import('./pages/ForumThread'));
+const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
+const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
 
 // Admin Pages
 import Admin from './pages/Admin';
@@ -47,16 +46,16 @@ import AdminComments from './pages/AdminComments';
 import AdminBookings from './pages/AdminBookings';
 import AdminMessages from './pages/AdminMessages';
 import AdminBeginnerStudents from './pages/AdminBeginnerStudents';
-import AdminServices from './pages/AdminServices';
 
 // Role-specific pages
-import JuryCasting from './pages/JuryCasting';
-import RegistrationCasting from './pages/RegistrationCasting';
+const JuryCasting = lazy(() => import('./pages/JuryCasting'));
+const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
 
 // Static Pages
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfUse from './pages/TermsOfUse';
-import NotFound from './pages/NotFound';
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -65,6 +64,13 @@ const ScrollToTop: React.FC = () => {
   }, [pathname]);
   return null;
 };
+
+const LoadingFallback: React.FC = () => (
+    <div className="w-full py-40 flex items-center justify-center">
+        <p className="text-pm-gold text-2xl font-playfair animate-pulse">Chargement...</p>
+    </div>
+);
+
 
 const AppContent: React.FC = () => {
     const location = useLocation();
@@ -104,23 +110,23 @@ const AppContent: React.FC = () => {
     return (
         <>
             <Layout>
-                {/* FIX: Replaced Switch with Routes and children prop with element for v6 compatibility */}
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/agence" element={<Agency />} />
-                    <Route path="/mannequins" element={<Models />} />
-                    <Route path="/mannequins/:id" element={<ModelDetail />} />
-                    <Route path="/fashion-day" element={<FashionDay />} />
-                    <Route path="/magazine" element={<Magazine />} />
-                    <Route path="/magazine/:slug" element={<ArticleDetail />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/services" element={<Services />} />
-                    <Route path="/casting" element={<Casting />} />
-                    <Route path="/casting-formulaire" element={<CastingForm />} />
-                    <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="/terms-of-use" element={<TermsOfUse />} />
+                <Suspense fallback={<LoadingFallback />}>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/agence" element={<Agency />} />
+                        <Route path="/mannequins" element={<Models />} />
+                        <Route path="/mannequins/:id" element={<ModelDetail />} />
+                        <Route path="/fashion-day" element={<FashionDay />} />
+                        <Route path="/magazine" element={<Magazine />} />
+                        <Route path="/magazine/:slug" element={<ArticleDetail />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/services" element={<Services />} />
+                        <Route path="/casting" element={<Casting />} />
+                        <Route path="/casting-formulaire" element={<CastingForm />} />
+                        <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                        <Route path="/terms-of-use" element={<TermsOfUse />} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -150,13 +156,13 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
                     <Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} />
                     <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
-                    <Route path="/admin/services" element={<ProtectedRoute role="admin"><AdminServices /></ProtectedRoute>} />
                     <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                     <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
                     <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
 
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </Suspense>
             </Layout>
         </>
     );
