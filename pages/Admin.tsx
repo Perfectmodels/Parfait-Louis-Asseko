@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -7,16 +6,62 @@ import {
     UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
-    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon
+    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
+    SignalIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
 type AdminTab = 'talents' | 'content' | 'accounting';
 
+interface ActiveUser {
+    name: string;
+    role: string;
+    loginTime: number;
+}
+
+const getRoleDisplayName = (role: string) => {
+    switch (role) {
+        case 'admin': return 'Administrateur';
+        case 'student': return 'Mannequin Pro';
+        case 'beginner': return 'Débutant';
+        case 'jury': return 'Jury';
+        case 'registration': return 'Enregistrement';
+        default: return role;
+    }
+};
+
+const getRoleColor = (role: string) => {
+    switch (role) {
+        case 'admin': return 'bg-red-500/20 text-red-300';
+        case 'student': return 'bg-pm-gold/20 text-pm-gold';
+        case 'beginner': return 'bg-blue-500/20 text-blue-300';
+        case 'jury': return 'bg-purple-500/20 text-purple-300';
+        case 'registration': return 'bg-teal-500/20 text-teal-300';
+        default: return 'bg-gray-500/20 text-gray-300';
+    }
+}
+
 const Admin: React.FC = () => {
     const navigate = ReactRouterDOM.useNavigate();
     const { data } = useData();
     const [activeTab, setActiveTab] = useState<AdminTab>('talents');
+    const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
+
+    useEffect(() => {
+        const checkActivity = () => {
+            const now = Date.now();
+            const fifteenMinutes = 15 * 60 * 1000;
+            const currentActivityJSON = localStorage.getItem('pmm_active_users');
+            const allUsers: ActiveUser[] = currentActivityJSON ? JSON.parse(currentActivityJSON) : [];
+            const recentUsers = allUsers.filter(user => (now - user.loginTime) < fifteenMinutes);
+            setActiveUsers(recentUsers);
+        };
+
+        checkActivity();
+        const interval = setInterval(checkActivity, 5000); // Refresh every 5 seconds
+
+        return () => clearInterval(interval);
+    }, []);
 
     const handleLogout = () => {
         sessionStorage.clear();
@@ -48,6 +93,25 @@ const Admin: React.FC = () => {
                         <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
                     </button>
                 </header>
+
+                <div className="admin-section-wrapper mb-8">
+                    <h2 className="admin-section-title flex items-center gap-2"><SignalIcon className="w-6 h-6"/>Activité en Direct</h2>
+                    {activeUsers.length > 0 ? (
+                        <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {activeUsers.map(user => (
+                                <li key={user.name} className="bg-pm-dark/50 p-3 rounded-md flex items-center gap-3">
+                                    <span className="w-2.5 h-2.5 bg-green-500 rounded-full flex-shrink-0 animate-pulse"></span>
+                                    <div>
+                                        <p className="font-semibold text-sm truncate">{user.name}</p>
+                                        <p className={`text-xs px-1.5 py-0.5 rounded-full inline-block ${getRoleColor(user.role)}`}>{getRoleDisplayName(user.role)}</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-sm text-pm-off-white/60">Aucun utilisateur actif dans les 15 dernières minutes.</p>
+                    )}
+                </div>
 
                 <div className="border-b border-pm-gold/20 mb-8">
                     <nav className="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">

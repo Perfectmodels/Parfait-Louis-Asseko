@@ -79,9 +79,9 @@ const ModelDashboard: React.FC = () => {
         );
     }
     
-    const getScoreColor = (score: number) => {
-        if (score >= 80) return 'text-green-400';
-        if (score >= 50) return 'text-yellow-400';
+    const getScoreColor = (scorePercentage: number) => {
+        if (scorePercentage >= 80) return 'text-green-400';
+        if (scorePercentage >= 50) return 'text-yellow-400';
         return 'text-red-400';
     };
 
@@ -138,12 +138,15 @@ const ModelDashboard: React.FC = () => {
                                     {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
                                         <ul className="space-y-3">
                                             {courseModulesWithQuizzes.map(module => {
-                                                const score = editableModel.quizScores?.[module.slug];
+                                                const scoreData = editableModel.quizScores?.[module.slug];
+                                                // FIX: Calculate percentage from the score object.
+                                                const percentage = scoreData ? Math.round((scoreData.score / scoreData.total) * 100) : null;
                                                 return (
                                                     <li key={module.slug} className="flex justify-between items-center bg-pm-dark p-3 rounded-md text-sm">
                                                         <span className="text-pm-off-white/80">{module.title}</span>
-                                                        {score !== undefined ? (
-                                                            <span className={`font-bold text-lg ${getScoreColor(score)}`}>{score}%</span>
+                                                        {percentage !== null ? (
+                                                            // FIX: Use the calculated percentage for display and color coding.
+                                                            <span className={`font-bold text-lg ${getScoreColor(percentage)}`}>{percentage}%</span>
                                                         ) : (
                                                             <span className="text-xs text-pm-off-white/50">Non complété</span>
                                                         )}
