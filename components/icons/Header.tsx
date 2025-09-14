@@ -113,7 +113,7 @@ export const Breadcrumb: React.FC = () => {
         };
 
         const pathnames = location.pathname.split('/').filter(Boolean);
-        let currentCrumbs = [{ label: 'Accueil', path: '/' }];
+        let currentCrumbs: { label: string; path: string }[] = [];
         let currentPath = '';
 
         pathnames.forEach(segment => {

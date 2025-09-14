@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { siteConfig } from '../constants/data';
+import { siteConfig, socialLinks } from '../constants/data';
 
 interface SEOProps {
   title?: string;
@@ -7,16 +7,29 @@ interface SEOProps {
   keywords?: string;
   image?: string;
   noIndex?: boolean;
-  schema?: object; // New prop for JSON-LD
+  schema?: object; // JSON-LD personnalisé
+  canonicalUrl?: string; // Nouveau : URL canonique
+  type?: 'website' | 'article' | 'profile' | 'event'; // Nouveau : type Open Graph
 }
 
-const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, noIndex, schema }) => {
+const SEO: React.FC<SEOProps> = ({
+  title,
+  description,
+  keywords,
+  image,
+  noIndex,
+  schema,
+  canonicalUrl,
+  type = 'website',
+}) => {
   useEffect(() => {
     const defaultTitle = 'Perfect Models Management';
     const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
+
     document.title = pageTitle;
 
-    const setMeta = (name: string, content: string, isProperty: boolean = false) => {
+    const setMeta = (name: string, content: string | undefined, isProperty: boolean = false) => {
+      if (!content) return;
       const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
       let element = document.head.querySelector(selector) as HTMLMetaElement;
       if (!element) {
@@ -31,16 +44,33 @@ const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, noIndex,
       element.setAttribute('content', content);
     };
 
-    const defaultDescription = "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
-    const defaultKeywords = "mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting";
+    const setLink = (rel: string, href: string) => {
+      if (!href) return;
+      let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', rel);
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', href);
+    };
+
+    const defaultDescription =
+      "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
+    const defaultKeywords =
+      'mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting';
     const defaultImage = siteConfig.logo;
     const siteUrl = window.location.href;
     const siteName = 'Perfect Models Management';
 
+    // Balises standard
     setMeta('description', description || defaultDescription);
     setMeta('keywords', keywords || defaultKeywords);
     setMeta('author', siteName);
     setMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
+
+    // Canonical
+    setLink('canonical', canonicalUrl || siteUrl);
 
     // Open Graph
     setMeta('og:title', pageTitle, true);
@@ -48,39 +78,54 @@ const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, noIndex,
     setMeta('og:image', image || defaultImage, true);
     setMeta('og:url', siteUrl, true);
     setMeta('og:site_name', siteName, true);
-    setMeta('og:type', 'website', true);
+    setMeta('og:type', type, true);
+    setMeta('og:locale', 'fr_FR', true);
+    setMeta('og:image:width', '1200', true);
+    setMeta('og:image:height', '630', true);
 
     // Twitter Card
-    setMeta('twitter:card', 'summary_large_image', false);
-    setMeta('twitter:title', pageTitle, false);
-    setMeta('twitter:description', description || defaultDescription, false);
-    setMeta('twitter:image', image || defaultImage, false);
+    setMeta('twitter:card', 'summary_large_image');
+    setMeta('twitter:title', pageTitle);
+    setMeta('twitter:description', description || defaultDescription);
+    setMeta('twitter:image', image || defaultImage);
 
-    // Handle JSON-LD Schema
+    // JSON-LD Schema
     const schemaElementId = 'seo-schema-script';
     let schemaElement = document.getElementById(schemaElementId) as HTMLScriptElement | null;
 
-    if (schema) {
+    const defaultSchema = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": siteName,
+      "url": window.location.origin,
+      "logo": siteConfig.logo,
+      "sameAs": [
+        socialLinks.facebook,
+        socialLinks.instagram,
+        socialLinks.youtube
+      ].filter(Boolean)
+    };
+
+    const finalSchema = schema || defaultSchema;
+
+    if (finalSchema) {
       if (!schemaElement) {
         schemaElement = document.createElement('script');
         schemaElement.id = schemaElementId;
         schemaElement.type = 'application/ld+json';
         document.head.appendChild(schemaElement);
       }
-      schemaElement.innerHTML = JSON.stringify(schema);
+      schemaElement.innerHTML = JSON.stringify(finalSchema);
     } else {
-      if (schemaElement) {
-        schemaElement.remove();
-      }
+      if (schemaElement) schemaElement.remove();
     }
 
-    // Cleanup function to remove schema on component unmount
+    // Cleanup
     return () => {
       const el = document.getElementById(schemaElementId);
       if (el) el.remove();
     };
-
-  }, [title, description, keywords, image, noIndex, schema]);
+  }, [title, description, keywords, image, noIndex, schema, canonicalUrl, type]);
 
   return null;
 };
