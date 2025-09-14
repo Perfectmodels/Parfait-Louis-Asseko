@@ -2,89 +2,19 @@
   "name": "Perfect Models Management",
   "short_name": "PMM",
   "description": "L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine.",
-  "start_url": "/?source=pwa",
-  "scope": "/",
+  "start_url": ".",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#111111",
   "theme_color": "#D4AF37",
-  "categories": ["fashion", "models", "lifestyle"],
-  "lang": "fr-FR",
-  "dir": "ltr",
-  "prefer_related_applications": false,
-  "screenshots": [
-    {
-      "src": "/screenshots/homepage-mobile.jpg",
-      "sizes": "360x640",
-      "type": "image/jpeg",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/screenshots/homepage-desktop.jpg",
-      "sizes": "1920x1080",
-      "type": "image/jpeg",
-      "form_factor": "wide"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Nos Mannequins",
-      "short_name": "Mannequins",
-      "description": "Découvrez nos talents",
-      "url": "/mannequins"
-    },
-    {
-      "name": "Événements à Venir",
-      "short_name": "Événements",
-      "description": "Découvrez nos prochains événements",
-      "url": "/evenements"
-    },
-    {
-      "name": "Contactez-nous",
-      "short_name": "Contact",
-      "description": "Prenez contact avec notre agence",
-      "url": "/contact"
-    }
-  ],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
+      "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
+      "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
