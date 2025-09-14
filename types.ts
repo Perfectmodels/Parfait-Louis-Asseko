@@ -193,6 +193,10 @@ export interface Partner {
 export interface ApiKeys {
   resendApiKey: string;
   formspreeEndpoint: string;
+  firebaseDynamicLinks?: {
+    webApiKey: string;
+    domainUriPrefix: string;
+  };
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';

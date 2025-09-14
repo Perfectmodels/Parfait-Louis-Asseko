@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
@@ -8,85 +7,234 @@ import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
-import { NewsItem } from '../types';
+import { ApiKeys, NewsItem } from '../types';
+import CountdownTimer from '../components/CountdownTimer';
+import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
+
+// --- Helper & Modal Components for Sharing ---
+const generateShortLink = async (
+  options: { link: string; title: string; description: string; imageUrl: string; },
+  apiKeys: ApiKeys | undefined
+): Promise<string> => {
+  const { link, title, description, imageUrl } = options;
+  const dynamicLinksConfig = apiKeys?.firebaseDynamicLinks;
+
+  if (
+    !dynamicLinksConfig?.webApiKey ||
+    dynamicLinksConfig.webApiKey.includes('YOUR_FIREBASE_WEB_API_KEY')
+  ) {
+    console.warn('Firebase Dynamic Links API key not configured. Falling back to long link.');
+    return link;
+  }
+
+  const endpoint = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${dynamicLinksConfig.webApiKey}`;
+
+  const requestBody = {
+    dynamicLinkInfo: {
+      domainUriPrefix: dynamicLinksConfig.domainUriPrefix,
+      link: link,
+      socialMetaTagInfo: {
+        socialTitle: title,
+        socialDescription: description,
+        socialImageLink: imageUrl,
+      },
+    },
+    suffix: { option: "SHORT" }
+  };
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error.message || 'Failed to generate short link.');
+    }
+    const data = await response.json();
+    return data.shortLink || link;
+  } catch (error) {
+    console.error('Error generating dynamic link:', error);
+    return link;
+  }
+};
+
+const ShareModal: React.FC<{
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    url: string;
+    isGenerating: boolean;
+}> = ({ isOpen, onClose, title, url, isGenerating }) => {
+    const [copied, setCopied] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        setCopied(false);
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, url, onClose]);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    if (!isOpen) return null;
+    
+    const shareText = encodeURIComponent(title);
+    const encodedUrl = encodeURIComponent(url);
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={onClose}>
+            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
+                    <h2 className="text-xl font-playfair text-pm-gold">Partager</h2>
+                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
+                </header>
+                <main className="p-6 space-y-4">
+                    {isGenerating ? (
+                        <div className="flex items-center justify-center h-24">
+                            <p className="text-pm-gold animate-pulse">Génération du lien...</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-2">
+                                <input type="text" readOnly value={url} className="admin-input flex-grow !pr-10" />
+                                <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
+                                    {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
+                                </button>
+                            </div>
+                            <div className="flex justify-center gap-4 pt-2">
+                                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><FacebookIcon className="w-10 h-10" /></a>
+                                <a href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><TwitterIcon className="w-10 h-10 bg-white rounded-full p-1" /></a>
+                                <a href={`https://api.whatsapp.com/send?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><WhatsAppIcon className="w-10 h-10" /></a>
+                            </div>
+                        </>
+                    )}
+                </main>
+            </div>
+        </div>
+    );
+};
 
 // --- News Carousel Component ---
 interface NewsCarouselProps {
     newsItems: NewsItem[];
+    apiKeys: ApiKeys | undefined;
 }
 
-const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems }) => {
+const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-
+    const [isShareOpen, setIsShareOpen] = useState(false);
+    const [shortUrl, setShortUrl] = useState('');
+    const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+    
     useEffect(() => {
         if (newsItems.length < 2) return;
-        
         const intervalId = setInterval(() => {
             setCurrentIndex(prevIndex => (prevIndex + 1) % newsItems.length);
-        }, 30000); // 30 seconds
-
+        }, 30000);
         return () => clearInterval(intervalId);
     }, [newsItems.length]);
 
     const goToNews = (index: number) => {
         setCurrentIndex(index);
     };
+    
+    const handleShareClick = async () => {
+        setIsShareOpen(true);
+        setShortUrl('');
+        setIsGeneratingLink(true);
+
+        const currentNews = newsItems[currentIndex];
+        if (!currentNews) return;
+
+        const longUrl = currentNews.link ? `${window.location.origin}/#${currentNews.link}` : window.location.origin;
+        const generatedUrl = await generateShortLink({
+            link: longUrl,
+            title: currentNews.title,
+            description: currentNews.excerpt,
+            imageUrl: currentNews.imageUrl,
+        }, apiKeys);
+
+        setShortUrl(generatedUrl);
+        setIsGeneratingLink(false);
+    };
+
 
     const currentNews = newsItems[currentIndex];
     if (!currentNews) return null;
 
     return (
-        <div className="relative max-w-6xl mx-auto bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-2xl shadow-black/50">
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={currentIndex}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="relative aspect-video w-full flex items-end justify-start text-left"
-                >
-                    <img src={currentNews.imageUrl} alt={currentNews.title} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
-                    <div className="relative z-10 p-6 md:p-10 lg:p-12 text-white md:w-3/4 lg:w-2/3">
-                        <h3 className="text-2xl md:text-4xl font-playfair text-pm-gold font-extrabold mb-3">{currentNews.title}</h3>
-                        <p className="text-sm md:text-base text-pm-off-white/90 mb-5">{currentNews.excerpt}</p>
-                        {currentNews.link && (
-                            <ReactRouterDOM.Link to={currentNews.link} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                                Lire la suite
-                            </ReactRouterDOM.Link>
-                        )}
-                    </div>
-                </motion.div>
-            </AnimatePresence>
+        <>
+            <div className="relative max-w-6xl mx-auto bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-2xl shadow-black/50">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentIndex}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="relative aspect-video w-full flex items-end justify-start text-left"
+                    >
+                        <img src={currentNews.imageUrl} alt={currentNews.title} className="absolute inset-0 w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
+                        <div className="relative z-10 p-6 md:p-10 lg:p-12 text-white md:w-3/4 lg:w-2/3">
+                            <h3 className="text-2xl md:text-4xl font-playfair text-pm-gold font-extrabold mb-3">{currentNews.title}</h3>
+                            <p className="text-sm md:text-base text-pm-off-white/90 mb-5">{currentNews.excerpt}</p>
+                             <div className="flex items-center gap-4">
+                                {currentNews.link && (
+                                    <ReactRouterDOM.Link to={currentNews.link} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                                        Lire la suite
+                                    </ReactRouterDOM.Link>
+                                )}
+                                <button onClick={handleShareClick} className="p-3 bg-pm-dark/50 border border-pm-gold/30 rounded-full text-pm-gold hover:bg-pm-gold/20 transition-colors" aria-label="Partager cette actualité">
+                                    <ShareIcon className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
 
-            {newsItems.length > 1 && (
-                <>
-                    {/* Navigation Dots */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
-                        {newsItems.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => goToNews(index)}
-                                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${currentIndex === index ? 'bg-pm-gold scale-125' : 'bg-white/40 hover:bg-white/80'}`}
-                                aria-label={`Aller à l'actualité ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-pm-gold/20 z-10">
-                         <motion.div
-                            key={currentIndex} // Reset animation on change
-                            className="h-full bg-pm-gold"
-                            initial={{ width: '0%' }}
-                            animate={{ width: '100%' }}
-                            transition={{ duration: 30, ease: 'linear' }}
-                         />
-                    </div>
-                </>
-            )}
-        </div>
+                {newsItems.length > 1 && (
+                    <>
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+                            {newsItems.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => goToNews(index)}
+                                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${currentIndex === index ? 'bg-pm-gold scale-125' : 'bg-white/40 hover:bg-white/80'}`}
+                                    aria-label={`Aller à l'actualité ${index + 1}`}
+                                />
+                            ))}
+                        </div>
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-pm-gold/20 z-10">
+                             <motion.div
+                                key={currentIndex}
+                                className="h-full bg-pm-gold"
+                                initial={{ width: '0%' }}
+                                animate={{ width: '100%' }}
+                                transition={{ duration: 30, ease: 'linear' }}
+                             />
+                        </div>
+                    </>
+                )}
+            </div>
+             <ShareModal
+                isOpen={isShareOpen}
+                onClose={() => setIsShareOpen(false)}
+                title={currentNews.title}
+                url={shortUrl}
+                isGenerating={isGeneratingLink}
+            />
+        </>
     );
 };
 
@@ -98,9 +246,14 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems } = data;
+  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems, apiKeys } = data;
   const publicModels = models.filter(m => m.isPublic).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
+  
+  const nextEvent = fashionDayEvents
+    .filter(e => new Date(e.date).getTime() > new Date().getTime())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+
 
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -178,7 +331,7 @@ const Home: React.FC = () => {
         {newsItems && newsItems.length > 0 && (
             <section>
                 <h2 className="section-title">Nos Actualités</h2>
-                <NewsCarousel newsItems={newsItems} />
+                <NewsCarousel newsItems={newsItems} apiKeys={apiKeys} />
             </section>
         )}
 
@@ -218,20 +371,35 @@ const Home: React.FC = () => {
       </section>
 
       {/* 5. Events */}
-      <section 
-        className="py-20 lg:py-28 bg-cover bg-center bg-fixed" 
-        style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}
-      >
-        <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm rounded-lg border border-pm-gold/20">
-          <h2 className="section-title">Notre Événement Phare</h2>
-          <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
-            {fashionDayEvents.find(e => e.edition === 2)?.description || "Nous créons des moments inoubliables où la mode prend vie. Découvrez nos événements phares."}
-          </p>
-          <ReactRouterDOM.Link to="/fashion-day" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-            Découvrir le Perfect Fashion Day
-          </ReactRouterDOM.Link>
-        </div>
-      </section>
+        <section
+            className="py-20 lg:py-28 bg-cover bg-center bg-fixed"
+            style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}
+        >
+            <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm rounded-lg border border-pm-gold/20">
+                <h2 className="section-title">Prochain Événement</h2>
+                {nextEvent ? (
+                    <>
+                        <h3 className="text-3xl md:text-4xl font-playfair text-white mb-4">
+                            Perfect Fashion Day - Édition {nextEvent.edition}
+                        </h3>
+                        <p className="text-xl md:text-2xl text-pm-gold mb-8">"{nextEvent.theme}"</p>
+                        <div className="my-8">
+                           <CountdownTimer targetDate={nextEvent.date} />
+                        </div>
+                        <p className="text-pm-off-white/80 max-w-3xl mx-auto mt-8 mb-6">
+                            {nextEvent.description}
+                        </p>
+                    </>
+                ) : (
+                    <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+                        Restez à l'écoute pour l'annonce de notre prochaine édition !
+                    </p>
+                )}
+                <ReactRouterDOM.Link to="/fashion-day" className="mt-4 inline-block px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+                    Découvrir le Perfect Fashion Day
+                </ReactRouterDOM.Link>
+            </div>
+        </section>
 
       <div className="page-container">
         {/* 7. Testimonials */}

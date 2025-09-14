@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
 import NotFound from './NotFound';
@@ -7,8 +6,120 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 // FIX: Corrected import path for types.
 import { ArticleContent, ArticleComment } from '../types';
-import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
+
+// --- Helper & Modal Components for Sharing ---
+const generateShortLink = async (
+  options: { link: string; title: string; description: string; imageUrl: string; },
+  apiKeys: any
+): Promise<string> => {
+  const { link, title, description, imageUrl } = options;
+  const dynamicLinksConfig = apiKeys?.firebaseDynamicLinks;
+
+  if (
+    !dynamicLinksConfig?.webApiKey ||
+    dynamicLinksConfig.webApiKey.includes('YOUR_FIREBASE_WEB_API_KEY')
+  ) {
+    console.warn('Firebase Dynamic Links API key not configured. Falling back to long link.');
+    return link;
+  }
+
+  const endpoint = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${dynamicLinksConfig.webApiKey}`;
+
+  const requestBody = {
+    dynamicLinkInfo: {
+      domainUriPrefix: dynamicLinksConfig.domainUriPrefix,
+      link: link,
+      socialMetaTagInfo: {
+        socialTitle: title,
+        socialDescription: description,
+        socialImageLink: imageUrl,
+      },
+    },
+    suffix: { option: "SHORT" }
+  };
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error.message || 'Failed to generate short link.');
+    }
+    const data = await response.json();
+    return data.shortLink || link;
+  } catch (error) {
+    console.error('Error generating dynamic link:', error);
+    return link;
+  }
+};
+
+const ShareModal: React.FC<{
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    url: string;
+    isGenerating: boolean;
+}> = ({ isOpen, onClose, title, url, isGenerating }) => {
+    const [copied, setCopied] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        setCopied(false);
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, url, onClose]);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    if (!isOpen) return null;
+    
+    const shareText = encodeURIComponent(title);
+    const encodedUrl = encodeURIComponent(url);
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={onClose}>
+            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
+                    <h2 className="text-xl font-playfair text-pm-gold">Partager l'Article</h2>
+                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
+                </header>
+                <main className="p-6 space-y-4">
+                    {isGenerating ? (
+                        <div className="flex items-center justify-center h-24">
+                            <p className="text-pm-gold animate-pulse">Génération du lien...</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-2">
+                                <input type="text" readOnly value={url} className="admin-input flex-grow !pr-10" />
+                                <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
+                                    {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
+                                </button>
+                            </div>
+                            <div className="flex justify-center gap-4 pt-2">
+                                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><FacebookIcon className="w-10 h-10" /></a>
+                                <a href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><TwitterIcon className="w-10 h-10 bg-white rounded-full p-1" /></a>
+                                <a href={`https://api.whatsapp.com/send?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><WhatsAppIcon className="w-10 h-10" /></a>
+                            </div>
+                        </>
+                    )}
+                </main>
+            </div>
+        </div>
+    );
+};
 
 const ArticleDetail: React.FC = () => {
   const { slug } = ReactRouterDOM.useParams<{ slug: string }>();
@@ -17,6 +128,10 @@ const ArticleDetail: React.FC = () => {
   const [commentAuthor, setCommentAuthor] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userReaction, setUserReaction] = useState<'like' | 'dislike' | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [shortUrl, setShortUrl] = useState('');
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+
 
   const article = data?.articles.find(a => a.slug === slug);
   
@@ -110,6 +225,26 @@ const ArticleDetail: React.FC = () => {
         console.error("Error saving reaction:", error);
     }
   };
+  
+  const handleShare = async () => {
+    if (!article) return;
+    setIsShareOpen(true);
+    if (shortUrl) return;
+
+    setIsGeneratingLink(true);
+    const longUrl = window.location.href;
+    const generatedUrl = await generateShortLink(
+        {
+            link: longUrl,
+            title: article.title,
+            description: article.excerpt,
+            imageUrl: article.imageUrl,
+        },
+        data?.apiKeys
+    );
+    setShortUrl(generatedUrl);
+    setIsGeneratingLink(false);
+  };
 
 
   if (!isInitialized) {
@@ -120,13 +255,16 @@ const ArticleDetail: React.FC = () => {
     return <NotFound />;
   }
   
+  // FIX: Ensure article.content is an array to prevent crashes from malformed data.
+  const safeContent = Array.isArray(article.content) ? article.content : [];
+  
   const articleSchema = {
       "@context": "https://schema.org",
       "@type": "NewsArticle",
       "headline": article.title,
       "image": [
         article.imageUrl,
-        ...article.content.filter(c => c.type === 'image').map(c => (c as { src: string }).src)
+        ...safeContent.filter(c => c.type === 'image').map(c => (c as { src: string }).src)
       ],
       "datePublished": new Date(article.date).toISOString(),
       "author": [{
@@ -173,9 +311,6 @@ const ArticleDetail: React.FC = () => {
         return null;
     }
   };
-  
-  const articleUrl = window.location.href;
-  const shareText = encodeURIComponent(article.title);
 
   return (
     <>
@@ -209,7 +344,7 @@ const ArticleDetail: React.FC = () => {
             <img src={article.imageUrl} alt={article.title} className="w-full h-auto object-cover my-8" />
             
             <div className="prose prose-invert prose-lg max-w-none text-pm-off-white/80">
-              {article.content.map((contentBlock, index) => (
+              {safeContent.map((contentBlock, index) => (
                 <div key={index}>{renderContent(contentBlock)}</div>
               ))}
             </div>
@@ -234,11 +369,10 @@ const ArticleDetail: React.FC = () => {
                         <HandThumbDownIcon className="w-5 h-5" /> Je n'aime pas ({article.reactions?.dislikes || 0})
                     </button>
                 </div>
-                 <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold uppercase tracking-wider text-pm-off-white/70">Partager :</span>
-                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><FacebookIcon className="w-7 h-7" /></a>
-                    <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${shareText}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><TwitterIcon className="w-7 h-7 bg-white rounded-full p-0.5" /></a>
-                    <a href={`https://api.whatsapp.com/send?text=${shareText}%20${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><WhatsAppIcon className="w-7 h-7" /></a>
+                <div className="flex items-center gap-3">
+                    <button onClick={handleShare} className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-colors border-pm-off-white/50 hover:bg-pm-dark">
+                        <ShareIcon className="w-5 h-5" /> Partager
+                    </button>
                 </div>
             </div>
 
@@ -315,6 +449,13 @@ const ArticleDetail: React.FC = () => {
           </section>
         </div>
       </div>
+      <ShareModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        title={article.title}
+        url={shortUrl}
+        isGenerating={isGeneratingLink}
+      />
     </>
   );
 };

@@ -1,12 +1,125 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
 import NotFound from './NotFound';
-import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import BookingForm from '../components/BookingForm';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
+
+// --- Helper & Modal Components for Sharing ---
+const generateShortLink = async (
+  options: { link: string; title: string; description: string; imageUrl: string; },
+  apiKeys: any
+): Promise<string> => {
+  const { link, title, description, imageUrl } = options;
+  const dynamicLinksConfig = apiKeys?.firebaseDynamicLinks;
+
+  if (
+    !dynamicLinksConfig?.webApiKey ||
+    dynamicLinksConfig.webApiKey.includes('YOUR_FIREBASE_WEB_API_KEY')
+  ) {
+    console.warn('Firebase Dynamic Links API key not configured. Falling back to long link.');
+    return link;
+  }
+
+  const endpoint = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${dynamicLinksConfig.webApiKey}`;
+
+  const requestBody = {
+    dynamicLinkInfo: {
+      domainUriPrefix: dynamicLinksConfig.domainUriPrefix,
+      link: link,
+      socialMetaTagInfo: {
+        socialTitle: title,
+        socialDescription: description,
+        socialImageLink: imageUrl,
+      },
+    },
+    suffix: { option: "SHORT" }
+  };
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error.message || 'Failed to generate short link.');
+    }
+    const data = await response.json();
+    return data.shortLink || link;
+  } catch (error) {
+    console.error('Error generating dynamic link:', error);
+    return link;
+  }
+};
+
+const ShareModal: React.FC<{
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    url: string;
+    isGenerating: boolean;
+}> = ({ isOpen, onClose, title, url, isGenerating }) => {
+    const [copied, setCopied] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        setCopied(false);
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, url, onClose]);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    if (!isOpen) return null;
+    
+    const shareText = encodeURIComponent(title);
+    const encodedUrl = encodeURIComponent(url);
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={onClose}>
+            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
+                    <h2 className="text-xl font-playfair text-pm-gold">Partager le Profil</h2>
+                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
+                </header>
+                <main className="p-6 space-y-4">
+                    {isGenerating ? (
+                        <div className="flex items-center justify-center h-24">
+                            <p className="text-pm-gold animate-pulse">Génération du lien...</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-2">
+                                <input type="text" readOnly value={url} className="admin-input flex-grow !pr-10" />
+                                <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
+                                    {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
+                                </button>
+                            </div>
+                            <div className="flex justify-center gap-4 pt-2">
+                                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><FacebookIcon className="w-10 h-10" /></a>
+                                <a href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><TwitterIcon className="w-10 h-10 bg-white rounded-full p-1" /></a>
+                                <a href={`https://api.whatsapp.com/send?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><WhatsAppIcon className="w-10 h-10" /></a>
+                            </div>
+                        </>
+                    )}
+                </main>
+            </div>
+        </div>
+    );
+};
+
 
 const ModelDetail: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -15,6 +128,9 @@ const ModelDetail: React.FC = () => {
   const [isViewingOwnProfile, setIsViewingOwnProfile] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [shortUrl, setShortUrl] = useState('');
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   
   const model = data?.models.find(m => m.id === id);
 
@@ -28,11 +144,10 @@ const ModelDetail: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    const isModalOpen = isBookingModalOpen || !!selectedImage;
+    const isModalOpen = isBookingModalOpen || !!selectedImage || isShareOpen;
     if (isModalOpen) {
         prevActiveElement.current = document.activeElement as HTMLElement;
         
-        // Timeout needed to allow modal to render before focusing
         setTimeout(() => {
             modalRef.current?.focus();
             const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
@@ -47,6 +162,7 @@ const ModelDetail: React.FC = () => {
                 if (e.key === 'Escape') {
                     setIsBookingModalOpen(false);
                     setSelectedImage(null);
+                    setIsShareOpen(false);
                 }
                 if (e.key === 'Tab') {
                     if (e.shiftKey) {
@@ -72,7 +188,27 @@ const ModelDetail: React.FC = () => {
         }, 100);
 
     }
-  }, [isBookingModalOpen, selectedImage]);
+  }, [isBookingModalOpen, selectedImage, isShareOpen]);
+
+  const handleShare = async () => {
+    if (!model) return;
+    setIsShareOpen(true);
+    if (shortUrl) return;
+
+    setIsGeneratingLink(true);
+    const longUrl = window.location.href;
+    const generatedUrl = await generateShortLink(
+        {
+            link: longUrl,
+            title: model.name,
+            description: `Découvrez le portfolio de ${model.name}, mannequin chez Perfect Models Management.`,
+            imageUrl: model.imageUrl,
+        },
+        data?.apiKeys
+    );
+    setShortUrl(generatedUrl);
+    setIsGeneratingLink(false);
+  };
 
   if (!isInitialized) {
     return <div className="min-h-screen bg-pm-dark"></div>;
@@ -183,12 +319,15 @@ const ModelDetail: React.FC = () => {
                 </div>
               </div>
 
-               <div className="mt-10">
+               <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
                   {!isViewingOwnProfile && (
-                    <button onClick={() => setIsBookingModalOpen(true)} className="inline-block text-center px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                    <button onClick={() => setIsBookingModalOpen(true)} className="w-full sm:w-auto px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                         Booker ce mannequin
                     </button>
                   )}
+                   <button onClick={handleShare} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+                      <ShareIcon className="w-5 h-5" /> Partager
+                  </button>
                </div>
             </div>
           </div>
@@ -260,6 +399,14 @@ const ModelDetail: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ShareModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        title={`Découvrez ${model.name} - Perfect Models Management`}
+        url={shortUrl}
+        isGenerating={isGeneratingLink}
+      />
     </>
   );
 };

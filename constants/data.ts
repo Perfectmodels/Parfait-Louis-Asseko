@@ -44,6 +44,10 @@ export const siteImages: SiteImages = {
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
+    firebaseDynamicLinks: {
+        webApiKey: 'YOUR_FIREBASE_WEB_API_KEY_GOES_HERE',
+        domainUriPrefix: 'https://perfectmodels.page.link'
+    }
 };
 
 export const juryMembers: JuryMember[] = [
@@ -225,7 +229,7 @@ export const newsItems: NewsItem[] = [
 export const fashionDayEvents: FashionDayEvent[] = [
     {
       edition: 1,
-      date: "Samedi 25 janvier 2025",
+      date: "2025-01-25T18:00:00",
       theme: "Racines et Modernité",
       location: "La Gare du Nord – Hôtel Restaurant Bar Casino, Carrefour Acaé",
       promoter: "Parfait Asseko",
@@ -336,7 +340,7 @@ export const fashionDayEvents: FashionDayEvent[] = [
     },
     {
       edition: 2,
-      date: "Samedi 31 janvier 2026",
+      date: "2026-01-31T18:00:00",
       theme: "L’Art de se révéler",
       location: "Complexe Hôtelier Le Nalys, Angondjé (à confirmer)",
       description: "Après une première édition marquante, riche en émotions et en élégance, Perfect Models Management est fier d’annoncer le retour de la Perfect Fashion Day pour une deuxième édition inédite. Cette nouvelle rencontre mettra à l’honneur une mode profondément enracinée dans la culture, l’histoire personnelle et l’affirmation de soi.",
