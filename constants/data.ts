@@ -45,14 +45,10 @@ export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
     firebaseDynamicLinks: {
-        webApiKey: process.env.FIREBASE_WEB_API_KEY,
+        webApiKey: "AIzaSyB_jjJEXU7yvJv49aiPCJqEZgiyfJEJzrg",
         domainUriPrefix: 'https://perfectmodels.page.link'
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
-    iLovePdf: {
-        publicKey: 'project_public_16a878a46e488b32ef375bd99462948f_p9a-Z08a113a72671e626154625b8256bd4d9',
-        secretKey: 'secret_key_16a878a46e488b32ef375bd99462948f_OWKnZ1ab4cf80eb992d60f1d6bc8a2261ca89',
-    },
 };
 
 export const juryMembers: JuryMember[] = [

@@ -199,10 +199,6 @@ export interface ApiKeys {
     domainUriPrefix: string;
   };
   imgbbApiKey?: string;
-  iLovePdf?: {
-    publicKey: string;
-    secretKey: string;
-  };
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
