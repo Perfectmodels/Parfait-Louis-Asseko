@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
-import { ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ArrowDownTrayIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
+import { QuizQuestion } from '../types';
 import BeginnerQuiz from '../components/BeginnerQuiz';
 
 const BeginnerChapterDetail: React.FC = () => {
@@ -64,8 +65,9 @@ const BeginnerChapterDetail: React.FC = () => {
           </article>
         </div>
         
+        {/* FIX: Pass module.slug to the moduleSlug prop instead of chapter.slug. */}
         {module.quiz && module.quiz.length > 0 && (
-            <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
+          <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
         )}
 
       </div>

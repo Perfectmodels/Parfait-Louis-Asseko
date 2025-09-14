@@ -87,7 +87,11 @@ export const models: Model[] = [
         categories: ['Défilé', 'Éditorial', 'Beauté'],
         experience: "Mannequin vedette de l'agence, Noemi a défilé pour les plus grands créateurs gabonais et a été le visage de plusieurs campagnes nationales. Son professionnalisme et sa démarche captivante en font une référence.",
         journey: "Découverte lors d'un casting sauvage, Noemi a rapidement gravi les échelons grâce à sa détermination. Formée au sein de la PMM Classroom, elle incarne aujourd'hui l'excellence et l'ambition de l'agence.",
-        quizScores: { 'module-1-les-fondamentaux-du-mannequinat': 100, 'module-2-techniques-de-podium-catwalk': 95 },
+        // FIX: Updated quizScores to match the complex object type.
+        quizScores: { 
+            'module-1-les-fondamentaux-du-mannequinat': { score: 3, total: 3, timesLeft: 0, timestamp: '2024-07-01T10:00:00Z' }, 
+            'module-2-techniques-de-podium-catwalk': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-02T10:00:00Z' } 
+        },
     },
     {
         id: 'aj-caramela',
@@ -108,7 +112,11 @@ export const models: Model[] = [
         categories: ['Défilé', 'Commercial', 'Éditorial'],
         experience: "Avec son regard perçant et sa polyvalence, AJ excelle dans les shootings éditoriaux et les campagnes publicitaires. Elle a collaboré avec de nombreuses marques locales et photographes de renom.",
         journey: "AJ a rejoint PMM avec une passion pour la photographie. Son aisance devant l'objectif et sa capacité à se transformer lui ont rapidement ouvert les portes des projets les plus créatifs.",
-        quizScores: { 'module-1-les-fondamentaux-du-mannequinat': 90, 'module-3-photographie-et-expression-corporelle': 100 },
+        // FIX: Updated quizScores to match the complex object type.
+        quizScores: { 
+            'module-1-les-fondamentaux-du-mannequinat': { score: 3, total: 3, timesLeft: 1, timestamp: '2024-07-03T10:00:00Z' }, 
+            'module-3-photographie-et-expression-corporelle': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-04T10:00:00Z' } 
+        },
     },
     {
         id: 'yann-aubin',
@@ -127,7 +135,10 @@ export const models: Model[] = [
         categories: ['Défilé', 'Costume', 'Sportswear'],
         experience: "Spécialiste du prêt-à-porter masculin, Yann est reconnu pour sa démarche puissante et son élégance naturelle. Il est un choix privilégié pour les défilés de créateurs de costumes.",
         journey: "Ancien athlète, Yann a apporté sa discipline et sa prestance au monde du mannequinat. Il s'est rapidement imposé comme une figure incontournable de la mode masculine au Gabon.",
-        quizScores: { 'module-2-techniques-de-podium-catwalk': 90 },
+        // FIX: Updated quizScores to match the complex object type.
+        quizScores: { 
+            'module-2-techniques-de-podium-catwalk': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-05T10:00:00Z' } 
+        },
     },
 ];
 
@@ -176,7 +187,10 @@ export const beginnerStudents: BeginnerStudent[] = [
         name: "Jordan Lefebvre",
         matricule: "DEB-2025-002",
         password: "jordan2025",
-        quizScores: { 'module-1-decouverte-du-mannequinat': 2 }
+        // FIX: Updated quizScores to match the complex object type.
+        quizScores: { 
+            'module-1-decouverte-du-mannequinat': { score: 2, total: 3, timesLeft: 0, timestamp: '2024-07-06T10:00:00Z' } 
+        }
     },
     {
         id: 'casting-1720000000003',
