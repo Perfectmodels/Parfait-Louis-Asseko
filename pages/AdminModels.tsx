@@ -3,9 +3,8 @@ import { useData } from '../contexts/DataContext';
 import { Model, ContactInfo } from '../types';
 import SEO from '../components/SEO';
 import * as ReactRouterDOM from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm'; 
-import { useILovePdf } from '../hooks/useILovePdf';
 
 const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: ContactInfo): string => {
     const portfolioImagesHtml = (model.portfolioImages || []).slice(0, 4).map(img => 
@@ -108,8 +107,6 @@ const AdminModels: React.FC = () => {
     const [localModels, setLocalModels] = useState<Model[]>([]);
     const [editingModel, setEditingModel] = useState<Model | null>(null);
     const [isCreating, setIsCreating] = useState(false);
-    const { generatePdf, isLoading: isPrinting } = useILovePdf();
-    const [printingModelId, setPrintingModelId] = useState<string | null>(null);
 
     useEffect(() => {
         if (data?.models) {
@@ -183,12 +180,24 @@ const AdminModels: React.FC = () => {
         await saveData({ ...data, models: updatedModels });
     };
 
-    const handlePrint = async (model: Model) => {
-        if (!data?.siteConfig || !data?.contactInfo) return;
-        setPrintingModelId(model.id);
-        const html = generateModelSheetHtml(model, data.siteConfig, data.contactInfo);
-        await generatePdf(html, `Fiche-Mannequin-${model.name.replace(/\s/g, '_')}.pdf`);
-        setPrintingModelId(null);
+    const handlePrint = (model: Model) => {
+        if (!data?.siteConfig || !data?.contactInfo) {
+            alert("Les informations du site ne sont pas chargées.");
+            return;
+        }
+        const htmlContent = generateModelSheetHtml(model, data.siteConfig, data.contactInfo);
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        } else {
+            alert("Veuillez autoriser les pop-ups pour imprimer la fiche.");
+        }
     };
 
     if (editingModel) {
@@ -255,11 +264,10 @@ const AdminModels: React.FC = () => {
                                         <div className="flex items-center gap-2">
                                             <button 
                                                 onClick={() => handlePrint(model)} 
-                                                className="p-2 text-pm-gold/70 hover:text-pm-gold disabled:opacity-50 disabled:cursor-not-allowed" 
+                                                className="p-2 text-pm-gold/70 hover:text-pm-gold" 
                                                 title="Imprimer la Fiche"
-                                                disabled={isPrinting && printingModelId === model.id}
                                             >
-                                                {isPrinting && printingModelId === model.id ? <ArrowPathIcon className="w-5 h-5 animate-spin"/> : <PrinterIcon className="w-5 h-5"/>}
+                                                <PrinterIcon className="w-5 h-5"/>
                                             </button>
                                             <button onClick={() => setEditingModel(model)} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
                                             <button onClick={() => handleDelete(model.id)} className="p-2 text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>

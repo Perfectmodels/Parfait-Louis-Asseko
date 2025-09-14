@@ -4,7 +4,6 @@ import { CastingApplication, CastingApplicationStatus, JuryMember, BeginnerStude
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
-import { useILovePdf } from '../hooks/useILovePdf';
 
 const generateCastingSheetHtml = (app: CastingApplication, juryMembers: JuryMember[], siteConfig: any): string => {
     const calculateAge = (birthDate: string): string => {
@@ -105,8 +104,6 @@ const generateCastingSheetHtml = (app: CastingApplication, juryMembers: JuryMemb
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
     const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
-    const { generatePdf, isLoading: isPrinting } = useILovePdf();
-    const [printingAppId, setPrintingAppId] = useState<string | null>(null);
 
     const applicantsWithScores = useMemo(() => {
         const juryMembers: JuryMember[] = data?.juryMembers || [];
@@ -181,12 +178,21 @@ const AdminCastingResults: React.FC = () => {
         }
     };
 
-    const handlePrint = async (app: CastingApplication) => {
+    const handlePrint = (app: CastingApplication) => {
         if (!data?.juryMembers || !data.siteConfig) return;
-        setPrintingAppId(app.id);
         const html = generateCastingSheetHtml(app, data.juryMembers, data.siteConfig);
-        await generatePdf(html, `Fiche_Candidat_${app.passageNumber}.pdf`);
-        setPrintingAppId(null);
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        } else {
+            alert("Veuillez autoriser les pop-ups pour imprimer la fiche.");
+        }
     };
     
     const getStatusColor = (status: CastingApplicationStatus) => {
@@ -254,8 +260,8 @@ const AdminCastingResults: React.FC = () => {
                                         : `Notes manquantes: ${missingJuryNames}`;
                                     return (
                                     <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
-                                        <td className="p-4 font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</td>
-                                        <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
+                                        <td className="p-4 font-bold text-pm-gold">#${String(app.passageNumber).padStart(3, '0')}</td>
+                                        <td className="p-4 font-semibold">{app.firstName} ${app.lastName}</td>
                                         <td className="p-4 text-center" title={tooltip}>
                                             {app.juryVotes} / {data?.juryMembers.length || 4}
                                             {!app.isFullyScored && <span className="text-red-500 ml-1">*</span>}
@@ -266,11 +272,10 @@ const AdminCastingResults: React.FC = () => {
                                             <div className="flex items-center justify-center gap-2">
                                                 <button
                                                     onClick={() => handlePrint(app)}
-                                                    className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20 disabled:opacity-50"
+                                                    className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
                                                     title="Télécharger la fiche PDF"
-                                                    disabled={isPrinting && printingAppId === app.id}
                                                 >
-                                                     {isPrinting && printingAppId === app.id ? <ArrowPathIcon className="w-5 h-5 animate-spin"/> : <PrinterIcon className="w-5 h-5"/>}
+                                                    <PrinterIcon className="w-5 h-5"/>
                                                 </button>
                                                 {app.status === 'Présélectionné' && (
                                                     <>

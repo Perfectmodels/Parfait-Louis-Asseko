@@ -2,11 +2,10 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
-import { ChevronLeftIcon, ArrowDownTrayIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 import BeginnerQuiz from '../components/BeginnerQuiz';
 import { Chapter, Module } from '../types';
-import { useILovePdf } from '../hooks/useILovePdf';
 
 const generateChapterHtml = (chapter: Chapter, module: Module, siteConfig: any): string => {
     const contentHtml = chapter.content.split('\n').map(p => `<p style="margin-bottom: 1em; line-height: 1.6;">${p}</p>`).join('');
@@ -51,7 +50,6 @@ const generateChapterHtml = (chapter: Chapter, module: Module, siteConfig: any):
 const BeginnerChapterDetail: React.FC = () => {
   const { data, isInitialized } = useData();
   const { moduleSlug, chapterSlug } = useParams<{ moduleSlug: string, chapterSlug: string }>();
-  const { generatePdf, isLoading: isPrinting } = useILovePdf();
   
   const module = data?.beginnerCourseData.find(m => m.slug === moduleSlug);
   const chapter = module?.chapters.find(c => c.slug === chapterSlug);
@@ -64,11 +62,21 @@ const BeginnerChapterDetail: React.FC = () => {
     return <NotFound />;
   }
 
-  const handleDownload = async () => {
+  const handlePrint = () => {
     if (!data.siteConfig) return;
     const html = generateChapterHtml(chapter, module, data.siteConfig);
-    const filename = `${module.title.replace(/\s/g, '_')}-${chapter.title.replace(/\s/g, '_')}.pdf`;
-    await generatePdf(html, filename);
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 250);
+    } else {
+        alert("Veuillez autoriser les pop-ups pour imprimer le chapitre.");
+    }
   };
 
   return (
@@ -86,12 +94,11 @@ const BeginnerChapterDetail: React.FC = () => {
             Retour au Classroom Débutant
           </Link>
           <button
-            onClick={handleDownload}
-            disabled={isPrinting}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white disabled:opacity-50"
+            onClick={handlePrint}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"
           >
-            {isPrinting ? <ArrowPathIcon className="w-5 h-5 animate-spin"/> : <ArrowDownTrayIcon className="w-5 h-5" />}
-            {isPrinting ? 'Génération...' : 'Télécharger en PDF'}
+            <ArrowDownTrayIcon className="w-5 h-5" />
+            Imprimer / PDF
           </button>
         </div>
         

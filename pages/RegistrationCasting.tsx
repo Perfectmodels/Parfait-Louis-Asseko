@@ -2,8 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
-import { UserPlusIcon, PrinterIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
-import { useILovePdf } from '../hooks/useILovePdf';
+import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const generateRegistrationListHtml = (applicants: CastingApplication[], siteConfig: any): string => {
     const rows = applicants.map(app => `
@@ -60,7 +59,6 @@ const generateRegistrationListHtml = (applicants: CastingApplication[], siteConf
 
 const RegistrationCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
-    const { generatePdf, isLoading: isPrinting } = useILovePdf();
     const initialFormState = {
         firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
@@ -114,10 +112,21 @@ const RegistrationCasting: React.FC = () => {
         }
     };
 
-    const handlePrint = async () => {
+    const handlePrint = () => {
         if (!data?.siteConfig) return;
         const html = generateRegistrationListHtml(registeredApplicants, data.siteConfig);
-        await generatePdf(html, 'Liste-Passage-Casting.pdf');
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        } else {
+            alert("Veuillez autoriser les pop-ups pour imprimer la liste.");
+        }
     };
 
     if (!isInitialized) {
@@ -185,9 +194,8 @@ const RegistrationCasting: React.FC = () => {
                         <div className="lg:col-span-2">
                              <div className="flex justify-between items-center mb-6">
                                 <h2 className="admin-page-title !text-3xl">Liste des Passages</h2>
-                                <button onClick={handlePrint} disabled={isPrinting} className="print-hide inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark disabled:opacity-50">
-                                     {isPrinting ? <ArrowPathIcon className="w-5 h-5 animate-spin"/> : <PrinterIcon className="w-5 h-5"/>}
-                                    {isPrinting ? 'Génération...' : 'Imprimer la Liste'}
+                                <button onClick={handlePrint} className="print-hide inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                                    <PrinterIcon className="w-5 h-5"/> Imprimer la Liste
                                 </button>
                             </div>
                             <div className="admin-section-wrapper printable-content">
@@ -204,8 +212,8 @@ const RegistrationCasting: React.FC = () => {
                                         <tbody>
                                             {registeredApplicants.map(app => (
                                                 <tr key={app.id} className="border-b border-pm-dark hover:bg-pm-dark/50">
-                                                    <td className="p-3 font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</td>
-                                                    <td className="p-3 font-semibold">{app.firstName} {app.lastName}</td>
+                                                    <td className="p-3 font-bold text-pm-gold">#${String(app.passageNumber).padStart(3, '0')}</td>
+                                                    <td className="p-3 font-semibold">{app.firstName} ${app.lastName}</td>
                                                     <td className="p-3 text-sm hidden sm:table-cell">{app.phone || 'N/A'}</td>
                                                     <td className="p-3 text-xs hidden sm:table-cell">{new Date(app.submissionDate).toLocaleTimeString('fr-FR')}</td>
                                                 </tr>
