@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { NewsItem } from '../types';
 import SEO from '../components/SEO';
@@ -76,36 +76,37 @@ const AdminNews: React.FC = () => {
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO title="Admin - Gérer les Actualités" noIndex />
       <div className="container mx-auto px-6">
-        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
+        <div className="admin-page-header">
             <div>
                  <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Dashboard
                 </Link>
-                <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Actualités</h1>
+                <h1 className="admin-page-title">Gérer les Actualités</h1>
+                <p className="admin-page-subtitle">Ajoutez, modifiez et organisez les actualités de la page d'accueil.</p>
             </div>
              <div className="flex items-center gap-4">
-                <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                <button onClick={handleStartCreate} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
                     <PlusIcon className="w-5 h-5"/> Ajouter une Actualité
                 </button>
             </div>
         </div>
 
-        <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
+        <div className="admin-section-wrapper !p-4 space-y-4">
           {localNews.map((item, index) => (
-            <div key={item.id} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
-              <div className="flex items-center gap-4">
-                <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded"/>
-                <div>
-                  <h2 className="font-bold">{item.title}</h2>
+            <div key={item.id} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark transition-colors duration-200">
+              <div className="flex items-center gap-4 flex-grow min-w-0">
+                <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded flex-shrink-0"/>
+                <div className="truncate">
+                  <h2 className="font-bold truncate">{item.title}</h2>
                   <p className="text-sm text-pm-off-white/70">{item.date}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="disabled:opacity-30" title="Monter"><ArrowUpIcon className="w-5 h-5"/></button>
-                <button onClick={() => handleMove(index, 'down')} disabled={index === localNews.length - 1} className="disabled:opacity-30" title="Descendre"><ArrowDownIcon className="w-5 h-5"/></button>
-                <button onClick={() => { setEditingItem(item); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
-                <button onClick={() => handleDelete(item.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
+              <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 ml-4">
+                <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="action-btn disabled:opacity-30" title="Monter"><ArrowUpIcon className="w-5 h-5"/></button>
+                <button onClick={() => handleMove(index, 'down')} disabled={index === localNews.length - 1} className="action-btn disabled:opacity-30" title="Descendre"><ArrowDownIcon className="w-5 h-5"/></button>
+                <button onClick={() => { setEditingItem(item); setIsCreating(false); }} className="action-btn" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
+                <button onClick={() => handleDelete(item.id)} className="action-btn !border-red-500/50 hover:!bg-red-500/20" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
               </div>
             </div>
           ))}
@@ -159,20 +160,27 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
         <>
             <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
                 <div className="container mx-auto px-6 max-w-3xl">
-                    <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvelle Actualité' : "Modifier l'Actualité"}</h1>
-                    <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
-                        <FormInput 
-                            label="Titre" name="title" value={formData.title} onChange={handleChange} 
-                            onAIAssist={() => openAssistant('Titre', `Génère un titre d'actualité percutant sur le thème: "${formData.title || 'nouveau sujet'}"`)}
-                        />
-                        <ImageInput label="Image" value={formData.imageUrl} onChange={handleImageChange} />
-                        <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
-                        <FormTextArea 
-                            label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
-                            onAIAssist={() => openAssistant('Extrait', `Rédige un court extrait (1-2 phrases) pour une actualité intitulée: "${formData.title}"`)}
-                        />
-                        <FormInput label="Lien (optionnel)" name="link" value={formData.link || ''} onChange={handleChange} />
-                        <div className="flex justify-end gap-4 pt-4">
+                    <div className="admin-page-header !mb-8">
+                         <div>
+                            <h1 className="admin-page-title">{isCreating ? 'Nouvelle Actualité' : "Modifier l'Actualité"}</h1>
+                            <p className="admin-page-subtitle">Remplissez les champs pour créer ou mettre à jour une actualité.</p>
+                         </div>
+                    </div>
+                    <form onSubmit={handleSubmit} className="admin-section-wrapper">
+                        <div className="space-y-6">
+                            <FormInput 
+                                label="Titre" name="title" value={formData.title} onChange={handleChange} 
+                                onAIAssist={() => openAssistant('Titre', `Génère un titre d'actualité percutant sur le thème: "${formData.title || 'nouveau sujet'}"`)}
+                            />
+                            <ImageInput label="Image" value={formData.imageUrl} onChange={handleImageChange} />
+                            <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
+                            <FormTextArea 
+                                label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
+                                onAIAssist={() => openAssistant('Extrait', `Rédige un court extrait (1-2 phrases) pour une actualité intitulée: "${formData.title}"`)}
+                            />
+                            <FormInput label="Lien (optionnel, ex: /casting)" name="link" value={formData.link || ''} onChange={handleChange} />
+                        </div>
+                        <div className="flex justify-end gap-4 pt-6 mt-6 border-t border-pm-gold/20">
                             <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
                             <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
                         </div>
