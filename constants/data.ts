@@ -1,7 +1,5 @@
-// FIX: Add BeginnerStudent to import
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief } from '../types';
 import { NavLink } from '../hooks/useDataStore';
-// FIX: Import beginner course data
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
@@ -14,6 +12,7 @@ export const navLinks: NavLink[] = [
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
+  { path: '/motivation', label: 'Motivation', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
@@ -92,7 +91,6 @@ export const models: Model[] = [
         categories: ['Défilé', 'Éditorial', 'Beauté'],
         experience: "Mannequin vedette de l'agence, Noemi a défilé pour les plus grands créateurs gabonais et a été le visage de plusieurs campagnes nationales. Son professionnalisme et sa démarche captivante en font une référence.",
         journey: "Découverte lors d'un casting sauvage, Noemi a rapidement gravi les échelons grâce à sa détermination. Formée au sein de la PMM Classroom, elle incarne aujourd'hui l'excellence et l'ambition de l'agence.",
-        // FIX: Updated quizScores to match the complex object type.
         quizScores: { 
             'module-1-les-fondamentaux-du-mannequinat': { score: 3, total: 3, timesLeft: 0, timestamp: '2024-07-01T10:00:00Z' }, 
             'module-2-techniques-de-podium-catwalk': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-02T10:00:00Z' } 
@@ -120,7 +118,6 @@ export const models: Model[] = [
         categories: ['Défilé', 'Commercial', 'Éditorial'],
         experience: "Avec son regard perçant et sa polyvalence, AJ excelle dans les shootings éditoriaux et les campagnes publicitaires. Elle a collaboré avec de nombreuses marques locales et photographes de renom.",
         journey: "AJ a rejoint PMM avec une passion pour la photographie. Son aisance devant l'objectif et sa capacité à se transformer lui ont rapidement ouvert les portes des projets les plus créatifs.",
-        // FIX: Updated quizScores to match the complex object type.
         quizScores: { 
             'module-1-les-fondamentaux-du-mannequinat': { score: 3, total: 3, timesLeft: 1, timestamp: '2024-07-03T10:00:00Z' }, 
             'module-3-photographie-et-expression-corporelle': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-04T10:00:00Z' } 
@@ -146,7 +143,6 @@ export const models: Model[] = [
         categories: ['Défilé', 'Costume', 'Sportswear'],
         experience: "Spécialiste du prêt-à-porter masculin, Yann est reconnu pour sa démarche puissante et son élégance naturelle. Il est un choix privilégié pour les défilés de créateurs de costumes.",
         journey: "Ancien athlète, Yann a apporté sa discipline et sa prestance au monde du mannequinat. Il s'est rapidement imposé comme une figure incontournable de la mode masculine au Gabon.",
-        // FIX: Updated quizScores to match the complex object type.
         quizScores: { 
             'module-2-techniques-de-podium-catwalk': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-05T10:00:00Z' } 
         },
@@ -198,7 +194,6 @@ export const beginnerStudents: BeginnerStudent[] = [
         name: "Jordan Lefebvre",
         matricule: "DEB-2025-002",
         password: "jordan2025",
-        // FIX: Updated quizScores to match the complex object type.
         quizScores: { 
             'module-1-decouverte-du-mannequinat': { score: 2, total: 3, timesLeft: 0, timestamp: '2024-07-06T10:00:00Z' } 
         }

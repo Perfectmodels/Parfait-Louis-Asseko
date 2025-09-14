@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useEffect, lazy, Suspense } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
@@ -31,6 +32,7 @@ const ForumThread = lazy(() => import('./pages/ForumThread'));
 const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
 const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
 const Chat = lazy(() => import('./pages/Chat'));
+const Motivation = lazy(() => import('./pages/Motivation'));
 
 // Admin Pages
 const Admin = lazy(() => import('./pages/Admin'));
@@ -138,6 +140,7 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/privacy-policy" element={<PrivacyPolicy />} />
                         <ReactRouterDOM.Route path="/terms-of-use" element={<TermsOfUse />} />
                         <ReactRouterDOM.Route path="/chat" element={<Chat />} />
+                        <ReactRouterDOM.Route path="/motivation" element={<Motivation />} />
 
                         {/* Protected Routes */}
                         <ReactRouterDOM.Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
