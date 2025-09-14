@@ -8,7 +8,7 @@ export const articles: Article[] = [
     excerpt: "De Miss Gabon à Top Model Afrique Centrale, Noemi Kim collectionne les titres et s'impose comme une figure incontournable de la mode. Retour sur le parcours d'une mannequin dont l'ambition n'a d'égale que son élégance.",
     imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
     author: 'Focus Model 241',
-    date: '12 Août 2024',
+    date: '2024-08-12',
     isFeatured: true,
     content: [
       { type: 'paragraph', text: "Noemi Kim n'est pas seulement un mannequin, elle est une collectionneuse de couronnes. Son parcours fulgurant, marqué par des titres prestigieux, dessine le portrait d'une jeune femme déterminée à porter haut les couleurs de la mode gabonaise. De l'écharpe de Miss à la reconnaissance continentale, son histoire est celle d'une ambition réalisée avec grâce et professionnalisme." },
@@ -29,7 +29,7 @@ export const articles: Article[] = [
     excerpt: "Récompensé Mannequin Homme de l'Année aux PFD Awards, Yann Aubin incarne une nouvelle masculinité, entre puissance athlétique et raffinement. Découvrez l'homme qui redéfinit les codes du podium au Gabon.",
     imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
     author: 'Focus Model 241',
-    date: '02 Septembre 2024',
+    date: '2024-09-02',
     content: [
       { type: 'paragraph', text: "Dans un monde de la mode en constante évolution, Yann Aubin impose sa singularité. Son allure athlétique, héritage d'une première vie de sportif, alliée à une élégance naturelle, a séduit les jurys et les créateurs. Son récent sacre comme 'Mannequin Homme de l'Année' aux Perfect Fashion Day Awards vient couronner une ascension aussi rapide que méritée." },
       { type: 'heading', level: 2, text: "Du Stade au Podium" },
@@ -47,7 +47,7 @@ export const articles: Article[] = [
     excerpt: "Élue Visage de l'Année aux Gabon Fashion Awards, AJ Caramela s'est imposée comme la muse des photographes. Son secret ? Une alchimie rare entre intensité et vulnérabilité qui transforme chaque cliché en œuvre d'art.",
     imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
     author: 'Focus Model 241',
-    date: '10 Septembre 2024',
+    date: '2024-09-10',
     content: [
       { type: 'paragraph', text: "Il y a des visages qui racontent une histoire. Celui d'AJ Caramela est de ceux-là. Intense, magnétique, capable de passer de la douceur la plus pure à une assurance redoutable en un clin d'œil. Cette polyvalence rare lui a valu le titre convoité de 'Visage de l'Année' lors des derniers Gabon Fashion Awards, une consécration pour ce talent brut de l'agence Perfect Models Management." },
       { type: 'heading', level: 2, text: "Une Alchimie avec l'Objectif" },
@@ -65,7 +65,7 @@ export const articles: Article[] = [
     excerpt: 'Les moments forts, les coulisses et les plus belles créations de l\'événement qui a marqué les esprits.',
     imageUrl: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
     author: 'La Rédaction',
-    date: '10 Février 2025',
+    date: '2025-02-10',
     content: [
       { type: 'paragraph', text: 'La première édition du Perfect Fashion Day a tenu toutes ses promesses, s\'imposant comme un rendez-vous incontournable de la mode gabonaise. Sous le thème "Racines & Modernité", l\'événement a célébré le talent des créateurs locaux et la beauté des mannequins de l\'agence dans le cadre prestigieux de La Gare du Nord.' },
       { type: 'heading', level: 2, text: 'Une Célébration de la Créativité' },
@@ -81,7 +81,7 @@ export const articles: Article[] = [
     excerpt: 'Analyse du style affirmé des créateurs comme Farel MD et Miguel Fashion Style, stars de notre dernier défilé.',
     imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
     author: 'Focus Model 241',
-    date: '28 Mars 2025',
+    date: '2025-03-28',
     content: [
       { type: 'paragraph', text: 'La mode masculine connaît une véritable révolution, et le Gabon n\'est pas en reste. Loin des sentiers battus, des créateurs audacieux redéfinissent les codes de l\'élégance pour homme, avec le sur-mesure comme terrain de jeu. Le Perfect Fashion Day a mis en lumière cette tendance de fond.' },
       { type: 'heading', level: 2, text: 'Farel MD : L\'Élégance Attitude' },
@@ -97,7 +97,7 @@ export const articles: Article[] = [
     excerpt: 'Nos coachs partagent leurs secrets pour réussir un casting, construire son book et développer sa carrière.',
     imageUrl: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
     author: 'L\'équipe PMM',
-    date: '05 Mai 2025',
+    date: '2025-05-05',
     content: [
       { type: 'paragraph', text: 'Le rêve de devenir mannequin en fascine plus d\'un, mais derrière les paillettes se cache un métier exigeant qui requiert discipline, persévérance et une bonne stratégie. Les coachs de Perfect Models Management vous livrent quelques clés essentielles pour mettre toutes les chances de votre côté.' },
       { type: 'heading', level: 2, text: '1. Le Casting : Plus qu\'un physique' },
