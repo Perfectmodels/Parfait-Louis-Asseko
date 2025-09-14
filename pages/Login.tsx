@@ -55,9 +55,10 @@ const Login: React.FC = () => {
     }
 
     const timestamp = new Date().toISOString();
+    const normalizedUsername = username.toLowerCase();
 
     // Admin Login
-    if (username.toLowerCase() === 'admin' && password === 'admin2025') {
+    if (normalizedUsername === 'admin' && password === 'admin2025') {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
       updateUserActivity('Administrateur', 'admin');
@@ -67,8 +68,8 @@ const Login: React.FC = () => {
 
     // Model Login
     const loggedInModel = data.models.find(m => 
-        m.username.toLowerCase() === username.toLowerCase() || 
-        m.name.toLowerCase() === username.toLowerCase()
+        m.username.toLowerCase() === normalizedUsername || 
+        m.name.toLowerCase() === normalizedUsername
     );
     if (loggedInModel && loggedInModel.password === password) {
         sessionStorage.setItem('classroom_access', 'granted');
@@ -85,7 +86,8 @@ const Login: React.FC = () => {
     
     // Beginner Student Login
     const loggedInBeginner = data.beginnerStudents.find(bs => 
-        bs.matricule.toLowerCase() === username.toLowerCase()
+        bs.matricule.toLowerCase() === normalizedUsername ||
+        bs.name.toLowerCase() === normalizedUsername
     );
     if (loggedInBeginner && loggedInBeginner.password === password) {
         sessionStorage.setItem('classroom_access', 'granted');
@@ -103,8 +105,8 @@ const Login: React.FC = () => {
 
     // Jury Login
     const loggedInJury = data.juryMembers.find(j => 
-        j.username.toLowerCase() === username.toLowerCase() ||
-        j.name.toLowerCase() === username.toLowerCase()
+        j.username.toLowerCase() === normalizedUsername ||
+        j.name.toLowerCase() === normalizedUsername
     );
     if (loggedInJury && loggedInJury.password === password) {
         sessionStorage.setItem('classroom_access', 'granted');
@@ -118,8 +120,8 @@ const Login: React.FC = () => {
     
     // Registration Staff Login
     const loggedInStaff = data.registrationStaff.find(s => 
-        s.username.toLowerCase() === username.toLowerCase() ||
-        s.name.toLowerCase() === username.toLowerCase()
+        s.username.toLowerCase() === normalizedUsername ||
+        s.name.toLowerCase() === normalizedUsername
     );
     if (loggedInStaff && loggedInStaff.password === password) {
         sessionStorage.setItem('classroom_access', 'granted');
