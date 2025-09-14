@@ -2,51 +2,68 @@ import { Article } from '../types';
 
 export const articles: Article[] = [
   {
-    slug: 'aj-caramela-nr-picture-collaboration',
-    title: "AJ Caramela x NR Picture : L'Alliance Iconique",
-    category: 'Shooting',
-    excerpt: "Quand la présence magnétique du mannequin AJ Caramela rencontre l'œil expert de NR Picture, le résultat est une série photo qui transcende la mode pour toucher à l'art.",
-    imageUrl: '/assets/nr-09474.jpg',
+    slug: 'noemi-kim-reine-des-podiums',
+    title: "Noemi Kim : Portrait d'une Reine des Podiums",
+    category: 'Portrait',
+    excerpt: "De Miss Gabon à Top Model Afrique Centrale, Noemi Kim collectionne les titres et s'impose comme une figure incontournable de la mode. Retour sur le parcours d'une mannequin dont l'ambition n'a d'égale que son élégance.",
+    imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
     author: 'Focus Model 241',
-    date: '28 Juillet 2024',
+    date: '12 Août 2024',
+    isFeatured: true,
     content: [
-      { type: 'paragraph', text: "Dans l'univers de la mode gabonaise, certaines collaborations sont destinées à marquer les esprits. La récente séance photo entre le mannequin vedette de Perfect Models Management, AJ Caramela, et le talentueux studio NR Picture en est la parfaite illustration. Une rencontre au sommet qui a donné naissance à une série de clichés d'une intensité rare, où la force et la grâce s'entremêlent." },
-      { type: 'heading', level: 2, text: 'La Puissance Incarnée' },
-      { type: 'paragraph', text: "Devant l'objectif, AJ Caramela n'est pas seulement un modèle ; elle est une histoire. Chaque pose est une affirmation, chaque regard une invitation. Sa capacité à incarner à la fois une vulnérabilité touchante et une puissance indomptable est au cœur de cette série. Elle joue avec les ombres et la lumière, transformant chaque tenue en une seconde peau, chaque accessoire en une extension de sa personnalité." },
-      { type: 'image', src: '/assets/nr-09484.jpg', alt: 'AJ Caramela dans une pose puissante en noir et blanc', caption: 'Une maîtrise du clair-obscur qui sculpte la silhouette.' },
-      { type: 'quote', text: "Le but n'était pas de faire de belles photos, mais de capturer une âme. AJ a cette capacité à livrer une partie d'elle-même à chaque déclenchement.", author: 'NR Picture' },
-      { type: 'heading', level: 2, text: "L'Œil du Maître" },
-      { type: 'paragraph', text: "NR Picture, connu pour son esthétique léchée et sa direction artistique précise, a su créer un écrin parfait pour le talent d'AJ Caramela. Le choix du noir et blanc pour une grande partie de la série n'est pas anodin. Il épure le superflu pour se concentrer sur l'essentiel : les lignes, les textures, et l'émotion brute. Chaque cadrage est millimétré, chaque composition est une œuvre d'art en soi." },
-      { type: 'image', src: '/assets/nr-09503-modifier.jpg', alt: 'Gros plan intense sur le visage de AJ Caramela', caption: "L'intensité d'un regard capturée par NR Picture." },
-      { type: 'paragraph', text: "Cette collaboration est bien plus qu'une simple séance photo. C'est un dialogue artistique, une fusion entre un modèle qui maîtrise son art et un photographe qui sait en extraire la quintessence. Le résultat est une série iconique qui confirme le statut d'AJ Caramela comme l'un des visages les plus captivants de sa génération et celui de NR Picture comme une référence incontournable de la photographie de mode au Gabon." }
+      { type: 'paragraph', text: "Noemi Kim n'est pas seulement un mannequin, elle est une collectionneuse de couronnes. Son parcours fulgurant, marqué par des titres prestigieux, dessine le portrait d'une jeune femme déterminée à porter haut les couleurs de la mode gabonaise. De l'écharpe de Miss à la reconnaissance continentale, son histoire est celle d'une ambition réalisée avec grâce et professionnalisme." },
+      { type: 'heading', level: 2, text: "Une Ambassadrice de Beauté Nationale" },
+      { type: 'paragraph', text: "En 2022, le Gabon découvre son nouveau visage : Noemi Kim est couronnée Miss Gabon. Plus qu'un concours de beauté, ce titre la propulse au rang d'ambassadrice de l'élégance et de la culture de son pays. Cette expérience a forgé son caractère et sa présence scénique, lui apprenant à maîtriser la pression des projecteurs et à incarner des valeurs fortes." },
+      { type: 'image', src: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg', alt: 'Noemi Kim lors d\'un shooting', caption: 'Une prestance royale, héritage de son titre de Miss Gabon.' },
+      { type: 'heading', level: 2, text: "La Conquête du Continent" },
+      { type: 'paragraph', text: "Loin de se reposer sur ses lauriers nationaux, Noemi Kim a relevé le défi continental en 2023. Sa participation au concours Top Model Afrique Centrale a été une démonstration de son talent et de sa polyvalence. Elle y a remporté le titre, confirmant son statut de mannequin de premier plan non seulement au Gabon, mais dans toute la sous-région. Ce succès international témoigne de la qualité de sa formation au sein de Perfect Models Management et de sa capacité à répondre aux standards les plus exigeants." },
+      { type: 'quote', text: "Chaque titre est une étape, pas une destination. Le plus important est de continuer à apprendre et à grandir.", author: "Noemi Kim" },
+      { type: 'paragraph', text: "Aujourd'hui, Noemi Kim continue son ascension, inspirant une nouvelle génération de mannequins. Son palmarès n'est que le reflet de son éthique de travail et de sa passion. Chez Perfect Models Management, nous sommes fiers d'accompagner une telle étoile sur le chemin du succès." }
     ],
-    tags: ['AJ Caramela', 'NR Picture', 'Shooting Photo', 'Mode Gabon', 'Collaboration Artistique', 'Noir et Blanc']
+    tags: ['Noemi Kim', 'Miss Gabon', 'Top Model', 'Mannequin Gabonais', 'Succès', 'Portrait']
   },
   {
-    slug: 'noemi-kim-au-dela-du-podium',
-    title: 'Noemi Kim : Au-delà du podium',
-    category: 'Interview',
-    excerpt: 'Plongez dans le parcours inspirant de notre mannequin phare, entre discipline, ambition et passion pour l\'art.',
-    imageUrl: '/assets/dsc-0272.jpg',
+    slug: 'yann-aubin-la-force-tranquille',
+    title: "Yann Aubin : La Force Tranquille de l'Élégance Masculine",
+    category: 'Portrait',
+    excerpt: "Récompensé Mannequin Homme de l'Année aux PFD Awards, Yann Aubin incarne une nouvelle masculinité, entre puissance athlétique et raffinement. Découvrez l'homme qui redéfinit les codes du podium au Gabon.",
+    imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
     author: 'Focus Model 241',
-    date: '15 Juillet 2024',
+    date: '02 Septembre 2024',
     content: [
-      { type: 'paragraph', text: 'Noemi Kim n\'est pas seulement un visage que l\'on remarque sur les podiums ; elle est l\'incarnation de la détermination et de la grâce. Mannequin phare de l\'agence Perfect Models Management, son parcours est une source d\'inspiration pour de nombreux jeunes talents. Nous l\'avons rencontrée pour discuter de sa carrière, de ses rêves et des défis du métier.' },
-      { type: 'heading', level: 2, text: 'Les débuts d\'une passion' },
-      { type: 'paragraph', text: 'Dès son plus jeune âge, Noemi était fascinée par l\'univers de la mode. "Je regardais les défilés à la télévision et je découpais les pages des magazines. Il y avait une magie, une force qui se dégageait des mannequins, et je voulais en faire partie", nous confie-t-elle. C\'est cette passion qui l\'a poussée à participer à son premier casting, une expérience qui allait changer sa vie.' },
-      { type: 'quote', text: 'La discipline est la clé. Sans elle, le talent ne suffit pas à construire une carrière durable.', author: 'Noemi Kim' },
-      { type: 'heading', level: 2, text: 'La vie à l\'agence' },
-      { type: 'paragraph', text: 'Rejoindre Perfect Models Management a été un tournant. "Ici, j\'ai trouvé plus qu\'une agence, j\'ai trouvé une famille. L\'encadrement, les formations, le soutien constant de l\'équipe m\'ont permis de grandir et de prendre confiance en moi", explique-t-elle. Pour Noemi, le plus grand défi reste la gestion de la pression et le maintien d\'une hygiène de vie irréprochable. "Votre corps est votre outil de travail, vous devez en prendre soin chaque jour."' },
-      { type: 'heading', level: 3, text: 'Vision pour l\'avenir' },
-      { type: 'paragraph', text: 'Avec une carrière déjà bien remplie au Gabon, Noemi Kim a les yeux tournés vers l\'international. "Je rêve de défiler à Paris, Milan... de représenter mon pays sur les plus grandes scènes mondiales." Un rêve qui, au vu de sa détermination, semble à portée de main.' }
-    ]
+      { type: 'paragraph', text: "Dans un monde de la mode en constante évolution, Yann Aubin impose sa singularité. Son allure athlétique, héritage d'une première vie de sportif, alliée à une élégance naturelle, a séduit les jurys et les créateurs. Son récent sacre comme 'Mannequin Homme de l'Année' aux Perfect Fashion Day Awards vient couronner une ascension aussi rapide que méritée." },
+      { type: 'heading', level: 2, text: "Du Stade au Podium" },
+      { type: 'paragraph', text: "La transition de Yann du sport au mannequinat n'est pas un hasard. Il y a apporté la même discipline, la même rigueur et la même présence physique. Sur le podium, sa démarche est puissante, presque féline. Il ne porte pas le vêtement, il l'habite. C'est cette force tranquille qui lui a également valu le Prix de l'Élégance Masculine à la Libreville Fashion Week, faisant de lui le mannequin incontournable des collections pour homme." },
+      { type: 'quote', text: "La discipline du sport m'a tout appris : le respect du corps, la concentration, le dépassement de soi. Le podium est juste une autre arène.", author: "Yann Aubin" },
+      { type: 'image', src: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg', alt: 'Yann Aubin en shooting', caption: 'Une présence qui captive l\'objectif.' },
+      { type: 'paragraph', text: "Yann Aubin n'est pas qu'un physique, c'est une attitude. Il représente une masculinité moderne, sûre d'elle et raffinée. Un modèle à suivre, au sens propre comme au figuré." }
+    ],
+    tags: ['Yann Aubin', 'Mannequin Homme', 'PFD Awards', 'Mode Masculine', 'Portrait']
+  },
+  {
+    slug: 'aj-caramela-visage-de-lannee',
+    title: "AJ Caramela : L'Art de Capturer la Lumière",
+    category: 'Portrait',
+    excerpt: "Élue Visage de l'Année aux Gabon Fashion Awards, AJ Caramela s'est imposée comme la muse des photographes. Son secret ? Une alchimie rare entre intensité et vulnérabilité qui transforme chaque cliché en œuvre d'art.",
+    imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+    author: 'Focus Model 241',
+    date: '10 Septembre 2024',
+    content: [
+      { type: 'paragraph', text: "Il y a des visages qui racontent une histoire. Celui d'AJ Caramela est de ceux-là. Intense, magnétique, capable de passer de la douceur la plus pure à une assurance redoutable en un clin d'œil. Cette polyvalence rare lui a valu le titre convoité de 'Visage de l'Année' lors des derniers Gabon Fashion Awards, une consécration pour ce talent brut de l'agence Perfect Models Management." },
+      { type: 'heading', level: 2, text: "Une Alchimie avec l'Objectif" },
+      { type: 'paragraph', text: "La force d'AJ réside dans sa connexion innée avec l'appareil photo. Là où d'autres posent, elle dialogue. Chaque shooting est une performance, une exploration des facettes de sa personnalité. Sa collaboration remarquée avec le studio NR Picture, également primée, a mis en lumière cette capacité à transcender le vêtement pour créer une émotion pure. Ses clichés, souvent en noir et blanc, sont devenus des références de la photographie de mode au Gabon." },
+      { type: 'quote', text: "L'objectif ne ment pas. Il faut être honnête, vulnérable, et forte à la fois. C'est ce que j'essaie d'offrir à chaque séance.", author: "AJ Caramela" },
+      { type: 'image', src: 'https://i.postimg.cc/Xv24Dvp1/NR-09484.jpg', alt: 'AJ Caramela dans une pose artistique', caption: 'Une maîtrise parfaite de l\'expression corporelle.' },
+      { type: 'paragraph', text: "Ce prix n'est pas une finalité, mais une confirmation. Celle qu'AJ Caramela est plus qu'un mannequin : une artiste de l'image, prête à laisser une empreinte durable sur la mode gabonaise." }
+    ],
+    tags: ['AJ Caramela', 'Mannequin Photo', 'Gabon Fashion Awards', 'NR Picture', 'Portrait']
   },
   {
     slug: 'retour-sur-le-perfect-fashion-day',
     title: 'Retour sur le Perfect Fashion Day',
     category: 'Événement',
     excerpt: 'Les moments forts, les coulisses et les plus belles créations de l\'événement qui a marqué les esprits.',
-    imageUrl: '/assets/titostyle-53.jpg',
+    imageUrl: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
     author: 'La Rédaction',
     date: '10 Février 2025',
     content: [
@@ -62,7 +79,7 @@ export const articles: Article[] = [
     title: 'L\'audace du sur-mesure masculin',
     category: 'Tendance',
     excerpt: 'Analyse du style affirmé des créateurs comme Farel MD et Miguel Fashion Style, stars de notre dernier défilé.',
-    imageUrl: '/assets/farelmd-37.jpg',
+    imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
     author: 'Focus Model 241',
     date: '28 Mars 2025',
     content: [
@@ -78,7 +95,7 @@ export const articles: Article[] = [
     title: 'Devenir mannequin : Les clés du succès',
     category: 'Conseils',
     excerpt: 'Nos coachs partagent leurs secrets pour réussir un casting, construire son book et développer sa carrière.',
-    imageUrl: '/assets/ajc-4630.jpg',
+    imageUrl: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
     author: 'L\'équipe PMM',
     date: '05 Mai 2025',
     content: [
