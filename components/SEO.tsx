@@ -7,9 +7,10 @@ interface SEOProps {
   keywords?: string;
   image?: string;
   noIndex?: boolean;
+  schema?: object; // New prop for JSON-LD
 }
 
-const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, noIndex }) => {
+const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, noIndex, schema }) => {
   useEffect(() => {
     const defaultTitle = 'Perfect Models Management';
     const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
@@ -55,7 +56,31 @@ const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, noIndex 
     setMeta('twitter:description', description || defaultDescription, false);
     setMeta('twitter:image', image || defaultImage, false);
 
-  }, [title, description, keywords, image, noIndex]);
+    // Handle JSON-LD Schema
+    const schemaElementId = 'seo-schema-script';
+    let schemaElement = document.getElementById(schemaElementId) as HTMLScriptElement | null;
+
+    if (schema) {
+      if (!schemaElement) {
+        schemaElement = document.createElement('script');
+        schemaElement.id = schemaElementId;
+        schemaElement.type = 'application/ld+json';
+        document.head.appendChild(schemaElement);
+      }
+      schemaElement.innerHTML = JSON.stringify(schema);
+    } else {
+      if (schemaElement) {
+        schemaElement.remove();
+      }
+    }
+
+    // Cleanup function to remove schema on component unmount
+    return () => {
+      const el = document.getElementById(schemaElementId);
+      if (el) el.remove();
+    };
+
+  }, [title, description, keywords, image, noIndex, schema]);
 
   return null;
 };

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link, useParams } from 'react-router-dom';
@@ -121,6 +119,31 @@ const ArticleDetail: React.FC = () => {
     return <NotFound />;
   }
   
+  const articleSchema = {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": article.title,
+      "image": [
+        article.imageUrl,
+        ...article.content.filter(c => c.type === 'image').map(c => (c as { src: string }).src)
+      ],
+      "datePublished": new Date(article.date).toISOString(),
+      "author": [{
+          "@type": "Organization",
+          "name": article.author,
+          "url": window.location.origin
+      }],
+      "publisher": {
+          "@type": "Organization",
+          "name": "Perfect Models Management",
+          "logo": {
+              "@type": "ImageObject",
+              "url": data?.siteConfig.logo
+          }
+      },
+      "description": article.excerpt
+  };
+
   const renderContent = (content: ArticleContent) => {
     switch (content.type) {
       case 'heading':
@@ -160,6 +183,7 @@ const ArticleDetail: React.FC = () => {
         description={article.excerpt}
         keywords={article.tags?.join(', ')}
         image={article.imageUrl}
+        schema={articleSchema}
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6 max-w-4xl">

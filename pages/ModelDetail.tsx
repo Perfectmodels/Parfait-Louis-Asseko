@@ -80,6 +80,27 @@ const ModelDetail: React.FC = () => {
   if (!model) {
     return <NotFound />;
   }
+  
+  const modelSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": model.name,
+    "jobTitle": "Mannequin",
+    "image": model.imageUrl,
+    "gender": model.gender === 'Homme' ? 'https://schema.org/Male' : 'https://schema.org/Female',
+    "height": {
+        "@type": "QuantitativeValue",
+        "value": model.height.replace('m', '.').replace(/[^0-9.]/g, ''),
+        "unitCode": "MTR"
+    },
+    "worksFor": {
+        "@type": "Organization",
+        "name": "Perfect Models Management",
+        "url": window.location.origin
+    },
+    "url": window.location.href,
+    "description": `Portfolio de ${model.name}, mannequin chez Perfect Models Management.`
+  };
 
   const seoDescription = `Explorez le portfolio de ${model.name}, mannequin ${model.gender} de ${model.height} chez Perfect Models Management. Découvrez ses photos, mensurations (${model.measurements.chest}-${model.measurements.waist}-${model.measurements.hips}), et son parcours unique dans la mode.`;
 
@@ -90,6 +111,7 @@ const ModelDetail: React.FC = () => {
         description={seoDescription}
         keywords={`${model.name}, mannequin ${model.gender}, modèle photo gabon, agence pmm, booker ${model.name}, mensurations mannequin`}
         image={model.imageUrl}
+        schema={modelSchema}
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6">
