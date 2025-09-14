@@ -276,27 +276,42 @@ const Home: React.FC = () => {
         schema={organizationSchema}
       />
 
-      {/* 1. Hero Section */}
+      {/* 1. Hero Section with Integrated Event */}
       <section 
-        className="relative h-[80vh] flex items-center justify-center text-center bg-cover bg-center" 
+        className="relative h-[90vh] lg:h-screen flex flex-col items-center justify-center text-center bg-cover bg-center" 
         style={{ backgroundImage: `url('${siteImages.hero}')` }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/80 to-transparent"></div>
-        <div className="relative z-10 p-6 animate-fade-in">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
-            L'Élégance Redéfinie
-          </h1>
-          <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
-            Nous révélons les talents et valorisons la beauté africaine.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <ReactRouterDOM.Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-              Découvrir nos mannequins
-            </ReactRouterDOM.Link>
-            <ReactRouterDOM.Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
-              Nous rejoindre
-            </ReactRouterDOM.Link>
+        <div className="relative z-10 p-6 animate-fade-in w-full max-w-5xl space-y-8">
+          <div>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
+              L'Élégance Redéfinie
+            </h1>
+            <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
+              Nous révélons les talents et valorisons la beauté africaine.
+            </p>
           </div>
+          
+          {nextEvent ? (
+              <div className="mt-10 bg-black/50 backdrop-blur-sm py-6 px-4 rounded-lg border border-pm-gold/20">
+                  <h3 className="text-2xl md:text-3xl font-playfair text-white mb-2">
+                      Prochain Événement : Perfect Fashion Day - Édition {nextEvent.edition}
+                  </h3>
+                  <p className="text-lg md:text-xl text-pm-gold mb-6">"{nextEvent.theme}"</p>
+                  <div className="my-6">
+                     <CountdownTimer targetDate={nextEvent.date} />
+                  </div>
+                  <ReactRouterDOM.Link to="/fashion-day-application" className="mt-4 inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+                      Participer à l'Édition 2
+                  </ReactRouterDOM.Link>
+              </div>
+          ) : (
+              <div className="mt-10">
+                  <p className="text-pm-off-white/80 max-w-3xl mx-auto">
+                      Restez à l'écoute pour l'annonce de notre prochaine édition !
+                  </p>
+              </div>
+          )}
         </div>
       </section>
 
@@ -366,37 +381,6 @@ const Home: React.FC = () => {
             </div>
         </div>
       </section>
-
-      {/* 5. Events */}
-        <section
-            className="py-20 lg:py-28 bg-cover bg-center bg-fixed"
-            style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}
-        >
-            <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm rounded-lg border border-pm-gold/20">
-                <h2 className="section-title">Prochain Événement</h2>
-                {nextEvent ? (
-                    <>
-                        <h3 className="text-3xl md:text-4xl font-playfair text-white mb-4">
-                            Perfect Fashion Day - Édition {nextEvent.edition}
-                        </h3>
-                        <p className="text-xl md:text-2xl text-pm-gold mb-8">"{nextEvent.theme}"</p>
-                        <div className="my-8">
-                           <CountdownTimer targetDate={nextEvent.date} />
-                        </div>
-                        <p className="text-pm-off-white/80 max-w-3xl mx-auto mt-8 mb-6">
-                            {nextEvent.description}
-                        </p>
-                    </>
-                ) : (
-                    <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
-                        Restez à l'écoute pour l'annonce de notre prochaine édition !
-                    </p>
-                )}
-                <ReactRouterDOM.Link to="/fashion-day" className="mt-4 inline-block px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-                    Découvrir le Perfect Fashion Day
-                </ReactRouterDOM.Link>
-            </div>
-        </section>
 
       <div className="page-container">
         {/* 7. Testimonials */}
