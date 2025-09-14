@@ -45,9 +45,14 @@ export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
     firebaseDynamicLinks: {
-        webApiKey: 'YOUR_FIREBASE_WEB_API_KEY_GOES_HERE',
+        webApiKey: process.env.FIREBASE_WEB_API_KEY,
         domainUriPrefix: 'https://perfectmodels.page.link'
-    }
+    },
+    imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
+    iLovePdf: {
+        publicKey: 'project_public_16a878a46e488b32ef375bd99462948f_p9a-Z08a113a72671e626154625b8256bd4d9',
+        secretKey: 'secret_key_16a878a46e488b32ef375bd99462948f_OWKnZ1ab4cf80eb992d60f1d6bc8a2261ca89',
+    },
 };
 
 export const juryMembers: JuryMember[] = [
@@ -385,6 +390,7 @@ export const modelDistinctions: ModelDistinction[] = [
 
 export const agencyServices: Service[] = [
   {
+    slug: "casting-mannequins",
     title: "Casting Mannequins",
     description: "Organisation de castings professionnels pour défilés, shootings, publicités et clips.",
     details: {
@@ -401,6 +407,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "booking-mannequins",
     title: "Booking Mannequins",
     description: "Réservation de mannequins pour événements, shootings ou campagnes publicitaires.",
     details: {
@@ -417,6 +424,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "mannequins-pour-defiles",
     title: "Mannequins pour Défilés",
     description: "Des mannequins professionnels pour vos défilés, avec coaching sur la posture et la démarche.",
     details: {
@@ -433,6 +441,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "mannequins-publicite-audiovisuel",
     title: "Mannequins Publicité / Audiovisuel",
     description: "Mannequins pour publicité, clips et projets audiovisuels.",
     details: {
@@ -449,6 +458,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "mannequins-photo",
     title: "Mannequins Photo",
     description: "Shooting photo pour catalogues, lookbooks ou réseaux sociaux.",
     details: {
@@ -465,6 +475,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "mannequins-figurants",
     title: "Mannequins Figurants",
     description: "Figurants pour clips, films ou événements nécessitant un public.",
     details: {
@@ -480,6 +491,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "formation-mannequins",
     title: "Formation Mannequins",
     description: "Coaching complet pour mannequins : posture, démarche, expressions et présence scénique.",
     details: {
@@ -495,6 +507,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "conseil-image-style",
     title: "Conseil en Image et Style",
     description: "Accompagnement pour look, coiffure, maquillage et style vestimentaire.",
     details: {
@@ -511,6 +524,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "creation-tenues-sur-mesure",
     title: "Création de Tenues Sur-Mesure",
     description: "Tenues sur-mesure pour femmes, hommes et enfants, en accord avec vos goûts et votre identité.",
     details: {
@@ -527,6 +541,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "location-tenues-mode",
     title: "Location de Tenues de Mode",
     description: "Accédez à notre collection de tenues pour vos défilés, shootings ou événements spéciaux.",
     details: {
@@ -542,6 +557,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "styling-conseil-mode",
     title: "Styling & Conseil Mode",
     description: "Création de looks parfaits pour campagnes, shootings ou événements.",
     details: {
@@ -557,6 +573,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "organisation-defiles-mode",
     title: "Organisation Défilés de Mode",
     description: "Planification et exécution complète du défilé : mannequins, scénographie, musique, mise en scène.",
     details: {
@@ -573,6 +590,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "conseil-creatif-branding",
     title: "Conseil Créatif et Branding",
     description: "Développement de l’identité visuelle et de la présence de votre marque.",
     details: {
@@ -589,6 +607,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "shooting-mode-professionnel",
     title: "Shooting Mode Professionnel",
     description: "Organisation complète de shootings en studio ou extérieur avec photographe, styliste et maquilleur.",
     details: {
@@ -605,6 +624,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "accessoires-lookbook",
     title: "Accessoires et Lookbook",
     description: "Création ou fourniture d’accessoires pour compléter vos collections et shootings.",
     details: {
@@ -620,6 +640,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "animation-shows-defiles",
     title: "Animation de Shows / Défilés",
     description: "Animation complète de vos événements mode pour captiver votre public.",
     details: {
@@ -635,6 +656,7 @@ export const agencyServices: Service[] = [
     category: "Services Événementiels"
   },
   {
+    slug: "presentateurs-hotes",
     title: "Présentateurs / Hôtes de Cérémonie",
     description: "Hôtes professionnels pour introduire vos défilés et événements.",
     icon: "MicrophoneIcon",
@@ -643,6 +665,7 @@ export const agencyServices: Service[] = [
     category: "Services Événementiels"
   },
   {
+    slug: "promotion-communication",
     title: "Promotion et Communication",
     description: "Couverture complète de vos événements et projets sur réseaux sociaux et médias partenaires.",
     icon: "ChatBubbleLeftRightIcon",
@@ -651,6 +674,7 @@ export const agencyServices: Service[] = [
     category: "Services Événementiels"
   },
   {
+    slug: "partenariat-marques",
     title: "Partenariat avec Marques",
     description: "Mise en relation de marques avec mannequins, créateurs et stylistes pour des collaborations impactantes.",
     icon: "BuildingStorefrontIcon",

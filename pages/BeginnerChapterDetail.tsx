@@ -1,15 +1,57 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
-import { ChevronLeftIcon, ArrowDownTrayIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ArrowDownTrayIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
-import { QuizQuestion } from '../types';
 import BeginnerQuiz from '../components/BeginnerQuiz';
+import { Chapter, Module } from '../types';
+import { useILovePdf } from '../hooks/useILovePdf';
+
+const generateChapterHtml = (chapter: Chapter, module: Module, siteConfig: any): string => {
+    const contentHtml = chapter.content.split('\n').map(p => `<p style="margin-bottom: 1em; line-height: 1.6;">${p}</p>`).join('');
+    
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.5; }
+                .page { padding: 40px; }
+                .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+                .header img { height: 50px; }
+                .module-title { color: #888; font-size: 14px; text-transform: uppercase; }
+                h1 { font-family: 'Times New Roman', Times, serif; font-size: 36px; color: #D4AF37; margin: 0 0 20px 0; }
+                .content { font-size: 16px; }
+                .footer { margin-top: 40px; padding-top: 10px; border-top: 1px solid #ccc; text-align: center; font-size: 12px; color: #aaa; }
+            </style>
+        </head>
+        <body>
+            <div class="page">
+                <header class="header">
+                    <div>
+                        <p class="module-title">${module.title}</p>
+                        <h1>${chapter.title}</h1>
+                    </div>
+                     ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
+                </header>
+                <div class="content">
+                    ${contentHtml}
+                </div>
+                <footer class="footer">
+                    &copy; ${new Date().getFullYear()} Perfect Models Management - Contenu de formation confidentiel
+                </footer>
+            </div>
+        </body>
+        </html>
+    `;
+};
 
 const BeginnerChapterDetail: React.FC = () => {
   const { data, isInitialized } = useData();
   const { moduleSlug, chapterSlug } = useParams<{ moduleSlug: string, chapterSlug: string }>();
+  const { generatePdf, isLoading: isPrinting } = useILovePdf();
   
   const module = data?.beginnerCourseData.find(m => m.slug === moduleSlug);
   const chapter = module?.chapters.find(c => c.slug === chapterSlug);
@@ -22,8 +64,11 @@ const BeginnerChapterDetail: React.FC = () => {
     return <NotFound />;
   }
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownload = async () => {
+    if (!data.siteConfig) return;
+    const html = generateChapterHtml(chapter, module, data.siteConfig);
+    const filename = `${module.title.replace(/\s/g, '_')}-${chapter.title.replace(/\s/g, '_')}.pdf`;
+    await generatePdf(html, filename);
   };
 
   return (
@@ -41,11 +86,12 @@ const BeginnerChapterDetail: React.FC = () => {
             Retour au Classroom Débutant
           </Link>
           <button
-            onClick={handlePrint}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"
+            onClick={handleDownload}
+            disabled={isPrinting}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white disabled:opacity-50"
           >
-            <ArrowDownTrayIcon className="w-5 h-5" />
-            Télécharger en PDF
+            {isPrinting ? <ArrowPathIcon className="w-5 h-5 animate-spin"/> : <ArrowDownTrayIcon className="w-5 h-5" />}
+            {isPrinting ? 'Génération...' : 'Télécharger en PDF'}
           </button>
         </div>
         
@@ -65,9 +111,8 @@ const BeginnerChapterDetail: React.FC = () => {
           </article>
         </div>
         
-        {/* FIX: Pass module.slug to the moduleSlug prop instead of chapter.slug. */}
         {module.quiz && module.quiz.length > 0 && (
-          <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
+            <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
         )}
 
       </div>

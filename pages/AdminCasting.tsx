@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
@@ -7,7 +8,8 @@ import SEO from '../components/SEO';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon } from '@heroicons/react/24/outline';
-import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
+// FIX: Corrected import path for PrintableCastingSheet component. It is not in the 'icons' subdirectory.
+import PrintableCastingSheet from '../components/PrintableCastingSheet';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();

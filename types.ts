@@ -87,6 +87,7 @@ export interface SocialLinks {
 }
 
 export interface Service {
+  slug: string;
   icon: string;
   title: string;
   category: 'Services Mannequinat' | 'Services Mode et Stylisme' | 'Services Événementiels';
@@ -194,8 +195,13 @@ export interface ApiKeys {
   resendApiKey: string;
   formspreeEndpoint: string;
   firebaseDynamicLinks?: {
-    webApiKey: string;
+    webApiKey?: string;
     domainUriPrefix: string;
+  };
+  imgbbApiKey?: string;
+  iLovePdf?: {
+    publicKey: string;
+    secretKey: string;
   };
 }
 

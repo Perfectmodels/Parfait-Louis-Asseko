@@ -20,10 +20,7 @@ const generateShortLink = async (
   const { link, title, description, imageUrl } = options;
   const dynamicLinksConfig = apiKeys?.firebaseDynamicLinks;
 
-  if (
-    !dynamicLinksConfig?.webApiKey ||
-    dynamicLinksConfig.webApiKey.includes('YOUR_FIREBASE_WEB_API_KEY')
-  ) {
+  if (!dynamicLinksConfig?.webApiKey) {
     console.warn('Firebase Dynamic Links API key not configured. Falling back to long link.');
     return link;
   }
