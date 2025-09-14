@@ -96,9 +96,22 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems } = data;
+  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems } = data;
   const publicModels = models.filter(m => m.isPublic).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
+
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Perfect Models Management",
+    "url": window.location.origin,
+    "logo": siteConfig.logo,
+    "sameAs": [
+      socialLinks.facebook,
+      socialLinks.instagram,
+      socialLinks.youtube
+    ].filter(Boolean)
+  };
 
   return (
     <div className="text-pm-off-white">
@@ -108,6 +121,7 @@ const Home: React.FC = () => {
         description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
         keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
         image={siteImages.hero}
+        schema={organizationSchema}
       />
 
       {/* 1. Hero Section */}
