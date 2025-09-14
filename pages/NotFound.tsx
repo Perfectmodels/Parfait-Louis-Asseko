@@ -1,6 +1,7 @@
+
 import React from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 
@@ -20,9 +21,9 @@ const NotFound: React.FC = () => {
           <h1 className="text-8xl font-playfair text-pm-gold">404</h1>
           <p className="text-2xl mt-4 text-pm-off-white">Page non trouvée</p>
           <p className="mt-2 text-pm-off-white/70">Désolé, la page que vous recherchez n'existe pas.</p>
-          <Link to="/" className="inline-block mt-8 px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+          <ReactRouterDOM.Link to="/" className="inline-block mt-8 px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
             Retour à l'accueil
-          </Link>
+          </ReactRouterDOM.Link>
         </div>
       </div>
     </>

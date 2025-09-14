@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
 import SEO from '../components/SEO';
@@ -149,9 +150,9 @@ const Agency: React.FC = () => {
           <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
               Nous serions ravis d'échanger avec vous. Visitez notre page de contact pour nous envoyer un message ou trouver nos coordonnées.
           </p>
-          <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
+          <ReactRouterDOM.Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
               Nous Contacter
-          </Link>
+          </ReactRouterDOM.Link>
         </section>
 
       </div>

@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
+import * as ReactRouterDOM from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
@@ -13,7 +15,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
     : '';
 
   return (
-    <NavLink
+    <ReactRouterDOM.NavLink
       to={to}
       onClick={onClick}
       end={to === '/'}
@@ -33,7 +35,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
           />
         </>
       )}
-    </NavLink>
+    </ReactRouterDOM.NavLink>
   );
 };
 
@@ -96,8 +98,8 @@ const SocialLinksComponent: React.FC<{ socialLinks: SocialLinks | undefined; cla
 };
 
 export const Breadcrumb: React.FC = () => {
-    const location = useLocation();
-    const params = useParams();
+    const location = ReactRouterDOM.useLocation();
+    const params = ReactRouterDOM.useParams();
     const { data } = useData();
 
     const crumbs = useMemo(() => {
@@ -182,7 +184,7 @@ export const Breadcrumb: React.FC = () => {
                                     {isLast ? (
                                         <span className="font-bold text-pm-gold truncate" aria-current="page">{crumb.label}</span>
                                     ) : (
-                                        <Link to={crumb.path} className="hover:text-pm-gold transition-colors">{crumb.label}</Link>
+                                        <ReactRouterDOM.Link to={crumb.path} className="hover:text-pm-gold transition-colors">{crumb.label}</ReactRouterDOM.Link>
                                     )}
                                 </li>
                             );
@@ -199,8 +201,8 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = ReactRouterDOM.useLocation();
+  const navigate = ReactRouterDOM.useNavigate();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -301,9 +303,9 @@ const Header: React.FC = () => {
       >
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
-            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+            <ReactRouterDOM.Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
               <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
-            </Link>
+            </ReactRouterDOM.Link>
           )}
           
           <nav className="hidden lg:flex items-center gap-8">
