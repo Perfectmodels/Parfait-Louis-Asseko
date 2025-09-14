@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { Link, useParams } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -10,7 +11,7 @@ import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDow
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 
 const ArticleDetail: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug } = ReactRouterDOM.useParams<{ slug: string }>();
   const { data, saveData, isInitialized } = useData();
   const [newComment, setNewComment] = useState('');
   const [commentAuthor, setCommentAuthor] = useState('');
@@ -187,10 +188,10 @@ const ArticleDetail: React.FC = () => {
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6 max-w-4xl">
-          <Link to="/magazine" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
+          <ReactRouterDOM.Link to="/magazine" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
             <ChevronLeftIcon className="w-5 h-5" />
             Retour au Magazine
-          </Link>
+          </ReactRouterDOM.Link>
 
           <article className="bg-black p-4 sm:p-8 border border-pm-gold/20">
             <header>
