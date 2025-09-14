@@ -108,6 +108,9 @@ export const models: Model[] = [
             'https://i.postimg.cc/59Qbnb1p/NR-09503-Modifier.jpg',
             'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
         ],
+        distinctions: [
+            { name: "Reconnaissance Artistique", titles: ["Visage de l'Année - Gabon Fashion Awards 2023", "Meilleure Collaboration Photo avec NR Picture"] }
+        ],
         measurements: { chest: '82cm', waist: '60cm', hips: '88cm', shoeSize: '39' },
         categories: ['Défilé', 'Commercial', 'Éditorial'],
         experience: "Avec son regard perçant et sa polyvalence, AJ excelle dans les shootings éditoriaux et les campagnes publicitaires. Elle a collaboré avec de nombreuses marques locales et photographes de renom.",
@@ -130,6 +133,9 @@ export const models: Model[] = [
         isPublic: true,
         portfolioImages: [
              'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+        ],
+        distinctions: [
+            { name: "Podiums Masculins", titles: ["Mannequin Homme de l'Année - PFD Awards 2025", "Prix de l'Élégance Masculine - Libreville Fashion Week"] }
         ],
         measurements: { chest: '98cm', waist: '78cm', hips: '95cm', shoeSize: '44' },
         categories: ['Défilé', 'Costume', 'Sportswear'],
