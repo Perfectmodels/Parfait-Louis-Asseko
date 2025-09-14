@@ -2,10 +2,65 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
-import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { UserPlusIcon, PrinterIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { useILovePdf } from '../hooks/useILovePdf';
+
+const generateRegistrationListHtml = (applicants: CastingApplication[], siteConfig: any): string => {
+    const rows = applicants.map(app => `
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 8px; font-weight: bold; color: #D4AF37;">#${String(app.passageNumber).padStart(3, '0')}</td>
+            <td style="padding: 8px;">${app.firstName} ${app.lastName}</td>
+            <td style="padding: 8px;">${app.phone || 'N/A'}</td>
+            <td style="padding: 8px; font-size: 12px;">${new Date(app.submissionDate).toLocaleTimeString('fr-FR')}</td>
+        </tr>
+    `).join('');
+
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; }
+                .sheet { padding: 40px; }
+                .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ccc; padding-bottom: 16px; }
+                .header h1 { font-size: 32px; margin: 0; }
+                .header img { height: 60px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                th, td { text-align: left; }
+                th { background-color: #f7f7f7; padding: 12px 8px; border-bottom: 2px solid #ccc; text-transform: uppercase; font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            <div class="sheet">
+                <header class="header">
+                    <div>
+                        <h1>Liste de Passage - Casting</h1>
+                        <p>${new Date().toLocaleDateString('fr-FR', { dateStyle: 'full' })}</p>
+                    </div>
+                     ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
+                </header>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Passage #</th>
+                            <th>Nom Complet</th>
+                            <th>Téléphone</th>
+                            <th>Heure</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>
+        </body>
+        </html>
+    `;
+};
+
 
 const RegistrationCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
+    const { generatePdf, isLoading: isPrinting } = useILovePdf();
     const initialFormState = {
         firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
@@ -59,8 +114,10 @@ const RegistrationCasting: React.FC = () => {
         }
     };
 
-    const handlePrint = () => {
-        window.print();
+    const handlePrint = async () => {
+        if (!data?.siteConfig) return;
+        const html = generateRegistrationListHtml(registeredApplicants, data.siteConfig);
+        await generatePdf(html, 'Liste-Passage-Casting.pdf');
     };
 
     if (!isInitialized) {
@@ -128,8 +185,9 @@ const RegistrationCasting: React.FC = () => {
                         <div className="lg:col-span-2">
                              <div className="flex justify-between items-center mb-6">
                                 <h2 className="admin-page-title !text-3xl">Liste des Passages</h2>
-                                <button onClick={handlePrint} className="print-hide inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                                    <PrinterIcon className="w-5 h-5"/> Imprimer la Liste
+                                <button onClick={handlePrint} disabled={isPrinting} className="print-hide inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark disabled:opacity-50">
+                                     {isPrinting ? <ArrowPathIcon className="w-5 h-5 animate-spin"/> : <PrinterIcon className="w-5 h-5"/>}
+                                    {isPrinting ? 'Génération...' : 'Imprimer la Liste'}
                                 </button>
                             </div>
                             <div className="admin-section-wrapper printable-content">

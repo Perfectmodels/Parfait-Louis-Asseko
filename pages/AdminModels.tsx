@@ -1,18 +1,115 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Model } from '../types';
+import { Model, ContactInfo } from '../types';
 import SEO from '../components/SEO';
 import * as ReactRouterDOM from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm'; 
-import PrintableModelSheet from '../components/PrintableModelSheet'; 
+import { useILovePdf } from '../hooks/useILovePdf';
+
+const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: ContactInfo): string => {
+    const portfolioImagesHtml = (model.portfolioImages || []).slice(0, 4).map(img => 
+        `<img src="${img}" alt="Portfolio" style="width: 100%; aspect-ratio: 3/4; object-fit: cover;" />`
+    ).join('');
+
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; margin: 0; padding: 0; background-color: #fff; }
+                .sheet { padding: 40px; }
+                .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 16px; }
+                .header h1 { font-family: 'Times New Roman', Times, serif; font-size: 48px; color: #111; margin: 0; }
+                .header p { color: #666; font-size: 18px; margin: 0; }
+                .header img { height: 80px; width: auto; }
+                .main { margin-top: 32px; display: grid; grid-template-columns: 1fr 2fr; gap: 32px; }
+                .profile-pic { width: 100%; aspect-ratio: 3/4; object-fit: cover; border: 4px solid #f0f0f0; }
+                .section { margin-bottom: 24px; }
+                .section h2 { font-family: 'Times New Roman', Times, serif; font-size: 22px; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 12px; }
+                .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+                .info-item strong { display: block; color: #777; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+                .info-item span { font-size: 14px; }
+                .portfolio { margin-top: 32px; }
+                .portfolio-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+                .experience { margin-top: 32px; font-size: 12px; color: #555; line-height: 1.6; }
+                .footer { margin-top: 48px; padding-top: 24px; border-top: 2px solid #eee; text-align: center; font-size: 10px; color: #888; }
+                .footer p { margin: 0; }
+                .footer span { margin: 0 8px; }
+            </style>
+        </head>
+        <body>
+            <div class="sheet">
+                <header class="header">
+                    <div>
+                        <h1>${model.name}</h1>
+                        <p>Mannequin Professionnel</p>
+                    </div>
+                    ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
+                </header>
+                <main class="main">
+                    <div>
+                        <img src="${model.imageUrl}" alt="${model.name}" class="profile-pic" />
+                    </div>
+                    <div class="space-y-6">
+                        <div class="section">
+                            <h2>Détails Personnels</h2>
+                            <div class="info-grid">
+                                <div class="info-item"><strong>Âge</strong><span>${model.age || 'N/A'} ans</span></div>
+                                <div class="info-item"><strong>Genre</strong><span>${model.gender}</span></div>
+                                <div class="info-item"><strong>Lieu</strong><span>${model.location || 'N/A'}</span></div>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Mensurations</h2>
+                            <div class="info-grid">
+                                <div class="info-item"><strong>Taille</strong><span>${model.height}</span></div>
+                                <div class="info-item"><strong>Poitrine</strong><span>${model.measurements.chest}</span></div>
+                                <div class="info-item"><strong>Taille (vêt.)</strong><span>${model.measurements.waist}</span></div>
+                                <div class="info-item"><strong>Hanches</strong><span>${model.measurements.hips}</span></div>
+                                <div class="info-item"><strong>Pointure</strong><span>${model.measurements.shoeSize} (EU)</span></div>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Contact Agence</h2>
+                            <div class="info-grid">
+                                <div class="info-item"><strong>Email</strong><span>${contactInfo.email || 'N/A'}</span></div>
+                                <div class="info-item"><strong>Téléphone</strong><span>${contactInfo.phone || 'N/A'}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                ${(model.portfolioImages && model.portfolioImages.length > 0) ? `
+                <section class="portfolio">
+                    <h2>Portfolio</h2>
+                    <div class="portfolio-grid">${portfolioImagesHtml}</div>
+                </section>` : ''}
+                <section class="experience">
+                    <h2>Expérience & Parcours</h2>
+                    <p>${model.experience} ${model.journey}</p>
+                </section>
+                <footer class="footer">
+                    <p style="font-size: 16px; font-weight: bold; color: #333;">Perfect Models Management</p>
+                    <div>
+                        <span>${contactInfo.email}</span> |
+                        <span>${contactInfo.phone}</span> |
+                        <span>${contactInfo.address}</span>
+                    </div>
+                </footer>
+            </div>
+        </body>
+        </html>
+    `;
+};
 
 const AdminModels: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localModels, setLocalModels] = useState<Model[]>([]);
     const [editingModel, setEditingModel] = useState<Model | null>(null);
     const [isCreating, setIsCreating] = useState(false);
-    const [printingModel, setPrintingModel] = useState<Model | null>(null);
+    const { generatePdf, isLoading: isPrinting } = useILovePdf();
+    const [printingModelId, setPrintingModelId] = useState<string | null>(null);
 
     useEffect(() => {
         if (data?.models) {
@@ -86,6 +183,14 @@ const AdminModels: React.FC = () => {
         await saveData({ ...data, models: updatedModels });
     };
 
+    const handlePrint = async (model: Model) => {
+        if (!data?.siteConfig || !data?.contactInfo) return;
+        setPrintingModelId(model.id);
+        const html = generateModelSheetHtml(model, data.siteConfig, data.contactInfo);
+        await generatePdf(html, `Fiche-Mannequin-${model.name.replace(/\s/g, '_')}.pdf`);
+        setPrintingModelId(null);
+    };
+
     if (editingModel) {
         return (
             <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -104,10 +209,6 @@ const AdminModels: React.FC = () => {
                 </div>
             </div>
         )
-    }
-
-    if (printingModel) {
-        return <PrintableModelSheet model={printingModel} onDonePrinting={() => setPrintingModel(null)} />;
     }
 
     return (
@@ -152,7 +253,14 @@ const AdminModels: React.FC = () => {
                                     </td>
                                     <td>
                                         <div className="flex items-center gap-2">
-                                            <button onClick={() => setPrintingModel(model)} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Imprimer la Fiche"><PrinterIcon className="w-5 h-5"/></button>
+                                            <button 
+                                                onClick={() => handlePrint(model)} 
+                                                className="p-2 text-pm-gold/70 hover:text-pm-gold disabled:opacity-50 disabled:cursor-not-allowed" 
+                                                title="Imprimer la Fiche"
+                                                disabled={isPrinting && printingModelId === model.id}
+                                            >
+                                                {isPrinting && printingModelId === model.id ? <ArrowPathIcon className="w-5 h-5 animate-spin"/> : <PrinterIcon className="w-5 h-5"/>}
+                                            </button>
                                             <button onClick={() => setEditingModel(model)} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
                                             <button onClick={() => handleDelete(model.id)} className="p-2 text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
                                         </div>

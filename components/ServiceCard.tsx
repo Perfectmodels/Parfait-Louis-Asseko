@@ -33,14 +33,14 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
             </div>
             <div className="mt-auto pt-6">
                 <Link 
-                    to={service.buttonLink}
+                    to={`/services/${service.slug}`}
                     className={`inline-block px-8 py-3 font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 shadow-md ${
                         service.isComingSoon 
                         ? 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600' 
                         : 'bg-pm-gold text-pm-dark hover:bg-white hover:scale-105 shadow-pm-gold/20'
                     }`}
                 >
-                    {service.buttonText}
+                    Voir les détails
                 </Link>
             </div>
         </div>

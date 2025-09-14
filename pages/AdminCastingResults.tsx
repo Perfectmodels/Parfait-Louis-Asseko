@@ -1,15 +1,112 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, JuryMember, BeginnerStudent } from '../types';
+import { CastingApplication, CastingApplicationStatus, JuryMember, BeginnerStudent, JuryScore } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
-import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
+import { useILovePdf } from '../hooks/useILovePdf';
+
+const generateCastingSheetHtml = (app: CastingApplication, juryMembers: JuryMember[], siteConfig: any): string => {
+    const calculateAge = (birthDate: string): string => {
+        if (!birthDate) return 'N/A';
+        const age = new Date().getFullYear() - new Date(birthDate).getFullYear();
+        return `${age} ans`;
+    };
+
+    const juryScores: [string, JuryScore][] = app.scores ? Object.entries(app.scores) : [];
+    const overallScores = juryScores.map(([, score]) => score.overall);
+    const averageScore = overallScores.length > 0 ? (overallScores.reduce((a, b) => a + b, 0) / overallScores.length) : 0;
+    const decision = averageScore >= 5 ? 'Présélectionné' : 'Recalé';
+
+    const scoreRows = juryScores.map(([juryId, score]) => {
+        const jury = juryMembers.find(j => j.id === juryId);
+        return `
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 8px; font-weight: bold;">${jury?.name || juryId}</td>
+                <td style="padding: 8px; text-align: center;">${score.physique.toFixed(1)}</td>
+                <td style="padding: 8px; text-align: center;">${score.presence.toFixed(1)}</td>
+                <td style="padding: 8px; text-align: center;">${score.photogenie.toFixed(1)}</td>
+                <td style="padding: 8px; text-align: center;">${score.potentiel.toFixed(1)}</td>
+                <td style="padding: 8px; text-align: center; font-weight: bold; color: #D4AF37; background-color: #111;">${score.overall.toFixed(1)}</td>
+            </tr>
+        `;
+    }).join('');
+
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; }
+                .sheet { padding: 40px; }
+                .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ccc; padding-bottom: 16px; }
+                .header h1 { font-size: 36px; margin: 0; }
+                .header img { height: 70px; }
+                .title { font-size: 56px; font-weight: bold; color: #D4AF37; }
+                .passage-box { text-align: center; background-color: #111; color: white; padding: 16px; }
+                .passage-box p { margin: 0; }
+                .passage-num { font-size: 80px; font-weight: bold; color: #D4AF37; line-height: 1; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                th { background-color: #f2f2f2; padding: 10px 8px; border-bottom: 2px solid #ccc; }
+                .decision { font-weight: bold; font-size: 40px; ${decision === 'Présélectionné' ? 'color: green;' : 'color: red;'} }
+            </style>
+        </head>
+        <body>
+            <div class="sheet">
+                <header class="header">
+                    <div>
+                        <h1>Fiche Candidat</h1>
+                        <p>Casting Perfect Models Management</p>
+                    </div>
+                    ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
+                </header>
+                <section style="margin-top: 24px; display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <div>
+                        <h2 class="title">${app.firstName} ${app.lastName}</h2>
+                        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 18px;">
+                            <p><strong>Âge:</strong> ${calculateAge(app.birthDate)}</p>
+                            <p><strong>Genre:</strong> ${app.gender}</p>
+                            <p><strong>Taille:</strong> ${app.height} cm</p>
+                            <p><strong>Poids:</strong> ${app.weight} kg</p>
+                            <p><strong>Téléphone:</strong> ${app.phone}</p>
+                            <p><strong>Email:</strong> ${app.email}</p>
+                        </div>
+                    </div>
+                    <div class="passage-box">
+                        <p style="font-size: 14px; text-transform: uppercase;">Numéro de Passage</p>
+                        <p class="passage-num">#${String(app.passageNumber).padStart(3, '0')}</p>
+                    </div>
+                </section>
+                <section style="margin-top: 24px;">
+                    <h3>Évaluation du Jury</h3>
+                    <table>
+                        <thead><tr><th>Jury</th><th>Physique</th><th>Présence</th><th>Photogénie</th><th>Potentiel</th><th>Globale</th></tr></thead>
+                        <tbody>${scoreRows}</tbody>
+                    </table>
+                </section>
+                <section style="margin-top: 32px; padding-top: 16px; border-top: 2px solid #ccc; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3>Moyenne Générale</h3>
+                        <p style="font-size: 60px; font-weight: bold; color: #D4AF37; margin:0;">${averageScore.toFixed(2)} <span style="font-size: 30px; color: #333;">/ 10</span></p>
+                    </div>
+                    <div>
+                        <h3>Décision Provisoire</h3>
+                        <p class="decision">${decision}</p>
+                    </div>
+                </section>
+            </div>
+        </body>
+        </html>
+    `;
+};
+
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
     const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
-    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
+    const { generatePdf, isLoading: isPrinting } = useILovePdf();
+    const [printingAppId, setPrintingAppId] = useState<string | null>(null);
 
     const applicantsWithScores = useMemo(() => {
         const juryMembers: JuryMember[] = data?.juryMembers || [];
@@ -83,6 +180,14 @@ const AdminCastingResults: React.FC = () => {
             alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
+
+    const handlePrint = async (app: CastingApplication) => {
+        if (!data?.juryMembers || !data.siteConfig) return;
+        setPrintingAppId(app.id);
+        const html = generateCastingSheetHtml(app, data.juryMembers, data.siteConfig);
+        await generatePdf(html, `Fiche_Candidat_${app.passageNumber}.pdf`);
+        setPrintingAppId(null);
+    };
     
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
@@ -106,10 +211,6 @@ const AdminCastingResults: React.FC = () => {
         { value: 'Accepté', label: 'Acceptés' },
         { value: 'Refusé', label: 'Refusés' }
     ];
-
-    if (printingApp) {
-        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
-    }
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -164,11 +265,12 @@ const AdminCastingResults: React.FC = () => {
                                         <td className="p-4">
                                             <div className="flex items-center justify-center gap-2">
                                                 <button
-                                                    onClick={() => setPrintingApp(app)}
-                                                    className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
+                                                    onClick={() => handlePrint(app)}
+                                                    className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20 disabled:opacity-50"
                                                     title="Télécharger la fiche PDF"
+                                                    disabled={isPrinting && printingAppId === app.id}
                                                 >
-                                                    <PrinterIcon className="w-5 h-5"/>
+                                                     {isPrinting && printingAppId === app.id ? <ArrowPathIcon className="w-5 h-5 animate-spin"/> : <PrinterIcon className="w-5 h-5"/>}
                                                 </button>
                                                 {app.status === 'Présélectionné' && (
                                                     <>

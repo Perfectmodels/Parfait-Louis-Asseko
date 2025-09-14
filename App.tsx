@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, lazy, Suspense } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
@@ -16,6 +17,7 @@ const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Services = lazy(() => import('./pages/Services'));
+const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
@@ -127,6 +129,7 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/magazine/:slug" element={<ArticleDetail />} />
                         <ReactRouterDOM.Route path="/contact" element={<Contact />} />
                         <ReactRouterDOM.Route path="/services" element={<Services />} />
+                        <ReactRouterDOM.Route path="/services/:slug" element={<ServiceDetail />} />
                         <ReactRouterDOM.Route path="/casting" element={<Casting />} />
                         <ReactRouterDOM.Route path="/casting-formulaire" element={<CastingForm />} />
                         <ReactRouterDOM.Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
