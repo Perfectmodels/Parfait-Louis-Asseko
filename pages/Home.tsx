@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
+import * as ReactRouterDOM from 'react-router-dom';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
@@ -50,9 +52,9 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems }) => {
                         <h3 className="text-2xl md:text-4xl font-playfair text-pm-gold font-extrabold mb-3">{currentNews.title}</h3>
                         <p className="text-sm md:text-base text-pm-off-white/90 mb-5">{currentNews.excerpt}</p>
                         {currentNews.link && (
-                            <Link to={currentNews.link} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                            <ReactRouterDOM.Link to={currentNews.link} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                                 Lire la suite
-                            </Link>
+                            </ReactRouterDOM.Link>
                         )}
                     </div>
                 </motion.div>
@@ -138,12 +140,12 @@ const Home: React.FC = () => {
             Nous révélons les talents et valorisons la beauté africaine.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+            <ReactRouterDOM.Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
               Découvrir nos mannequins
-            </Link>
-            <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
+            </ReactRouterDOM.Link>
+            <ReactRouterDOM.Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
               Nous rejoindre
-            </Link>
+            </ReactRouterDOM.Link>
           </div>
         </div>
       </section>
@@ -164,9 +166,9 @@ const Home: React.FC = () => {
                         <div className="flex justify-center md:justify-start gap-x-4 text-sm font-bold text-pm-gold/90 mb-8 uppercase tracking-wider">
                             <span>Professionnalisme</span><span>•</span><span>Excellence</span><span>•</span><span>Éthique</span>
                         </div>
-                        <Link to="/agence" className="inline-block px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+                        <ReactRouterDOM.Link to="/agence" className="inline-block px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
                             Découvrir l'agence
-                        </Link>
+                        </ReactRouterDOM.Link>
                     </div>
                 </div>
             </div>
@@ -190,9 +192,9 @@ const Home: React.FC = () => {
               ))}
             </div>
             <div className="text-center mt-12">
-              <Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+              <ReactRouterDOM.Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                 Découvrir tous nos services
-              </Link>
+              </ReactRouterDOM.Link>
             </div>
           </div>
         </section>
@@ -208,9 +210,9 @@ const Home: React.FC = () => {
               ))}
             </div>
             <div className="text-center mt-12">
-              <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+              <ReactRouterDOM.Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
                 Voir tous les mannequins
-              </Link>
+              </ReactRouterDOM.Link>
             </div>
         </div>
       </section>
@@ -225,9 +227,9 @@ const Home: React.FC = () => {
           <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
             {fashionDayEvents.find(e => e.edition === 2)?.description || "Nous créons des moments inoubliables où la mode prend vie. Découvrez nos événements phares."}
           </p>
-          <Link to="/fashion-day" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+          <ReactRouterDOM.Link to="/fashion-day" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
             Découvrir le Perfect Fashion Day
-          </Link>
+          </ReactRouterDOM.Link>
         </div>
       </section>
 
@@ -252,12 +254,12 @@ const Home: React.FC = () => {
               Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+              <ReactRouterDOM.Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                 Postuler
-              </Link>
-              <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+              </ReactRouterDOM.Link>
+              <ReactRouterDOM.Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
                 Nous Contacter
-              </Link>
+              </ReactRouterDOM.Link>
             </div>
           </div>
         </section>

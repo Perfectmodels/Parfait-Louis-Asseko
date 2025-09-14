@@ -1,7 +1,8 @@
 
+
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { Link, useNavigate } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
@@ -49,9 +50,9 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                                 <ul className="mt-2 space-y-1 pl-2 border-l border-pm-gold/30">
                                   {module.chapters.map((chapter, chapterIndex) => (
                                     <li key={chapterIndex}>
-                                      <Link to={`/formations/${module.slug}/${chapter.slug}`} className="block text-xs text-pm-off-white/70 hover:text-pm-gold">
+                                      <ReactRouterDOM.Link to={`/formations/${module.slug}/${chapter.slug}`} className="block text-xs text-pm-off-white/70 hover:text-pm-gold">
                                         {chapter.title}
-                                      </Link>
+                                      </ReactRouterDOM.Link>
                                     </li>
                                   ))}
                                 </ul>
@@ -78,7 +79,7 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                         </section>
                         
                         <div className="mb-12">
-                            <Link to="/formations/forum" className="group block w-full text-left p-6 bg-pm-gold/10 border-2 border-dashed border-pm-gold/30 hover:border-pm-gold hover:bg-pm-gold/20 transition-all duration-300">
+                            <ReactRouterDOM.Link to="/formations/forum" className="group block w-full text-left p-6 bg-pm-gold/10 border-2 border-dashed border-pm-gold/30 hover:border-pm-gold hover:bg-pm-gold/20 transition-all duration-300">
                                 <div className="flex items-center gap-4">
                                     <ChatBubbleBottomCenterTextIcon className="w-10 h-10 text-pm-gold flex-shrink-0" />
                                     <div>
@@ -86,7 +87,7 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                                         <p className="text-sm text-pm-off-white/80">Échangez avec les autres mannequins, posez vos questions et partagez votre expérience.</p>
                                     </div>
                                 </div>
-                            </Link>
+                            </ReactRouterDOM.Link>
                         </div>
                     
                         <section aria-label="Modules de formation" className="space-y-4">
@@ -109,9 +110,9 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                                             <ul className="space-y-3 list-disc list-inside">
                                                 {module.chapters.map((chapter) => (
                                                     <li key={chapter.slug}>
-                                                        <Link to={`/formations/${module.slug}/${chapter.slug}`} className="text-pm-off-white/80 hover:text-pm-gold hover:underline">
+                                                        <ReactRouterDOM.Link to={`/formations/${module.slug}/${chapter.slug}`} className="text-pm-off-white/80 hover:text-pm-gold hover:underline">
                                                             {chapter.title}
-                                                        </Link>
+                                                        </ReactRouterDOM.Link>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -250,7 +251,7 @@ const QuizComponent: React.FC<{ quiz: QuizQuestion[], moduleSlug: string }> = ({
 const Formations: React.FC = () => {
     const { data, isInitialized } = useData();
     // FIX: Use useNavigate for react-router-dom v6 compatibility.
-    const navigate = useNavigate();
+    const navigate = ReactRouterDOM.useNavigate();
 
     useEffect(() => {
         const hasAccess = sessionStorage.getItem('classroom_access');

@@ -1,5 +1,7 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
+import * as ReactRouterDOM from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
@@ -28,9 +30,9 @@ const Footer: React.FC = () => {
                     {/* Column 1: Brand & Social */}
                     <div className="space-y-4">
                         {siteConfig?.logo && (
-                            <Link to="/">
+                            <ReactRouterDOM.Link to="/">
                                 <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-16 w-auto" />
-                            </Link>
+                            </ReactRouterDOM.Link>
                         )}
                         <p className="text-sm">L'élégance redéfinie. Berceau de talents et plateforme dédiée à l'avenir de la mode africaine.</p>
                          {socialLinks && (
@@ -48,15 +50,15 @@ const Footer: React.FC = () => {
                         <ul className="space-y-3">
                             {footerLinks.map(link => (
                                 <li key={link.path}>
-                                    <Link to={link.path} className="hover:text-pm-gold transition-colors text-sm">
+                                    <ReactRouterDOM.Link to={link.path} className="hover:text-pm-gold transition-colors text-sm">
                                         {link.footerLabel || link.label}
-                                    </Link>
+                                    </ReactRouterDOM.Link>
                                 </li>
                             ))}
                              <li>
-                                <Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
+                                <ReactRouterDOM.Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
                                     Accès Panel
-                                </Link>
+                                </ReactRouterDOM.Link>
                             </li>
                         </ul>
                     </div>
@@ -67,9 +69,9 @@ const Footer: React.FC = () => {
                         <ul className="space-y-3">
                            {keyServices.map(service => (
                                <li key={service.label}>
-                                   <Link to={service.link} className="hover:text-pm-gold transition-colors text-sm">
+                                   <ReactRouterDOM.Link to={service.link} className="hover:text-pm-gold transition-colors text-sm">
                                        {service.label}
-                                   </Link>
+                                   </ReactRouterDOM.Link>
                                </li>
                            ))}
                         </ul>
@@ -100,9 +102,9 @@ const Footer: React.FC = () => {
                 <div className="mt-16 pt-8 border-t border-pm-off-white/10 text-center text-sm">
                     <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
                      <div className="mt-2 space-x-4">
-                        <Link to="/terms-of-use" className="hover:text-pm-gold transition-colors">Conditions d'Utilisation</Link>
+                        <ReactRouterDOM.Link to="/terms-of-use" className="hover:text-pm-gold transition-colors">Conditions d'Utilisation</ReactRouterDOM.Link>
                         <span>|</span>
-                        <Link to="/privacy-policy" className="hover:text-pm-gold transition-colors">Politique de Confidentialité</Link>
+                        <ReactRouterDOM.Link to="/privacy-policy" className="hover:text-pm-gold transition-colors">Politique de Confidentialité</ReactRouterDOM.Link>
                     </div>
                 </div>
             </div>

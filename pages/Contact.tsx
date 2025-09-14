@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { useLocation } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -10,7 +11,7 @@ import { ContactMessage } from '../types';
 
 const Contact: React.FC = () => {
     const { data, saveData } = useData();
-    const location = useLocation();
+    const location = ReactRouterDOM.useLocation();
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
     
