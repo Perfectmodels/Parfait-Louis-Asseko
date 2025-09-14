@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
+import * as ReactRouterDOM from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
     UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
@@ -12,7 +14,7 @@ import { useData } from '../contexts/DataContext';
 type AdminTab = 'talents' | 'content' | 'accounting';
 
 const Admin: React.FC = () => {
-    const navigate = useNavigate();
+    const navigate = ReactRouterDOM.useNavigate();
     const { data } = useData();
     const [activeTab, setActiveTab] = useState<AdminTab>('talents');
 
@@ -123,7 +125,7 @@ interface DashboardCardProps {
     notificationCount?: number;
 }
 const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, description, notificationCount }) => (
-    <Link to={link} className="relative group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-1 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
+    <ReactRouterDOM.Link to={link} className="relative group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-1 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
         {notificationCount && notificationCount > 0 && (
             <span className="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full animate-pulse-slow">
                 {notificationCount}
@@ -132,7 +134,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, 
         <Icon className="w-10 h-10 text-pm-gold mb-4" />
         <h2 className="text-lg font-bold text-pm-off-white group-hover:text-pm-gold transition-colors mb-1">{title}</h2>
         <p className="text-xs text-pm-off-white/70 leading-relaxed">{description}</p>
-    </Link>
+    </ReactRouterDOM.Link>
 );
 
 export default Admin;

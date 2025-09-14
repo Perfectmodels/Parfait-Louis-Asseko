@@ -1,7 +1,8 @@
 
+
 import React from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import CountdownTimer from '../components/CountdownTimer';
 import { CalendarDaysIcon, ClockIcon, MapPinIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
@@ -122,9 +123,9 @@ const Casting: React.FC = () => {
               <div className="max-w-3xl mx-auto bg-pm-gold text-pm-dark p-8 text-center shadow-lg shadow-pm-gold/30">
                 <h2 id="application-title" className="text-4xl font-playfair font-bold mb-4">Prêt(e) à défiler ?</h2>
                 <p className="text-lg mb-6">Ne manquez pas cette opportunité unique. Soumettez votre candidature en ligne pour pré-valider votre participation.</p>
-                <Link to="/casting-formulaire" className="inline-block px-10 py-4 bg-pm-dark text-pm-gold font-bold uppercase tracking-widest transition-transform duration-300 hover:scale-105">
+                <ReactRouterDOM.Link to="/casting-formulaire" className="inline-block px-10 py-4 bg-pm-dark text-pm-gold font-bold uppercase tracking-widest transition-transform duration-300 hover:scale-105">
                     Postuler en Ligne
-                </Link>
+                </ReactRouterDOM.Link>
               </div>
             </section>
         </div>
