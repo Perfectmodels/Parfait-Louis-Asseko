@@ -1,7 +1,5 @@
-// FIX: Add BeginnerStudent to import
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief } from '../types';
 import { NavLink } from '../hooks/useDataStore';
-// FIX: Import beginner course data
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
@@ -44,6 +42,11 @@ export const siteImages: SiteImages = {
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
+    firebaseDynamicLinks: {
+        webApiKey: "AIzaSyB_jjJEXU7yvJv49aiPCJqEZgiyfJEJzrg",
+        domainUriPrefix: 'https://perfectmodels.page.link'
+    },
+    imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
 };
 
 export const juryMembers: JuryMember[] = [
@@ -66,7 +69,6 @@ export const models: Model[] = [
         name: 'Noemi Kim',
         username: 'Man-PMMN01',
         password: 'noemi2024',
-        // FIX: Add level property for data consistency.
         level: 'Pro',
         email: 'noemi.kim@example.com',
         phone: '+241077000001',
@@ -75,6 +77,7 @@ export const models: Model[] = [
         gender: 'Femme',
         location: 'Libreville',
         imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        isPublic: true,
         portfolioImages: [
             'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
             'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
@@ -87,47 +90,61 @@ export const models: Model[] = [
         categories: ['Défilé', 'Éditorial', 'Beauté'],
         experience: "Mannequin vedette de l'agence, Noemi a défilé pour les plus grands créateurs gabonais et a été le visage de plusieurs campagnes nationales. Son professionnalisme et sa démarche captivante en font une référence.",
         journey: "Découverte lors d'un casting sauvage, Noemi a rapidement gravi les échelons grâce à sa détermination. Formée au sein de la PMM Classroom, elle incarne aujourd'hui l'excellence et l'ambition de l'agence.",
-        quizScores: { 'module-1-les-fondamentaux-du-mannequinat': 100, 'module-2-techniques-de-podium-catwalk': 95 },
+        quizScores: { 
+            'module-1-les-fondamentaux-du-mannequinat': { score: 3, total: 3, timesLeft: 0, timestamp: '2024-07-01T10:00:00Z' }, 
+            'module-2-techniques-de-podium-catwalk': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-02T10:00:00Z' } 
+        },
     },
     {
         id: 'aj-caramela',
         name: 'AJ Caramela',
         username: 'Man-PMMA01',
         password: 'caramela2024',
-        // FIX: Add level property for data consistency.
         level: 'Pro',
         height: '1m75',
         gender: 'Femme',
         imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+        isPublic: true,
         portfolioImages: [
             'https://i.postimg.cc/Xv24Dvp1/NR-09484.jpg',
             'https://i.postimg.cc/59Qbnb1p/NR-09503-Modifier.jpg',
             'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
         ],
+        distinctions: [
+            { name: "Reconnaissance Artistique", titles: ["Visage de l'Année - Gabon Fashion Awards 2023", "Meilleure Collaboration Photo avec NR Picture"] }
+        ],
         measurements: { chest: '82cm', waist: '60cm', hips: '88cm', shoeSize: '39' },
         categories: ['Défilé', 'Commercial', 'Éditorial'],
         experience: "Avec son regard perçant et sa polyvalence, AJ excelle dans les shootings éditoriaux et les campagnes publicitaires. Elle a collaboré avec de nombreuses marques locales et photographes de renom.",
         journey: "AJ a rejoint PMM avec une passion pour la photographie. Son aisance devant l'objectif et sa capacité à se transformer lui ont rapidement ouvert les portes des projets les plus créatifs.",
-        quizScores: { 'module-1-les-fondamentaux-du-mannequinat': 90, 'module-3-photographie-et-expression-corporelle': 100 },
+        quizScores: { 
+            'module-1-les-fondamentaux-du-mannequinat': { score: 3, total: 3, timesLeft: 1, timestamp: '2024-07-03T10:00:00Z' }, 
+            'module-3-photographie-et-expression-corporelle': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-04T10:00:00Z' } 
+        },
     },
     {
         id: 'yann-aubin',
         name: 'Yann Aubin',
         username: 'Man-PMMY01',
         password: 'yann2024',
-        // FIX: Add level property for data consistency.
         level: 'Pro',
         height: '1m88',
         gender: 'Homme',
         imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+        isPublic: true,
         portfolioImages: [
              'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+        ],
+        distinctions: [
+            { name: "Podiums Masculins", titles: ["Mannequin Homme de l'Année - PFD Awards 2025", "Prix de l'Élégance Masculine - Libreville Fashion Week"] }
         ],
         measurements: { chest: '98cm', waist: '78cm', hips: '95cm', shoeSize: '44' },
         categories: ['Défilé', 'Costume', 'Sportswear'],
         experience: "Spécialiste du prêt-à-porter masculin, Yann est reconnu pour sa démarche puissante et son élégance naturelle. Il est un choix privilégié pour les défilés de créateurs de costumes.",
         journey: "Ancien athlète, Yann a apporté sa discipline et sa prestance au monde du mannequinat. Il s'est rapidement imposé comme une figure incontournable de la mode masculine au Gabon.",
-        quizScores: { 'module-2-techniques-de-podium-catwalk': 90 },
+        quizScores: { 
+            'module-2-techniques-de-podium-catwalk': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-05T10:00:00Z' } 
+        },
     },
 ];
 
@@ -141,7 +158,7 @@ export const testimonials: Testimonial[] = [
     {
         name: 'Nadia K.',
         role: 'Directrice Artistique',
-        quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond parfaitement aux besoins créatifs de nos campagnes publicitaires.",
+        quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond perfectly aux besoins créatifs de nos campagnes publicitaires.",
         imageUrl: 'https://i.ibb.co/y4x9Y8X/testimonial-2.jpg',
     },
     {
@@ -160,8 +177,41 @@ export const articleComments: ArticleComment[] = [];
 export const recoveryRequests: RecoveryRequest[] = [];
 export const bookingRequests: BookingRequest[] = [];
 export const contactMessages: ContactMessage[] = [];
-// FIX: Add beginnerStudents array and export beginnerCourseData
-export const beginnerStudents: BeginnerStudent[] = [];
+export const absences: Absence[] = [];
+export const monthlyPayments: MonthlyPayment[] = [];
+export const photoshootBriefs: PhotoshootBrief[] = [];
+export const beginnerStudents: BeginnerStudent[] = [
+    {
+        id: 'casting-1720000000001',
+        name: "Alicia Dubois",
+        matricule: "DEB-2025-001",
+        password: "alicia2025",
+        quizScores: {}
+    },
+    {
+        id: 'casting-1720000000002',
+        name: "Jordan Lefebvre",
+        matricule: "DEB-2025-002",
+        password: "jordan2025",
+        quizScores: { 
+            'module-1-decouverte-du-mannequinat': { score: 2, total: 3, timesLeft: 0, timestamp: '2024-07-06T10:00:00Z' } 
+        }
+    },
+    {
+        id: 'casting-1720000000003',
+        name: "Chloé Moreau",
+        matricule: "DEB-2025-003",
+        password: "chloe2025",
+        quizScores: {}
+    },
+    {
+        id: 'casting-1720000000004',
+        name: "Lucas Girard",
+        matricule: "DEB-2025-004",
+        password: "lucas2025",
+        quizScores: {}
+    }
+];
 export { beginnerCourseData };
 
 
@@ -172,129 +222,134 @@ export const newsItems: NewsItem[] = [
 ];
 
 export const fashionDayEvents: FashionDayEvent[] = [
-  {
-    edition: 1,
-    date: '8 Février 2025',
-    theme: 'Racines & Modernité',
-    location: 'La Gare du Nord, Libreville',
-    description: 'La première édition du Perfect Fashion Day a célébré le talent des créateurs locaux et la beauté des mannequins de l\'agence dans un cadre prestigieux.',
-    stylists: [
-        { 
-            name: 'AG Style', 
-            description: 'Un mélange parfait de tradition et de modernité.', 
-            images: [
-                'https://i.ibb.co/Gfxgf00z/agstyle-42.jpg', 'https://i.ibb.co/4g4x6Dkp/agstyle-41.jpg', 'https://i.ibb.co/0y7Pqv9y/agstyle-36.jpg', 'https://i.ibb.co/yc5kxJKT/agstyle-33.jpg',
-                'https://i.ibb.co/8DTp4Qqy/agstyle-28.jpg', 'https://i.ibb.co/DfF1Z4T9/agstyle-23.jpg', 'https://i.ibb.co/h1mPDBy4/agstyle-21.jpg', 'https://i.ibb.co/d4D6QLnf/agstyle-17.jpg',
-                'https://i.ibb.co/60RSnzxY/agstyle-13.jpg', 'https://i.ibb.co/hR9Sfy5Q/agstyle-15.jpg', 'https://i.ibb.co/KpRpVrg3/agstyle-7.jpg', 'https://i.ibb.co/vCNg8h6j/AG-Style.jpg'
-            ] 
+    {
+      edition: 1,
+      date: "2025-01-25T18:00:00",
+      theme: "Racines et Modernité",
+      location: "La Gare du Nord – Hôtel Restaurant Bar Casino, Carrefour Acaé",
+      promoter: "Parfait Asseko",
+      description: "La 1ère Édition de la Perfect Fashion Day a tenu toutes ses promesses en réunissant mode, art, culture et professionnalisme. Le thème « Racines et Modernité » a permis d’explorer la richesse de la culture gabonaise tout en ouvrant un dialogue avec les tendances contemporaines, posant ainsi les bases solides d’un événement de référence pour la mode gabonaise.",
+      stylists: [
+        {
+          name: "AG Style",
+          description: "Un mélange parfait de tradition et de modernité.",
+          images: [
+            "https://i.ibb.co/Gfxgf00z/agstyle-42.jpg", "https://i.ibb.co/4g4x6Dkp/agstyle-41.jpg", "https://i.ibb.co/0y7Pqv9y/agstyle-36.jpg", "https://i.ibb.co/yc5kxJKT/agstyle-33.jpg",
+            "https://i.ibb.co/8DTp4Qqy/agstyle-28.jpg", "https://i.ibb.co/DfF1Z4T9/agstyle-23.jpg", "https://i.ibb.co/h1mPDBy4/agstyle-21.jpg", "https://i.ibb.co/d4D6QLnf/agstyle-17.jpg",
+            "https://i.ibb.co/60RSnzxY/agstyle-13.jpg", "https://i.ibb.co/hR9Sfy5Q/agstyle-15.jpg", "https://i.ibb.co/KpRpVrg3/agstyle-7.jpg", "https://i.ibb.co/vCNg8h6j/AG-Style.jpg"
+          ]
         },
-        { 
-            name: 'VENTEX Custom', 
-            description: 'Une prestation haute en audace et en style.', 
-            images: [
-                'https://i.ibb.co/LDm73BY2/ventex-44.jpg', 'https://i.ibb.co/LXj51t0G/ventex-43.jpg', 'https://i.ibb.co/hRnhS3gP/ventex-31.jpg', 'https://i.ibb.co/fdM74zWJ/ventex-36.jpg',
-                'https://i.ibb.co/HTb9F9rc/ventex-21.jpg', 'https://i.ibb.co/bjWPHcc3/ventex-28.jpg', 'https://i.ibb.co/JW2VY4JY/ventex-18.jpg', 'https://i.ibb.co/6JwgLJk2/ventex-4.jpg',
-                'https://i.ibb.co/vvYkS6nQ/ventex-14.jpg', 'https://i.ibb.co/ch7Fxy8J/ventex-7.jpg'
-            ] 
+        {
+          name: "Farel MD",
+          description: "Élégance masculine & attitude.",
+          images: [
+            "https://i.ibb.co/mC32jrDj/farelmd-31.jpg", "https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg", "https://i.ibb.co/Z6LnsF9F/farelmd-33.jpg", "https://i.ibb.co/0yVgwzxH/farelmd-28.jpg",
+            "https://i.ibb.co/bZWLkcw/farelmd-30.jpg", "https://i.ibb.co/LDjkT30K/farelmd-21.jpg", "https://i.ibb.co/rKm9BH3j/farelmd-26.jpg", "https://i.ibb.co/KpY1tHHg/farelmd-10.jpg",
+            "https://i.ibb.co/tp51KKMX/farelmd-16.jpg", "https://i.ibb.co/fTrvQht/farelmd-5.jpg"
+          ]
         },
-        { 
-            name: 'Farel MD', 
-            description: 'Élégance masculine & attitude.', 
-            images: [
-                'https://i.ibb.co/mC32jrDj/farelmd-31.jpg', 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg', 'https://i.ibb.co/Z6LnsF9F/farelmd-33.jpg', 'https://i.ibb.co/0yVgwzxH/farelmd-28.jpg',
-                'https://i.ibb.co/bZWLkcw/farelmd-30.jpg', 'https://i.ibb.co/LDjkT30K/farelmd-21.jpg', 'https://i.ibb.co/rKm9BH3j/farelmd-26.jpg', 'https://i.ibb.co/KpY1tHHg/farelmd-10.jpg',
-                'https://i.ibb.co/tp51KKMX/farelmd-16.jpg', 'https://i.ibb.co/fTrvQht/farelmd-5.jpg'
-            ] 
+        {
+          name: "Ventex Custom",
+          description: "Une prestation haute en audace et en style.",
+          images: [
+            "https://i.ibb.co/LDm73BY2/ventex-44.jpg", "https://i.ibb.co/LXj51t0G/ventex-43.jpg", "https://i.ibb.co/hRnhS3gP/ventex-31.jpg", "https://i.ibb.co/fdM74zWJ/ventex-36.jpg",
+            "https://i.ibb.co/HTb9F9rc/ventex-21.jpg", "https://i.ibb.co/bjWPHcc3/ventex-28.jpg", "https://i.ibb.co/JW2VY4JY/ventex-18.jpg", "https://i.ibb.co/6JwgLJk2/ventex-4.jpg",
+            "https://i.ibb.co/vvYkS6nQ/ventex-14.jpg", "https://i.ibb.co/ch7Fxy8J/ventex-7.jpg"
+          ]
         },
-        { 
-            name: 'Madame Luc (Abiale)', 
-            description: 'Des coupes fluides, une allure élégante et intemporelle.', 
-            images: [
-                'https://i.ibb.co/TM8ZvfwY/madameluc-35.jpg', 'https://i.ibb.co/N2n3N649/madameluc-27.jpg', 'https://i.ibb.co/HfGP2hfY/madameluc-23.jpg', 'https://i.ibb.co/v4bptydm/madameluc-14.jpg',
-                'https://i.ibb.co/Nk9JnK8/madameluc-10.jpg', 'https://i.ibb.co/wN3028xM/madameluc-1.jpg', 'https://i.ibb.co/Z64LbfNr/madameluc-4.jpg'
-            ] 
+        {
+          name: "Miguel Fashion Style",
+          description: "La finesse sur-mesure.",
+          images: [
+            "https://i.ibb.co/R4j44vxH/miguel-25.jpg", "https://i.ibb.co/DF36zP1/miguel-24.jpg", "https://i.ibb.co/5hHnGSgR/miguel-23.jpg", "https://i.ibb.co/KccH1yVW/miguel-21.jpg",
+            "https://i.ibb.co/tTwH0qkd/miguel-19.jpg", "https://i.ibb.co/PztGS4cG/miguel-13.jpg", "https://i.ibb.co/HfHQDqs9/miguel-12.jpg", "https://i.ibb.co/DPbZq0X5/miguel-6.jpg",
+            "https://i.ibb.co/fYzb35qV/miguel-10.jpg"
+          ]
         },
-        { 
-            name: 'Brand’O', 
-            description: 'Une énergie flamboyante sur le podium.', 
-            images: [
-                'https://i.ibb.co/jkztFFQV/brando-50.jpg', 'https://i.ibb.co/Mxvqp922/brando-45.jpg', 'https://i.ibb.co/b5NYjLqm/brando-39.jpg', 'https://i.ibb.co/mFGznJJd/brando-34.jpg',
-                'https://i.ibb.co/pjQ61C7X/brando-28.jpg', 'https://i.ibb.co/mrj3sfP7/brando-26.jpg', 'https://i.ibb.co/GQfNYbHh/brando-25.jpg', 'https://i.ibb.co/bgJd82zf/brando-24.jpg',
-                'https://i.ibb.co/GQzzgTZw/brando-22.jpg', 'https://i.ibb.co/4gNj73vP/brando-17.jpg', 'https://i.ibb.co/spywFpR6/brando-13.jpg', 'https://i.ibb.co/GfYXkKVK/brando-11.jpg',
-                'https://i.ibb.co/ymw3cwt9/brando-10.jpg'
-            ] 
+        {
+          name: "Faran",
+          description: "Parade des Miss du Gabon.",
+          images: [
+            "https://i.ibb.co/xqxq0t42/faran-72.jpg", "https://i.ibb.co/5WRGVpN2/faran-63.jpg", "https://i.ibb.co/C3rMvpRH/faran-62.jpg", "https://i.ibb.co/ccTm9fqZ/faran-45.jpg",
+            "https://i.ibb.co/W4JbLKPY/faran-31.jpg", "https://i.ibb.co/kVvx62Cd/faran-7.jpg", "https://i.ibb.co/1fpzHFCR/faran-18.jpg"
+          ]
         },
-        { 
-            name: 'Tito Style', 
-            description: 'Audace urbaine & inspiration afro.', 
-            images: [
-                'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg', 'https://i.ibb.co/gMf55YY9/titostyle-51.jpg', 'https://i.ibb.co/8Ty8sGT/titostyle-50.jpg', 'https://i.ibb.co/d0tXVs0v/titostyle-45.jpg',
-                'https://i.ibb.co/21VQys2y/titostyle-43.jpg', 'https://i.ibb.co/wNPRTQrS/titostyle-41.jpg', 'https://i.ibb.co/vvc0k6TQ/titostyle-36.jpg', 'https://i.ibb.co/PGP9HTrw/titostyle-33.jpg',
-                'https://i.ibb.co/QvjHXZFY/titostyle-19.jpg', 'https://i.ibb.co/21cjYs2K/titostyle-25.jpg', 'https://i.ibb.co/ynCg04LR/titostyle-17.jpg', 'https://i.ibb.co/cXkw3btJ/titostyle-4.jpg',
-                'https://i.ibb.co/qY64DbG0/titostyle-12.jpg'
-            ] 
+        {
+          name: "Madame Luc (Abiale)",
+          description: "Une allure élégante et intemporelle.",
+          images: [
+            "https://i.ibb.co/TM8ZvfwY/madameluc-35.jpg", "https://i.ibb.co/N2n3N649/madameluc-27.jpg", "https://i.ibb.co/HfGP2hfY/madameluc-23.jpg", "https://i.ibb.co/v4bptydm/madameluc-14.jpg",
+            "https://i.ibb.co/Nk9JnK8/madameluc-10.jpg", "https://i.ibb.co/wN3028xM/madameluc-1.jpg", "https://i.ibb.co/Z64LbfNr/madameluc-4.jpg"
+          ]
         },
-        { 
-            name: 'Miguel Fashion Style', 
-            description: 'La finesse sur-mesure.', 
-            images: [
-                'https://i.ibb.co/R4j44vxH/miguel-25.jpg', 'https://i.ibb.co/DF36zP1/miguel-24.jpg', 'https://i.ibb.co/5hHnGSgR/miguel-23.jpg', 'https://i.ibb.co/KccH1yVW/miguel-21.jpg',
-                'https://i.ibb.co/tTwH0qkd/miguel-19.jpg', 'https://i.ibb.co/PztGS4cG/miguel-13.jpg', 'https://i.ibb.co/HfHQDqs9/miguel-12.jpg', 'https://i.ibb.co/DPbZq0X5/miguel-6.jpg',
-                'https://i.ibb.co/fYzb35qV/miguel-10.jpg'
-            ] 
+        {
+          name: "Brand’O",
+          description: "Une énergie flamboyante au podium.",
+          images: [
+            "https://i.ibb.co/jkztFFQV/brando-50.jpg", "https://i.ibb.co/Mxvqp922/brando-45.jpg", "https://i.ibb.co/b5NYjLqm/brando-39.jpg", "https://i.ibb.co/mFGznJJd/brando-34.jpg",
+            "https://i.ibb.co/pjQ61C7X/brando-28.jpg", "https://i.ibb.co/mrj3sfP7/brando-26.jpg", "https://i.ibb.co/GQfNYbHh/brando-25.jpg", "https://i.ibb.co/bgJd82zf/brando-24.jpg",
+            "https://i.ibb.co/GQzzgTZw/brando-22.jpg", "https://i.ibb.co/4gNj73vP/brando-17.jpg", "https://i.ibb.co/spywFpR6/brando-13.jpg", "https://i.ibb.co/GfYXkKVK/brando-11.jpg",
+            "https://i.ibb.co/ymw3cwt9/brando-10.jpg"
+          ]
         },
-        { 
-            name: 'Faran', 
-            description: 'Parade des Miss du Gabon.', 
-            images: [
-                'https://i.ibb.co/xqxq0t42/faran-72.jpg', 'https://i.ibb.co/5WRGVpN2/faran-63.jpg', 'https://i.ibb.co/C3rMvpRH/faran-62.jpg', 'https://i.ibb.co/ccTm9fqZ/faran-45.jpg',
-                'https://i.ibb.co/W4JbLKPY/faran-31.jpg', 'https://i.ibb.co/kVvx62Cd/faran-7.jpg', 'https://i.ibb.co/1fpzHFCR/faran-18.jpg'
-            ] 
+        {
+          name: "Tito Style",
+          description: "Audace urbaine & inspiration afro.",
+          images: [
+            "https://i.ibb.co/C5rcPJHz/titostyle-53.jpg", "https://i.ibb.co/gMf55YY9/titostyle-51.jpg", "https://i.ibb.co/8Ty8sGT/titostyle-50.jpg", "https://i.ibb.co/d0tXVs0v/titostyle-45.jpg",
+            "https://i.ibb.co/21VQys2y/titostyle-43.jpg", "https://i.ibb.co/wNPRTQrS/titostyle-41.jpg", "https://i.ibb.co/vvc0k6TQ/titostyle-36.jpg", "https://i.ibb.co/PGP9HTrw/titostyle-33.jpg",
+            "https://i.ibb.co/QvjHXZFY/titostyle-19.jpg", "https://i.ibb.co/21cjYs2K/titostyle-25.jpg", "https://i.ibb.co/ynCg04LR/titostyle-17.jpg", "https://i.ibb.co/cXkw3btJ/titostyle-4.jpg",
+            "https://i.ibb.co/qY64DbG0/titostyle-12.jpg"
+          ]
         },
-        { 
-            name: 'Edele A', 
-            description: 'Le final tout en poésie.', 
-            images: [
-                'https://i.ibb.co/N26jYJCm/edelea-40.jpg', 'https://i.ibb.co/zhtZj7wG/edelea-38.jpg', 'https://i.ibb.co/BKwMNJBw/edelea-31.jpg', 'https://i.ibb.co/mVJhr45j/edelea-24.jpg',
-                'https://i.ibb.co/35dDJXpV/edelea-22.jpg', 'https://i.ibb.co/Xx03RWJx/edelea-16.jpg', 'https://i.ibb.co/Tq77XgYg/edelea-3.jpg'
-            ] 
+        {
+          name: "Edele A",
+          description: "Le final tout en poésie.",
+          images: [
+            "https://i.ibb.co/N26jYJCm/edelea-40.jpg", "https://i.ibb.co/zhtZj7wG/edelea-38.jpg", "https://i.ibb.co/BKwMNJBw/edelea-31.jpg", "https://i.ibb.co/mVJhr45j/edelea-24.jpg",
+            "https://i.ibb.co/35dDJXpV/edelea-22.jpg", "https://i.ibb.co/Xx03RWJx/edelea-16.jpg", "https://i.ibb.co/Tq77XgYg/edelea-3.jpg"
+          ]
         }
-    ],
-    featuredModels: ['Noemi Kim', 'AJ Caramela', 'Yann Aubin'],
-    artists: [
-        { 
-            name: 'Lady Riaba (Poésie)', 
-            description: 'Performance poétique envoûtante', 
-            images: [
-                'https://i.ibb.co/JRs6P128/ladyriaba-1.jpg',
-                'https://i.ibb.co/Kx1WMT87/ladyriaba-5.jpg',
-                'https://i.ibb.co/x8mGQcCG/ladyriaba-6.jpg',
-                'https://i.ibb.co/zhj0xKNN/ladyriaba-8.jpg',
-                'https://i.ibb.co/Fq4NQ0gN/ladyriaba-10.jpg',
-                'https://i.ibb.co/Cp50mQwn/ladyriaba-14.jpg',
-                'https://i.ibb.co/Cs3pHkbD/ladyriaba-20.jpg',
-                'https://i.ibb.co/hRFn9tyT/ladyriaba-22.jpg',
-                'https://i.ibb.co/rfLBb0t3/ladyriaba-26.jpg',
-                'https://i.ibb.co/WCYYHQ1/ladyriaba-28.jpg'
-            ] 
+      ],
+      featuredModels: [
+        "Juliana Jodelle", "Noemi Kim", "Stecya", "Lyne", "Cassandra", "Merveille",
+        "Osée Jn", "Donatien", "Pablo Zapatero", "Rosnel", "Moustapha"
+      ],
+      artists: [
+        {
+          name: "Lady Riaba",
+          description: "Slam poétique intitulé « Racines et Modernité » en ouverture de soirée.",
+          images: [
+            "https://i.ibb.co/WCYYHQ1/ladyriaba-28.jpg", "https://i.ibb.co/rfLBb0t3/ladyriaba-26.jpg", "https://i.ibb.co/hRFn9tyT/ladyriaba-22.jpg",
+            "https://i.ibb.co/Cs3pHkbD/ladyriaba-20.jpg", "https://i.ibb.co/Cp50mQwn/ladyriaba-14.jpg", "https://i.ibb.co/Fq4NQ0gN/ladyriaba-10.jpg",
+            "https://i.ibb.co/zhj0xKNN/ladyriaba-8.jpg", "https://i.ibb.co/x8mGQcCG/ladyriaba-6.jpg", "https://i.ibb.co/Kx1WMT87/ladyriaba-5.jpg", "https://i.ibb.co/JRs6P128/ladyriaba-1.jpg"
+          ]
         }
-    ],
-    partners: [{type: 'Principal', name: 'G Store'}]
-  },
-  {
-    edition: 2,
-    date: 'Samedi 31 janvier 2026',
-    theme: 'L’Art de se révéler',
-    location: 'Complexe Hôtelier Le Nalys, Angondjé (à confirmer)',
-    description: 'Cette deuxième édition vise à renforcer l’impact de cet événement devenu une plateforme de référence pour la mode gabonaise. Le thème « L’Art de se révéler » traduit la volonté de mettre en lumière la mode comme langage universel, permettant aux créateurs et mannequins d’exprimer leur identité, leur héritage et leur créativité.',
-    artists: [
+      ],
+      partners: [
+        { type: "Golden Partenaire Officiel", name: "La Gare du Nord" },
+        { type: "Golden Partenaire", name: "Indi Hair" },
+        { type: "Golden Partenaire", name: "Darain Visuals" },
+        { type: "Golden Partenaire", name: "Femmes Belles Ambitieuses et Dynamiques" }
+      ]
+    },
+    {
+      edition: 2,
+      date: "2026-01-31T18:00:00",
+      theme: "L’Art de se révéler",
+      location: "Complexe Hôtelier Le Nalys, Angondjé (à confirmer)",
+      description: "Après une première édition marquante, riche en émotions et en élégance, Perfect Models Management est fier d’annoncer le retour de la Perfect Fashion Day pour une deuxième édition inédite. Cette nouvelle rencontre mettra à l’honneur une mode profondément enracinée dans la culture, l’histoire personnelle et l’affirmation de soi.",
+      stylists: [],
+      featuredModels: [],
+      artists: [
         { 
             name: 'Lady Riaba (Poésie)', 
             description: 'Slam introductif sur le thème « L’Art de se révéler »', 
             images: [] 
         }
-    ]
-  }
+      ],
+      partners: []
+    }
 ];
 
 export const agencyTimeline = [
@@ -323,10 +378,9 @@ export const modelDistinctions: ModelDistinction[] = [
     { name: 'Libreville Fashion Week', titles: ['Mannequin de l\'année 2024'] }
 ];
 
-// FIX: Replace the old agencyServices array with a more detailed and categorized version for the new Services page.
 export const agencyServices: Service[] = [
-  // ----------- Services Mannequinat ----------- //
   {
+    slug: "casting-mannequins",
     title: "Casting Mannequins",
     description: "Organisation de castings professionnels pour défilés, shootings, publicités et clips.",
     details: {
@@ -343,6 +397,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "booking-mannequins",
     title: "Booking Mannequins",
     description: "Réservation de mannequins pour événements, shootings ou campagnes publicitaires.",
     details: {
@@ -359,6 +414,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "mannequins-pour-defiles",
     title: "Mannequins pour Défilés",
     description: "Des mannequins professionnels pour vos défilés, avec coaching sur la posture et la démarche.",
     details: {
@@ -375,6 +431,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "mannequins-publicite-audiovisuel",
     title: "Mannequins Publicité / Audiovisuel",
     description: "Mannequins pour publicité, clips et projets audiovisuels.",
     details: {
@@ -391,6 +448,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "mannequins-photo",
     title: "Mannequins Photo",
     description: "Shooting photo pour catalogues, lookbooks ou réseaux sociaux.",
     details: {
@@ -407,6 +465,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "mannequins-figurants",
     title: "Mannequins Figurants",
     description: "Figurants pour clips, films ou événements nécessitant un public.",
     details: {
@@ -422,6 +481,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "formation-mannequins",
     title: "Formation Mannequins",
     description: "Coaching complet pour mannequins : posture, démarche, expressions et présence scénique.",
     details: {
@@ -437,6 +497,7 @@ export const agencyServices: Service[] = [
     category: "Services Mannequinat"
   },
   {
+    slug: "conseil-image-style",
     title: "Conseil en Image et Style",
     description: "Accompagnement pour look, coiffure, maquillage et style vestimentaire.",
     details: {
@@ -452,9 +513,8 @@ export const agencyServices: Service[] = [
     buttonLink: "/contact?service=Conseil+en+Image+et+Style",
     category: "Services Mannequinat"
   },
-
-  // ----------- Services Mode et Stylisme ----------- //
   {
+    slug: "creation-tenues-sur-mesure",
     title: "Création de Tenues Sur-Mesure",
     description: "Tenues sur-mesure pour femmes, hommes et enfants, en accord avec vos goûts et votre identité.",
     details: {
@@ -471,6 +531,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "location-tenues-mode",
     title: "Location de Tenues de Mode",
     description: "Accédez à notre collection de tenues pour vos défilés, shootings ou événements spéciaux.",
     details: {
@@ -486,6 +547,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "styling-conseil-mode",
     title: "Styling & Conseil Mode",
     description: "Création de looks parfaits pour campagnes, shootings ou événements.",
     details: {
@@ -501,6 +563,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "organisation-defiles-mode",
     title: "Organisation Défilés de Mode",
     description: "Planification et exécution complète du défilé : mannequins, scénographie, musique, mise en scène.",
     details: {
@@ -517,6 +580,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "conseil-creatif-branding",
     title: "Conseil Créatif et Branding",
     description: "Développement de l’identité visuelle et de la présence de votre marque.",
     details: {
@@ -533,6 +597,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "shooting-mode-professionnel",
     title: "Shooting Mode Professionnel",
     description: "Organisation complète de shootings en studio ou extérieur avec photographe, styliste et maquilleur.",
     details: {
@@ -549,6 +614,7 @@ export const agencyServices: Service[] = [
     category: "Services Mode et Stylisme"
   },
   {
+    slug: "accessoires-lookbook",
     title: "Accessoires et Lookbook",
     description: "Création ou fourniture d’accessoires pour compléter vos collections et shootings.",
     details: {
@@ -563,9 +629,8 @@ export const agencyServices: Service[] = [
     buttonLink: "/contact?service=Accessoires+et+Lookbook",
     category: "Services Mode et Stylisme"
   },
-
-  // ----------- Services Événementiels ----------- //
   {
+    slug: "animation-shows-defiles",
     title: "Animation de Shows / Défilés",
     description: "Animation complète de vos événements mode pour captiver votre public.",
     details: {
@@ -581,6 +646,7 @@ export const agencyServices: Service[] = [
     category: "Services Événementiels"
   },
   {
+    slug: "presentateurs-hotes",
     title: "Présentateurs / Hôtes de Cérémonie",
     description: "Hôtes professionnels pour introduire vos défilés et événements.",
     icon: "MicrophoneIcon",
@@ -589,6 +655,7 @@ export const agencyServices: Service[] = [
     category: "Services Événementiels"
   },
   {
+    slug: "promotion-communication",
     title: "Promotion et Communication",
     description: "Couverture complète de vos événements et projets sur réseaux sociaux et médias partenaires.",
     icon: "ChatBubbleLeftRightIcon",
@@ -597,6 +664,7 @@ export const agencyServices: Service[] = [
     category: "Services Événementiels"
   },
   {
+    slug: "partenariat-marques",
     title: "Partenariat avec Marques",
     description: "Mise en relation de marques avec mannequins, créateurs et stylistes pour des collaborations impactantes.",
     icon: "BuildingStorefrontIcon",
@@ -618,4 +686,54 @@ export const agencyPartners: Partner[] = [
     { name: 'Tito Style' },
     { name: 'La Gare du Nord' },
     { name: 'Miguel Fashion Style' }
+];
+
+export const faqData: FAQCategory[] = [
+    {
+        category: 'Devenir Mannequin',
+        items: [
+            {
+                question: "Quels sont les critères pour devenir mannequin chez PMM ?",
+                answer: "Nous recherchons des profils variés. Pour les défilés, les critères de taille sont généralement de 1m70 minimum pour les femmes et 1m80 pour les hommes. Cependant, nous encourageons tous les talents, y compris pour le mannequinat commercial et beauté, à postuler via notre page Casting."
+            },
+            {
+                question: "Dois-je avoir de l'expérience pour postuler ?",
+                answer: "Non, l'expérience n'est pas obligatoire. Perfect Models Management est aussi une agence de développement. Nous organisons des castings pour dénicher de nouveaux talents que nous formons ensuite via notre 'Classroom Débutant'."
+            },
+            {
+                question: "Comment se déroule le processus de casting ?",
+                answer: "Après avoir postulé en ligne, les profils présélectionnés sont invités à un casting physique. Vous serez évalué sur votre démarche, votre photogénie et votre personnalité par un jury de professionnels. Les candidats retenus intègrent ensuite notre programme de formation."
+            }
+        ]
+    },
+    {
+        category: 'Nos Services',
+        items: [
+            {
+                question: "Comment puis-je booker un mannequin pour mon projet ?",
+                answer: "C'est très simple. Vous pouvez nous contacter via notre page Contact ou remplir directement le formulaire de demande de booking. Précisez la nature de votre projet, les dates, et le(s) profil(s) recherché(s), et notre équipe vous répondra dans les plus brefs délais."
+            },
+            {
+                question: "Organisez-vous des shootings pour des particuliers ?",
+                answer: "Oui, via notre service 'Shooting Mode Professionnel'. Nous pouvons organiser une séance photo complète pour vous, que ce soit pour un book personnel ou simplement pour le plaisir, en collaboration avec nos photographes, stylistes et maquilleurs partenaires."
+            }
+        ]
+    },
+    {
+        category: 'Événements',
+        items: [
+            {
+                question: "Comment puis-je participer au Perfect Fashion Day en tant que créateur ?",
+                answer: "Nous ouvrons les candidatures pour les créateurs plusieurs mois avant chaque édition. Vous pouvez soumettre votre dossier via le formulaire de candidature dédié sur la page 'Perfect Fashion Day' lorsque les inscriptions sont ouvertes."
+            },
+            {
+                question: "Vendez-vous des billets pour assister à vos défilés ?",
+                answer: "L'accès à nos événements comme le Perfect Fashion Day se fait généralement sur invitation. Cependant, nous organisons parfois des concours sur nos réseaux sociaux pour faire gagner des places. Suivez-nous pour ne rien manquer !"
+            },
+            {
+                question: "Comment devenir partenaire de vos événements ?",
+                answer: "Nous sommes toujours ouverts à des collaborations avec des marques et entreprises qui partagent nos valeurs. Veuillez nous contacter via notre page Contact pour discuter des opportunités de partenariat pour nos prochains événements."
+            }
+        ]
+    }
 ];

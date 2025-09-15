@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { QuizQuestion, BeginnerStudent, Module } from '../types';
 import { useData } from '../contexts/DataContext';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
@@ -16,14 +16,32 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
 
     const [answers, setAnswers] = useState<{ [key: number]: string }>({});
     const [submitted, setSubmitted] = useState(false);
-    const [score, setScore] = useState(0);
+    // FIX: Use a result object to store score and total, not just a number, to match the data structure.
+    const [result, setResult] = useState<{ score: number, total: number } | null>(null);
+    const timesLeftRef = useRef(0);
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden && !submitted) {
+                timesLeftRef.current += 1;
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, [submitted]);
 
     // Check if the quiz was already taken
     useEffect(() => {
         if (userId && data?.beginnerStudents) {
             const student = data.beginnerStudents.find(s => s.id === userId);
-            if (student && student.quizScores && student.quizScores[quizId] !== undefined) {
-                setScore(student.quizScores[quizId]);
+            // FIX: Correctly read the score object from the user's data.
+            const savedResult = student?.quizScores?.[quizId];
+            if (savedResult) {
+                setResult({ score: savedResult.score, total: savedResult.total });
                 setSubmitted(true);
             }
         }
@@ -42,14 +60,26 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
                 newScore++;
             }
         });
-        setScore(newScore);
+        
+        const newResult = { score: newScore, total: quiz.length };
+        setResult(newResult);
         setSubmitted(true);
         
         if (userId && data?.beginnerStudents) {
+            const timestamp = new Date().toISOString();
             const updatedStudents = data.beginnerStudents.map(s => {
                 if (s.id === userId) {
-                    const newQuizScores = { ...s.quizScores, [quizId]: newScore };
-                    return { ...s, quizScores: newQuizScores };
+                    // FIX: Save the full, correctly-typed quiz score object to align with the type definition.
+                    const newQuizScores = { 
+                        ...s.quizScores, 
+                        [quizId]: {
+                            score: newResult.score,
+                            total: newResult.total,
+                            timesLeft: timesLeftRef.current,
+                            timestamp
+                        }
+                    };
+                    return { ...s, quizScores: newQuizScores, lastActivity: timestamp };
                 }
                 return s;
             });
@@ -103,9 +133,9 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
                     ))}
                 </div>
                 <div className="mt-8 text-center">
-                    {submitted ? (
+                    {submitted && result ? (
                         <div className="text-2xl font-bold">
-                            <p className="text-pm-gold">Votre score : <span className="text-white">{score} / {quiz.length}</span></p>
+                            <p className="text-pm-gold">Votre score : <span className="text-white">{result.score} / {result.total}</span></p>
                         </div>
                     ) : (
                         <button 

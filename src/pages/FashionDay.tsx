@@ -72,42 +72,11 @@ const FashionDay: React.FC = () => {
     <>
       <div className="bg-pm-dark text-pm-off-white">
         <SEO 
-          title={`Perfect Fashion Day ${selectedEdition.edition} : ${selectedEdition.theme}`}
+          title="Perfect Fashion Day | L'Événement Mode de Référence"
           description="Vibrez au rythme du Perfect Fashion Day, l'événement mode incontournable à Libreville. Revivez les éditions, découvrez les créateurs gabonais et les moments forts qui célèbrent la mode africaine."
           keywords="perfect fashion day, défilé de mode gabon, événement mode libreville, créateurs gabonais, mode africaine, fashion week gabon"
           image={data?.siteImages.fashionDayBg}
-          type="event"
-        >
-            <script type="application/ld+json">
-                {JSON.stringify({
-                    "@context": "https://schema.org",
-                    "@type": "Event",
-                    "name": `Perfect Fashion Day - Édition ${selectedEdition.edition}: ${selectedEdition.theme}`,
-                    "startDate": selectedEdition.date,
-                    "eventStatus": "https://schema.org/EventScheduled",
-                    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-                    "location": {
-                        "@type": "Place",
-                        "name": selectedEdition.location,
-                        "address": {
-                            "@type": "PostalAddress",
-                            "addressLocality": "Libreville",
-                            "addressCountry": "GA"
-                        }
-                    },
-                    "image": [
-                        data?.siteImages.fashionDayBg,
-                        ...(selectedEdition.stylists?.[0]?.images || [])
-                    ],
-                    "description": selectedEdition.description,
-                    "organizer": {
-                        "@type": "Organization",
-                        "name": "Perfect Models Management",
-                        "url": "https://www.perfectmodels.ga"
-                    }
-                })}
-            </script>
-        </SEO>
+        />
         <div className="page-container">
           <h1 className="page-title">Perfect Fashion Day</h1>
           <p className="page-subtitle">
