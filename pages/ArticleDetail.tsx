@@ -5,7 +5,7 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { ArticleContent, ArticleComment, Article } from '../types';
 import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 import html2canvas from 'html2canvas';
 
 // --- Helper & Modal Components for Sharing ---

@@ -1,9 +1,7 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-// FIX: Add BeginnerStudent to the type imports.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -20,6 +18,9 @@ import {
     recoveryRequests as initialRecoveryRequests,
     bookingRequests as initialBookingRequests,
     contactMessages as initialContactMessages,
+    absences as initialAbsences,
+    monthlyPayments as initialMonthlyPayments,
+    photoshootBriefs as initialPhotoshootBriefs,
     newsItems as initialNewsItems, 
     navLinks as initialNavLinks, 
     fashionDayEvents as initialFashionDayEvents, 
@@ -34,17 +35,11 @@ import {
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
-    beginnerCourseData as initialBeginnerCourseData
+    faqData as initialFaqData
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
-
-export interface NavLink {
-    path: string;
-    label: string;
-    inFooter: boolean;
-    footerLabel?: string;
-}
+import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -78,9 +73,12 @@ export interface AppData {
     contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
-    // FIX: Add missing properties for beginner classroom functionality.
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
+    faqData: FAQCategory[];
+    absences: Absence[];
+    monthlyPayments: MonthlyPayment[];
+    photoshootBriefs: PhotoshootBrief[];
 }
 
 export const useDataStore = () => {
@@ -101,6 +99,9 @@ export const useDataStore = () => {
         recoveryRequests: initialRecoveryRequests,
         bookingRequests: initialBookingRequests,
         contactMessages: initialContactMessages,
+        absences: initialAbsences,
+        monthlyPayments: initialMonthlyPayments,
+        photoshootBriefs: initialPhotoshootBriefs,
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,
@@ -118,6 +119,7 @@ export const useDataStore = () => {
         registrationStaff: initialRegistrationStaff,
         beginnerCourseData: initialBeginnerCourseData,
         beginnerStudents: initialBeginnerStudents,
+        faqData: initialFaqData,
     }), []);
     
     useEffect(() => {
@@ -127,12 +129,6 @@ export const useDataStore = () => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
             if (dbData) {
-                 // Check for valid Fashion Day events in the database to prevent data loss
-                const hasValidDbFashionDayEvents = dbData.fashionDayEvents && 
-                                                   Array.isArray(dbData.fashionDayEvents) && 
-                                                   dbData.fashionDayEvents.length > 0 && 
-                                                   dbData.fashionDayEvents.some((e: FashionDayEvent) => e.edition && e.theme);
-
                 // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
                 const mergedData = {
                     ...initialData,
@@ -144,7 +140,8 @@ export const useDataStore = () => {
                     newsItems: (dbData.newsItems && dbData.newsItems.length > 0) ? dbData.newsItems : initialData.newsItems,
                     testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
-                    fashionDayEvents: hasValidDbFashionDayEvents ? dbData.fashionDayEvents : initialData.fashionDayEvents,
+                    fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
+                    faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
                 };
                 
                 // Always use navLinks from code to ensure route integrity

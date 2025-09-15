@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 

@@ -9,7 +9,7 @@ import ServiceCard from '../components/ServiceCard';
 import { ApiKeys, NewsItem } from '../types';
 import CountdownTimer from '../components/CountdownTimer';
 import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 
 // --- Helper & Modal Components for Sharing ---
 const generateShortLink = async (

@@ -25,7 +25,6 @@ export interface Model {
   categories: string[];
   experience: string;
   journey: string;
-  // FIX: Updated quizScores to support a detailed score object instead of just a number.
   quizScores: { 
     [chapterSlug: string]: {
       score: number;
@@ -43,7 +42,6 @@ export interface BeginnerStudent {
   name: string;
   matricule: string;
   password: string;
-  // FIX: Updated quizScores to support a detailed score object.
   quizScores: { 
     [chapterSlug: string]: {
       score: number;
@@ -88,7 +86,6 @@ export interface SocialLinks {
   youtube: string;
 }
 
-// FIX: Added 'slug' property to the Service interface to match its usage.
 export interface Service {
   slug: string;
   icon: string;
@@ -194,7 +191,6 @@ export interface Partner {
   name: string;
 }
 
-// FIX: Added missing properties for Firebase Dynamic Links and ImgBB to ApiKeys interface.
 export interface ApiKeys {
   resendApiKey: string;
   formspreeEndpoint: string;
@@ -346,7 +342,6 @@ export interface AIAssistantProps {
     jsonSchema?: any;
 }
 
-// FIX: Added missing type definitions for new features.
 export interface FAQItem {
   question: string;
   answer: string;
@@ -390,4 +385,11 @@ export interface PhotoshootBrief {
   dateTime: string; // ISO string format for date and time
   createdAt: string; // ISO string format
   status: 'Nouveau' | 'Lu' | 'Archivé';
+}
+
+export interface NavLink {
+    path: string;
+    label: string;
+    inFooter: boolean;
+    footerLabel?: string;
 }

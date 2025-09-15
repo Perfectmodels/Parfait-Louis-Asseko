@@ -386,3 +386,11 @@ export interface PhotoshootBrief {
   createdAt: string; // ISO string format
   status: 'Nouveau' | 'Lu' | 'Archivé';
 }
+
+// FIX: Added NavLink interface to centralize type definitions and resolve circular dependencies.
+export interface NavLink {
+    path: string;
+    label: string;
+    inFooter: boolean;
+    footerLabel?: string;
+}
