@@ -8,8 +8,9 @@ interface SEOProps {
   image?: string;
   noIndex?: boolean;
   schema?: object; // JSON-LD personnalisé
-  canonicalUrl?: string; // Nouveau : URL canonique
-  type?: 'website' | 'article' | 'profile' | 'event'; // Nouveau : type Open Graph
+  canonicalUrl?: string;
+  type?: 'website' | 'article' | 'profile' | 'event' | 'organization';
+  lang?: string; // Pour hreflang
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -21,6 +22,7 @@ const SEO: React.FC<SEOProps> = ({
   schema,
   canonicalUrl,
   type = 'website',
+  lang = 'fr',
 }) => {
   useEffect(() => {
     const defaultTitle = 'Perfect Models Management';
@@ -28,6 +30,7 @@ const SEO: React.FC<SEOProps> = ({
 
     document.title = pageTitle;
 
+    // Fonction utilitaire : créer/mettre à jour une meta
     const setMeta = (name: string, content: string | undefined, isProperty: boolean = false) => {
       if (!content) return;
       const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
@@ -44,7 +47,8 @@ const SEO: React.FC<SEOProps> = ({
       element.setAttribute('content', content);
     };
 
-    const setLink = (rel: string, href: string) => {
+    // Fonction utilitaire : créer/mettre à jour un link
+    const setLink = (rel: string, href: string, extraAttr?: { [key: string]: string }) => {
       if (!href) return;
       let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
       if (!link) {
@@ -53,6 +57,9 @@ const SEO: React.FC<SEOProps> = ({
         document.head.appendChild(link);
       }
       link.setAttribute('href', href);
+      if (extraAttr) {
+        Object.entries(extraAttr).forEach(([k, v]) => link.setAttribute(k, v));
+      }
     };
 
     const defaultDescription =
@@ -61,7 +68,12 @@ const SEO: React.FC<SEOProps> = ({
       'mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting';
     const defaultImage = siteConfig.logo;
     const siteUrl = window.location.href;
+    const siteOrigin = window.location.origin;
     const siteName = 'Perfect Models Management';
+
+    // Balises HTML essentielles
+    setMeta('charset', 'UTF-8');
+    setMeta('viewport', 'width=device-width, initial-scale=1');
 
     // Balises standard
     setMeta('description', description || defaultDescription);
@@ -71,6 +83,9 @@ const SEO: React.FC<SEOProps> = ({
 
     // Canonical
     setLink('canonical', canonicalUrl || siteUrl);
+
+    // Hreflang
+    setLink('alternate', canonicalUrl || siteUrl, { hreflang: lang });
 
     // Open Graph
     setMeta('og:title', pageTitle, true);
@@ -82,31 +97,82 @@ const SEO: React.FC<SEOProps> = ({
     setMeta('og:locale', 'fr_FR', true);
     setMeta('og:image:width', '1200', true);
     setMeta('og:image:height', '630', true);
+    setMeta('og:updated_time', new Date().toISOString(), true);
 
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', pageTitle);
     setMeta('twitter:description', description || defaultDescription);
     setMeta('twitter:image', image || defaultImage);
+    setMeta('twitter:site', '@PerfectModelsGA'); // Twitter handle de l’agence
 
-    // JSON-LD Schema
+    // JSON-LD Schema dynamique
     const schemaElementId = 'seo-schema-script';
     let schemaElement = document.getElementById(schemaElementId) as HTMLScriptElement | null;
 
-    const defaultSchema = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": siteName,
-      "url": window.location.origin,
-      "logo": siteConfig.logo,
-      "sameAs": [
-        socialLinks.facebook,
-        socialLinks.instagram,
-        socialLinks.youtube
-      ].filter(Boolean)
+    const schemasByType: Record<string, object> = {
+      organization: {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": siteName,
+        "url": siteOrigin,
+        "logo": siteConfig.logo,
+        "sameAs": [socialLinks.facebook, socialLinks.instagram, socialLinks.youtube].filter(Boolean),
+      },
+      website: {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": siteName,
+        "url": siteOrigin,
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": `${siteOrigin}/search?q={search_term_string}`,
+          "query-input": "required name=search_term_string"
+        }
+      },
+      event: {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": title || siteName,
+        "startDate": "2025-11-16T15:00:00+02:00",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": {
+          "@type": "Place",
+          "name": "Casino Croisette, Libreville",
+          "address": "Libreville, Gabon"
+        },
+        "image": image || defaultImage,
+        "description": description || defaultDescription,
+        "organizer": {
+          "@type": "Organization",
+          "name": siteName,
+          "url": siteOrigin
+        }
+      },
+      article: {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": title || siteName,
+        "description": description || defaultDescription,
+        "author": {
+          "@type": "Organization",
+          "name": siteName
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": siteName,
+          "logo": {
+            "@type": "ImageObject",
+            "url": siteConfig.logo
+          }
+        },
+        "datePublished": new Date().toISOString(),
+        "image": image || defaultImage
+      }
     };
 
-    const finalSchema = schema || defaultSchema;
+    const finalSchema = schema || schemasByType[type] || schemasByType.organization;
 
     if (finalSchema) {
       if (!schemaElement) {
@@ -125,7 +191,7 @@ const SEO: React.FC<SEOProps> = ({
       const el = document.getElementById(schemaElementId);
       if (el) el.remove();
     };
-  }, [title, description, keywords, image, noIndex, schema, canonicalUrl, type]);
+  }, [title, description, keywords, image, noIndex, schema, canonicalUrl, type, lang]);
 
   return null;
 };

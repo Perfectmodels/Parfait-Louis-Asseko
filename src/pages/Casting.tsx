@@ -40,11 +40,39 @@ const Casting: React.FC = () => {
   return (
     <div className="bg-pm-dark text-pm-off-white">
       <SEO 
-        title="Grand Casting National | Devenez Mannequin PMM"
+        title="Grand Casting National 2025 | Devenez Mannequin PMM"
         description="Saisissez votre chance ! Participez au grand casting national de Perfect Models Management pour devenir notre prochain visage. Découvrez les dates, lieux et conditions pour lancer votre carrière."
         keywords="casting mannequin gabon 2025, devenir mannequin libreville, casting pmm, agence de casting gabon, comment devenir mannequin"
         image={posterUrl}
-      />
+        type="event"
+      >
+        <script type="application/ld+json">
+            {JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Event",
+                "name": "Grand Casting National 2025 - Perfect Models Management",
+                "startDate": castingDate,
+                "eventStatus": "https://schema.org/EventScheduled",
+                "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                "location": {
+                    "@type": "Place",
+                    "name": "Complexe Eli, Ancien Sobraga",
+                    "address": {
+                        "@type": "PostalAddress",
+                        "addressLocality": "Libreville",
+                        "addressCountry": "GA"
+                    }
+                },
+                "image": [posterUrl],
+                "description": "Casting national pour recruter les nouveaux visages de l'agence Perfect Models Management.",
+                "organizer": {
+                    "@type": "Organization",
+                    "name": "Perfect Models Management",
+                    "url": "https://www.perfectmodels.ga"
+                }
+            })}
+        </script>
+      </SEO>
       {/* Hero Section */}
       <section 
         className="relative min-h-[70vh] flex items-center justify-center text-center bg-cover bg-center bg-no-repeat"

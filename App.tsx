@@ -13,6 +13,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 const Home = lazy(() => import('./pages/Home'));
 const Agency = lazy(() => import('./pages/Agency'));
 const Models = lazy(() => import('./pages/Models'));
+const Robots = lazy(() => import('./pages/Robots'));
+const Sitemap = lazy(() => import('./pages/Sitemap'));
 const ModelDetail = lazy(() => import('./pages/ModelDetail'));
 const FashionDay = lazy(() => import('./pages/FashionDay'));
 const Magazine = lazy(() => import('./pages/Magazine'));
@@ -123,6 +125,10 @@ const AppContent: React.FC = () => {
             <Layout>
                 <Suspense fallback={<LoadingFallback />}>
                     <ReactRouterDOM.Routes>
+                        {/* SEO Routes */}
+                        <ReactRouterDOM.Route path="/robots.txt" element={<Robots />} />
+                        <ReactRouterDOM.Route path="/sitemap.xml" element={<Sitemap />} />
+
                         <ReactRouterDOM.Route path="/" element={<Home />} />
                         <ReactRouterDOM.Route path="/agence" element={<Agency />} />
                         <ReactRouterDOM.Route path="/mannequins" element={<Models />} />
