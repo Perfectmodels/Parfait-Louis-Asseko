@@ -1,8 +1,5 @@
-
-
 import React, { useState, useEffect } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
@@ -50,9 +47,9 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                                 <ul className="mt-2 space-y-1 pl-2 border-l border-pm-gold/30">
                                   {module.chapters.map((chapter, chapterIndex) => (
                                     <li key={chapterIndex}>
-                                      <ReactRouterDOM.Link to={`/formations/${module.slug}/${chapter.slug}`} className="block text-xs text-pm-off-white/70 hover:text-pm-gold">
+                                      <Link to={`/formations/${module.slug}/${chapter.slug}`} className="block text-xs text-pm-off-white/70 hover:text-pm-gold">
                                         {chapter.title}
-                                      </ReactRouterDOM.Link>
+                                      </Link>
                                     </li>
                                   ))}
                                 </ul>
@@ -79,7 +76,7 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                         </section>
                         
                         <div className="mb-12">
-                            <ReactRouterDOM.Link to="/formations/forum" className="group block w-full text-left p-6 bg-pm-gold/10 border-2 border-dashed border-pm-gold/30 hover:border-pm-gold hover:bg-pm-gold/20 transition-all duration-300">
+                            <Link to="/formations/forum" className="group block w-full text-left p-6 bg-pm-gold/10 border-2 border-dashed border-pm-gold/30 hover:border-pm-gold hover:bg-pm-gold/20 transition-all duration-300">
                                 <div className="flex items-center gap-4">
                                     <ChatBubbleBottomCenterTextIcon className="w-10 h-10 text-pm-gold flex-shrink-0" />
                                     <div>
@@ -87,7 +84,7 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                                         <p className="text-sm text-pm-off-white/80">Échangez avec les autres mannequins, posez vos questions et partagez votre expérience.</p>
                                     </div>
                                 </div>
-                            </ReactRouterDOM.Link>
+                            </Link>
                         </div>
                     
                         <section aria-label="Modules de formation" className="space-y-4">
@@ -110,9 +107,9 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                                             <ul className="space-y-3 list-disc list-inside">
                                                 {module.chapters.map((chapter) => (
                                                     <li key={chapter.slug}>
-                                                        <ReactRouterDOM.Link to={`/formations/${module.slug}/${chapter.slug}`} className="text-pm-off-white/80 hover:text-pm-gold hover:underline">
+                                                        <Link to={`/formations/${module.slug}/${chapter.slug}`} className="text-pm-off-white/80 hover:text-pm-gold hover:underline">
                                                             {chapter.title}
-                                                        </ReactRouterDOM.Link>
+                                                        </Link>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -132,13 +129,11 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
 // --- MAIN COMPONENT ---
 const Formations: React.FC = () => {
     const { data, isInitialized } = useData();
-    // FIX: Use useNavigate for react-router-dom v6 compatibility.
-    const navigate = ReactRouterDOM.useNavigate();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const hasAccess = sessionStorage.getItem('classroom_access');
         if (hasAccess !== 'granted') {
-            // FIX: Use navigate for navigation in react-router-dom v6.
             navigate('/login', { replace: true });
         }
     }, [navigate]);
@@ -147,7 +142,6 @@ const Formations: React.FC = () => {
         sessionStorage.removeItem('classroom_access');
         sessionStorage.removeItem('classroom_role');
         sessionStorage.removeItem('userId');
-        // FIX: Use navigate for navigation in react-router-dom v6.
         navigate('/login');
     };
 

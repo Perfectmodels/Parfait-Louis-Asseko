@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import * as ReactRouterDOM from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
 import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import BookingForm from '../components/BookingForm';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
 
 // --- Helper & Modal Components for Sharing ---
 const generateShortLink = async (
@@ -120,7 +119,7 @@ const ShareModal: React.FC<{
 
 const ModelDetail: React.FC = () => {
   const { data, isInitialized } = useData();
-  const { id } = ReactRouterDOM.useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState('details');
   const [isViewingOwnProfile, setIsViewingOwnProfile] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -249,10 +248,10 @@ const ModelDetail: React.FC = () => {
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6">
-          <ReactRouterDOM.Link to="/mannequins" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
+          <Link to="/mannequins" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
             <ChevronLeftIcon className="w-5 h-5" />
             Retour au catalogue
-          </ReactRouterDOM.Link>
+          </Link>
           <div className="flex flex-col lg:flex-row gap-12 bg-black p-4 sm:p-8 border border-pm-gold/20">
             <div className="lg:w-1/3">
               <div className="aspect-[3/4] border-2 border-pm-gold p-2">
