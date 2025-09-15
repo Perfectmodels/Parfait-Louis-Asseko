@@ -1,7 +1,6 @@
-
 import React from 'react';
 import Header, { Breadcrumb } from './Header';
-import Footer from '../Footer';
+import Footer from '../../components/Footer';
 import Marquee from './Marquee';
 
 interface LayoutProps {
