@@ -1,9 +1,7 @@
-
 import React from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from './icons/SocialIcons';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 
 const Footer: React.FC = () => {
@@ -30,9 +28,9 @@ const Footer: React.FC = () => {
                     {/* Column 1: Brand & Social */}
                     <div className="space-y-4">
                         {siteConfig?.logo && (
-                            <ReactRouterDOM.Link to="/">
+                            <Link to="/">
                                 <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-16 w-auto" />
-                            </ReactRouterDOM.Link>
+                            </Link>
                         )}
                         <p className="text-sm">L'élégance redéfinie. Berceau de talents et plateforme dédiée à l'avenir de la mode africaine.</p>
                          {socialLinks && (
@@ -50,15 +48,15 @@ const Footer: React.FC = () => {
                         <ul className="space-y-3">
                             {footerLinks.map(link => (
                                 <li key={link.path}>
-                                    <ReactRouterDOM.Link to={link.path} className="hover:text-pm-gold transition-colors text-sm">
+                                    <Link to={link.path} className="hover:text-pm-gold transition-colors text-sm">
                                         {link.footerLabel || link.label}
-                                    </ReactRouterDOM.Link>
+                                    </Link>
                                 </li>
                             ))}
                              <li>
-                                <ReactRouterDOM.Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
+                                <Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
                                     Accès Panel
-                                </ReactRouterDOM.Link>
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -69,9 +67,9 @@ const Footer: React.FC = () => {
                         <ul className="space-y-3">
                            {keyServices.map(service => (
                                <li key={service.label}>
-                                   <ReactRouterDOM.Link to={service.link} className="hover:text-pm-gold transition-colors text-sm">
+                                   <Link to={service.link} className="hover:text-pm-gold transition-colors text-sm">
                                        {service.label}
-                                   </ReactRouterDOM.Link>
+                                   </Link>
                                </li>
                            ))}
                         </ul>
@@ -102,9 +100,9 @@ const Footer: React.FC = () => {
                 <div className="mt-16 pt-8 border-t border-pm-off-white/10 text-center text-sm">
                     <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
                      <div className="mt-2 space-x-4">
-                        <ReactRouterDOM.Link to="/terms-of-use" className="hover:text-pm-gold transition-colors">Conditions d'Utilisation</ReactRouterDOM.Link>
+                        <Link to="/terms-of-use" className="hover:text-pm-gold transition-colors">Conditions d'Utilisation</Link>
                         <span>|</span>
-                        <ReactRouterDOM.Link to="/privacy-policy" className="hover:text-pm-gold transition-colors">Politique de Confidentialité</ReactRouterDOM.Link>
+                        <Link to="/privacy-policy" className="hover:text-pm-gold transition-colors">Politique de Confidentialité</Link>
                     </div>
                 </div>
             </div>

@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
 import { NavLink as NavLinkType } from '../../hooks/useDataStore';
 import { SocialLinks } from '../../types';
 
@@ -15,7 +13,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
     : '';
 
   return (
-    <ReactRouterDOM.NavLink
+    <NavLink
       to={to}
       onClick={onClick}
       end={to === '/'}
@@ -35,7 +33,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
           />
         </>
       )}
-    </ReactRouterDOM.NavLink>
+    </NavLink>
   );
 };
 
@@ -98,8 +96,8 @@ const SocialLinksComponent: React.FC<{ socialLinks: SocialLinks | undefined; cla
 };
 
 export const Breadcrumb: React.FC = () => {
-    const location = ReactRouterDOM.useLocation();
-    const params = ReactRouterDOM.useParams();
+    const location = useLocation();
+    const params = useParams();
     const { data } = useData();
 
     const crumbs = useMemo(() => {
@@ -184,7 +182,7 @@ export const Breadcrumb: React.FC = () => {
                                     {isLast ? (
                                         <span className="font-bold text-pm-gold truncate" aria-current="page">{crumb.label}</span>
                                     ) : (
-                                        <ReactRouterDOM.Link to={crumb.path} className="hover:text-pm-gold transition-colors">{crumb.label}</ReactRouterDOM.Link>
+                                        <Link to={crumb.path} className="hover:text-pm-gold transition-colors">{crumb.label}</Link>
                                     )}
                                 </li>
                             );
@@ -201,8 +199,8 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
-  const location = ReactRouterDOM.useLocation();
-  const navigate = ReactRouterDOM.useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -308,18 +306,18 @@ const Header: React.FC = () => {
       >
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
-            <ReactRouterDOM.Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
               <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
-            </ReactRouterDOM.Link>
+            </Link>
           )}
           
           <nav className="hidden lg:flex items-center gap-8">
             <NavLinks navLinks={processedNavLinks} />
             
             <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
-                <ReactRouterDOM.Link to="/casting-formulaire" className="px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                <Link to="/casting-formulaire" className="px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                     Postuler
-                </ReactRouterDOM.Link>
+                </Link>
                 <SocialLinksComponent socialLinks={socialLinks} />
                 {isLoggedIn && <LogoutButton onClick={handleLogout} />}
             </div>
@@ -360,13 +358,13 @@ const Header: React.FC = () => {
                 className={`text-center transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
                 style={{ transitionDelay: `${isOpen ? applyButtonDelay : 0}ms` }}
               >
-                  <ReactRouterDOM.Link
+                  <Link
                       to="/casting-formulaire"
                       onClick={() => setIsOpen(false)}
                       className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"
                   >
                       Postuler
-                  </ReactRouterDOM.Link>
+                  </Link>
               </div>
               {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
             </nav>
