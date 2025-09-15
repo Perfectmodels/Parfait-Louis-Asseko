@@ -10,64 +10,64 @@ import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy-loaded Pages
-const Home = lazy(() => import('./pages/Home'));
-const Agency = lazy(() => import('./pages/Agency'));
-const Models = lazy(() => import('./pages/Models'));
-const Robots = lazy(() => import('./pages/Robots'));
-const Sitemap = lazy(() => import('./pages/Sitemap'));
-const ModelDetail = lazy(() => import('./pages/ModelDetail'));
-const FashionDay = lazy(() => import('./pages/FashionDay'));
-const Magazine = lazy(() => import('./pages/Magazine'));
-const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
-const Contact = lazy(() => import('./pages/Contact'));
-const Services = lazy(() => import('./pages/Services'));
-const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
-const Casting = lazy(() => import('./pages/Casting'));
-const CastingForm = lazy(() => import('./pages/CastingForm'));
-const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
-const Login = lazy(() => import('./pages/Login'));
-const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
-const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
-const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
-const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
-const ForumThread = lazy(() => import('./pages/ForumThread'));
-const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
-const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
-const Chat = lazy(() => import('./pages/Chat'));
-const Motivation = lazy(() => import('./pages/Motivation'));
+const Home = lazy(() => import('./src/pages/Home'));
+const Agency = lazy(() => import('./src/pages/Agency'));
+const Models = lazy(() => import('./src/pages/Models'));
+const Robots = lazy(() => import('./src/pages/Robots'));
+const Sitemap = lazy(() => import('./src/pages/Sitemap'));
+const ModelDetail = lazy(() => import('./src/pages/ModelDetail'));
+const FashionDay = lazy(() => import('./src/pages/FashionDay'));
+const Magazine = lazy(() => import('./src/pages/Magazine'));
+const ArticleDetail = lazy(() => import('./src/pages/ArticleDetail'));
+const Contact = lazy(() => import('./src/pages/Contact'));
+const Services = lazy(() => import('./src/pages/Services'));
+const ServiceDetail = lazy(() => import('./src/pages/ServiceDetail'));
+const Casting = lazy(() => import('./src/pages/Casting'));
+const CastingForm = lazy(() => import('./src/pages/CastingForm'));
+const FashionDayApplicationForm = lazy(() => import('./src/pages/FashionDayApplicationForm'));
+const Login = lazy(() => import('./src/pages/Login'));
+const Activity = lazy(() => import('./src/pages/Activity')); // Renamed Formations
+const ChapterDetail = lazy(() => import('./src/pages/ChapterDetail'));
+const ModelDashboard = lazy(() => import('./src/pages/ModelDashboard')); // Profil
+const ClassroomForum = lazy(() => import('./src/pages/ClassroomForum'));
+const ForumThread = lazy(() => import('./src/pages/ForumThread'));
+const BeginnerClassroom = lazy(() => import('./src/pages/BeginnerClassroom'));
+const BeginnerChapterDetail = lazy(() => import('./src/pages/BeginnerChapterDetail'));
+const Chat = lazy(() => import('./src/pages/Chat'));
+const Motivation = lazy(() => import('./src/pages/Motivation'));
 
 // Admin Pages
-const Admin = lazy(() => import('./pages/Admin'));
-const AdminAgency = lazy(() => import('./pages/AdminAgency'));
-const AdminCasting = lazy(() => import('./pages/AdminCasting'));
-const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
-const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
-const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
-const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
-const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
-const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
-const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
-const AdminModels = lazy(() => import('./pages/AdminModels'));
-const AdminNews = lazy(() => import('./pages/AdminNews'));
-const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
-const AdminSettings = lazy(() => import('./pages/AdminSettings'));
-const AdminComments = lazy(() => import('./pages/AdminComments'));
-const AdminBookings = lazy(() => import('./pages/AdminBookings'));
-const AdminMessages = lazy(() => import('./pages/AdminMessages'));
-const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
-const AdminPayments = lazy(() => import('./pages/AdminPayments'));
-const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
-const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+const Admin = lazy(() => import('./src/pages/Admin'));
+const AdminAgency = lazy(() => import('./src/pages/AdminAgency'));
+const AdminCasting = lazy(() => import('./src/pages/AdminCasting'));
+const AdminCastingResults = lazy(() => import('./src/pages/AdminCastingResults'));
+const AdminClassroom = lazy(() => import('./src/pages/AdminClassroom'));
+const AdminClassroomProgress = lazy(() => import('./src/pages/AdminClassroomProgress'));
+const AdminFashionDay = lazy(() => import('./src/pages/AdminFashionDay'));
+const AdminFashionDayEvents = lazy(() => import('./src/pages/AdminFashionDayEvents'));
+const AdminMagazine = lazy(() => import('./src/pages/AdminMagazine'));
+const AdminModelAccess = lazy(() => import('./src/pages/AdminModelAccess'));
+const AdminModels = lazy(() => import('./src/pages/AdminModels'));
+const AdminNews = lazy(() => import('./src/pages/AdminNews'));
+const AdminRecovery = lazy(() => import('./src/pages/AdminRecovery'));
+const AdminSettings = lazy(() => import('./src/pages/AdminSettings'));
+const AdminComments = lazy(() => import('./src/pages/AdminComments'));
+const AdminBookings = lazy(() => import('./src/pages/AdminBookings'));
+const AdminMessages = lazy(() => import('./src/pages/AdminMessages'));
+const AdminBeginnerStudents = lazy(() => import('./src/pages/AdminBeginnerStudents'));
+const AdminPayments = lazy(() => import('./src/pages/AdminPayments'));
+const AdminAbsences = lazy(() => import('./src/pages/AdminAbsences'));
+const AdminArtisticDirection = lazy(() => import('./src/pages/AdminArtisticDirection'));
 
 
 // Role-specific pages
-const JuryCasting = lazy(() => import('./pages/JuryCasting'));
-const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
+const JuryCasting = lazy(() => import('./src/pages/JuryCasting'));
+const RegistrationCasting = lazy(() => import('./src/pages/RegistrationCasting'));
 
 // Static Pages
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
-const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+const PrivacyPolicy = lazy(() => import('./src/pages/PrivacyPolicy'));
+const TermsOfUse = lazy(() => import('./src/pages/TermsOfUse'));
+const NotFound = lazy(() => import('./src/pages/NotFound'));
 
 
 const ScrollToTop: React.FC = () => {
