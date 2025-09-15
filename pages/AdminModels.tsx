@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Model, ContactInfo } from '../types';
 import SEO from '../components/SEO';
-import * as ReactRouterDOM from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm'; 
 
@@ -226,10 +226,10 @@ const AdminModels: React.FC = () => {
             <div className="container mx-auto px-6">
                 <div className="admin-page-header">
                     <div>
-                        <ReactRouterDOM.Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                             <ChevronLeftIcon className="w-5 h-5" />
                             Retour au Dashboard
-                        </ReactRouterDOM.Link>
+                        </Link>
                         <h1 className="admin-page-title">Gérer les Mannequins</h1>
                         <p className="admin-page-subtitle">Ajoutez, modifiez ou supprimez les profils des mannequins.</p>
                     </div>

@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
@@ -37,13 +34,14 @@ const AdminFashionDayEvents: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Gérer les Événements PFD" noIndex />
             <div className="container mx-auto px-6">
-                 <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
+                 <div className="admin-page-header">
                     <div>
                         <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                             <ChevronLeftIcon className="w-5 h-5" />
                             Retour au Tableau de Bord
                         </Link>
-                        <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Événements Perfect Fashion Day</h1>
+                        <h1 className="admin-page-title">Gérer les Événements Perfect Fashion Day</h1>
+                        <p className="admin-page-subtitle">Modifiez les informations pour chaque édition du PFD.</p>
                     </div>
                     <button onClick={handleSave} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/30">
                         Sauvegarder les Changements
@@ -58,11 +56,10 @@ const AdminFashionDayEvents: React.FC = () => {
                             renderItem={(item: FashionDayEvent, onChange) => (
                                 <div className="space-y-4">
                                     <FormInput label="Édition (Numéro)" type="number" value={item.edition} onChange={e => onChange('edition', parseInt(e.target.value, 10))} />
-                                    <FormInput label="Date" value={item.date} onChange={e => onChange('date', e.target.value)} />
+                                    <FormInput label="Date (AAAA-MM-JJTHH:MM:SS)" value={item.date} onChange={e => onChange('date', e.target.value)} />
                                     <FormInput label="Thème" value={item.theme} onChange={e => onChange('theme', e.target.value)} />
                                     <FormTextArea label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} />
                                     <FormInput label="Lieu" value={item.location || ''} onChange={e => onChange('location', e.target.value)} />
-                                    <FormInput label="MC" value={item.mc || ''} onChange={e => onChange('mc', e.target.value)} />
                                     <FormInput label="Promoteur" value={item.promoter || ''} onChange={e => onChange('promoter', e.target.value)} />
 
                                     <SubArrayEditor
@@ -75,7 +72,6 @@ const AdminFashionDayEvents: React.FC = () => {
                                             <>
                                                 <FormInput label="Nom du Styliste" value={stylist.name} onChange={e => onStylistChange('name', e.target.value)} />
                                                 <FormTextArea label="Description" value={stylist.description} onChange={e => onStylistChange('description', e.target.value)} />
-                                                {/* FIX: Add filter(Boolean) to prevent empty strings from being saved as image URLs. */}
                                                 <FormTextArea label="Images (URLs, une par ligne)" value={(stylist.images || []).join('\n')} onChange={e => onStylistChange('images', e.target.value.split('\n').filter(Boolean))} />
                                             </>
                                         )}
@@ -83,7 +79,6 @@ const AdminFashionDayEvents: React.FC = () => {
                                     
                                      <FormTextArea label="Mannequins Vedettes (séparés par des virgules)" value={(item.featuredModels || []).join(', ')} onChange={e => onChange('featuredModels', e.target.value.split(',').map((s: string) => s.trim()))} />
                                      
-                                     {/* FIX: Replaced FormTextArea with SubArrayEditor for artists to handle complex object data correctly and prevent data corruption. */}
                                      <SubArrayEditor
                                         title="Artistes"
                                         items={item.artists || []}
@@ -95,6 +90,20 @@ const AdminFashionDayEvents: React.FC = () => {
                                                 <FormInput label="Nom de l'Artiste" value={artist.name} onChange={e => onArtistChange('name', e.target.value)} />
                                                 <FormTextArea label="Description" value={artist.description} onChange={e => onArtistChange('description', e.target.value)} />
                                                 <FormTextArea label="Images (URLs, une par ligne)" value={(artist.images || []).join('\n')} onChange={e => onArtistChange('images', e.target.value.split('\n').filter(Boolean))} />
+                                            </>
+                                        )}
+                                    />
+                                    
+                                    <SubArrayEditor
+                                        title="Partenaires"
+                                        items={item.partners || []}
+                                        setItems={newPartners => onChange('partners', newPartners)}
+                                        getNewItem={() => ({ name: 'Nouveau Partenaire', type: 'Partenaire' })}
+                                        getItemTitle={partner => partner.name}
+                                        renderItem={(partner: Partner, onPartnerChange) => (
+                                            <>
+                                                <FormInput label="Nom du Partenaire" value={partner.name} onChange={e => onPartnerChange('name', e.target.value)} />
+                                                <FormInput label="Type de Partenariat" value={(partner as any).type} onChange={e => onPartnerChange('type', e.target.value)} />
                                             </>
                                         )}
                                     />
@@ -113,21 +122,21 @@ const AdminFashionDayEvents: React.FC = () => {
 
 const SectionWrapper: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30">
-        <h2 className="text-2xl font-playfair text-pm-gold mb-6 border-b border-pm-gold/20 pb-3">{title}</h2>
+        <h2 className="admin-section-title">{title}</h2>
         <div className="space-y-4">{children}</div>
     </div>
 );
 
 const FormInput: React.FC<{label: string, value: any, onChange: any, type?: string}> = ({label, value, onChange, type = "text"}) => (
     <div>
-        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+        <label className="admin-label">{label}</label>
         <input type={type} value={value} onChange={onChange} className="admin-input" />
     </div>
 );
 
 const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
-        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+        <label className="admin-label">{label}</label>
         <textarea value={value} onChange={onChange} rows={4} className="admin-input admin-textarea" />
     </div>
 );
@@ -163,7 +172,7 @@ const ArrayEditor: React.FC<{
         <div className="space-y-3">
             {items.map((item, index) => (
                 <div key={index} className="bg-pm-dark/50 border border-pm-off-white/10 rounded-md overflow-hidden">
-                    <button onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full p-3 text-left font-bold flex justify-between items-center hover:bg-pm-gold/5">
+                    <button type="button" onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full p-3 text-left font-bold flex justify-between items-center hover:bg-pm-gold/5">
                         <span className="truncate pr-4">{getItemTitle(item)}</span>
                         <ChevronDownIcon className={`w-5 h-5 transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`} />
                     </button>
@@ -171,13 +180,13 @@ const ArrayEditor: React.FC<{
                         <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
                             {renderItem(item, (key, value) => handleItemChange(index, key, value), index)}
                             <div className="text-right pt-2">
-                                <button onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
+                                <button type="button" onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
                             </div>
                         </div>
                     )}
                 </div>
             ))}
-            <button onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
+            <button type="button" onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
                 <PlusIcon className="w-4 h-4"/> Ajouter une Édition
             </button>
         </div>

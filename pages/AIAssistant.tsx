@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { AIAssistantProps } from '../types';
-import CloseIcon from '../components/icons/CloseIcon';
+import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 import { GoogleGenAI, Type } from '@google/genai';
 

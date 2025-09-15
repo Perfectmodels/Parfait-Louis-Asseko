@@ -15,6 +15,7 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
 
     const [answers, setAnswers] = useState<{ [key: number]: string }>({});
     const [submitted, setSubmitted] = useState(false);
+    // FIX: Use a result object to store score and total, not just a number.
     const [result, setResult] = useState<{ score: number, total: number } | null>(null);
     const timesLeftRef = useRef(0);
 
@@ -36,6 +37,7 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
     useEffect(() => {
         if (userId && data?.beginnerStudents) {
             const student = data.beginnerStudents.find(s => s.id === userId);
+            // FIX: Correctly read the score object from the user's data.
             const savedResult = student?.quizScores?.[quizId];
             if (savedResult) {
                 setResult({ score: savedResult.score, total: savedResult.total });
@@ -66,6 +68,7 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
             const timestamp = new Date().toISOString();
             const updatedStudents = data.beginnerStudents.map(s => {
                 if (s.id === userId) {
+                    // FIX: Save the full, correctly-typed quiz score object.
                     const newQuizScores = { 
                         ...s.quizScores, 
                         [quizId]: {

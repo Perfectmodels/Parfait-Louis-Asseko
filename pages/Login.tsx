@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import * as ReactRouterDOM from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-// FIX: Corrected import path for types.
 import { RecoveryRequest } from '../types';
 
 // Interface for storing active user data in localStorage
@@ -41,8 +39,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
-  // FIX: Use useNavigate for react-router-dom v6 compatibility.
-  const navigate = ReactRouterDOM.useNavigate();
+  const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
   const handleLogin = async (e: React.FormEvent) => {

@@ -5,7 +5,7 @@ import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import BookingForm from '../components/BookingForm';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 
 // --- Helper & Modal Components for Sharing ---
 const generateShortLink = async (

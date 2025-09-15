@@ -1,6 +1,5 @@
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief } from '../types';
-import { NavLink } from '../hooks/useDataStore';
-import { beginnerCourseData } from './beginnerCourseData';
+// FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
@@ -212,7 +211,6 @@ export const beginnerStudents: BeginnerStudent[] = [
         quizScores: {}
     }
 ];
-export { beginnerCourseData };
 
 
 export const newsItems: NewsItem[] = [

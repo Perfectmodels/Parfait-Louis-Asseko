@@ -1,10 +1,65 @@
 import React, { useState } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
-import { CheckBadgeIcon } from '@heroicons/react/24/outline';
-import { AchievementCategory, ModelDistinction } from '../types';
+import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+
+const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
+    const [openFAQ, setOpenFAQ] = useState<string | null>('0-0'); // Open the first question by default
+
+    const toggleFAQ = (id: string) => {
+        setOpenFAQ(openFAQ === id ? null : id);
+    };
+
+    if (!faqData || faqData.length === 0) {
+        return null;
+    }
+
+    return (
+        <section>
+            <h2 className="section-title">Questions Fréquemment Posées</h2>
+            <div className="max-w-4xl mx-auto space-y-8">
+                {faqData.map((category, catIndex) => (
+                    <div key={catIndex}>
+                        <h3 className="text-2xl font-playfair text-pm-gold mb-4">{category.category}</h3>
+                        <div className="space-y-3">
+                            {category.items.map((item, itemIndex) => {
+                                const faqId = `${catIndex}-${itemIndex}`;
+                                const isOpen = openFAQ === faqId;
+                                return (
+                                    <div key={itemIndex} className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden">
+                                        <button
+                                            onClick={() => toggleFAQ(faqId)}
+                                            className="w-full flex justify-between items-center p-5 text-left"
+                                            aria-expanded={isOpen}
+                                            aria-controls={`faq-answer-${faqId}`}
+                                        >
+                                            <span className="font-bold text-lg text-pm-off-white">{item.question}</span>
+                                            <ChevronDownIcon className={`w-6 h-6 text-pm-gold flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                                        </button>
+                                        <div
+                                            id={`faq-answer-${faqId}`}
+                                            className="grid transition-all duration-500 ease-in-out"
+                                            style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                                        >
+                                            <div className="overflow-hidden">
+                                                <div className="px-5 pb-5 text-pm-off-white/80">
+                                                    {item.answer}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+};
+
 
 const Agency: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -13,7 +68,7 @@ const Agency: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
   
-  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages } = data;
+  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages, faqData } = data;
 
   return (
     <div className="bg-pm-dark text-pm-off-white">
@@ -79,10 +134,13 @@ const Agency: React.FC = () => {
           <h2 className="section-title">Nos Partenaires Clé</h2>
           <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
             {agencyPartners.map((partner, index) => (
-                <p key={index} className="text-xl font-semibold text-pm-off-white/80 border-b-2 border-pm-gold/30 pb-1">{partner.name}</p>
+                <p key={index} className="text-lg font-normal text-pm-off-white/80">{partner.name}</p>
             ))}
           </div>
         </section>
+        
+        {/* FAQ Section */}
+        <FAQ faqData={faqData} />
 
         {/* Contact CTA */}
         <section className="text-center content-section">
@@ -138,19 +196,24 @@ const AchievementsTabs: React.FC<{ achievements: AchievementCategory[] }> = ({ a
                     role="tabpanel"
                     hidden={activeTab !== index}
                     aria-labelledby={`tab-${index}`}
-                    className="content-section"
+                    className={`transition-opacity duration-300 ${activeTab === index ? 'opacity-100' : 'opacity-0'}`}
                 >
                     {activeTab === index && (
-                        <>
-                           <ul className="columns-1 md:columns-2 lg:columns-3 gap-x-8 text-pm-off-white/80">
+                        <div className="content-section animate-fade-in">
+                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-pm-off-white/90">
                                 {category.items.map((item, itemIndex) => (
-                                    <li key={itemIndex} className="mb-2 break-inside-avoid">{item}</li>
+                                    <div key={itemIndex} className="bg-pm-dark/50 p-4 rounded-lg flex items-start gap-3 border border-pm-gold/10">
+                                        <CheckBadgeIcon className="w-6 h-6 text-pm-gold flex-shrink-0 mt-0.5" />
+                                        <span>{item}</span>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                             {category.name === "Défilés de Mode" && 
-                                <p className="text-center mt-8 text-pm-gold italic">"Notre agence a participé à tous les événements de mode depuis 2021, son année de création."</p>
+                                <p className="text-center mt-10 text-pm-gold/90 italic text-sm md:text-base bg-pm-dark/50 p-4 rounded-md">
+                                    "Notre agence a participé à tous les événements de mode depuis 2021, son année de création."
+                                </p>
                             }
-                        </>
+                        </div>
                     )}
                 </div>
             ))}

@@ -1,0 +1,16 @@
+# Voir https://www.robotstxt.org/robotstxt.html pour la documentation.
+User-agent: *
+Allow: /
+
+# Interdire l'exploration des zones privées et d'administration.
+Disallow: /admin
+Disallow: /login
+Disallow: /profil
+Disallow: /formations
+Disallow: /classroom-debutant
+Disallow: /jury
+Disallow: /enregistrement
+Disallow: /chat
+
+# Emplacement du sitemap
+Sitemap: https://www.perfectmodels.ga/sitemap.txt
