@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import * as ReactRouterDOM from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-// FIX: Corrected import path for types.
 import { ArticleContent, ArticleComment, Article } from '../types';
 import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
 import html2canvas from 'html2canvas';
 
 // --- Helper & Modal Components for Sharing ---
@@ -171,7 +169,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
 };
 
 const ArticleDetail: React.FC = () => {
-  const { slug } = ReactRouterDOM.useParams<{ slug: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { data, saveData, isInitialized } = useData();
   const [newComment, setNewComment] = useState('');
   const [commentAuthor, setCommentAuthor] = useState('');
@@ -335,7 +333,7 @@ const ArticleDetail: React.FC = () => {
       <SEO title={article.title} description={article.excerpt} keywords={article.tags?.join(', ')} image={article.imageUrl} schema={articleSchema} />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6 max-w-4xl">
-          <ReactRouterDOM.Link to="/magazine" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline"><ChevronLeftIcon className="w-5 h-5" />Retour au Magazine</ReactRouterDOM.Link>
+          <Link to="/magazine" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline"><ChevronLeftIcon className="w-5 h-5" />Retour au Magazine</Link>
           <article ref={articleRef} className="bg-black p-4 sm:p-8 border border-pm-gold/20">
             <header>
               <p className="text-sm uppercase tracking-widest text-pm-gold font-bold">{article.category}</p>

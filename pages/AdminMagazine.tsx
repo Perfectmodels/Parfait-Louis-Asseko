@@ -5,7 +5,7 @@ import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, StarIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/icons/ImageInput';
-import { FacebookIcon } from '../components/icons/SocialIcons';
+import { FacebookIcon } from '../components/SocialIcons';
 import AIAssistant from '../components/AIAssistant';
 import ArticleGenerator from '../components/ArticleGenerator';
 
