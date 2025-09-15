@@ -7,7 +7,6 @@ import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/SocialIcons';
 import BookingForm from '../components/BookingForm';
 import { ContactMessage } from '../types';
-import { siteConfig } from '../constants/data';
 
 const Contact: React.FC = () => {
     const { data, saveData } = useData();
@@ -69,36 +68,12 @@ const Contact: React.FC = () => {
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24 min-h-screen">
-            <SEO
-                title="Contactez Perfect Models Management | Agence de Mannequins au Gabon"
-                description="Contactez Perfect Models Management pour vos besoins de booking de mannequins, partenariats ou toute autre information. Notre agence est basée à Libreville, Gabon. Remplissez notre formulaire ou utilisez nos coordonnées."
-                keywords="contact agence mannequin gabon, booking mannequin libreville, partenariat mode gabon, perfect models management contact, agence pmm email, téléphone agence mannequin"
+            <SEO 
+                title="Contact | Perfect Models Management"
+                description="Contactez-nous pour toute demande de booking, de partenariat ou d'information. L'équipe de Perfect Models Management est à votre disposition à Libreville, Gabon."
+                keywords="contacter agence mannequin, booking mannequin gabon, partenariat mode, pmm contact"
                 image={data?.siteImages.about}
-            >
-                {contactInfo && socialLinks && (
-                    <script type="application/ld+json">
-                        {JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "Organization",
-                            "name": "Perfect Models Management",
-                            "url": "https://www.perfectmodels.ga/contact",
-                            "logo": siteConfig.logo,
-                            "contactPoint": {
-                                "@type": "ContactPoint",
-                                "telephone": contactInfo.phone,
-                                "contactType": "customer service",
-                                "email": contactInfo.email
-                            },
-                            "address": {
-                                "@type": "PostalAddress",
-                                "addressLocality": contactInfo.address.split(',')[0],
-                                "addressCountry": "GA"
-                            },
-                            "sameAs": Object.values(socialLinks).filter(Boolean)
-                        })}
-                    </script>
-                )}
-            </SEO>
+            />
             <div className="container mx-auto px-6">
                 <div className="text-center">
                     <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold mb-4">Contactez-nous</h1>

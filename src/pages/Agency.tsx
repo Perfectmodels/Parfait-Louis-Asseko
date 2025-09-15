@@ -5,7 +5,6 @@ import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { siteConfig } from '../constants/data';
 
 const Agency: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -14,40 +13,16 @@ const Agency: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
   
-  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages, socialLinks, contactInfo } = data;
+  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages } = data;
 
   return (
     <div className="bg-pm-dark text-pm-off-white">
-      <SEO
-        title="Notre Agence : Histoire, Valeurs & Succès | Perfect Models Management"
-        description="Découvrez l'histoire de Perfect Models Management, l'agence de mannequins leader au Gabon. Explorez nos valeurs, nos succès, nos distinctions et ce qui fait de nous un partenaire de choix pour la mode."
-        keywords="agence de mannequins gabon, histoire perfect models management, valeurs agence de mode, mannequins professionnels libreville, parfait asseko, succès agence pmm"
+      <SEO 
+        title="L'Agence | Notre Histoire et Nos Valeurs"
+        description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence, et les services qui font de nous un leader de la mode au Gabon."
+        keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
         image={siteImages.agencyHistory}
-      >
-        {agencyInfo && socialLinks && contactInfo && (
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Perfect Models Management",
-              "url": "https://www.perfectmodels.ga/agence",
-              "logo": siteConfig.logo,
-              "description": agencyInfo.about.p1,
-              "founder": {
-                "@type": "Person",
-                "name": "Parfait Asseko"
-              },
-              "foundingDate": "2021",
-              "address": {
-                "@type": "PostalAddress",
-                "addressLocality": contactInfo.address.split(',')[0],
-                "addressCountry": "GA"
-              },
-              "sameAs": Object.values(socialLinks).filter(Boolean)
-            })}
-          </script>
-        )}
-      </SEO>
+      />
       <div className="page-container space-y-20 lg:space-y-28">
 
         {/* À Propos */}

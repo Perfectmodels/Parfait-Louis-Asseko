@@ -133,8 +133,13 @@ const AdminCasting: React.FC = () => {
 
     return (
         <>
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Candidatures Casting" noIndex />
-            <div>
+            <div className="container mx-auto px-6">
+                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                    <ChevronLeftIcon className="w-5 h-5" />
+                    Retour au Tableau de Bord
+                </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">Candidatures Casting</h1>
 
                 <div className="flex flex-wrap items-center gap-4 mb-8">
@@ -178,6 +183,7 @@ const AdminCasting: React.FC = () => {
                     </div>
                 </div>
             </div>
+        </div>
         {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} />}
         </>
     );
