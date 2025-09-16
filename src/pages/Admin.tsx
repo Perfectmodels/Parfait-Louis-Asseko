@@ -6,7 +6,7 @@ import {
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
     ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
-    SignalIcon, Bars3Icon, XMarkIcon, BellIcon, ChartBarIcon, UserCircleIcon, ClockIcon
+    SignalIcon, Bars3Icon, XMarkIcon, BellIcon, ChartBarIcon, UserCircleIcon, ClockIcon, PlusIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
@@ -378,6 +378,7 @@ const AccountingView: React.FC<{
             <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins confirmés aux quiz." />
             <DashboardCard title="Messages de Contact" icon={EnvelopeIcon} link="/admin/messages" description="Lire et gérer les messages reçus via le formulaire de contact." notificationCount={newMessages} />
             <DashboardCard title="Demandes de Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Traiter les demandes de coordonnées oubliées." notificationCount={newRecoveryRequests} />
+            <DashboardCard title="Livre Comptable" icon={CurrencyDollarIcon} link="/admin/accounting" description="Gérer les revenus, dépenses et générer des rapports PDF." />
         </div>
     </div>
 );

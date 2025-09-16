@@ -244,12 +244,12 @@ const ModelDashboard: React.FC = () => {
                                <div className="p-4 border-t border-pm-gold/20 space-y-2">
                                    <h3 className="text-sm font-medium text-pm-gold mb-3">Actions Rapides</h3>
                                    <Link
-                                       to="/classroom-pro"
+                                       to="/formations"
                                        className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
                                        onClick={() => setSidebarOpen(false)}
                                    >
                                        <BookOpenIcon className="w-4 h-4" />
-                                       <span className="text-sm">Classroom Pro</span>
+                                       <span className="text-sm">Formations</span>
                                    </Link>
                                    <Link
                                        to={`/mannequins/${editableModel.id}`}
@@ -384,24 +384,6 @@ const ModelDashboard: React.FC = () => {
     );
 };
 
-const TabButton: React.FC<{name: string, icon: React.ElementType, isActive: boolean, onClick: () => void, notificationCount?: number}> = ({ name, icon: Icon, isActive, onClick, notificationCount = 0 }) => (
-    <button
-        onClick={onClick}
-        className={`relative flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-t-lg transition-colors border-b-2 ${
-            isActive 
-            ? 'border-pm-gold text-pm-gold' 
-            : 'border-transparent text-pm-off-white/70 hover:text-pm-gold'
-        }`}
-    >
-        <Icon className="w-5 h-5" />
-        {name}
-        {notificationCount > 0 && (
-            <span className="absolute top-1 -right-1 flex h-4 w-4">
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-xs items-center justify-center">{notificationCount}</span>
-            </span>
-        )}
-    </button>
-);
 
 const BriefItem: React.FC<{ brief: PhotoshootBrief, expandedBriefId: string | null, onToggle: (id: string) => void }> = ({ brief, expandedBriefId, onToggle }) => {
     const isExpanded = expandedBriefId === brief.id;

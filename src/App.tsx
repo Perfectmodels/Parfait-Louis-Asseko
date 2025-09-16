@@ -44,6 +44,7 @@ const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
 const AdminNews = lazy(() => import('./pages/AdminNews'));
 const AdminUserCreation = lazy(() => import('./pages/AdminUserCreation'));
+const AdminAccounting = lazy(() => import('./pages/AdminAccounting'));
 const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
 const AdminSettings = lazy(() => import('./pages/AdminSettings'));
 const AdminComments = lazy(() => import('./pages/AdminComments'));
@@ -144,8 +145,6 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
                         
-                        <ReactRouterDOM.Route path="/classroom-pro" element={<ProtectedRoute role="model"><ProClassroom /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/classroom-pro/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="model"><ChapterDetail /></ProtectedRoute>} />
                         
                         <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />
@@ -155,6 +154,7 @@ const AppContent: React.FC = () => {
                         
                         <ReactRouterDOM.Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/user-creation" element={<ProtectedRoute role="admin"><AdminUserCreation /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRoute role="admin"><AdminAccounting /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />

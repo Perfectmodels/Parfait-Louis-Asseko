@@ -13,18 +13,48 @@ const FashionDayApplicationForm: React.FC = () => {
         phone: string;
         role: FashionDayApplicationRole;
         message: string;
+        age: string;
+        gender: 'Homme' | 'Femme' | '';
+        location: string;
+        experience: string;
+        portfolioUrl: string;
+        instagram: string;
+        facebook: string;
+        website: string;
+        availability: string;
+        motivation: string;
+        previousParticipation: boolean;
+        specialRequirements: string;
     }>({
         name: '',
         email: '',
         phone: '',
         role: 'Mannequin',
-        message: ''
+        message: '',
+        age: '',
+        gender: '',
+        location: '',
+        experience: '',
+        portfolioUrl: '',
+        instagram: '',
+        facebook: '',
+        website: '',
+        availability: '',
+        motivation: '',
+        previousParticipation: false,
+        specialRequirements: ''
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, type } = e.target;
+        if (type === 'checkbox') {
+            const { checked } = e.target as HTMLInputElement;
+            setFormData({ ...formData, [name]: checked });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -38,10 +68,28 @@ const FashionDayApplicationForm: React.FC = () => {
         }
 
         const newApplication: FashionDayApplication = {
-            ...formData,
             id: `pfd-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            role: formData.role,
+            message: formData.message,
+            age: formData.age ? parseInt(formData.age) : undefined,
+            gender: formData.gender || undefined,
+            location: formData.location || undefined,
+            experience: formData.experience || undefined,
+            portfolioUrl: formData.portfolioUrl || undefined,
+            socialMedia: {
+                instagram: formData.instagram || undefined,
+                facebook: formData.facebook || undefined,
+                website: formData.website || undefined,
+            },
+            availability: formData.availability || undefined,
+            motivation: formData.motivation || undefined,
+            previousParticipation: formData.previousParticipation,
+            specialRequirements: formData.specialRequirements || undefined,
         };
 
         try {
@@ -50,7 +98,12 @@ const FashionDayApplicationForm: React.FC = () => {
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée ! L\'équipe du Perfect Fashion Day vous recontactera prochainement.');
-            setFormData({ name: '', email: '', phone: '', role: 'Mannequin', message: '' });
+            setFormData({ 
+                name: '', email: '', phone: '', role: 'Mannequin', message: '',
+                age: '', gender: '', location: '', experience: '', portfolioUrl: '',
+                instagram: '', facebook: '', website: '', availability: '', motivation: '',
+                previousParticipation: false, specialRequirements: ''
+            });
 
         } catch (error) {
             setStatus('error');
