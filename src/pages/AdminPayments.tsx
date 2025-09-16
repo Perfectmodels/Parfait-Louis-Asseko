@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, PlusIcon, PencilIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, PlusIcon, PencilIcon, CheckCircleIcon, ExclamationTriangleIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { Model, PaymentStatus, PaymentWarning } from '../types';
 import PaymentStatusBadge from '../components/PaymentStatusBadge';
 
@@ -10,8 +10,19 @@ const AdminPayments: React.FC = () => {
   const { data, saveData } = useData();
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [expandedModels, setExpandedModels] = useState<Set<string>>(new Set());
 
   const models = data?.models || [];
+
+  const toggleModelExpansion = (modelId: string) => {
+    const newExpanded = new Set(expandedModels);
+    if (newExpanded.has(modelId)) {
+      newExpanded.delete(modelId);
+    } else {
+      newExpanded.add(modelId);
+    }
+    setExpandedModels(newExpanded);
+  };
 
   const handleUpdatePayment = async (modelId: string, paymentData: Partial<PaymentStatus>) => {
     if (!data) return;
@@ -167,73 +178,118 @@ const AdminPayments: React.FC = () => {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-pm-gold/20">
-                  <th className="text-left py-3 px-4 text-pm-gold font-medium">Mannequin</th>
-                  <th className="text-left py-3 px-4 text-pm-gold font-medium">Statut</th>
-                  <th className="text-left py-3 px-4 text-pm-gold font-medium">Dernier Paiement</th>
-                  <th className="text-left py-3 px-4 text-pm-gold font-medium">Prochaine Échéance</th>
-                  <th className="text-left py-3 px-4 text-pm-gold font-medium">Montant</th>
-                  <th className="text-left py-3 px-4 text-pm-gold font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {models.map((model) => (
-                  <tr key={model.id} className="border-b border-pm-gold/10 hover:bg-pm-gold/5">
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={model.imageUrl}
-                          alt={model.name}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                        <div>
-                          <p className="font-medium text-pm-off-white">{model.name}</p>
-                          <p className="text-sm text-pm-off-white/60">{model.level}</p>
+          <div className="space-y-4">
+            {models.map((model) => {
+              const isExpanded = expandedModels.has(model.id);
+              return (
+                <div key={model.id} className="bg-black/50 border border-pm-gold/20 rounded-lg overflow-hidden hover:border-pm-gold transition-colors">
+                  {/* Header de la carte */}
+                  <button
+                    onClick={() => toggleModelExpansion(model.id)}
+                    className="w-full flex justify-between items-center p-6 text-left hover:bg-pm-gold/5 transition-colors"
+                    aria-expanded={isExpanded}
+                  >
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={model.imageUrl}
+                        alt={model.name}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                      <div>
+                        <h3 className="text-lg font-bold text-pm-gold">{model.name}</h3>
+                        <p className="text-sm text-pm-off-white/60">{model.level}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <PaymentStatusBadge paymentStatus={model.paymentStatus} />
+                      {isExpanded ? (
+                        <ChevronUpIcon className="w-6 h-6 text-pm-gold" />
+                      ) : (
+                        <ChevronDownIcon className="w-6 h-6 text-pm-gold" />
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Contenu dépliable */}
+                  {isExpanded && (
+                    <div className="p-6 border-t border-pm-gold/20 bg-pm-dark/30 animate-fade-in">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* Dernier Paiement */}
+                        <div className="bg-black/50 p-4 rounded-lg border border-pm-gold/10">
+                          <h4 className="text-sm font-medium text-pm-gold mb-2">Dernier Paiement</h4>
+                          <p className="text-pm-off-white/80">
+                            {model.paymentStatus?.lastPaymentDate 
+                              ? new Date(model.paymentStatus.lastPaymentDate).toLocaleDateString('fr-FR')
+                              : 'Aucun'
+                            }
+                          </p>
+                        </div>
+
+                        {/* Prochaine Échéance */}
+                        <div className="bg-black/50 p-4 rounded-lg border border-pm-gold/10">
+                          <h4 className="text-sm font-medium text-pm-gold mb-2">Prochaine Échéance</h4>
+                          <p className="text-pm-off-white/80">
+                            {model.paymentStatus?.nextDueDate 
+                              ? new Date(model.paymentStatus.nextDueDate).toLocaleDateString('fr-FR')
+                              : 'Non défini'
+                            }
+                          </p>
+                        </div>
+
+                        {/* Montant */}
+                        <div className="bg-black/50 p-4 rounded-lg border border-pm-gold/10">
+                          <h4 className="text-sm font-medium text-pm-gold mb-2">Montant</h4>
+                          <p className="text-pm-off-white/80">
+                            {model.paymentStatus?.amount 
+                              ? `${model.paymentStatus.amount} ${model.paymentStatus.currency || 'FCFA'}`
+                              : 'Non défini'
+                            }
+                          </p>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="bg-black/50 p-4 rounded-lg border border-pm-gold/10">
+                          <h4 className="text-sm font-medium text-pm-gold mb-2">Actions</h4>
+                          <button
+                            onClick={() => {
+                              setSelectedModel(model);
+                              setShowPaymentForm(true);
+                            }}
+                            className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20 w-full"
+                            title="Modifier le paiement"
+                          >
+                            <PencilIcon className="w-4 h-4" />
+                            Modifier
+                          </button>
                         </div>
                       </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <PaymentStatusBadge paymentStatus={model.paymentStatus} />
-                    </td>
-                    <td className="py-4 px-4 text-pm-off-white/80">
-                      {model.paymentStatus?.lastPaymentDate 
-                        ? new Date(model.paymentStatus.lastPaymentDate).toLocaleDateString('fr-FR')
-                        : 'Aucun'
-                      }
-                    </td>
-                    <td className="py-4 px-4 text-pm-off-white/80">
-                      {model.paymentStatus?.nextDueDate 
-                        ? new Date(model.paymentStatus.nextDueDate).toLocaleDateString('fr-FR')
-                        : 'Non défini'
-                      }
-                    </td>
-                    <td className="py-4 px-4 text-pm-off-white/80">
-                      {model.paymentStatus?.amount 
-                        ? `${model.paymentStatus.amount} ${model.paymentStatus.currency || 'FCFA'}`
-                        : 'Non défini'
-                      }
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            setSelectedModel(model);
-                            setShowPaymentForm(true);
-                          }}
-                          className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
-                          title="Modifier le paiement"
-                        >
-                          <PencilIcon className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+                      {/* Avertissements */}
+                      {model.paymentStatus?.warnings && model.paymentStatus.warnings.length > 0 && (
+                        <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                          <h4 className="text-sm font-medium text-red-400 mb-3">Avertissements</h4>
+                          <div className="space-y-2">
+                            {model.paymentStatus.warnings.map((warning) => (
+                              <div key={warning.id} className="flex items-start gap-3 p-3 bg-red-500/5 rounded-lg">
+                                <ExclamationTriangleIcon className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-sm text-red-300 font-medium">{warning.title}</p>
+                                  <p className="text-xs text-red-400/80">{warning.message}</p>
+                                  <p className="text-xs text-red-400/60 mt-1">
+                                    {new Date(warning.date).toLocaleDateString('fr-FR')}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
