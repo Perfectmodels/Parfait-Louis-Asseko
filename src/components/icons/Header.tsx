@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useData } from '../../src/contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';

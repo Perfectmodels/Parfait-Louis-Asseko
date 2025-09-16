@@ -8,8 +8,8 @@ import React, { useEffect, lazy, Suspense } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
-import Layout from '../components/icons/Layout';
-import ProtectedRoute from '../components/ProtectedRoute';
+import Layout from './components/icons/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -190,10 +190,8 @@ const App: React.FC = () => {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(registration => {
-          console.log('SW registered: ', registration);
-        }).catch(registrationError => {
-          console.log('SW registration failed: ', registrationError);
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+          /* silent */
         });
       });
     }

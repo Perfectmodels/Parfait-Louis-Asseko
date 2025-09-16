@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useData } from '../src/contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import { BookingRequest } from '../types';
 
 interface BookingFormProps {
