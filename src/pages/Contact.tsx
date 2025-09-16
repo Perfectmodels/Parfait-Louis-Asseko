@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { MapPinIcon, EnvelopeIcon, PhoneIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
@@ -74,16 +75,26 @@ const Contact: React.FC = () => {
                 image={data?.siteImages.about}
             />
             <div className="container mx-auto px-6">
-                <div className="text-center">
+                <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="text-center"
+                >
                     <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold mb-4">Contactez-nous</h1>
-                    <p className="max-w-2xl mx-auto text-pm-off-white/80">
+                    <p className="max-w-2xl mx-auto text-pm-off-white/80 text-lg">
                         Une question, un projet de collaboration ou une demande de booking ? Notre équipe est à votre écoute.
                     </p>
-                </div>
+                </motion.div>
 
-                <div className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                <div className="mt-8 md:mt-10 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
                     {/* Contact Info */}
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
+                    <motion.div 
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="bg-black/50 backdrop-blur-sm p-8 border border-pm-gold/20 rounded-lg shadow-lg"
+                    >
                         <h2 className="text-3xl font-playfair text-pm-gold mb-6">Nos Coordonnées</h2>
                         {contactInfo && (
                             <div className="space-y-4 text-lg">
@@ -105,7 +116,12 @@ const Contact: React.FC = () => {
                     </div>
 
                     {/* Contact Form */}
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
+                    <motion.div 
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="bg-black/50 backdrop-blur-sm p-8 border border-pm-gold/20 rounded-lg shadow-lg"
+                    >
                         <h2 className="text-3xl font-playfair text-pm-gold mb-6">Envoyez-nous un message</h2>
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <FormInput label="Votre Nom" name="name" value={formData.name} onChange={handleChange} required />
@@ -113,19 +129,36 @@ const Contact: React.FC = () => {
                             <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
                             <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
                             
-                            <div>
-                                <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
-                                    {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
+                            <motion.div
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50 flex items-center justify-center gap-2">
+                                    {status === 'loading' ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-pm-dark border-t-transparent rounded-full animate-spin"></div>
+                                            Envoi en cours...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <PaperAirplaneIcon className="w-5 h-5" />
+                                            Envoyer
+                                        </>
+                                    )}
                                 </button>
-                            </div>
+                            </motion.div>
                             
                             {statusMessage && (
-                                <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                                <motion.p 
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}
+                                >
                                     {statusMessage}
-                                </p>
+                                </motion.p>
                             )}
                         </form>
-                    </div>
+                    </motion.div>
                 </div>
 
                 <div className="mt-16 max-w-6xl mx-auto">

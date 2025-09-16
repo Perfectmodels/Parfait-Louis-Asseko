@@ -3,7 +3,7 @@ import { useData } from '../contexts/DataContext';
 import { Model, ContactInfo, BeginnerStudent } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowDownTrayIcon, ChevronDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm'; 
 
 const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: ContactInfo): string => {
@@ -105,14 +105,29 @@ const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: Cont
 const AdminModels: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localModels, setLocalModels] = useState<Model[]>([]);
-    const [editingModel, setEditingModel] = useState<Model | null>(null);
+    const [editingModel, setEditableModel] = useState<Model | null>(null);
     const [isCreating, setIsCreating] = useState(false);
+    const [demoteDropdownOpen, setDemoteDropdownOpen] = useState<string | null>(null);
 
     useEffect(() => {
         if (data?.models) {
             setLocalModels([...data.models].sort((a,b) => a.name.localeCompare(b.name)));
         }
     }, [data?.models, isInitialized]);
+
+    // Fermer le menu déroulant quand on clique ailleurs
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (demoteDropdownOpen) {
+                setDemoteDropdownOpen(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [demoteDropdownOpen]);
 
     const handleFormSave = async (modelToSave: Model) => {
         if (!data) return;
@@ -180,38 +195,82 @@ const AdminModels: React.FC = () => {
         await saveData({ ...data, models: updatedModels });
     };
 
-    const handleDemote = async (proModel: Model) => {
+    const handleDemote = async (proModel: Model, targetLevel: 'Débutant' | 'Inactif') => {
         if (!data) return;
         if (proModel.level !== 'Pro') {
             alert("Ce profil n'est pas au niveau Professionnel.");
             return;
         }
-        if (!window.confirm(`Rétrograder ${proModel.name} au statut Débutant ? Le profil pro sera retiré et un accès débutant sera créé.`)) return;
+        
+        const confirmMessage = targetLevel === 'Débutant' 
+            ? `Rétrograder ${proModel.name} au statut Débutant ? Le profil pro sera retiré et un accès débutant sera créé.`
+            : `Marquer ${proModel.name} comme Inactif ? Le profil sera désactivé mais conservé.`;
+            
+        if (!window.confirm(confirmMessage)) return;
 
-        // Générer un matricule unique pour débutant
-        const initial = (proModel.name.split(' ')[0] || 'X').charAt(0).toUpperCase();
-        const existingDebuts = (data.beginnerStudents || []).filter(s => s.matricule && s.matricule.startsWith(`DEB-${initial}`));
-        const existingNums = existingDebuts.map(s => parseInt(s.matricule.replace(`DEB-${initial}`, ''), 10) || 0);
-        const nextNum = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
-        const matricule = `DEB-${initial}${String(nextNum).padStart(3, '0')}`;
+        if (targetLevel === 'Débutant') {
+            // Générer un matricule unique pour débutant
+            const initial = (proModel.name.split(' ')[0] || 'X').charAt(0).toUpperCase();
+            const existingDebuts = (data.beginnerStudents || []).filter(s => s.matricule && s.matricule.startsWith(`DEB-${initial}`));
+            const existingNums = existingDebuts.map(s => parseInt(s.matricule.replace(`DEB-${initial}`, ''), 10) || 0);
+            const nextNum = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
+            const matricule = `DEB-${initial}${String(nextNum).padStart(3, '0')}`;
 
-        const newBeginner: BeginnerStudent = {
-            id: proModel.id || `${proModel.name.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}`,
-            name: proModel.name,
-            matricule,
-            password: proModel.password || `pmm${new Date().getFullYear()}`,
-            quizScores: {}
-        };
+            const newBeginner: BeginnerStudent = {
+                id: proModel.id || `${proModel.name.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}`,
+                name: proModel.name,
+                matricule,
+                password: proModel.password || `pmm${new Date().getFullYear()}`,
+                quizScores: proModel.quizScores || {}
+            };
 
-        const updatedModels = (data.models || []).filter(m => m.id !== proModel.id);
-        const updatedBeginners = [ ...(data.beginnerStudents || []), newBeginner ];
+            const updatedModels = (data.models || []).filter(m => m.id !== proModel.id);
+            const updatedBeginners = [ ...(data.beginnerStudents || []), newBeginner ];
+
+            try {
+                await saveData({ ...data, models: updatedModels, beginnerStudents: updatedBeginners });
+                alert(`${proModel.name} a été rétrogradé(e) au statut Débutant avec succès.`);
+            } catch (e) {
+                console.error('Demotion failed:', e);
+                alert("Une erreur est survenue lors de la rétrogradation.");
+            }
+        } else if (targetLevel === 'Inactif') {
+            // Marquer comme inactif
+            const updatedModels = data.models.map(m => 
+                m.id === proModel.id ? { ...m, level: 'Inactif' as const } : m
+            );
+
+            try {
+                await saveData({ ...data, models: updatedModels });
+                alert(`${proModel.name} a été marqué(e) comme Inactif avec succès.`);
+            } catch (e) {
+                console.error('Status change failed:', e);
+                alert("Une erreur est survenue lors du changement de statut.");
+            }
+        }
+        
+        setDemoteDropdownOpen(null);
+    };
+
+    const handleReactivate = async (inactiveModel: Model) => {
+        if (!data) return;
+        if (inactiveModel.level !== 'Inactif') {
+            alert("Ce profil n'est pas inactif.");
+            return;
+        }
+        
+        if (!window.confirm(`Réactiver ${inactiveModel.name} au statut Professionnel ?`)) return;
+
+        const updatedModels = data.models.map(m => 
+            m.id === inactiveModel.id ? { ...m, level: 'Pro' as const } : m
+        );
 
         try {
-            await saveData({ ...data, models: updatedModels, beginnerStudents: updatedBeginners });
-            alert(`${proModel.name} a été rétrogradé(e) au statut Débutant avec succès.`);
+            await saveData({ ...data, models: updatedModels });
+            alert(`${inactiveModel.name} a été réactivé(e) au statut Professionnel avec succès.`);
         } catch (e) {
-            console.error('Demotion failed:', e);
-            alert("Une erreur est survenue lors de la rétrogradation.");
+            console.error('Reactivation failed:', e);
+            alert("Une erreur est survenue lors de la réactivation.");
         }
     };
 
@@ -289,7 +348,15 @@ const AdminModels: React.FC = () => {
                                 <tr key={model.id}>
                                     <td><img src={model.imageUrl} alt={model.name} className="w-12 h-16 object-cover rounded"/></td>
                                     <td className="font-semibold">{model.name}</td>
-                                    <td><span className={`px-2 py-0.5 text-xs rounded-full ${model.level === 'Pro' ? 'bg-pm-gold/20 text-pm-gold' : 'bg-blue-500/20 text-blue-300'}`}>{model.level}</span></td>
+                                    <td>
+                                        <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                            model.level === 'Pro' ? 'bg-pm-gold/20 text-pm-gold' : 
+                                            model.level === 'Inactif' ? 'bg-red-500/20 text-red-300' : 
+                                            'bg-blue-500/20 text-blue-300'
+                                        }`}>
+                                            {model.level}
+                                        </span>
+                                    </td>
                                     <td>
                                         <button onClick={() => handleTogglePublic(model.id)} title={model.isPublic ? "Rendre privé" : "Rendre public"}>
                                             {model.isPublic ? <EyeIcon className="w-6 h-6 text-green-500"/> : <EyeSlashIcon className="w-6 h-6 text-pm-off-white/50"/>}
@@ -305,13 +372,43 @@ const AdminModels: React.FC = () => {
                                                 <PrinterIcon className="w-5 h-5"/>
                                             </button>
                                             {(model.level && /pro/i.test(model.level)) && (
+                                              <div className="relative">
+                                                <button 
+                                                  onClick={() => setDemoteDropdownOpen(demoteDropdownOpen === model.id ? null : model.id)}
+                                                  className="action-btn !flex !items-center !gap-1 bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20" 
+                                                  title="Options de rétrogradation"
+                                                >
+                                                  <ArrowDownTrayIcon className="w-5 h-5"/>
+                                                  <ChevronDownIcon className="w-3 h-3"/>
+                                                </button>
+                                                
+                                                {demoteDropdownOpen === model.id && (
+                                                  <div className="absolute right-0 top-full mt-1 w-48 bg-pm-dark border border-pm-gold/20 rounded-lg shadow-lg z-50">
+                                                    <button
+                                                      onClick={() => handleDemote(model, 'Débutant')}
+                                                      className="w-full px-4 py-2 text-left text-sm text-pm-off-white hover:bg-pm-gold/10 hover:text-pm-gold transition-colors"
+                                                    >
+                                                      Rétrograder en Débutant
+                                                    </button>
+                                                    <button
+                                                      onClick={() => handleDemote(model, 'Inactif')}
+                                                      className="w-full px-4 py-2 text-left text-sm text-pm-off-white hover:bg-pm-gold/10 hover:text-pm-gold transition-colors"
+                                                    >
+                                                      Marquer comme Inactif
+                                                    </button>
+                                                  </div>
+                                                )}
+                                              </div>
+                                            )}
+                                            
+                                            {(model.level && /inactif/i.test(model.level)) && (
                                               <button 
-                                                onClick={() => handleDemote(model)} 
-                                                className="action-btn !flex !items-center !gap-1 bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20" 
-                                                title="Rétrograder en Débutant"
+                                                onClick={() => handleReactivate(model)} 
+                                                className="action-btn !flex !items-center !gap-1 bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20" 
+                                                title="Réactiver"
                                               >
-                                                <ArrowDownTrayIcon className="w-5 h-5"/>
-                                                <span className="hidden xl:inline text-xs uppercase">Rétrograder</span>
+                                                <ArrowUpIcon className="w-5 h-5"/>
+                                                <span className="hidden xl:inline text-xs uppercase">Réactiver</span>
                                               </button>
                                             )}
                                             <button onClick={() => setEditingModel(model)} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>

@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { QuizQuestion, BeginnerStudent, Module } from '../../types';
-import { useData } from '../../contexts/DataContext';
+import { QuizQuestion, BeginnerStudent, Module } from '../types';
+import { useData } from '../contexts/DataContext';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 interface BeginnerQuizProps {
@@ -16,7 +15,7 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
 
     const [answers, setAnswers] = useState<{ [key: number]: string }>({});
     const [submitted, setSubmitted] = useState(false);
-    // FIX: Use a result object to store score and total, not just a number, to match the data structure.
+    // FIX: Use a result object to store score and total, not just a number.
     const [result, setResult] = useState<{ score: number, total: number } | null>(null);
     const timesLeftRef = useRef(0);
 
@@ -69,7 +68,7 @@ const BeginnerQuiz: React.FC<BeginnerQuizProps> = ({ quiz, moduleSlug }) => {
             const timestamp = new Date().toISOString();
             const updatedStudents = data.beginnerStudents.map(s => {
                 if (s.id === userId) {
-                    // FIX: Save the full, correctly-typed quiz score object to align with the type definition.
+                    // FIX: Save the full, correctly-typed quiz score object.
                     const newQuizScores = { 
                         ...s.quizScores, 
                         [quizId]: {

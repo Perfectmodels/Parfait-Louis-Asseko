@@ -7,10 +7,11 @@
     font-smooth: always;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #111111;
+    background-color: #1a1a1a;
   }
   body {
     @apply bg-pm-dark text-pm-off-white;
+    background-color: #1a1a1a;
   }
 
   /* Global focus styles for accessibility */
@@ -31,7 +32,7 @@
 @layer components {
   /* ===================== GENERAL LAYOUT ===================== */
   .page-container {
-    @apply container mx-auto px-6 py-16 lg:py-24 space-y-20 lg:space-y-28;
+    @apply container mx-auto px-6 py-8 lg:py-12 space-y-12 lg:space-y-16;
   }
 
   /* ===================== TITRES ===================== */
@@ -39,10 +40,10 @@
     @apply text-5xl md:text-6xl font-playfair text-pm-gold text-center font-extrabold mb-6;
   }
   .page-subtitle {
-    @apply text-center text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/80 mt-2 mb-12;
+    @apply text-center text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/80 mt-2 mb-8;
   }
   .section-title {
-    @apply text-4xl md:text-5xl font-playfair font-extrabold text-center text-pm-gold mb-10 relative pb-4;
+    @apply text-4xl md:text-5xl font-playfair font-extrabold text-center text-pm-gold mb-6 relative pb-4;
     text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
   }
   .section-title::after {
@@ -50,15 +51,15 @@
     @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-pm-gold;
   }
   .section-subtitle {
-    @apply text-center text-base md:text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-8 leading-relaxed;
+    @apply text-center text-base md:text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-6 leading-relaxed;
   }
   .content-section {
-    @apply bg-black border border-pm-gold/20 p-8 sm:p-10 lg:p-14 rounded-lg;
+    @apply bg-gray-900/50 border border-pm-gold/20 p-6 sm:p-8 lg:p-10 rounded-lg;
   }
 
   /* ===================== CARD BASE STYLE ===================== */
   .card-base {
-    @apply bg-black border border-pm-gold/20 transition-all duration-300 rounded-lg;
+    @apply bg-gray-900/40 border border-pm-gold/20 transition-all duration-300 rounded-lg;
   }
   .card-base:hover {
     @apply border-pm-gold shadow-2xl shadow-pm-gold/20 -translate-y-2;
@@ -75,7 +76,7 @@
     @apply text-pm-off-white/80 mt-1;
   }
   .admin-section-wrapper {
-    @apply bg-black border border-pm-gold/20 p-6 lg:p-8 rounded-lg shadow-lg shadow-black/30;
+    @apply bg-gray-900/50 border border-pm-gold/20 p-6 lg:p-8 rounded-lg shadow-lg shadow-black/30;
   }
   .admin-section-title {
     @apply text-2xl font-playfair text-pm-gold mb-6 border-b border-pm-gold/20 pb-3;
