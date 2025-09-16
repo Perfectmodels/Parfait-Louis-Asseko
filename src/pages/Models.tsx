@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import ModelCard from '../../components/ModelCard';
 import SEO from '../../components/SEO';
 import { useData } from '../contexts/DataContext';

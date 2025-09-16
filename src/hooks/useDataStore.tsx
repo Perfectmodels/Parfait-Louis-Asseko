@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../../firebaseConfig';
+import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-// FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -40,8 +39,7 @@ import {
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
-// FIX: Import beginnerCourseData directly to resolve module path error.
-import { beginnerCourseData as initialBeginnerCourseData } from '../components/beginnerCourseData';
+import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -153,6 +151,7 @@ export const useDataStore = () => {
                 // If DB is empty, seed it with initial data
                 set(dbRef, initialData).then(() => {
                     setData(initialData);
+                    console.log("Firebase database seeded with initial data.");
                 }).catch(error => {
                     console.error("Error seeding database:", error);
                 });

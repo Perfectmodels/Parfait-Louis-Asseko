@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { AchievementCategory, ModelDistinction, FAQCategory } from '../../types';
-import SEO from '../../components/SEO';
+import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
+import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 
 const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
