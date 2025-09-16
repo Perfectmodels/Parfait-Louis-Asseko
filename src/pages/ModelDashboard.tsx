@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import SEO from '../components/SEO';
+import SEO from '../../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import { Model, PhotoshootBrief } from '../types';
-import ModelForm from '../components/ModelForm';
+import { Model, PhotoshootBrief } from '../../types';
+import ModelForm from '../../components/ModelForm';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 
