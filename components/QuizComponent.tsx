@@ -93,7 +93,7 @@ const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, moduleSlug, moduleT
                                 {q.options.map((option, optionIndex) => {
                                     const isSelected = answers[index] === option;
                                     let optionClass = "border-pm-dark hover:border-pm-gold/50";
-                                    let icon = null;
+                                    let icon: React.ReactNode = null;
 
                                     if(submitted) {
                                         if(option === q.correctAnswer) {

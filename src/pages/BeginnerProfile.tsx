@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import SEO from '../../components/SEO';
+import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { BeginnerStudent, MonthlyPayment } from '../../types';
+import { BeginnerStudent, MonthlyPayment } from '../types';
 import { ArrowLeftIcon, ArrowRightOnRectangleIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 const monthKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;

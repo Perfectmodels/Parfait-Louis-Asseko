@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
-import { Article } from '../types';
+import { Article } from '../../types';
 import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 
