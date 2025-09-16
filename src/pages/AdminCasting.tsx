@@ -84,7 +84,7 @@ const AdminCasting: React.FC = () => {
             height: `${app.height}cm`,
             gender: app.gender,
             location: app.city,
-            imageUrl: `https://i.ibb.co/fVBxPNTP/T-shirt.png`, // Placeholder image
+            imageUrl: `https://i.ibb.co/fVBxPNT/T-shirt.png`, // Placeholder image
             isPublic: false, // Default to private
             distinctions: [],
             measurements: {

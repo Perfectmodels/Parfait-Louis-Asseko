@@ -35,6 +35,27 @@ export interface Model {
   };
   lastLogin?: string;
   lastActivity?: string;
+  paymentStatus?: PaymentStatus;
+  adminAccess?: boolean;
+}
+
+export interface PaymentStatus {
+  isUpToDate: boolean;
+  lastPaymentDate?: string;
+  nextDueDate?: string;
+  amount?: number;
+  currency?: string;
+  paymentMethod?: string;
+  notes?: string;
+  warnings?: PaymentWarning[];
+}
+
+export interface PaymentWarning {
+  id: string;
+  type: 'overdue' | 'reminder' | 'final_notice';
+  message: string;
+  date: string;
+  isRead: boolean;
 }
 
 export interface BeginnerStudent {
@@ -71,6 +92,7 @@ export interface FashionDayEvent {
   date: string;
   theme: string;
   location?: string;
+  imageUrl?: string;
   mc?: string;
   promoter?: string;
   stylists?: Stylist[];

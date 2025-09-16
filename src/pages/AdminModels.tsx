@@ -4,7 +4,8 @@ import { Model, ContactInfo, BeginnerStudent } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowDownTrayIcon, ChevronDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
-import ModelForm from '../components/ModelForm'; 
+import ModelForm from '../components/ModelForm';
+import PaymentStatusBadge from '../components/PaymentStatusBadge'; 
 
 const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: ContactInfo): string => {
     const portfolioImagesHtml = (model.portfolioImages || []).slice(0, 4).map(img => 
@@ -145,7 +146,21 @@ const AdminModels: React.FC = () => {
             if(!modelToSave.id) {
                 modelToSave.id = `${modelToSave.name.toLowerCase().replace(/ /g, '-')}-${Date.now()}`;
             }
-            updatedModels = [...localModels, modelToSave];
+            
+            // Ajouter l'accès admin et le statut de paiement par défaut pour les nouveaux mannequins
+            const newModel: Model = {
+                ...modelToSave,
+                adminAccess: true,
+                paymentStatus: {
+                    isUpToDate: false,
+                    nextDueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 jours
+                    amount: 50000, // 50,000 FCFA par défaut
+                    currency: 'FCFA',
+                    warnings: []
+                }
+            };
+            
+            updatedModels = [...localModels, newModel];
         } else {
             updatedModels = localModels.map(m => m.id === modelToSave.id ? modelToSave : m);
         }
@@ -339,6 +354,7 @@ const AdminModels: React.FC = () => {
                                 <th>Photo</th>
                                 <th>Nom</th>
                                 <th>Niveau</th>
+                                <th>Statut Paiement</th>
                                 <th>Public</th>
                                 <th>Actions</th>
                             </tr>
@@ -356,6 +372,9 @@ const AdminModels: React.FC = () => {
                                         }`}>
                                             {model.level}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <PaymentStatusBadge paymentStatus={model.paymentStatus} />
                                     </td>
                                     <td>
                                         <button onClick={() => handleTogglePublic(model.id)} title={model.isPublic ? "Rendre privé" : "Rendre public"}>

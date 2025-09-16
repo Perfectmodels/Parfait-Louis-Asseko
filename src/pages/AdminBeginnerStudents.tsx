@@ -79,7 +79,7 @@ const AdminBeginnerStudents: React.FC = () => {
             isPublic: false,
             gender: originalApplication?.gender || 'Femme',
             height: originalApplication ? `${originalApplication.height}cm` : 'N/A',
-            imageUrl: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+            imageUrl: 'https://i.ibb.co/fVBxPNT/T-shirt.png',
             measurements: originalApplication ? {
                 chest: `${originalApplication.chest || '0'}cm`,
                 waist: `${originalApplication.waist || '0'}cm`,

@@ -144,6 +144,20 @@ const FashionDay: React.FC = () => {
           <div className="content-section">
             <h2 className="text-4xl font-playfair text-center text-pm-gold mb-2">Thème : "{selectedEdition.theme}"</h2>
             <p className="text-center text-pm-off-white/70 mb-8">{new Date(selectedEdition.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            
+            {/* Image de l'événement */}
+            {selectedEdition.imageUrl && (
+              <div className="flex justify-center mb-12">
+                <div className="max-w-2xl w-full">
+                  <img 
+                    src={selectedEdition.imageUrl} 
+                    alt={`Affiche de la Perfect Fashion Day - Édition ${selectedEdition.edition}`}
+                    className="w-full h-auto rounded-lg shadow-2xl border border-pm-gold/20"
+                  />
+                </div>
+              </div>
+            )}
+            
             <p className="text-center max-w-3xl mx-auto mb-12">{selectedEdition.description}</p>
             
             {selectedEdition.location && (
