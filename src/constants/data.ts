@@ -2,7 +2,7 @@
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+  logo: 'https://i.ibb.co/fVBxPNT/T-shirt.png',
 };
 
 export const navLinks: NavLink[] = [
@@ -215,7 +215,7 @@ export const beginnerStudents: BeginnerStudent[] = [
 
 export const newsItems: NewsItem[] = [
     { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
-    { id: '2', title: "Perfect Fashion Day Édition 2", date: '2025-02-08', imageUrl: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
+    { id: '2', title: "Perfect Fashion Day Édition 2", date: '2026-01-31', imageUrl: 'https://i.ibb.co/Zpc4WJVF/L-art-de-se-reveler-080-Z.png', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
     { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: 'https://i.ibb.co/3WfK9Xg/about-img.jpg', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
 ];
 
@@ -225,8 +225,9 @@ export const fashionDayEvents: FashionDayEvent[] = [
       date: "2025-01-25T18:00:00",
       theme: "Racines et Modernité",
       location: "La Gare du Nord – Hôtel Restaurant Bar Casino, Carrefour Acaé",
+      imageUrl: "https://i.ibb.co/C5rcPJHz/titostyle-53.jpg",
       promoter: "Parfait Asseko",
-      description: "La 1ère Édition de la Perfect Fashion Day a tenu toutes ses promesses en réunissant mode, art, culture et professionnalisme. Le thème « Racines et Modernité » a permis d’explorer la richesse de la culture gabonaise tout en ouvrant un dialogue avec les tendances contemporaines, posant ainsi les bases solides d’un événement de référence pour la mode gabonaise.",
+      description: "La 1ère Édition de la Perfect Fashion Day a tenu toutes ses promesses en réunissant mode, art, culture et professionnalisme. Le thème « Racines et Modernité » a permis d'explorer la richesse de la culture gabonaise tout en ouvrant un dialogue avec les tendances contemporaines, posant ainsi les bases solides d'un événement de référence pour la mode gabonaise.",
       stylists: [
         {
           name: "AG Style",
@@ -334,15 +335,16 @@ export const fashionDayEvents: FashionDayEvent[] = [
     {
       edition: 2,
       date: "2026-01-31T18:00:00",
-      theme: "L’Art de se révéler",
+      theme: "L'Art de se révéler",
       location: "Complexe Hôtelier Le Nalys, Angondjé (à confirmer)",
-      description: "Après une première édition marquante, riche en émotions et en élégance, Perfect Models Management est fier d’annoncer le retour de la Perfect Fashion Day pour une deuxième édition inédite. Cette nouvelle rencontre mettra à l’honneur une mode profondément enracinée dans la culture, l’histoire personnelle et l’affirmation de soi.",
+      imageUrl: "https://i.ibb.co/Zpc4WJVF/L-art-de-se-reveler-080-Z.png",
+      description: "Après une première édition marquante, riche en émotions et en élégance, Perfect Models Management est fier d'annoncer le retour de la Perfect Fashion Day pour une deuxième édition inédite. Cette nouvelle rencontre mettra à l'honneur une mode profondément enracinée dans la culture, l'histoire personnelle et l'affirmation de soi.",
       stylists: [],
       featuredModels: [],
       artists: [
         { 
             name: 'Lady Riaba (Poésie)', 
-            description: 'Slam introductif sur le thème « L’Art de se révéler »', 
+            description: 'Slam introductif sur le thème "L\'Art de se révéler"', 
             images: [] 
         }
       ],

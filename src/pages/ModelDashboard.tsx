@@ -9,6 +9,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Model, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
+import PaymentStatusBadge from '../components/PaymentStatusBadge';
+import PaymentWarningAlert from '../components/PaymentWarningAlert';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 
@@ -73,6 +75,31 @@ const ModelDashboard: React.FC = () => {
             if (brief && brief.status === 'Nouveau') {
                 await handleMarkAsRead(briefId);
             }
+        }
+    };
+
+    const handleDismissWarning = async (warningId: string) => {
+        if (!data || !editableModel) return;
+        
+        const updatedModel = {
+            ...editableModel,
+            paymentStatus: {
+                ...editableModel.paymentStatus,
+                warnings: editableModel.paymentStatus?.warnings?.map(warning => 
+                    warning.id === warningId ? { ...warning, isRead: true } : warning
+                ) || []
+            }
+        };
+        
+        const updatedModels = data.models.map(m => 
+            m.id === editableModel.id ? updatedModel : m
+        );
+        
+        try {
+            await saveData({ ...data, models: updatedModels });
+            setEditableModel(updatedModel);
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour de l\'avertissement:', error);
         }
     };
 
@@ -245,6 +272,25 @@ const ModelDashboard: React.FC = () => {
                                     <h2 className="text-2xl font-bold text-pm-gold">Mon Profil</h2>
                                     <p className="text-pm-off-white/60">Gérez vos informations personnelles et professionnelles</p>
                                 </div>
+                                
+                                {/* Statut de paiement et avertissements */}
+                                <div className="bg-black/50 p-6 border border-pm-gold/20 rounded-lg">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-lg font-semibold text-pm-gold">Statut des Cotisations</h3>
+                                        <PaymentStatusBadge paymentStatus={editableModel.paymentStatus} showDetails={true} />
+                                    </div>
+                                    
+                                    {editableModel.paymentStatus?.warnings && editableModel.paymentStatus.warnings.length > 0 && (
+                                        <div className="mt-4">
+                                            <h4 className="text-sm font-medium text-pm-off-white mb-3">Avertissements</h4>
+                                            <PaymentWarningAlert 
+                                                warnings={editableModel.paymentStatus.warnings}
+                                                onDismissWarning={handleDismissWarning}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                
                                 <ModelForm 
                                     model={editableModel}
                                     onSave={handleSave}
