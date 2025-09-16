@@ -138,7 +138,7 @@ const BeginnerClassroom: React.FC = () => {
                                 <span className="text-sm">Statistiques</span>
                             </button>
                         </div>
-                    </div>
+                </div>
                 </aside>
 
                        {/* Main Content */}
@@ -194,11 +194,11 @@ const BeginnerClassroom: React.FC = () => {
                                                         </div>
                                                 </Link>
                                         ))}
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
-                            ))}
+                            </div>
+                                    )}
+                        </div>
+                    ))}
                         </div>
                     </div>
                 </main>
