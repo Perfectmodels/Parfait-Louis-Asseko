@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Model, ContactInfo } from '../../types';
+import { Model, ContactInfo, BeginnerStudent } from '../../types';
 import SEO from '../../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../../components/ModelForm'; 
 
 const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: ContactInfo): string => {
@@ -180,6 +180,41 @@ const AdminModels: React.FC = () => {
         await saveData({ ...data, models: updatedModels });
     };
 
+    const handleDemote = async (proModel: Model) => {
+        if (!data) return;
+        if (proModel.level !== 'Pro') {
+            alert("Ce profil n'est pas au niveau Professionnel.");
+            return;
+        }
+        if (!window.confirm(`Rétrograder ${proModel.name} au statut Débutant ? Le profil pro sera retiré et un accès débutant sera créé.`)) return;
+
+        // Générer un matricule unique pour débutant
+        const initial = (proModel.name.split(' ')[0] || 'X').charAt(0).toUpperCase();
+        const existingDebuts = (data.beginnerStudents || []).filter(s => s.matricule && s.matricule.startsWith(`DEB-${initial}`));
+        const existingNums = existingDebuts.map(s => parseInt(s.matricule.replace(`DEB-${initial}`, ''), 10) || 0);
+        const nextNum = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
+        const matricule = `DEB-${initial}${String(nextNum).padStart(3, '0')}`;
+
+        const newBeginner: BeginnerStudent = {
+            id: proModel.id || `${proModel.name.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}`,
+            name: proModel.name,
+            matricule,
+            password: proModel.password || `pmm${new Date().getFullYear()}`,
+            quizScores: {}
+        };
+
+        const updatedModels = (data.models || []).filter(m => m.id !== proModel.id);
+        const updatedBeginners = [ ...(data.beginnerStudents || []), newBeginner ];
+
+        try {
+            await saveData({ ...data, models: updatedModels, beginnerStudents: updatedBeginners });
+            alert(`${proModel.name} a été rétrogradé(e) au statut Débutant avec succès.`);
+        } catch (e) {
+            console.error('Demotion failed:', e);
+            alert("Une erreur est survenue lors de la rétrogradation.");
+        }
+    };
+
     const handlePrint = (model: Model) => {
         if (!data?.siteConfig || !data?.contactInfo) {
             alert("Les informations du site ne sont pas chargées.");
@@ -269,6 +304,16 @@ const AdminModels: React.FC = () => {
                                             >
                                                 <PrinterIcon className="w-5 h-5"/>
                                             </button>
+                                            {(model.level && /pro/i.test(model.level)) && (
+                                              <button 
+                                                onClick={() => handleDemote(model)} 
+                                                className="action-btn !flex !items-center !gap-1 bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20" 
+                                                title="Rétrograder en Débutant"
+                                              >
+                                                <ArrowDownTrayIcon className="w-5 h-5"/>
+                                                <span className="hidden xl:inline text-xs uppercase">Rétrograder</span>
+                                              </button>
+                                            )}
                                             <button onClick={() => setEditingModel(model)} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
                                             <button onClick={() => handleDelete(model.id)} className="p-2 text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
                                         </div>

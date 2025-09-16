@@ -90,6 +90,31 @@ const Agency: React.FC = () => {
             <div className="md:w-1/2 text-lg leading-relaxed text-pm-off-white/90">
               <p className="mb-4">{agencyInfo.about.p1}</p>
               <p>{agencyInfo.about.p2}</p>
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div className="bg-pm-dark/40 border border-pm-gold/20 rounded-lg p-4">
+                  <p className="text-pm-gold font-bold mb-1">Notre Mission</p>
+                  <p className="text-pm-off-white/80">Révéler des talents et construire des carrières durables, ancrées dans l'excellence et l'éthique.</p>
+                </div>
+                <div className="bg-pm-dark/40 border border-pm-gold/20 rounded-lg p-4">
+                  <p className="text-pm-gold font-bold mb-1">Notre Vision</p>
+                  <p className="text-pm-off-white/80">Devenir la référence panafricaine en management de mannequins et direction artistique.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Direction & Leadership */}
+        <section>
+          <h2 className="section-title">Direction & Leadership</h2>
+          <div className="content-section grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-6">
+              <p className="text-lg font-playfair text-pm-gold">Direction Artistique</p>
+              <p className="text-sm text-pm-off-white/80 mt-2">Conception des moodboards, encadrement en studio, sélection des looks et cohérence esthétique de nos productions.</p>
+            </div>
+            <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-6">
+              <p className="text-lg font-playfair text-pm-gold">Management & Carrière</p>
+              <p className="text-sm text-pm-off-white/80 mt-2">Développement de l'image, suivi des objectifs, préparation aux castings et placement sur les marchés adaptés.</p>
             </div>
           </div>
         </section>
@@ -132,9 +157,11 @@ const Agency: React.FC = () => {
          {/* Partenaires */}
         <section>
           <h2 className="section-title">Nos Partenaires Clé</h2>
-          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 content-section bg-transparent border-0 p-0">
             {agencyPartners.map((partner, index) => (
-                <p key={index} className="text-lg font-normal text-pm-off-white/80">{partner.name}</p>
+              <div key={index} className="bg-black/60 border border-pm-gold/20 rounded-md p-3 text-center">
+                <p className="text-sm md:text-base text-pm-off-white/80">{partner.name}</p>
+              </div>
             ))}
           </div>
         </section>

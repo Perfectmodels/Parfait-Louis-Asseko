@@ -42,6 +42,10 @@ export interface BeginnerStudent {
   name: string;
   matricule: string;
   password: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  instagram?: string;
   quizScores: { 
     [chapterSlug: string]: {
       score: number;

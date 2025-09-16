@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-import { MonthlyPayment, Model } from '../../types';
+import { MonthlyPayment, Model, BeginnerStudent } from '../../types';
 import SEO from '../../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -9,7 +9,7 @@ const AdminPayments: React.FC = () => {
     const { data, saveData } = useData();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPayment, setEditingPayment] = useState<MonthlyPayment | null>(null);
-    const [monthFilter, setMonthFilter] = useState('');
+    const [monthFilter, setMonthFilter] = useState<string>(new Date().toISOString().slice(0, 7));
 
     const payments = useMemo(() => {
         return [...(data?.monthlyPayments || [])].sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime());
@@ -18,6 +18,17 @@ const AdminPayments: React.FC = () => {
     const models = useMemo(() => {
         return [...(data?.models || [])].sort((a, b) => a.name.localeCompare(b.name));
     }, [data?.models]);
+
+    const beginners = useMemo(() => {
+        return [...(data?.beginnerStudents || [])].sort((a, b) => a.name.localeCompare(b.name));
+    }, [data?.beginnerStudents]);
+
+    const entities = useMemo(() => {
+        return [
+            ...models.map(m => ({ id: m.id, name: m.name })),
+            ...beginners.map(b => ({ id: b.id, name: b.name }))
+        ].sort((a,b) => a.name.localeCompare(b.name));
+    }, [models, beginners]);
 
     const filteredPayments = useMemo(() => {
         if (!monthFilter) return payments;
@@ -37,8 +48,10 @@ const AdminPayments: React.FC = () => {
     const handleSave = async (paymentData: MonthlyPayment) => {
         if (!data) return;
 
-        let updatedPayments;
-        if (editingPayment) {
+        let updatedPayments: MonthlyPayment[];
+        const isEditingExisting = Boolean(editingPayment && editingPayment.id);
+
+        if (isEditingExisting) {
             updatedPayments = payments.map(p => p.id === paymentData.id ? paymentData : p);
         } else {
             updatedPayments = [...payments, { ...paymentData, id: `payment-${Date.now()}` }];
@@ -61,6 +74,20 @@ const AdminPayments: React.FC = () => {
             await saveData({ ...data, monthlyPayments: updatedPayments });
         }
     };
+
+const handleSaveMany = async (paymentDataList: MonthlyPayment[]) => {
+        if (!data) return;
+        const withIds = paymentDataList.map(pd => ({ ...pd, id: pd.id && pd.id !== '' ? pd.id : `payment-${Date.now()}-${Math.random().toString(36).slice(2,7)}` }));
+        const updatedPayments = [...payments, ...withIds];
+        try {
+            await saveData({ ...data, monthlyPayments: updatedPayments });
+            setIsModalOpen(false);
+            setEditingPayment(null);
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde multiple:', error);
+            alert("Impossible de sauvegarder les paiements.");
+        }
+    };
     
     const getStatusColor = (status: MonthlyPayment['status']) => {
         switch (status) {
@@ -70,6 +97,12 @@ const AdminPayments: React.FC = () => {
             default: return 'bg-gray-500/20 text-gray-300';
         }
     };
+
+    const getMonthlyPaymentFor = (modelId: string, month: string) =>
+        payments.find(p => p.modelId === modelId && p.month === month && p.amount >= 1500 && p.amount < 15000);
+
+    const getRegistrationPaymentFor = (modelId: string) =>
+        payments.find(p => p.modelId === modelId && p.amount >= 15000);
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -82,22 +115,158 @@ const AdminPayments: React.FC = () => {
                             Retour au Dashboard
                         </Link>
                         <h1 className="admin-page-title">Comptabilité des Mannequins</h1>
-                        <p className="admin-page-subtitle">Suivi des paiements mensuels.</p>
+                        <p className="admin-page-subtitle">Cotisations (1 500 FCFA / mois) et Inscriptions (15 000 FCFA). Tous les mannequins sont listés ci‑dessous.</p>
                     </div>
                     <button onClick={() => handleOpenModal()} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
                         <PlusIcon className="w-5 h-5"/> Ajouter un Paiement
                     </button>
                 </div>
 
-                <div className="mb-6 flex items-center gap-4">
-                    <label className="admin-label !mb-0">Filtrer par mois :</label>
-                    <select value={monthFilter} onChange={e => setMonthFilter(e.target.value)} className="admin-input !w-auto">
-                        <option value="">Tous les mois</option>
-                        {uniqueMonths.map(month => <option key={month} value={month}>{month}</option>)}
-                    </select>
-                </div>
+                {/* Cotisations mensuelles */}
+                <section className="admin-section-wrapper overflow-x-auto mb-8">
+                    <div className="flex items-center gap-4 mb-4">
+                        <h2 className="admin-section-title !mb-0">Cotisations mensuelles (1 500 FCFA)</h2>
+                        <div className="flex items-center gap-2">
+                            <label className="admin-label !mb-0">Mois :</label>
+                            <input type="month" value={monthFilter} onChange={e => setMonthFilter(e.target.value)} className="admin-input !w-auto" />
+                        </div>
+                    </div>
+                    <table className="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Mannequin</th>
+                                <th>Mois</th>
+                                <th>Statut</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {models.map(m => {
+                                const pay = getMonthlyPaymentFor(m.id, monthFilter);
+                                return (
+                                  <tr key={m.id}>
+                                    <td>{m.name}</td>
+                                    <td>{monthFilter}</td>
+                                    <td>
+                                      {pay ? (
+                                        <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(pay.status)}`}>{pay.status}</span>
+                                      ) : (
+                                        <span className="px-2 py-0.5 text-xs rounded-full bg-red-500/20 text-red-300">Non payé</span>
+                                      )}
+                                    </td>
+                                    <td>{pay ? `${pay.amount.toLocaleString('fr-FR')} FCFA` : '—'}</td>
+                                    <td>{pay ? new Date(pay.paymentDate).toLocaleDateString('fr-FR') : '—'}</td>
+                                    <td>
+                                        <button onClick={() => handleOpenModal(pay || { id: '', modelId: m.id, modelName: m.name, month: monthFilter, amount: 1500, paymentDate: new Date().toISOString().split('T')[0], method: 'Espèces', status: 'En attente', notes: '' } as any)} className="text-pm-gold/70 hover:text-pm-gold p-1">
+                                            <PencilIcon className="w-5 h-5" />
+                                        </button>
+                                    </td>
+                                  </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </section>
 
+                {/* Débutants — Inscriptions & Cotisations */}
+                <section className="admin-section-wrapper overflow-x-auto mb-8">
+                    <div className="flex items-center gap-4 mb-4">
+                        <h2 className="admin-section-title !mb-0">Débutants — Inscriptions & Cotisations</h2>
+                        <div className="flex items-center gap-2">
+                            <label className="admin-label !mb-0">Mois :</label>
+                            <input type="month" value={monthFilter} onChange={e => setMonthFilter(e.target.value)} className="admin-input !w-auto" />
+                        </div>
+                    </div>
+                    <table className="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Débutant</th>
+                                <th>Inscription</th>
+                                <th>Cotisation ({monthFilter})</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {beginners.map(b => {
+                                const reg = getRegistrationPaymentFor(b.id);
+                                const pay = getMonthlyPaymentFor(b.id, monthFilter);
+                                return (
+                                  <tr key={b.id}>
+                                    <td>{b.name}</td>
+                                    <td>
+                                      {reg ? (
+                                        <div className="space-x-2">
+                                          <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(reg.status)}`}>{reg.status}</span>
+                                          <span className="text-xs text-pm-off-white/70">{reg.amount.toLocaleString('fr-FR')} FCFA · {new Date(reg.paymentDate).toLocaleDateString('fr-FR')}</span>
+                                        </div>
+                                      ) : (
+                                        <span className="px-2 py-0.5 text-xs rounded-full bg-red-500/20 text-red-300">Non payé</span>
+                                      )}
+                                    </td>
+                                    <td>
+                                      {pay ? (
+                                        <div className="space-x-2">
+                                          <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(pay.status)}`}>{pay.status}</span>
+                                          <span className="text-xs text-pm-off-white/70">{pay.amount.toLocaleString('fr-FR')} FCFA · {new Date(pay.paymentDate).toLocaleDateString('fr-FR')}</span>
+                                        </div>
+                                      ) : (
+                                        <span className="px-2 py-0.5 text-xs rounded-full bg-red-500/20 text-red-300">Non payé</span>
+                                      )}
+                                    </td>
+                                    <td>
+                                      <div className="flex items-center gap-2">
+                                        <button onClick={() => handleOpenModal({ id: '', modelId: b.id, modelName: b.name, month: monthFilter, amount: 0, paymentDate: new Date().toISOString().split('T')[0], method: 'Espèces', status: 'En attente', notes: '' } as any)} className="text-pm-gold/70 hover:text-pm-gold p-1" title="Saisir paiement">
+                                            <PencilIcon className="w-5 h-5" />
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </section>
+
+                {/* Dépenses */}
+                <section className="admin-section-wrapper overflow-x-auto mb-8">
+                    <h2 className="admin-section-title">Dépenses (Loyer, Séances Photos, Déplacements, Salaires)</h2>
+                    <table className="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {payments.filter(p => p.modelId.startsWith('expense:')).map(exp => (
+                                <tr key={exp.id}>
+                                    <td>{exp.modelName.replace('DEPENSE: ','')}</td>
+                                    <td>{exp.amount.toLocaleString('fr-FR')} FCFA</td>
+                                    <td>{new Date(exp.paymentDate).toLocaleDateString('fr-FR')}</td>
+                                    <td>{exp.notes || '—'}</td>
+                                    <td>
+                                        <div className="flex items-center gap-2">
+                                            <button onClick={() => handleOpenModal(exp)} className="text-pm-gold/70 hover:text-pm-gold p-1"><PencilIcon className="w-5 h-5"/></button>
+                                            <button onClick={() => handleDelete(exp.id)} className="text-red-500/70 hover:text-red-500 p-1"><TrashIcon className="w-5 h-5"/></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className="mt-4">
+                        <button onClick={() => handleOpenModal({ id: '', modelId: 'expense:Loyer', modelName: 'DEPENSE: Loyer', month: monthFilter, amount: 0, paymentDate: new Date().toISOString().split('T')[0], method: 'Espèces', status: 'En attente', notes: '' } as any)} className="action-btn !px-4 !py-2">Ajouter une dépense</button>
+                    </div>
+                </section>
+
+                {/* Historique des paiements */}
                 <div className="admin-section-wrapper overflow-x-auto">
+                    <h2 className="admin-section-title">Historique</h2>
                     <table className="admin-table">
                         <thead>
                             <tr>
@@ -136,9 +305,10 @@ const AdminPayments: React.FC = () => {
             {isModalOpen && (
                 <PaymentModal
                     payment={editingPayment}
-                    models={models}
+                    entities={entities}
                     onClose={() => { setIsModalOpen(false); setEditingPayment(null); }}
                     onSave={handleSave}
+                    onSaveMany={handleSaveMany}
                 />
             )}
         </div>
@@ -147,11 +317,12 @@ const AdminPayments: React.FC = () => {
 
 interface PaymentModalProps {
     payment: MonthlyPayment | null;
-    models: Model[];
+    entities: { id: string; name: string; }[];
     onClose: () => void;
     onSave: (payment: MonthlyPayment) => void;
+    onSaveMany?: (payments: MonthlyPayment[]) => void;
 }
-const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, onSave }) => {
+const PaymentModal: React.FC<PaymentModalProps> = ({ payment, entities, onClose, onSave, onSaveMany }) => {
     const [formData, setFormData] = useState<Omit<MonthlyPayment, 'id' | 'modelName'>>({
         modelId: payment?.modelId || '',
         month: payment?.month || new Date().toISOString().slice(0, 7),
@@ -161,6 +332,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, o
         status: payment?.status || 'En attente',
         notes: payment?.notes || ''
     });
+    const [isRegistration, setIsRegistration] = useState<boolean>(!!(payment && payment.amount >= 15000));
+    const [isSubscription, setIsSubscription] = useState<boolean>(!!(payment && payment.amount >= 1500 && payment.amount < 15000));
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -173,12 +346,24 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, o
             alert("Veuillez sélectionner un mannequin.");
             return;
         }
-        const model = models.find(m => m.id === formData.modelId);
-        if (!model) {
+        if (formData.modelId.startsWith('expense:')) {
+            const label = formData.modelId.replace('expense:','');
+            onSave({ ...formData, id: payment?.id || '', modelName: `DEPENSE: ${label}` });
+            return;
+        }
+        const ent = entities.find(e => e.id === formData.modelId);
+        if (!ent) {
             alert("Le mannequin sélectionné est invalide.");
             return;
         }
-        onSave({ ...formData, id: payment?.id || '', modelName: model.name });
+        if (onSaveMany && !payment?.id && isRegistration && isSubscription) {
+            const base = { ...formData } as MonthlyPayment;
+            const reg: MonthlyPayment = { ...base, amount: 15000, id: '', modelName: ent.name };
+            const sub: MonthlyPayment = { ...base, amount: 1500, id: '', modelName: ent.name };
+            onSaveMany([reg, sub]);
+            return;
+        }
+        onSave({ ...formData, id: payment?.id || '', modelName: ent.name });
     };
 
     return (
@@ -192,10 +377,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, o
                     <main className="p-6 space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="admin-label">Mannequin</label>
+                                <label className="admin-label">Bénéficiaire / Catégorie</label>
                                 <select name="modelId" value={formData.modelId} onChange={handleChange} className="admin-input" required>
                                     <option value="">Sélectionner...</option>
-                                    {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                                    {/* Dépenses */}
+                                    <optgroup label="Dépenses">
+                                        <option value="expense:Loyer">Loyer</option>
+                                        <option value="expense:Séances Photos">Séances Photos</option>
+                                        <option value="expense:Déplacements">Déplacements</option>
+                                        <option value="expense:Salaires">Salaires</option>
+                                    </optgroup>
+                                    <optgroup label="Mannequins">
+                                        {entities.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+                                    </optgroup>
                                 </select>
                             </div>
                              <div>
@@ -205,8 +399,22 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, o
                         </div>
                          <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="admin-label">Montant (FCFA)</label>
+                                <label className="admin-label">Type & Montant</label>
+                                <div className="flex items-center gap-4 mb-2">
+                                    <label className="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" className="accent-pm-gold" checked={isSubscription} onChange={(e) => { setIsSubscription(e.target.checked); if (e.target.checked && !isRegistration) setFormData(prev => ({ ...prev, amount: 1500 })); }} />
+                                        Cotisation (1 500)
+                                    </label>
+                                    <label className="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" className="accent-pm-gold" checked={isRegistration} onChange={(e) => { setIsRegistration(e.target.checked); if (e.target.checked && !isSubscription) setFormData(prev => ({ ...prev, amount: 15000 })); }} />
+                                        Inscription (15 000)
+                                    </label>
+                                </div>
                                 <input type="number" name="amount" value={formData.amount} onChange={handleChange} className="admin-input" required/>
+                                <div className="flex gap-2 mt-2 text-xs">
+                                    <button type="button" onClick={() => { setIsSubscription(true); setIsRegistration(false); setFormData(prev => ({ ...prev, amount: 1500 })); }} className="px-2 py-1 border border-pm-gold/40 rounded-full hover:border-pm-gold">Cotisation 1 500</button>
+                                    <button type="button" onClick={() => { setIsRegistration(true); setIsSubscription(false); setFormData(prev => ({ ...prev, amount: 15000 })); }} className="px-2 py-1 border border-pm-gold/40 rounded-full hover:border-pm-gold">Inscription 15 000</button>
+                                </div>
                             </div>
                             <div>
                                 <label className="admin-label">Date de Paiement</label>
