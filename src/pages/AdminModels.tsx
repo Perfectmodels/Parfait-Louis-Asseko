@@ -147,10 +147,10 @@ const AdminModels: React.FC = () => {
                 modelToSave.id = `${modelToSave.name.toLowerCase().replace(/ /g, '-')}-${Date.now()}`;
             }
             
-            // Ajouter l'accès admin et le statut de paiement par défaut pour les nouveaux mannequins
+            // Ajouter le statut de paiement par défaut pour les nouveaux mannequins
             const newModel: Model = {
                 ...modelToSave,
-                adminAccess: true,
+                adminAccess: false,
                 paymentStatus: {
                     isUpToDate: false,
                     nextDueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 jours

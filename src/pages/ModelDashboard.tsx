@@ -240,26 +240,34 @@ const ModelDashboard: React.FC = () => {
                             </button>
                         </nav>
                         
-                        {/* Quick Actions */}
-                        <div className="p-4 border-t border-pm-gold/20 space-y-2">
-                            <h3 className="text-sm font-medium text-pm-gold mb-3">Actions Rapides</h3>
-                            <Link 
-                                to="/formations" 
-                                className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
-                                onClick={() => setSidebarOpen(false)}
-                            >
-                                <BookOpenIcon className="w-4 h-4" />
-                                <span className="text-sm">Classroom Pro</span>
-                            </Link>
-                            <Link 
-                                to={`/mannequins/${editableModel.id}`} 
-                                className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
-                                onClick={() => setSidebarOpen(false)}
-                            >
-                                <UserCircleIcon className="w-4 h-4" />
-                                <span className="text-sm">Portfolio Public</span>
-                            </Link>
-                        </div>
+                               {/* Quick Actions */}
+                               <div className="p-4 border-t border-pm-gold/20 space-y-2">
+                                   <h3 className="text-sm font-medium text-pm-gold mb-3">Actions Rapides</h3>
+                                   <Link
+                                       to="/classroom-pro"
+                                       className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
+                                       onClick={() => setSidebarOpen(false)}
+                                   >
+                                       <BookOpenIcon className="w-4 h-4" />
+                                       <span className="text-sm">Classroom Pro</span>
+                                   </Link>
+                                   <Link
+                                       to={`/mannequins/${editableModel.id}`}
+                                       className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
+                                       onClick={() => setSidebarOpen(false)}
+                                   >
+                                       <UserCircleIcon className="w-4 h-4" />
+                                       <span className="text-sm">Portfolio Public</span>
+                                   </Link>
+                                   <Link
+                                       to="/contact"
+                                       className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
+                                       onClick={() => setSidebarOpen(false)}
+                                   >
+                                       <EnvelopeIcon className="w-4 h-4" />
+                                       <span className="text-sm">Contacter l'Agence</span>
+                                   </Link>
+                               </div>
                     </div>
                 </aside>
 
