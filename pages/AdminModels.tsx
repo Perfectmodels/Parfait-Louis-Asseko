@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
 import { Model, ContactInfo, BeginnerStudent } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm'; 
+
 const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: ContactInfo): string => {
     const portfolioImagesHtml = (model.portfolioImages || []).slice(0, 4).map(img => 
         `<img src="${img}" alt="Portfolio" style="width: 100%; aspect-ratio: 3/4; object-fit: cover;" />`
