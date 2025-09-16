@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
-import SEO from '../components/SEO';
+import SEO from '../../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { ArticleContent, ArticleComment, Article } from '../types';
+import { ArticleContent, ArticleComment, Article } from '../../types';
 import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 import html2canvas from 'html2canvas';

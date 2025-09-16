@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react/24/outline';
-import SEO from '../components/SEO';
+import SEO from '../../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { RecoveryRequest } from '../types';
+import { RecoveryRequest } from '../../types';
 
 // Interface for storing active user data in localStorage
 interface ActiveUser {
