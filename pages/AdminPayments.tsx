@@ -1,12 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-<<<<<<< HEAD:src/pages/AdminPayments.tsx
-import { MonthlyPayment, Model, BeginnerStudent } from '../../types';
-import SEO from '../../components/SEO';
-=======
-import { MonthlyPayment, Model } from '../types';
+import { MonthlyPayment, Model, BeginnerStudent } from '../types';
 import SEO from '../components/SEO';
->>>>>>> a8e58ab7aa3753140508b09c699d8ac17bcd2b6a:pages/AdminPayments.tsx
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -80,7 +75,7 @@ const AdminPayments: React.FC = () => {
         }
     };
 
-const handleSaveMany = async (paymentDataList: MonthlyPayment[]) => {
+    const handleSaveMany = async (paymentDataList: MonthlyPayment[]) => {
         if (!data) return;
         const withIds = paymentDataList.map(pd => ({ ...pd, id: pd.id && pd.id !== '' ? pd.id : `payment-${Date.now()}-${Math.random().toString(36).slice(2,7)}` }));
         const updatedPayments = [...payments, ...withIds];
@@ -451,7 +446,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ payment, entities, onClose,
                     </main>
                     <footer className="p-4 flex justify-end gap-4 border-t border-pm-gold/20">
                         <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-bold uppercase tracking-wider">Annuler</button>
-                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
+                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg_white">
                             Sauvegarder
                         </button>
                     </footer>
