@@ -1,12 +1,5 @@
-
-
-
-
-
-
 import React, { useEffect, lazy, Suspense } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import * as ReactRouterDOM from 'react-router-dom';
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -71,7 +64,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 
 const ScrollToTop: React.FC = () => {
-  const { pathname } = ReactRouterDOM.useLocation();
+  const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);

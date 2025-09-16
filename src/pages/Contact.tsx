@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { useLocation } from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
-import SEO from '../../components/SEO';
+import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/SocialIcons';
+<<<<<<< HEAD
 import { ContactMessage, BookingRequest } from '../../types';
+=======
+import BookingForm from '../components/BookingForm';
+import { ContactMessage } from '../types';
+>>>>>>> a8e58ab7aa3753140508b09c699d8ac17bcd2b6a
 
 const Contact: React.FC = () => {
     const { data, saveData } = useData();

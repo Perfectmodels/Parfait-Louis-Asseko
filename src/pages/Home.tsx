@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
-import ModelCard from '../components/ModelCard';
-import ServiceCard from '../components/ServiceCard';
+import ModelCard from '../../components/ModelCard';
+import ServiceCard from '../../components/ServiceCard';
 import { ApiKeys, NewsItem } from '../../types';
-import CountdownTimer from '../components/CountdownTimer';
-import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, UsersIcon, StarIcon, NewspaperIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import CountdownTimer from '../../components/CountdownTimer';
+import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 
 // --- Helper & Modal Components for Sharing ---
@@ -242,75 +242,41 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems, apiKeys } = data;
+  const { agencyInfo, agencyPartners, fashionDayEvents, models, siteImages, testimonials, agencyServices } = data;
   const publicModels = models.filter(m => m.isPublic).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
-  
-  const nextEvent = fashionDayEvents
-    .filter(e => new Date(e.date).getTime() > new Date().getTime())
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
-
-
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Perfect Models Management",
-    "url": window.location.origin,
-    "logo": siteConfig.logo,
-    "sameAs": [
-      socialLinks.facebook,
-      socialLinks.instagram,
-      socialLinks.youtube
-    ].filter(Boolean)
-  };
 
   return (
-    <div className="bg-pm-dark text-pm-off-white">
+    <div className="text-pm-off-white">
 
       <SEO 
         title="Accueil | L'Élégance Redéfinie"
         description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
         keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
         image={siteImages.hero}
-        schema={organizationSchema}
       />
 
-      {/* 1. Hero Section with Integrated Event */}
+      {/* 1. Hero Section */}
       <section 
-        className="relative h-[90vh] lg:h-screen flex flex-col items-center justify-center text-center bg-cover bg-center" 
+        className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed" 
         style={{ backgroundImage: `url('${siteImages.hero}')` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/80 to-transparent"></div>
-        <div className="relative z-10 p-6 animate-fade-in w-full max-w-5xl space-y-8">
-          <div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
-              L'Élégance Redéfinie
-            </h1>
-            <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
-              Nous révélons les talents et valorisons la beauté africaine.
-            </p>
+        <div className="absolute inset-0 bg-pm-dark/80"></div>
+        <div className="relative z-10 p-6">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
+            L'Élégance Redéfinie
+          </h1>
+          <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
+            Nous révélons les talents et valorisons la beauté africaine.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+              Découvrir nos mannequins
+            </Link>
+            <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
+              Nous rejoindre
+            </Link>
           </div>
-          
-          {nextEvent ? (
-              <div className="mt-10 bg-black/50 backdrop-blur-sm py-6 px-4 rounded-lg border border-pm-gold/20">
-                  <h3 className="text-2xl md:text-3xl font-playfair text-white mb-2">
-                      Prochain Événement : Perfect Fashion Day - Édition {nextEvent.edition}
-                  </h3>
-                  <p className="text-lg md:text-xl text-pm-gold mb-6">"{nextEvent.theme}"</p>
-                  <div className="my-6">
-                     <CountdownTimer targetDate={nextEvent.date} />
-                  </div>
-                  <Link to="/fashion-day-application" className="mt-4 inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-                      Participer à l'Édition 2
-                  </Link>
-              </div>
-          ) : (
-              <div className="mt-10">
-                  <p className="text-pm-off-white/80 max-w-3xl mx-auto">
-                      Restez à l'écoute pour l'annonce de notre prochaine édition !
-                  </p>
-              </div>
-          )}
         </div>
       </section>
 
@@ -336,32 +302,6 @@ const Home: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </section>
-
-        {/* Key Metrics */}
-        <section aria-label="Chiffres clés" className="mt-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="bg-black border border-pm-gold/20 rounded-lg p-6 text-center">
-              <UsersIcon className="w-8 h-8 mx-auto text-pm-gold" />
-              <p className="text-3xl font-playfair text-pm-gold mt-2">{models.length}</p>
-              <p className="text-sm text-pm-off-white/70">Mannequins</p>
-            </div>
-            <div className="bg-black border border-pm-gold/20 rounded-lg p-6 text-center">
-              <StarIcon className="w-8 h-8 mx-auto text-pm-gold" />
-              <p className="text-3xl font-playfair text-pm-gold mt-2">{fashionDayEvents.length}</p>
-              <p className="text-sm text-pm-off-white/70">Événements PFD</p>
-            </div>
-            <div className="bg-black border border-pm-gold/20 rounded-lg p-6 text-center">
-              <ShieldCheckIcon className="w-8 h-8 mx-auto text-pm-gold" />
-              <p className="text-3xl font-playfair text-pm-gold mt-2">{data.agencyPartners?.length || 0}</p>
-              <p className="text-sm text-pm-off-white/70">Partenaires</p>
-            </div>
-            <div className="bg-black border border-pm-gold/20 rounded-lg p-6 text-center">
-              <NewspaperIcon className="w-8 h-8 mx-auto text-pm-gold" />
-              <p className="text-3xl font-playfair text-pm-gold mt-2">{data.articles?.length || 0}</p>
-              <p className="text-sm text-pm-off-white/70">Articles publiés</p>
-            </div>
-          </div>
         </section>
 
         {/* News Carousel Section */}
@@ -390,47 +330,6 @@ const Home: React.FC = () => {
         </section>
       </div>
       
-      {/* Partners */}
-      {data.agencyPartners && data.agencyPartners.length > 0 && (
-        <section className="bg-black py-16">
-          <div className="container mx-auto px-6">
-            <h2 className="section-title">Nos Partenaires</h2>
-            <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-              {data.agencyPartners.map((p, idx) => (
-                <span key={idx} className="px-4 py-2 border border-pm-gold/30 text-pm-off-white/80 rounded-full hover:border-pm-gold/60 transition-colors text-sm">
-                  {p.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Latest Articles */}
-      {data.articles && data.articles.length > 0 && (
-        <section className="bg-black py-16">
-          <div className="container mx-auto px-6">
-            <h2 className="section-title">Derniers Articles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {data.articles.slice(0, 3).map(article => (
-                <Link to={`/magazine/${article.slug}`} key={article.slug} className="group block bg-pm-dark border border-pm-gold/20 rounded-lg overflow-hidden hover:border-pm-gold transition-all">
-                  <div className="aspect-video w-full overflow-hidden">
-                    <img src={article.imageUrl || siteImages.hero} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-xl font-playfair text-pm-gold mb-2 group-hover:underline">{article.title}</h3>
-                    <p className="text-sm text-pm-off-white/70 line-clamp-3">{article.excerpt}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-            <div className="text-center mt-10">
-              <Link to="/magazine" className="px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full transition-all hover:bg-pm-gold hover:text-pm-dark">Voir tous les articles</Link>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* 4. Models (Full bleed for visual variety) */}
       <section className="bg-black py-20 lg:py-28">
         <div className="container mx-auto px-6">
@@ -461,45 +360,20 @@ const Home: React.FC = () => {
           </section>
         )}
 
-        {/* Pourquoi nous choisir ? */}
-        <section>
-          <div className="content-section">
-            <h2 className="section-title">Pourquoi nous choisir ?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-              <div className="bg-pm-dark/40 border border-pm-gold/20 p-6 rounded-lg">
-                <h3 className="text-lg font-bold text-pm-gold mb-2">Excellence et encadrement</h3>
-                <p className="text-pm-off-white/80">Un accompagnement complet: sélection, formation, direction artistique et suivi de carrière avec des professionnels passionnés.</p>
-              </div>
-              <div className="bg-pm-dark/40 border border-pm-gold/20 p-6 rounded-lg">
-                <h3 className="text-lg font-bold text-pm-gold mb-2">Réseau et opportunités</h3>
-                <p className="text-pm-off-white/80">Un réseau actif de partenaires, créateurs et médias pour multiplier les opportunités locales et à l’international.</p>
-              </div>
-              <div className="bg-pm-dark/40 border border-pm-gold/20 p-6 rounded-lg">
-                <h3 className="text-lg font-bold text-pm-gold mb-2">Éthique & image</h3>
-                <p className="text-pm-off-white/80">Une approche centrée sur l’éthique, le professionnalisme et la valorisation de l’image avec une vision durable.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 8. Call to Action */}
-        <section>
-          <div className="content-section text-center">
-            <h2 className="section-title">Prêts à nous rejoindre ?</h2>
-            <p className="section-subtitle">
-              Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                Postuler
-              </Link>
-              <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                Nous Contacter
-              </Link>
-            </div>
-          </div>
-        </section>
-      </div>
+      {/* 8. Call to Action */}
+      <section className="page-container bg-pm-dark text-center">
+        <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+          Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+            Postuler
+          </Link>
+          <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+            Nous Contacter
+          </Link>
+        </div>
+      </section>
 
     </div>
   );
