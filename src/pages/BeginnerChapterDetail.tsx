@@ -190,21 +190,21 @@ const BeginnerChapterDetail: React.FC = () => {
                     <p className="font-medium text-sm truncate">{courseModule.title}</p>
                     <p className="text-xs opacity-60">{courseModule.chapters.length} chapitres</p>
                   </div>
-                </Link>
+          </Link>
               ))}
             </nav>
             
             {/* Quick Actions */}
             <div className="p-4 border-t border-pm-gold/20 space-y-2">
               <h3 className="text-sm font-medium text-pm-gold mb-3">Actions</h3>
-              <button 
-                onClick={handlePrint}
+          <button
+            onClick={handlePrint}
                 className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors w-full text-left"
-              >
+          >
                 <ArrowDownTrayIcon className="w-4 h-4" />
                 <span className="text-sm">Imprimer le chapitre</span>
-              </button>
-            </div>
+          </button>
+        </div>
           </div>
         </aside>
 
@@ -231,30 +231,30 @@ const BeginnerChapterDetail: React.FC = () => {
                       <BookOpenIcon className="w-6 h-6 text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-sm uppercase tracking-widest text-pm-gold/80 font-bold">{module.title}</p>
+              <p className="text-sm uppercase tracking-widest text-pm-gold/80 font-bold">{module.title}</p>
                       <h1 className="text-3xl lg:text-4xl font-bold text-pm-off-white mt-1">
-                        {chapter.title}
-                      </h1>
+                {chapter.title}
+              </h1>
                     </div>
                   </div>
-                </header>
+            </header>
                 
                 <div className="prose prose-lg max-w-none">
                   <div className="text-pm-off-white/80 leading-relaxed space-y-4">
-                    {chapter.content.split('\n').map((paragraph, index) => (
+              {chapter.content.split('\n').map((paragraph, index) => (
                       <p key={index} className="text-base leading-7">{paragraph}</p>
-                    ))}
+              ))}
                   </div>
-                </div>
-              </article>
-              
-              {/* Quiz Section */}
-              {module.quiz && module.quiz.length > 0 && (
-                <div className="mt-8">
-                  <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
-                </div>
-              )}
             </div>
+          </article>
+        
+              {/* Quiz Section */}
+        {module.quiz && module.quiz.length > 0 && (
+                <div className="mt-8">
+            <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
+                </div>
+        )}
+      </div>
           </div>
         </main>
       </div>

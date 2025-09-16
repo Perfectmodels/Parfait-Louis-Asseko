@@ -43,6 +43,7 @@ const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
 const AdminNews = lazy(() => import('./pages/AdminNews'));
+const AdminUserCreation = lazy(() => import('./pages/AdminUserCreation'));
 const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
 const AdminSettings = lazy(() => import('./pages/AdminSettings'));
 const AdminComments = lazy(() => import('./pages/AdminComments'));
@@ -150,6 +151,7 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
                         
                         <ReactRouterDOM.Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/user-creation" element={<ProtectedRoute role="admin"><AdminUserCreation /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
