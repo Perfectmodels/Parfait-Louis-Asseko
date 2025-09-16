@@ -28,7 +28,6 @@ const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
 const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
-const ProClassroom = lazy(() => import('./pages/ProClassroom'));
 const Chat = lazy(() => import('./pages/Chat'));
 
 // Admin Pages

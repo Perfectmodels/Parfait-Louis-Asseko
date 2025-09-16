@@ -31,22 +31,22 @@ const Footer: React.FC = () => {
                 }}></div>
             </div>
             
-            <div className="container mx-auto px-6 py-16 relative">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div className="container mx-auto px-6 py-8 relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Column 1: Brand & Social */}
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         {siteConfig?.logo && (
                             <Link to="/" className="block group">
                                 <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-16 w-auto group-hover:scale-105 transition-transform duration-300" />
                             </Link>
                         )}
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             <h3 className="text-lg font-bold text-pm-gold">Perfect Models Management</h3>
                             <p className="text-sm leading-relaxed">L'élégance redéfinie. Berceau de talents et plateforme dédiée à l'avenir de la mode africaine.</p>
                         </div>
                         
                         {/* Bouton de connexion visible */}
-                        <div className="pt-4">
+                        <div className="pt-2">
                             <Link 
                                 to="/login" 
                                 className="inline-flex items-center gap-2 px-6 py-3 bg-pm-gold text-pm-dark font-semibold rounded-lg hover:bg-white transition-all duration-300 hover:shadow-lg hover:shadow-pm-gold/25 group"
@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
 
                         {/* Social Links */}
                         {socialLinks && (
-                            <div className="flex space-x-4 pt-4">
+                            <div className="flex space-x-4 pt-2">
                                 {socialLinks.facebook && (
                                     <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" 
                                        className="p-2 bg-pm-gold/10 rounded-lg hover:bg-pm-gold hover:text-pm-dark transition-all duration-300 group" 
@@ -86,11 +86,11 @@ const Footer: React.FC = () => {
 
                     {/* Column 2: Explorer */}
                     <div>
-                        <h3 className="text-lg font-bold text-pm-gold uppercase tracking-wider mb-6 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-pm-gold uppercase tracking-wider mb-4 flex items-center gap-2">
                             <SparklesIcon className="w-5 h-5" />
                             Explorer
                         </h3>
-                        <ul className="space-y-4">
+                        <ul className="space-y-3">
                             {footerLinks.map(link => (
                                 <li key={link.path}>
                                     <Link to={link.path} className="flex items-center gap-3 hover:text-pm-gold transition-colors text-sm group">
@@ -104,11 +104,11 @@ const Footer: React.FC = () => {
                     
                     {/* Column 3: Key Services */}
                     <div>
-                        <h3 className="text-lg font-bold text-pm-gold uppercase tracking-wider mb-6 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-pm-gold uppercase tracking-wider mb-4 flex items-center gap-2">
                             <BriefcaseIcon className="w-5 h-5" />
                             Services Clés
                         </h3>
-                        <ul className="space-y-4">
+                        <ul className="space-y-3">
                            {keyServices.map((service, index) => {
                                const icons = [UserIcon, CalendarDaysIcon, SparklesIcon, BookOpenIcon];
                                const Icon = icons[index] || BriefcaseIcon;
@@ -126,12 +126,12 @@ const Footer: React.FC = () => {
 
                     {/* Column 4: Contact Info */}
                     <div>
-                        <h3 className="text-lg font-bold text-pm-gold uppercase tracking-wider mb-6 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-pm-gold uppercase tracking-wider mb-4 flex items-center gap-2">
                             <EnvelopeIcon className="w-5 h-5" />
                             Contact
                         </h3>
                         {contactInfo && (
-                            <ul className="space-y-5 text-sm">
+                            <ul className="space-y-3 text-sm">
                                 <li className="flex items-start gap-3 group">
                                     <div className="p-2 bg-pm-gold/10 rounded-lg group-hover:bg-pm-gold transition-colors">
                                         <MapPinIcon className="w-4 h-4 text-pm-gold group-hover:text-pm-dark transition-colors" />
@@ -156,8 +156,8 @@ const Footer: React.FC = () => {
                 </div>
 
                 {/* Bottom section */}
-                <div className="mt-16 pt-8 border-t border-pm-gold/20">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="mt-8 pt-6 border-t border-pm-gold/20">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="text-center md:text-left">
                             <p className="text-sm text-pm-off-white/60">
                                 &copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.
