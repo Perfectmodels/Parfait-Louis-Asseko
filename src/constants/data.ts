@@ -1,8 +1,8 @@
 // FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory } from '../types';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNT/T-shirt.png',
+  logo: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
 };
 
 export const navLinks: NavLink[] = [
@@ -225,7 +225,7 @@ export const fashionDayEvents: FashionDayEvent[] = [
       date: "2025-01-25T18:00:00",
       theme: "Racines et Modernité",
       location: "La Gare du Nord – Hôtel Restaurant Bar Casino, Carrefour Acaé",
-      imageUrl: "https://i.ibb.co/C5rcPJHz/titostyle-53.jpg",
+      imageUrl: "https://i.ibb.co/35tKdsRr/482986573-631604006390611-5475849692479591284-n.jpg",
       promoter: "Parfait Asseko",
       description: "La 1ère Édition de la Perfect Fashion Day a tenu toutes ses promesses en réunissant mode, art, culture et professionnalisme. Le thème « Racines et Modernité » a permis d'explorer la richesse de la culture gabonaise tout en ouvrant un dialogue avec les tendances contemporaines, posant ainsi les bases solides d'un événement de référence pour la mode gabonaise.",
       stylists: [
@@ -735,5 +735,90 @@ export const faqData: FAQCategory[] = [
                 answer: "Nous sommes toujours ouverts à des collaborations avec des marques et entreprises qui partagent nos valeurs. Veuillez nous contacter via notre page Contact pour discuter des opportunités de partenariat pour nos prochains événements."
             }
         ]
+    }
+];
+
+// Données par défaut pour le système comptable
+export const defaultAccountingCategories: AccountingCategory[] = [
+    {
+        id: 'revenue-cotisations',
+        name: 'Cotisations Mannequins',
+        type: 'revenue',
+        subcategories: ['Cotisations mensuelles', 'Cotisations annuelles', 'Frais d\'inscription'],
+        description: 'Revenus provenant des cotisations des mannequins'
+    },
+    {
+        id: 'revenue-services',
+        name: 'Services',
+        type: 'revenue',
+        subcategories: ['Booking mannequins', 'Organisation événements', 'Formation', 'Photographie'],
+        description: 'Revenus provenant des services de l\'agence'
+    },
+    {
+        id: 'revenue-partenariats',
+        name: 'Partenariats',
+        type: 'revenue',
+        subcategories: ['Sponsors', 'Collaborations', 'Publicité'],
+        description: 'Revenus provenant des partenariats'
+    },
+    {
+        id: 'expense-location',
+        name: 'Location & Infrastructure',
+        type: 'expense',
+        subcategories: ['Loyer bureau', 'Électricité', 'Internet', 'Téléphone'],
+        description: 'Dépenses liées à l\'infrastructure'
+    },
+    {
+        id: 'expense-marketing',
+        name: 'Marketing & Communication',
+        type: 'expense',
+        subcategories: ['Publicité', 'Réseaux sociaux', 'Matériel promotionnel', 'Événements'],
+        description: 'Dépenses de marketing et communication'
+    },
+    {
+        id: 'expense-personnel',
+        name: 'Personnel',
+        type: 'expense',
+        subcategories: ['Salaires', 'Formation', 'Équipement', 'Déplacements'],
+        description: 'Dépenses liées au personnel'
+    },
+    {
+        id: 'expense-divers',
+        name: 'Divers',
+        type: 'expense',
+        subcategories: ['Fournitures', 'Maintenance', 'Assurance', 'Autres'],
+        description: 'Autres dépenses'
+    }
+];
+
+export const defaultAccountingTransactions: AccountingTransaction[] = [
+    // Quelques transactions d'exemple
+    {
+        id: 'trans-1',
+        date: '2024-01-15',
+        description: 'Cotisation mensuelle - Marie Dubois',
+        category: 'revenue',
+        subcategory: 'Cotisations mensuelles',
+        amount: 50000,
+        currency: 'FCFA',
+        paymentMethod: 'bank_transfer',
+        reference: 'COT-2024-001',
+        relatedModelId: 'model-1',
+        relatedModelName: 'Marie Dubois',
+        createdBy: 'admin',
+        createdAt: '2024-01-15T10:00:00Z'
+    },
+    {
+        id: 'trans-2',
+        date: '2024-01-20',
+        description: 'Loyer bureau - Janvier 2024',
+        category: 'expense',
+        subcategory: 'Loyer bureau',
+        amount: 150000,
+        currency: 'FCFA',
+        paymentMethod: 'bank_transfer',
+        reference: 'LOY-2024-01',
+        createdBy: 'admin',
+        createdAt: '2024-01-20T14:30:00Z'
     }
 ];

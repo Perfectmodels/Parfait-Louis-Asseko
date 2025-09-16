@@ -36,7 +36,9 @@ import {
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
-    faqData as initialFaqData
+    faqData as initialFaqData,
+    defaultAccountingCategories as initialAccountingCategories,
+    defaultAccountingTransactions as initialAccountingTransactions
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -81,6 +83,9 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    accountingCategories: AccountingCategory[];
+    accountingTransactions: AccountingTransaction[];
+    paymentLists: PaymentList[];
 }
 
 export const useDataStore = () => {
@@ -122,6 +127,9 @@ export const useDataStore = () => {
         beginnerCourseData: initialBeginnerCourseData,
         beginnerStudents: initialBeginnerStudents,
         faqData: initialFaqData,
+        accountingCategories: initialAccountingCategories,
+        accountingTransactions: initialAccountingTransactions,
+        paymentLists: [],
     }), []);
     
     useEffect(() => {

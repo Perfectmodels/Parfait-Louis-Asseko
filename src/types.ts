@@ -40,7 +40,7 @@ export interface Model {
 }
 
 export interface PaymentStatus {
-  isUpToDate: boolean;
+  isUpToDate?: boolean;
   lastPaymentDate?: string;
   nextDueDate?: string;
   amount?: number;
@@ -296,6 +296,21 @@ export interface FashionDayApplication {
   role: FashionDayApplicationRole;
   message: string;
   status: FashionDayApplicationStatus;
+  // Nouveaux champs enrichis
+  age?: number;
+  gender?: 'Homme' | 'Femme';
+  location?: string;
+  experience?: string;
+  portfolioUrl?: string;
+  socialMedia?: {
+    instagram?: string;
+    facebook?: string;
+    website?: string;
+  };
+  availability?: string;
+  motivation?: string;
+  previousParticipation?: boolean;
+  specialRequirements?: string;
 }
 
 export interface ForumThread {
@@ -394,6 +409,52 @@ export interface MonthlyPayment {
   method: 'Virement' | 'Espèces' | 'Autre';
   status: 'Payé' | 'En attente' | 'En retard';
   notes?: string;
+}
+
+// Types pour le système comptable
+export interface AccountingTransaction {
+  id: string;
+  date: string; // YYYY-MM-DD
+  description: string;
+  category: 'revenue' | 'expense';
+  subcategory: string;
+  amount: number;
+  currency: string;
+  paymentMethod: 'cash' | 'bank_transfer' | 'mobile_money' | 'check' | 'other';
+  reference?: string; // Numéro de facture, référence, etc.
+  notes?: string;
+  relatedModelId?: string; // Si lié à un mannequin
+  relatedModelName?: string;
+  createdBy: string; // Admin qui a créé la transaction
+  createdAt: string;
+}
+
+export interface AccountingCategory {
+  id: string;
+  name: string;
+  type: 'revenue' | 'expense';
+  subcategories: string[];
+  description?: string;
+}
+
+export interface AccountingBalance {
+  totalRevenue: number;
+  totalExpenses: number;
+  netIncome: number;
+  currency: string;
+  period: string; // YYYY-MM
+}
+
+export interface PaymentList {
+  id: string;
+  title: string;
+  type: 'cotisations' | 'inscriptions' | 'custom';
+  date: string;
+  transactions: AccountingTransaction[];
+  totalAmount: number;
+  currency: string;
+  generatedBy: string;
+  generatedAt: string;
 }
 
 export interface PhotoshootBrief {
