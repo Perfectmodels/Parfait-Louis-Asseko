@@ -7,7 +7,6 @@ import { useData } from '../contexts/DataContext';
 import { QuizQuestion, Model, Chapter, Module } from '../types';
 import QuizComponent from '../components/QuizComponent';
 
-
 const generateChapterHtml = (chapter: Chapter, module: Module, siteConfig: any): string => {
     const contentHtml = chapter.content.split('\n').map(p => `<p style="margin-bottom: 1em; line-height: 1.6;">${p}</p>`).join('');
     

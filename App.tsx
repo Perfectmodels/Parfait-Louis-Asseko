@@ -1,10 +1,3 @@
-
-
-
-
-
-
-import React, { useEffect, lazy, Suspense } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
@@ -12,66 +5,65 @@ import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy-loaded Pages
-const Home = lazy(() => import('./pages/Home'));
-const Agency = lazy(() => import('./pages/Agency'));
-const Models = lazy(() => import('./pages/Models'));
-const ModelDetail = lazy(() => import('./pages/ModelDetail'));
-const FashionDay = lazy(() => import('./pages/FashionDay'));
-const Magazine = lazy(() => import('./pages/Magazine'));
-const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
-const Contact = lazy(() => import('./pages/Contact'));
-const Services = lazy(() => import('./pages/Services'));
-const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
-const Casting = lazy(() => import('./pages/Casting'));
-const CastingForm = lazy(() => import('./pages/CastingForm'));
-const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
-const Login = lazy(() => import('./pages/Login'));
-const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
-const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
-const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
-const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
-const ForumThread = lazy(() => import('./pages/ForumThread'));
-const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
-const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
-const Chat = lazy(() => import('./pages/Chat'));
+const Home = ReactRouterDOM.lazy(() => import('./pages/Home'));
+const Agency = ReactRouterDOM.lazy(() => import('./pages/Agency'));
+const Models = ReactRouterDOM.lazy(() => import('./pages/Models'));
+const ModelDetail = ReactRouterDOM.lazy(() => import('./pages/ModelDetail'));
+const FashionDay = ReactRouterDOM.lazy(() => import('./pages/FashionDay'));
+const Magazine = ReactRouterDOM.lazy(() => import('./pages/Magazine'));
+const ArticleDetail = ReactRouterDOM.lazy(() => import('./pages/ArticleDetail'));
+const Contact = ReactRouterDOM.lazy(() => import('./pages/Contact'));
+const Services = ReactRouterDOM.lazy(() => import('./pages/Services'));
+const ServiceDetail = ReactRouterDOM.lazy(() => import('./pages/ServiceDetail'));
+const Casting = ReactRouterDOM.lazy(() => import('./pages/Casting'));
+const CastingForm = ReactRouterDOM.lazy(() => import('./pages/CastingForm'));
+const FashionDayApplicationForm = ReactRouterDOM.lazy(() => import('./pages/FashionDayApplicationForm'));
+const Login = ReactRouterDOM.lazy(() => import('./pages/Login'));
+const Activity = ReactRouterDOM.lazy(() => import('./pages/Activity')); // Renamed Formations
+const ChapterDetail = ReactRouterDOM.lazy(() => import('./pages/ChapterDetail'));
+const ModelDashboard = ReactRouterDOM.lazy(() => import('./pages/ModelDashboard')); // Profil
+const ClassroomForum = ReactRouterDOM.lazy(() => import('./pages/ClassroomForum'));
+const ForumThread = ReactRouterDOM.lazy(() => import('./pages/ForumThread'));
+const BeginnerClassroom = ReactRouterDOM.lazy(() => import('./pages/BeginnerClassroom'));
+const BeginnerChapterDetail = ReactRouterDOM.lazy(() => import('./pages/BeginnerChapterDetail'));
+const Chat = ReactRouterDOM.lazy(() => import('./pages/Chat'));
 
 // Admin Pages
-const Admin = lazy(() => import('./pages/Admin'));
-const AdminAgency = lazy(() => import('./pages/AdminAgency'));
-const AdminCasting = lazy(() => import('./pages/AdminCasting'));
-const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
-const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
-const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
-const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
-const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
-const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
-const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
-const AdminModels = lazy(() => import('./pages/AdminModels'));
-const AdminNews = lazy(() => import('./pages/AdminNews'));
-const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
-const AdminSettings = lazy(() => import('./pages/AdminSettings'));
-const AdminComments = lazy(() => import('./pages/AdminComments'));
-const AdminBookings = lazy(() => import('./pages/AdminBookings'));
-const AdminMessages = lazy(() => import('./pages/AdminMessages'));
-const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
-const AdminPayments = lazy(() => import('./pages/AdminPayments'));
-const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
-const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
-
+const Admin = ReactRouterDOM.lazy(() => import('./pages/Admin'));
+const AdminAgency = ReactRouterDOM.lazy(() => import('./pages/AdminAgency'));
+const AdminCasting = ReactRouterDOM.lazy(() => import('./pages/AdminCasting'));
+const AdminCastingResults = ReactRouterDOM.lazy(() => import('./pages/AdminCastingResults'));
+const AdminClassroom = ReactRouterDOM.lazy(() => import('./pages/AdminClassroom'));
+const AdminClassroomProgress = ReactRouterDOM.lazy(() => import('./pages/AdminClassroomProgress'));
+const AdminFashionDay = ReactRouterDOM.lazy(() => import('./pages/AdminFashionDay'));
+const AdminFashionDayEvents = ReactRouterDOM.lazy(() => import('./pages/AdminFashionDayEvents'));
+const AdminMagazine = ReactRouterDOM.lazy(() => import('./pages/AdminMagazine'));
+const AdminModelAccess = ReactRouterDOM.lazy(() => import('./pages/AdminModelAccess'));
+const AdminModels = ReactRouterDOM.lazy(() => import('./pages/AdminModels'));
+const AdminNews = ReactRouterDOM.lazy(() => import('./pages/AdminNews'));
+const AdminRecovery = ReactRouterDOM.lazy(() => import('./pages/AdminRecovery'));
+const AdminSettings = ReactRouterDOM.lazy(() => import('./pages/AdminSettings'));
+const AdminComments = ReactRouterDOM.lazy(() => import('./pages/AdminComments'));
+const AdminBookings = ReactRouterDOM.lazy(() => import('./pages/AdminBookings'));
+const AdminMessages = ReactRouterDOM.lazy(() => import('./pages/AdminMessages'));
+const AdminBeginnerStudents = ReactRouterDOM.lazy(() => import('./pages/AdminBeginnerStudents'));
+const AdminPayments = ReactRouterDOM.lazy(() => import('./pages/AdminPayments'));
+const AdminAbsences = ReactRouterDOM.lazy(() => import('./pages/AdminAbsences'));
+const AdminArtisticDirection = ReactRouterDOM.lazy(() => import('./pages/AdminArtisticDirection'));
 
 // Role-specific pages
-const JuryCasting = lazy(() => import('./pages/JuryCasting'));
-const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
+const JuryCasting = ReactRouterDOM.lazy(() => import('./pages/JuryCasting'));
+const RegistrationCasting = ReactRouterDOM.lazy(() => import('./pages/RegistrationCasting'));
 
 // Static Pages
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
-const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+const PrivacyPolicy = ReactRouterDOM.lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfUse = ReactRouterDOM.lazy(() => import('./pages/TermsOfUse'));
+const NotFound = ReactRouterDOM.lazy(() => import('./pages/NotFound'));
 
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = ReactRouterDOM.useLocation();
-  useEffect(() => {
+  ReactRouterDOM.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
@@ -89,7 +81,7 @@ const AppContent: React.FC = () => {
     const { data } = useData();
 
     // Notification logic for browser tab title
-    useEffect(() => {
+    ReactRouterDOM.useEffect(() => {
         const originalTitle = "Perfect Models Management";
         if (data && location.pathname.startsWith('/admin')) {
             const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
@@ -122,7 +114,7 @@ const AppContent: React.FC = () => {
     return (
         <>
             <Layout>
-                <Suspense fallback={<LoadingFallback />}>
+                <ReactRouterDOM.Suspense fallback={<LoadingFallback />}>
                     <ReactRouterDOM.Routes>
                         <ReactRouterDOM.Route path="/" element={<Home />} />
                         <ReactRouterDOM.Route path="/agence" element={<Agency />} />
@@ -179,7 +171,7 @@ const AppContent: React.FC = () => {
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                     </ReactRouterDOM.Routes>
-                </Suspense>
+                </ReactRouterDOM.Suspense>
             </Layout>
         </>
     );
@@ -187,7 +179,7 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
 
-  useEffect(() => {
+  ReactRouterDOM.useEffect(() => {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').then(registration => {

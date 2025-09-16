@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { Model } from '../types';
-import { useData } from '../contexts/DataContext';
+import { Model } from '../../types';
+import { useData } from '../../contexts/DataContext';
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/solid';
 
 interface PrintableModelSheetProps {
