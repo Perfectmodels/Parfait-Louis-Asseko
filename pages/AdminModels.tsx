@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-<<<<<<< HEAD:src/pages/AdminModels.tsx
-import { Model, ContactInfo, BeginnerStudent } from '../../types';
-import SEO from '../../components/SEO';
-import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import ModelForm from '../../components/ModelForm'; 
-=======
-import { Model, ContactInfo } from '../types';
+import React, { useState, useEffect } from 'react';
+import { useData } from '../contexts/DataContext';
+import { Model, ContactInfo, BeginnerStudent } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm'; 
->>>>>>> a8e58ab7aa3753140508b09c699d8ac17bcd2b6a:pages/AdminModels.tsx
-
 const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: ContactInfo): string => {
     const portfolioImagesHtml = (model.portfolioImages || []).slice(0, 4).map(img => 
         `<img src="${img}" alt="Portfolio" style="width: 100%; aspect-ratio: 3/4; object-fit: cover;" />`
