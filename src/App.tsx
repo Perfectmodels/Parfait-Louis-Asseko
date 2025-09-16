@@ -28,6 +28,7 @@ const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
 const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
+const ProClassroom = lazy(() => import('./pages/ProClassroom'));
 const Chat = lazy(() => import('./pages/Chat'));
 
 // Admin Pages
@@ -143,6 +144,9 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
+                        
+                        <ReactRouterDOM.Route path="/classroom-pro" element={<ProtectedRoute role="model"><ProClassroom /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/classroom-pro/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="model"><ChapterDetail /></ProtectedRoute>} />
                         
                         <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />

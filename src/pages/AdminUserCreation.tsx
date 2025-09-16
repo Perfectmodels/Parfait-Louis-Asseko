@@ -109,7 +109,7 @@ const AdminUserCreation: React.FC = () => {
           journey: 'Créé par l\'administrateur',
           quizScores: {},
           lastLogin: new Date().toISOString(),
-          adminAccess: true,
+          adminAccess: false,
           paymentStatus: {
             isUpToDate: false,
             nextDueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
