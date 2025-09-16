@@ -134,6 +134,29 @@ const CastingForm: React.FC = () => {
                         </p>
                     )}
                 </form>
+
+                {/* FAQ Candidature */}
+                <div className="content-section mt-12">
+                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">FAQ Candidature</h2>
+                    <ul className="space-y-4 text-sm text-pm-off-white/80">
+                        <li>
+                          <p className="font-bold text-pm-off-white">Faut-il avoir de l'expérience pour postuler ?</p>
+                          <p>Non. Nous acceptons les débutants comme les profils expérimentés. Indiquez simplement votre niveau dans le formulaire.</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Dois-je envoyer des photos ?</p>
+                          <p>Pas à cette étape. Si votre profil est présélectionné, nous vous demanderons des polas (photos naturelles) par email.</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Quel est l'âge minimum ?</p>
+                          <p>À partir de 16 ans avec autorisation parentale. 18+ ans sans autorisation.</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Combien de temps avant une réponse ?</p>
+                          <p>Comptez 1 à 3 semaines selon le volume de candidatures. Si vous êtes retenu(e), nous vous contactons par email/téléphone.</p>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     );

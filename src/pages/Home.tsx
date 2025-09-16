@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import SEO from '../../components/SEO';
-import TestimonialCarousel from '../../components/TestimonialCarousel';
+import SEO from '../components/SEO';
+import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
-import ModelCard from '../../components/ModelCard';
-import ServiceCard from '../../components/ServiceCard';
+import ModelCard from '../components/ModelCard';
+import ServiceCard from '../components/ServiceCard';
 import { ApiKeys, NewsItem } from '../../types';
-import CountdownTimer from '../../components/CountdownTimer';
-import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import CountdownTimer from '../components/CountdownTimer';
+import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, UsersIcon, StarIcon, NewspaperIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 
 // --- Helper & Modal Components for Sharing ---
@@ -338,6 +338,32 @@ const Home: React.FC = () => {
             </div>
         </section>
 
+        {/* Key Metrics */}
+        <section aria-label="Chiffres clés" className="mt-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="bg-black border border-pm-gold/20 rounded-lg p-6 text-center">
+              <UsersIcon className="w-8 h-8 mx-auto text-pm-gold" />
+              <p className="text-3xl font-playfair text-pm-gold mt-2">{models.length}</p>
+              <p className="text-sm text-pm-off-white/70">Mannequins</p>
+            </div>
+            <div className="bg-black border border-pm-gold/20 rounded-lg p-6 text-center">
+              <StarIcon className="w-8 h-8 mx-auto text-pm-gold" />
+              <p className="text-3xl font-playfair text-pm-gold mt-2">{fashionDayEvents.length}</p>
+              <p className="text-sm text-pm-off-white/70">Événements PFD</p>
+            </div>
+            <div className="bg-black border border-pm-gold/20 rounded-lg p-6 text-center">
+              <ShieldCheckIcon className="w-8 h-8 mx-auto text-pm-gold" />
+              <p className="text-3xl font-playfair text-pm-gold mt-2">{data.agencyPartners?.length || 0}</p>
+              <p className="text-sm text-pm-off-white/70">Partenaires</p>
+            </div>
+            <div className="bg-black border border-pm-gold/20 rounded-lg p-6 text-center">
+              <NewspaperIcon className="w-8 h-8 mx-auto text-pm-gold" />
+              <p className="text-3xl font-playfair text-pm-gold mt-2">{data.articles?.length || 0}</p>
+              <p className="text-sm text-pm-off-white/70">Articles publiés</p>
+            </div>
+          </div>
+        </section>
+
         {/* News Carousel Section */}
         {newsItems && newsItems.length > 0 && (
             <section>
@@ -364,6 +390,47 @@ const Home: React.FC = () => {
         </section>
       </div>
       
+      {/* Partners */}
+      {data.agencyPartners && data.agencyPartners.length > 0 && (
+        <section className="bg-black py-16">
+          <div className="container mx-auto px-6">
+            <h2 className="section-title">Nos Partenaires</h2>
+            <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+              {data.agencyPartners.map((p, idx) => (
+                <span key={idx} className="px-4 py-2 border border-pm-gold/30 text-pm-off-white/80 rounded-full hover:border-pm-gold/60 transition-colors text-sm">
+                  {p.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Latest Articles */}
+      {data.articles && data.articles.length > 0 && (
+        <section className="bg-black py-16">
+          <div className="container mx-auto px-6">
+            <h2 className="section-title">Derniers Articles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {data.articles.slice(0, 3).map(article => (
+                <Link to={`/magazine/${article.slug}`} key={article.slug} className="group block bg-pm-dark border border-pm-gold/20 rounded-lg overflow-hidden hover:border-pm-gold transition-all">
+                  <div className="aspect-video w-full overflow-hidden">
+                    <img src={article.imageUrl || siteImages.hero} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-xl font-playfair text-pm-gold mb-2 group-hover:underline">{article.title}</h3>
+                    <p className="text-sm text-pm-off-white/70 line-clamp-3">{article.excerpt}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="text-center mt-10">
+              <Link to="/magazine" className="px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full transition-all hover:bg-pm-gold hover:text-pm-dark">Voir tous les articles</Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 4. Models (Full bleed for visual variety) */}
       <section className="bg-black py-20 lg:py-28">
         <div className="container mx-auto px-6">
@@ -393,6 +460,27 @@ const Home: React.FC = () => {
             </div>
           </section>
         )}
+
+        {/* Pourquoi nous choisir ? */}
+        <section>
+          <div className="content-section">
+            <h2 className="section-title">Pourquoi nous choisir ?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+              <div className="bg-pm-dark/40 border border-pm-gold/20 p-6 rounded-lg">
+                <h3 className="text-lg font-bold text-pm-gold mb-2">Excellence et encadrement</h3>
+                <p className="text-pm-off-white/80">Un accompagnement complet: sélection, formation, direction artistique et suivi de carrière avec des professionnels passionnés.</p>
+              </div>
+              <div className="bg-pm-dark/40 border border-pm-gold/20 p-6 rounded-lg">
+                <h3 className="text-lg font-bold text-pm-gold mb-2">Réseau et opportunités</h3>
+                <p className="text-pm-off-white/80">Un réseau actif de partenaires, créateurs et médias pour multiplier les opportunités locales et à l’international.</p>
+              </div>
+              <div className="bg-pm-dark/40 border border-pm-gold/20 p-6 rounded-lg">
+                <h3 className="text-lg font-bold text-pm-gold mb-2">Éthique & image</h3>
+                <p className="text-pm-off-white/80">Une approche centrée sur l’éthique, le professionnalisme et la valorisation de l’image avec une vision durable.</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* 8. Call to Action */}
         <section>

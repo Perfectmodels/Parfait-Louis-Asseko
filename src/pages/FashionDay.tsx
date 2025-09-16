@@ -126,6 +126,26 @@ const FashionDay: React.FC = () => {
             Plus qu'un défilé, une célébration de la créativité, de la culture et de l'identité gabonaise.
           </p>
 
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+            <div className="bg-black border border-pm-gold/20 rounded-lg p-4 text-center">
+              <p className="text-3xl font-playfair text-pm-gold">{fashionDayEvents.length}</p>
+              <p className="text-sm text-pm-off-white/70">Éditions</p>
+            </div>
+            <div className="bg-black border border-pm-gold/20 rounded-lg p-4 text-center">
+              <p className="text-3xl font-playfair text-pm-gold">{selectedEdition.stylists?.length || 0}</p>
+              <p className="text-sm text-pm-off-white/70">Créateurs</p>
+            </div>
+            <div className="bg-black border border-pm-gold/20 rounded-lg p-4 text-center">
+              <p className="text-3xl font-playfair text-pm-gold">{selectedEdition.featuredModels?.length || 0}</p>
+              <p className="text-sm text-pm-off-white/70">Mannequins</p>
+            </div>
+            <div className="bg-black border border-pm-gold/20 rounded-lg p-4 text-center">
+              <p className="text-3xl font-playfair text-pm-gold">{selectedEdition.partners?.length || 0}</p>
+              <p className="text-sm text-pm-off-white/70">Partenaires</p>
+            </div>
+          </div>
+
           {/* Edition Selector */}
           <div className="flex justify-center gap-4 mb-10 lg:mb-14" role="group" aria-label="Sélection de l'édition">
             {fashionDayEvents.map(event => (
@@ -219,11 +239,11 @@ const FashionDay: React.FC = () => {
             {selectedEdition.partners && selectedEdition.partners.length > 0 && (
               <section className="mt-16">
                 <h3 className="section-title">Partenaires & Sponsors</h3>
-                <div className="flex justify-center items-center gap-12 flex-wrap">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     {selectedEdition.partners.map(p => (
-                        <div key={p.name} className="text-center">
-                            <p className="text-pm-gold/80 text-sm">{p.type}</p>
-                            <p className="text-2xl font-bold tracking-wider">{p.name}</p>
+                        <div key={p.name} className="bg-black/60 border border-pm-gold/20 rounded-md p-3 text-center">
+                            <p className="text-pm-gold/80 text-xs uppercase tracking-widest">{p.type}</p>
+                            <p className="text-base md:text-lg font-bold tracking-wide">{p.name}</p>
                         </div>
                     ))}
                 </div>

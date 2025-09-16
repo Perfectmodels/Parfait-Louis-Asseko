@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pmm-v1';
+const CACHE_NAME = 'pmm-v2';
 // Removed cross-origin assets that may cause CORS errors during installation.
 // The service worker will attempt to cache other assets at runtime.
 const ASSETS_TO_CACHE = [
@@ -38,6 +38,14 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET' || (!event.request.url.startsWith('http:') && !event.request.url.startsWith('https:'))) {
     return;
   }
+
+  // Network-first for navigations to always get the latest index.html
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
   
   // Network-first for APIs to ensure data freshness
   if (event.request.url.includes('firebaseio.com')) {
@@ -49,7 +57,7 @@ self.addEventListener('fetch', (event) => {
      return;
   }
 
-  // Cache-first for all other requests
+  // Cache-first for all other requests (static assets)
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((response) => {

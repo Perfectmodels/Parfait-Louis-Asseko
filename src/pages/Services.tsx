@@ -80,6 +80,29 @@ const Services: React.FC = () => {
                         )
                     ))}
                 </div>
+
+                {/* FAQ Services */}
+                <section className="content-section mt-12">
+                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">FAQ Services</h2>
+                    <ul className="space-y-4 text-sm text-pm-off-white/80">
+                        <li>
+                          <p className="font-bold text-pm-off-white">Comment réserver un service ?</p>
+                          <p>Depuis la page du service souhaité ou via la page Contact (onglet Booking). Nous vous recontactons sous 48h ouvrées.</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Quelles informations sont nécessaires pour un devis ?</p>
+                          <p>Dates, lieu, type de service, nombre de mannequins et budget indicatif nous aident à vous répondre précisément.</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Travaillez-vous à l'international ?</p>
+                          <p>Oui, selon le projet. Nos équipes peuvent se déplacer et/ou travailler avec des partenaires dans la sous‑région.</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Proposez-vous des prestations sur-mesure ?</p>
+                          <p>Toutes nos offres sont adaptables. Décrivez votre besoin et nous concevrons une proposition personnalisée.</p>
+                        </li>
+                    </ul>
+                </section>
             </div>
         </div>
     );

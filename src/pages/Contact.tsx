@@ -4,8 +4,7 @@ import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline
 import SEO from '../../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/SocialIcons';
-import BookingForm from '../../components/BookingForm';
-import { ContactMessage } from '../../types';
+import { ContactMessage, BookingRequest } from '../../types';
 
 const Contact: React.FC = () => {
     const { data, saveData } = useData();
@@ -13,7 +12,9 @@ const Contact: React.FC = () => {
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
     
+    const [purpose, setPurpose] = useState<'message' | 'booking'>('message');
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    const [bookingForm, setBookingForm] = useState({ clientName: '', clientEmail: '', clientCompany: '', requestedModels: '', startDate: '', endDate: '', message: '' });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
     
@@ -22,6 +23,7 @@ const Contact: React.FC = () => {
         const service = params.get('service');
         if (service) {
             setFormData(prev => ({ ...prev, subject: `Demande de devis pour : ${service}` }));
+            setBookingForm(prev => ({ ...prev, requestedModels: service }));
         }
     }, [location.search]);
 
@@ -37,32 +39,55 @@ const Contact: React.FC = () => {
             return;
         }
 
-        const newContactMessage: ContactMessage = {
-            id: `contact-${Date.now()}`,
-            submissionDate: new Date().toISOString(),
-            status: 'Nouveau',
-            name: formData.name,
-            email: formData.email,
-            subject: formData.subject,
-            message: formData.message,
-        };
-
         try {
-            const updatedMessages = [...(data.contactMessages || []), newContactMessage];
-            await saveData({ ...data, contactMessages: updatedMessages });
-            
-            setStatus('success');
-            setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
-            setFormData({ name: '', email: '', subject: '', message: '' });
+            if (purpose === 'message') {
+                const newContactMessage: ContactMessage = {
+                    id: `contact-${Date.now()}`,
+                    submissionDate: new Date().toISOString(),
+                    status: 'Nouveau',
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                };
+                const updatedMessages = [...(data.contactMessages || []), newContactMessage];
+                await saveData({ ...data, contactMessages: updatedMessages });
+                setFormData({ name: '', email: '', subject: '', message: '' });
+                setStatus('success');
+                setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
+            } else {
+                const newRequest: BookingRequest = {
+                    id: `booking-${Date.now()}`,
+                    submissionDate: new Date().toISOString(),
+                    status: 'Nouveau',
+                    clientName: bookingForm.clientName || formData.name,
+                    clientEmail: bookingForm.clientEmail || formData.email,
+                    clientCompany: bookingForm.clientCompany,
+                    requestedModels: bookingForm.requestedModels,
+                    startDate: bookingForm.startDate,
+                    endDate: bookingForm.endDate,
+                    message: bookingForm.message || formData.message,
+                } as BookingRequest;
+                const updatedRequests = [...(data.bookingRequests || []), newRequest];
+                await saveData({ ...data, bookingRequests: updatedRequests });
+                setBookingForm({ clientName: '', clientEmail: '', clientCompany: '', requestedModels: '', startDate: '', endDate: '', message: '' });
+                setFormData({ name: '', email: '', subject: '', message: '' });
+                setStatus('success');
+                setStatusMessage('Votre demande de booking a été envoyée. Notre équipe vous recontactera rapidement.');
+            }
         } catch (error) {
             setStatus('error');
-            setStatusMessage('Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer.');
-            console.error("Error saving contact message:", error);
+            setStatusMessage('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.');
+            console.error('Error submitting form:', error);
         }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleBookingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setBookingForm({ ...bookingForm, [e.target.name]: e.target.value });
     };
 
     return (
@@ -104,21 +129,44 @@ const Contact: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Contact Form */}
+                    {/* Formulaire unifié: Contact & Booking */}
                     <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Envoyez-nous un message</h2>
+                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Contact & Booking</h2>
+
+                        {/* Type de demande */}
+                        <div className="flex gap-3 mb-6" role="tablist" aria-label="Type de demande">
+                            <button type="button" onClick={() => setPurpose('message')} aria-selected={purpose==='message'} className={`px-4 py-2 rounded-full text-sm uppercase tracking-widest border transition-colors ${purpose==='message' ? 'bg-pm-gold text-pm-dark border-pm-gold' : 'bg-transparent text-pm-gold border-pm-gold hover:bg-pm-gold hover:text-pm-dark'}`}>Message</button>
+                            <button type="button" onClick={() => setPurpose('booking')} aria-selected={purpose==='booking'} className={`px-4 py-2 rounded-full text-sm uppercase tracking-widest border transition-colors ${purpose==='booking' ? 'bg-pm-gold text-pm-dark border-pm-gold' : 'bg-transparent text-pm-gold border-pm-gold hover:bg-pm-gold hover:text-pm-dark'}`}>Booking</button>
+                        </div>
+
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Champs communs */}
                             <FormInput label="Votre Nom" name="name" value={formData.name} onChange={handleChange} required />
                             <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-                            <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
-                            <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
-                            
+
+                            {purpose === 'message' ? (
+                                <>
+                                  <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
+                                  <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
+                                </>
+                            ) : (
+                                <>
+                                  <FormInput label="Société (optionnel)" name="clientCompany" value={bookingForm.clientCompany} onChange={handleBookingChange} />
+                                  <FormInput label="Mannequin(s) souhaité(s)" name="requestedModels" value={bookingForm.requestedModels} onChange={handleBookingChange} required />
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <FormInput label="Date de début (souhaitée)" name="startDate" type="date" value={bookingForm.startDate} onChange={handleBookingChange} />
+                                    <FormInput label="Date de fin (souhaitée)" name="endDate" type="date" value={bookingForm.endDate} onChange={handleBookingChange} />
+                                  </div>
+                                  <FormTextArea label="Votre Message / Détails du projet" name="message" value={bookingForm.message} onChange={handleBookingChange} required />
+                                </>
+                            )}
+
                             <div>
                                 <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
                                     {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
                                 </button>
                             </div>
-                            
+
                             {statusMessage && (
                                 <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
                                     {statusMessage}
@@ -128,16 +176,28 @@ const Contact: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="mt-16 max-w-6xl mx-auto">
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6 text-center">Demande de Booking</h2>
-                        <p className="text-center text-pm-off-white/80 mb-8 -mt-4">
-                            Pour un ou plusieurs mannequins, ou pour tout autre projet.
-                        </p>
-                        <BookingForm />
-                    </div>
-                </div>
-
+                {/* FAQ Contact */}
+                <section className="content-section mt-12 max-w-6xl mx-auto">
+                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">FAQ Contact & Booking</h2>
+                    <ul className="space-y-4 text-sm text-pm-off-white/80">
+                        <li>
+                          <p className="font-bold text-pm-off-white">Sous quel délai répondez-vous ?</p>
+                          <p>Nous répondons généralement sous 24 à 48h ouvrées. Pour les urgences, privilégiez l'appel téléphonique.</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Comment suivre ma demande de booking ?</p>
+                          <p>Une fois votre demande envoyée, vous recevrez un email de confirmation. Nous vous recontacterons si des précisions sont nécessaires.</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Puis-je réserver plusieurs mannequins ?</p>
+                          <p>Oui. Précisez le nombre de profils souhaités et le type de prestation (défilé, shooting, événement...).</p>
+                        </li>
+                        <li>
+                          <p className="font-bold text-pm-off-white">Avez-vous des tarifs publics ?</p>
+                          <p>Nos tarifs sont adaptés à chaque projet (durée, diffusion, droits à l'image). Demandez un devis pour une estimation personnalisée.</p>
+                        </li>
+                    </ul>
+                </section>
             </div>
         </div>
     );

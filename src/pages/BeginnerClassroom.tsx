@@ -53,13 +53,16 @@ const BeginnerClassroom: React.FC = () => {
                      <p className="text-pm-off-white/80 leading-relaxed max-w-3xl mx-auto">
                         Ce programme est conçu pour vous donner toutes les bases théoriques et pratiques pour bien démarrer dans le monde du mannequinat. Chaque module est une étape essentielle de votre parcours.
                      </p>
-                     <button 
-                        onClick={handleLogout}
-                        className="absolute top-0 right-0 -mt-8 md:mt-0 inline-flex items-center gap-2 text-pm-gold/70 hover:text-pm-gold text-sm transition-colors"
-                     >
-                         <ArrowLeftOnRectangleIcon className="w-5 h-5"/>
-                         <span className="hidden md:inline">Déconnexion</span>
-                     </button>
+                     <div className="absolute top-0 right-0 -mt-8 md:mt-0 flex items-center gap-4">
+                         <Link to="/profil-debutant" className="inline-flex items-center gap-2 text-pm-gold/80 hover:text-pm-gold text-sm transition-colors underline underline-offset-4">Mon Profil</Link>
+                         <button 
+                            onClick={handleLogout}
+                            className="inline-flex items-center gap-2 text-pm-gold/70 hover:text-pm-gold text-sm transition-colors"
+                         >
+                             <ArrowLeftOnRectangleIcon className="w-5 h-5"/>
+                             <span className="hidden md:inline">Déconnexion</span>
+                         </button>
+                     </div>
                 </section>
             
                 <section aria-label="Modules de formation" className="space-y-4 max-w-4xl mx-auto">
@@ -87,6 +90,16 @@ const BeginnerClassroom: React.FC = () => {
                                                 </Link>
                                             </li>
                                         ))}
+                                        {module.quiz && module.quiz.length > 0 && (
+                                            <li className="mt-2">
+                                                <Link
+                                                    to={module.chapters[0] ? `/classroom-debutant/${module.slug}/${module.chapters[0].slug}#quiz` : `/classroom-debutant/${module.slug}/${module.chapters[0]?.slug || ''}#quiz`}
+                                                    className="inline-flex items-center gap-2 text-pm-gold hover:underline"
+                                                >
+                                                    Quiz du module • {module.quiz.length} question{module.quiz.length > 1 ? 's' : ''}
+                                                </Link>
+                                            </li>
+                                        )}
                                     </ul>
                                 </div>
                             </div>

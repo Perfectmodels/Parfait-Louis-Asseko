@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../../components/SEO';
 import { Article } from '../../types';
@@ -8,16 +8,19 @@ import Pagination from '../../components/Pagination';
 const Magazine: React.FC = () => {
   const { data, isInitialized } = useData();
   const [currentPage, setCurrentPage] = useState(1);
+  const [category, setCategory] = useState<string>('Toutes');
   const ARTICLES_PER_PAGE = 9;
 
   const articles = data?.articles || [];
+  const categories = useMemo(() => ['Toutes', ...Array.from(new Set(articles.map(a => a.category).filter(Boolean)))], [articles]);
 
   let featuredArticle = articles.find(a => a.isFeatured);
   if (!featuredArticle && articles.length > 0) {
     featuredArticle = articles[0]; // Fallback to the first article if none is featured
   }
   
-  const otherArticles = articles.filter(a => a.slug !== featuredArticle?.slug);
+  const otherArticlesBase = articles.filter(a => a.slug !== featuredArticle?.slug);
+  const otherArticles = otherArticlesBase.filter(a => category === 'Toutes' || a.category === category);
 
   const totalPages = Math.ceil(otherArticles.length / ARTICLES_PER_PAGE);
   const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
@@ -47,6 +50,17 @@ const Magazine: React.FC = () => {
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold tracking-widest">FOCUS MODEL 241</h1>
           <p className="text-pm-off-white/80 mt-2">Le magazine de la mode et des talents gabonais.</p>
+          <div className="mt-6 flex flex-wrap gap-3 justify-center">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => { setCategory(cat); setCurrentPage(1); }}
+                className={`px-4 py-2 rounded-full text-sm uppercase tracking-widest border transition-colors ${category === cat ? 'bg-pm-gold text-pm-dark border-pm-gold' : 'bg-transparent text-pm-gold border-pm-gold hover:bg-pm-gold hover:text-pm-dark'}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -84,6 +98,17 @@ const Magazine: React.FC = () => {
                 onPageChange={handlePageChange}
             />
           )}
+
+          {/* Newsletter CTA */}
+          <div className="content-section mt-12 text-center">
+            <h3 className="text-2xl font-playfair text-pm-gold mb-3">Restez informé</h3>
+            <p className="text-pm-off-white/80 mb-6">Recevez nos nouveaux articles, interviews et tendances directement dans votre boîte mail.</p>
+            <form className="flex flex-col sm:flex-row gap-3 justify-center">
+              <label htmlFor="newsletter-email" className="sr-only">Votre email</label>
+              <input id="newsletter-email" type="email" required placeholder="Votre email" className="bg-black border border-pm-gold/40 rounded-full px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/50" />
+              <button type="button" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white transition-colors">S'abonner</button>
+            </form>
+          </div>
         </section>
       </div>
     </div>
