@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
-import { useData } from '../src/contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 
 const TestimonialCarousel: React.FC = () => {
   const { data, isInitialized } = useData();

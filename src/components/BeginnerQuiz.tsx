@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { QuizQuestion, BeginnerStudent, Module } from '../types';
-import { useData } from '../src/contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 interface BeginnerQuizProps {

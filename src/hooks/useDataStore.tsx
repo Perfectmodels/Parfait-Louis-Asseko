@@ -37,11 +37,11 @@ import {
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
     faqData as initialFaqData
-} from '../../constants/data';
-import { articles as initialArticles } from '../../constants/magazineData';
-import { courseData as initialCourseData } from '../../constants/courseData';
+} from '../constants/data';
+import { articles as initialArticles } from '../constants/magazineData';
+import { courseData as initialCourseData } from '../constants/courseData';
 // FIX: Import beginnerCourseData directly to resolve module path error.
-import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
+import { beginnerCourseData as initialBeginnerCourseData } from '../components/beginnerCourseData';
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -153,7 +153,6 @@ export const useDataStore = () => {
                 // If DB is empty, seed it with initial data
                 set(dbRef, initialData).then(() => {
                     setData(initialData);
-                    console.log("Firebase database seeded with initial data.");
                 }).catch(error => {
                     console.error("Error seeding database:", error);
                 });
