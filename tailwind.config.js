@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        'pm-dark': '#111111',
+        'pm-dark': '#1a1a1a',
         'pm-gold': '#D4AF37',
         'pm-off-white': '#f0f0f0',
       },

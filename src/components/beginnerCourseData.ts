@@ -48,11 +48,23 @@ export const beginnerCourseData: Module[] = [
         Votre succès est notre succès. Une relation de confiance et de communication transparente avec nous est la clé pour atteindre vos objectifs.`
       }
     ],
-    quiz: Array.from({ length: 20 }, (_, i) => ({
-      question: `Question ${i + 1} du Module 1`,
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option A"
-    }))
+    quiz: [
+      {
+        question: "Quel est le rôle principal d'un mannequin en 2025 selon la formation ?",
+        options: ["Juste porter des vêtements", "Être célèbre sur Instagram", "Interpréter une vision et communiquer une émotion", "Uniquement défiler"],
+        correctAnswer: "Interpréter une vision et communiquer une émotion"
+      },
+      {
+        question: "Quel type de mannequinat se concentre sur les publicités et les catalogues avec une apparence accessible ?",
+        options: ["Éditorial", "Commercial", "Haute Couture", "De détail"],
+        correctAnswer: "Commercial"
+      },
+      {
+        question: "Quelle qualité est considérée comme votre meilleur atout professionnel ?",
+        options: ["Votre nombre de followers", "Votre style personnel", "Votre réputation (ponctualité, attitude)", "Votre connaissance des créateurs"],
+        correctAnswer: "Votre réputation (ponctualité, attitude)"
+      }
+    ]
   },
   {
     slug: "module-2-les-outils-du-mannequin",
@@ -84,11 +96,23 @@ export const beginnerCourseData: Module[] = [
         content: "Votre corps est votre outil de travail. En prendre soin est non négociable. 1. Nutrition : Mangez équilibré. Privilégiez les légumes, les fruits, les protéines maigres. Évitez les aliments trop gras, trop sucrés, trop salés. 2. Hydratation : Buvez beaucoup d'eau (au moins 2 litres par jour) pour une peau saine et lumineuse. 3. Sommeil : Dormez au moins 8 heures par nuit. Le manque de sommeil se voit immédiatement sur le visage. 4. Sport : Pratiquez une activité physique régulière pour la tonicité et l'endurance. 5. Soins : Ayez une routine de soin pour votre peau (nettoyage, hydratation) et vos cheveux."
       }
     ],
-    quiz: Array.from({ length: 20 }, (_, i) => ({
-      question: `Question ${i + 1} du Module 2`,
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option B"
-    }))
+    quiz: [
+      {
+        question: "Que sont les 'polas' ou 'digitals' ?",
+        options: ["Des photos très artistiques en noir et blanc", "Des photos naturelles sans maquillage ni retouches", "Vos photos préférées de shootings passés", "Des photos prises avec un téléphone"],
+        correctAnswer: "Des photos naturelles sans maquillage ni retouches"
+      },
+      {
+        question: "Quel est le conseil principal pour une bonne démarche sur le podium ?",
+        options: ["Regarder ses pieds", "Marcher en posant un pied exactement devant l'autre, comme sur une ligne", "Balancer beaucoup les bras", "Marcher très vite"],
+        correctAnswer: "Marcher en posant un pied exactement devant l'autre, comme sur une ligne"
+      },
+      {
+        question: "Quelle est la règle d'or concernant l'hygiène de vie d'un mannequin ?",
+        options: ["Sauter des repas pour rester mince", "Boire beaucoup de café pour l'énergie", "Considérer son corps comme son instrument de travail et en prendre soin", "Dormir seulement 5 heures par nuit"],
+        correctAnswer: "Considérer son corps comme son instrument de travail et en prendre soin"
+      }
+    ]
   },
   {
     slug: "module-3-le-metier-au-quotidien",
@@ -120,11 +144,23 @@ export const beginnerCourseData: Module[] = [
         content: "Aujourd'hui, votre compte Instagram est une extension de votre book. Les clients le consultent ! Il doit être géré de manière professionnelle. 1. Photo de profil claire. 2. Bio concise : Nom, Agence (Perfect Models Management), contact pro. 3. Contenu de qualité : postez vos meilleures photos de travail. 4. Montrez votre personnalité : partagez des moments 'off-duty', vos passions, mais toujours de manière soignée. 5. Interagissez : suivez et commentez le travail des photographes, stylistes et marques que vous admirez. Attention : évitez les photos de fête trop arrosées ou les prises de position controversées. Votre image en ligne est votre marque."
       }
     ],
-    quiz: Array.from({ length: 20 }, (_, i) => ({
-      question: `Question ${i + 1} du Module 3`,
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option C"
-    }))
+    quiz: [
+        {
+            question: "Quelle est la tenue idéale pour se présenter à un casting ?",
+            options: ["Votre tenue la plus à la mode pour impressionner", "Des vêtements larges et confortables", "Des vêtements simples et près du corps (jean slim, débardeur)", "Un costume"],
+            correctAnswer: "Des vêtements simples et près du corps (jean slim, débardeur)"
+        },
+        {
+            question: "Qu'est-ce qu'un 'fitting' ?",
+            options: ["Le casting final", "La répétition du défilé", "La séance d'essayage des vêtements avant un show ou un shooting", "Le maquillage"],
+            correctAnswer: "La séance d'essayage des vêtements avant un show ou un shooting"
+        },
+        {
+            question: "Comment devez-vous gérer votre compte Instagram en tant que mannequin ?",
+            options: ["Le mettre en privé pour que les clients ne le voient pas", "Poster uniquement des selfies", "Comme une vitrine professionnelle montrant votre travail et votre personnalité", "Poster tout et n'importe quoi"],
+            correctAnswer: "Comme une vitrine professionnelle montrant votre travail et votre personnalité"
+        }
+    ]
   },
   {
     slug: "module-4-culture-mode-et-inspiration",
@@ -156,11 +192,23 @@ export const beginnerCourseData: Module[] = [
         content: "Un moodboard est un collage d'images, de textes, de couleurs, qui représente une ambiance ou une inspiration. Créez votre propre moodboard (sur un carnet, un tableau en liège, ou en ligne avec Pinterest). Collectionnez des images qui vous inspirent : des photos de mode, des portraits de cinéma, des paysages, des œuvres d'art. Cet exercice vous aidera à définir votre propre identité visuelle, à comprendre le type d'images que vous voulez créer, et à avoir des références précises à discuter avec un photographe lors d'un shooting. C'est un excellent outil pour développer votre créativité."
       }
     ],
-    quiz: Array.from({ length: 20 }, (_, i) => ({
-      question: `Question ${i + 1} du Module 4`,
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option D"
-    }))
+    quiz: [
+        {
+            question: "Pourquoi est-il important de s'intéresser à d'autres formes d'art (cinéma, peinture) ?",
+            options: ["Ce n'est pas important, seule la mode compte", "Pour avoir des sujets de conversation en backstage", "Pour nourrir sa créativité et enrichir ses poses et expressions", "Pour devenir critique d'art"],
+            correctAnswer: "Pour nourrir sa créativité et enrichir ses poses et expressions"
+        },
+        {
+            question: "Qu'est-ce qu'un 'moodboard' ?",
+            options: ["Votre planning de la semaine", "Un collage d'images qui représente une inspiration ou une ambiance", "La liste des mannequins d'un défilé", "Un contrat de travail"],
+            correctAnswer: "Un collage d'images qui représente une inspiration ou une ambiance"
+        },
+        {
+            question: "Quel est le bon équilibre pour suivre les tendances ?",
+            options: ["Les ignorer complètement pour être unique", "Copier exactement les looks des magazines", "S'en inspirer pour développer son propre style personnel", "Acheter toutes les dernières nouveautés"],
+            correctAnswer: "S'en inspirer pour développer son propre style personnel"
+        }
+    ]
   },
   {
     slug: "module-5-vers-la-professionnalisation",
@@ -192,10 +240,22 @@ export const beginnerCourseData: Module[] = [
         content: "Félicitations, vous avez terminé les bases ! Retenez une dernière chose : une carrière de mannequin se construit sur la durée. Il y aura des moments d'euphorie et des périodes de doute. La clé est la constance. Continuez à vous former, à prendre soin de vous, à rester professionnel et curieux. Soyez patient. Le succès instantané est un mythe. C'est votre discipline, votre persévérance et votre passion qui feront de vous un mannequin professionnel respecté et accompli. L'équipe de PMM est là pour vous accompagner à chaque étape de ce marathon. Maintenant, au travail !"
       }
     ],
-    quiz: Array.from({ length: 20 }, (_, i) => ({
-      question: `Question ${i + 1} du Module 5`,
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option A"
-    }))
+    quiz: [
+        {
+            question: "Comment faut-il réagir à un refus en casting ?",
+            options: ["L'oublier immédiatement et ne pas le prendre personnellement", "Arrêter les castings pendant une semaine", "Se remettre en question et changer son apparence", "Appeler le client pour se plaindre"],
+            correctAnswer: "L'oublier immédiatement et ne pas le prendre personnellement"
+        },
+        {
+            question: "Pourquoi est-il crucial de mettre de l'argent de côté à chaque contrat ?",
+            options: ["Pour s'acheter des vêtements de luxe", "Parce que les revenus sont irréguliers et il faut couvrir les périodes creuses", "L'agence l'exige", "Pour payer des cadeaux aux photographes"],
+            correctAnswer: "Parce que les revenus sont irréguliers et il faut couvrir les périodes creuses"
+        },
+        {
+            question: "Quelle est la vision à long terme de la carrière de mannequin ?",
+            options: ["Un sprint pour gagner un maximum d'argent en peu de temps", "Une chance d'être célèbre", "Un marathon qui demande de la patience, de la persévérance et de la stratégie", "Un métier facile qui ne demande pas d'effort"],
+            correctAnswer: "Un marathon qui demande de la patience, de la persévérance et de la stratégie"
+        }
+    ]
   }
 ];

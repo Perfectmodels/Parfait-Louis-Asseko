@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ModelCard from '../components/ModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
 
@@ -9,27 +11,16 @@ const Models: React.FC = () => {
   const { data, isInitialized } = useData();
   const [filter, setFilter] = useState<GenderFilter>('Tous');
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'alpha' | 'recent'>('alpha');
 
   const models = data?.models || [];
   
   const publicModels = useMemo(() => models.filter(model => model.isPublic === true), [models]);
 
   const filteredModels = useMemo(() => {
-    const byFilter = publicModels
+    return publicModels
       .filter(model => filter === 'Tous' || model.gender === filter)
       .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    const sorted = [...byFilter].sort((a, b) => {
-      if (sortBy === 'alpha') return a.name.localeCompare(b.name);
-      // recent: use createdAt if present, otherwise fallback name
-      const da = (a as any).createdAt ? new Date((a as any).createdAt).getTime() : 0;
-      const db = (b as any).createdAt ? new Date((b as any).createdAt).getTime() : 0;
-      return db - da || a.name.localeCompare(b.name);
-    });
-
-    return sorted;
-  }, [filter, searchTerm, publicModels, sortBy]);
+  }, [filter, searchTerm, publicModels]);
   
   const seoDescription = useMemo(() => {
       const modelNames = publicModels.slice(0, 3).map(m => m.name).join(', ');
@@ -64,64 +55,104 @@ const Models: React.FC = () => {
           Découvrez les visages qui définissent l'avenir de la mode. Des talents uniques, prêts à donner vie à vos créations.
         </p>
 
-        {/* Highlighted CTA */}
-        <div className="content-section mb-10 text-center">
-          <p className="text-pm-off-white/80 mb-4">Vous cherchez un profil précis (catwalk, commercial, beauté) ?</p>
-          <Link to="/contact" className="px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white transition-colors">Discuter de votre projet</Link>
-        </div>
-
         {/* Filters and Search */}
-        <div className="flex flex-col gap-6 mb-10 lg:mb-14">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-4">
-              <FilterButton gender="Tous" />
-              <FilterButton gender="Femme" />
-              <FilterButton gender="Homme" />
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row justify-between items-center gap-6 mb-6 lg:mb-8"
+        >
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex items-center gap-4"
+          >
+            <div className="flex items-center gap-2 text-pm-gold/70">
+              <FunnelIcon className="w-5 h-5" />
+              <span className="text-sm font-medium">Filtrer :</span>
             </div>
-            <div className="flex items-center gap-4">
-              <div>
-                <label htmlFor="search-model" className="sr-only">Rechercher un mannequin</label>
-                <input
-                  id="search-model"
-                  type="text"
-                  placeholder="Rechercher un mannequin..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-64 bg-black border border-pm-gold/50 rounded-full px-4 py-2 text-pm-off-white focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/50 transition-all"
-                />
-              </div>
-              <div>
-                <label htmlFor="sort-by" className="sr-only">Trier</label>
-                <select
-                  id="sort-by"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-black border border-pm-gold/50 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/50"
-                >
-                  <option value="alpha">Tri alphabétique</option>
-                  <option value="recent">Nouveaux profils</option>
-                </select>
-              </div>
+            <FilterButton gender="Tous" />
+            <FilterButton gender="Femme" />
+            <FilterButton gender="Homme" />
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="w-full md:w-auto relative"
+          >
+            <label htmlFor="search-model" className="sr-only">Rechercher un mannequin</label>
+            <div className="relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-pm-gold/50" />
+              <input
+                id="search-model"
+                type="text"
+                placeholder="Rechercher un mannequin..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full md:w-80 bg-black/50 border border-pm-gold/30 rounded-full pl-10 pr-4 py-3 text-pm-off-white placeholder-pm-off-white/50 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/30 focus:bg-black/70 transition-all duration-300"
+              />
             </div>
-          </div>
-          <div className="flex gap-6 text-sm text-pm-off-white/70">
-            <span>Total: <strong className="text-pm-gold">{publicModels.length}</strong></span>
-            <span>Femmes: <strong className="text-pm-gold">{publicModels.filter(m => m.gender === 'Femme').length}</strong></span>
-            <span>Hommes: <strong className="text-pm-gold">{publicModels.filter(m => m.gender === 'Homme').length}</strong></span>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Models Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {filteredModels.map((model) => (
-            <ModelCard key={model.id} model={model} />
-          ))}
-        </div>
-        {filteredModels.length === 0 && (
-          <div className="text-center col-span-full py-20">
-            <p className="text-pm-off-white/70">Aucun mannequin ne correspond à votre recherche.</p>
-          </div>
-        )}
+        <motion.div 
+          layout
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        >
+          <AnimatePresence mode="wait">
+            {filteredModels.map((model, index) => (
+              <motion.div
+                key={model.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ 
+                  duration: 0.4, 
+                  delay: index * 0.1,
+                  ease: "easeOut"
+                }}
+                whileHover={{ y: -5 }}
+              >
+                <ModelCard model={model} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+        
+        <AnimatePresence>
+          {filteredModels.length === 0 && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="text-center col-span-full py-20"
+            >
+              <div className="max-w-md mx-auto">
+                <div className="w-24 h-24 mx-auto mb-6 bg-pm-gold/10 rounded-full flex items-center justify-center">
+                  <MagnifyingGlassIcon className="w-12 h-12 text-pm-gold/50" />
+                </div>
+                <h3 className="text-xl font-semibold text-pm-off-white mb-2">Aucun résultat trouvé</h3>
+                <p className="text-pm-off-white/70 mb-4">
+                  Aucun mannequin ne correspond à votre recherche. Essayez de modifier vos critères.
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setFilter('Tous');
+                  }}
+                  className="px-6 py-2 bg-pm-gold/20 text-pm-gold border border-pm-gold/30 rounded-full hover:bg-pm-gold/30 transition-colors"
+                >
+                  Réinitialiser les filtres
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

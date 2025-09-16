@@ -3,8 +3,8 @@ import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router
 import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
-// FIX: The NavLink type should be imported from the centralized types.ts file, not from useDataStore.
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
+// FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
@@ -100,73 +100,74 @@ export const Breadcrumb: React.FC = () => {
     const params = useParams();
     const { data } = useData();
 
-    const breadcrumbNameMap: { [key: string]: string } = {
-        '/agence': 'Agence',
-        '/mannequins': 'Nos Mannequins',
-        '/fashion-day': 'PFD',
-        '/magazine': 'Magazine',
-        '/contact': 'Contact',
-        '/services': 'Services',
-        '/casting': 'Casting',
-        '/casting-formulaire': 'Postuler au Casting',
-        '/fashion-day-application': 'Candidature PFD',
-    };
-    
-    const pathnames = location.pathname.split('/').filter(Boolean);
-    
-    if (pathnames.length === 0 || location.pathname.startsWith('/login') || location.pathname.startsWith('/admin')) {
-        return null;
-    }
+    const crumbs = useMemo(() => {
+        const breadcrumbNameMap: { [key: string]: string } = {
+            '/agence': 'Agence', '/mannequins': 'Nos Mannequins', '/fashion-day': 'PFD',
+            '/magazine': 'Magazine', '/contact': 'Contact', '/services': 'Services',
+            '/casting': 'Casting', '/casting-formulaire': 'Postuler au Casting',
+            '/fashion-day-application': 'Candidature PFD', '/profil': 'Mon Profil',
+            '/formations': 'Classroom', '/formations/forum': 'Forum',
+            '/classroom-debutant': 'Classroom Débutant'
+        };
 
-    let crumbs = [{ label: 'Accueil', path: '/' }];
-
-    // Specific route structures
-    if (location.pathname.startsWith('/mannequins/')) {
-        crumbs.push({ label: 'Nos Mannequins', path: '/mannequins' });
-        const model = data?.models.find(m => m.id === params.id);
-        if (model) crumbs.push({ label: model.name, path: location.pathname });
-    } else if (location.pathname.startsWith('/magazine/')) {
-        crumbs.push({ label: 'Magazine', path: '/magazine' });
-        const article = data?.articles.find(a => a.slug === params.slug);
-        if (article) crumbs.push({ label: article.title, path: location.pathname });
-    } else if (location.pathname.startsWith('/formations/forum/')) {
-        crumbs.push({ label: 'Classroom', path: '/formations' });
-        crumbs.push({ label: 'Forum', path: '/formations/forum' });
-        const thread = data?.forumThreads.find(t => t.id === params.threadId);
-        if (thread) crumbs.push({ label: thread.title, path: location.pathname });
-    } else if (location.pathname.startsWith('/formations/') && params.moduleSlug && params.chapterSlug) {
-        crumbs.push({ label: 'Classroom', path: '/formations' });
-        const module = data?.courseData.find(m => m.slug === params.moduleSlug);
-        if (module) {
-            const chapter = module.chapters.find(c => c.slug === params.chapterSlug);
-            const firstChapterSlug = module.chapters[0]?.slug;
-            crumbs.push({ label: module.title, path: `/formations/${module.slug}/${firstChapterSlug}` });
-            if (chapter) crumbs.push({ label: chapter.title, path: location.pathname });
-        }
-    } else if (location.pathname.startsWith('/classroom-debutant/') && params.moduleSlug && params.chapterSlug) {
-        crumbs.push({ label: 'Classroom Débutant', path: '/classroom-debutant' });
-        const module = data?.beginnerCourseData.find(m => m.slug === params.moduleSlug);
-        if (module) {
-            const chapter = module.chapters.find(c => c.slug === params.chapterSlug);
-            const firstChapterSlug = module.chapters[0]?.slug;
-            crumbs.push({ label: module.title, path: `/classroom-debutant/${module.slug}/${firstChapterSlug}` });
-            if (chapter) crumbs.push({ label: chapter.title, path: location.pathname });
-        }
-    } else if (location.pathname === '/profil') {
-        crumbs.push({ label: 'Classroom', path: '/formations' });
-        crumbs.push({ label: 'Mon Profil', path: '/profil' });
-    } else {
-        // Generic handling for simple, non-nested routes
+        const pathnames = location.pathname.split('/').filter(Boolean);
+        let currentCrumbs: { label: string; path: string }[] = [];
         let currentPath = '';
+
         pathnames.forEach(segment => {
             currentPath += `/${segment}`;
             if (breadcrumbNameMap[currentPath]) {
-                crumbs.push({ label: breadcrumbNameMap[currentPath], path: currentPath });
+                currentCrumbs.push({ label: breadcrumbNameMap[currentPath], path: currentPath });
+            } else if (params.id && currentPath.startsWith('/mannequins/')) {
+                const model = data?.models.find(m => m.id === params.id);
+                if (model) currentCrumbs.push({ label: model.name, path: currentPath });
+            } else if (params.slug && currentPath.startsWith('/magazine/')) {
+                const article = data?.articles.find(a => a.slug === params.slug);
+                if (article) currentCrumbs.push({ label: article.title, path: currentPath });
+            } else if (params.threadId && currentPath.startsWith('/formations/forum/')) {
+                const thread = data?.forumThreads.find(t => t.id === params.threadId);
+                if (thread) currentCrumbs.push({ label: thread.title, path: currentPath });
             }
         });
-    }
+        return currentCrumbs;
+    }, [location.pathname, params, data]);
 
-    if (crumbs.length <= 1) return null;
+    useEffect(() => {
+        const schemaElementId = 'breadcrumb-schema-script';
+        let schemaElement = document.getElementById(schemaElementId) as HTMLScriptElement | null;
+
+        if (crumbs.length > 1) {
+            const breadcrumbSchema = {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": crumbs.map((crumb, index) => ({
+                    "@type": "ListItem",
+                    "position": index + 1,
+                    "name": crumb.label,
+                    "item": `${window.location.origin}/#${crumb.path}`
+                }))
+            };
+            
+            if (!schemaElement) {
+                schemaElement = document.createElement('script');
+                schemaElement.id = schemaElementId;
+                schemaElement.type = 'application/ld+json';
+                document.head.appendChild(schemaElement);
+            }
+            schemaElement.innerHTML = JSON.stringify(breadcrumbSchema);
+        } else if (schemaElement) {
+            schemaElement.remove();
+        }
+
+        return () => {
+            const el = document.getElementById(schemaElementId);
+            if (el) el.remove();
+        };
+    }, [crumbs]);
+    
+    if (crumbs.length <= 1 || location.pathname.startsWith('/login') || location.pathname.startsWith('/admin')) {
+        return null;
+    }
 
     return (
         <div className="bg-black border-b border-pm-gold/20 print-hide">
@@ -291,6 +292,11 @@ const Header: React.FC = () => {
     }).filter((link): link is NavLinkType => link !== null);
   }, [navLinksFromData, userRole]);
 
+  const applyButtonDelay = 150 + processedNavLinks.length * 50;
+  const logoutButtonDelay = 150 + (processedNavLinks.length + 1) * 50;
+  const socialLinksDelay = 150 + (isLoggedIn ? processedNavLinks.length + 2 : processedNavLinks.length + 1) * 50;
+
+
   return (
     <>
       <header 
@@ -307,12 +313,14 @@ const Header: React.FC = () => {
           
           <nav className="hidden lg:flex items-center gap-8">
             <NavLinks navLinks={processedNavLinks} />
-            {(isLoggedIn || socialLinks) && (
-              <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
-                  <SocialLinksComponent socialLinks={socialLinks} />
-                  {isLoggedIn && <LogoutButton onClick={handleLogout} />}
-              </div>
-            )}
+            
+            <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
+                <Link to="/casting-formulaire" className="px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                    Postuler
+                </Link>
+                <SocialLinksComponent socialLinks={socialLinks} />
+                {isLoggedIn && <LogoutButton onClick={handleLogout} />}
+            </div>
           </nav>
 
           <div className="lg:hidden flex items-center">
@@ -346,7 +354,19 @@ const Header: React.FC = () => {
         <div className="flex-grow overflow-y-auto">
             <nav className="flex flex-col p-8 gap-6">
               <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen}/>
-              {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={150 + processedNavLinks.length * 50} />}
+              <div 
+                className={`text-center transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+                style={{ transitionDelay: `${isOpen ? applyButtonDelay : 0}ms` }}
+              >
+                  <Link
+                      to="/casting-formulaire"
+                      onClick={() => setIsOpen(false)}
+                      className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"
+                  >
+                      Postuler
+                  </Link>
+              </div>
+              {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
             </nav>
         </div>
         <div className="p-8 border-t border-pm-gold/20 flex-shrink-0">
@@ -355,7 +375,7 @@ const Header: React.FC = () => {
                 className="justify-center"
                 isMobile={true}
                 isOpen={isOpen}
-                delay={150 + (isLoggedIn ? processedNavLinks.length + 1 : processedNavLinks.length) * 50}
+                delay={socialLinksDelay}
              />
         </div>
       </div>
