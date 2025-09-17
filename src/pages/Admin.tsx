@@ -11,6 +11,7 @@ import {
     UserIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
+import InteractiveDashboardCard from '../components/InteractiveDashboardCard';
 
 type AdminTab = 'dashboard' | 'talents' | 'content' | 'accounting' | 'analytics';
 
@@ -48,6 +49,96 @@ const getRoleColor = (role: string) => {
         default: return 'bg-gray-500/20 text-gray-300';
     }
 }
+
+// Helper function to generate notifications for different sections
+const generateNotifications = (data: any, section: string) => {
+    const notifications = [];
+    const now = new Date();
+
+    switch (section) {
+        case 'casting':
+            const castingApps = data?.castingApplications || [];
+            castingApps.forEach((app: any, index: number) => {
+                if (index < 3) { // Show only first 3
+                    notifications.push({
+                        id: `casting-${app.id}`,
+                        title: `Nouvelle candidature`,
+                        message: `${app.firstName} ${app.lastName} a postulé pour le casting`,
+                        type: 'info' as const,
+                        timestamp: new Date(app.createdAt).toLocaleDateString('fr-FR'),
+                        link: '/admin/casting-applications'
+                    });
+                }
+            });
+            break;
+
+        case 'booking':
+            const bookings = data?.bookingRequests || [];
+            bookings.forEach((booking: any, index: number) => {
+                if (index < 3) {
+                    notifications.push({
+                        id: `booking-${booking.id}`,
+                        title: `Demande de booking`,
+                        message: `Nouvelle demande de ${booking.clientName} pour ${booking.eventType}`,
+                        type: 'warning' as const,
+                        timestamp: new Date(booking.createdAt).toLocaleDateString('fr-FR'),
+                        link: '/admin/bookings'
+                    });
+                }
+            });
+            break;
+
+        case 'fashion-day':
+            const fashionApps = data?.fashionDayApplications || [];
+            fashionApps.forEach((app: any, index: number) => {
+                if (index < 3) {
+                    notifications.push({
+                        id: `fashion-${app.id}`,
+                        title: `Candidature PFD`,
+                        message: `${app.firstName} ${app.lastName} souhaite participer au Perfect Fashion Day`,
+                        type: 'success' as const,
+                        timestamp: new Date(app.createdAt).toLocaleDateString('fr-FR'),
+                        link: '/admin/fashion-day-applications'
+                    });
+                }
+            });
+            break;
+
+        case 'messages':
+            const messages = data?.contactMessages || [];
+            messages.forEach((message: any, index: number) => {
+                if (index < 3) {
+                    notifications.push({
+                        id: `message-${message.id}`,
+                        title: `Message de ${message.name}`,
+                        message: message.message.substring(0, 100) + '...',
+                        type: 'info' as const,
+                        timestamp: new Date(message.createdAt).toLocaleDateString('fr-FR'),
+                        link: '/admin/messages'
+                    });
+                }
+            });
+            break;
+
+        case 'recovery':
+            const recoveries = data?.recoveryRequests || [];
+            recoveries.forEach((recovery: any, index: number) => {
+                if (index < 3) {
+                    notifications.push({
+                        id: `recovery-${recovery.id}`,
+                        title: `Demande de récupération`,
+                        message: `${recovery.name} a oublié ses identifiants`,
+                        type: 'error' as const,
+                        timestamp: new Date(recovery.createdAt).toLocaleDateString('fr-FR'),
+                        link: '/admin/recovery-requests'
+                    });
+                }
+            });
+            break;
+    }
+
+    return notifications;
+};
 
 const Admin: React.FC = () => {
     const navigate = useNavigate();
@@ -336,7 +427,19 @@ const TalentsView: React.FC<{ newCastingApps: number }> = ({ newCastingApps }) =
                             <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
                             <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
                             <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>
-                            <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Consulter et traiter les candidatures pour les castings." notificationCount={newCastingApps} />
+                            <InteractiveDashboardCard 
+                                title="Candidatures Casting" 
+                                icon={ClipboardDocumentListIcon} 
+                                link="/admin/casting-applications" 
+                                description="Consulter et traiter les candidatures pour les castings." 
+                                notificationCount={newCastingApps}
+                                notifications={generateNotifications(data, 'casting')}
+                                stats={{
+                                    total: data?.castingApplications?.length || 0,
+                                    new: newCastingApps,
+                                    pending: data?.castingApplications?.filter((app: any) => app.status === 'pending')?.length || 0
+                                }}
+                            />
                             <DashboardCard title="Résultats & Validation Casting" icon={ClipboardDocumentCheckIcon} link="/admin/casting-results" description="Valider les candidats et créer leurs profils de débutant." />
                              <DashboardCard title="Accès Mannequins Pro" icon={KeyIcon} link="/admin/model-access" description="Consulter les identifiants des mannequins confirmés." />
         </div>
@@ -380,11 +483,59 @@ const AccountingView: React.FC<{
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                              <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
                              <DashboardCard title="Suivi des Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences des mannequins." />
-                             <DashboardCard title="Demandes de Booking" icon={BriefcaseIcon} link="/admin/bookings" description="Consulter et gérer les demandes de booking des clients." notificationCount={newBookingRequests} />
-                            <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions pour l'événement Perfect Fashion Day." notificationCount={newFashionDayApps} />
+                             <InteractiveDashboardCard 
+                                title="Demandes de Booking" 
+                                icon={BriefcaseIcon} 
+                                link="/admin/bookings" 
+                                description="Consulter et gérer les demandes de booking des clients." 
+                                notificationCount={newBookingRequests}
+                                notifications={generateNotifications(data, 'booking')}
+                                stats={{
+                                    total: data?.bookingRequests?.length || 0,
+                                    new: newBookingRequests,
+                                    pending: data?.bookingRequests?.filter((req: any) => req.status === 'pending')?.length || 0
+                                }}
+                            />
+                            <InteractiveDashboardCard 
+                                title="Candidatures PFD" 
+                                icon={SparklesIcon} 
+                                link="/admin/fashion-day-applications" 
+                                description="Gérer les inscriptions pour l'événement Perfect Fashion Day." 
+                                notificationCount={newFashionDayApps}
+                                notifications={generateNotifications(data, 'fashion-day')}
+                                stats={{
+                                    total: data?.fashionDayApplications?.length || 0,
+                                    new: newFashionDayApps,
+                                    pending: data?.fashionDayApplications?.filter((app: any) => app.status === 'pending')?.length || 0
+                                }}
+                            />
                              <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins confirmés aux quiz." />
-                             <DashboardCard title="Messages de Contact" icon={EnvelopeIcon} link="/admin/messages" description="Lire et gérer les messages reçus via le formulaire de contact." notificationCount={newMessages} />
-                             <DashboardCard title="Demandes de Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Traiter les demandes de coordonnées oubliées." notificationCount={newRecoveryRequests} />
+                             <InteractiveDashboardCard 
+                                title="Messages de Contact" 
+                                icon={EnvelopeIcon} 
+                                link="/admin/messages" 
+                                description="Lire et gérer les messages reçus via le formulaire de contact." 
+                                notificationCount={newMessages}
+                                notifications={generateNotifications(data, 'messages')}
+                                stats={{
+                                    total: data?.contactMessages?.length || 0,
+                                    new: newMessages,
+                                    pending: data?.contactMessages?.filter((msg: any) => !msg.read)?.length || 0
+                                }}
+                            />
+                             <InteractiveDashboardCard 
+                                title="Demandes de Récupération" 
+                                icon={ExclamationTriangleIcon} 
+                                link="/admin/recovery-requests" 
+                                description="Traiter les demandes de coordonnées oubliées." 
+                                notificationCount={newRecoveryRequests}
+                                notifications={generateNotifications(data, 'recovery')}
+                                stats={{
+                                    total: data?.recoveryRequests?.length || 0,
+                                    new: newRecoveryRequests,
+                                    pending: data?.recoveryRequests?.filter((req: any) => req.status === 'pending')?.length || 0
+                                }}
+                            />
             <DashboardCard title="Livre Comptable" icon={CurrencyDollarIcon} link="/admin/accounting" description="Gérer les revenus, dépenses et générer des rapports PDF." />
         </div>
     </div>

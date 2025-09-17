@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, UserIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
 import { QuizQuestion, Module, SiteImages } from '../types';
@@ -9,10 +9,28 @@ import { useData } from '../contexts/DataContext';
 // --- STUDENT VIEW ---
 const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteImages: SiteImages; }> = ({ onLogout, courseData, siteImages }) => {
     const [openModule, setOpenModule] = useState<number | null>(0);
+    const userRole = sessionStorage.getItem('classroom_role');
+    const userName = sessionStorage.getItem('userName');
 
     const toggleModule = (index: number) => {
         setOpenModule(openModule === index ? null : index);
     };
+
+    const getWelcomeMessage = () => {
+        if (userRole === 'beginner') {
+            return {
+                title: "Bienvenue dans la PMM Classroom !",
+                subtitle: "Votre parcours de formation au mannequinat commence ici. Découvrez les 40 chapitres qui vous mèneront vers le succès professionnel."
+            };
+        } else {
+            return {
+                title: "PMM Classroom - Formation Avancée",
+                subtitle: "40 chapitres théoriques pour maîtriser l'art du mannequinat et lancer une carrière à succès."
+            };
+        }
+    };
+
+    const welcome = getWelcomeMessage();
 
     return (
         <>
@@ -24,11 +42,16 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                 <div className="absolute inset-0 bg-pm-dark/80"></div>
                 <div className="relative z-10 p-6">
                     <h1 id="formations-title" className="text-4xl md:text-6xl font-playfair text-pm-gold font-extrabold" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
-                        PMM Classroom
+                        {welcome.title}
                     </h1>
                     <p className="mt-4 text-lg md:text-xl text-pm-off-white/90 max-w-3xl mx-auto">
-                        40 chapitres théoriques pour maîtriser l'art du mannequinat et lancer une carrière à succès.
+                        {welcome.subtitle}
                     </p>
+                    {userName && (
+                        <p className="mt-2 text-pm-gold/80 font-semibold">
+                            Bonjour, {userName} !
+                        </p>
+                    )}
                 </div>
             </section>
 
@@ -37,7 +60,41 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                      {/* Sidebar */}
                     <aside className="lg:col-span-3 lg:sticky lg:top-32 self-start mb-12 lg:mb-0">
                         <div className="bg-black p-6 border border-pm-gold/20">
-                          <h3 className="text-xl font-playfair text-pm-gold mb-4">Navigation du Cours</h3>
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-playfair text-pm-gold">Navigation du Cours</h3>
+                            {userRole === 'beginner' && (
+                              <span className="px-2 py-1 text-xs bg-pm-gold/20 text-pm-gold border border-pm-gold/30 rounded-full">
+                                Débutant
+                              </span>
+                            )}
+                            {userRole === 'student' && (
+                              <span className="px-2 py-1 text-xs bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full">
+                                Professionnel
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Profile Link */}
+                          <div className="mb-6 pb-4 border-b border-pm-gold/20">
+                            {userRole === 'beginner' ? (
+                              <Link 
+                                to="/profil-debutant" 
+                                className="flex items-center gap-2 text-pm-gold hover:text-pm-gold/80 transition-colors"
+                              >
+                                <UserIcon className="w-5 h-5" />
+                                <span className="text-sm font-semibold">Mon Profil</span>
+                              </Link>
+                            ) : (
+                              <Link 
+                                to="/profil" 
+                                className="flex items-center gap-2 text-pm-gold hover:text-pm-gold/80 transition-colors"
+                              >
+                                <UserIcon className="w-5 h-5" />
+                                <span className="text-sm font-semibold">Mon Profil</span>
+                              </Link>
+                            )}
+                          </div>
+                          
                           <nav>
                             {courseData.map((module, moduleIndex) => (
                               <div key={moduleIndex} className="mb-3">
@@ -75,17 +132,6 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                              </button>
                         </section>
                         
-                        <div className="mb-12">
-                            <Link to="/formations/forum" className="group block w-full text-left p-6 bg-pm-gold/10 border-2 border-dashed border-pm-gold/30 hover:border-pm-gold hover:bg-pm-gold/20 transition-all duration-300">
-                                <div className="flex items-center gap-4">
-                                    <ChatBubbleBottomCenterTextIcon className="w-10 h-10 text-pm-gold flex-shrink-0" />
-                                    <div>
-                                        <h3 className="text-xl font-bold text-pm-gold">Rejoindre le Forum de Discussion</h3>
-                                        <p className="text-sm text-pm-off-white/80">Échangez avec les autres mannequins, posez vos questions et partagez votre expérience.</p>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
                     
                         <section aria-label="Modules de formation" className="space-y-4">
                             {courseData.map((module, index) => (

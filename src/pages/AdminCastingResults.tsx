@@ -159,11 +159,17 @@ const AdminCastingResults: React.FC = () => {
         const password = `${sanitizeForPassword(app.firstName)}${currentYear}`;
 
         const newBeginnerStudent: BeginnerStudent = {
-            id: app.id,
+            id: `beginner-${app.firstName.toLowerCase().replace(/\s+/g, '-')}-${app.lastName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
             name: `${app.firstName} ${app.lastName}`,
             matricule: matricule,
             password: password,
-            quizScores: {}
+            email: app.email || '',
+            phone: app.phone || '',
+            city: app.city || '',
+            instagram: app.instagram || '',
+            quizScores: {},
+            lastLogin: new Date().toISOString(),
+            lastActivity: new Date().toISOString()
         };
         
         const updatedBeginnerStudents = [...data.beginnerStudents, newBeginnerStudent];

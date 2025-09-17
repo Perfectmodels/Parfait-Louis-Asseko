@@ -186,30 +186,54 @@ export const beginnerStudents: BeginnerStudent[] = [
         name: "Alicia Dubois",
         matricule: "DEB-2025-001",
         password: "alicia2025",
-        quizScores: {}
+        email: "alicia.dubois@email.com",
+        phone: "+241 01 23 45 67",
+        city: "Libreville",
+        instagram: "@alicia_dubois",
+        quizScores: {},
+        lastLogin: new Date().toISOString(),
+        lastActivity: new Date().toISOString()
     },
     {
         id: 'casting-1720000000002',
         name: "Jordan Lefebvre",
         matricule: "DEB-2025-002",
         password: "jordan2025",
+        email: "jordan.lefebvre@email.com",
+        phone: "+241 02 34 56 78",
+        city: "Libreville",
+        instagram: "@jordan_lefebvre",
         quizScores: { 
             'module-1-decouverte-du-mannequinat': { score: 2, total: 3, timesLeft: 0, timestamp: '2024-07-06T10:00:00Z' } 
-        }
+        },
+        lastLogin: new Date().toISOString(),
+        lastActivity: new Date().toISOString()
     },
     {
         id: 'casting-1720000000003',
         name: "Chloé Moreau",
         matricule: "DEB-2025-003",
         password: "chloe2025",
-        quizScores: {}
+        email: "chloe.moreau@email.com",
+        phone: "+241 03 45 67 89",
+        city: "Libreville",
+        instagram: "@chloe_moreau",
+        quizScores: {},
+        lastLogin: new Date().toISOString(),
+        lastActivity: new Date().toISOString()
     },
     {
         id: 'casting-1720000000004',
         name: "Lucas Girard",
         matricule: "DEB-2025-004",
         password: "lucas2025",
-        quizScores: {}
+        email: "lucas.girard@email.com",
+        phone: "+241 04 56 78 90",
+        city: "Libreville",
+        instagram: "@lucas_girard",
+        quizScores: {},
+        lastLogin: new Date().toISOString(),
+        lastActivity: new Date().toISOString()
     }
 ];
 

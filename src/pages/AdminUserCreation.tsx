@@ -136,7 +136,13 @@ const AdminUserCreation: React.FC = () => {
           name: formData.name,
           matricule,
           password: formData.password,
-          quizScores: {}
+          email: formData.email || '',
+          phone: formData.phone || '',
+          city: formData.location || '',
+          instagram: '',
+          quizScores: {},
+          lastLogin: new Date().toISOString(),
+          lastActivity: new Date().toISOString()
         };
 
         const updatedBeginners = [...(data.beginnerStudents || []), newBeginner];

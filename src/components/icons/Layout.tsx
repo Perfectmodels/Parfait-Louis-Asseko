@@ -12,7 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="bg-pm-dark min-h-screen flex flex-col font-montserrat">
       <Marquee />
       <Header />
-      <main className="flex-grow pt-24 lg:pt-28">
+      <main className="flex-grow pt-32 lg:pt-36">
         <Breadcrumb />
         {children}
       </main>

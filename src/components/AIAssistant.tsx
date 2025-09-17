@@ -1,215 +1,225 @@
+import React, { useState } from 'react';
+import { SparklesIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { AIAssistantProps } from '../types';
-import CloseIcon from './icons/CloseIcon';
-import { SparklesIcon } from '@heroicons/react/24/solid';
-import { GoogleGenAI, Type } from '@google/genai';
+interface AIAssistantProps {
+  onContentGenerated: (content: string) => void;
+  context: string;
+  placeholder?: string;
+  className?: string;
+}
 
-const getSuggestions = (fieldName: string): string[] => {
-    const lowerFieldName = fieldName.toLowerCase();
-    if (lowerFieldName.includes('distinction')) {
-        return [
-            "Génère 3 titres prestigieux pour un mannequin.",
-            "Invente 2 distinctions internationales.",
-            "Liste des récompenses pour un 'Mannequin Espoir'."
-        ];
+const AIAssistant: React.FC<AIAssistantProps> = ({
+  onContentGenerated,
+  context,
+  placeholder = "Décrivez ce que vous voulez générer...",
+  className = ""
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [prompt, setPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) return;
+
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      // Simulation d'une génération AI (remplacer par un vrai service AI)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Pour l'instant, on génère du contenu basé sur le contexte
+      let generatedContent = '';
+      
+      switch (context) {
+        case 'album-description':
+          generatedContent = `Découvrez cette magnifique séance photo qui capture l'essence de la mode et de l'élégance. Chaque image raconte une histoire unique, mettant en valeur le talent de nos mannequins et la créativité de notre équipe. ${prompt}`;
+          break;
+        case 'article-content':
+          generatedContent = `Dans le monde en constante évolution de la mode, ${prompt} représente une tendance majeure qui redéfinit les standards de beauté et d'élégance. Cette approche novatrice ouvre de nouvelles perspectives pour les professionnels du secteur.`;
+          break;
+        case 'model-bio':
+          generatedContent = `${prompt} est une mannequin passionnée et déterminée, avec une approche unique du métier. Son charisme naturel et sa polyvalence en font une professionnelle remarquable, capable de s'adapter à tous les styles et univers.`;
+          break;
+        case 'service-description':
+          generatedContent = `Notre service ${prompt} offre une expérience personnalisée et professionnelle, conçue pour répondre aux besoins spécifiques de nos clients. Avec une équipe d'experts dédiés, nous garantissons des résultats exceptionnels.`;
+          break;
+        default:
+          generatedContent = `Contenu généré basé sur votre demande : ${prompt}. Ce texte a été créé pour enrichir votre contenu et vous faire gagner du temps dans la rédaction.`;
+      }
+
+      onContentGenerated(generatedContent);
+      setPrompt('');
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la génération:', error);
+      setError('Erreur lors de la génération du contenu. Veuillez réessayer.');
+    } finally {
+      setIsGenerating(false);
     }
-    if (lowerFieldName.includes('titre')) {
-        return [
-            "Propose 5 titres accrocheurs pour un article de mode.",
-            "Génère un titre d'interview percutant.",
-            "Trouve un titre poétique pour un article sur la haute couture."
-        ];
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleGenerate();
     }
-     if (lowerFieldName.includes('extrait')) {
-        return [
-            "Rédige un résumé de 2 phrases pour un article.",
-            "Écris une introduction engageante qui donne envie de lire."
-        ];
-    }
-    if (lowerFieldName.includes('contenu')) {
-        return [
-            "Rédige un article sur les tendances mode de la saison.",
-            "Écris une interview structurée avec un créateur.",
-            "Décris l'histoire d'un vêtement iconique."
-        ];
-    }
-    if (lowerFieldName.includes('témoignage')) {
-        return [
-            "Écris un témoignage positif d'un mannequin sur son agence.",
-            "Rédige une citation inspirante d'un partenaire.",
-            "Génère un texte élogieux d'un client satisfait."
-        ];
-    }
-    return [];
+  };
+
+  return (
+    <div className={`relative ${className}`}>
+      {/* Bouton pour ouvrir l'assistant */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+        title="Assistant AI"
+      >
+        <SparklesIcon className="w-4 h-4" />
+        <span className="text-sm font-medium">Assistant AI</span>
+      </button>
+
+      {/* Modal de l'assistant */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <SparklesIcon className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Assistant AI</h3>
+                  <p className="text-sm text-gray-500">Générateur de contenu intelligent</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <XMarkIcon className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Décrivez ce que vous voulez générer
+                </label>
+                <textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder={placeholder}
+                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  disabled={isGenerating}
+                />
+              </div>
+
+              {error && (
+                <div className="p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {/* Suggestions rapides */}
+              <div>
+                <p className="text-sm font-medium text-gray-700 mb-2">Suggestions rapides :</p>
+                <div className="flex flex-wrap gap-2">
+                  {getQuickSuggestions(context).map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setPrompt(suggestion)}
+                      className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
+                      disabled={isGenerating}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
+              <p className="text-xs text-gray-500">
+                L'assistant AI vous aide à générer du contenu de qualité
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                  disabled={isGenerating}
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleGenerate}
+                  disabled={!prompt.trim() || isGenerating}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Génération...
+                    </>
+                  ) : (
+                    <>
+                      <PaperAirplaneIcon className="w-4 h-4" />
+                      Générer
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
-
-const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertContent, fieldName, initialPrompt, jsonSchema }) => {
-    const [prompt, setPrompt] = useState(initialPrompt);
-    const [isLoading, setIsLoading] = useState(false);
-    const [generatedContent, setGeneratedContent] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [suggestions, setSuggestions] = useState<string[]>([]);
-
-    useEffect(() => {
-        if (isOpen) {
-            setPrompt(initialPrompt);
-            setGeneratedContent('');
-            setError(null);
-            setSuggestions(getSuggestions(fieldName));
-        }
-    }, [isOpen, initialPrompt, fieldName]);
-
-    const handleGenerate = useCallback(async () => {
-        if (!prompt) return;
-
-        setIsLoading(true);
-        setError(null);
-        setGeneratedContent('');
-
-        const convertSchema = (schema: any): any => {
-            if (!schema || typeof schema !== 'object') return schema;
-            const newSchema = { ...schema };
-            if (schema.type && typeof schema.type === 'string' && Type[schema.type as keyof typeof Type]) {
-                newSchema.type = Type[schema.type as keyof typeof Type];
-            }
-            if (schema.items) {
-                newSchema.items = convertSchema(schema.items);
-            }
-            if (schema.properties) {
-                newSchema.properties = {};
-                for (const key in schema.properties) {
-                    newSchema.properties[key] = convertSchema(schema.properties[key]);
-                }
-            }
-            return newSchema;
-        };
-
-        try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
-            
-            let response;
-            const model = 'gemini-2.5-flash';
-
-            if (jsonSchema) {
-                const typedSchema = convertSchema(jsonSchema);
-                response = await ai.models.generateContent({
-                    model,
-                    contents: prompt,
-                    config: {
-                        responseMimeType: "application/json",
-                        responseSchema: typedSchema
-                    }
-                });
-            } else {
-                 response = await ai.models.generateContent({
-                    model,
-                    contents: prompt
-                });
-            }
-            
-            const textResult = response.text;
-            setGeneratedContent(textResult);
-
-        } catch (err: any) {
-            console.error("Erreur de l'API Gemini:", err);
-            setError(err.message || "Une erreur est survenue lors de la génération du contenu.");
-        } finally {
-            setIsLoading(false);
-        }
-    }, [prompt, jsonSchema]);
-
-    const handleInsert = () => {
-        onInsertContent(generatedContent);
-        onClose();
-    };
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl shadow-pm-gold/10 w-full max-w-2xl transform transition-all duration-300">
-                <div className="p-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-playfair text-pm-gold flex items-center gap-2">
-                            <SparklesIcon className="w-6 h-6" />
-                            Assistant IA pour "{fieldName}"
-                        </h2>
-                        <button onClick={onClose} className="text-pm-off-white/70 hover:text-white">
-                            <CloseIcon />
-                        </button>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="ai-prompt" className="block text-sm font-bold text-pm-off-white/80 mb-2">Votre demande (Prompt) :</label>
-                            <textarea
-                                id="ai-prompt"
-                                value={prompt}
-                                onChange={(e) => setPrompt(e.target.value)}
-                                rows={4}
-                                className="admin-input admin-textarea"
-                                placeholder="Ex: Rédige un paragraphe sur l'importance de la posture..."
-                            />
-                        </div>
-                        
-                        {suggestions.length > 0 && (
-                            <div className="pt-2">
-                                <p className="text-xs text-pm-off-white/60 mb-2">Suggestions :</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {suggestions.map((s, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => setPrompt(s)}
-                                            className="px-3 py-1 bg-black border border-pm-gold/50 text-pm-gold/90 text-xs rounded-full hover:bg-pm-gold/10 transition-colors"
-                                        >
-                                            {s}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        <button
-                            onClick={handleGenerate}
-                            disabled={isLoading}
-                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isLoading ? 'Génération en cours...' : 'Générer le contenu'}
-                        </button>
-
-                        {error && <div className="p-3 bg-red-900/50 border border-red-500 text-red-300 text-sm rounded-md">{error}</div>}
-
-                        {generatedContent && (
-                            <div>
-                                <label className="block text-sm font-bold text-pm-off-white/80 mb-2">Résultat :</label>
-                                <textarea
-                                    readOnly
-                                    value={generatedContent}
-                                    rows={8}
-                                    className="admin-input admin-textarea bg-black"
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex justify-end gap-4 mt-6">
-                        <button onClick={onClose} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-xs rounded-full hover:border-white">
-                            Annuler
-                        </button>
-                        <button
-                            onClick={handleInsert}
-                            disabled={!generatedContent || isLoading}
-                            className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white disabled:opacity-50"
-                        >
-                            Insérer le contenu
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+// Fonction pour obtenir des suggestions rapides selon le contexte
+const getQuickSuggestions = (context: string): string[] => {
+  switch (context) {
+    case 'album-description':
+      return [
+        'Séance mode élégante',
+        'Portrait artistique',
+        'Fashion shoot urbain',
+        'Séance nature et lumière'
+      ];
+    case 'article-content':
+      return [
+        'Les tendances mode 2024',
+        'L\'évolution du mannequinat',
+        'Les techniques de pose',
+        'L\'industrie de la mode'
+      ];
+    case 'model-bio':
+      return [
+        'Mannequin expérimentée',
+        'Nouveau talent prometteur',
+        'Spécialiste mode haute couture',
+        'Modèle polyvalent'
+      ];
+    case 'service-description':
+      return [
+        'Formation mannequinat',
+        'Séances photo professionnelles',
+        'Coaching personnalisé',
+        'Développement de carrière'
+      ];
+    default:
+      return [
+        'Contenu professionnel',
+        'Description détaillée',
+        'Présentation élégante',
+        'Texte engageant'
+      ];
+  }
 };
 
 export default AIAssistant;
