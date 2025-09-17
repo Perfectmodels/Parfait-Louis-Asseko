@@ -45,7 +45,7 @@ const AdminModelTracking: React.FC = () => {
         name: student.name,
         username: student.matricule || student.name.toLowerCase().replace(/\s+/g, ''),
         level: 'Mannequin' as const,
-        imageUrl: 'https://i.ibb.co/fVBxPNT/T-shirt.png',
+        imageUrl: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
         lastLogin: student.lastLogin,
         lastActivity: student.lastActivity,
         paymentStatus: student.paymentStatus

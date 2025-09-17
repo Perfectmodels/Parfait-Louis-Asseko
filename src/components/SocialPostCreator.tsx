@@ -51,7 +51,7 @@ const SocialPostCreator: React.FC<SocialPostCreatorProps> = ({
         id: `post-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         authorId: currentUser.id,
         authorName: currentUser.name,
-        authorImage: currentUser.imageUrl || 'https://i.ibb.co/fVBxPNT/T-shirt.png',
+        authorImage: currentUser.imageUrl || 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
         content: content.trim(),
         images: images.length > 0 ? images : undefined,
         type: images.length > 0 ? 'image' : 'text',
@@ -148,7 +148,7 @@ const SocialPostCreator: React.FC<SocialPostCreatorProps> = ({
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-pm-gold/20 flex-shrink-0">
             <img 
-              src={currentUser?.imageUrl || 'https://i.ibb.co/fVBxPNT/T-shirt.png'} 
+              src={currentUser?.imageUrl || 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg'} 
               alt={currentUser?.name || 'Utilisateur'}
               className="w-full h-full object-cover"
             />
