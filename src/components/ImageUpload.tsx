@@ -49,14 +49,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         useWebWorker: true
       };
       
-      console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
       const compressedFile = await imageCompression(file, options);
-      console.log(`Compressed size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
 
       // Créer FormData
       const formData = new FormData();
       formData.append('image', compressedFile);
-      formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614'); // Clé ImgBB
+      formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614');
 
       // Upload vers ImgBB
       const response = await fetch('https://api.imgbb.com/1/upload', {
@@ -73,7 +71,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       if (data.success) {
         const imageUrl = data.data.url;
         setPreviewUrl(imageUrl);
-        onImageUploaded(imageUrl);
+        if (typeof onImageUploaded === 'function') {
+          onImageUploaded(imageUrl);
+        } else {
+          console.error("ImageUpload component requires an 'onImageUploaded' function prop.");
+        }
       } else {
         throw new Error(data.error?.message || 'Erreur lors de l\'upload');
       }
@@ -87,7 +89,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   const handleRemoveImage = () => {
     setPreviewUrl(null);
-    onImageUploaded('');
+    if (typeof onImageUploaded === 'function') {
+      onImageUploaded('');
+    }
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }

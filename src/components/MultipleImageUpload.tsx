@@ -91,9 +91,7 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
         useWebWorker: true
       };
       
-      console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
       const compressedFile = await imageCompression(file, options);
-      console.log(`Compressed size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
 
       // Créer FormData
       const formData = new FormData();

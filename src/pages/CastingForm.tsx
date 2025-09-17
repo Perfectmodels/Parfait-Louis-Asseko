@@ -166,19 +166,16 @@ const CastingForm: React.FC = () => {
                             <p className="text-sm text-pm-off-white/60">Veuillez soumettre des photos récentes, claires et non retouchées (polas).</p>
                             <div className="grid md:grid-cols-3 gap-6">
                                 <ImageUpload
-                                    label="Photo Portrait (visage)"
-                                    onUploadComplete={handlePhotoUpload('portrait')}
-                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                    placeholder="Photo Portrait (visage)"
+                                    onImageUploaded={handlePhotoUpload('portrait')}
                                 />
                                 <ImageUpload
-                                    label="Photo Plein Pied"
-                                    onUploadComplete={handlePhotoUpload('fullBody')}
-                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                    placeholder="Photo Plein Pied"
+                                    onImageUploaded={handlePhotoUpload('fullBody')}
                                 />
                                 <ImageUpload
-                                    label="Photo de Profil"
-                                    onUploadComplete={handlePhotoUpload('profile')}
-                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                    placeholder="Photo de Profil"
+                                    onImageUploaded={handlePhotoUpload('profile')}
                                 />
                             </div>
                         </div>
