@@ -56,7 +56,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
       onClick={onClick}
       end={to === '/'}
       className={({ isActive }) =>
-        `relative py-2 px-3 text-pm-off-white uppercase text-sm tracking-widest transition-all duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold whitespace-nowrap ${
+        `relative py-2 px-2 text-pm-off-white uppercase text-sm tracking-widest transition-all duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold whitespace-nowrap ${
           isActive ? "text-pm-gold" : ""
         }`
       }
@@ -420,7 +420,7 @@ const Header: React.FC = () => {
             </Link>
           )}
           
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 flex-1 justify-center max-w-4xl">
+          <nav className="hidden lg:flex items-center gap-3 xl:gap-4 flex-1 justify-center max-w-4xl">
             <NavLinks navLinks={processedNavLinks} />
           </nav>
           
