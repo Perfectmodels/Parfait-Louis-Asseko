@@ -330,7 +330,14 @@ const ArticleDetail: React.FC = () => {
 
   return (
     <>
-      <SEO title={article.title} description={article.excerpt} keywords={article.tags?.join(', ')} image={article.imageUrl} schema={articleSchema} />
+      <SEO 
+        title={article.title} 
+        description={article.excerpt} 
+        keywords={article.tags?.join(', ')} 
+        image={article.imageUrl} 
+        type="article"
+        schema={articleSchema} 
+      />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6 max-w-4xl">
           <Link to="/magazine" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline"><ChevronLeftIcon className="w-5 h-5" />Retour au Magazine</Link>

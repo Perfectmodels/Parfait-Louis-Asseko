@@ -5,7 +5,7 @@ import { FashionDayEvent, Stylist, Partner, Artist } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
+import ImageUpload from '../components/ImageUpload';
 
 type EditableData = Pick<AppData, 'fashionDayEvents'>;
 
@@ -61,6 +61,15 @@ const AdminFashionDayEvents: React.FC = () => {
                                     <FormTextArea label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} />
                                     <FormInput label="Lieu" value={item.location || ''} onChange={e => onChange('location', e.target.value)} />
                                     <FormInput label="Promoteur" value={item.promoter || ''} onChange={e => onChange('promoter', e.target.value)} />
+                                    
+                                    <div>
+                                        <label className="admin-label">Image de l'événement</label>
+                                        <ImageUpload 
+                                            currentImage={item.imageUrl || ''}
+                                            onImageUploaded={(imageUrl) => onChange('imageUrl', imageUrl)}
+                                            placeholder="Cliquez pour uploader l'image de l'événement"
+                                        />
+                                    </div>
 
                                     <SubArrayEditor
                                         title="Stylistes"

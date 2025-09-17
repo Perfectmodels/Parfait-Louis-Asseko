@@ -82,6 +82,12 @@ const SEO: React.FC<SEOProps> = ({
     setMeta('og:locale', 'fr_FR', true);
     setMeta('og:image:width', '1200', true);
     setMeta('og:image:height', '630', true);
+    
+    // Métadonnées spécifiques aux événements
+    if (type === 'event' && image) {
+      setMeta('og:image:alt', `Affiche officielle de l'événement ${title}`, true);
+      setMeta('og:image:type', 'image/png', true);
+    }
 
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');

@@ -11,6 +11,7 @@ import { Model, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
 import PaymentStatusBadge from '../components/PaymentStatusBadge';
 import PaymentWarningAlert from '../components/PaymentWarningAlert';
+import PaymentSubmissionForm from '../components/PaymentSubmissionForm';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 
@@ -22,6 +23,7 @@ const ModelDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<ActiveTab>('profile');
     const [expandedBriefId, setExpandedBriefId] = useState<string | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [showPaymentForm, setShowPaymentForm] = useState(false);
 
     const originalModel = data?.models.find(m => m.id === userId);
     const courseModulesWithQuizzes = data?.courseData?.filter(m => m.quiz && m.quiz.length > 0) || [];
@@ -285,7 +287,15 @@ const ModelDashboard: React.FC = () => {
                                 <div className="bg-black/50 p-6 border border-pm-gold/20 rounded-lg">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="text-lg font-semibold text-pm-gold">Statut des Cotisations</h3>
-                                        <PaymentStatusBadge paymentStatus={editableModel.paymentStatus} showDetails={true} />
+                                        <div className="flex items-center gap-3">
+                                            <PaymentStatusBadge paymentStatus={editableModel.paymentStatus} showDetails={true} />
+                                            <button
+                                                onClick={() => setShowPaymentForm(true)}
+                                                className="px-4 py-2 bg-pm-gold text-pm-dark font-medium rounded-lg hover:bg-pm-gold/90 transition-colors text-sm"
+                                            >
+                                                Soumettre Paiement
+                                            </button>
+                                        </div>
                                     </div>
                                     
                                     {editableModel.paymentStatus?.warnings && editableModel.paymentStatus.warnings.length > 0 && (
@@ -375,9 +385,18 @@ const ModelDashboard: React.FC = () => {
 
             {/* Mobile overlay */}
             {sidebarOpen && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black/50 z-30 lg:hidden"
                     onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
+            {/* Payment Submission Form */}
+            {showPaymentForm && (
+                <PaymentSubmissionForm
+                    modelId={editableModel.id}
+                    modelName={editableModel.name}
+                    onClose={() => setShowPaymentForm(false)}
                 />
             )}
         </div>

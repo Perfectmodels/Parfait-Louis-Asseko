@@ -9,15 +9,13 @@ import {
     ArrowTrendingDownIcon, EyeIcon, PencilIcon, TrashIcon
 } from '@heroicons/react/24/outline';
 import { AccountingTransaction, AccountingCategory, AccountingBalance } from '../types';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const AdminAccounting: React.FC = () => {
     const { data, saveData } = useData();
-    const [activeTab, setActiveTab] = useState<'transactions' | 'balance' | 'reports' | 'payments'>('payments');
+    const [activeTab, setActiveTab] = useState<'transactions' | 'balance' | 'reports'>('transactions');
     const [showTransactionForm, setShowTransactionForm] = useState(false);
-    const [showPaymentForm, setShowPaymentForm] = useState(false);
-    const [selectedModel, setSelectedModel] = useState<string>('');
-    const [paymentType, setPaymentType] = useState<'cotisation' | 'inscription'>('cotisation');
-    const [paymentAmount, setPaymentAmount] = useState<number>(0);
     const [selectedPeriod, setSelectedPeriod] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
     const [newTransaction, setNewTransaction] = useState<Partial<AccountingTransaction>>({
         date: new Date().toISOString().split('T')[0],
@@ -34,17 +32,6 @@ const AdminAccounting: React.FC = () => {
     const transactions = data?.accountingTransactions || [];
     const categories = data?.accountingCategories || [];
     
-    // Récupérer tous les mannequins (Pro + Débutants unifiés)
-    const allModels = [
-        ...(data?.models || []),
-        ...(data?.beginnerStudents?.map(student => ({
-            id: student.id,
-            name: student.name,
-            level: 'Mannequin' as const,
-            username: student.matricule || student.name.toLowerCase().replace(/\s+/g, ''),
-            isActive: true
-        })) || [])
-    ];
 
     // Filtrer les transactions par période
     const filteredTransactions = useMemo(() => {
@@ -120,49 +107,406 @@ const AdminAccounting: React.FC = () => {
         }
     };
 
-    const handlePaymentSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!data || !selectedModel || !paymentAmount) return;
 
-        const model = allModels.find(m => m.id === selectedModel);
-        if (!model) return;
-
-        const transaction: AccountingTransaction = {
-            id: `payment-${Date.now()}`,
-            date: new Date().toISOString().split('T')[0],
-            description: `${paymentType === 'cotisation' ? 'Cotisation' : 'Inscription'} - ${model.name}`,
-            category: 'revenue',
-            subcategory: paymentType === 'cotisation' ? 'Cotisations Mannequins' : 'Inscriptions',
-            amount: paymentAmount,
-            currency: 'FCFA',
-            paymentMethod: 'cash',
-            reference: `${paymentType.toUpperCase()}-${model.name}-${new Date().getFullYear()}`,
-            notes: `Paiement ${paymentType} pour ${model.name}`,
-            relatedModelId: model.id,
-            relatedModelName: model.name,
-            createdBy: 'admin',
-            createdAt: new Date().toISOString()
-        };
-
+    const generatePaymentListPDF = async (type: 'cotisations' | 'inscriptions') => {
         try {
-            const updatedTransactions = [...transactions, transaction];
-            await saveData({ ...data, accountingTransactions: updatedTransactions });
+            // Filtrer les transactions selon le type
+            const paymentTransactions = transactions.filter(t => {
+                if (type === 'cotisations') {
+                    return t.subcategory === 'Cotisations mensuelles' || 
+                           t.subcategory === 'Cotisations + Inscriptions' ||
+                           t.subcategory === 'Paiements en avance';
+                } else {
+                    return t.subcategory === 'Frais d\'inscription' || 
+                           t.subcategory === 'Cotisations + Inscriptions';
+                }
+            });
+
+            if (paymentTransactions.length === 0) {
+                alert(`Aucune transaction de type "${type}" trouvée pour cette période.`);
+                return;
+            }
+
+            // Créer le PDF
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            let yPosition = 20;
+
+            // Charger et ajouter le logo
+            try {
+                const logoUrl = 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg';
+                const logoImg = new Image();
+                logoImg.crossOrigin = 'anonymous';
+                
+                await new Promise((resolve, reject) => {
+                    logoImg.onload = resolve;
+                    logoImg.onerror = reject;
+                    logoImg.src = logoUrl;
+                });
+
+                // Ajouter le logo (redimensionné)
+                const logoWidth = 40;
+                const logoHeight = 30;
+                doc.addImage(logoImg, 'JPEG', pageWidth / 2 - logoWidth / 2, yPosition, logoWidth, logoHeight);
+                yPosition += logoHeight + 10;
+            } catch (logoError) {
+                console.warn('Impossible de charger le logo:', logoError);
+                // Continuer sans le logo
+            }
+
+            // En-tête stylé
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(255, 215, 0); // Couleur dorée
+            doc.text('PERFECT MODEL AGENCY', pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 15;
+
+            // Ligne de séparation dorée
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(0.5);
+            doc.line(20, yPosition, pageWidth - 20, yPosition);
+            yPosition += 10;
+
+            // Titre du document
+            doc.setFontSize(18);
+            doc.setTextColor(0, 0, 0); // Noir
+            doc.setFont('helvetica', 'bold');
+            doc.text(`LISTE DES ${type === 'cotisations' ? 'COTISATIONS' : 'INSCRIPTIONS'}`, pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 15;
+
+            // Informations de période
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 100, 100); // Gris
+            doc.text(`Période: ${selectedPeriod}`, pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 8;
+            doc.text(`Généré le: ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 20;
+
+            // Tableau stylé avec largeurs ajustées
+            const tableHeaders = ['Date', 'Mannequin', 'Type', 'Montant', 'Méthode'];
+            const colWidths = [20, 60, 35, 35, 20]; // Ajusté pour éviter les superpositions
+            const startX = 15;
+
+            // En-têtes du tableau avec fond doré
+            const totalTableWidth = colWidths.reduce((a, b) => a + b, 0);
+            doc.setFillColor(255, 215, 0);
+            doc.rect(startX, yPosition - 5, totalTableWidth, 10, 'F');
             
-            // Reset form
-            setSelectedModel('');
-            setPaymentType('cotisation');
-            setPaymentAmount(0);
-            setShowPaymentForm(false);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(0, 0, 0); // Noir sur fond doré
+            let xPosition = startX;
+            tableHeaders.forEach((header, index) => {
+                // Centrer le texte dans chaque colonne
+                const textWidth = doc.getTextWidth(header);
+                const centerX = xPosition + (colWidths[index] / 2) - (textWidth / 2);
+                doc.text(header, centerX, yPosition);
+                xPosition += colWidths[index];
+            });
+            yPosition += 8;
+
+            // Ligne de séparation dorée
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(0.5);
+            doc.line(startX, yPosition, startX + colWidths.reduce((a, b) => a + b, 0), yPosition);
+            yPosition += 5;
+
+            // Données du tableau avec alternance de couleurs
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            let totalAmount = 0;
+
+            paymentTransactions.forEach((transaction, index) => {
+                // Vérifier si on a besoin d'une nouvelle page
+                if (yPosition > pageHeight - 50) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+
+                // Alternance de couleurs pour les lignes
+                if (index % 2 === 0) {
+                    doc.setFillColor(248, 248, 248);
+                    doc.rect(startX, yPosition - 3, totalTableWidth, 6, 'F');
+                }
+
+                // Préparer les données avec troncature si nécessaire
+                const dateStr = new Date(transaction.date).toLocaleDateString('fr-FR');
+                const modelName = (transaction.relatedModelName || 'N/A').length > 15 
+                    ? (transaction.relatedModelName || 'N/A').substring(0, 15) + '...' 
+                    : (transaction.relatedModelName || 'N/A');
+                const typeStr = transaction.subcategory.length > 12 
+                    ? transaction.subcategory.substring(0, 12) + '...' 
+                    : transaction.subcategory;
+                const amountStr = `${transaction.amount.toLocaleString()} FCFA`;
+                const methodStr = transaction.paymentMethod.length > 8 
+                    ? transaction.paymentMethod.substring(0, 8) + '...' 
+                    : transaction.paymentMethod;
+
+                const rowData = [dateStr, modelName, typeStr, amountStr, methodStr];
+
+                doc.setTextColor(0, 0, 0);
+                xPosition = startX;
+                rowData.forEach((data, colIndex) => {
+                    // Ajuster la position pour éviter les superpositions
+                    const textX = xPosition + 1;
+                    doc.text(data, textX, yPosition);
+                    xPosition += colWidths[colIndex];
+                });
+
+                totalAmount += transaction.amount;
+                yPosition += 6;
+            });
+
+            // Ligne de séparation finale dorée
+            yPosition += 5;
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(1);
+            doc.line(startX, yPosition, startX + colWidths.reduce((a, b) => a + b, 0), yPosition);
+            yPosition += 10;
+
+            // Total stylé
+            doc.setFillColor(255, 215, 0);
+            doc.rect(startX + colWidths.slice(0, 3).reduce((a, b) => a + b, 0) - 10, yPosition - 5, colWidths[3] + colWidths[4] + 10, 10, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`TOTAL: ${totalAmount.toLocaleString()} FCFA`, startX + colWidths.slice(0, 3).reduce((a, b) => a + b, 0), yPosition);
+
+            // Pied de page stylé
+            yPosition = pageHeight - 30;
             
-            alert(`${paymentType === 'cotisation' ? 'Cotisation' : 'Inscription'} enregistrée avec succès !`);
+            // Ligne de séparation dorée
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(0.5);
+            doc.line(20, yPosition, pageWidth - 20, yPosition);
+            yPosition += 10;
+            
+            // Informations de l'agence
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(255, 215, 0);
+            doc.text('PERFECT MODEL AGENCY', pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 5;
+            
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 100, 100);
+            doc.text('Agence de Mannequins Professionnelle', pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 4;
+            doc.text('Livre Comptable - Document Officiel', pageWidth / 2, yPosition, { align: 'center' });
+
+            // Télécharger le PDF
+            const fileName = `liste_${type}_${selectedPeriod}_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
+
+            alert(`PDF généré avec succès: ${fileName}`);
         } catch (error) {
-            console.error('Erreur lors de l\'enregistrement du paiement:', error);
+            console.error('Erreur lors de la génération du PDF:', error);
+            alert('Erreur lors de la génération du PDF. Veuillez réessayer.');
         }
     };
 
-    const generatePaymentListPDF = async (type: 'cotisations' | 'inscriptions') => {
-        // Cette fonction sera implémentée avec la génération PDF
-        console.log(`Génération PDF pour ${type}`);
+    const generateBalanceReportPDF = async () => {
+        try {
+            if (filteredTransactions.length === 0) {
+                alert('Aucune transaction trouvée pour cette période.');
+                return;
+            }
+
+            // Créer le PDF
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            let yPosition = 20;
+
+            // Charger et ajouter le logo
+            try {
+                const logoUrl = 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg';
+                const logoImg = new Image();
+                logoImg.crossOrigin = 'anonymous';
+                
+                await new Promise((resolve, reject) => {
+                    logoImg.onload = resolve;
+                    logoImg.onerror = reject;
+                    logoImg.src = logoUrl;
+                });
+
+                // Ajouter le logo (redimensionné)
+                const logoWidth = 40;
+                const logoHeight = 30;
+                doc.addImage(logoImg, 'JPEG', pageWidth / 2 - logoWidth / 2, yPosition, logoWidth, logoHeight);
+                yPosition += logoHeight + 10;
+            } catch (logoError) {
+                console.warn('Impossible de charger le logo:', logoError);
+                // Continuer sans le logo
+            }
+
+            // En-tête stylé
+            doc.setFontSize(24);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(255, 215, 0); // Couleur dorée
+            doc.text('PERFECT MODEL AGENCY', pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 15;
+
+            // Ligne de séparation dorée
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(0.5);
+            doc.line(20, yPosition, pageWidth - 20, yPosition);
+            yPosition += 10;
+
+            // Titre du document
+            doc.setFontSize(18);
+            doc.setTextColor(0, 0, 0); // Noir
+            doc.setFont('helvetica', 'bold');
+            doc.text('RAPPORT DE BILAN COMPTABLE', pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 15;
+
+            // Informations de période
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 100, 100); // Gris
+            doc.text(`Période: ${selectedPeriod}`, pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 8;
+            doc.text(`Généré le: ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}`, pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 20;
+
+            // Résumé financier stylé
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(0, 0, 0);
+            doc.text('RÉSUMÉ FINANCIER', 20, yPosition);
+            yPosition += 15;
+
+            // Encadré pour le résumé
+            const summaryWidth = pageWidth - 40;
+            const summaryHeight = 40;
+            doc.setFillColor(248, 248, 248);
+            doc.rect(20, yPosition - 5, summaryWidth, summaryHeight, 'F');
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(1);
+            doc.rect(20, yPosition - 5, summaryWidth, summaryHeight, 'S');
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(0, 100, 0); // Vert pour les revenus
+            doc.text(`TOTAL DES REVENUS: ${balance.totalRevenue.toLocaleString()} FCFA`, 30, yPosition + 8);
+            yPosition += 12;
+            
+            doc.setTextColor(200, 0, 0); // Rouge pour les dépenses
+            doc.text(`TOTAL DES DÉPENSES: ${balance.totalExpenses.toLocaleString()} FCFA`, 30, yPosition + 8);
+            yPosition += 12;
+            
+            doc.setTextColor(balance.netIncome >= 0 ? 0 : 200, balance.netIncome >= 0 ? 100 : 0, 0); // Vert si positif, rouge si négatif
+            doc.text(`BÉNÉFICE NET: ${balance.netIncome.toLocaleString()} FCFA`, 30, yPosition + 8);
+            yPosition += 20;
+
+            // Détail des transactions
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Détail des Transactions', 20, yPosition);
+            yPosition += 15;
+
+            // Tableau des transactions avec largeurs ajustées
+            const tableHeaders = ['Date', 'Description', 'Type', 'Montant'];
+            const colWidths = [20, 100, 25, 35]; // Ajusté pour éviter les superpositions
+            const startX = 15;
+
+            // En-têtes du tableau avec fond doré
+            const totalTableWidth = colWidths.reduce((a, b) => a + b, 0);
+            doc.setFillColor(255, 215, 0);
+            doc.rect(startX, yPosition - 5, totalTableWidth, 10, 'F');
+            
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(0, 0, 0);
+            let xPosition = startX;
+            tableHeaders.forEach((header, index) => {
+                // Centrer le texte dans chaque colonne
+                const textWidth = doc.getTextWidth(header);
+                const centerX = xPosition + (colWidths[index] / 2) - (textWidth / 2);
+                doc.text(header, centerX, yPosition);
+                xPosition += colWidths[index];
+            });
+            yPosition += 8;
+
+            // Ligne de séparation dorée
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(0.5);
+            doc.line(startX, yPosition, startX + totalTableWidth, yPosition);
+            yPosition += 5;
+
+            // Données du tableau avec alternance de couleurs
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            filteredTransactions.forEach((transaction, index) => {
+                // Vérifier si on a besoin d'une nouvelle page
+                if (yPosition > pageHeight - 50) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+
+                // Alternance de couleurs pour les lignes
+                if (index % 2 === 0) {
+                    doc.setFillColor(248, 248, 248);
+                    doc.rect(startX, yPosition - 3, totalTableWidth, 6, 'F');
+                }
+
+                // Préparer les données avec troncature si nécessaire
+                const dateStr = new Date(transaction.date).toLocaleDateString('fr-FR');
+                const description = transaction.description.length > 35 
+                    ? transaction.description.substring(0, 35) + '...' 
+                    : transaction.description;
+                const typeStr = transaction.category === 'revenue' ? 'Revenu' : 'Dépense';
+                const amountStr = `${transaction.amount.toLocaleString()} FCFA`;
+
+                const rowData = [dateStr, description, typeStr, amountStr];
+
+                doc.setTextColor(0, 0, 0);
+                xPosition = startX;
+                rowData.forEach((data, colIndex) => {
+                    // Ajuster la position pour éviter les superpositions
+                    const textX = xPosition + 1;
+                    doc.text(data, textX, yPosition);
+                    xPosition += colWidths[colIndex];
+                });
+
+                yPosition += 6;
+            });
+
+            // Pied de page stylé
+            yPosition = pageHeight - 30;
+            
+            // Ligne de séparation dorée
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(0.5);
+            doc.line(20, yPosition, pageWidth - 20, yPosition);
+            yPosition += 10;
+            
+            // Informations de l'agence
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(255, 215, 0);
+            doc.text('PERFECT MODEL AGENCY', pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 5;
+            
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 100, 100);
+            doc.text('Agence de Mannequins Professionnelle', pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += 4;
+            doc.text('Rapport Comptable - Document Officiel', pageWidth / 2, yPosition, { align: 'center' });
+
+            // Télécharger le PDF
+            const fileName = `rapport_bilan_${selectedPeriod}_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
+
+            alert(`Rapport de bilan généré avec succès: ${fileName}`);
+        } catch (error) {
+            console.error('Erreur lors de la génération du rapport:', error);
+            alert('Erreur lors de la génération du rapport. Veuillez réessayer.');
+        }
     };
 
     return (
@@ -177,6 +521,15 @@ const AdminAccounting: React.FC = () => {
                         </Link>
                         <h1 className="admin-page-title">Livre Comptable</h1>
                         <p className="admin-page-subtitle">Gestion des revenus, dépenses et génération de rapports</p>
+                        <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                            <p className="text-blue-300 text-sm">
+                                💡 <strong>Note :</strong> Pour enregistrer les paiements des mannequins, utilisez la page 
+                                <Link to="/admin/payments" className="text-blue-400 hover:text-blue-300 underline ml-1">
+                                    Gestion des Paiements
+                                </Link>
+                                . Les paiements sont automatiquement synchronisés avec le livre comptable.
+                            </p>
+                        </div>
                     </div>
                     <div className="flex gap-4">
                         <button
@@ -270,7 +623,6 @@ const AdminAccounting: React.FC = () => {
                 <div className="admin-section-wrapper">
                     <div className="flex border-b border-pm-gold/20 mb-6">
                         {[
-                            { id: 'payments', label: 'Paiements', icon: CurrencyDollarIcon },
                             { id: 'transactions', label: 'Transactions', icon: BanknotesIcon },
                             { id: 'balance', label: 'Bilan', icon: ChartBarIcon },
                             { id: 'reports', label: 'Rapports', icon: DocumentArrowDownIcon }
@@ -291,132 +643,6 @@ const AdminAccounting: React.FC = () => {
                     </div>
 
                     {/* Contenu des onglets */}
-                    {activeTab === 'payments' && (
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h3 className="text-xl font-bold text-pm-gold mb-2">Gestion des Paiements</h3>
-                                    <p className="text-pm-off-white/60">Enregistrez facilement les cotisations et inscriptions des mannequins</p>
-                                </div>
-                                <button
-                                    onClick={() => setShowPaymentForm(true)}
-                                    className="action-btn bg-pm-gold text-pm-dark hover:bg-white"
-                                >
-                                    <PlusIcon className="w-5 h-5" />
-                                    Nouveau Paiement
-                                </button>
-                            </div>
-
-                            {/* Statistiques rapides */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="bg-green-500/10 border border-green-500/20 p-6 rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <CurrencyDollarIcon className="w-8 h-8 text-green-400" />
-                                        <div>
-                                            <p className="text-green-400/60 text-sm">Cotisations ce mois</p>
-                                            <p className="text-2xl font-bold text-green-400">
-                                                {filteredTransactions
-                                                    .filter(t => t.subcategory === 'Cotisations Mannequins')
-                                                    .reduce((sum, t) => sum + t.amount, 0)
-                                                    .toLocaleString()} FCFA
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="bg-blue-500/10 border border-blue-500/20 p-6 rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <CreditCardIcon className="w-8 h-8 text-blue-400" />
-                                        <div>
-                                            <p className="text-blue-400/60 text-sm">Inscriptions ce mois</p>
-                                            <p className="text-2xl font-bold text-blue-400">
-                                                {filteredTransactions
-                                                    .filter(t => t.subcategory === 'Inscriptions')
-                                                    .reduce((sum, t) => sum + t.amount, 0)
-                                                    .toLocaleString()} FCFA
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Liste des mannequins pour paiements rapides */}
-                            <div className="bg-black/50 p-6 rounded-lg border border-pm-gold/20">
-                                <h4 className="text-lg font-semibold text-pm-gold mb-4">Enregistrer un Paiement</h4>
-                                <p className="text-pm-off-white/60 mb-6">Cliquez sur un mannequin pour enregistrer rapidement une cotisation ou inscription</p>
-                                
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                                    {allModels.map(model => (
-                                        <div key={model.id} className="bg-pm-dark/30 p-4 rounded-lg border border-pm-gold/10 hover:border-pm-gold/30 transition-colors">
-                                            <div className="flex items-center justify-between mb-3">
-                                                <h5 className="font-semibold text-pm-off-white">{model.name}</h5>
-                                                <span className="text-xs text-pm-off-white/60">#{model.username}</span>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedModel(model.id);
-                                                        setPaymentType('cotisation');
-                                                        setPaymentAmount(50000); // Montant par défaut
-                                                        setShowPaymentForm(true);
-                                                    }}
-                                                    className="flex-1 px-3 py-2 bg-green-500/20 text-green-300 border border-green-500/30 rounded text-sm hover:bg-green-500/30 transition-colors"
-                                                >
-                                                    Cotisation
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedModel(model.id);
-                                                        setPaymentType('inscription');
-                                                        setPaymentAmount(25000); // Montant par défaut
-                                                        setShowPaymentForm(true);
-                                                    }}
-                                                    className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded text-sm hover:bg-blue-500/30 transition-colors"
-                                                >
-                                                    Inscription
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Liste des paiements récents */}
-                            <div className="bg-black/50 p-6 rounded-lg border border-pm-gold/20">
-                                <h4 className="text-lg font-semibold text-pm-gold mb-4">Paiements Récents</h4>
-                                <div className="space-y-3">
-                                    {filteredTransactions
-                                        .filter(t => t.subcategory === 'Cotisations Mannequins' || t.subcategory === 'Inscriptions')
-                                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                                        .slice(0, 10)
-                                        .map(transaction => (
-                                            <div key={transaction.id} className="flex justify-between items-center p-4 bg-pm-dark/30 rounded-lg">
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`w-3 h-3 rounded-full ${
-                                                        transaction.subcategory === 'Cotisations Mannequins' ? 'bg-green-400' : 'bg-blue-400'
-                                                    }`}></div>
-                                                    <div>
-                                                        <p className="font-medium text-pm-off-white">{transaction.relatedModelName}</p>
-                                                        <p className="text-sm text-pm-off-white/60">{transaction.subcategory}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="font-bold text-pm-gold">{transaction.amount.toLocaleString()} FCFA</p>
-                                                    <p className="text-sm text-pm-off-white/60">{transaction.date}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    
-                                    {filteredTransactions.filter(t => t.subcategory === 'Cotisations Mannequins' || t.subcategory === 'Inscriptions').length === 0 && (
-                                        <div className="text-center py-8">
-                                            <CurrencyDollarIcon className="w-16 h-16 text-pm-gold/30 mx-auto mb-4" />
-                                            <p className="text-pm-off-white/60">Aucun paiement enregistré pour cette période</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     {activeTab === 'transactions' && (
                         <div className="space-y-4">
@@ -556,95 +782,23 @@ const AdminAccounting: React.FC = () => {
                                             Générer un PDF avec toutes les inscriptions et frais d'inscription.
                                         </p>
                                     </button>
+                                    
+                                    <button
+                                        onClick={generateBalanceReportPDF}
+                                        className="p-6 bg-purple-500/10 border border-purple-500/20 rounded-lg hover:bg-purple-500/20 transition-colors text-left"
+                                    >
+                                        <ChartBarIcon className="w-8 h-8 text-purple-400 mb-3" />
+                                        <h4 className="text-lg font-semibold text-purple-400 mb-2">Rapport de Bilan</h4>
+                                        <p className="text-pm-off-white/60 text-sm">
+                                            Générer un rapport complet avec revenus, dépenses et bénéfice net.
+                                        </p>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Formulaire de paiement simplifié */}
-                {showPaymentForm && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-pm-dark border border-pm-gold/20 rounded-lg p-8 max-w-md w-full">
-                            <h3 className="text-2xl font-bold text-pm-gold mb-6">Nouveau Paiement</h3>
-                            
-                            <form onSubmit={handlePaymentSubmit} className="space-y-4">
-                                <div>
-                                    <label className="admin-label">Mannequin</label>
-                                    <select
-                                        value={selectedModel}
-                                        onChange={(e) => setSelectedModel(e.target.value)}
-                                        className="admin-input"
-                                        required
-                                    >
-                                        <option value="">Sélectionner un mannequin</option>
-                                        {allModels.map(model => (
-                                            <option key={model.id} value={model.id}>
-                                                {model.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {selectedModel && (
-                                        <p className="text-sm text-pm-gold/80 mt-1">
-                                            Sélectionné: {allModels.find(m => m.id === selectedModel)?.name}
-                                        </p>
-                                    )}
-                                </div>
-                                
-                                <div>
-                                    <label className="admin-label">Type de paiement</label>
-                                    <select
-                                        value={paymentType}
-                                        onChange={(e) => setPaymentType(e.target.value as 'cotisation' | 'inscription')}
-                                        className="admin-input"
-                                        required
-                                    >
-                                        <option value="cotisation">Cotisation</option>
-                                        <option value="inscription">Inscription</option>
-                                    </select>
-                                    <div className={`mt-2 p-2 rounded text-sm ${
-                                        paymentType === 'cotisation' 
-                                            ? 'bg-green-500/10 text-green-300 border border-green-500/20' 
-                                            : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
-                                    }`}>
-                                        {paymentType === 'cotisation' 
-                                            ? '💚 Cotisation mensuelle des mannequins' 
-                                            : '💙 Frais d\'inscription pour nouveaux mannequins'
-                                        }
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label className="admin-label">Montant (FCFA)</label>
-                                    <input
-                                        type="number"
-                                        value={paymentAmount}
-                                        onChange={(e) => setPaymentAmount(parseFloat(e.target.value) || 0)}
-                                        className="admin-input"
-                                        placeholder="0"
-                                        required
-                                    />
-                                </div>
-                                
-                                <div className="flex justify-end gap-4 pt-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPaymentForm(false)}
-                                        className="px-6 py-2 border border-pm-gold/50 text-pm-gold rounded-lg hover:bg-pm-gold/10 transition-colors"
-                                    >
-                                        Annuler
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="px-6 py-2 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-white transition-colors"
-                                    >
-                                        Enregistrer
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
 
                 {/* Formulaire de nouvelle transaction */}
                 {showTransactionForm && (

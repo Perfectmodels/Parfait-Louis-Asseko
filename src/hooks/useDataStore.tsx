@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, AdminPermission } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, AdminPermission, PaymentSubmission, Album, AccountingCategory, AccountingTransaction, PaymentList, TeamMember } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -40,7 +40,9 @@ import {
     defaultAccountingCategories as initialAccountingCategories,
     defaultAccountingTransactions as initialAccountingTransactions,
     defaultAdminUsers as initialAdminUsers,
-    defaultAdminPermissions as initialAdminPermissions
+    defaultAdminPermissions as initialAdminPermissions,
+    defaultAlbums as initialAlbums,
+    defaultTeamMembers as initialTeamMembers
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -90,6 +92,9 @@ export interface AppData {
     paymentLists: PaymentList[];
     adminUsers: AdminUser[];
     adminPermissions: AdminPermission[];
+    paymentSubmissions: PaymentSubmission[];
+    albums: Album[];
+    teamMembers: TeamMember[];
 }
 
 export const useDataStore = () => {
@@ -136,6 +141,9 @@ export const useDataStore = () => {
         paymentLists: [],
         adminUsers: initialAdminUsers,
         adminPermissions: initialAdminPermissions,
+        paymentSubmissions: [],
+        albums: initialAlbums,
+        teamMembers: initialTeamMembers,
     }), []);
     
     useEffect(() => {

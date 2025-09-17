@@ -6,7 +6,7 @@ import SEO from '../components/SEO';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
+import ImageUpload from '../components/ImageUpload';
 
 type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData' | 'beginnerCourseData' | 'beginnerStudents' | 'castingApplications' | 'fashionDayApplications' | 'newsItems' | 'forumThreads' | 'forumReplies' | 'articleComments' | 'recoveryRequests' | 'bookingRequests' | 'contactMessages' | 'juryMembers' | 'registrationStaff' >;
 
@@ -74,14 +74,63 @@ const AdminSettings: React.FC = () => {
 
                     <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Images du Site</h2>
-                        <div className="space-y-4">
-                            <ImageInput label="Logo" value={localData.siteConfig.logo} onChange={value => handleSimpleChange('siteConfig', 'logo', value)} />
-                            <ImageInput label="Image Héros (Accueil)" value={localData.siteImages.hero} onChange={value => handleSimpleChange('siteImages', 'hero', value)} />
-                            <ImageInput label="Image 'À Propos' (Accueil)" value={localData.siteImages.about} onChange={value => handleSimpleChange('siteImages', 'about', value)} />
-                            <ImageInput label="Fond 'Fashion Day' (Accueil)" value={localData.siteImages.fashionDayBg} onChange={value => handleSimpleChange('siteImages', 'fashionDayBg', value)} />
-                            <ImageInput label="Image 'Notre Histoire' (Agence)" value={localData.siteImages.agencyHistory} onChange={value => handleSimpleChange('siteImages', 'agencyHistory', value)} />
-                            <ImageInput label="Fond 'Classroom'" value={localData.siteImages.classroomBg} onChange={value => handleSimpleChange('siteImages', 'classroomBg', value)} />
-                            <ImageInput label="Affiche 'Casting'" value={localData.siteImages.castingBg} onChange={value => handleSimpleChange('siteImages', 'castingBg', value)} />
+                        <div className="space-y-6">
+                            <div>
+                                <label className="admin-label">Logo</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteConfig.logo} 
+                                    onImageUploaded={value => handleSimpleChange('siteConfig', 'logo', value)}
+                                    placeholder="Cliquez pour uploader le logo"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Image Héros (Accueil)</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.hero} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'hero', value)}
+                                    placeholder="Cliquez pour uploader l'image héros"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Image 'À Propos' (Accueil)</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.about} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'about', value)}
+                                    placeholder="Cliquez pour uploader l'image à propos"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Fond 'Fashion Day' (Accueil)</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.fashionDayBg} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'fashionDayBg', value)}
+                                    placeholder="Cliquez pour uploader le fond Fashion Day"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Image 'Notre Histoire' (Agence)</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.agencyHistory} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'agencyHistory', value)}
+                                    placeholder="Cliquez pour uploader l'image histoire"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Fond 'Classroom'</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.classroomBg} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'classroomBg', value)}
+                                    placeholder="Cliquez pour uploader le fond classroom"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Affiche 'Casting'</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.castingBg} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'castingBg', value)}
+                                    placeholder="Cliquez pour uploader l'affiche casting"
+                                />
+                            </div>
                         </div>
                     </div>
                     
@@ -121,7 +170,14 @@ const AdminSettings: React.FC = () => {
                                     <>
                                         <FormInput label="Nom" value={item.name} onChange={e => onChange('name', e.target.value)} />
                                         <FormInput label="Rôle" value={item.role} onChange={e => onChange('role', e.target.value)} />
-                                        <ImageInput label="Photo" value={item.imageUrl} onChange={value => onChange('imageUrl', value)} />
+                                        <div>
+                                            <label className="admin-label">Photo</label>
+                                            <ImageUpload 
+                                                currentImage={item.imageUrl} 
+                                                onImageUploaded={value => onChange('imageUrl', value)}
+                                                placeholder="Cliquez pour uploader la photo"
+                                            />
+                                        </div>
                                         <FormTextArea 
                                             label="Citation" 
                                             value={item.quote} 

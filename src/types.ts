@@ -48,14 +48,34 @@ export interface PaymentStatus {
   paymentMethod?: string;
   notes?: string;
   warnings?: PaymentWarning[];
+  paymentType?: 'cotisation' | 'inscription' | 'avance' | 'cotisation_inscription';
+  description?: string;
 }
 
 export interface PaymentWarning {
   id: string;
   type: 'overdue' | 'reminder' | 'final_notice';
+  title: string;
   message: string;
   date: string;
   isRead: boolean;
+}
+
+export interface PaymentSubmission {
+  id: string;
+  modelId: string;
+  modelName: string;
+  amount: number;
+  currency: string;
+  paymentType: 'cotisation' | 'inscription' | 'avance' | 'cotisation_inscription';
+  description: string;
+  paymentMethod: string;
+  notes: string;
+  submittedAt: string;
+  status: 'pending' | 'approved' | 'rejected';
+  adminNotes?: string;
+  approvedAt?: string;
+  approvedBy?: string;
 }
 
 export interface BeginnerStudent {
@@ -73,6 +93,7 @@ export interface BeginnerStudent {
   };
   lastLogin?: string;
   lastActivity?: string;
+  paymentStatus?: PaymentStatus;
 }
 
 export interface Stylist {
@@ -221,6 +242,7 @@ export interface ApiKeys {
     domainUriPrefix: string;
   };
   imgbbApiKey?: string;
+  geminiApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -497,4 +519,56 @@ export interface AdminPermission {
   description: string;
   category: 'models' | 'content' | 'accounting' | 'system' | 'reports';
   actions: string[]; // ['read', 'write', 'delete', 'export']
+}
+
+export interface Photo {
+  id: string;
+  url: string;
+  title?: string;
+  description?: string;
+  alt?: string;
+  uploadedAt: string;
+  uploadedBy: string;
+  tags?: string[];
+  featured?: boolean;
+}
+
+export interface Album {
+  id: string;
+  title: string;
+  description: string;
+  theme: string;
+  coverImage: string;
+  photos: Photo[];
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  isPublic: boolean;
+  featured?: boolean;
+  tags?: string[];
+  location?: string;
+  date?: string;
+  models?: string[]; // IDs des mannequins présents
+  stylists?: string[];
+  photographers?: string[];
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  position: string;
+  role: 'founder' | 'director' | 'trainer' | 'stylist' | 'photographer' | 'coordinator' | 'other';
+  description: string;
+  imageUrl?: string;
+  email?: string;
+  phone?: string;
+  socialLinks?: {
+    linkedin?: string;
+    instagram?: string;
+    facebook?: string;
+  };
+  isPublic: boolean;
+  order: number; // Pour l'ordre d'affichage
+  createdAt: string;
+  updatedAt: string;
 }

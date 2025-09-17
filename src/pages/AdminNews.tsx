@@ -4,7 +4,7 @@ import { NewsItem } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
+import ImageUpload from '../components/ImageUpload';
 import AIAssistant from '../components/AIAssistant';
 
 const AdminNews: React.FC = () => {
@@ -172,7 +172,14 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
                                 label="Titre" name="title" value={formData.title} onChange={handleChange} 
                                 onAIAssist={() => openAssistant('Titre', `Génère un titre d'actualité percutant sur le thème: "${formData.title || 'nouveau sujet'}"`)}
                             />
-                            <ImageInput label="Image" value={formData.imageUrl} onChange={handleImageChange} />
+                            <div>
+                                <label className="admin-label">Image</label>
+                                <ImageUpload 
+                                    currentImage={formData.imageUrl} 
+                                    onImageUploaded={handleImageChange}
+                                    placeholder="Cliquez pour uploader l'image de l'actualité"
+                                />
+                            </div>
                             <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
                             <FormTextArea 
                                 label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
