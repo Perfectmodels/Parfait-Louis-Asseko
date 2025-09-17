@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { CloudArrowUpIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import imageCompression from 'browser-image-compression';
 
 interface ImageUploadProps {
   onImageUploaded: (imageUrl: string) => void;
@@ -26,18 +27,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   };
 
-  // Fonction pour compresser l'image via l'API TinyPNG (backend local)
-  async function compressImageWithTinyPng(file: File): Promise<Blob> {
-    const formData = new FormData();
-    formData.append('image', file);
-    const response = await fetch('http://localhost:3001/api/compress-image', {
-      method: 'POST',
-      body: formData
-    });
-    if (!response.ok) throw new Error('Compression échouée');
-    return await response.blob();
-  }
-
   const uploadImage = async (file: File) => {
     setIsUploading(true);
     setUploadError(null);
@@ -53,21 +42,21 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         throw new Error('Veuillez sélectionner un fichier image valide');
       }
 
-      // Compresser l'image via TinyPNG (API backend)
-      let compressedBlob: Blob;
-      try {
-        compressedBlob = await compressImageWithTinyPng(file);
-      } catch (err) {
-        // Si la compression échoue, fallback sur l'image originale
-        console.warn('Compression TinyPNG échouée, upload de l\'original:', err);
-        compressedBlob = file;
-      }
-      const compressedFile = new File([compressedBlob], file.name, { type: compressedBlob.type || file.type });
+      // Options de compression
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true
+      };
+      
+      console.log(`Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+      const compressedFile = await imageCompression(file, options);
+      console.log(`Compressed size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
 
-      // Créer FormData pour ImgBB
+      // Créer FormData
       const formData = new FormData();
       formData.append('image', compressedFile);
-      formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614');
+      formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614'); // Clé ImgBB
 
       // Upload vers ImgBB
       const response = await fetch('https://api.imgbb.com/1/upload', {
