@@ -61,8 +61,23 @@ const AdminAccounting: React.FC = () => {
         e.preventDefault();
         if (!data || !newTransaction.description || !newTransaction.amount) return;
 
+        // --- Prévention des doublons ---
+        const isDuplicate = transactions.some(t => 
+            t.description.toLowerCase() === newTransaction.description?.toLowerCase() &&
+            t.amount === newTransaction.amount &&
+            t.date === newTransaction.date
+        );
+
+        if (isDuplicate) {
+            if (!window.confirm("Une transaction très similaire existe déjà à cette date. Êtes-vous sûr de vouloir l'ajouter quand même ?")) {
+                return; // Annuler si l'utilisateur ne confirme pas
+            }
+        }
+
+        const transactionId = `trans-${newTransaction.category}-${newTransaction.date}-${Date.now()}`;
+
         const transaction: AccountingTransaction = {
-            id: `trans-${Date.now()}`,
+            id: transactionId,
             date: newTransaction.date || new Date().toISOString().split('T')[0],
             description: newTransaction.description,
             category: newTransaction.category || 'revenue',
@@ -839,7 +854,7 @@ const AdminAccounting: React.FC = () => {
                                         value={newTransaction.description}
                                         onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})}
                                         className="admin-input"
-                                        placeholder="Description de la transaction"
+                                        placeholder="Ex: Cotisation - Nom Mannequin"
                                         required
                                     />
                                 </div>
@@ -899,7 +914,7 @@ const AdminAccounting: React.FC = () => {
                                             value={newTransaction.reference}
                                             onChange={(e) => setNewTransaction({...newTransaction, reference: e.target.value})}
                                             className="admin-input"
-                                            placeholder="Numéro de facture, référence..."
+                                            placeholder="Ex: INV-2024-001, Nom Mannequin"
                                         />
                                     </div>
                                 </div>

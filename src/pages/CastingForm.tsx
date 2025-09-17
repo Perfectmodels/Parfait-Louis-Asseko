@@ -6,6 +6,32 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
+import ImageUpload from '../components/ImageUpload'; // Importer le composant
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+
+const ApplicationGuide: React.FC = () => (
+    <div className="bg-pm-dark/50 border border-pm-gold/20 p-6 rounded-lg mb-12 shadow-inner">
+        <div className="flex items-start gap-4">
+            <InformationCircleIcon className="w-8 h-8 text-pm-gold mt-1 flex-shrink-0" />
+            <div>
+                <h2 className="text-xl font-playfair text-pm-gold mb-3">Avant de commencer, lisez attentivement :</h2>
+                <p className="text-pm-off-white/80 mb-4 text-sm">Pour que votre candidature soit considérée, vous devez remplir les critères suivants. Assurez-vous d'avoir des photos naturelles (polas) prêtes.</p>
+                <ul className="list-disc list-inside space-y-2 text-pm-off-white/90 text-sm">
+                    <li><span className="font-semibold">Âge :</span> Ouvert aux candidats de 16 à 25 ans.</li>
+                    <li><span className="font-semibold">Taille minimale :</span> 175cm pour les femmes, 180cm pour les hommes.</li>
+                    <li><span className="font-semibold">Photos :</span> Des photos récentes, sans maquillage, sans filtres et sur fond neutre sont requises.
+                        <ul className="list-['-_'] list-inside ml-4 mt-1 text-pm-off-white/70">
+                            <li>Un portrait (visage et épaules)</li>
+                            <li>Une photo en pied (corps entier)</li>
+                            <li>Une photo de profil</li>
+                        </ul>
+                    </li>
+                    <li><span className="font-semibold">Attitude :</span> Nous recherchons des personnes sérieuses, motivées et professionnelles.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+);
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -14,11 +40,20 @@ const CastingForm: React.FC = () => {
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
         eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
     });
+    const [photoUrls, setPhotoUrls] = useState({
+        portrait: null,
+        fullBody: null,
+        profile: null,
+    });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handlePhotoUpload = (field: 'portrait' | 'fullBody' | 'profile') => (url: string) => {
+        setPhotoUrls(prev => ({ ...prev, [field]: url }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -36,11 +71,17 @@ const CastingForm: React.FC = () => {
             id: `casting-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
+            photoPortraitUrl: photoUrls.portrait,
+            photoFullBodyUrl: photoUrls.fullBody,
+            photoProfileUrl: photoUrls.profile,
         };
 
         try {
             const updatedApplications = [...(data.castingApplications || []), newApplication];
             await saveData({ ...data, castingApplications: updatedApplications });
+            
+            // Envoyer la notification par e-mail
+            await sendEmailNotification(newApplication, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');
@@ -49,6 +90,7 @@ const CastingForm: React.FC = () => {
                 gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
                 eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
             });
+            setPhotoUrls({ portrait: null, fullBody: null, profile: null }); // Reset photos
 
         } catch (error) {
             setStatus('error');
@@ -65,6 +107,9 @@ const CastingForm: React.FC = () => {
                 <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
                     Remplissez ce formulaire avec attention. C'est votre première étape pour peut-être nous rejoindre.
                 </p>
+                
+                <ApplicationGuide />
+
                 <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-8 rounded-lg shadow-lg">
                     <Section title="Informations Personnelles">
                         <div className="grid md:grid-cols-2 gap-6">
@@ -116,9 +161,27 @@ const CastingForm: React.FC = () => {
                             <FormInput label="Profil Instagram" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="@pseudo" />
                             <FormInput label="Lien vers portfolio (optionnel)" name="portfolioLink" value={formData.portfolioLink} onChange={handleChange} />
                         </div>
-                        <p className="text-sm text-pm-off-white/60 bg-pm-dark/50 p-3 rounded-md border border-pm-off-white/10">
-                            Note : Pour simplifier cette première étape, nous ne demandons pas de photos immédiatement. Si votre profil est présélectionné, nous vous contacterons par email pour vous demander de nous envoyer vos polas (photos naturelles).
-                        </p>
+                        <div className="space-y-6 pt-4">
+                            <h3 className="text-lg font-semibold text-pm-off-white/90">Photos Requises</h3>
+                            <p className="text-sm text-pm-off-white/60">Veuillez soumettre des photos récentes, claires et non retouchées (polas).</p>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <ImageUpload
+                                    label="Photo Portrait (visage)"
+                                    onUploadComplete={handlePhotoUpload('portrait')}
+                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                />
+                                <ImageUpload
+                                    label="Photo Plein Pied"
+                                    onUploadComplete={handlePhotoUpload('fullBody')}
+                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                />
+                                <ImageUpload
+                                    label="Photo de Profil"
+                                    onUploadComplete={handlePhotoUpload('profile')}
+                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                />
+                            </div>
+                        </div>
                     </Section>
 
                     <div className="pt-6">
@@ -160,3 +223,93 @@ const FormSelect: React.FC<{label: string, name: string, value: string, onChange
 );
 
 export default CastingForm;
+
+async function sendEmailNotification(application: CastingApplication, apiKey?: string, notificationEmail?: string) {
+    if (!apiKey || !notificationEmail) {
+        console.warn("Brevo API key or notification email is not configured. Skipping email notification.");
+        return;
+    }
+
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h1 style="color: #D4AF37;">Nouvelle Candidature au Casting</h1>
+            <p>Une nouvelle candidature a été soumise via le formulaire du site.</p>
+            
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Informations Personnelles</h2>
+            <ul>
+                <li><strong>Nom:</strong> ${application.firstName} ${application.lastName}</li>
+                <li><strong>Date de naissance:</strong> ${application.birthDate}</li>
+                <li><strong>Email:</strong> ${application.email}</li>
+                <li><strong>Téléphone:</strong> ${application.phone}</li>
+                <li><strong>Nationalité:</strong> ${application.nationality}</li>
+                <li><strong>Ville:</strong> ${application.city}</li>
+            </ul>
+
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Mensurations & Physique</h2>
+            <ul>
+                <li><strong>Genre:</strong> ${application.gender}</li>
+                <li><strong>Taille:</strong> ${application.height} cm</li>
+                <li><strong>Poids:</strong> ${application.weight} kg</li>
+                <li><strong>Poitrine:</strong> ${application.chest} cm</li>
+                <li><strong>Taille (vêtement):</strong> ${application.waist} cm</li>
+                <li><strong>Hanches:</strong> ${application.hips} cm</li>
+                <li><strong>Pointure:</strong> ${application.shoeSize}</li>
+                <li><strong>Couleur des yeux:</strong> ${application.eyeColor}</li>
+                <li><strong>Couleur des cheveux:</strong> ${application.hairColor}</li>
+            </ul>
+
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Expérience & Portfolio</h2>
+            <ul>
+                <li><strong>Expérience:</strong> ${application.experience}</li>
+                <li><strong>Instagram:</strong> <a href="https://instagram.com/${application.instagram.replace('@', '')}">${application.instagram}</a></li>
+                <li><strong>Portfolio:</strong> <a href="${application.portfolioLink}">${application.portfolioLink}</a></li>
+            </ul>
+            
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Photos Soumises</h2>
+            <p>
+                <a href="${application.photoPortraitUrl}">Voir le portrait</a> | 
+                <a href="${application.photoFullBodyUrl}">Voir la photo plein pied</a> | 
+                <a href="${application.photoProfileUrl}">Voir la photo de profil</a>
+            </p>
+
+            <hr>
+            <p style="font-size: 0.8em; color: #888;">Cet e-mail a été envoyé automatiquement depuis le site Perfect Models Management.</p>
+        </div>
+    `;
+
+    const emailData = {
+        sender: {
+            name: "PMM Site Web",
+            email: "noreply@perfectmodels.ga"
+        },
+        to: [
+            {
+                email: notificationEmail,
+                name: "Admin PMM"
+            }
+        ],
+        subject: `Nouvelle Candidature Casting: ${application.firstName} ${application.lastName}`,
+        htmlContent: emailHtml
+    };
+
+    try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': apiKey
+            },
+            body: JSON.stringify(emailData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Erreur API Brevo: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+        }
+
+        console.log("Email de notification envoyé avec succès !");
+
+    } catch (error) {
+        console.error("Erreur lors de l'envoi de l'e-mail de notification:", error);
+    }
+}

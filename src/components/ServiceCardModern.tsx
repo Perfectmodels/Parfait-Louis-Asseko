@@ -107,7 +107,7 @@ const ServiceCardModern: React.FC<ServiceCardModernProps> = ({ service, onQuickV
 
   return (
     <div 
-      className="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-pm-gold/30"
+      className="group relative bg-black/40 backdrop-blur-sm rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-pm-gold/20 hover:border-pm-gold/40"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -122,10 +122,10 @@ const ServiceCardModern: React.FC<ServiceCardModernProps> = ({ service, onQuickV
               {getServiceIcon(service)}
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 group-hover:text-pm-gold transition-colors duration-300">
+              <h3 className="text-xl font-bold text-pm-off-white group-hover:text-pm-gold transition-colors duration-300">
                 {service.title}
               </h3>
-              <p className="text-sm text-gray-500 font-medium">
+              <p className="text-sm text-pm-off-white/70 font-medium">
                 {service.category || 'Service Premium'}
               </p>
             </div>
@@ -134,29 +134,29 @@ const ServiceCardModern: React.FC<ServiceCardModernProps> = ({ service, onQuickV
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsFavorited(!isFavorited)}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              className="p-2 rounded-full hover:bg-pm-gold/20 transition-colors duration-200"
             >
               {isFavorited ? (
                 <HeartIconSolid className="w-5 h-5 text-red-500" />
               ) : (
-                <HeartIcon className="w-5 h-5 text-gray-400 hover:text-red-500" />
+                <HeartIcon className="w-5 h-5 text-pm-off-white/60 hover:text-red-500" />
               )}
             </button>
             
             <div className="flex items-center gap-1">
-              <StarIconSolid className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-semibold text-gray-700">4.9</span>
+              <StarIconSolid className="w-4 h-4 text-pm-gold" />
+              <span className="text-sm font-semibold text-pm-off-white">4.9</span>
             </div>
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3">
+        <p className="text-pm-off-white/80 leading-relaxed mb-4 line-clamp-3">
           {service.description}
         </p>
 
         {/* Features */}
-        <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+        <div className="flex items-center gap-4 text-sm text-pm-off-white/60 mb-4">
           <div className="flex items-center gap-1">
             <ClockIcon className="w-4 h-4" />
             <span>2-4h</span>
@@ -177,7 +177,7 @@ const ServiceCardModern: React.FC<ServiceCardModernProps> = ({ service, onQuickV
         <div className="flex items-center justify-between mb-4">
           <div>
             <span className="text-3xl font-bold text-pm-gold">{formattedPrice}</span>
-            <span className="text-sm text-gray-500 ml-2">/session</span>
+            <span className="text-sm text-pm-off-white/60 ml-2">/session</span>
           </div>
           
           {inCart && (
@@ -192,19 +192,19 @@ const ServiceCardModern: React.FC<ServiceCardModernProps> = ({ service, onQuickV
         <div className="flex gap-3">
           {showQuantitySelector || inCart ? (
             <div className="flex items-center gap-3 flex-1">
-              <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2">
+              <div className="flex items-center gap-2 bg-pm-gold/10 rounded-full px-3 py-2">
                 <button
                   onClick={() => handleQuantityChange(quantity - 1)}
-                  className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                  className="p-1 rounded-full hover:bg-pm-gold/20 transition-colors"
                 >
-                  <MinusIcon className="w-4 h-4 text-gray-600" />
+                  <MinusIcon className="w-4 h-4 text-pm-off-white" />
                 </button>
-                <span className="font-semibold text-gray-900 min-w-[20px] text-center">{quantity}</span>
+                <span className="font-semibold text-pm-off-white min-w-[20px] text-center">{quantity}</span>
                 <button
                   onClick={() => handleQuantityChange(quantity + 1)}
-                  className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                  className="p-1 rounded-full hover:bg-pm-gold/20 transition-colors"
                 >
-                  <PlusIcon className="w-4 h-4 text-gray-600" />
+                  <PlusIcon className="w-4 h-4 text-pm-off-white" />
                 </button>
               </div>
               
@@ -229,7 +229,7 @@ const ServiceCardModern: React.FC<ServiceCardModernProps> = ({ service, onQuickV
               {onQuickView && (
                 <button
                   onClick={() => onQuickView(service)}
-                  className="px-4 py-3 border-2 border-pm-gold text-pm-gold font-semibold rounded-xl hover:bg-pm-gold hover:text-white transition-all duration-300"
+                  className="px-4 py-3 border-2 border-pm-gold text-pm-gold font-semibold rounded-xl hover:bg-pm-gold hover:text-pm-dark transition-all duration-300"
                 >
                   Voir
                 </button>

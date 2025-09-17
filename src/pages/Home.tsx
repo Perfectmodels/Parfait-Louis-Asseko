@@ -327,7 +327,7 @@ const Home: React.FC = () => {
       <div className="page-container">
         {/* 2. Agency Presentation */}
         <section>
-            <div className="content-section">
+            <div className="bg-black/30 backdrop-blur-sm border border-pm-gold/20 p-6 sm:p-8 lg:p-10 rounded-lg">
                 <h2 className="section-title">Notre Agence</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center mt-8">
                     <div className="p-1 border-2 border-pm-gold/30 hover:border-pm-gold transition-all duration-300 rounded-lg">

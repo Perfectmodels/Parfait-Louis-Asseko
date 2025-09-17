@@ -84,6 +84,8 @@ const Contact: React.FC = () => {
                 const updatedMessages = [...(data.contactMessages || []), newContactMessage];
                 await saveData({ ...data, contactMessages: updatedMessages });
                 
+                await sendContactEmailNotification(newContactMessage, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
+
                 setStatus('success');
                 setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
             } else {
@@ -102,6 +104,8 @@ const Contact: React.FC = () => {
 
                 const updatedRequests = [...(data.bookingRequests || []), newBookingRequest];
                 await saveData({ ...data, bookingRequests: updatedRequests });
+                
+                await sendBookingEmailNotification(newBookingRequest, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
                 
                 setStatus('success');
                 setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');
@@ -134,7 +138,15 @@ const Contact: React.FC = () => {
             />
 
             {/* Hero Section */}
-            <section className="relative py-20 lg:py-32 overflow-hidden">
+            <section 
+                className="relative py-20 lg:py-32 overflow-hidden"
+                style={{ 
+                    backgroundImage: data?.siteImages?.contactHero ? `url(${data.siteImages.contactHero})` : undefined,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                }}
+            >
+                <div className="absolute inset-0 bg-black/60"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-pm-gold/10 via-transparent to-pm-gold/5"></div>
                 <div className="relative z-10 container mx-auto px-6">
                     <motion.div 
@@ -580,3 +592,100 @@ const FormSelect: React.FC<{
 );
 
 export default Contact;
+
+async function sendContactEmailNotification(message: ContactMessage, apiKey?: string, notificationEmail?: string) {
+    if (!apiKey || !notificationEmail) {
+        console.warn("Brevo API key or notification email is not configured.");
+        return;
+    }
+
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h1 style="color: #D4AF37;">Nouveau Message de Contact</h1>
+            <p>Vous avez reçu un nouveau message depuis le formulaire de contact du site.</p>
+            
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Détails du Message</h2>
+            <ul>
+                <li><strong>Nom:</strong> ${message.name}</li>
+                <li><strong>Email:</strong> ${message.email}</li>
+                <li><strong>Sujet:</strong> ${message.subject}</li>
+            </ul>
+            <h3 style="color: #D4AF37;">Message :</h3>
+            <p style="background-color: #f4f4f4; border-left: 4px solid #D4AF37; padding: 15px; white-space: pre-wrap;">${message.message}</p>
+            
+            <hr>
+            <p style="font-size: 0.8em; color: #888;">Cet e-mail a été envoyé automatiquement depuis le site Perfect Models Management.</p>
+        </div>
+    `;
+
+    const emailData = {
+        sender: { name: "PMM Site Web", email: "noreply@perfectmodels.ga" },
+        to: [{ email: notificationEmail, name: "Admin PMM" }],
+        subject: `Nouveau Message: ${message.subject}`,
+        htmlContent: emailHtml
+    };
+
+    try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
+            body: JSON.stringify(emailData)
+        });
+        if (!response.ok) throw new Error(`Erreur API Brevo: ${response.status}`);
+        console.log("Email de notification de contact envoyé !");
+    } catch (error) {
+        console.error("Erreur d'envoi de l'e-mail de contact:", error);
+    }
+}
+
+async function sendBookingEmailNotification(request: BookingRequest, apiKey?: string, notificationEmail?: string) {
+    if (!apiKey || !notificationEmail) {
+        console.warn("Brevo API key or notification email is not configured.");
+        return;
+    }
+
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h1 style="color: #D4AF37;">Nouvelle Demande de Booking</h1>
+            <p>Une nouvelle demande de booking a été soumise.</p>
+            
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Détails du Client</h2>
+            <ul>
+                <li><strong>Nom du client:</strong> ${request.clientName}</li>
+                <li><strong>Email:</strong> ${request.clientEmail}</li>
+                <li><strong>Société:</strong> ${request.clientCompany || 'Non spécifié'}</li>
+            </ul>
+
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Détails du Booking</h2>
+            <ul>
+                <li><strong>Mannequin(s) souhaité(s):</strong> ${request.requestedModels}</li>
+                <li><strong>Date de début:</strong> ${request.startDate || 'Non spécifié'}</li>
+                <li><strong>Date de fin:</strong> ${request.endDate || 'Non spécifié'}</li>
+            </ul>
+            <h3 style="color: #D4AF37;">Message du client :</h3>
+            <p style="background-color: #f4f4f4; border-left: 4px solid #D4AF37; padding: 15px; white-space: pre-wrap;">${request.message}</p>
+            
+            <hr>
+            <p style="font-size: 0.8em; color: #888;">Cet e-mail a été envoyé automatiquement depuis le site Perfect Models Management.</p>
+        </div>
+    `;
+
+    const emailData = {
+        sender: { name: "PMM Site Web", email: "noreply@perfectmodels.ga" },
+        to: [{ email: notificationEmail, name: "Admin PMM" }],
+        subject: `Nouvelle Demande de Booking: ${request.clientName}`,
+        htmlContent: emailHtml
+    };
+
+    try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
+            body: JSON.stringify(emailData)
+        });
+        if (!response.ok) throw new Error(`Erreur API Brevo: ${response.status}`);
+        console.log("Email de notification de booking envoyé !");
+    } catch (error) {
+        console.error("Erreur d'envoi de l'e-mail de booking:", error);
+    }
+}

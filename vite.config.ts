@@ -10,6 +10,9 @@ export default defineConfig({
       overlay: false
     }
   },
+  resolve: {
+    dedupe: ['react', 'react-dom']
+  },
   build: {
     rollupOptions: {
       output: {
