@@ -5,16 +5,25 @@ import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, PencilIcon, CheckCircleIcon, ExclamationTriangleIcon, ChevronDownIcon, ChevronUpIcon, XMarkIcon, FunnelIcon, ArrowUpIcon, ArrowDownIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { AccountingTransaction } from '../types';
 
-import PaymentStatusIndicator from '../components/PaymentStatusIndicator';
 
 const AdminPayments: React.FC = () => {
-  const { data, saveData } = useData();
+  const { data, saveData, isInitialized } = useData();
   const [selectedModel, setSelectedModel] = useState<any>(null);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [expandedModels, setExpandedModels] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<'name' | 'status' | 'lastPayment' | 'nextDue'>('status');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+
+  // Vérifier si les données sont initialisées
+  if (!isInitialized || !data) {
+    return (
+      <div className="min-h-screen bg-pm-dark flex flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold"></div>
+        <p className="text-pm-off-white/70 mt-4">Chargement des données de paiement...</p>
+      </div>
+    );
+  }
 
   // Récupérer tous les mannequins (Pro + Débutants unifiés)
   const allModels = [

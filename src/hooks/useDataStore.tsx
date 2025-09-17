@@ -3,6 +3,7 @@ import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Added NavLink to the import from types.ts to use the centralized definition.
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, AdminPermission, PaymentSubmission, Album, AccountingCategory, AccountingTransaction, PaymentList, TeamMember, ModelActivity, ModelPerformance, ModelTrackingData, SocialPost, SocialComment, SocialNotification, SocialUser } from '../types';
+import { syncModelAccessWithData } from '../data/modelAccess';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -186,11 +187,15 @@ export const useDataStore = () => {
                 
                 // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
-                setData(mergedData);
+                
+                // Synchroniser les mannequins du système centralisé
+                const syncedData = syncModelAccessWithData(mergedData);
+                setData(syncedData);
             } else {
                 // If DB is empty, seed it with initial data
-                set(dbRef, initialData).then(() => {
-                    setData(initialData);
+                const syncedInitialData = syncModelAccessWithData(initialData);
+                set(dbRef, syncedInitialData).then(() => {
+                    setData(syncedInitialData);
                     console.log("Firebase database seeded with initial data.");
                 }).catch(error => {
                     console.error("Error seeding database:", error);

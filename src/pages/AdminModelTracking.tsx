@@ -26,9 +26,10 @@ import { Model, ModelActivity, ModelPerformance, ModelTrackingData } from '../ty
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { getModelsWithRealActivity } from '../utils/modelTrackingUtils';
 
 const AdminModelTracking: React.FC = () => {
-  const { data, saveData } = useData();
+  const { data, saveData, isInitialized } = useData();
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'activities' | 'performance' | 'notes'>('overview');
   const [sortField, setSortField] = useState<'name' | 'overallScore' | 'lastLogin' | 'paymentCompliance'>('overallScore');
@@ -36,55 +37,42 @@ const AdminModelTracking: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Vérifier si les données sont initialisées
+  if (!isInitialized || !data) {
+    return (
+      <div className="min-h-screen bg-pm-dark flex flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold"></div>
+        <p className="text-pm-off-white/70 mt-4">Chargement des données de tracking...</p>
+      </div>
+    );
+  }
+
   // Récupérer tous les mannequins avec leurs données de suivi
   const allModels = useMemo(() => {
-    const models = [
-      ...(data?.models || []),
-      ...(data?.beginnerStudents?.map(student => ({
-        id: student.id,
-        name: student.name,
-        username: student.matricule || student.name.toLowerCase().replace(/\s+/g, ''),
-        level: 'Mannequin' as const,
-        imageUrl: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
-        lastLogin: student.lastLogin,
-        lastActivity: student.lastActivity,
-        paymentStatus: student.paymentStatus
-      })) || [])
-    ];
+    if (!data) return [];
+    
+    // Utiliser les vraies données d'activité
+    const modelsWithRealActivity = getModelsWithRealActivity(
+      data.models || [],
+      data.beginnerStudents || [],
+      data.modelActivities || []
+    );
 
-    return models.map(model => {
-      const trackingData = data?.modelTrackingData?.find(t => t.modelId === model.id);
-      const performance = data?.modelPerformances?.find(p => p.modelId === model.id);
-      const activities = data?.modelActivities?.filter(a => a.modelId === model.id) || [];
-
-      return {
-        ...model,
-        trackingData: trackingData || {
-          modelId: model.id,
-          activities: activities,
-          performance: performance || {
-            modelId: model.id,
-            totalQuizAttempts: 0,
-            averageQuizScore: 0,
-            totalLoginDays: 0,
-            lastLoginDate: model.lastLogin || new Date().toISOString(),
-            totalBookings: 0,
-            totalCastings: 0,
-            forumPosts: 0,
-            paymentCompliance: model.paymentStatus?.isUpToDate ? 100 : 0,
-            overallScore: 0,
-            lastUpdated: new Date().toISOString()
-          },
-          notes: '',
-          tags: [],
-          status: 'active' as const,
-          lastAdminReview: new Date().toISOString(),
-          nextReviewDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      };
-    });
+    return modelsWithRealActivity.map(model => ({
+      ...model,
+      trackingData: {
+        modelId: model.id,
+        activities: model.activities,
+        performance: model.performance,
+        notes: '',
+        tags: [],
+        status: model.status,
+        lastAdminReview: new Date().toISOString(),
+        nextReviewDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    }));
   }, [data]);
 
   // Filtrer et trier les modèles
@@ -182,7 +170,11 @@ const AdminModelTracking: React.FC = () => {
             Retour au Dashboard
           </Link>
           <h1 className="admin-page-title">Suivi des Mannequins</h1>
-          <p className="admin-page-subtitle">Tableau de bord complet pour suivre la performance et l'activité des mannequins</p>
+          <p className="admin-page-subtitle">Tableau de bord basé sur les vraies données d'activité des mannequins</p>
+          <div className="mt-2 flex items-center gap-2 text-sm text-pm-gold/80">
+            <CheckCircleIcon className="w-4 h-4" />
+            <span>Données en temps réel • {allModels.length} mannequin(s) avec activité</span>
+          </div>
         </div>
       </div>
 
@@ -218,6 +210,40 @@ const AdminModelTracking: React.FC = () => {
             color="text-green-400"
             bgColor="bg-green-500/10"
           />
+        </div>
+
+        {/* Indicateurs d'activité réelle */}
+        <div className="mt-6 p-4 bg-black/30 rounded-lg border border-pm-gold/20">
+          <h3 className="text-lg font-semibold text-pm-gold mb-3 flex items-center gap-2">
+            <CheckCircleIcon className="w-5 h-5" />
+            Types d'Activité Détectée
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-pm-off-white/70">
+                Connexions: {allModels.filter(m => m.lastLogin).length}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-pm-off-white/70">
+                Quiz complétés: {allModels.reduce((acc, m) => acc + Object.keys(m.quizScores || {}).length, 0)}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+              <span className="text-pm-off-white/70">
+                Paiements: {allModels.filter(m => m.paymentStatus?.isUpToDate).length}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+              <span className="text-pm-off-white/70">
+                Activités totales: {allModels.reduce((acc, m) => acc + m.activities.length, 0)}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

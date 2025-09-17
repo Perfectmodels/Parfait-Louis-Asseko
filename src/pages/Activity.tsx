@@ -11,6 +11,7 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
     const [openModule, setOpenModule] = useState<number | null>(0);
     const userRole = sessionStorage.getItem('classroom_role');
     const userName = sessionStorage.getItem('userName');
+    const userId = sessionStorage.getItem('userId');
 
     const toggleModule = (index: number) => {
         setOpenModule(openModule === index ? null : index);
@@ -76,17 +77,9 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                           
                           {/* Profile Link */}
                           <div className="mb-6 pb-4 border-b border-pm-gold/20">
-                            {userRole === 'beginner' ? (
+                            {userId && (
                               <Link 
-                                to="/profil-debutant" 
-                                className="flex items-center gap-2 text-pm-gold hover:text-pm-gold/80 transition-colors"
-                              >
-                                <UserIcon className="w-5 h-5" />
-                                <span className="text-sm font-semibold">Mon Profil</span>
-                              </Link>
-                            ) : (
-                              <Link 
-                                to="/profil" 
+                                to={`/profil/${userId}`} 
                                 className="flex items-center gap-2 text-pm-gold hover:text-pm-gold/80 transition-colors"
                               >
                                 <UserIcon className="w-5 h-5" />

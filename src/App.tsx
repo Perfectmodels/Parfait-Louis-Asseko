@@ -31,7 +31,7 @@ const SocialLogin = lazy(() => import('./pages/SocialLogin'));
 const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
-const BeginnerDashboard = lazy(() => import('./pages/BeginnerDashboard')); // Profil Débutant
+const ProfilePage = lazy(() => import('./pages/Profile'));
 const Chat = lazy(() => import('./pages/Chat'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 
@@ -63,7 +63,7 @@ const AdminComments = lazy(() => import('./pages/AdminComments'));
 const AdminBookings = lazy(() => import('./pages/AdminBookings'));
 const AdminMessages = lazy(() => import('./pages/AdminMessages'));
 const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
-const AdminPayments = lazy(() => import('./pages/AdminPayments'));
+const AdminPayments = lazy(() => import('./pages/AdminPaymentsNew'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 
@@ -111,7 +111,7 @@ const LoadingFallback: React.FC = () => (
 
 const AppContent: React.FC = () => {
     const location = ReactRouterDOM.useLocation();
-    const { data } = useData();
+    const { data, isInitialized } = useData();
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -143,6 +143,10 @@ const AppContent: React.FC = () => {
         };
     }, [location.pathname, data]);
 
+    // Attendre que les données soient initialisées avant de rendre le contenu
+    if (!isInitialized) {
+        return <LoadingTransition />;
+    }
 
     return (
         <>
@@ -178,8 +182,7 @@ const AppContent: React.FC = () => {
                         {/* Protected Routes - Classroom Unifiée (Débutants + Pros) */}
                         <ReactRouterDOM.Route path="/formations" element={<ProtectedRouteWrapper role="classroom"><Activity /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRouteWrapper role="classroom"><ChapterDetail /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/profil" element={<ProtectedRouteWrapper role="student"><ModelDashboard /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/profil-debutant" element={<ProtectedRouteWrapper role="beginner"><BeginnerDashboard /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/profil/:userId" element={<ProtectedRouteWrapper role="classroom"><ProfilePage /></ProtectedRouteWrapper>} />
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRouteWrapper role="jury"><JuryCasting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRouteWrapper role="registration"><RegistrationCasting /></ProtectedRouteWrapper>} />

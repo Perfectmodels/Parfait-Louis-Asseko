@@ -14,8 +14,12 @@ import { useData } from '../contexts/DataContext';
 import InteractiveDashboardCard from '../components/InteractiveDashboardCard';
 import { useAdminNavigation } from '../hooks/useAdminNavigation';
 import AdminNavigationDebug from '../components/AdminNavigationDebug';
+import { ComptabiliteView } from './AdminComptabilite';
+import { ParametresView } from './AdminParametres';
+import { updateModelPaymentStatus } from '../utils/paymentUtils';
 
-type AdminTab = 'dashboard' | 'talents' | 'content' | 'accounting' | 'analytics';
+
+type AdminTab = 'dashboard' | 'mannequins' | 'casting' | 'content' | 'comptabilite' | 'parametres';
 
 interface ActiveUser {
     name: string;
@@ -201,11 +205,12 @@ const Admin: React.FC = () => {
     const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
 
     const navigationItems: { id: AdminTab; label: string; icon: React.ElementType; description: string }[] = [
-        { id: 'dashboard', label: 'Tableau de Bord', icon: HomeIcon, description: 'Vue d\'ensemble et statistiques' },
-        { id: 'talents', label: 'Gestion des Talents', icon: UsersIcon, description: 'Mannequins et recrutement' },
-        { id: 'content', label: 'Contenu & Formation', icon: BookOpenIcon, description: 'Magazine et formations' },
-        { id: 'accounting', label: 'Comptabilité & Suivi', icon: BriefcaseIcon, description: 'Paiements et opérations' },
-        { id: 'analytics', label: 'Analytiques', icon: ChartBarIcon, description: 'Statistiques et rapports' },
+        { id: 'dashboard', label: 'Tableau de Bord', icon: HomeIcon, description: 'Vue d\'ensemble et notifications' },
+        { id: 'mannequins', label: 'Mannequins', icon: UsersIcon, description: 'Gestion des mannequins et accès' },
+        { id: 'casting', label: 'Casting & Événements', icon: ClipboardDocumentListIcon, description: 'Candidatures et Fashion Day' },
+        { id: 'content', label: 'Contenu', icon: BookOpenIcon, description: 'Magazine et formations' },
+        { id: 'comptabilite', label: 'Comptabilité', icon: CurrencyDollarIcon, description: 'Paiements et finances' },
+        { id: 'parametres', label: 'Paramètres', icon: Cog6ToothIcon, description: 'Configuration du site' },
     ];
 
     return (
@@ -350,11 +355,12 @@ const Admin: React.FC = () => {
                        {/* Main Content */}
                        <main className="flex-1 lg:ml-0">
                            <div className="p-4">
-                        {activeTab === 'dashboard' && <DashboardView stats={stats} activeUsers={activeUsers} />}
-                        {activeTab === 'talents' && <TalentsView newCastingApps={newCastingApps} data={data} generateNotifications={generateNotifications} />}
+                        {activeTab === 'dashboard' && <DashboardView stats={stats} activeUsers={activeUsers} onNavigate={handleTabChange} />}
+                        {activeTab === 'mannequins' && <MannequinsView data={data} />}
+                        {activeTab === 'casting' && <CastingView newCastingApps={newCastingApps} newFashionDayApps={newFashionDayApps} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'content' && <ContentView />}
-                        {activeTab === 'accounting' && <AccountingView newBookingRequests={newBookingRequests} newFashionDayApps={newFashionDayApps} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} data={data} generateNotifications={generateNotifications} />}
-                        {activeTab === 'analytics' && <AnalyticsView data={data} />}
+                        {activeTab === 'comptabilite' && <ComptabiliteView newBookingRequests={newBookingRequests} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} data={data} generateNotifications={generateNotifications} />}
+                        {activeTab === 'parametres' && <ParametresView data={data} />}
                     </div>
                 </main>
             </div>
@@ -390,7 +396,7 @@ const Admin: React.FC = () => {
 };
 
 // Dashboard View Component
-const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> = React.memo(({ stats, activeUsers }) => (
+const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[]; onNavigate: (view: AdminTab, params?: any) => void }> = React.memo(({ stats, activeUsers, onNavigate }) => (
     <div className="space-y-4">
         <div className="flex items-center justify-between">
             <div>
@@ -459,177 +465,155 @@ const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> 
                 />
             </div>
         </div>
+
+        <div className="mt-8">
+            <h2 className="text-xl font-bold text-pm-gold mb-4">Actions Rapides</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Card pour la gestion des paiements */}
+                <div 
+                    className="bg-pm-dark/50 p-4 rounded-xl border border-pm-gold/20 hover:border-pm-gold/40 transition-colors cursor-pointer"
+                    onClick={() => onNavigate('comptabilite', { subView: 'payments' })}
+                >
+                    <h3 className="font-semibold text-white mb-2">Gérer les Paiements</h3>
+                    <p className="text-sm text-gray-400">Enregistrer les inscriptions et cotisations des mannequins.</p>
+                </div>
+            </div>
+        </div>
     </div>
 ));
 
-// Talents View Component
-const TalentsView: React.FC<{ newCastingApps: number; data: any; generateNotifications: any }> = React.memo(({ newCastingApps, data, generateNotifications }) => (
+// Mannequins View Component - Gestion simplifiée des mannequins
+const MannequinsView: React.FC<{ data: any }> = React.memo(({ data }) => (
     <div className="space-y-4">
         <div>
-            <h2 className="text-2xl font-bold text-pm-gold">Gestion des Talents</h2>
-            <p className="text-pm-off-white/60">Recrutement et gestion des mannequins</p>
+            <h2 className="text-2xl font-bold text-pm-gold">Gestion des Mannequins</h2>
+            <p className="text-pm-off-white/60">Gérer les mannequins professionnels et débutants</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                   <DashboardCard title="Gestion des Utilisateurs" icon={PlusIcon} link="/admin/user-management" description="Créer et gérer les comptes administrateurs avec permissions personnalisées."/>
-                   <DashboardCard title="Soumissions de Paiement" icon={ClipboardDocumentCheckIcon} link="/admin/payment-submissions" description="Valider les paiements soumis par les mannequins."/>
-                   <DashboardCard title="Statuts de Paiement" icon={ChartBarIcon} link="/admin/payment-status" description="Vue d'ensemble des statuts de paiement avec tri automatique."/>
-                            <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
-                            <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
-                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>
-                            <InteractiveDashboardCard 
-                                title="Candidatures Casting" 
-                                icon={ClipboardDocumentListIcon} 
-                                link="/admin/casting-applications" 
-                                description="Consulter et traiter les candidatures pour les castings." 
-                                notificationCount={newCastingApps}
-                                notifications={generateNotifications(data, 'casting')}
-                                stats={{
-                                    total: data?.castingApplications?.length || 0,
-                                    new: newCastingApps,
-                                    pending: data?.castingApplications?.filter((app: any) => app.status === 'pending')?.length || 0
-                                }}
-                            />
-                            <DashboardCard title="Résultats & Validation Casting" icon={ClipboardDocumentCheckIcon} link="/admin/casting-results" description="Valider les candidats et créer leurs profils de débutant." />
-                             <DashboardCard title="Accès Mannequins Pro" icon={KeyIcon} link="/admin/model-access" description="Consulter les identifiants des mannequins confirmés." />
+            <DashboardCard 
+                title="Mannequins Professionnels" 
+                icon={UsersIcon} 
+                link="/admin/models" 
+                description="Gérer les profils des mannequins professionnels"
+            />
+            <DashboardCard 
+                title="Mannequins Débutants" 
+                icon={UserGroupIcon} 
+                link="/admin/beginner-students-access" 
+                description="Consulter et promouvoir les mannequins en formation"
+            />
+            <DashboardCard 
+                title="Gestion des Paiements" 
+                icon={CurrencyDollarIcon} 
+                link="/admin/payments" 
+                description="Enregistrer les paiements directement depuis la liste des mannequins"
+            />
+            <DashboardCard 
+                title="Accès et Identifiants" 
+                icon={KeyIcon} 
+                link="/admin/model-access" 
+                description="Consulter les identifiants de connexion"
+            />
+            <DashboardCard 
+                title="Soumissions de Paiement" 
+                icon={ClipboardDocumentCheckIcon} 
+                link="/admin/payment-submissions" 
+                description="Valider les paiements soumis par les mannequins"
+            />
+            <DashboardCard 
+                title="Direction Artistique" 
+                icon={PaintBrushIcon} 
+                link="/admin/artistic-direction" 
+                description="Assigner des thèmes de séance photo"
+            />
         </div>
     </div>
 ));
 
-// Content View Component
+// Casting View Component - Gestion des candidatures et événements
+const CastingView: React.FC<{ newCastingApps: number; newFashionDayApps: number; data: any; generateNotifications: any }> = React.memo(({ newCastingApps, newFashionDayApps, data, generateNotifications }) => (
+    <div className="space-y-4">
+        <div>
+            <h2 className="text-2xl font-bold text-pm-gold">Casting & Événements</h2>
+            <p className="text-pm-off-white/60">Gérer les candidatures et événements</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <InteractiveDashboardCard 
+                title="Candidatures Casting" 
+                icon={ClipboardDocumentListIcon} 
+                link="/admin/casting-applications" 
+                description="Traiter les candidatures pour les castings" 
+                notificationCount={newCastingApps}
+                notifications={generateNotifications(data, 'casting')}
+            />
+            <DashboardCard 
+                title="Résultats Casting" 
+                icon={ClipboardDocumentCheckIcon} 
+                link="/admin/casting-results" 
+                description="Valider les candidats et créer leurs profils"
+            />
+            <InteractiveDashboardCard 
+                title="Candidatures Fashion Day" 
+                icon={SparklesIcon} 
+                link="/admin/fashion-day-applications" 
+                description="Gérer les candidatures pour le PFD" 
+                notificationCount={newFashionDayApps}
+                notifications={generateNotifications(data, 'fashion-day')}
+            />
+            <DashboardCard 
+                title="Événements PFD" 
+                icon={CalendarDaysIcon} 
+                link="/admin/fashion-day-events" 
+                description="Configurer les éditions du Perfect Fashion Day"
+            />
+        </div>
+    </div>
+));
+
+// Content View Component - Gestion du contenu simplifiée
 const ContentView: React.FC = React.memo(() => (
     <div className="space-y-4">
         <div>
-            <h2 className="text-2xl font-bold text-pm-gold">Contenu & Formation</h2>
-            <p className="text-pm-off-white/60">Gestion du contenu et des formations</p>
+            <h2 className="text-2xl font-bold text-pm-gold">Contenu</h2>
+            <p className="text-pm-off-white/60">Gérer le contenu du site et les formations</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine Focus Model 241." />
-                            <DashboardCard title="Galerie Photos" icon={PhotoIcon} link="/admin/gallery" description="Créer et organiser des albums photos par thème." />
-                            <DashboardCard title="Gestion d'Équipe" icon={UserIcon} link="/admin/team" description="Gérer les membres de l'équipe et leur visibilité sur le site." />
-                            <DashboardCard title="Suivi des Mannequins" icon={ChartBarIcon} link="/admin/model-tracking" description="Tableau de bord complet pour suivre la performance et l'activité des mannequins." />
-                            <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier et gérer les actualités de la page d'accueil." />
-                            <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services, la chronologie et les réalisations." />
-                            <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
-                             <DashboardCard title="Modérer les Commentaires" icon={ChatBubbleLeftRightIcon} link="/admin/comments" description="Gérer les commentaires laissés sur les articles du magazine." />
-                             <DashboardCard title="Gérer le Classroom Pro" icon={BookOpenIcon} link="/admin/classroom" description="Modifier les modules et chapitres de la formation avancée." />
-                            <DashboardCard title="Paramètres du Site" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, les images et les clés API." />
-        </div>
-    </div>
-));
-
-// Accounting View Component
-const AccountingView: React.FC<{ 
-    newBookingRequests: number; 
-    newFashionDayApps: number; 
-    newMessages: number; 
-    newRecoveryRequests: number; 
-    data: any;
-    generateNotifications: any;
-}> = React.memo(({ newBookingRequests, newFashionDayApps, newMessages, newRecoveryRequests, data, generateNotifications }) => (
-    <div className="space-y-6">
-        <div>
-            <h2 className="text-2xl font-bold text-pm-gold">Comptabilité & Suivi</h2>
-            <p className="text-pm-off-white/60">Gestion financière et opérationnelle</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                             <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
-                             <DashboardCard title="Suivi des Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences des mannequins." />
-                             <InteractiveDashboardCard 
-                                title="Demandes de Booking" 
-                                icon={BriefcaseIcon} 
-                                link="/admin/bookings" 
-                                description="Consulter et gérer les demandes de booking des clients." 
-                                notificationCount={newBookingRequests}
-                                notifications={generateNotifications(data, 'booking')}
-                                stats={{
-                                    total: data?.bookingRequests?.length || 0,
-                                    new: newBookingRequests,
-                                    pending: data?.bookingRequests?.filter((req: any) => req.status === 'pending')?.length || 0
-                                }}
-                            />
-                            <InteractiveDashboardCard 
-                                title="Candidatures PFD" 
-                                icon={SparklesIcon} 
-                                link="/admin/fashion-day-applications" 
-                                description="Gérer les inscriptions pour l'événement Perfect Fashion Day." 
-                                notificationCount={newFashionDayApps}
-                                notifications={generateNotifications(data, 'fashion-day')}
-                                stats={{
-                                    total: data?.fashionDayApplications?.length || 0,
-                                    new: newFashionDayApps,
-                                    pending: data?.fashionDayApplications?.filter((app: any) => app.status === 'pending')?.length || 0
-                                }}
-                            />
-                             <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins confirmés aux quiz." />
-                             <InteractiveDashboardCard 
-                                title="Messages de Contact" 
-                                icon={EnvelopeIcon} 
-                                link="/admin/messages" 
-                                description="Lire et gérer les messages reçus via le formulaire de contact." 
-                                notificationCount={newMessages}
-                                notifications={generateNotifications(data, 'messages')}
-                                stats={{
-                                    total: data?.contactMessages?.length || 0,
-                                    new: newMessages,
-                                    pending: data?.contactMessages?.filter((msg: any) => !msg.read)?.length || 0
-                                }}
-                            />
-                             <InteractiveDashboardCard 
-                                title="Demandes de Récupération" 
-                                icon={ExclamationTriangleIcon} 
-                                link="/admin/recovery-requests" 
-                                description="Traiter les demandes de coordonnées oubliées." 
-                                notificationCount={newRecoveryRequests}
-                                notifications={generateNotifications(data, 'recovery')}
-                                stats={{
-                                    total: data?.recoveryRequests?.length || 0,
-                                    new: newRecoveryRequests,
-                                    pending: data?.recoveryRequests?.filter((req: any) => req.status === 'pending')?.length || 0
-                                }}
-                            />
-            <DashboardCard title="Livre Comptable" icon={CurrencyDollarIcon} link="/admin/accounting" description="Gérer les revenus, dépenses et générer des rapports PDF." />
-        </div>
-    </div>
-));
-
-// Analytics View Component
-const AnalyticsView: React.FC<{ data: any }> = React.memo(({ data }) => (
-    <div className="space-y-6">
-        <div>
-            <h2 className="text-2xl font-bold text-pm-gold">Analytiques</h2>
-            <p className="text-pm-off-white/60">Statistiques et rapports de la plateforme</p>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-black/50 rounded-lg p-6 border border-pm-gold/20">
-                <h3 className="text-lg font-semibold text-pm-gold mb-4">Statistiques Générales</h3>
-                <div className="space-y-3">
-                    <div className="flex justify-between">
-                        <span className="text-pm-off-white/70">Total Mannequins</span>
-                        <span className="text-pm-gold font-semibold">{data?.models?.length || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-pm-off-white/70">Total Débutants</span>
-                        <span className="text-pm-gold font-semibold">{data?.beginnerStudents?.length || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-pm-off-white/70">Articles Magazine</span>
-                        <span className="text-pm-gold font-semibold">{data?.articles?.length || 0}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="bg-black/50 rounded-lg p-6 border border-pm-gold/20">
-                <h3 className="text-lg font-semibold text-pm-gold mb-4">Activité Récente</h3>
-                <div className="space-y-3">
-                    <div className="flex justify-between">
-                        <span className="text-pm-off-white/70">Candidatures en Attente</span>
-                        <span className="text-orange-400 font-semibold">{(data?.castingApplications?.filter((app: any) => app.status === 'Nouveau').length || 0)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-pm-off-white/70">Messages Non Lus</span>
-                        <span className="text-red-400 font-semibold">{(data?.contactMessages?.filter((msg: any) => msg.status === 'Nouveau').length || 0)}</span>
-                    </div>
-                </div>
-            </div>
+            <DashboardCard 
+                title="Magazine" 
+                icon={NewspaperIcon} 
+                link="/admin/magazine" 
+                description="Créer et gérer les articles du magazine"
+            />
+            <DashboardCard 
+                title="Galerie Photos" 
+                icon={PhotoIcon} 
+                link="/admin/gallery" 
+                description="Organiser les albums photos par thème"
+            />
+            <DashboardCard 
+                title="Actualités" 
+                icon={PresentationChartLineIcon} 
+                link="/admin/news" 
+                description="Publier les actualités de la page d'accueil"
+            />
+            <DashboardCard 
+                title="Contenu de l'Agence" 
+                icon={BuildingStorefrontIcon} 
+                link="/admin/agency" 
+                description="Mettre à jour les services et réalisations"
+            />
+            <DashboardCard 
+                title="Formations" 
+                icon={BookOpenIcon} 
+                link="/admin/classroom" 
+                description="Gérer les modules de formation"
+            />
+            <DashboardCard 
+                title="Commentaires" 
+                icon={ChatBubbleLeftRightIcon} 
+                link="/admin/comments" 
+                description="Modérer les commentaires du magazine"
+            />
         </div>
     </div>
 ));
