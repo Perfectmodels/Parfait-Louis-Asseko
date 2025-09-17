@@ -4,13 +4,51 @@ import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
+import { motion, AnimatePresence } from 'framer-motion';
 // FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
-  const mobileAnimationClasses = isMobile
-    ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
-    : '';
+  if (isMobile) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ 
+          opacity: isOpen ? 1 : 0, 
+          y: isOpen ? 0 : -20 
+        }}
+        transition={{ 
+          duration: 0.3, 
+          delay: isOpen ? delay : 0,
+          ease: [0.25, 0.46, 0.45, 0.94]
+        }}
+      >
+        <NavLink
+          to={to}
+          onClick={onClick}
+          end={to === '/'}
+          className={({ isActive }) =>
+            `relative py-2 px-3 text-pm-off-white uppercase text-sm tracking-widest transition-all duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold whitespace-nowrap text-center break-words hyphens-auto ${
+              isActive ? "text-pm-gold" : ""
+            }`
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <span className="block max-w-full">{label}</span>
+              <motion.span 
+                className="absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: isActive ? 1 : 0 }}
+                whileHover={{ scaleX: 1 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              />
+            </>
+          )}
+        </NavLink>
+      </motion.div>
+    );
+  }
 
   return (
     <NavLink
@@ -18,20 +56,32 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
       onClick={onClick}
       end={to === '/'}
       className={({ isActive }) =>
-        `relative py-2 px-3 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold whitespace-nowrap ${mobileAnimationClasses} ${
-          isMobile ? 'text-center break-words hyphens-auto' : ''
-        } ` +
-        (isActive ? "text-pm-gold" : "")
+        `relative py-2 px-3 text-pm-off-white uppercase text-sm tracking-widest transition-all duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold whitespace-nowrap ${
+          isActive ? "text-pm-gold" : ""
+        }`
       }
-      style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
       {({ isActive }) => (
         <>
-          <span className={isMobile ? 'block max-w-full' : ''}>{label}</span>
-          <span 
-            className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${
-              isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100'
-            }`} 
+          <motion.span 
+            className="relative z-10"
+            whileHover={{ y: -2 }}
+            transition={{ duration: 0.2 }}
+          >
+            {label}
+          </motion.span>
+          <motion.span 
+            className="absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: isActive ? 1 : 0 }}
+            whileHover={{ scaleX: 1 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+          />
+          <motion.div
+            className="absolute inset-0 bg-pm-gold/10 rounded-md"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2 }}
           />
         </>
       )}
@@ -77,22 +127,67 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile
 };
 
 const SocialLinksComponent: React.FC<{ socialLinks: SocialLinks | undefined; className?: string; isMobile?: boolean; isOpen?: boolean; delay?: number }> = ({ socialLinks, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
-    const mobileAnimationClasses = isMobile
-    ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
-    : '';
-
     if (!socialLinks || (!socialLinks.facebook && !socialLinks.instagram && !socialLinks.youtube)) {
         return null;
     }
 
+    const socialIcons = [
+        { key: 'facebook', href: socialLinks.facebook, icon: FacebookIcon, label: 'Facebook' },
+        { key: 'instagram', href: socialLinks.instagram, icon: InstagramIcon, label: 'Instagram' },
+        { key: 'youtube', href: socialLinks.youtube, icon: YoutubeIcon, label: 'YouTube' }
+    ].filter(item => item.href);
+
+    if (isMobile) {
+        return (
+            <motion.div 
+                className={`flex items-center gap-5 ${className}`}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ 
+                    opacity: isOpen ? 1 : 0, 
+                    y: isOpen ? 0 : -20 
+                }}
+                transition={{ 
+                    duration: 0.3, 
+                    delay: isOpen ? delay : 0,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                }}
+            >
+                {socialIcons.map((social, index) => (
+                    <motion.a
+                        key={social.key}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-pm-off-white/70 hover:text-pm-gold transition-colors"
+                        aria-label={social.label}
+                        whileHover={{ scale: 1.2, rotate: 5 }}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <social.icon className="w-6 h-6" />
+                    </motion.a>
+                ))}
+            </motion.div>
+        );
+    }
+
     return (
-        <div 
-            className={`flex items-center gap-5 ${className} ${mobileAnimationClasses}`}
-            style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
-        >
-            {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Facebook"><FacebookIcon className="w-6 h-6" /></a>}
-            {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Instagram"><InstagramIcon className="w-6 h-6" /></a>}
-            {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="YouTube"><YoutubeIcon className="w-6 h-6" /></a>}
+        <div className={`flex items-center gap-5 ${className}`}>
+            {socialIcons.map((social, index) => (
+                <motion.a
+                    key={social.key}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-pm-off-white/70 hover:text-pm-gold transition-colors"
+                    aria-label={social.label}
+                    whileHover={{ scale: 1.2, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                >
+                    <social.icon className="w-6 h-6" />
+                </motion.a>
+            ))}
         </div>
     );
 };
@@ -318,9 +413,31 @@ const Header: React.FC = () => {
           </nav>
           
           <div className="hidden lg:flex items-center gap-4 xl:gap-6 flex-shrink-0">
-            <Link to="/casting-formulaire" className="px-4 xl:px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20 whitespace-nowrap">
-                Postuler
-            </Link>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Link 
+                to="/casting-formulaire" 
+                className="relative px-4 xl:px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20 whitespace-nowrap overflow-hidden group"
+              >
+                <motion.span
+                  className="relative z-10"
+                  initial={{ x: 0 }}
+                  whileHover={{ x: -2 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  Postuler
+                </motion.span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-pm-gold to-white"
+                  initial={{ x: '-100%' }}
+                  whileHover={{ x: '0%' }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                />
+              </Link>
+            </motion.div>
             <SocialLinksComponent socialLinks={socialLinks} />
             {isLoggedIn && <LogoutButton onClick={handleLogout} />}
           </div>
@@ -333,22 +450,34 @@ const Header: React.FC = () => {
         </div>
       </header>
       
-      <div 
-        className={`lg:hidden fixed inset-0 z-30 transition-opacity duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
-        onClick={() => setIsOpen(false)}
-        aria-hidden={!isOpen}
-      />
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            className="lg:hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+            aria-hidden={!isOpen}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          />
+        )}
+      </AnimatePresence>
       
-      <div 
+      <motion.div 
         id="mobile-menu-panel"
         ref={mobileMenuRef}
-        className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform flex flex-col overflow-hidden ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className="lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 z-40 flex flex-col overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
         aria-hidden={!isOpen}
+        initial={{ x: '100%' }}
+        animate={{ x: isOpen ? 0 : '100%' }}
+        transition={{ 
+          duration: 0.4, 
+          ease: [0.25, 0.46, 0.45, 0.94] 
+        }}
       >
         <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24 flex-shrink-0">
              <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
@@ -356,18 +485,46 @@ const Header: React.FC = () => {
         <div className="flex-grow overflow-y-auto">
             <nav className="flex flex-col p-8 gap-6">
               <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen}/>
-              <div 
-                className={`text-center transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
-                style={{ transitionDelay: `${isOpen ? applyButtonDelay : 0}ms` }}
+              <motion.div 
+                className="text-center"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ 
+                  opacity: isOpen ? 1 : 0, 
+                  y: isOpen ? 0 : -20 
+                }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: isOpen ? applyButtonDelay : 0,
+                  ease: [0.25, 0.46, 0.45, 0.94]
+                }}
               >
-                  <Link
-                      to="/casting-formulaire"
-                      onClick={() => setIsOpen(false)}
-                      className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
                   >
-                      Postuler
-                  </Link>
-              </div>
+                    <Link
+                        to="/casting-formulaire"
+                        onClick={() => setIsOpen(false)}
+                        className="relative inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white overflow-hidden group"
+                    >
+                        <motion.span
+                          className="relative z-10"
+                          initial={{ x: 0 }}
+                          whileHover={{ x: -2 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          Postuler
+                        </motion.span>
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-pm-gold to-white"
+                          initial={{ x: '-100%' }}
+                          whileHover={{ x: '0%' }}
+                          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        />
+                    </Link>
+                  </motion.div>
+              </motion.div>
               {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
             </nav>
         </div>
@@ -380,7 +537,7 @@ const Header: React.FC = () => {
                 delay={socialLinksDelay}
              />
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

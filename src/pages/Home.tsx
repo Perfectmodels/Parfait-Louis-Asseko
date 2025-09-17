@@ -10,6 +10,14 @@ import { ApiKeys, NewsItem } from '../types';
 import CountdownTimer from '../components/CountdownTimer';
 import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
+import { 
+  ScrollReveal, 
+  StaggerOnScroll, 
+  ScaleOnScroll, 
+  TextReveal,
+  FloatingElement,
+  PulseElement 
+} from '../components/ScrollAnimations';
 
 // --- Helper & Modal Components for Sharing ---
 const generateShortLink = async (
@@ -281,15 +289,17 @@ const Home: React.FC = () => {
         style={{ backgroundImage: `url('${siteImages.hero}')` }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/80 to-transparent"></div>
-        <div className="relative z-10 p-6 animate-fade-in w-full max-w-5xl space-y-8">
-          <div>
+        <div className="relative z-10 p-6 w-full max-w-5xl space-y-8">
+          <TextReveal>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter px-4" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
               L'Élégance Redéfinie
             </h1>
+          </TextReveal>
+          <TextReveal delay={0.2}>
             <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
               Nous révélons les talents et valorisons la beauté africaine.
             </p>
-          </div>
+          </TextReveal>
           
           {nextEvent ? (
               <div className="mt-10 bg-black/50 backdrop-blur-sm py-4 sm:py-6 px-2 sm:px-4 rounded-lg border border-pm-gold/20 mx-2 sm:mx-4">
@@ -349,27 +359,37 @@ const Home: React.FC = () => {
         {/* 3. Services */}
         <section>
           <div className="content-section">
-            <h2 className="section-title">Nos Prestations</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-              {featuredServices.map(service => (
-                <ServiceCard key={service.title} service={service} />
-              ))}
-            </div>
-            <div className="text-center mt-12">
-              <Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                Découvrir nos prestations
-              </Link>
-            </div>
+            <ScrollReveal>
+              <h2 className="section-title">Nos Prestations</h2>
+            </ScrollReveal>
+            <StaggerOnScroll staggerDelay={0.15}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                {featuredServices.map(service => (
+                  <ServiceCard key={service.title} service={service} />
+                ))}
+              </div>
+            </StaggerOnScroll>
+            <ScrollReveal delay={0.4}>
+              <div className="text-center mt-12">
+                <Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                  Découvrir nos prestations
+                </Link>
+              </div>
+            </ScrollReveal>
           </div>
         </section>
 
         {/* 3.5. Perfect Fashion Day Editions */}
         <section>
           <div className="content-section">
-            <h2 className="section-title">Perfect Fashion Day</h2>
-            <p className="text-center text-pm-off-white/80 mb-12 max-w-3xl mx-auto">
-              Découvrez nos éditions exceptionnelles qui célèbrent la mode gabonaise et l'élégance africaine.
-            </p>
+            <ScrollReveal>
+              <h2 className="section-title">Perfect Fashion Day</h2>
+            </ScrollReveal>
+            <TextReveal delay={0.2}>
+              <p className="text-center text-pm-off-white/80 mb-12 max-w-3xl mx-auto">
+                Découvrez nos éditions exceptionnelles qui célèbrent la mode gabonaise et l'élégance africaine.
+              </p>
+            </TextReveal>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {fashionDayEvents.map(event => (
@@ -442,17 +462,23 @@ const Home: React.FC = () => {
       {/* 4. Models (Full bleed for visual variety) */}
       <section className="bg-black py-20 lg:py-28">
         <div className="container mx-auto px-6">
-            <h2 className="section-title">Nos Mannequins</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {publicModels.map(model => (
-                <ModelCard key={model.id} model={model} />
-              ))}
-            </div>
-            <div className="text-center mt-12">
-              <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                Voir les mannequins
-              </Link>
-            </div>
+            <ScrollReveal>
+              <h2 className="section-title">Nos Mannequins</h2>
+            </ScrollReveal>
+            <StaggerOnScroll staggerDelay={0.1}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {publicModels.map(model => (
+                  <ModelCard key={model.id} model={model} />
+                ))}
+              </div>
+            </StaggerOnScroll>
+            <ScrollReveal delay={0.3}>
+              <div className="text-center mt-12">
+                <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+                  Voir les mannequins
+                </Link>
+              </div>
+            </ScrollReveal>
         </div>
       </section>
 
@@ -461,10 +487,14 @@ const Home: React.FC = () => {
         {testimonials && testimonials.length > 0 && (
           <section>
             <div className="content-section">
-              <h2 className="section-title">Témoignages</h2>
-              <div className="mt-8">
-                <TestimonialCarousel />
-              </div>
+              <ScrollReveal>
+                <h2 className="section-title">Témoignages</h2>
+              </ScrollReveal>
+              <ScaleOnScroll delay={0.2}>
+                <div className="mt-8">
+                  <TestimonialCarousel />
+                </div>
+              </ScaleOnScroll>
             </div>
           </section>
         )}
@@ -472,18 +502,24 @@ const Home: React.FC = () => {
         {/* 8. Call to Action */}
         <section>
           <div className="content-section text-center">
-            <h2 className="section-title">Prêts à nous rejoindre ?</h2>
-            <p className="section-subtitle">
-              Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                Postuler
-              </Link>
-              <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                Nous Contacter
-              </Link>
-            </div>
+            <ScrollReveal>
+              <h2 className="section-title">Prêts à nous rejoindre ?</h2>
+            </ScrollReveal>
+            <TextReveal delay={0.2}>
+              <p className="section-subtitle">
+                Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
+              </p>
+            </TextReveal>
+            <StaggerOnScroll staggerDelay={0.1} direction="up">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                  Postuler
+                </Link>
+                <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+                  Nous Contacter
+                </Link>
+              </div>
+            </StaggerOnScroll>
           </div>
         </section>
       </div>

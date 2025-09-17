@@ -4,6 +4,7 @@ import * as ReactRouterDOM from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import PageTransition, { LoadingTransition } from './components/PageTransition';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -79,9 +80,12 @@ const ScrollToTop: React.FC = () => {
 };
 
 const LoadingFallback: React.FC = () => (
-    <div className="w-full py-40 flex items-center justify-center">
-        <p className="text-pm-gold text-2xl font-playfair animate-pulse">Chargement...</p>
-    </div>
+    <LoadingTransition>
+        <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-pm-gold/30 border-t-pm-gold rounded-full animate-spin"></div>
+            <p className="text-pm-gold text-xl font-playfair">Chargement...</p>
+        </div>
+    </LoadingTransition>
 );
 
 
@@ -124,7 +128,8 @@ const AppContent: React.FC = () => {
         <>
             <Layout>
                 <Suspense fallback={<LoadingFallback />}>
-                    <ReactRouterDOM.Routes>
+                    <PageTransition>
+                        <ReactRouterDOM.Routes>
                         <ReactRouterDOM.Route path="/" element={<Home />} />
                         <ReactRouterDOM.Route path="/agence" element={<Agency />} />
                         <ReactRouterDOM.Route path="/mannequins" element={<Models />} />
@@ -189,7 +194,8 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
-                    </ReactRouterDOM.Routes>
+                        </ReactRouterDOM.Routes>
+                    </PageTransition>
                 </Suspense>
             </Layout>
         </>
