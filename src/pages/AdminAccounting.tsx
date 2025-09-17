@@ -12,8 +12,12 @@ import { AccountingTransaction, AccountingCategory, AccountingBalance } from '..
 
 const AdminAccounting: React.FC = () => {
     const { data, saveData } = useData();
-    const [activeTab, setActiveTab] = useState<'transactions' | 'balance' | 'reports'>('transactions');
+    const [activeTab, setActiveTab] = useState<'transactions' | 'balance' | 'reports' | 'payments'>('payments');
     const [showTransactionForm, setShowTransactionForm] = useState(false);
+    const [showPaymentForm, setShowPaymentForm] = useState(false);
+    const [selectedModel, setSelectedModel] = useState<string>('');
+    const [paymentType, setPaymentType] = useState<'cotisation' | 'inscription'>('cotisation');
+    const [paymentAmount, setPaymentAmount] = useState<number>(0);
     const [selectedPeriod, setSelectedPeriod] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
     const [newTransaction, setNewTransaction] = useState<Partial<AccountingTransaction>>({
         date: new Date().toISOString().split('T')[0],
@@ -29,6 +33,18 @@ const AdminAccounting: React.FC = () => {
 
     const transactions = data?.accountingTransactions || [];
     const categories = data?.accountingCategories || [];
+    
+    // Récupérer tous les mannequins (Pro + Débutants unifiés)
+    const allModels = [
+        ...(data?.models || []),
+        ...(data?.beginnerStudents?.map(student => ({
+            id: student.id,
+            name: student.name,
+            level: 'Mannequin' as const,
+            username: student.matricule || student.name.toLowerCase().replace(/\s+/g, ''),
+            isActive: true
+        })) || [])
+    ];
 
     // Filtrer les transactions par période
     const filteredTransactions = useMemo(() => {
@@ -101,6 +117,46 @@ const AdminAccounting: React.FC = () => {
             await saveData({ ...data, accountingTransactions: updatedTransactions });
         } catch (error) {
             console.error('Erreur lors de la suppression:', error);
+        }
+    };
+
+    const handlePaymentSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!data || !selectedModel || !paymentAmount) return;
+
+        const model = allModels.find(m => m.id === selectedModel);
+        if (!model) return;
+
+        const transaction: AccountingTransaction = {
+            id: `payment-${Date.now()}`,
+            date: new Date().toISOString().split('T')[0],
+            description: `${paymentType === 'cotisation' ? 'Cotisation' : 'Inscription'} - ${model.name}`,
+            category: 'revenue',
+            subcategory: paymentType === 'cotisation' ? 'Cotisations Mannequins' : 'Inscriptions',
+            amount: paymentAmount,
+            currency: 'FCFA',
+            paymentMethod: 'cash',
+            reference: `${paymentType.toUpperCase()}-${model.name}-${new Date().getFullYear()}`,
+            notes: `Paiement ${paymentType} pour ${model.name}`,
+            relatedModelId: model.id,
+            relatedModelName: model.name,
+            createdBy: 'admin',
+            createdAt: new Date().toISOString()
+        };
+
+        try {
+            const updatedTransactions = [...transactions, transaction];
+            await saveData({ ...data, accountingTransactions: updatedTransactions });
+            
+            // Reset form
+            setSelectedModel('');
+            setPaymentType('cotisation');
+            setPaymentAmount(0);
+            setShowPaymentForm(false);
+            
+            alert(`${paymentType === 'cotisation' ? 'Cotisation' : 'Inscription'} enregistrée avec succès !`);
+        } catch (error) {
+            console.error('Erreur lors de l\'enregistrement du paiement:', error);
         }
     };
 
@@ -214,6 +270,7 @@ const AdminAccounting: React.FC = () => {
                 <div className="admin-section-wrapper">
                     <div className="flex border-b border-pm-gold/20 mb-6">
                         {[
+                            { id: 'payments', label: 'Paiements', icon: CurrencyDollarIcon },
                             { id: 'transactions', label: 'Transactions', icon: BanknotesIcon },
                             { id: 'balance', label: 'Bilan', icon: ChartBarIcon },
                             { id: 'reports', label: 'Rapports', icon: DocumentArrowDownIcon }
@@ -234,6 +291,133 @@ const AdminAccounting: React.FC = () => {
                     </div>
 
                     {/* Contenu des onglets */}
+                    {activeTab === 'payments' && (
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-xl font-bold text-pm-gold mb-2">Gestion des Paiements</h3>
+                                    <p className="text-pm-off-white/60">Enregistrez facilement les cotisations et inscriptions des mannequins</p>
+                                </div>
+                                <button
+                                    onClick={() => setShowPaymentForm(true)}
+                                    className="action-btn bg-pm-gold text-pm-dark hover:bg-white"
+                                >
+                                    <PlusIcon className="w-5 h-5" />
+                                    Nouveau Paiement
+                                </button>
+                            </div>
+
+                            {/* Statistiques rapides */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="bg-green-500/10 border border-green-500/20 p-6 rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                        <CurrencyDollarIcon className="w-8 h-8 text-green-400" />
+                                        <div>
+                                            <p className="text-green-400/60 text-sm">Cotisations ce mois</p>
+                                            <p className="text-2xl font-bold text-green-400">
+                                                {filteredTransactions
+                                                    .filter(t => t.subcategory === 'Cotisations Mannequins')
+                                                    .reduce((sum, t) => sum + t.amount, 0)
+                                                    .toLocaleString()} FCFA
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-blue-500/10 border border-blue-500/20 p-6 rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                        <CreditCardIcon className="w-8 h-8 text-blue-400" />
+                                        <div>
+                                            <p className="text-blue-400/60 text-sm">Inscriptions ce mois</p>
+                                            <p className="text-2xl font-bold text-blue-400">
+                                                {filteredTransactions
+                                                    .filter(t => t.subcategory === 'Inscriptions')
+                                                    .reduce((sum, t) => sum + t.amount, 0)
+                                                    .toLocaleString()} FCFA
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Liste des mannequins pour paiements rapides */}
+                            <div className="bg-black/50 p-6 rounded-lg border border-pm-gold/20">
+                                <h4 className="text-lg font-semibold text-pm-gold mb-4">Enregistrer un Paiement</h4>
+                                <p className="text-pm-off-white/60 mb-6">Cliquez sur un mannequin pour enregistrer rapidement une cotisation ou inscription</p>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                                    {allModels.map(model => (
+                                        <div key={model.id} className="bg-pm-dark/30 p-4 rounded-lg border border-pm-gold/10 hover:border-pm-gold/30 transition-colors">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h5 className="font-semibold text-pm-off-white">{model.name}</h5>
+                                                <span className="text-xs text-pm-off-white/60">#{model.username}</span>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedModel(model.id);
+                                                        setPaymentType('cotisation');
+                                                        setPaymentAmount(50000); // Montant par défaut
+                                                        setShowPaymentForm(true);
+                                                    }}
+                                                    className="flex-1 px-3 py-2 bg-green-500/20 text-green-300 border border-green-500/30 rounded text-sm hover:bg-green-500/30 transition-colors"
+                                                >
+                                                    Cotisation
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedModel(model.id);
+                                                        setPaymentType('inscription');
+                                                        setPaymentAmount(25000); // Montant par défaut
+                                                        setShowPaymentForm(true);
+                                                    }}
+                                                    className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded text-sm hover:bg-blue-500/30 transition-colors"
+                                                >
+                                                    Inscription
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Liste des paiements récents */}
+                            <div className="bg-black/50 p-6 rounded-lg border border-pm-gold/20">
+                                <h4 className="text-lg font-semibold text-pm-gold mb-4">Paiements Récents</h4>
+                                <div className="space-y-3">
+                                    {filteredTransactions
+                                        .filter(t => t.subcategory === 'Cotisations Mannequins' || t.subcategory === 'Inscriptions')
+                                        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                                        .slice(0, 10)
+                                        .map(transaction => (
+                                            <div key={transaction.id} className="flex justify-between items-center p-4 bg-pm-dark/30 rounded-lg">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-3 h-3 rounded-full ${
+                                                        transaction.subcategory === 'Cotisations Mannequins' ? 'bg-green-400' : 'bg-blue-400'
+                                                    }`}></div>
+                                                    <div>
+                                                        <p className="font-medium text-pm-off-white">{transaction.relatedModelName}</p>
+                                                        <p className="text-sm text-pm-off-white/60">{transaction.subcategory}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="font-bold text-pm-gold">{transaction.amount.toLocaleString()} FCFA</p>
+                                                    <p className="text-sm text-pm-off-white/60">{transaction.date}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    
+                                    {filteredTransactions.filter(t => t.subcategory === 'Cotisations Mannequins' || t.subcategory === 'Inscriptions').length === 0 && (
+                                        <div className="text-center py-8">
+                                            <CurrencyDollarIcon className="w-16 h-16 text-pm-gold/30 mx-auto mb-4" />
+                                            <p className="text-pm-off-white/60">Aucun paiement enregistré pour cette période</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {activeTab === 'transactions' && (
                         <div className="space-y-4">
                             {filteredTransactions.map(transaction => (
@@ -377,6 +561,90 @@ const AdminAccounting: React.FC = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Formulaire de paiement simplifié */}
+                {showPaymentForm && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-pm-dark border border-pm-gold/20 rounded-lg p-8 max-w-md w-full">
+                            <h3 className="text-2xl font-bold text-pm-gold mb-6">Nouveau Paiement</h3>
+                            
+                            <form onSubmit={handlePaymentSubmit} className="space-y-4">
+                                <div>
+                                    <label className="admin-label">Mannequin</label>
+                                    <select
+                                        value={selectedModel}
+                                        onChange={(e) => setSelectedModel(e.target.value)}
+                                        className="admin-input"
+                                        required
+                                    >
+                                        <option value="">Sélectionner un mannequin</option>
+                                        {allModels.map(model => (
+                                            <option key={model.id} value={model.id}>
+                                                {model.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {selectedModel && (
+                                        <p className="text-sm text-pm-gold/80 mt-1">
+                                            Sélectionné: {allModels.find(m => m.id === selectedModel)?.name}
+                                        </p>
+                                    )}
+                                </div>
+                                
+                                <div>
+                                    <label className="admin-label">Type de paiement</label>
+                                    <select
+                                        value={paymentType}
+                                        onChange={(e) => setPaymentType(e.target.value as 'cotisation' | 'inscription')}
+                                        className="admin-input"
+                                        required
+                                    >
+                                        <option value="cotisation">Cotisation</option>
+                                        <option value="inscription">Inscription</option>
+                                    </select>
+                                    <div className={`mt-2 p-2 rounded text-sm ${
+                                        paymentType === 'cotisation' 
+                                            ? 'bg-green-500/10 text-green-300 border border-green-500/20' 
+                                            : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+                                    }`}>
+                                        {paymentType === 'cotisation' 
+                                            ? '💚 Cotisation mensuelle des mannequins' 
+                                            : '💙 Frais d\'inscription pour nouveaux mannequins'
+                                        }
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label className="admin-label">Montant (FCFA)</label>
+                                    <input
+                                        type="number"
+                                        value={paymentAmount}
+                                        onChange={(e) => setPaymentAmount(parseFloat(e.target.value) || 0)}
+                                        className="admin-input"
+                                        placeholder="0"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className="flex justify-end gap-4 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPaymentForm(false)}
+                                        className="px-6 py-2 border border-pm-gold/50 text-pm-gold rounded-lg hover:bg-pm-gold/10 transition-colors"
+                                    >
+                                        Annuler
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-6 py-2 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-white transition-colors"
+                                    >
+                                        Enregistrer
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
 
                 {/* Formulaire de nouvelle transaction */}
                 {showTransactionForm && (
