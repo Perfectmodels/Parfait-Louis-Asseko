@@ -65,8 +65,8 @@ const SocialPostCreator: React.FC<SocialPostCreatorProps> = ({
         isPinned: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        location: location || undefined,
-        mood
+        ...(location && { location }),
+        ...(mood && { mood })
       };
 
       // Sauvegarder le post
