@@ -268,7 +268,7 @@ const Home: React.FC = () => {
     <div className="bg-pm-dark text-pm-off-white">
 
       <SEO 
-        title="Accueil | L'Élégance Redéfinie"
+        title="Perfect Models Management"
         description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
         keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
         image={siteImages.hero}
@@ -357,7 +357,7 @@ const Home: React.FC = () => {
             </div>
             <div className="text-center mt-12">
               <Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                Découvrir tous nos services
+                Découvrir nos prestations
               </Link>
             </div>
           </div>
@@ -432,7 +432,7 @@ const Home: React.FC = () => {
             
             <div className="text-center mt-12">
               <Link to="/fashion-day" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                Voir toutes les éditions
+                Voir les éditions
               </Link>
             </div>
           </div>
@@ -450,7 +450,7 @@ const Home: React.FC = () => {
             </div>
             <div className="text-center mt-12">
               <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                Voir tous les mannequins
+                Voir les mannequins
               </Link>
             </div>
         </div>
