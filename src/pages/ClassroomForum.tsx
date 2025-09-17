@@ -1,46 +1,30 @@
 
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChatBubbleLeftRightIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { 
+  ChatBubbleLeftRightIcon, 
+  PlusIcon, 
+  SparklesIcon,
+  UsersIcon,
+  FireIcon,
+  HeartIcon,
+  ChatBubbleLeftIcon
+} from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-// FIX: Corrected import path for types from '../src/types' to '../types'.
+import SocialFeed from '../components/SocialFeed';
 import { ForumThread } from '../types';
 
 const ClassroomForum: React.FC = () => {
-    const { data, saveData, isInitialized } = useData();
-    const [isCreating, setIsCreating] = useState(false);
-    const [newThread, setNewThread] = useState({ title: '', initialPost: '' });
+    const { data, isInitialized } = useData();
+    const [activeTab, setActiveTab] = useState<'social' | 'forum'>('social');
 
     const userId = sessionStorage.getItem('userId');
-    const user = data?.models.find(m => m.id === userId);
+    const user = data?.models.find(m => m.id === userId) || 
+                 data?.beginnerStudents.find(s => s.id === userId);
     
     const threads = data?.forumThreads.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
-
-    const handleCreateThread = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newThread.title.trim() || !newThread.initialPost.trim() || !user || !data) return;
-
-        const threadData: ForumThread = {
-            id: Date.now().toString(),
-            title: newThread.title,
-            initialPost: newThread.initialPost,
-            authorId: user.id,
-            authorName: user.name,
-            createdAt: new Date().toISOString()
-        };
-
-        const updatedThreads = [...data.forumThreads, threadData];
-        try {
-            await saveData({ ...data, forumThreads: updatedThreads });
-            setNewThread({ title: '', initialPost: '' });
-            setIsCreating(false);
-        } catch (error) {
-            console.error("Erreur lors de la création de la discussion:", error);
-            alert("Impossible de créer la discussion.");
-        }
-    };
+    const socialPosts = data?.socialPosts || [];
     
     if (!isInitialized || !user) {
         return <div className="bg-pm-dark text-pm-off-white min-h-screen flex items-center justify-center"><p>Chargement...</p></div>;
@@ -48,68 +32,136 @@ const ClassroomForum: React.FC = () => {
 
     return (
         <>
-            <SEO title="Forum | PMM Classroom" noIndex />
+            <SEO title="Communauté | PMM Classroom" noIndex />
             <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-                <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
-                    <header className="flex justify-between items-center mb-8 flex-wrap gap-4">
-                        <div className="flex items-center gap-3">
-                            <ChatBubbleLeftRightIcon className="w-10 h-10 text-pm-gold" />
+                <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+                    {/* Header */}
+                    <header className="mb-8">
+                        <div className="flex items-center gap-3 mb-4">
+                            <SparklesIcon className="w-10 h-10 text-pm-gold" />
                             <div>
-                                <h1 className="text-4xl font-playfair text-pm-gold">Forum de Discussion</h1>
-                                <p className="text-sm text-pm-off-white/70">Échangez, posez des questions et partagez avec la communauté.</p>
+                                <h1 className="text-4xl font-playfair text-pm-gold">Communauté PMM</h1>
+                                <p className="text-sm text-pm-off-white/70">Connectez-vous, partagez et apprenez ensemble</p>
                             </div>
                         </div>
-                        <button onClick={() => setIsCreating(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/20">
-                            <PlusIcon className="w-5 h-5"/> Lancer une Discussion
-                        </button>
+
+                        {/* Statistiques rapides */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-4 text-center">
+                                <div className="text-2xl font-bold text-pm-gold">{socialPosts.length}</div>
+                                <div className="text-sm text-pm-off-white/60">Publications</div>
+                            </div>
+                            <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-4 text-center">
+                                <div className="text-2xl font-bold text-pm-gold">
+                                    {socialPosts.reduce((sum, post) => sum + post.likes.length, 0)}
+                                </div>
+                                <div className="text-sm text-pm-off-white/60">Likes</div>
+                            </div>
+                            <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-4 text-center">
+                                <div className="text-2xl font-bold text-pm-gold">
+                                    {socialPosts.reduce((sum, post) => sum + post.comments.length, 0)}
+                                </div>
+                                <div className="text-sm text-pm-off-white/60">Commentaires</div>
+                            </div>
+                            <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-4 text-center">
+                                <div className="text-2xl font-bold text-pm-gold">{threads.length}</div>
+                                <div className="text-sm text-pm-off-white/60">Discussions</div>
+                            </div>
+                        </div>
+
+                        {/* Navigation par onglets */}
+                        <div className="flex gap-2 border-b border-pm-gold/20">
+                            <button
+                                onClick={() => setActiveTab('social')}
+                                className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
+                                    activeTab === 'social'
+                                        ? 'text-pm-gold border-pm-gold'
+                                        : 'text-pm-off-white/60 border-transparent hover:text-pm-gold'
+                                }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <SparklesIcon className="w-5 h-5" />
+                                    Fil d'Actualité
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('forum')}
+                                className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
+                                    activeTab === 'forum'
+                                        ? 'text-pm-gold border-pm-gold'
+                                        : 'text-pm-off-white/60 border-transparent hover:text-pm-gold'
+                                }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <ChatBubbleLeftRightIcon className="w-5 h-5" />
+                                    Forum Classique
+                                </div>
+                            </button>
+                        </div>
                     </header>
 
-                    {isCreating && (
-                        <div className="bg-black p-6 border border-pm-gold/20 rounded-lg mb-8">
-                            <h2 className="text-2xl font-playfair text-pm-gold mb-4">Nouvelle Discussion</h2>
-                            <form onSubmit={handleCreateThread} className="space-y-4">
-                                <input
-                                    type="text"
-                                    placeholder="Titre de la discussion"
-                                    value={newThread.title}
-                                    onChange={(e) => setNewThread(prev => ({ ...prev, title: e.target.value }))}
-                                    className="admin-input"
-                                    required
-                                />
-                                <textarea
-                                    placeholder="Votre premier message..."
-                                    value={newThread.initialPost}
-                                    onChange={(e) => setNewThread(prev => ({ ...prev, initialPost: e.target.value }))}
-                                    className="admin-input admin-textarea"
-                                    rows={5}
-                                    required
-                                />
-                                <div className="flex justify-end gap-4">
-                                    <button type="button" onClick={() => setIsCreating(false)} className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-pm-off-white/70 hover:text-white">Annuler</button>
-                                    <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">Publier</button>
+                    {/* Contenu selon l'onglet actif */}
+                    {activeTab === 'social' ? (
+                        <SocialFeed />
+                    ) : (
+                        <div className="space-y-6">
+                            {/* Forum classique */}
+                            <div className="bg-pm-dark border border-pm-gold/20 rounded-xl p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-xl font-playfair text-pm-gold">Discussions du Forum</h2>
+                                    <Link
+                                        to="/formations/forum/new"
+                                        className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-semibold rounded-lg hover:bg-pm-gold/90 transition-colors"
+                                    >
+                                        <PlusIcon className="w-5 h-5" />
+                                        Nouvelle Discussion
+                                    </Link>
                                 </div>
-                            </form>
+
+                                <div className="space-y-4">
+                                    {threads.map(thread => (
+                                        <Link 
+                                            to={`/formations/forum/${thread.id}`} 
+                                            key={thread.id} 
+                                            className="block bg-pm-dark/50 p-4 border border-pm-gold/10 rounded-lg hover:border-pm-gold hover:bg-pm-dark transition-all duration-300"
+                                        >
+                                            <h3 className="text-lg font-semibold text-pm-gold mb-2">{thread.title}</h3>
+                                            <p className="text-pm-off-white/80 text-sm mb-3 line-clamp-2">
+                                                {thread.initialPost}
+                                            </p>
+                                            <div className="flex items-center justify-between text-xs text-pm-off-white/60">
+                                                <div className="flex items-center gap-4">
+                                                    <span>Par <span className="font-semibold text-pm-gold">{thread.authorName}</span></span>
+                                                </div>
+                                                <span>{new Date(thread.createdAt).toLocaleDateString('fr-FR', { 
+                                                    day: 'numeric', 
+                                                    month: 'short', 
+                                                    year: 'numeric' 
+                                                })}</span>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                    
+                                    {threads.length === 0 && (
+                                        <div className="text-center py-12">
+                                            <ChatBubbleLeftRightIcon className="w-16 h-16 text-pm-gold/40 mx-auto mb-4" />
+                                            <h3 className="text-xl font-playfair text-pm-gold mb-2">Aucune discussion</h3>
+                                            <p className="text-pm-off-white/60 mb-6">
+                                                Soyez le premier à lancer une discussion dans le forum classique !
+                                            </p>
+                                            <Link
+                                                to="/formations/forum/new"
+                                                className="inline-flex items-center gap-2 px-6 py-3 bg-pm-gold text-pm-dark font-semibold rounded-lg hover:bg-pm-gold/90 transition-colors"
+                                            >
+                                                <PlusIcon className="w-5 h-5" />
+                                                Créer une Discussion
+                                            </Link>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     )}
-
-                    <div className="space-y-4">
-                        {threads.map(thread => (
-                            <Link to={`/formations/forum/${thread.id}`} key={thread.id} className="block bg-black p-4 border border-pm-gold/10 rounded-lg hover:border-pm-gold hover:bg-pm-dark transition-all duration-300">
-                                <h3 className="text-xl font-bold text-pm-gold">{thread.title}</h3>
-                                <div className="flex items-center justify-between text-xs text-pm-off-white/60 mt-2">
-                                    <p>Par <span className="font-semibold">{thread.authorName}</span></p>
-                                    <p>{new Date(thread.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                                </div>
-                            </Link>
-                        ))}
-                         {threads.length === 0 && !isCreating && (
-                            <div className="text-center py-16">
-                                <p className="text-pm-off-white/70">Aucune discussion pour le moment.</p>
-                                <p className="mt-2 text-pm-off-white/70">Soyez le premier à en lancer une !</p>
-                            </div>
-                        )}
-                    </div>
-
                 </div>
             </div>
         </>

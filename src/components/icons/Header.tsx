@@ -18,7 +18,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
       onClick={onClick}
       end={to === '/'}
       className={({ isActive }) =>
-        `relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${mobileAnimationClasses} ${
+        `relative py-2 px-3 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold whitespace-nowrap ${mobileAnimationClasses} ${
           isMobile ? 'text-center break-words hyphens-auto' : ''
         } ` +
         (isActive ? "text-pm-gold" : "")
@@ -109,7 +109,7 @@ export const Breadcrumb: React.FC = () => {
             '/casting': 'Casting', '/casting-formulaire': 'Postuler au Casting',
             '/fashion-day-application': 'Candidature PFD', '/profil': 'Mon Profil',
             '/formations': 'Classroom', '/formations/forum': 'Forum',
-            '/classroom-debutant': 'Classroom Débutant'
+            '/classroom-debutant': 'Formations'
         };
 
         const pathnames = location.pathname.split('/').filter(Boolean);
@@ -308,22 +308,22 @@ const Header: React.FC = () => {
       >
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
-            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+            <Link to="/" className="flex-shrink-0 z-10" onClick={() => setIsOpen(false)}>
               <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
             </Link>
           )}
           
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 flex-1 justify-center max-w-4xl">
             <NavLinks navLinks={processedNavLinks} />
-            
-            <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
-                <Link to="/casting-formulaire" className="px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                    Postuler
-                </Link>
-                <SocialLinksComponent socialLinks={socialLinks} />
-                {isLoggedIn && <LogoutButton onClick={handleLogout} />}
-            </div>
           </nav>
+          
+          <div className="hidden lg:flex items-center gap-4 xl:gap-6 flex-shrink-0">
+            <Link to="/casting-formulaire" className="px-4 xl:px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20 whitespace-nowrap">
+                Postuler
+            </Link>
+            <SocialLinksComponent socialLinks={socialLinks} />
+            {isLoggedIn && <LogoutButton onClick={handleLogout} />}
+          </div>
 
           <div className="lg:hidden flex items-center">
               <button ref={hamburgerButtonRef} onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">

@@ -354,6 +354,7 @@ const ContentView: React.FC = () => (
                             <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine Focus Model 241." />
                             <DashboardCard title="Galerie Photos" icon={PhotoIcon} link="/admin/gallery" description="Créer et organiser des albums photos par thème." />
                             <DashboardCard title="Gestion d'Équipe" icon={UserIcon} link="/admin/team" description="Gérer les membres de l'équipe et leur visibilité sur le site." />
+                            <DashboardCard title="Suivi des Mannequins" icon={ChartBarIcon} link="/admin/model-tracking" description="Tableau de bord complet pour suivre la performance et l'activité des mannequins." />
                             <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier et gérer les actualités de la page d'accueil." />
                             <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services, la chronologie et les réalisations." />
                             <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />

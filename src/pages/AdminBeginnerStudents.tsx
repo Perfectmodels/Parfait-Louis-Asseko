@@ -75,7 +75,7 @@ const AdminBeginnerStudents: React.FC = () => {
             name: studentToPromote.name,
             username,
             password,
-            level: 'Pro',
+            level: 'Mannequin',
             isPublic: false,
             gender: originalApplication?.gender || 'Femme',
             height: originalApplication ? `${originalApplication.height}cm` : 'N/A',

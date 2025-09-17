@@ -212,8 +212,8 @@ const AdminModels: React.FC = () => {
 
     const handleDemote = async (proModel: Model, targetLevel: 'Débutant' | 'Inactif') => {
         if (!data) return;
-        if (proModel.level !== 'Pro') {
-            alert("Ce profil n'est pas au niveau Professionnel.");
+        if (proModel.level !== 'Mannequin') {
+            alert("Ce profil n'est pas au niveau Mannequin.");
             return;
         }
         
@@ -252,7 +252,7 @@ const AdminModels: React.FC = () => {
         } else if (targetLevel === 'Inactif') {
             // Marquer comme inactif
             const updatedModels = data.models.map(m => 
-                m.id === proModel.id ? { ...m, level: 'Inactif' as const } : m
+                m.id === proModel.id ? { ...m, level: 'Inactif' as any } : m
             );
 
             try {
@@ -277,7 +277,7 @@ const AdminModels: React.FC = () => {
         if (!window.confirm(`Réactiver ${inactiveModel.name} au statut Professionnel ?`)) return;
 
         const updatedModels = data.models.map(m => 
-            m.id === inactiveModel.id ? { ...m, level: 'Pro' as const } : m
+            m.id === inactiveModel.id ? { ...m, level: 'Mannequin' as any } : m
         );
 
         try {
@@ -366,7 +366,7 @@ const AdminModels: React.FC = () => {
                                     <td className="font-semibold">{model.name}</td>
                                     <td>
                                         <span className={`px-2 py-0.5 text-xs rounded-full ${
-                                            model.level === 'Pro' ? 'bg-pm-gold/20 text-pm-gold' : 
+                                            model.level === 'Mannequin' ? 'bg-pm-gold/20 text-pm-gold' : 
                                             model.level === 'Inactif' ? 'bg-red-500/20 text-red-300' : 
                                             'bg-blue-500/20 text-blue-300'
                                         }`}>
@@ -390,7 +390,7 @@ const AdminModels: React.FC = () => {
                                             >
                                                 <PrinterIcon className="w-5 h-5"/>
                                             </button>
-                                            {(model.level && /pro/i.test(model.level)) && (
+                                            {(model.level && /mannequin/i.test(model.level)) && (
                                               <div className="relative">
                                                 <button 
                                                   onClick={() => setDemoteDropdownOpen(demoteDropdownOpen === model.id ? null : model.id)}

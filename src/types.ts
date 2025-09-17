@@ -572,3 +572,151 @@ export interface TeamMember {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ModelActivity {
+  id: string;
+  modelId: string;
+  type: 'login' | 'quiz_completed' | 'payment_submitted' | 'profile_updated' | 'booking_requested' | 'casting_applied' | 'forum_post' | 'classroom_access';
+  title: string;
+  description: string;
+  timestamp: string;
+  metadata?: {
+    quizScore?: number;
+    quizChapter?: string;
+    paymentAmount?: number;
+    bookingDetails?: string;
+    castingEvent?: string;
+    forumThread?: string;
+  };
+  isRead: boolean;
+}
+
+export interface ModelPerformance {
+  modelId: string;
+  totalQuizAttempts: number;
+  averageQuizScore: number;
+  totalLoginDays: number;
+  lastLoginDate: string;
+  totalBookings: number;
+  totalCastings: number;
+  forumPosts: number;
+  paymentCompliance: number; // Pourcentage de paiements à jour
+  overallScore: number; // Score global de performance
+  lastUpdated: string;
+}
+
+export interface ModelTrackingData {
+  modelId: string;
+  activities: ModelActivity[];
+  performance: ModelPerformance;
+  notes: string;
+  tags: string[];
+  status: 'active' | 'inactive' | 'suspended' | 'graduated';
+  lastAdminReview: string;
+  nextReviewDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Types pour le système social/forum
+export interface SocialPost {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorImage?: string;
+  content: string;
+  images?: string[];
+  type: 'text' | 'image' | 'video' | 'poll' | 'event';
+  category: 'general' | 'tips' | 'inspiration' | 'question' | 'achievement' | 'news';
+  tags: string[];
+  mentions: string[]; // IDs des utilisateurs mentionnés
+  likes: string[]; // IDs des utilisateurs qui ont liké
+  shares: string[]; // IDs des utilisateurs qui ont partagé
+  comments: SocialComment[];
+  isPublic: boolean;
+  isPinned: boolean;
+  createdAt: string;
+  updatedAt: string;
+  editedAt?: string;
+  location?: string;
+  mood?: 'happy' | 'excited' | 'grateful' | 'proud' | 'motivated' | 'inspired';
+}
+
+export interface SocialComment {
+  id: string;
+  postId: string;
+  authorId: string;
+  authorName: string;
+  authorImage?: string;
+  content: string;
+  likes: string[];
+  replies: SocialComment[];
+  createdAt: string;
+  updatedAt: string;
+  editedAt?: string;
+  isEdited: boolean;
+}
+
+export interface SocialReaction {
+  id: string;
+  postId: string;
+  userId: string;
+  type: 'like' | 'love' | 'laugh' | 'wow' | 'sad' | 'angry';
+  createdAt: string;
+}
+
+export interface SocialShare {
+  id: string;
+  originalPostId: string;
+  sharedBy: string;
+  sharedByName: string;
+  comment?: string; // Commentaire ajouté lors du partage
+  createdAt: string;
+}
+
+export interface SocialNotification {
+  id: string;
+  userId: string;
+  type: 'like' | 'comment' | 'share' | 'mention' | 'follow' | 'achievement';
+  title: string;
+  message: string;
+  relatedPostId?: string;
+  relatedUserId?: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface SocialUser {
+  id: string;
+  name: string;
+  username: string;
+  imageUrl?: string;
+  bio?: string;
+  followers: string[];
+  following: string[];
+  postsCount: number;
+  isVerified: boolean;
+  isOnline: boolean;
+  lastSeen: string;
+  badges: string[]; // Badges d'achievement
+  privacy: {
+    showOnlineStatus: boolean;
+    allowMentions: boolean;
+    allowDirectMessages: boolean;
+  };
+}
+
+export interface SocialPoll {
+  id: string;
+  postId: string;
+  question: string;
+  options: {
+    id: string;
+    text: string;
+    votes: string[]; // IDs des utilisateurs qui ont voté
+  }[];
+  allowMultipleVotes: boolean;
+  expiresAt?: string;
+  totalVotes: number;
+  createdAt: string;
+}
