@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, AdminPermission, PaymentSubmission, Album, AccountingCategory, AccountingTransaction, PaymentList, TeamMember } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, AdminPermission, PaymentSubmission, Album, AccountingCategory, AccountingTransaction, PaymentList, TeamMember, ModelActivity, ModelPerformance, ModelTrackingData, SocialPost, SocialComment, SocialNotification, SocialUser } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -95,6 +95,12 @@ export interface AppData {
     paymentSubmissions: PaymentSubmission[];
     albums: Album[];
     teamMembers: TeamMember[];
+    modelActivities: ModelActivity[];
+    modelPerformances: ModelPerformance[];
+    modelTrackingData: ModelTrackingData[];
+    socialPosts: SocialPost[];
+    socialNotifications: SocialNotification[];
+    socialUsers: SocialUser[];
 }
 
 export const useDataStore = () => {
@@ -144,6 +150,12 @@ export const useDataStore = () => {
         paymentSubmissions: [],
         albums: initialAlbums,
         teamMembers: initialTeamMembers,
+        modelActivities: [],
+        modelPerformances: [],
+        modelTrackingData: [],
+        socialPosts: [],
+        socialNotifications: [],
+        socialUsers: [],
     }), []);
     
     useEffect(() => {

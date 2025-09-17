@@ -26,8 +26,6 @@ const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
-const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
-const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
 const Chat = lazy(() => import('./pages/Chat'));
 
 // Admin Pages
@@ -49,6 +47,7 @@ const AdminPaymentStatus = lazy(() => import('./pages/AdminPaymentStatus'));
 const AdminAccounting = lazy(() => import('./pages/AdminAccounting'));
 const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
 const AdminTeam = lazy(() => import('./pages/AdminTeam'));
+const AdminModelTracking = lazy(() => import('./pages/AdminModelTracking'));
 const TestImageUpload = lazy(() => import('./pages/TestImageUpload'));
 const Gallery = lazy(() => import('./pages/Gallery'));
 const AdminGallery = lazy(() => import('./pages/AdminGallery'));
@@ -146,16 +145,16 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/test-upload" element={<TestImageUpload />} />
                         <ReactRouterDOM.Route path="/galerie" element={<Gallery />} />
 
-                        {/* Protected Routes */}
+                        {/* Protected Routes - Classroom Unifiée */}
                         <ReactRouterDOM.Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
                         
-                        
-                        <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />
+                        {/* Routes pour débutants redirigées vers la classroom unifiée */}
+                        <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><Activity /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><ChapterDetail /></ProtectedRoute>} />
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
@@ -169,6 +168,7 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/team" element={<ProtectedRoute role="admin"><AdminTeam /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/model-tracking" element={<ProtectedRoute role="admin"><AdminModelTracking /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/agency" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />

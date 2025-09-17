@@ -96,7 +96,7 @@ const Login: React.FC = () => {
         await saveData({ ...data, beginnerStudents: updatedBeginners });
         updateUserActivity(loggedInBeginner.name, 'beginner');
 
-        navigate('/classroom-debutant');
+        navigate('/formations');
         return;
     }
 
