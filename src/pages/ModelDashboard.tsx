@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     BookOpenIcon, UserIcon, ArrowRightOnRectangleIcon,
     EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon, Bars3Icon, XMarkIcon,
     BellIcon, TrophyIcon, UserCircleIcon
 } from '@heroicons/react/24/outline';
-import { Model, PhotoshootBrief } from '../types';
+import { Model, BeginnerStudent, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
 import PaymentStatusBadge from '../components/PaymentStatusBadge';
 import PaymentWarningAlert from '../components/PaymentWarningAlert';
@@ -18,14 +18,21 @@ type ActiveTab = 'profile' | 'results' | 'briefs';
 const ModelDashboard: React.FC = () => {
     const { data, saveData } = useData();
     const navigate = useNavigate();
-    const userId = sessionStorage.getItem('userId');
+    const { userId } = useParams<{ userId: string }>();
+    const sessionUserId = sessionStorage.getItem('userId');
     const [editableModel, setEditableModel] = useState<Model | null>(null);
+    const [editableBeginner, setEditableBeginner] = useState<BeginnerStudent | null>(null);
     const [activeTab, setActiveTab] = useState<ActiveTab>('profile');
     const [expandedBriefId, setExpandedBriefId] = useState<string | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
 
+    // Détecter le type de mannequin
     const originalModel = data?.models.find(m => m.id === userId);
+    const originalBeginner = data?.beginnerStudents.find(bs => bs.id === userId);
+    const isBeginner = !!originalBeginner && !originalModel;
+    const currentUser = isBeginner ? originalBeginner : originalModel;
+    
     const courseModulesWithQuizzes = data?.courseData?.filter(m => m.quiz && m.quiz.length > 0) || [];
 
     const myBriefs = data?.photoshootBriefs.filter(b => b.modelId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
@@ -34,25 +41,36 @@ const ModelDashboard: React.FC = () => {
     useEffect(() => {
         if (originalModel) {
             setEditableModel(JSON.parse(JSON.stringify(originalModel)));
+        } else if (originalBeginner) {
+            setEditableBeginner(JSON.parse(JSON.stringify(originalBeginner)));
         }
-    }, [originalModel]);
+    }, [originalModel, originalBeginner]);
     
-    const handleSave = async (updatedModel: Model) => {
-        if (!data || !editableModel) return;
+    const handleSave = async (updatedUser: Model | BeginnerStudent) => {
+        if (!data || (!editableModel && !editableBeginner)) return;
         
-        const updatedModels = data.models.map(m => 
-            m.id === updatedModel.id ? updatedModel : m
-        );
+        if (isBeginner && editableBeginner) {
+            const updatedBeginners = data.beginnerStudents.map(bs => 
+                bs.id === updatedUser.id ? updatedUser as BeginnerStudent : bs
+            );
+            await saveData({ ...data, beginnerStudents: updatedBeginners });
+        } else if (editableModel) {
+            const updatedModels = data.models.map(m => 
+                m.id === updatedUser.id ? updatedUser as Model : m
+            );
+            await saveData({ ...data, models: updatedModels });
+        }
         
-        await saveData({ ...data, models: updatedModels });
         alert("Profil mis à jour avec succès.");
     };
     
     const handleCancel = () => {
         if (originalModel) {
             setEditableModel(JSON.parse(JSON.stringify(originalModel)));
-            alert("Les modifications ont été annulées.");
+        } else if (originalBeginner) {
+            setEditableBeginner(JSON.parse(JSON.stringify(originalBeginner)));
         }
+        alert("Les modifications ont été annulées.");
     };
 
     const handleLogout = () => {
@@ -81,31 +99,71 @@ const ModelDashboard: React.FC = () => {
     };
 
     const handleDismissWarning = async (warningId: string) => {
-        if (!data || !editableModel) return;
+        if (!data || (!editableModel && !editableBeginner)) return;
         
-        const updatedModel = {
-            ...editableModel,
-            paymentStatus: {
-                ...editableModel.paymentStatus,
-                warnings: editableModel.paymentStatus?.warnings?.map(warning => 
-                    warning.id === warningId ? { ...warning, isRead: true } : warning
-                ) || []
+        if (isBeginner && editableBeginner) {
+            const updatedBeginner = {
+                ...editableBeginner,
+                paymentStatus: {
+                    ...editableBeginner.paymentStatus,
+                    warnings: editableBeginner.paymentStatus?.warnings?.map(warning => 
+                        warning.id === warningId ? { ...warning, isRead: true } : warning
+                    ) || []
+                }
+            };
+            
+            const updatedBeginners = data.beginnerStudents.map(bs => 
+                bs.id === editableBeginner.id ? updatedBeginner : bs
+            );
+            
+            try {
+                await saveData({ ...data, beginnerStudents: updatedBeginners });
+                setEditableBeginner(updatedBeginner);
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour de l\'avertissement:', error);
             }
-        };
-        
-        const updatedModels = data.models.map(m => 
-            m.id === editableModel.id ? updatedModel : m
-        );
-        
-        try {
-            await saveData({ ...data, models: updatedModels });
-            setEditableModel(updatedModel);
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour de l\'avertissement:', error);
+        } else if (editableModel) {
+            const updatedModel = {
+                ...editableModel,
+                paymentStatus: {
+                    ...editableModel.paymentStatus,
+                    warnings: editableModel.paymentStatus?.warnings?.map(warning => 
+                        warning.id === warningId ? { ...warning, isRead: true } : warning
+                    ) || []
+                }
+            };
+            
+            const updatedModels = data.models.map(m => 
+                m.id === editableModel.id ? updatedModel : m
+            );
+            
+            try {
+                await saveData({ ...data, models: updatedModels });
+                setEditableModel(updatedModel);
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour de l\'avertissement:', error);
+            }
         }
     };
 
-    if (!editableModel) {
+    if (!sessionUserId || sessionUserId !== userId) {
+        return (
+            <div className="min-h-screen bg-pm-dark text-pm-off-white flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-500 mb-4">Accès Refusé</h1>
+                    <p className="text-pm-off-white/70 mb-6">Vous n'avez pas la permission d'accéder à ce profil.</p>
+                    <button
+                        onClick={() => navigate('/login')}
+                        className="px-6 py-3 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
+                    >
+                        Retour à la connexion
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!currentUser || (!editableModel && !editableBeginner)) {
         return (
             <div className="bg-pm-dark text-pm-off-white min-h-screen flex items-center justify-center">
                 <p>Chargement du profil...</p>
@@ -139,8 +197,8 @@ const ModelDashboard: React.FC = () => {
                                     <UserIcon className="w-5 h-5 text-black" />
                                 </div>
                                 <div>
-                                    <h1 className="text-lg font-bold text-pm-gold">Mannequin Pro</h1>
-                                    <p className="text-xs text-pm-off-white/60">Bienvenue, {editableModel.name.split(' ')[0]}</p>
+                                    <h1 className="text-lg font-bold text-pm-gold">{isBeginner ? 'Mannequin Débutant' : 'Mannequin Pro'}</h1>
+                                    <p className="text-xs text-pm-off-white/60">Bienvenue, {currentUser.name.split(' ')[0]}</p>
                                 </div>
                             </div>
                         </div>
@@ -161,8 +219,8 @@ const ModelDashboard: React.FC = () => {
                             {/* User Info */}
                             <div className="hidden sm:flex items-center gap-3 text-sm">
                                 <div className="text-right">
-                                    <p className="text-pm-gold font-medium">{editableModel.name}</p>
-                                    <p className="text-pm-off-white/60 text-xs">Mannequin Professionnel</p>
+                                    <p className="text-pm-gold font-medium">{currentUser.name}</p>
+                                    <p className="text-pm-off-white/60 text-xs">{isBeginner ? 'Mannequin Débutant' : 'Mannequin Professionnel'}</p>
                                 </div>
                                 <button
                                     onClick={handleLogout}
@@ -253,14 +311,16 @@ const ModelDashboard: React.FC = () => {
                                        <BookOpenIcon className="w-4 h-4" />
                                        <span className="text-sm">Formations</span>
                                    </Link>
-                                   <Link
-                                       to={`/mannequins/${editableModel.id}`}
-                                       className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
-                                       onClick={() => setSidebarOpen(false)}
-                                   >
-                                       <UserCircleIcon className="w-4 h-4" />
-                                       <span className="text-sm">Portfolio Public</span>
-                                   </Link>
+                                   {!isBeginner && (
+                                       <Link
+                                           to={`/mannequins/${currentUser.id}`}
+                                           className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
+                                           onClick={() => setSidebarOpen(false)}
+                                       >
+                                           <UserCircleIcon className="w-4 h-4" />
+                                           <span className="text-sm">Portfolio Public</span>
+                                       </Link>
+                                   )}
                                    <Link
                                        to="/contact"
                                        className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
@@ -288,7 +348,7 @@ const ModelDashboard: React.FC = () => {
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="text-lg font-semibold text-pm-gold">Statut des Cotisations</h3>
                                         <div className="flex items-center gap-3">
-                                            <PaymentStatusBadge paymentStatus={editableModel.paymentStatus} showDetails={true} />
+                                            <PaymentStatusBadge paymentStatus={currentUser.paymentStatus} showDetails={true} />
                                             <button
                                                 onClick={() => setShowPaymentForm(true)}
                                                 className="px-4 py-2 bg-pm-gold text-pm-dark font-medium rounded-lg hover:bg-pm-gold/90 transition-colors text-sm"
@@ -298,24 +358,102 @@ const ModelDashboard: React.FC = () => {
                                         </div>
                                     </div>
                                     
-                                    {editableModel.paymentStatus?.warnings && editableModel.paymentStatus.warnings.length > 0 && (
+                                    {currentUser.paymentStatus?.warnings && currentUser.paymentStatus.warnings.length > 0 && (
                                         <div className="mt-4">
                                             <h4 className="text-sm font-medium text-pm-off-white mb-3">Avertissements</h4>
                                             <PaymentWarningAlert 
-                                                warnings={editableModel.paymentStatus.warnings}
+                                                warnings={currentUser.paymentStatus.warnings}
                                                 onDismissWarning={handleDismissWarning}
                                             />
                                         </div>
                                     )}
                                 </div>
                                 
-                                <ModelForm 
-                                    model={editableModel}
-                                    onSave={handleSave}
-                                    onCancel={handleCancel}
-                                    mode="model"
-                                    isCreating={false}
-                                />
+                                {isBeginner ? (
+                                    <div className="bg-pm-dark border border-pm-gold/20 rounded-xl p-6">
+                                        <h3 className="text-2xl font-playfair text-pm-gold mb-6">Informations Personnelles</h3>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-sm font-medium text-pm-gold mb-2">Nom complet</label>
+                                                <input
+                                                    type="text"
+                                                    value={editableBeginner?.name || ''}
+                                                    onChange={(e) => setEditableBeginner({...editableBeginner!, name: e.target.value})}
+                                                    className="w-full px-4 py-3 bg-pm-dark border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                                />
+                                            </div>
+                                            
+                                            <div>
+                                                <label className="block text-sm font-medium text-pm-gold mb-2">Matricule</label>
+                                                <input
+                                                    type="text"
+                                                    value={editableBeginner?.matricule || ''}
+                                                    readOnly
+                                                    className="w-full px-4 py-3 bg-pm-dark/50 border border-pm-gold/30 rounded-lg text-pm-off-white/70"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-pm-gold mb-2">Email</label>
+                                                <input
+                                                    type="email"
+                                                    value={editableBeginner?.email || ''}
+                                                    onChange={(e) => setEditableBeginner({...editableBeginner!, email: e.target.value})}
+                                                    className="w-full px-4 py-3 bg-pm-dark border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-pm-gold mb-2">Téléphone</label>
+                                                <input
+                                                    type="tel"
+                                                    value={editableBeginner?.phone || ''}
+                                                    onChange={(e) => setEditableBeginner({...editableBeginner!, phone: e.target.value})}
+                                                    className="w-full px-4 py-3 bg-pm-dark border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-pm-gold mb-2">Ville</label>
+                                                <input
+                                                    type="text"
+                                                    value={editableBeginner?.city || ''}
+                                                    onChange={(e) => setEditableBeginner({...editableBeginner!, city: e.target.value})}
+                                                    className="w-full px-4 py-3 bg-pm-dark border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-pm-gold mb-2">Instagram</label>
+                                                <input
+                                                    type="text"
+                                                    value={editableBeginner?.instagram || ''}
+                                                    onChange={(e) => setEditableBeginner({...editableBeginner!, instagram: e.target.value})}
+                                                    placeholder="@nom_utilisateur"
+                                                    className="w-full px-4 py-3 bg-pm-dark border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-6 flex justify-end">
+                                            <button
+                                                onClick={() => handleSave(editableBeginner!)}
+                                                className="px-6 py-3 bg-pm-gold text-pm-dark font-semibold rounded-lg hover:bg-pm-gold/90 transition-colors"
+                                            >
+                                                Sauvegarder
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : editableModel ? (
+                                    <ModelForm 
+                                        model={editableModel}
+                                        onSave={handleSave}
+                                        onCancel={handleCancel}
+                                        mode="model"
+                                        isCreating={false}
+                                    />
+                                ) : null}
                             </div>
                         )}
                         
@@ -329,7 +467,7 @@ const ModelDashboard: React.FC = () => {
                                     {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {courseModulesWithQuizzes.map(module => {
-                                                const scoreData = editableModel.quizScores?.[module.slug];
+                                                const scoreData = currentUser.quizScores?.[module.slug];
                                                 const percentage = scoreData ? Math.round((scoreData.score / scoreData.total) * 100) : null;
                                                 return (
                                                     <div key={module.slug} className="bg-pm-dark/50 p-4 rounded-lg border border-pm-gold/10">
@@ -394,8 +532,8 @@ const ModelDashboard: React.FC = () => {
             {/* Payment Submission Form */}
             {showPaymentForm && (
                 <PaymentSubmissionForm
-                    modelId={editableModel.id}
-                    modelName={editableModel.name}
+                    modelId={currentUser.id}
+                    modelName={currentUser.name}
                     onClose={() => setShowPaymentForm(false)}
                 />
             )}

@@ -31,7 +31,6 @@ export const Breadcrumb: React.FC = () => {
     '/contact': 'Contact',
     '/formations': 'Formations',
     '/profil': 'Mon Profil',
-    '/profil-debutant': 'Profil Débutant',
     '/casting': 'Casting',
     '/casting-formulaire': 'Formulaire de Casting',
     '/fashion-day-application': 'Candidature PFD',
@@ -408,7 +407,10 @@ const Header: React.FC = () => {
   const processedNavLinks = useMemo(() => {
     const links = effectiveNavLinks.map(link => {
         if (link.label === 'Classroom') {
-            if (userRole === 'student') return { ...link, label: 'Mon Profil', path: '/profil' };
+            if (userRole === 'student' || userRole === 'beginner') {
+                const userId = sessionStorage.getItem('userId');
+                return { ...link, label: 'Mon Profil', path: `/profil/${userId}` };
+            }
             if (userRole === 'admin') return { ...link, path: '/admin/classroom' };
             return null;
         }

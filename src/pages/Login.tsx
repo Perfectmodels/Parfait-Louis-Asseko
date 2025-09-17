@@ -4,6 +4,7 @@ import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { RecoveryRequest } from '../types';
+import { findModelAccess } from '../data/modelAccess';
 
 // Interface for storing active user data in localStorage
 interface ActiveUser {
@@ -63,40 +64,36 @@ const Login: React.FC = () => {
       return;
     }
 
-    // Model Login
-    const loggedInModel = data.models.find(m => 
-        m.username.toLowerCase() === normalizedUsername || 
-        m.name.toLowerCase() === normalizedUsername
-    );
-    if (loggedInModel && loggedInModel.password === password) {
-        sessionStorage.setItem('classroom_access', 'granted');
-        sessionStorage.setItem('classroom_role', 'student');
-        sessionStorage.setItem('userId', loggedInModel.id);
-        
-        const updatedModels = data.models.map(m => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
-        await saveData({ ...data, models: updatedModels });
-        updateUserActivity(loggedInModel.name, 'student');
-        
-        navigate('/profil');
-        return;
-    }
+    // Unified Model Login (Pro + Beginner) - Utilise le fichier centralisé
+    const modelAccess = findModelAccess(username, password);
     
-    // Beginner Student Login
-    const loggedInBeginner = data.beginnerStudents.find(bs => 
-        bs.matricule.toLowerCase() === normalizedUsername ||
-        bs.name.toLowerCase() === normalizedUsername
-    );
-    if (loggedInBeginner && loggedInBeginner.password === password) {
-        sessionStorage.setItem('classroom_access', 'granted');
-        sessionStorage.setItem('classroom_role', 'beginner');
-        sessionStorage.setItem('userId', loggedInBeginner.id);
-        sessionStorage.setItem('userName', loggedInBeginner.name);
-        
-        const updatedBeginners = data.beginnerStudents.map(bs => bs.id === loggedInBeginner.id ? { ...bs, lastLogin: timestamp } : bs);
-        await saveData({ ...data, beginnerStudents: updatedBeginners });
-        updateUserActivity(loggedInBeginner.name, 'beginner');
+    console.log('🔍 Login attempt:', { username, password, modelAccess });
 
-        navigate('/formations');
+    if (modelAccess) {
+        sessionStorage.setItem('classroom_access', 'granted');
+        sessionStorage.setItem('classroom_role', modelAccess.type === 'pro' ? 'student' : 'beginner');
+        sessionStorage.setItem('userId', modelAccess.id);
+        sessionStorage.setItem('userName', modelAccess.name);
+        
+        // Mettre à jour le lastLogin dans les données appropriées
+        if (modelAccess.type === 'pro') {
+            // Vérifier si le modèle existe dans data.models
+            const existingModel = data.models.find(m => m.id === modelAccess.id);
+            if (existingModel) {
+                const updatedModels = data.models.map(m => m.id === modelAccess.id ? { ...m, lastLogin: timestamp } : m);
+                await saveData({ ...data, models: updatedModels });
+            }
+        } else {
+            // Vérifier si le débutant existe dans data.beginnerStudents
+            const existingBeginner = data.beginnerStudents.find(bs => bs.id === modelAccess.id);
+            if (existingBeginner) {
+                const updatedBeginners = data.beginnerStudents.map(bs => bs.id === modelAccess.id ? { ...bs, lastLogin: timestamp } : bs);
+                await saveData({ ...data, beginnerStudents: updatedBeginners });
+            }
+        }
+        
+        updateUserActivity(modelAccess.name, modelAccess.type === 'pro' ? 'student' : 'beginner');
+        navigate(`/profil/${modelAccess.id}`);
         return;
     }
 
