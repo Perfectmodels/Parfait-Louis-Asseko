@@ -497,17 +497,8 @@ const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <motion.button
-            ref={hamburgerButtonRef}
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-1.5 text-pm-off-white hover:text-pm-gold transition-colors duration-300 rounded-lg hover:bg-pm-gold/10"
-            aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <AnimatedHamburgerIcon isOpen={isOpen} />
-          </motion.button>
+          {/* Mobile Menu Button - Disabled for Simple Navigation */}
+          {/* Navigation mobile simplifiée en bas de l'écran */}
         </div>
 
         {/* Mobile Menu Overlay */}

@@ -83,6 +83,10 @@ export interface BeginnerStudent {
   name: string;
   matricule: string;
   password: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  instagram?: string;
   quizScores: { 
     [chapterSlug: string]: {
       score: number;
@@ -698,6 +702,7 @@ export interface SocialUser {
   id: string;
   name: string;
   username: string;
+  email?: string;
   imageUrl?: string;
   bio?: string;
   followers: string[];
@@ -712,6 +717,8 @@ export interface SocialUser {
     allowMentions: boolean;
     allowDirectMessages: boolean;
   };
+  createdAt?: string;
+  lastActive?: string;
 }
 
 export interface SocialPoll {

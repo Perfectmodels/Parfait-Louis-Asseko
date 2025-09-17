@@ -321,9 +321,9 @@ const Admin: React.FC = () => {
                        <main className="flex-1 lg:ml-0">
                            <div className="p-4">
                         {activeTab === 'dashboard' && <DashboardView stats={stats} activeUsers={activeUsers} />}
-                        {activeTab === 'talents' && <TalentsView newCastingApps={newCastingApps} />}
+                        {activeTab === 'talents' && <TalentsView newCastingApps={newCastingApps} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'content' && <ContentView />}
-                        {activeTab === 'accounting' && <AccountingView newBookingRequests={newBookingRequests} newFashionDayApps={newFashionDayApps} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} />}
+                        {activeTab === 'accounting' && <AccountingView newBookingRequests={newBookingRequests} newFashionDayApps={newFashionDayApps} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'analytics' && <AnalyticsView data={data} />}
                     </div>
                 </main>
@@ -414,7 +414,7 @@ const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> 
 );
 
 // Talents View Component
-const TalentsView: React.FC<{ newCastingApps: number }> = ({ newCastingApps }) => (
+const TalentsView: React.FC<{ newCastingApps: number; data: any; generateNotifications: any }> = ({ newCastingApps, data, generateNotifications }) => (
     <div className="space-y-4">
         <div>
             <h2 className="text-2xl font-bold text-pm-gold">Gestion des Talents</h2>
@@ -474,7 +474,9 @@ const AccountingView: React.FC<{
     newFashionDayApps: number; 
     newMessages: number; 
     newRecoveryRequests: number; 
-}> = ({ newBookingRequests, newFashionDayApps, newMessages, newRecoveryRequests }) => (
+    data: any;
+    generateNotifications: any;
+}> = ({ newBookingRequests, newFashionDayApps, newMessages, newRecoveryRequests, data, generateNotifications }) => (
     <div className="space-y-6">
         <div>
             <h2 className="text-2xl font-bold text-pm-gold">Comptabilité & Suivi</h2>
