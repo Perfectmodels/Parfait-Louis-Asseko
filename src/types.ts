@@ -15,7 +15,7 @@ export interface Model {
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
   isPublic?: boolean; 
-  level?: 'Pro' | 'Débutant';
+  level?: 'Mannequin';
   measurements: {
     chest: string;
     waist: string;
@@ -475,4 +475,26 @@ export interface NavLink {
     label: string;
     inFooter: boolean;
     footerLabel?: string;
+}
+
+export interface AdminUser {
+  id: string;
+  username: string;
+  password: string;
+  name: string;
+  email?: string;
+  role: 'admin' | 'manager' | 'staff';
+  permissions: AdminPermission[];
+  isActive: boolean;
+  lastLogin?: string;
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface AdminPermission {
+  id: string;
+  name: string;
+  description: string;
+  category: 'models' | 'content' | 'accounting' | 'system' | 'reports';
+  actions: string[]; // ['read', 'write', 'delete', 'export']
 }

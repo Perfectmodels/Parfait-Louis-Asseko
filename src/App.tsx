@@ -43,7 +43,7 @@ const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
 const AdminNews = lazy(() => import('./pages/AdminNews'));
-const AdminUserCreation = lazy(() => import('./pages/AdminUserCreation'));
+const AdminUserManagement = lazy(() => import('./pages/AdminUserManagement'));
 const AdminAccounting = lazy(() => import('./pages/AdminAccounting'));
 const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
 const AdminSettings = lazy(() => import('./pages/AdminSettings'));
@@ -153,7 +153,7 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
                         
                         <ReactRouterDOM.Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/user-creation" element={<ProtectedRoute role="admin"><AdminUserCreation /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/user-management" element={<ProtectedRoute role="admin"><AdminUserManagement /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRoute role="admin"><AdminAccounting /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />

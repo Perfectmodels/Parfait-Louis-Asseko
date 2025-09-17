@@ -1,5 +1,5 @@
 // FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory, AdminUser, AdminPermission } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
@@ -820,5 +820,48 @@ export const defaultAccountingTransactions: AccountingTransaction[] = [
         reference: 'LOY-2024-01',
         createdBy: 'admin',
         createdAt: '2024-01-20T14:30:00Z'
+    }
+];
+
+// Permissions par défaut pour les utilisateurs administrateurs
+export const defaultAdminPermissions: AdminPermission[] = [
+    // Gestion des mannequins
+    { id: 'models-read', name: 'Voir les mannequins', description: 'Consulter la liste des mannequins', category: 'models', actions: ['read'] },
+    { id: 'models-write', name: 'Modifier les mannequins', description: 'Ajouter, modifier ou supprimer des mannequins', category: 'models', actions: ['read', 'write', 'delete'] },
+    { id: 'models-export', name: 'Exporter les mannequins', description: 'Exporter les données des mannequins', category: 'models', actions: ['read', 'export'] },
+    
+    // Gestion du contenu
+    { id: 'content-read', name: 'Voir le contenu', description: 'Consulter les articles et le magazine', category: 'content', actions: ['read'] },
+    { id: 'content-write', name: 'Modifier le contenu', description: 'Créer et modifier les articles', category: 'content', actions: ['read', 'write', 'delete'] },
+    { id: 'news-write', name: 'Gérer les actualités', description: 'Créer et modifier les actualités', category: 'content', actions: ['read', 'write', 'delete'] },
+    
+    // Comptabilité
+    { id: 'accounting-read', name: 'Voir la comptabilité', description: 'Consulter les transactions et bilans', category: 'accounting', actions: ['read'] },
+    { id: 'accounting-write', name: 'Gérer la comptabilité', description: 'Ajouter des transactions et paiements', category: 'accounting', actions: ['read', 'write'] },
+    { id: 'accounting-export', name: 'Exporter la comptabilité', description: 'Générer des rapports PDF', category: 'accounting', actions: ['read', 'export'] },
+    
+    // Système
+    { id: 'system-users', name: 'Gérer les utilisateurs', description: 'Créer et modifier les comptes administrateurs', category: 'system', actions: ['read', 'write', 'delete'] },
+    { id: 'system-settings', name: 'Paramètres système', description: 'Modifier les paramètres du site', category: 'system', actions: ['read', 'write'] },
+    { id: 'system-backup', name: 'Sauvegarde', description: 'Accès aux fonctions de sauvegarde', category: 'system', actions: ['read', 'write'] },
+    
+    // Rapports
+    { id: 'reports-basic', name: 'Rapports de base', description: 'Consulter les rapports standards', category: 'reports', actions: ['read'] },
+    { id: 'reports-advanced', name: 'Rapports avancés', description: 'Créer des rapports personnalisés', category: 'reports', actions: ['read', 'write', 'export'] }
+];
+
+// Utilisateurs administrateurs par défaut
+export const defaultAdminUsers: AdminUser[] = [
+    {
+        id: 'admin-1',
+        username: 'admin',
+        password: 'admin123',
+        name: 'Administrateur Principal',
+        email: 'admin@perfectmodels.ga',
+        role: 'admin',
+        permissions: defaultAdminPermissions,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        createdBy: 'system'
     }
 ];

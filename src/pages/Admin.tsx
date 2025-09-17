@@ -328,7 +328,7 @@ const TalentsView: React.FC<{ newCastingApps: number }> = ({ newCastingApps }) =
             <p className="text-pm-off-white/60">Recrutement et gestion des mannequins</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <DashboardCard title="Créer des Utilisateurs" icon={PlusIcon} link="/admin/user-creation" description="Créer de nouveaux mannequins ou étudiants débutants avec accès personnalisé."/>
+                   <DashboardCard title="Gestion des Utilisateurs" icon={PlusIcon} link="/admin/user-management" description="Créer et gérer les comptes administrateurs avec permissions personnalisées."/>
             <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
             <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
             <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>

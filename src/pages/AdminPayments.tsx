@@ -12,7 +12,23 @@ const AdminPayments: React.FC = () => {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [expandedModels, setExpandedModels] = useState<Set<string>>(new Set());
 
-  const models = data?.models || [];
+  // Récupérer tous les mannequins (Pro + Débutants unifiés)
+  const allModels = [
+    ...(data?.models || []),
+    ...(data?.beginnerStudents?.map(student => ({
+      id: student.id,
+      name: student.name,
+      username: student.matricule || student.name.toLowerCase().replace(/\s+/g, ''),
+      level: 'Mannequin' as const,
+      paymentStatus: {
+        isUpToDate: false,
+        nextDueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        amount: 50000,
+        currency: 'FCFA',
+        warnings: []
+      }
+    })) || [])
+  ];
 
   const toggleModelExpansion = (modelId: string) => {
     const newExpanded = new Set(expandedModels);
@@ -27,7 +43,8 @@ const AdminPayments: React.FC = () => {
   const handleUpdatePayment = async (modelId: string, paymentData: Partial<PaymentStatus>) => {
     if (!data) return;
 
-    const updatedModels = models.map(model => {
+    // Mettre à jour les modèles professionnels
+    const updatedProModels = (data?.models || []).map(model => {
       if (model.id === modelId) {
         return {
           ...model,
@@ -42,8 +59,29 @@ const AdminPayments: React.FC = () => {
       return model;
     });
 
+    // Mettre à jour les étudiants débutants
+    const updatedBeginnerStudents = (data?.beginnerStudents || []).map(student => {
+      if (student.id === modelId) {
+        return {
+          ...student,
+          paymentStatus: {
+            isUpToDate: true,
+            lastPaymentDate: new Date().toISOString(),
+            amount: paymentData.amount || 50000,
+            currency: paymentData.currency || 'FCFA',
+            warnings: []
+          }
+        };
+      }
+      return student;
+    });
+
     try {
-      await saveData({ ...data, models: updatedModels });
+      await saveData({ 
+        ...data, 
+        models: updatedProModels,
+        beginnerStudents: updatedBeginnerStudents
+      });
       setShowPaymentForm(false);
       setSelectedModel(null);
     } catch (error) {
@@ -54,13 +92,14 @@ const AdminPayments: React.FC = () => {
   const handleAddWarning = async (modelId: string, warning: Omit<PaymentWarning, 'id'>) => {
     if (!data) return;
 
-    const updatedModels = models.map(model => {
+    const newWarning: PaymentWarning = {
+      ...warning,
+      id: `warning-${Date.now()}`
+    };
+
+    // Mettre à jour les modèles professionnels
+    const updatedProModels = (data?.models || []).map(model => {
       if (model.id === modelId) {
-        const newWarning: PaymentWarning = {
-          ...warning,
-          id: `warning-${Date.now()}`
-        };
-        
         return {
           ...model,
           paymentStatus: {
@@ -73,17 +112,36 @@ const AdminPayments: React.FC = () => {
       return model;
     });
 
+    // Mettre à jour les étudiants débutants
+    const updatedBeginnerStudents = (data?.beginnerStudents || []).map(student => {
+      if (student.id === modelId) {
+        return {
+          ...student,
+          paymentStatus: {
+            ...student.paymentStatus,
+            warnings: [...(student.paymentStatus?.warnings || []), newWarning],
+            isUpToDate: false
+          }
+        };
+      }
+      return student;
+    });
+
     try {
-      await saveData({ ...data, models: updatedModels });
+      await saveData({ 
+        ...data, 
+        models: updatedProModels,
+        beginnerStudents: updatedBeginnerStudents
+      });
     } catch (error) {
       console.error('Erreur lors de l\'ajout de l\'avertissement:', error);
     }
   };
 
   const getPaymentStats = () => {
-    const totalModels = models.length;
-    const upToDate = models.filter(m => m.paymentStatus?.isUpToDate).length;
-    const overdue = models.filter(m => 
+    const totalModels = allModels.length;
+    const upToDate = allModels.filter(m => m.paymentStatus?.isUpToDate).length;
+    const overdue = allModels.filter(m => 
       m.paymentStatus?.nextDueDate && 
       new Date(m.paymentStatus.nextDueDate) < new Date() && 
       !m.paymentStatus.isUpToDate
@@ -170,7 +228,10 @@ const AdminPayments: React.FC = () => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="admin-section-title">Statuts de Paiement</h2>
             <button
-              onClick={() => setShowPaymentForm(true)}
+              onClick={() => {
+                setSelectedModel(null);
+                setShowPaymentForm(true);
+              }}
               className="action-btn bg-pm-gold text-pm-dark hover:bg-white"
             >
               <PlusIcon className="w-5 h-5" />
@@ -179,17 +240,19 @@ const AdminPayments: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            {models.map((model) => {
+            {allModels.map((model) => {
               const isExpanded = expandedModels.has(model.id);
               return (
                 <div key={model.id} className="bg-black/50 border border-pm-gold/20 rounded-lg overflow-hidden hover:border-pm-gold transition-colors">
                   {/* Header de la carte */}
-                  <button
-                    onClick={() => toggleModelExpansion(model.id)}
-                    className="w-full flex justify-between items-center p-6 text-left hover:bg-pm-gold/5 transition-colors"
-                    aria-expanded={isExpanded}
-                  >
-                    <div className="flex items-center gap-4">
+                  <div className="w-full flex justify-between items-center p-6">
+                    <div 
+                      className="flex-1 flex items-center gap-4 cursor-pointer hover:bg-pm-gold/5 p-2 rounded transition-colors"
+                      onClick={() => {
+                        setSelectedModel(model);
+                        setShowPaymentForm(true);
+                      }}
+                    >
                       <img
                         src={model.imageUrl}
                         alt={model.name}
@@ -198,18 +261,27 @@ const AdminPayments: React.FC = () => {
                       <div>
                         <h3 className="text-lg font-bold text-pm-gold">{model.name}</h3>
                         <p className="text-sm text-pm-off-white/60">{model.level}</p>
+                        <p className="text-xs text-pm-gold/60">Cliquez pour modifier le paiement</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-4">
                       <PaymentStatusBadge paymentStatus={model.paymentStatus} />
-                      {isExpanded ? (
-                        <ChevronUpIcon className="w-6 h-6 text-pm-gold" />
-                      ) : (
-                        <ChevronDownIcon className="w-6 h-6 text-pm-gold" />
-                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleModelExpansion(model.id);
+                        }}
+                        className="p-2 hover:bg-pm-gold/10 rounded transition-colors"
+                      >
+                        {isExpanded ? (
+                          <ChevronUpIcon className="w-6 h-6 text-pm-gold" />
+                        ) : (
+                          <ChevronDownIcon className="w-6 h-6 text-pm-gold" />
+                        )}
+                      </button>
                     </div>
-                  </button>
+                  </div>
 
                   {/* Contenu dépliable */}
                   {isExpanded && (
@@ -292,6 +364,106 @@ const AdminPayments: React.FC = () => {
             })}
           </div>
         </div>
+
+        {/* Formulaire de paiement */}
+        {showPaymentForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-pm-dark border border-pm-gold/20 rounded-lg p-8 max-w-md w-full">
+              <h3 className="text-2xl font-bold text-pm-gold mb-6">
+                {selectedModel ? `Paiement - ${selectedModel.name}` : 'Nouveau Paiement'}
+              </h3>
+              
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target as HTMLFormElement);
+                const modelId = formData.get('modelId') as string || selectedModel?.id;
+                
+                if (modelId) {
+                  const paymentData = {
+                    amount: parseFloat(formData.get('amount') as string) || 0,
+                    currency: formData.get('currency') as string || 'FCFA',
+                    paymentMethod: formData.get('paymentMethod') as string || 'cash',
+                    notes: formData.get('notes') as string || ''
+                  };
+                  handleUpdatePayment(modelId, paymentData);
+                }
+              }} className="space-y-4">
+                
+                {selectedModel ? (
+                  <div className="p-4 bg-pm-gold/10 border border-pm-gold/20 rounded-lg">
+                    <h4 className="font-semibold text-pm-gold mb-2">Mannequin sélectionné</h4>
+                    <p className="text-pm-off-white">{selectedModel.name}</p>
+                    <p className="text-sm text-pm-off-white/60">{selectedModel.level}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="admin-label">Sélectionner un mannequin</label>
+                    <select name="modelId" className="admin-input" required>
+                      <option value="">Choisir un mannequin</option>
+                      {allModels.map(model => (
+                        <option key={model.id} value={model.id}>
+                          {model.name} ({model.level})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div>
+                  <label className="admin-label">Montant (FCFA)</label>
+                  <input
+                    type="number"
+                    name="amount"
+                    defaultValue={selectedModel?.paymentStatus?.amount || 50000}
+                    className="admin-input"
+                    placeholder="50000"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label">Méthode de paiement</label>
+                  <select name="paymentMethod" className="admin-input" defaultValue="cash">
+                    <option value="cash">Espèces</option>
+                    <option value="bank_transfer">Virement bancaire</option>
+                    <option value="mobile_money">Mobile Money</option>
+                    <option value="check">Chèque</option>
+                    <option value="other">Autre</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="admin-label">Notes (optionnel)</label>
+                  <textarea
+                    name="notes"
+                    className="admin-textarea"
+                    rows={3}
+                    placeholder="Notes sur le paiement..."
+                  />
+                </div>
+
+                <div className="flex justify-end gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPaymentForm(false);
+                      setSelectedModel(null);
+                    }}
+                    className="px-6 py-2 border border-pm-gold/50 text-pm-gold rounded-lg hover:bg-pm-gold/10 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-white transition-colors"
+                  >
+                    Enregistrer le Paiement
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
