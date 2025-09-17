@@ -42,7 +42,11 @@ import {
     defaultAdminUsers as initialAdminUsers,
     defaultAdminPermissions as initialAdminPermissions,
     defaultAlbums as initialAlbums,
-    defaultTeamMembers as initialTeamMembers
+    defaultTeamMembers as initialTeamMembers,
+    defaultSocialUsers as initialSocialUsers,
+    defaultSocialPosts as initialSocialPosts,
+    defaultSocialNotifications as initialSocialNotifications,
+    defaultForumThreads as initialDefaultForumThreads
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -115,7 +119,7 @@ export const useDataStore = () => {
         apiKeys: initialApiKeys,
         castingApplications: initialCastingApplications,
         fashionDayApplications: initialFashionDayApplications,
-        forumThreads: initialForumThreads,
+        forumThreads: initialDefaultForumThreads,
         forumReplies: initialForumReplies,
         articleComments: initialArticleComments,
         recoveryRequests: initialRecoveryRequests,
@@ -153,9 +157,9 @@ export const useDataStore = () => {
         modelActivities: [],
         modelPerformances: [],
         modelTrackingData: [],
-        socialPosts: [],
-        socialNotifications: [],
-        socialUsers: [],
+        socialPosts: initialSocialPosts,
+        socialNotifications: initialSocialNotifications,
+        socialUsers: initialSocialUsers,
     }), []);
     
     useEffect(() => {

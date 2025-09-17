@@ -1,5 +1,5 @@
 // FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory, AdminUser, AdminPermission, TeamMember } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory, AdminUser, AdminPermission, TeamMember, SocialUser, SocialPost, SocialNotification } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
@@ -978,5 +978,109 @@ export const defaultTeamMembers: TeamMember[] = [
         order: 3,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
+    }
+];
+
+// Données initiales pour le mini réseau social
+export const defaultSocialUsers: SocialUser[] = [
+    {
+        id: 'social-user-1',
+        name: 'Parfait Louis Asseko',
+        username: 'parfait',
+        email: 'contact@perfectmodels.ga',
+        bio: 'Fondateur de Perfect Models Management',
+        followers: [],
+        following: [],
+        postsCount: 0,
+        isVerified: true,
+        isOnline: false,
+        createdAt: new Date().toISOString(),
+        lastActive: new Date().toISOString()
+    },
+    {
+        id: 'social-user-2',
+        name: 'Marie Claire',
+        username: 'marie',
+        email: 'marie@perfectmodels.ga',
+        bio: 'Formatrice et experte en mannequinat',
+        followers: [],
+        following: [],
+        postsCount: 0,
+        isVerified: true,
+        isOnline: false,
+        createdAt: new Date().toISOString(),
+        lastActive: new Date().toISOString()
+    }
+];
+
+export const defaultSocialPosts: SocialPost[] = [
+    {
+        id: 'post-1',
+        authorId: 'social-user-1',
+        authorName: 'Parfait Louis Asseko',
+        authorImage: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
+        content: 'Bienvenue dans la communauté Perfect Models Management ! 🎉 Partagez vos expériences, posez vos questions et connectez-vous avec d\'autres talents de la mode.',
+        type: 'text',
+        category: 'general',
+        likes: ['social-user-2'],
+        shares: [],
+        comments: [],
+        isPublic: true,
+        isPinned: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    },
+    {
+        id: 'post-2',
+        authorId: 'social-user-2',
+        authorName: 'Marie Claire',
+        authorImage: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
+        content: 'Conseil du jour : La confiance en soi est la clé du succès en mannequinat. Travaillez votre posture et votre présence ! 💪',
+        type: 'text',
+        category: 'tips',
+        mood: 'motivated',
+        likes: ['social-user-1'],
+        shares: [],
+        comments: [],
+        isPublic: true,
+        isPinned: false,
+        createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 jour plus tôt
+        updatedAt: new Date(Date.now() - 86400000).toISOString()
+    }
+];
+
+export const defaultSocialNotifications: SocialNotification[] = [];
+
+// Données initiales pour le forum
+export const defaultForumThreads: ForumThread[] = [
+    {
+        id: 'thread-1',
+        title: 'Bienvenue dans le forum PMM !',
+        content: 'Ce forum est un espace d\'échange pour tous les membres de la communauté Perfect Models Management. N\'hésitez pas à poser vos questions et partager vos expériences !',
+        authorId: 'social-user-1',
+        authorName: 'Parfait Louis Asseko',
+        category: 'general',
+        tags: ['bienvenue', 'forum', 'communauté'],
+        isPinned: true,
+        isLocked: false,
+        views: 0,
+        replies: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    },
+    {
+        id: 'thread-2',
+        title: 'Conseils pour débuter en mannequinat',
+        content: 'Partagez vos conseils et expériences pour aider les nouveaux mannequins à bien commencer leur parcours.',
+        authorId: 'social-user-2',
+        authorName: 'Marie Claire',
+        category: 'tips',
+        tags: ['conseils', 'débutant', 'mannequinat'],
+        isPinned: false,
+        isLocked: false,
+        views: 0,
+        replies: [],
+        createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 jours plus tôt
+        updatedAt: new Date(Date.now() - 172800000).toISOString()
     }
 ];

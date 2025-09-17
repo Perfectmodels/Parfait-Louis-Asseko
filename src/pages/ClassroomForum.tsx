@@ -26,7 +26,7 @@ const ClassroomForum: React.FC = () => {
                  data?.beginnerStudents.find(s => s.id === userId);
     const socialUser = data?.socialUsers?.find(u => u.id === socialUserId);
     
-    const threads = data?.forumThreads.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
+    const threads = data?.forumThreads?.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
     const socialPosts = data?.socialPosts || [];
     
     if (!isInitialized) {
@@ -56,13 +56,13 @@ const ClassroomForum: React.FC = () => {
                             </div>
                             <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-4 text-center">
                                 <div className="text-2xl font-bold text-pm-gold">
-                                    {socialPosts.reduce((sum, post) => sum + post.likes.length, 0)}
+                                    {socialPosts.reduce((sum, post) => sum + (post.likes?.length || 0), 0)}
                                 </div>
                                 <div className="text-sm text-pm-off-white/60">Likes</div>
                             </div>
                             <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-4 text-center">
                                 <div className="text-2xl font-bold text-pm-gold">
-                                    {socialPosts.reduce((sum, post) => sum + post.comments.length, 0)}
+                                    {socialPosts.reduce((sum, post) => sum + (post.comments?.length || 0), 0)}
                                 </div>
                                 <div className="text-sm text-pm-off-white/60">Commentaires</div>
                             </div>
@@ -171,7 +171,7 @@ const ClassroomForum: React.FC = () => {
                                         </Link>
                                     ))}
                                     
-                                    {threads.length === 0 && (
+                                    {(!threads || threads.length === 0) && (
                                         <div className="text-center py-12">
                                             <ChatBubbleLeftRightIcon className="w-16 h-16 text-pm-gold/40 mx-auto mb-4" />
                                             <h3 className="text-xl font-playfair text-pm-gold mb-2">Aucune discussion</h3>
