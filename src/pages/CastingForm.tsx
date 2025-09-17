@@ -79,6 +79,9 @@ const CastingForm: React.FC = () => {
         try {
             const updatedApplications = [...(data.castingApplications || []), newApplication];
             await saveData({ ...data, castingApplications: updatedApplications });
+            
+            // Envoyer la notification par e-mail
+            await sendEmailNotification(newApplication, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');
@@ -220,3 +223,93 @@ const FormSelect: React.FC<{label: string, name: string, value: string, onChange
 );
 
 export default CastingForm;
+
+async function sendEmailNotification(application: CastingApplication, apiKey?: string, notificationEmail?: string) {
+    if (!apiKey || !notificationEmail) {
+        console.warn("Brevo API key or notification email is not configured. Skipping email notification.");
+        return;
+    }
+
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h1 style="color: #D4AF37;">Nouvelle Candidature au Casting</h1>
+            <p>Une nouvelle candidature a été soumise via le formulaire du site.</p>
+            
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Informations Personnelles</h2>
+            <ul>
+                <li><strong>Nom:</strong> ${application.firstName} ${application.lastName}</li>
+                <li><strong>Date de naissance:</strong> ${application.birthDate}</li>
+                <li><strong>Email:</strong> ${application.email}</li>
+                <li><strong>Téléphone:</strong> ${application.phone}</li>
+                <li><strong>Nationalité:</strong> ${application.nationality}</li>
+                <li><strong>Ville:</strong> ${application.city}</li>
+            </ul>
+
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Mensurations & Physique</h2>
+            <ul>
+                <li><strong>Genre:</strong> ${application.gender}</li>
+                <li><strong>Taille:</strong> ${application.height} cm</li>
+                <li><strong>Poids:</strong> ${application.weight} kg</li>
+                <li><strong>Poitrine:</strong> ${application.chest} cm</li>
+                <li><strong>Taille (vêtement):</strong> ${application.waist} cm</li>
+                <li><strong>Hanches:</strong> ${application.hips} cm</li>
+                <li><strong>Pointure:</strong> ${application.shoeSize}</li>
+                <li><strong>Couleur des yeux:</strong> ${application.eyeColor}</li>
+                <li><strong>Couleur des cheveux:</strong> ${application.hairColor}</li>
+            </ul>
+
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Expérience & Portfolio</h2>
+            <ul>
+                <li><strong>Expérience:</strong> ${application.experience}</li>
+                <li><strong>Instagram:</strong> <a href="https://instagram.com/${application.instagram.replace('@', '')}">${application.instagram}</a></li>
+                <li><strong>Portfolio:</strong> <a href="${application.portfolioLink}">${application.portfolioLink}</a></li>
+            </ul>
+            
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Photos Soumises</h2>
+            <p>
+                <a href="${application.photoPortraitUrl}">Voir le portrait</a> | 
+                <a href="${application.photoFullBodyUrl}">Voir la photo plein pied</a> | 
+                <a href="${application.photoProfileUrl}">Voir la photo de profil</a>
+            </p>
+
+            <hr>
+            <p style="font-size: 0.8em; color: #888;">Cet e-mail a été envoyé automatiquement depuis le site Perfect Models Management.</p>
+        </div>
+    `;
+
+    const emailData = {
+        sender: {
+            name: "PMM Site Web",
+            email: "noreply@perfectmodels.ga"
+        },
+        to: [
+            {
+                email: notificationEmail,
+                name: "Admin PMM"
+            }
+        ],
+        subject: `Nouvelle Candidature Casting: ${application.firstName} ${application.lastName}`,
+        htmlContent: emailHtml
+    };
+
+    try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': apiKey
+            },
+            body: JSON.stringify(emailData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Erreur API Brevo: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+        }
+
+        console.log("Email de notification envoyé avec succès !");
+
+    } catch (error) {
+        console.error("Erreur lors de l'envoi de l'e-mail de notification:", error);
+    }
+}

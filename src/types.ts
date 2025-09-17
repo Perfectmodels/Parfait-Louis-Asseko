@@ -255,6 +255,7 @@ export interface ApiKeys {
   };
   imgbbApiKey?: string;
   geminiApiKey?: string;
+  brevoApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';

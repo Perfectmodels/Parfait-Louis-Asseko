@@ -110,6 +110,8 @@ const FashionDayApplicationForm: React.FC = () => {
             const updatedApplications = [...(data.fashionDayApplications || []), newApplication];
             await saveData({ ...data, fashionDayApplications: updatedApplications });
 
+            await sendFashionDayEmailNotification(newApplication, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
+
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée ! L\'équipe du Perfect Fashion Day vous recontactera prochainement.');
             setFormData({ 
@@ -407,3 +409,50 @@ const FormTextArea: React.FC<{
 );
 
 export default FashionDayApplicationForm;
+
+async function sendFashionDayEmailNotification(application: FashionDayApplication, apiKey?: string, notificationEmail?: string) {
+    if (!apiKey || !notificationEmail) {
+        console.warn("Brevo API key or notification email is not configured.");
+        return;
+    }
+
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h1 style="color: #D4AF37;">Nouvelle Candidature - Perfect Fashion Day</h1>
+            <p>Une nouvelle candidature a été soumise pour le PFD.</p>
+            
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Informations du Candidat</h2>
+            <ul>
+                <li><strong>Nom / Marque:</strong> ${application.name}</li>
+                <li><strong>Email:</strong> ${application.email}</li>
+                <li><strong>Téléphone:</strong> ${application.phone}</li>
+                <li><strong>Postule en tant que:</strong> ${application.role}</li>
+            </ul>
+
+            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Message de Candidature</h2>
+            <p style="background-color: #f4f4f4; border-left: 4px solid #D4AF37; padding: 15px; white-space: pre-wrap;">${application.message}</p>
+            
+            <hr>
+            <p style="font-size: 0.8em; color: #888;">Cet e-mail a été envoyé automatiquement depuis le site Perfect Models Management.</p>
+        </div>
+    `;
+
+    const emailData = {
+        sender: { name: "PMM Site Web", email: "noreply@perfectmodels.ga" },
+        to: [{ email: notificationEmail, name: "Admin PMM" }],
+        subject: `Nouvelle Candidature PFD: ${application.name} (${application.role})`,
+        htmlContent: emailHtml
+    };
+
+    try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
+            body: JSON.stringify(emailData)
+        });
+        if (!response.ok) throw new Error(`Erreur API Brevo: ${response.status}`);
+        console.log("Email de notification PFD envoyé !");
+    } catch (error) {
+        console.error("Erreur d'envoi de l'e-mail PFD:", error);
+    }
+}

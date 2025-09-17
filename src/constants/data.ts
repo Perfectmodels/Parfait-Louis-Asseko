@@ -55,6 +55,7 @@ export const apiKeys: ApiKeys = {
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
     geminiApiKey: 'AIzaSyCEVGrbdck61n5l0kl5uGMUwiolTfl1yM4',
+    brevoApiKey: import.meta.env.VITE_BREVO_API_KEY || '',
 };
 
 export const juryMembers: JuryMember[] = [

@@ -142,22 +142,28 @@ const AlbumCard: React.FC<{ album: any; onClick: () => void }> = ({ album, onCli
   return (
     <div 
       onClick={onClick}
-      className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden cursor-pointer hover:border-pm-gold/50 transition-all duration-300 group"
+      className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden cursor-pointer hover:border-pm-gold/50 transition-all duration-300 group shadow-lg hover:shadow-pm-gold/20"
     >
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-64 overflow-hidden bg-black/30">
         <img
           src={album.coverImage}
           alt={album.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-100 group-hover:opacity-100 transition-opacity duration-300" />
+        
+        {/* Overlay on hover */}
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <EyeIcon className="w-12 h-12 text-white" />
+        </div>
+
         <div className="absolute top-4 left-4">
-          <span className="px-3 py-1 bg-pm-gold text-pm-dark text-xs font-bold uppercase tracking-wider rounded-full">
+          <span className="px-3 py-1 bg-pm-gold text-pm-dark text-xs font-bold uppercase tracking-wider rounded-full shadow-md">
             {album.theme}
           </span>
         </div>
-        <div className="absolute bottom-4 left-4 right-4">
-          <h3 className="text-xl font-playfair text-white mb-1">
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <h3 className="text-xl font-playfair text-white mb-1 truncate group-hover:text-pm-gold transition-colors">
             {album.title}
           </h3>
           <p className="text-sm text-white/80 line-clamp-2">
@@ -166,39 +172,17 @@ const AlbumCard: React.FC<{ album: any; onClick: () => void }> = ({ album, onCli
         </div>
       </div>
       
-      <div className="p-4">
-        <div className="flex items-center justify-between text-sm text-pm-off-white/60 mb-3">
-          <div className="flex items-center gap-1">
-            <CalendarIcon className="w-4 h-4" />
+      <div className="p-4 bg-pm-dark/30">
+        <div className="flex items-center justify-between text-sm text-pm-off-white/60">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="w-4 h-4 text-pm-gold/70" />
             <span>{new Date(album.createdAt).toLocaleDateString('fr-FR')}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <EyeIcon className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <EyeIcon className="w-4 h-4 text-pm-gold/70" />
             <span>{(album.photos || []).length} photos</span>
           </div>
         </div>
-        
-        {album.location && (
-          <div className="flex items-center gap-1 text-sm text-pm-off-white/60 mb-2">
-            <MapPinIcon className="w-4 h-4" />
-            <span>{album.location}</span>
-          </div>
-        )}
-        
-        {(album.tags || []).length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {(album.tags || []).slice(0, 3).map((tag: string, index: number) => (
-              <span key={index} className="px-2 py-1 bg-pm-dark text-pm-gold text-xs rounded">
-                #{tag}
-              </span>
-            ))}
-            {(album.tags || []).length > 3 && (
-              <span className="px-2 py-1 bg-pm-dark text-pm-off-white/60 text-xs rounded">
-                +{(album.tags || []).length - 3}
-              </span>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
@@ -264,26 +248,26 @@ const AlbumDetail: React.FC<{ album: any; onBack: () => void }> = ({ album, onBa
           </div>
         </div>
 
-        {/* Photos Grid */}
+        {/* Photos Grid - Masonry Layout */}
         {(album.photos || []).length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {(album.photos || []).map((photo: any, index: number) => (
-              <div
-                key={photo.id}
-                onClick={() => setSelectedPhotoIndex(index)}
-                className="relative cursor-pointer group"
-              >
-                <img
-                  src={photo.url}
-                  alt={photo.title || `Photo ${index + 1}`}
-                  className="w-full h-48 object-cover rounded-lg border border-pm-gold/20 group-hover:border-pm-gold transition-colors"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg flex items-center justify-center">
-                  <EyeIcon className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              </div>
-            ))}
-          </div>
+            <div className="masonry-gallery">
+                {(album.photos || []).map((photo: any, index: number) => (
+                    <div
+                        key={photo.id}
+                        onClick={() => setSelectedPhotoIndex(index)}
+                        className="masonry-item relative cursor-pointer group"
+                    >
+                        <img
+                            src={photo.url}
+                            alt={photo.title || `Photo ${index + 1}`}
+                            className="w-full h-auto object-cover rounded-lg border border-pm-gold/20 group-hover:border-pm-gold transition-colors"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors rounded-lg flex items-center justify-center">
+                            <EyeIcon className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                    </div>
+                ))}
+            </div>
         ) : (
           <div className="text-center py-12">
             <p className="text-pm-off-white/60">Aucune photo dans cet album.</p>
@@ -312,7 +296,7 @@ const PhotoModal: React.FC<{
   onPrevious: () => void;
   onNext: () => void;
 }> = ({ photos, currentIndex, onClose, onPrevious, onNext }) => {
-  if (currentIndex < 0 || currentIndex >= photos.length) return null;
+  if (currentIndex < 0 || currentIndex >= (photos || []).length) return null;
 
   const photo = photos[currentIndex];
 
@@ -329,10 +313,10 @@ const PhotoModal: React.FC<{
         <img
           src={photo.url}
           alt={photo.title || `Photo ${currentIndex + 1}`}
-          className="max-w-full max-h-full object-contain"
+          className="max-w-full max-h-[90vh] object-contain"
         />
         
-        {photos.length > 1 && (
+        {(photos || []).length > 1 && (
           <>
             <button
               onClick={onPrevious}
@@ -343,7 +327,7 @@ const PhotoModal: React.FC<{
             </button>
             <button
               onClick={onNext}
-              disabled={currentIndex === photos.length - 1}
+              disabled={currentIndex === (photos || []).length - 1}
               className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors disabled:opacity-50"
             >
               ›
@@ -353,7 +337,7 @@ const PhotoModal: React.FC<{
         
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center">
           <p className="text-sm">
-            {currentIndex + 1} / {photos.length}
+            {currentIndex + 1} / {(photos || []).length}
           </p>
           {photo.title && (
             <p className="text-lg font-semibold">{photo.title}</p>
