@@ -1,4 +1,4 @@
-https://pagespeed.web.dev/analysis/https-perfectmodels-ga/mc1hurc398?hl=fr&form_factor=mobileimport React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
     Cog6ToothIcon, 
