@@ -22,6 +22,7 @@ const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
 const Login = lazy(() => import('./pages/Login'));
+const SocialLogin = lazy(() => import('./pages/SocialLogin'));
 const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
@@ -144,6 +145,7 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/casting-formulaire" element={<CastingForm />} />
                         <ReactRouterDOM.Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                         <ReactRouterDOM.Route path="/login" element={<Login />} />
+                        <ReactRouterDOM.Route path="/social-login" element={<SocialLogin />} />
                         <ReactRouterDOM.Route path="/privacy-policy" element={<PrivacyPolicy />} />
                         <ReactRouterDOM.Route path="/terms-of-use" element={<TermsOfUse />} />
                         <ReactRouterDOM.Route path="/chat" element={<Chat />} />

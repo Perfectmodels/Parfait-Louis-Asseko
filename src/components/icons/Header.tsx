@@ -300,6 +300,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isSocialLoggedIn, setIsSocialLoggedIn] = useState(false);
 
   const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -354,8 +355,10 @@ const Header: React.FC = () => {
   useEffect(() => {
     const role = sessionStorage.getItem('classroom_role');
     const access = sessionStorage.getItem('classroom_access') === 'granted';
+    const socialAccess = sessionStorage.getItem('social_access') === 'granted';
     setUserRole(role);
     setIsLoggedIn(access);
+    setIsSocialLoggedIn(socialAccess);
     
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -379,7 +382,7 @@ const Header: React.FC = () => {
   const socialLinks = data?.socialLinks;
 
   const processedNavLinks = useMemo(() => {
-    return navLinksFromData.map(link => {
+    const links = navLinksFromData.map(link => {
         if (link.label === 'Classroom') {
             if (userRole === 'student') return { ...link, label: 'Mon Profil', path: '/profil' };
             if (userRole === 'admin') return { ...link, path: '/admin/classroom' };
@@ -387,7 +390,16 @@ const Header: React.FC = () => {
         }
         return link;
     }).filter((link): link is NavLinkType => link !== null);
-  }, [navLinksFromData, userRole]);
+
+    // Ajouter le lien vers le mini réseau social si l'utilisateur est connecté
+    if (isLoggedIn && !isSocialLoggedIn) {
+        links.push({ path: '/social-login', label: 'Réseau Social', inFooter: false });
+    } else if (isSocialLoggedIn) {
+        links.push({ path: '/formations/forum', label: 'Communauté', inFooter: false });
+    }
+
+    return links;
+  }, [navLinksFromData, userRole, isLoggedIn, isSocialLoggedIn]);
 
   const applyButtonDelay = 150 + processedNavLinks.length * 50;
   const logoutButtonDelay = 150 + (processedNavLinks.length + 1) * 50;
