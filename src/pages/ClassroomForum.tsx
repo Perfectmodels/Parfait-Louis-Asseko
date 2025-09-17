@@ -8,7 +8,8 @@ import {
   UsersIcon,
   FireIcon,
   HeartIcon,
-  ChatBubbleLeftIcon
+  ChatBubbleLeftIcon,
+  UserPlusIcon
 } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -20,13 +21,15 @@ const ClassroomForum: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'social' | 'forum'>('social');
 
     const userId = sessionStorage.getItem('userId');
+    const socialUserId = sessionStorage.getItem('social_user_id');
     const user = data?.models.find(m => m.id === userId) || 
                  data?.beginnerStudents.find(s => s.id === userId);
+    const socialUser = data?.socialUsers?.find(u => u.id === socialUserId);
     
     const threads = data?.forumThreads.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
     const socialPosts = data?.socialPosts || [];
     
-    if (!isInitialized || !user) {
+    if (!isInitialized) {
         return <div className="bg-pm-dark text-pm-off-white min-h-screen flex items-center justify-center"><p>Chargement...</p></div>;
     }
 
@@ -68,6 +71,32 @@ const ClassroomForum: React.FC = () => {
                                 <div className="text-sm text-pm-off-white/60">Discussions</div>
                             </div>
                         </div>
+
+                        {/* Invitation au mini réseau social */}
+                        {!socialUser && (
+                            <div className="bg-gradient-to-r from-pm-gold/20 to-pm-gold/10 border border-pm-gold/30 rounded-xl p-6 mb-8">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-pm-gold/20 rounded-full flex items-center justify-center">
+                                        <UserPlusIcon className="w-6 h-6 text-pm-gold" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-semibold text-pm-gold mb-1">
+                                            Rejoignez le mini réseau social PMM !
+                                        </h3>
+                                        <p className="text-sm text-pm-off-white/80 mb-3">
+                                            Connectez-vous avec d'autres mannequins, partagez vos expériences et échangez des conseils professionnels.
+                                        </p>
+                                        <Link 
+                                            to="/social-login"
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-semibold text-sm rounded-lg hover:bg-white transition-colors"
+                                        >
+                                            <UserPlusIcon className="w-4 h-4" />
+                                            S'inscrire / Se connecter
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Navigation par onglets */}
                         <div className="flex gap-2 border-b border-pm-gold/20">
