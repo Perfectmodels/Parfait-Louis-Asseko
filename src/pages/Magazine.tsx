@@ -45,9 +45,27 @@ const Magazine: React.FC = () => {
         keywords="magazine mode gabon, focus model 241, interview mannequin, tendances mode afrique, mode libreville"
         image={featuredArticle?.imageUrl}
       />
+      
+      {/* Hero Section */}
+      <div 
+        className="relative bg-cover bg-center h-[50vh] flex items-center justify-center text-center"
+        style={{ 
+          backgroundImage: data?.siteImages?.magazineHero ? `url(${data.siteImages.magazineHero})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div className="relative z-10 p-4">
+          <h1 className="text-5xl font-extrabold text-pm-gold mb-4 drop-shadow-lg">FOCUS MODEL 241</h1>
+          <p className="text-xl text-pm-off-white/90 max-w-2xl mx-auto">
+            Le magazine en ligne de Perfect Models Management. Plongez dans les coulisses de la mode gabonaise.
+          </p>
+        </div>
+      </div>
+
       <header className="bg-black py-8 border-b-2 border-pm-gold">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold tracking-widest">FOCUS MODEL 241</h1>
           <p className="text-pm-off-white/80 mt-2">Le magazine de la mode et des talents gabonais.</p>
         </div>
       </header>

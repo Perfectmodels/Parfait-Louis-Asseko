@@ -45,8 +45,16 @@ const ServicesContent: React.FC = () => {
             />
             
             {/* Hero Section */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-pm-gold via-yellow-400 to-orange-400">
-                <div className="absolute inset-0 bg-black/40"></div>
+            <div 
+                className="relative overflow-hidden bg-gradient-to-br from-pm-gold via-yellow-400 to-orange-400"
+                style={{ 
+                    backgroundImage: data?.siteImages?.servicesHero ? `url(${data.siteImages.servicesHero})` : undefined,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundBlendMode: 'overlay'
+                }}
+            >
+                <div className="absolute inset-0 bg-black/50"></div>
                 <div className="relative container mx-auto px-4 py-20">
                     <div className="text-center text-white">
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">

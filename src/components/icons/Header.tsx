@@ -415,10 +415,7 @@ const Header: React.FC = () => {
         return link;
     }).filter((link): link is NavLinkType => link !== null);
 
-    // Ajouter le lien vers le mini réseau social si l'utilisateur est connecté
-    if (isLoggedIn && !isSocialLoggedIn) {
-        links.push({ path: '/social-login', label: 'Réseau Social', inFooter: false });
-    }
+    // Lien vers le mini réseau social supprimé - les icônes sociales suffisent
 
     return links;
   }, [effectiveNavLinks, userRole, isLoggedIn, isSocialLoggedIn]);

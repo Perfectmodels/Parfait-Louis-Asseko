@@ -56,18 +56,27 @@ const Gallery: React.FC = () => {
         keywords="galerie, shooting, photos, mannequins, mode, Gabon, portfolio"
       />
       
+      {/* Hero Section */}
+      <div 
+        className="relative bg-cover bg-center h-[50vh] flex items-center justify-center text-center"
+        style={{ 
+          backgroundImage: data?.siteImages?.galleryHero ? `url(${data.siteImages.galleryHero})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div className="relative z-10 p-4">
+          <h1 className="text-5xl font-extrabold text-pm-gold mb-4 drop-shadow-lg">Galerie Photos</h1>
+          <p className="text-xl text-pm-off-white/90 max-w-2xl mx-auto">
+            Découvrez nos créations artistiques et shootings photos organisés par thème. 
+            Chaque album raconte une histoire unique de beauté et d'élégance.
+          </p>
+        </div>
+      </div>
+      
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-playfair text-pm-gold mb-4">
-              Galerie Photos
-            </h1>
-            <p className="text-xl text-pm-off-white/80 max-w-3xl mx-auto">
-              Découvrez nos créations artistiques et shootings photos organisés par thème. 
-              Chaque album raconte une histoire unique de beauté et d'élégance.
-            </p>
-          </div>
 
           {/* Search and Filters */}
           <div className="bg-black border border-pm-gold/20 rounded-lg p-6 mb-8">

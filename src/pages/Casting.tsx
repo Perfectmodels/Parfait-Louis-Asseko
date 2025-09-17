@@ -46,7 +46,9 @@ const Casting: React.FC = () => {
       {/* Hero Section */}
       <section 
         className="relative min-h-[70vh] flex items-center justify-center text-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url('${posterUrl}')` }}
+        style={{ 
+          backgroundImage: data?.siteImages?.castingHero ? `url(${data.siteImages.castingHero})` : `url('${posterUrl}')` 
+        }}
         aria-labelledby="casting-title"
       >
         <div className="absolute inset-0 bg-pm-dark/80 backdrop-blur-sm"></div>

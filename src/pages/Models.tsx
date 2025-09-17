@@ -49,11 +49,26 @@ const Models: React.FC = () => {
         keywords="mannequins hommes gabon, mannequins femmes gabon, book mannequins, agence de modèles photo, casting modèles libreville"
         image={publicModels[0]?.imageUrl || data?.siteImages.about}
       />
+      
+      {/* Hero Section */}
+      <div 
+        className="relative bg-cover bg-center h-[50vh] flex items-center justify-center text-center"
+        style={{ 
+          backgroundImage: data?.siteImages?.modelsHero ? `url(${data.siteImages.modelsHero})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div className="relative z-10 p-4">
+          <h1 className="text-5xl font-extrabold text-pm-gold mb-4 drop-shadow-lg">Nos Mannequins</h1>
+          <p className="text-xl text-pm-off-white/90 max-w-2xl mx-auto">
+            Découvrez les visages qui définissent l'avenir de la mode. Des talents uniques, prêts à donner vie à vos créations.
+          </p>
+        </div>
+      </div>
+
       <div className="page-container">
-        <h1 className="page-title">Nos Mannequins</h1>
-        <p className="page-subtitle">
-          Découvrez les visages qui définissent l'avenir de la mode. Des talents uniques, prêts à donner vie à vos créations.
-        </p>
 
         {/* Filters and Search */}
         <motion.div 

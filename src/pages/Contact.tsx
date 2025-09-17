@@ -134,7 +134,15 @@ const Contact: React.FC = () => {
             />
 
             {/* Hero Section */}
-            <section className="relative py-20 lg:py-32 overflow-hidden">
+            <section 
+                className="relative py-20 lg:py-32 overflow-hidden"
+                style={{ 
+                    backgroundImage: data?.siteImages?.contactHero ? `url(${data.siteImages.contactHero})` : undefined,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                }}
+            >
+                <div className="absolute inset-0 bg-black/60"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-pm-gold/10 via-transparent to-pm-gold/5"></div>
                 <div className="relative z-10 container mx-auto px-6">
                     <motion.div 

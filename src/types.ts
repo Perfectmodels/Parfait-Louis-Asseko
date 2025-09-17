@@ -228,6 +228,14 @@ export interface SiteImages {
   agencyHistory: string;
   classroomBg: string;
   castingBg: string;
+  // Hero backgrounds for main sections
+  servicesHero: string;
+  modelsHero: string;
+  magazineHero: string;
+  galleryHero: string;
+  contactHero: string;
+  agencyHero: string;
+  castingHero: string;
 }
 
 export interface Partner {

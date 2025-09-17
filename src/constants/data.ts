@@ -36,6 +36,14 @@ export const siteImages: SiteImages = {
     agencyHistory: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
     classroomBg: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
     castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+    // Hero backgrounds for main sections
+    servicesHero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+    modelsHero: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
+    magazineHero: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+    galleryHero: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
+    contactHero: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+    agencyHero: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+    castingHero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
 };
 
 export const apiKeys: ApiKeys = {
