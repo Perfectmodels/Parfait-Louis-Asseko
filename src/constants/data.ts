@@ -36,6 +36,14 @@ export const siteImages: SiteImages = {
     agencyHistory: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
     classroomBg: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
     castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+    // Hero backgrounds for main sections
+    servicesHero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+    modelsHero: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
+    magazineHero: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+    galleryHero: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
+    contactHero: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+    agencyHero: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+    castingHero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
 };
 
 export const apiKeys: ApiKeys = {
@@ -47,6 +55,7 @@ export const apiKeys: ApiKeys = {
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
     geminiApiKey: 'AIzaSyCEVGrbdck61n5l0kl5uGMUwiolTfl1yM4',
+    brevoApiKey: import.meta.env.VITE_BREVO_API_KEY || '',
 };
 
 export const juryMembers: JuryMember[] = [
@@ -180,6 +189,61 @@ export const contactMessages: ContactMessage[] = [];
 export const absences: Absence[] = [];
 export const monthlyPayments: MonthlyPayment[] = [];
 export const photoshootBriefs: PhotoshootBrief[] = [];
+
+// Données comptables initiales
+export const accountingCategories: AccountingCategory[] = [
+    {
+        id: 'cat-revenue-1',
+        name: 'Cotisations mensuelles',
+        type: 'revenue',
+        subcategories: ['Cotisations mensuelles', 'Paiements en avance'],
+        description: 'Revenus provenant des cotisations mensuelles des mannequins'
+    },
+    {
+        id: 'cat-revenue-2',
+        name: 'Frais d\'inscription',
+        type: 'revenue',
+        subcategories: ['Frais d\'inscription', 'Cotisations + Inscriptions'],
+        description: 'Revenus provenant des frais d\'inscription'
+    },
+    {
+        id: 'cat-revenue-3',
+        name: 'Services clients',
+        type: 'revenue',
+        subcategories: ['Séances photo', 'Événements', 'Défilés', 'Formations'],
+        description: 'Revenus provenant des services rendus aux clients'
+    },
+    {
+        id: 'cat-expense-1',
+        name: 'Salaires et charges',
+        type: 'expense',
+        subcategories: ['Salaires équipe', 'Charges sociales', 'Formations équipe'],
+        description: 'Dépenses liées aux ressources humaines'
+    },
+    {
+        id: 'cat-expense-2',
+        name: 'Fonctionnement',
+        type: 'expense',
+        subcategories: ['Loyer', 'Électricité', 'Internet', 'Téléphone', 'Fournitures'],
+        description: 'Dépenses de fonctionnement quotidien'
+    },
+    {
+        id: 'cat-expense-3',
+        name: 'Marketing et communication',
+        type: 'expense',
+        subcategories: ['Publicité', 'Photos', 'Site web', 'Réseaux sociaux'],
+        description: 'Dépenses de marketing et communication'
+    },
+    {
+        id: 'cat-expense-4',
+        name: 'Équipement et matériel',
+        type: 'expense',
+        subcategories: ['Caméras', 'Éclairage', 'Accessoires', 'Ordinateurs'],
+        description: 'Dépenses d\'équipement et de matériel'
+    }
+];
+
+export const accountingTransactions: AccountingTransaction[] = [];
 export const beginnerStudents: BeginnerStudent[] = [
     {
         id: 'casting-1720000000001',
@@ -1046,6 +1110,8 @@ export const defaultSocialPosts: SocialPost[] = [
         content: 'Bienvenue dans la communauté Perfect Models Management ! 🎉 Partagez vos expériences, posez vos questions et connectez-vous avec d\'autres talents de la mode.',
         type: 'text',
         category: 'general',
+        tags: ['bienvenue', 'communauté', 'mode'],
+        mentions: [],
         likes: ['social-user-2'],
         shares: [],
         comments: [],
@@ -1062,6 +1128,8 @@ export const defaultSocialPosts: SocialPost[] = [
         content: 'Conseil du jour : La confiance en soi est la clé du succès en mannequinat. Travaillez votre posture et votre présence ! 💪',
         type: 'text',
         category: 'tips',
+        tags: ['conseils', 'confiance', 'mannequinat'],
+        mentions: [],
         mood: 'motivated',
         likes: ['social-user-1'],
         shares: [],
@@ -1080,31 +1148,17 @@ export const defaultForumThreads: ForumThread[] = [
     {
         id: 'thread-1',
         title: 'Bienvenue dans le forum PMM !',
-        content: 'Ce forum est un espace d\'échange pour tous les membres de la communauté Perfect Models Management. N\'hésitez pas à poser vos questions et partager vos expériences !',
+        initialPost: 'Ce forum est un espace d\'échange pour tous les membres de la communauté Perfect Models Management. N\'hésitez pas à poser vos questions et partager vos expériences !',
         authorId: 'social-user-1',
         authorName: 'Parfait Louis Asseko',
-        category: 'general',
-        tags: ['bienvenue', 'forum', 'communauté'],
-        isPinned: true,
-        isLocked: false,
-        views: 0,
-        replies: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: new Date().toISOString()
     },
     {
         id: 'thread-2',
         title: 'Conseils pour débuter en mannequinat',
-        content: 'Partagez vos conseils et expériences pour aider les nouveaux mannequins à bien commencer leur parcours.',
+        initialPost: 'Partagez vos conseils et expériences pour aider les nouveaux mannequins à bien commencer leur parcours.',
         authorId: 'social-user-2',
         authorName: 'Marie Claire',
-        category: 'tips',
-        tags: ['conseils', 'débutant', 'mannequinat'],
-        isPinned: false,
-        isLocked: false,
-        views: 0,
-        replies: [],
-        createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 jours plus tôt
-        updatedAt: new Date(Date.now() - 172800000).toISOString()
+        createdAt: new Date(Date.now() - 172800000).toISOString() // 2 jours plus tôt
     }
 ];

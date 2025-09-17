@@ -4,6 +4,11 @@ import * as ReactRouterDOM from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRouteWrapper from './components/ProtectedRouteWrapper';
+import PublicRouteWrapper from './components/PublicRouteWrapper';
+import DataLoadingWrapper from './components/DataLoadingWrapper';
+import RoutePreloader from './components/RoutePreloader';
+import RouteErrorBoundary from './components/RouteErrorBoundary';
 import PageTransition, { LoadingTransition } from './components/PageTransition';
 
 // Lazy-loaded Pages
@@ -62,6 +67,9 @@ const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 
+// Test component
+const LoadingTest = lazy(() => import('./components/LoadingTest'));
+
 // Role-specific pages
 const JuryCasting = lazy(() => import('./pages/JuryCasting'));
 const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
@@ -82,9 +90,20 @@ const ScrollToTop: React.FC = () => {
 
 const LoadingFallback: React.FC = () => (
     <LoadingTransition>
-        <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-pm-gold/30 border-t-pm-gold rounded-full animate-spin"></div>
-            <p className="text-pm-gold text-xl font-playfair">Chargement...</p>
+        <div className="min-h-screen bg-pm-dark flex flex-col items-center justify-center gap-6">
+            <div className="relative">
+                <div className="w-16 h-16 border-4 border-pm-gold/20 border-t-pm-gold rounded-full animate-spin"></div>
+                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-pm-gold/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+            </div>
+            <div className="text-center">
+                <p className="text-pm-gold text-2xl font-playfair font-bold mb-2">Perfect Models</p>
+                <p className="text-pm-off-white/70 text-lg">Chargement de la page...</p>
+                <div className="mt-4 flex justify-center space-x-1">
+                    <div className="w-2 h-2 bg-pm-gold rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-2 h-2 bg-pm-gold rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-2 h-2 bg-pm-gold rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
+            </div>
         </div>
     </LoadingTransition>
 );
@@ -127,74 +146,78 @@ const AppContent: React.FC = () => {
 
     return (
         <>
+            <RoutePreloader />
             <Layout>
+                <RouteErrorBoundary>
                 <Suspense fallback={<LoadingFallback />}>
                     <PageTransition>
                         <ReactRouterDOM.Routes>
-                        <ReactRouterDOM.Route path="/" element={<Home />} />
-                        <ReactRouterDOM.Route path="/agence" element={<Agency />} />
-                        <ReactRouterDOM.Route path="/mannequins" element={<Models />} />
-                        <ReactRouterDOM.Route path="/mannequins/:id" element={<ModelDetail />} />
-                        <ReactRouterDOM.Route path="/fashion-day" element={<FashionDay />} />
-                        <ReactRouterDOM.Route path="/magazine" element={<Magazine />} />
-                        <ReactRouterDOM.Route path="/magazine/:slug" element={<ArticleDetail />} />
-            <ReactRouterDOM.Route path="/contact" element={<Contact />} />
-            <ReactRouterDOM.Route path="/services" element={<Services />} />
-            <ReactRouterDOM.Route path="/services/:slug" element={<ServiceDetail />} />
-            <ReactRouterDOM.Route path="/checkout" element={<Checkout />} />
-                        <ReactRouterDOM.Route path="/casting" element={<Casting />} />
-                        <ReactRouterDOM.Route path="/casting-formulaire" element={<CastingForm />} />
-                        <ReactRouterDOM.Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
-                        <ReactRouterDOM.Route path="/login" element={<Login />} />
-                        <ReactRouterDOM.Route path="/social-login" element={<SocialLogin />} />
+                        <ReactRouterDOM.Route path="/" element={<PublicRouteWrapper><Home /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/agence" element={<PublicRouteWrapper><Agency /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/mannequins" element={<PublicRouteWrapper><Models /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/mannequins/:id" element={<PublicRouteWrapper><ModelDetail /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/fashion-day" element={<PublicRouteWrapper><FashionDay /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/magazine" element={<PublicRouteWrapper><Magazine /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/magazine/:slug" element={<PublicRouteWrapper><ArticleDetail /></PublicRouteWrapper>} />
+            <ReactRouterDOM.Route path="/contact" element={<PublicRouteWrapper><Contact /></PublicRouteWrapper>} />
+            <ReactRouterDOM.Route path="/services" element={<PublicRouteWrapper><Services /></PublicRouteWrapper>} />
+            <ReactRouterDOM.Route path="/services/:slug" element={<PublicRouteWrapper><ServiceDetail /></PublicRouteWrapper>} />
+            <ReactRouterDOM.Route path="/checkout" element={<PublicRouteWrapper><Checkout /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/casting" element={<PublicRouteWrapper><Casting /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/casting-formulaire" element={<PublicRouteWrapper><CastingForm /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/fashion-day-application" element={<PublicRouteWrapper><FashionDayApplicationForm /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/login" element={<PublicRouteWrapper><Login /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/social-login" element={<PublicRouteWrapper><SocialLogin /></PublicRouteWrapper>} />
                         <ReactRouterDOM.Route path="/privacy-policy" element={<PrivacyPolicy />} />
                         <ReactRouterDOM.Route path="/terms-of-use" element={<TermsOfUse />} />
-                        <ReactRouterDOM.Route path="/chat" element={<Chat />} />
+                        <ReactRouterDOM.Route path="/chat" element={<PublicRouteWrapper><Chat /></PublicRouteWrapper>} />
                         <ReactRouterDOM.Route path="/test-upload" element={<TestImageUpload />} />
-                        <ReactRouterDOM.Route path="/galerie" element={<Gallery />} />
+                        <ReactRouterDOM.Route path="/loading-test" element={<LoadingTest />} />
+                        <ReactRouterDOM.Route path="/galerie" element={<PublicRouteWrapper><Gallery /></PublicRouteWrapper>} />
 
                         {/* Protected Routes - Classroom Unifiée (Débutants + Pros) */}
-                        <ReactRouterDOM.Route path="/formations" element={<ProtectedRoute role="classroom"><Activity /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="classroom"><ChapterDetail /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/profil-debutant" element={<ProtectedRoute role="beginner"><BeginnerDashboard /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/formations" element={<ProtectedRouteWrapper role="classroom"><Activity /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRouteWrapper role="classroom"><ChapterDetail /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/profil" element={<ProtectedRouteWrapper role="student"><ModelDashboard /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/profil-debutant" element={<ProtectedRouteWrapper role="beginner"><BeginnerDashboard /></ProtectedRouteWrapper>} />
                         
-                        <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRouteWrapper role="jury"><JuryCasting /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRouteWrapper role="registration"><RegistrationCasting /></ProtectedRouteWrapper>} />
                         
-                        <ReactRouterDOM.Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/user-management" element={<ProtectedRoute role="admin"><AdminUserManagement /></ProtectedRoute>} />
-                <ReactRouterDOM.Route path="/admin/payment-submissions" element={<ProtectedRoute role="admin"><AdminPaymentSubmissions /></ProtectedRoute>} />
-                <ReactRouterDOM.Route path="/admin/payment-status" element={<ProtectedRoute role="admin"><AdminPaymentStatus /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRoute role="admin"><AdminAccounting /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/team" element={<ProtectedRoute role="admin"><AdminTeam /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/model-tracking" element={<ProtectedRoute role="admin"><AdminModelTracking /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/agency" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/casting-applications" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/casting-results" element={<ProtectedRoute role="admin"><AdminCastingResults /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/fashion-day-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/payments" element={<ProtectedRoute role="admin"><AdminPayments /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/absences" element={<ProtectedRoute role="admin"><AdminAbsences /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin" element={<ProtectedRouteWrapper role="admin"><Admin /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/user-management" element={<ProtectedRouteWrapper role="admin"><AdminUserManagement /></ProtectedRouteWrapper>} />
+                <ReactRouterDOM.Route path="/admin/payment-submissions" element={<ProtectedRouteWrapper role="admin"><AdminPaymentSubmissions /></ProtectedRouteWrapper>} />
+                <ReactRouterDOM.Route path="/admin/payment-status" element={<ProtectedRouteWrapper role="admin"><AdminPaymentStatus /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRouteWrapper role="admin"><AdminAccounting /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRouteWrapper role="admin"><AdminModels /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRouteWrapper role="admin"><AdminMagazine /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRouteWrapper role="admin"><AdminGallery /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/team" element={<ProtectedRouteWrapper role="admin"><AdminTeam /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/model-tracking" element={<ProtectedRouteWrapper role="admin"><AdminModelTracking /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/classroom" element={<ProtectedRouteWrapper role="admin"><AdminClassroom /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/settings" element={<ProtectedRouteWrapper role="admin"><AdminSettings /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/agency" element={<ProtectedRouteWrapper role="admin"><AdminAgency /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/casting-applications" element={<ProtectedRouteWrapper role="admin"><AdminCasting /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/casting-results" element={<ProtectedRouteWrapper role="admin"><AdminCastingResults /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/fashion-day-applications" element={<ProtectedRouteWrapper role="admin"><AdminFashionDay /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/fashion-day-events" element={<ProtectedRouteWrapper role="admin"><AdminFashionDayEvents /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/news" element={<ProtectedRouteWrapper role="admin"><AdminNews /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/classroom-progress" element={<ProtectedRouteWrapper role="admin"><AdminClassroomProgress /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/model-access" element={<ProtectedRouteWrapper role="admin"><AdminModelAccess /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/beginner-students-access" element={<ProtectedRouteWrapper role="admin"><AdminBeginnerStudents /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/recovery-requests" element={<ProtectedRouteWrapper role="admin"><AdminRecovery /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/comments" element={<ProtectedRouteWrapper role="admin"><AdminComments /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/messages" element={<ProtectedRouteWrapper role="admin"><AdminMessages /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/bookings" element={<ProtectedRouteWrapper role="admin"><AdminBookings /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/payments" element={<ProtectedRouteWrapper role="admin"><AdminPayments /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/absences" element={<ProtectedRouteWrapper role="admin"><AdminAbsences /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/artistic-direction" element={<ProtectedRouteWrapper role="admin"><AdminArtisticDirection /></ProtectedRouteWrapper>} />
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                         </ReactRouterDOM.Routes>
                     </PageTransition>
                 </Suspense>
+                </RouteErrorBoundary>
             </Layout>
         </>
     );

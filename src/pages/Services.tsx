@@ -45,8 +45,16 @@ const ServicesContent: React.FC = () => {
             />
             
             {/* Hero Section */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-pm-gold via-yellow-400 to-orange-400">
-                <div className="absolute inset-0 bg-black/40"></div>
+            <div 
+                className="relative overflow-hidden bg-gradient-to-br from-pm-gold via-yellow-400 to-orange-400"
+                style={{ 
+                    backgroundImage: data?.siteImages?.servicesHero ? `url(${data.siteImages.servicesHero})` : undefined,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundBlendMode: 'overlay'
+                }}
+            >
+                <div className="absolute inset-0 bg-black/50"></div>
                 <div className="relative container mx-auto px-4 py-20">
                     <div className="text-center text-white">
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
@@ -84,7 +92,7 @@ const ServicesContent: React.FC = () => {
             </div>
 
             {/* Features Section */}
-            <div className="py-16 bg-black/30 backdrop-blur-sm">
+            <div className="py-16 bg-black/20 backdrop-blur-sm">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div className="text-center p-6">
@@ -113,23 +121,23 @@ const ServicesContent: React.FC = () => {
             </div>
 
             {/* Services Section */}
-            <div className="py-16 bg-black/20 backdrop-blur-sm">
+            <div className="py-16 bg-black/10 backdrop-blur-sm">
                 <div className="container mx-auto px-4">
                     {/* Category Navigation */}
                     <div className="flex justify-center mb-12">
                         <div className="bg-black/40 backdrop-blur-sm border border-pm-gold/20 rounded-2xl p-2 shadow-lg">
                             {categoryOrder.map((category) => (
-                                <button
-                                    key={category}
-                                    onClick={() => setActiveCategory(category)}
+                             <button
+                                key={category}
+                                onClick={() => setActiveCategory(category)}
                                     className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                                         activeCategory === category
                                             ? 'bg-gradient-to-r from-pm-gold to-yellow-400 text-white shadow-lg'
                                             : 'text-pm-off-white/70 hover:text-pm-gold hover:bg-black/20'
                                     }`}
-                                >
-                                    {category}
-                                </button>
+                            >
+                                {category}
+                            </button>
                             ))}
                         </div>
                     </div>
@@ -138,8 +146,8 @@ const ServicesContent: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {servicesByCategory[activeCategory]?.map((service, index) => (
                             <ServiceCardModern key={service.id || index} service={service} />
-                        ))}
-                    </div>
+                    ))}
+                </div>
 
                     {(!servicesByCategory[activeCategory] || servicesByCategory[activeCategory].length === 0) && (
                         <div className="text-center py-16">
@@ -150,8 +158,8 @@ const ServicesContent: React.FC = () => {
                             <p className="text-pm-off-white/70">Cette catégorie sera bientôt disponible avec de nouveaux services.</p>
                         </div>
                     )}
-                </div>
-            </div>
+                                </div>
+                            </div>
 
             {/* CTA Section */}
             <div className="py-16 bg-gradient-to-r from-pm-gold to-yellow-400">
@@ -175,9 +183,9 @@ const ServicesContent: React.FC = () => {
                         >
                             Découvrir nos formations
                         </a>
-                    </div>
                 </div>
             </div>
+        </div>
 
             {/* Floating Cart */}
             <FloatingCart />

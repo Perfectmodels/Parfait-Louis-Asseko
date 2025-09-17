@@ -415,10 +415,7 @@ const Header: React.FC = () => {
         return link;
     }).filter((link): link is NavLinkType => link !== null);
 
-    // Ajouter le lien vers le mini réseau social si l'utilisateur est connecté
-    if (isLoggedIn && !isSocialLoggedIn) {
-        links.push({ path: '/social-login', label: 'Réseau Social', inFooter: false });
-    }
+    // Lien vers le mini réseau social supprimé - les icônes sociales suffisent
 
     return links;
   }, [effectiveNavLinks, userRole, isLoggedIn, isSocialLoggedIn]);
@@ -434,10 +431,10 @@ const Header: React.FC = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className={`fixed top-10 left-4 right-4 z-50 transition-all duration-500 print-hide ${
+        className={`fixed top-12 left-4 right-4 z-50 transition-all duration-500 print-hide ${
           isScrolled 
-            ? 'bg-black/80 backdrop-blur-xl shadow-2xl shadow-pm-gold/30 border border-pm-gold/20' 
-            : 'bg-black/50 backdrop-blur-lg shadow-xl shadow-pm-gold/20 border border-pm-gold/10'
+            ? 'bg-black/90 backdrop-blur-xl shadow-2xl shadow-pm-gold/30 border border-pm-gold/20' 
+            : 'bg-black/70 backdrop-blur-lg shadow-xl shadow-pm-gold/20 border border-pm-gold/10'
         } rounded-2xl`}
       >
         <div className="container mx-auto px-4 h-14 lg:h-16 flex justify-between items-center">
@@ -500,17 +497,8 @@ const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <motion.button
-            ref={hamburgerButtonRef}
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-1.5 text-pm-off-white hover:text-pm-gold transition-colors duration-300 rounded-lg hover:bg-pm-gold/10"
-            aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <AnimatedHamburgerIcon isOpen={isOpen} />
-          </motion.button>
+          {/* Mobile Menu Button - Disabled for Simple Navigation */}
+          {/* Navigation mobile simplifiée en bas de l'écran */}
         </div>
 
         {/* Mobile Menu Overlay */}

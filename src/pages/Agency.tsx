@@ -104,7 +104,15 @@ const Agency: React.FC = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-32">
+      <section 
+        className="relative overflow-hidden py-20 lg:py-32"
+        style={{ 
+          backgroundImage: data?.siteImages?.agencyHero ? `url(${data.siteImages.agencyHero})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-pm-gold/10 via-transparent to-pm-gold/5"></div>
         <div className="relative z-10 page-container">
           <div className="text-center max-w-4xl mx-auto">

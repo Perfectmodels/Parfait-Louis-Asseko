@@ -133,6 +133,70 @@ const AdminSettings: React.FC = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Section Hero Backgrounds */}
+                    <div className="admin-section-wrapper">
+                        <h2 className="admin-section-title">Backgrounds des Sections Hero</h2>
+                        <p className="text-pm-off-white/70 mb-6">Configurez les images d'arrière-plan pour les sections hero de chaque page principale.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="admin-label">Services - Hero Background</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.servicesHero} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'servicesHero', value)}
+                                    placeholder="Cliquez pour uploader le background Services"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Mannequins - Hero Background</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.modelsHero} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'modelsHero', value)}
+                                    placeholder="Cliquez pour uploader le background Mannequins"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Magazine - Hero Background</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.magazineHero} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'magazineHero', value)}
+                                    placeholder="Cliquez pour uploader le background Magazine"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Galerie - Hero Background</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.galleryHero} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'galleryHero', value)}
+                                    placeholder="Cliquez pour uploader le background Galerie"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Contact - Hero Background</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.contactHero} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'contactHero', value)}
+                                    placeholder="Cliquez pour uploader le background Contact"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Agence - Hero Background</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.agencyHero} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'agencyHero', value)}
+                                    placeholder="Cliquez pour uploader le background Agence"
+                                />
+                            </div>
+                            <div>
+                                <label className="admin-label">Casting - Hero Background</label>
+                                <ImageUpload 
+                                    currentImage={localData.siteImages.castingHero} 
+                                    onImageUploaded={value => handleSimpleChange('siteImages', 'castingHero', value)}
+                                    placeholder="Cliquez pour uploader le background Casting"
+                                />
+                            </div>
+                        </div>
+                    </div>
                     
                      <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Réseaux Sociaux</h2>

@@ -29,6 +29,9 @@ const AdminGallery: React.FC = () => {
   useEffect(() => {
     if (data?.albums) {
       setLocalAlbums([...data.albums].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    } else if (isInitialized) {
+      // If data is initialized but there are no albums, ensure local state is an empty array
+      setLocalAlbums([]);
     }
   }, [data?.albums, isInitialized]);
 
@@ -355,7 +358,7 @@ const AlbumForm: React.FC<{
             <div>
               <label className="admin-label">Photos de l'album</label>
               <MultipleImageUpload
-                images={photos.map(p => p.url)}
+                images={photos ? photos.map(p => p.url) : []}
                 onImagesChange={handlePhotosChange}
                 maxImages={50}
                 placeholder="Ajouter des photos à l'album"

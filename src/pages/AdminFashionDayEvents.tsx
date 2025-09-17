@@ -63,12 +63,15 @@ const AdminFashionDayEvents: React.FC = () => {
                                     <FormInput label="Promoteur" value={item.promoter || ''} onChange={e => onChange('promoter', e.target.value)} />
                                     
                                     <div>
-                                        <label className="admin-label">Image de l'événement</label>
+                                        <label className="admin-label">Background Hero de l'Édition</label>
                                         <ImageUpload 
                                             currentImage={item.imageUrl || ''}
                                             onImageUploaded={(imageUrl) => onChange('imageUrl', imageUrl)}
-                                            placeholder="Cliquez pour uploader l'image de l'événement"
+                                            placeholder="Cliquez pour uploader le background hero de cette édition"
                                         />
+                                        <p className="text-xs text-pm-off-white/60 mt-2">
+                                            Cette image sera utilisée comme arrière-plan de la section hero pour cette édition spécifique.
+                                        </p>
                                     </div>
 
                                     <SubArrayEditor

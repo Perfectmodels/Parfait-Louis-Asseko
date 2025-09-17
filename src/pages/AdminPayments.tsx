@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, PlusIcon, PencilIcon, CheckCircleIcon, ExclamationTriangleIcon, ChevronDownIcon, ChevronUpIcon, XMarkIcon, FunnelIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, PlusIcon, PencilIcon, CheckCircleIcon, ExclamationTriangleIcon, ChevronDownIcon, ChevronUpIcon, XMarkIcon, FunnelIcon, ArrowUpIcon, ArrowDownIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { AccountingTransaction } from '../types';
 
 import PaymentStatusIndicator from '../components/PaymentStatusIndicator';
@@ -37,6 +37,33 @@ const AdminPayments: React.FC = () => {
     })) || [])
   ];
 
+  const getModelPaymentStatus = (modelId: string, transactions: AccountingTransaction[]) => {
+    const modelTransactions = transactions.filter(t => t.relatedModelId === modelId);
+    
+    const hasPaidInscription = modelTransactions.some(t => 
+        t.subcategory === "Frais d'inscription" || t.subcategory === "Cotisations + Inscriptions"
+    );
+    
+    // Pour la cotisation, on peut vérifier la plus récente ou si une existe dans la période actuelle
+    const hasPaidCotisationThisPeriod = modelTransactions.some(t => 
+        (t.subcategory === "Cotisations mensuelles" || t.subcategory === "Cotisations + Inscriptions") &&
+        new Date(t.date).getMonth() === new Date().getMonth() &&
+        new Date(t.date).getFullYear() === new Date().getFullYear()
+    );
+
+    if (hasPaidInscription && hasPaidCotisationThisPeriod) {
+        return 'a_jour';
+    }
+    if (hasPaidInscription) {
+        return 'inscription_ok';
+    }
+    if (hasPaidCotisationThisPeriod) {
+        return 'cotisation_ok';
+    }
+    return 'aucun_paiement';
+  };
+
+
   const toggleModelExpansion = (modelId: string) => {
     const newExpanded = new Set(expandedModels);
     if (newExpanded.has(modelId)) {
@@ -49,63 +76,20 @@ const AdminPayments: React.FC = () => {
 
   // Fonction pour déterminer la catégorie de statut
   const getStatusCategory = (model: any) => {
-    const paymentStatus = model.paymentStatus;
-    
-    // Si pas de statut de paiement du tout, c'est "en attente"
-    if (!paymentStatus || !paymentStatus.paymentType) {
-      return 'pending';
+    const transactions = data?.accountingTransactions || [];
+    const status = getModelPaymentStatus(model.id, transactions);
+
+    switch (status) {
+        case 'a_jour':
+            return 'complete';
+        case 'inscription_ok':
+            return 'inscription_only';
+        case 'cotisation_ok':
+            return 'cotisation_only';
+        case 'aucun_paiement':
+        default:
+            return 'pending';
     }
-    
-    const now = new Date();
-    const nextDueDate = paymentStatus.nextDueDate ? new Date(paymentStatus.nextDueDate) : null;
-    const isOverdue = nextDueDate && nextDueDate < now;
-    const hasWarnings = paymentStatus.warnings && paymentStatus.warnings.length > 0;
-
-    // Vérifier si le mannequin a payé quelque chose
-    const hasPaid = paymentStatus.lastPaymentDate && paymentStatus.amount && paymentStatus.amount > 0;
-
-    if (paymentStatus.paymentType === 'cotisation_inscription') {
-      if (paymentStatus.isUpToDate && !isOverdue && !hasWarnings && hasPaid) {
-        return 'complete';
-      } else if (hasPaid) {
-        return 'partial';
-      } else {
-        return 'pending';
-      }
-    } else if (paymentStatus.paymentType === 'cotisation') {
-      if (paymentStatus.isUpToDate && !isOverdue && !hasWarnings && hasPaid) {
-        return 'cotisation_only';
-      } else if (hasPaid) {
-        return 'cotisation_pending';
-      } else {
-        return 'pending';
-      }
-    } else if (paymentStatus.paymentType === 'inscription') {
-      if (paymentStatus.isUpToDate && !isOverdue && !hasWarnings && hasPaid) {
-        return 'inscription_only';
-      } else if (hasPaid) {
-        return 'inscription_pending';
-      } else {
-        return 'pending';
-      }
-    } else if (paymentStatus.paymentType === 'avance') {
-      if (paymentStatus.isUpToDate && !isOverdue && !hasWarnings && hasPaid) {
-        return 'advance';
-      } else if (hasPaid) {
-        return 'advance_pending';
-      } else {
-        return 'pending';
-      }
-    }
-
-    // Si pas de paiement du tout
-    if (!hasPaid) {
-      return 'pending';
-    }
-
-    if (isOverdue) return 'overdue';
-    if (hasWarnings) return 'warning';
-    return 'pending';
   };
 
   // Tri et filtrage des modèles
@@ -124,17 +108,11 @@ const AdminPayments: React.FC = () => {
         case 'status':
           const statusOrder = {
             'pending': 1,
-            'complete': 2,
-            'cotisation_only': 3,
-            'inscription_only': 4,
-            'advance': 5,
-            'partial': 6,
-            'cotisation_pending': 7,
-            'inscription_pending': 8,
-            'advance_pending': 9,
-            'warning': 10,
-            'overdue': 11,
-            'unknown': 12
+            'overdue': 2,
+            'warning': 3,
+            'cotisation_only': 4,
+            'inscription_only': 5,
+            'complete': 6,
           };
           aValue = statusOrder[a.statusCategory as keyof typeof statusOrder] || 999;
           bValue = statusOrder[b.statusCategory as keyof typeof statusOrder] || 999;
@@ -460,16 +438,11 @@ const AdminPayments: React.FC = () => {
               className="bg-pm-dark border border-pm-gold/20 rounded-lg px-3 py-2 text-pm-off-white"
             >
               <option value="all">Tous les statuts</option>
-              <option value="pending">En attente (Aucun paiement)</option>
-              <option value="complete">Complets (Cotisation + Inscription)</option>
-              <option value="cotisation_only">Cotisation seule</option>
-              <option value="inscription_only">Inscription seule</option>
-              <option value="partial">Partiels</option>
-              <option value="cotisation_pending">Cotisation en attente</option>
-              <option value="inscription_pending">Inscription en attente</option>
-              <option value="advance_pending">Avance en attente</option>
+              <option value="complete">À jour (Inscription + Cotisation)</option>
+              <option value="inscription_only">Inscription OK</option>
+              <option value="cotisation_only">Cotisation OK</option>
+              <option value="pending">Paiement en attente</option>
               <option value="overdue">En retard</option>
-              <option value="warning">Avertissements</option>
             </select>
           </div>
           <div className="flex items-center gap-2 text-sm text-pm-off-white/60">
@@ -554,7 +527,10 @@ const AdminPayments: React.FC = () => {
                     </div>
                     
                     <div className="flex items-center gap-4">
-                      <PaymentStatusIndicator paymentStatus={model.paymentStatus} />
+                      <PaymentStatusIndicator 
+                         status={model.statusCategory} 
+                         lastPaymentDate={(model.paymentStatus as any)?.lastPaymentDate}
+                      />
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -931,6 +907,70 @@ const AdminPayments: React.FC = () => {
           </div>
         )}
       </div>
+    </div>
+  );
+};
+
+const PaymentStatusIndicator: React.FC<{ status: string; lastPaymentDate?: string }> = ({ status, lastPaymentDate }) => {
+  const getStatusInfo = () => {
+    switch (status) {
+      case 'complete':
+        return { 
+          icon: <ShieldCheckIcon className="w-5 h-5 text-teal-400" />,
+          text: 'À jour',
+          textColor: 'text-teal-400',
+          bgColor: 'bg-teal-500/10',
+          borderColor: 'border-teal-500/20'
+        };
+      case 'inscription_only':
+        return { 
+          icon: <CheckCircleIcon className="w-5 h-5 text-blue-400" />,
+          text: 'Inscription OK',
+          textColor: 'text-blue-400',
+          bgColor: 'bg-blue-500/10',
+          borderColor: 'border-blue-500/20'
+        };
+      case 'cotisation_only':
+        return { 
+          icon: <CheckCircleIcon className="w-5 h-5 text-green-400" />,
+          text: 'Cotisation OK',
+          textColor: 'text-green-400',
+          bgColor: 'bg-green-500/10',
+          borderColor: 'border-green-500/20'
+        };
+      case 'pending':
+        return { 
+          icon: <ExclamationTriangleIcon className="w-5 h-5 text-yellow-400" />,
+          text: 'En attente',
+          textColor: 'text-yellow-400',
+          bgColor: 'bg-yellow-500/10',
+          borderColor: 'border-yellow-500/20'
+        };
+      case 'overdue':
+        return { 
+          icon: <ExclamationTriangleIcon className="w-5 h-5 text-red-400" />,
+          text: 'En retard',
+          textColor: 'text-red-400',
+          bgColor: 'bg-red-500/10',
+          borderColor: 'border-red-500/20'
+        };
+      default:
+        return { 
+          icon: <ExclamationTriangleIcon className="w-5 h-5 text-gray-400" />,
+          text: 'Inconnu',
+          textColor: 'text-gray-400',
+          bgColor: 'bg-gray-500/10',
+          borderColor: 'border-gray-500/20'
+        };
+    }
+  };
+
+  const { icon, text, textColor, bgColor, borderColor } = getStatusInfo();
+
+  return (
+    <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${bgColor} border ${borderColor}`}>
+      {icon}
+      <span className={textColor}>{text}</span>
     </div>
   );
 };

@@ -83,6 +83,10 @@ export interface BeginnerStudent {
   name: string;
   matricule: string;
   password: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  instagram?: string;
   quizScores: { 
     [chapterSlug: string]: {
       score: number;
@@ -228,6 +232,14 @@ export interface SiteImages {
   agencyHistory: string;
   classroomBg: string;
   castingBg: string;
+  // Hero backgrounds for main sections
+  servicesHero: string;
+  modelsHero: string;
+  magazineHero: string;
+  galleryHero: string;
+  contactHero: string;
+  agencyHero: string;
+  castingHero: string;
 }
 
 export interface Partner {
@@ -243,6 +255,7 @@ export interface ApiKeys {
   };
   imgbbApiKey?: string;
   geminiApiKey?: string;
+  brevoApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -690,6 +703,7 @@ export interface SocialUser {
   id: string;
   name: string;
   username: string;
+  email?: string;
   imageUrl?: string;
   bio?: string;
   followers: string[];
@@ -704,6 +718,8 @@ export interface SocialUser {
     allowMentions: boolean;
     allowDirectMessages: boolean;
   };
+  createdAt?: string;
+  lastActive?: string;
 }
 
 export interface SocialPoll {

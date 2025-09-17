@@ -126,7 +126,15 @@ const FashionDay: React.FC = () => {
         />
         <div className="page-container">
           {/* Hero Section améliorée */}
-          <section className="relative overflow-hidden mb-16">
+          <section 
+            className="relative overflow-hidden mb-16"
+            style={{ 
+              backgroundImage: selectedEdition.imageUrl ? `url(${selectedEdition.imageUrl})` : undefined,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
+            <div className="absolute inset-0 bg-black/60"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-pm-gold/10 via-transparent to-pm-gold/5"></div>
             <div className="relative z-10 text-center py-16">
               <motion.div
