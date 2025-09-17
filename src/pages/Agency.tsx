@@ -22,6 +22,12 @@ import {
 import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { 
+  ScrollReveal, 
+  StaggerOnScroll, 
+  ScaleOnScroll, 
+  TextReveal 
+} from '../components/ScrollAnimations';
 
 const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
     const [openFAQ, setOpenFAQ] = useState<string | null>('0-0'); // Open the first question by default
@@ -101,22 +107,21 @@ const Agency: React.FC = () => {
       <section className="relative overflow-hidden py-20 lg:py-32">
         <div className="absolute inset-0 bg-gradient-to-br from-pm-gold/10 via-transparent to-pm-gold/5"></div>
         <div className="relative z-10 page-container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold/20 rounded-full mb-6">
-              <SparklesIcon className="w-5 h-5 text-pm-gold" />
-              <span className="text-pm-gold font-semibold text-sm uppercase tracking-wider">
-                Depuis 2021
-              </span>
-            </div>
+          <div className="text-center max-w-4xl mx-auto">
+            <ScrollReveal>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold/20 rounded-full mb-6">
+                <SparklesIcon className="w-5 h-5 text-pm-gold" />
+                <span className="text-pm-gold font-semibold text-sm uppercase tracking-wider">
+                  Depuis 2021
+                </span>
+              </div>
+            </ScrollReveal>
             
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-playfair text-pm-gold mb-6 tracking-wider px-4">
-              Perfect Models Management
-            </h1>
+            <TextReveal delay={0.2}>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-playfair text-pm-gold mb-6 tracking-wider px-4">
+                Perfect Models Management
+              </h1>
+            </TextReveal>
             
             <p className="text-xl md:text-2xl text-pm-off-white/90 mb-8 leading-relaxed">
               L'agence de mannequins d'élite qui révolutionne la mode gabonaise
@@ -136,7 +141,7 @@ const Agency: React.FC = () => {
                 Notre histoire
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -144,13 +149,8 @@ const Agency: React.FC = () => {
 
         {/* Section Statistiques */}
         <section className="py-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto"
-          >
+          <StaggerOnScroll staggerDelay={0.1}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
             <div className="text-center">
               <div className="w-16 h-16 bg-pm-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <UsersIcon className="w-8 h-8 text-pm-gold" />
@@ -179,7 +179,8 @@ const Agency: React.FC = () => {
               <div className="text-3xl font-bold text-pm-gold mb-2">100%</div>
               <div className="text-sm text-pm-off-white/80">Satisfaction client</div>
             </div>
-          </motion.div>
+            </div>
+          </StaggerOnScroll>
         </section>
 
         {/* Notre Histoire */}
@@ -618,6 +619,7 @@ const Agency: React.FC = () => {
   );
 };
 
+// Composant DistinctionCard
 const DistinctionCard: React.FC<{ distinction: ModelDistinction }> = ({ distinction }) => (
     <div className="bg-black/50 backdrop-blur-sm border border-pm-gold/20 rounded-xl p-8 text-center h-full flex flex-col justify-center items-center hover:border-pm-gold transition-all duration-300 group">
         <div className="w-16 h-16 bg-pm-gold/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-pm-gold/30 transition-colors duration-300">
