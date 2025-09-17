@@ -12,6 +12,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 import InteractiveDashboardCard from '../components/InteractiveDashboardCard';
+import { useAdminNavigation } from '../hooks/useAdminNavigation';
+import AdminNavigationDebug from '../components/AdminNavigationDebug';
 
 type AdminTab = 'dashboard' | 'talents' | 'content' | 'accounting' | 'analytics';
 
@@ -143,9 +145,9 @@ const generateNotifications = (data: any, section: string) => {
 const Admin: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useData();
-    const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
+    const { activeTab, sidebarOpen, handleTabChange, toggleSidebar, closeSidebar } = useAdminNavigation();
     const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [showDebug, setShowDebug] = useState(false);
     const [stats, setStats] = useState<AdminStats>({
         totalModels: 0,
         totalBeginners: 0,
@@ -186,6 +188,7 @@ const Admin: React.FC = () => {
         }
     }, [data]);
 
+
     const handleLogout = () => {
         sessionStorage.clear();
         navigate('/login');
@@ -215,8 +218,18 @@ const Admin: React.FC = () => {
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center gap-4">
                             <button
-                                onClick={() => setSidebarOpen(!sidebarOpen)}
-                                className="lg:hidden p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    toggleSidebar();
+                                }}
+                                onMouseDown={(e) => e.preventDefault()}
+                                className="lg:hidden p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors cursor-pointer select-none"
+                                style={{ 
+                                    WebkitTapHighlightColor: 'transparent',
+                                    touchAction: 'manipulation'
+                                }}
+                                aria-label="Toggle navigation menu"
                             >
                                 {sidebarOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
                             </button>
@@ -232,6 +245,15 @@ const Admin: React.FC = () => {
                     </div>
                         
                         <div className="flex items-center gap-4">
+                            {/* Debug Toggle */}
+                            <button
+                                onClick={() => setShowDebug(!showDebug)}
+                                className="p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors"
+                                title="Toggle Debug Panel"
+                            >
+                                <Cog6ToothIcon className="w-5 h-5" />
+                            </button>
+
                             {/* Notifications */}
                             <div className="relative">
                                 <button className="p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors relative">
@@ -271,15 +293,23 @@ const Admin: React.FC = () => {
                             {navigationItems.map((item) => (
                             <button
                                     key={item.id}
-                                    onClick={() => {
-                                        setActiveTab(item.id);
-                                        setSidebarOpen(false);
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleTabChange(item.id);
                                     }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${
+                                    onMouseDown={(e) => {
+                                        e.preventDefault(); // Prevent focus issues
+                                    }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 cursor-pointer select-none ${
                                         activeTab === item.id
-                                            ? 'bg-pm-gold/20 text-pm-gold border border-pm-gold/30'
-                                            : 'text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10'
+                                            ? 'bg-pm-gold/20 text-pm-gold border border-pm-gold/30 shadow-lg'
+                                            : 'text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 hover:shadow-md'
                                     }`}
+                                    style={{ 
+                                        WebkitTapHighlightColor: 'transparent',
+                                        touchAction: 'manipulation'
+                                    }}
                                 >
                                     <item.icon className="w-5 h-5 flex-shrink-0" />
                                     <div>
@@ -333,7 +363,26 @@ const Admin: React.FC = () => {
             {sidebarOpen && (
                 <div 
                     className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-                    onClick={() => setSidebarOpen(false)}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        closeSidebar();
+                    }}
+                    onMouseDown={(e) => e.preventDefault()}
+                    style={{ 
+                        WebkitTapHighlightColor: 'transparent',
+                        touchAction: 'manipulation'
+                    }}
+                />
+            )}
+
+            {/* Debug Panel */}
+            {showDebug && (
+                <AdminNavigationDebug
+                    activeTab={activeTab}
+                    sidebarOpen={sidebarOpen}
+                    onTabChange={handleTabChange}
+                    onToggleSidebar={toggleSidebar}
                 />
             )}
         </div>
@@ -341,7 +390,7 @@ const Admin: React.FC = () => {
 };
 
 // Dashboard View Component
-const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> = ({ stats, activeUsers }) => (
+const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> = React.memo(({ stats, activeUsers }) => (
     <div className="space-y-4">
         <div className="flex items-center justify-between">
             <div>
@@ -411,10 +460,10 @@ const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> 
             </div>
         </div>
     </div>
-);
+));
 
 // Talents View Component
-const TalentsView: React.FC<{ newCastingApps: number; data: any; generateNotifications: any }> = ({ newCastingApps, data, generateNotifications }) => (
+const TalentsView: React.FC<{ newCastingApps: number; data: any; generateNotifications: any }> = React.memo(({ newCastingApps, data, generateNotifications }) => (
     <div className="space-y-4">
         <div>
             <h2 className="text-2xl font-bold text-pm-gold">Gestion des Talents</h2>
@@ -444,10 +493,10 @@ const TalentsView: React.FC<{ newCastingApps: number; data: any; generateNotific
                              <DashboardCard title="Accès Mannequins Pro" icon={KeyIcon} link="/admin/model-access" description="Consulter les identifiants des mannequins confirmés." />
         </div>
     </div>
-);
+));
 
 // Content View Component
-const ContentView: React.FC = () => (
+const ContentView: React.FC = React.memo(() => (
     <div className="space-y-4">
         <div>
             <h2 className="text-2xl font-bold text-pm-gold">Contenu & Formation</h2>
@@ -466,7 +515,7 @@ const ContentView: React.FC = () => (
                             <DashboardCard title="Paramètres du Site" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, les images et les clés API." />
         </div>
     </div>
-);
+));
 
 // Accounting View Component
 const AccountingView: React.FC<{ 
@@ -476,7 +525,7 @@ const AccountingView: React.FC<{
     newRecoveryRequests: number; 
     data: any;
     generateNotifications: any;
-}> = ({ newBookingRequests, newFashionDayApps, newMessages, newRecoveryRequests, data, generateNotifications }) => (
+}> = React.memo(({ newBookingRequests, newFashionDayApps, newMessages, newRecoveryRequests, data, generateNotifications }) => (
     <div className="space-y-6">
         <div>
             <h2 className="text-2xl font-bold text-pm-gold">Comptabilité & Suivi</h2>
@@ -541,10 +590,10 @@ const AccountingView: React.FC<{
             <DashboardCard title="Livre Comptable" icon={CurrencyDollarIcon} link="/admin/accounting" description="Gérer les revenus, dépenses et générer des rapports PDF." />
         </div>
     </div>
-);
+));
 
 // Analytics View Component
-const AnalyticsView: React.FC<{ data: any }> = ({ data }) => (
+const AnalyticsView: React.FC<{ data: any }> = React.memo(({ data }) => (
     <div className="space-y-6">
         <div>
             <h2 className="text-2xl font-bold text-pm-gold">Analytiques</h2>
@@ -583,7 +632,7 @@ const AnalyticsView: React.FC<{ data: any }> = ({ data }) => (
             </div>
         </div>
     </div>
-);
+));
 
 // Stat Card Component
 const StatCard: React.FC<{ 

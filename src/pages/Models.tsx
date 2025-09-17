@@ -117,7 +117,7 @@ const Models: React.FC = () => {
           layout
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {filteredModels.map((model, index) => (
               <motion.div
                 key={model.id}

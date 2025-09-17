@@ -174,7 +174,7 @@ const AlbumCard: React.FC<{ album: any; onClick: () => void }> = ({ album, onCli
           </div>
           <div className="flex items-center gap-1">
             <EyeIcon className="w-4 h-4" />
-            <span>{album.photos.length} photos</span>
+            <span>{(album.photos || []).length} photos</span>
           </div>
         </div>
         
@@ -185,16 +185,16 @@ const AlbumCard: React.FC<{ album: any; onClick: () => void }> = ({ album, onCli
           </div>
         )}
         
-        {album.tags && album.tags.length > 0 && (
+        {(album.tags || []).length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {album.tags.slice(0, 3).map((tag: string, index: number) => (
+            {(album.tags || []).slice(0, 3).map((tag: string, index: number) => (
               <span key={index} className="px-2 py-1 bg-pm-dark text-pm-gold text-xs rounded">
                 #{tag}
               </span>
             ))}
-            {album.tags.length > 3 && (
+            {(album.tags || []).length > 3 && (
               <span className="px-2 py-1 bg-pm-dark text-pm-off-white/60 text-xs rounded">
-                +{album.tags.length - 3}
+                +{(album.tags || []).length - 3}
               </span>
             )}
           </div>
@@ -249,7 +249,7 @@ const AlbumDetail: React.FC<{ album: any; onBack: () => void }> = ({ album, onBa
                 <div className="flex items-center gap-2">
                   <EyeIcon className="w-4 h-4 text-pm-gold" />
                   <span className="text-pm-off-white/60">Photos:</span>
-                  <span>{album.photos.length}</span>
+                  <span>{(album.photos || []).length}</span>
                 </div>
               </div>
             </div>
@@ -265,9 +265,9 @@ const AlbumDetail: React.FC<{ album: any; onBack: () => void }> = ({ album, onBa
         </div>
 
         {/* Photos Grid */}
-        {album.photos.length > 0 ? (
+        {(album.photos || []).length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {album.photos.map((photo: any, index: number) => (
+            {(album.photos || []).map((photo: any, index: number) => (
               <div
                 key={photo.id}
                 onClick={() => setSelectedPhotoIndex(index)}
@@ -292,13 +292,13 @@ const AlbumDetail: React.FC<{ album: any; onBack: () => void }> = ({ album, onBa
       </div>
 
       {/* Photo Modal */}
-      {album.photos.length > 0 && (
+      {(album.photos || []).length > 0 && (
         <PhotoModal
           photos={album.photos}
           currentIndex={selectedPhotoIndex}
           onClose={() => setSelectedPhotoIndex(-1)}
           onPrevious={() => setSelectedPhotoIndex(Math.max(0, selectedPhotoIndex - 1))}
-          onNext={() => setSelectedPhotoIndex(Math.min(album.photos.length - 1, selectedPhotoIndex + 1))}
+          onNext={() => setSelectedPhotoIndex(Math.min((album.photos || []).length - 1, selectedPhotoIndex + 1))}
         />
       )}
     </div>

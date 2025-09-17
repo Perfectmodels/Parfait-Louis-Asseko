@@ -231,7 +231,7 @@ const Magazine: React.FC = () => {
               layout
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {currentArticles.map((article, index) => (
                 <motion.div
                   key={article.slug}

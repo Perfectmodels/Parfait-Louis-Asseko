@@ -17,13 +17,13 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
 
     setIsGenerating(true);
-    setError(null);
+        setError(null);
 
     try {
       // Simulation d'une génération AI (remplacer par un vrai service AI)
@@ -55,7 +55,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
     } catch (error) {
       console.error('Erreur lors de la génération:', error);
       setError('Erreur lors de la génération du contenu. Veuillez réessayer.');
-    } finally {
+        } finally {
       setIsGenerating(false);
     }
   };
@@ -67,7 +67,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
     }
   };
 
-  return (
+    return (
     <div className={`relative ${className}`}>
       {/* Bouton pour ouvrir l'assistant */}
       <button
@@ -99,25 +99,25 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <XMarkIcon className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
+                        </button>
+                    </div>
 
             {/* Content */}
             <div className="p-6 space-y-4">
-              <div>
+                        <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Décrivez ce que vous voulez générer
                 </label>
-                <textarea
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
+                            <textarea
+                                value={prompt}
+                                onChange={(e) => setPrompt(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={placeholder}
                   className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                   disabled={isGenerating}
-                />
-              </div>
-
+                            />
+                        </div>
+                        
               {error && (
                 <div className="p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
                   {error}
@@ -127,20 +127,20 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
               {/* Suggestions rapides */}
               <div>
                 <p className="text-sm font-medium text-gray-700 mb-2">Suggestions rapides :</p>
-                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-2">
                   {getQuickSuggestions(context).map((suggestion, index) => (
-                    <button
+                                        <button
                       key={index}
                       onClick={() => setPrompt(suggestion)}
                       className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
                       disabled={isGenerating}
                     >
                       {suggestion}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                    </div>
 
             {/* Footer */}
             <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
@@ -153,9 +153,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
                   className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
                   disabled={isGenerating}
                 >
-                  Annuler
-                </button>
-                <button
+                            Annuler
+                        </button>
+                        <button
                   onClick={handleGenerate}
                   disabled={!prompt.trim() || isGenerating}
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -171,14 +171,14 @@ const AIAssistant: React.FC<AIAssistantProps> = ({
                       Générer
                     </>
                   )}
-                </button>
-              </div>
+                        </button>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
       )}
-    </div>
-  );
+        </div>
+    );
 };
 
 // Fonction pour obtenir des suggestions rapides selon le contexte

@@ -6,6 +6,32 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
+import ImageUpload from '../components/ImageUpload'; // Importer le composant
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+
+const ApplicationGuide: React.FC = () => (
+    <div className="bg-pm-dark/50 border border-pm-gold/20 p-6 rounded-lg mb-12 shadow-inner">
+        <div className="flex items-start gap-4">
+            <InformationCircleIcon className="w-8 h-8 text-pm-gold mt-1 flex-shrink-0" />
+            <div>
+                <h2 className="text-xl font-playfair text-pm-gold mb-3">Avant de commencer, lisez attentivement :</h2>
+                <p className="text-pm-off-white/80 mb-4 text-sm">Pour que votre candidature soit considérée, vous devez remplir les critères suivants. Assurez-vous d'avoir des photos naturelles (polas) prêtes.</p>
+                <ul className="list-disc list-inside space-y-2 text-pm-off-white/90 text-sm">
+                    <li><span className="font-semibold">Âge :</span> Ouvert aux candidats de 16 à 25 ans.</li>
+                    <li><span className="font-semibold">Taille minimale :</span> 175cm pour les femmes, 180cm pour les hommes.</li>
+                    <li><span className="font-semibold">Photos :</span> Des photos récentes, sans maquillage, sans filtres et sur fond neutre sont requises.
+                        <ul className="list-['-_'] list-inside ml-4 mt-1 text-pm-off-white/70">
+                            <li>Un portrait (visage et épaules)</li>
+                            <li>Une photo en pied (corps entier)</li>
+                            <li>Une photo de profil</li>
+                        </ul>
+                    </li>
+                    <li><span className="font-semibold">Attitude :</span> Nous recherchons des personnes sérieuses, motivées et professionnelles.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+);
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -14,11 +40,20 @@ const CastingForm: React.FC = () => {
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
         eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
     });
+    const [photoUrls, setPhotoUrls] = useState({
+        portrait: null,
+        fullBody: null,
+        profile: null,
+    });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handlePhotoUpload = (field: 'portrait' | 'fullBody' | 'profile') => (url: string) => {
+        setPhotoUrls(prev => ({ ...prev, [field]: url }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -36,6 +71,9 @@ const CastingForm: React.FC = () => {
             id: `casting-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
+            photoPortraitUrl: photoUrls.portrait,
+            photoFullBodyUrl: photoUrls.fullBody,
+            photoProfileUrl: photoUrls.profile,
         };
 
         try {
@@ -49,6 +87,7 @@ const CastingForm: React.FC = () => {
                 gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
                 eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
             });
+            setPhotoUrls({ portrait: null, fullBody: null, profile: null }); // Reset photos
 
         } catch (error) {
             setStatus('error');
@@ -65,6 +104,9 @@ const CastingForm: React.FC = () => {
                 <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
                     Remplissez ce formulaire avec attention. C'est votre première étape pour peut-être nous rejoindre.
                 </p>
+                
+                <ApplicationGuide />
+
                 <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-8 rounded-lg shadow-lg">
                     <Section title="Informations Personnelles">
                         <div className="grid md:grid-cols-2 gap-6">
@@ -116,9 +158,27 @@ const CastingForm: React.FC = () => {
                             <FormInput label="Profil Instagram" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="@pseudo" />
                             <FormInput label="Lien vers portfolio (optionnel)" name="portfolioLink" value={formData.portfolioLink} onChange={handleChange} />
                         </div>
-                        <p className="text-sm text-pm-off-white/60 bg-pm-dark/50 p-3 rounded-md border border-pm-off-white/10">
-                            Note : Pour simplifier cette première étape, nous ne demandons pas de photos immédiatement. Si votre profil est présélectionné, nous vous contacterons par email pour vous demander de nous envoyer vos polas (photos naturelles).
-                        </p>
+                        <div className="space-y-6 pt-4">
+                            <h3 className="text-lg font-semibold text-pm-off-white/90">Photos Requises</h3>
+                            <p className="text-sm text-pm-off-white/60">Veuillez soumettre des photos récentes, claires et non retouchées (polas).</p>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <ImageUpload
+                                    label="Photo Portrait (visage)"
+                                    onUploadComplete={handlePhotoUpload('portrait')}
+                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                />
+                                <ImageUpload
+                                    label="Photo Plein Pied"
+                                    onUploadComplete={handlePhotoUpload('fullBody')}
+                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                />
+                                <ImageUpload
+                                    label="Photo de Profil"
+                                    onUploadComplete={handlePhotoUpload('profile')}
+                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
+                                />
+                            </div>
+                        </div>
                     </Section>
 
                     <div className="pt-6">
