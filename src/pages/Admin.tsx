@@ -6,7 +6,9 @@ import {
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
     ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
-    SignalIcon, Bars3Icon, XMarkIcon, BellIcon, ChartBarIcon, UserCircleIcon, ClockIcon, PlusIcon
+    SignalIcon, Bars3Icon, XMarkIcon, BellIcon, ChartBarIcon, UserCircleIcon, ClockIcon, PlusIcon,
+    PhotoIcon,
+    UserIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
@@ -131,12 +133,12 @@ const Admin: React.FC = () => {
                                 <div className="w-8 h-8 bg-pm-gold rounded-lg flex items-center justify-center">
                                     <UserCircleIcon className="w-5 h-5 text-black" />
                                 </div>
-                                <div>
+                    <div>
                                     <h1 className="text-lg font-bold text-pm-gold">Admin Panel</h1>
                                     <p className="text-xs text-pm-off-white/60">Perfect Models Management</p>
                                 </div>
                             </div>
-                        </div>
+                    </div>
                         
                         <div className="flex items-center gap-4">
                             {/* Notifications */}
@@ -149,8 +151,8 @@ const Admin: React.FC = () => {
                                         </span>
                                     )}
                                 </button>
-                            </div>
-                            
+                </div>
+
                             {/* User Info */}
                             <div className="hidden sm:flex items-center gap-3 text-sm">
                                 <div className="text-right">
@@ -176,7 +178,7 @@ const Admin: React.FC = () => {
                     <div className="flex flex-col h-full pt-16 lg:pt-0">
                         <nav className="flex-1 px-4 py-6 space-y-2">
                             {navigationItems.map((item) => (
-                                <button
+                            <button
                                     key={item.id}
                                     onClick={() => {
                                         setActiveTab(item.id);
@@ -193,9 +195,9 @@ const Admin: React.FC = () => {
                                         <p className="font-medium">{item.label}</p>
                                         <p className="text-xs opacity-60">{item.description}</p>
                                     </div>
-                                </button>
-                            ))}
-                        </nav>
+                            </button>
+                        ))}
+                    </nav>
                         
                         {/* Active Users */}
                         <div className="p-4 border-t border-pm-gold/20">
@@ -290,8 +292,8 @@ const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> 
                 color="text-orange-400" 
                 bgColor="bg-orange-500/10" 
             />
-        </div>
-
+                </div>
+                
         {/* Quick Actions */}
         <div className="bg-black/50 rounded-lg p-6 border border-pm-gold/20">
             <h3 className="text-lg font-semibold text-pm-gold mb-4">Actions Rapides</h3>
@@ -329,12 +331,14 @@ const TalentsView: React.FC<{ newCastingApps: number }> = ({ newCastingApps }) =
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                    <DashboardCard title="Gestion des Utilisateurs" icon={PlusIcon} link="/admin/user-management" description="Créer et gérer les comptes administrateurs avec permissions personnalisées."/>
-            <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
-            <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
-            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>
-            <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Consulter et traiter les candidatures pour les castings." notificationCount={newCastingApps} />
-            <DashboardCard title="Résultats & Validation Casting" icon={ClipboardDocumentCheckIcon} link="/admin/casting-results" description="Valider les candidats et créer leurs profils de débutant." />
-            <DashboardCard title="Accès Mannequins Pro" icon={KeyIcon} link="/admin/model-access" description="Consulter les identifiants des mannequins confirmés." />
+                   <DashboardCard title="Soumissions de Paiement" icon={ClipboardDocumentCheckIcon} link="/admin/payment-submissions" description="Valider les paiements soumis par les mannequins."/>
+                   <DashboardCard title="Statuts de Paiement" icon={ChartBarIcon} link="/admin/payment-status" description="Vue d'ensemble des statuts de paiement avec tri automatique."/>
+                            <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
+                            <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
+                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>
+                            <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Consulter et traiter les candidatures pour les castings." notificationCount={newCastingApps} />
+                            <DashboardCard title="Résultats & Validation Casting" icon={ClipboardDocumentCheckIcon} link="/admin/casting-results" description="Valider les candidats et créer leurs profils de débutant." />
+                             <DashboardCard title="Accès Mannequins Pro" icon={KeyIcon} link="/admin/model-access" description="Consulter les identifiants des mannequins confirmés." />
         </div>
     </div>
 );
@@ -347,13 +351,15 @@ const ContentView: React.FC = () => (
             <p className="text-pm-off-white/60">Gestion du contenu et des formations</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine Focus Model 241." />
-            <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier et gérer les actualités de la page d'accueil." />
-            <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services, la chronologie et les réalisations." />
-            <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
-            <DashboardCard title="Modérer les Commentaires" icon={ChatBubbleLeftRightIcon} link="/admin/comments" description="Gérer les commentaires laissés sur les articles du magazine." />
-            <DashboardCard title="Gérer le Classroom Pro" icon={BookOpenIcon} link="/admin/classroom" description="Modifier les modules et chapitres de la formation avancée." />
-            <DashboardCard title="Paramètres du Site" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, les images et les clés API." />
+                            <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine Focus Model 241." />
+                            <DashboardCard title="Galerie Photos" icon={PhotoIcon} link="/admin/gallery" description="Créer et organiser des albums photos par thème." />
+                            <DashboardCard title="Gestion d'Équipe" icon={UserIcon} link="/admin/team" description="Gérer les membres de l'équipe et leur visibilité sur le site." />
+                            <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier et gérer les actualités de la page d'accueil." />
+                            <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services, la chronologie et les réalisations." />
+                            <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
+                             <DashboardCard title="Modérer les Commentaires" icon={ChatBubbleLeftRightIcon} link="/admin/comments" description="Gérer les commentaires laissés sur les articles du magazine." />
+                             <DashboardCard title="Gérer le Classroom Pro" icon={BookOpenIcon} link="/admin/classroom" description="Modifier les modules et chapitres de la formation avancée." />
+                            <DashboardCard title="Paramètres du Site" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, les images et les clés API." />
         </div>
     </div>
 );
@@ -371,13 +377,13 @@ const AccountingView: React.FC<{
             <p className="text-pm-off-white/60">Gestion financière et opérationnelle</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
-            <DashboardCard title="Suivi des Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences des mannequins." />
-            <DashboardCard title="Demandes de Booking" icon={BriefcaseIcon} link="/admin/bookings" description="Consulter et gérer les demandes de booking des clients." notificationCount={newBookingRequests} />
-            <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions pour l'événement Perfect Fashion Day." notificationCount={newFashionDayApps} />
-            <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins confirmés aux quiz." />
-            <DashboardCard title="Messages de Contact" icon={EnvelopeIcon} link="/admin/messages" description="Lire et gérer les messages reçus via le formulaire de contact." notificationCount={newMessages} />
-            <DashboardCard title="Demandes de Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Traiter les demandes de coordonnées oubliées." notificationCount={newRecoveryRequests} />
+                             <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
+                             <DashboardCard title="Suivi des Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences des mannequins." />
+                             <DashboardCard title="Demandes de Booking" icon={BriefcaseIcon} link="/admin/bookings" description="Consulter et gérer les demandes de booking des clients." notificationCount={newBookingRequests} />
+                            <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions pour l'événement Perfect Fashion Day." notificationCount={newFashionDayApps} />
+                             <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins confirmés aux quiz." />
+                             <DashboardCard title="Messages de Contact" icon={EnvelopeIcon} link="/admin/messages" description="Lire et gérer les messages reçus via le formulaire de contact." notificationCount={newMessages} />
+                             <DashboardCard title="Demandes de Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Traiter les demandes de coordonnées oubliées." notificationCount={newRecoveryRequests} />
             <DashboardCard title="Livre Comptable" icon={CurrencyDollarIcon} link="/admin/accounting" description="Gérer les revenus, dépenses et générer des rapports PDF." />
         </div>
     </div>
@@ -441,10 +447,10 @@ const StatCard: React.FC<{
             </div>
             <div className={`p-3 rounded-lg ${bgColor}`}>
                 <Icon className={`w-6 h-6 ${color}`} />
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
 
 // Quick Action Card Component
 const QuickActionCard: React.FC<{ 

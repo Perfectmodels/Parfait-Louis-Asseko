@@ -44,8 +44,14 @@ const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
 const AdminNews = lazy(() => import('./pages/AdminNews'));
 const AdminUserManagement = lazy(() => import('./pages/AdminUserManagement'));
+const AdminPaymentSubmissions = lazy(() => import('./pages/AdminPaymentSubmissions'));
+const AdminPaymentStatus = lazy(() => import('./pages/AdminPaymentStatus'));
 const AdminAccounting = lazy(() => import('./pages/AdminAccounting'));
 const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
+const AdminTeam = lazy(() => import('./pages/AdminTeam'));
+const TestImageUpload = lazy(() => import('./pages/TestImageUpload'));
+const Gallery = lazy(() => import('./pages/Gallery'));
+const AdminGallery = lazy(() => import('./pages/AdminGallery'));
 const AdminSettings = lazy(() => import('./pages/AdminSettings'));
 const AdminComments = lazy(() => import('./pages/AdminComments'));
 const AdminBookings = lazy(() => import('./pages/AdminBookings'));
@@ -137,6 +143,8 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/privacy-policy" element={<PrivacyPolicy />} />
                         <ReactRouterDOM.Route path="/terms-of-use" element={<TermsOfUse />} />
                         <ReactRouterDOM.Route path="/chat" element={<Chat />} />
+                        <ReactRouterDOM.Route path="/test-upload" element={<TestImageUpload />} />
+                        <ReactRouterDOM.Route path="/galerie" element={<Gallery />} />
 
                         {/* Protected Routes */}
                         <ReactRouterDOM.Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -154,9 +162,13 @@ const AppContent: React.FC = () => {
                         
                         <ReactRouterDOM.Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/user-management" element={<ProtectedRoute role="admin"><AdminUserManagement /></ProtectedRoute>} />
+                <ReactRouterDOM.Route path="/admin/payment-submissions" element={<ProtectedRoute role="admin"><AdminPaymentSubmissions /></ProtectedRoute>} />
+                <ReactRouterDOM.Route path="/admin/payment-status" element={<ProtectedRoute role="admin"><AdminPaymentStatus /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRoute role="admin"><AdminAccounting /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/team" element={<ProtectedRoute role="admin"><AdminTeam /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/agency" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />

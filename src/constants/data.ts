@@ -1,16 +1,16 @@
 // FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory, AdminUser, AdminPermission } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory, AdminUser, AdminPermission, TeamMember } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
 };
 
 export const navLinks: NavLink[] = [
-  { path: '/', label: 'Accueil', inFooter: true },
   { path: '/agence', label: 'Agence', inFooter: true },
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
+  { path: '/galerie', label: 'Galerie', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
@@ -46,6 +46,7 @@ export const apiKeys: ApiKeys = {
         domainUriPrefix: 'https://perfectmodels.page.link'
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
+    geminiApiKey: 'AIzaSyCEVGrbdck61n5l0kl5uGMUwiolTfl1yM4',
 };
 
 export const juryMembers: JuryMember[] = [
@@ -68,7 +69,7 @@ export const models: Model[] = [
         name: 'Noemi Kim',
         username: 'Man-PMMN01',
         password: 'noemi2024',
-        level: 'Pro',
+        level: 'Mannequin',
         email: 'noemi.kim@example.com',
         phone: '+241077000001',
         age: 22,
@@ -99,7 +100,7 @@ export const models: Model[] = [
         name: 'AJ Caramela',
         username: 'Man-PMMA01',
         password: 'caramela2024',
-        level: 'Pro',
+        level: 'Mannequin',
         height: '1m75',
         gender: 'Femme',
         imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
@@ -126,7 +127,7 @@ export const models: Model[] = [
         name: 'Yann Aubin',
         username: 'Man-PMMY01',
         password: 'yann2024',
-        level: 'Pro',
+        level: 'Mannequin',
         height: '1m88',
         gender: 'Homme',
         imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
@@ -863,5 +864,119 @@ export const defaultAdminUsers: AdminUser[] = [
         isActive: true,
         createdAt: new Date().toISOString(),
         createdBy: 'system'
+    }
+];
+
+export const defaultAlbums = [
+    {
+        id: 'album-1',
+        title: 'Shooting Mode Élégante',
+        description: 'Une collection de photos mettant en valeur l\'élégance et le raffinement de nos mannequins dans des tenues sophistiquées.',
+        theme: 'Mode Élégante',
+        coverImage: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        photos: [
+            {
+                id: 'photo-1-1',
+                url: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+                title: 'Portrait Élégant',
+                description: 'Portrait en noir et blanc mettant en valeur les traits fins',
+                uploadedAt: new Date().toISOString(),
+                uploadedBy: 'admin',
+                featured: true
+            },
+            {
+                id: 'photo-1-2',
+                url: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+                title: 'Pose Sophistiquée',
+                description: 'Pose classique dans un environnement moderne',
+                uploadedAt: new Date().toISOString(),
+                uploadedBy: 'admin',
+                featured: false
+            }
+        ],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: 'admin',
+        isPublic: true,
+        featured: true,
+        tags: ['élégance', 'sophistication', 'portrait'],
+        location: 'Studio PMM, Libreville',
+        date: '2024-01-15',
+        models: ['noemi-kim'],
+        stylists: ['Styliste Principal'],
+        photographers: ['Photographe PMM']
+    },
+    {
+        id: 'album-2',
+        title: 'Nature & Beauté',
+        description: 'Shooting en extérieur mettant en harmonie la beauté naturelle de nos mannequins avec les paysages gabonais.',
+        theme: 'Nature',
+        coverImage: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+        photos: [
+            {
+                id: 'photo-2-1',
+                url: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+                title: 'Harmonie Naturelle',
+                description: 'Mise en valeur de la beauté naturelle',
+                uploadedAt: new Date().toISOString(),
+                uploadedBy: 'admin',
+                featured: true
+            }
+        ],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: 'admin',
+        isPublic: true,
+        featured: false,
+        tags: ['nature', 'extérieur', 'beauté'],
+        location: 'Parc National, Libreville',
+        date: '2024-02-20',
+        models: ['aj-caramela'],
+        stylists: ['Équipe Nature'],
+        photographers: ['Photographe Nature']
+    }
+];
+
+// Données d'équipe par défaut
+export const defaultTeamMembers: TeamMember[] = [
+    {
+        id: 'team-1',
+        name: 'Parfait Asseko',
+        position: 'Fondateur & Directeur',
+        role: 'founder',
+        description: 'Visionnaire passionné, Parfait Asseko a créé Perfect Models Management avec l\'ambition de révolutionner la mode gabonaise et de former les futurs talents de l\'industrie.',
+        imageUrl: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
+        email: 'parfait@perfectmodelsmanagement.ga',
+        phone: '+241 XX XX XX XX',
+        socialLinks: {
+            linkedin: 'https://linkedin.com/in/parfait-asseko',
+            instagram: 'https://instagram.com/parfait_asseko'
+        },
+        isPublic: true,
+        order: 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    },
+    {
+        id: 'team-2',
+        name: 'Équipe de Formation',
+        position: 'Formateurs Professionnels',
+        role: 'trainer',
+        description: 'Nos formateurs expérimentés accompagnent chaque mannequin dans son développement personnel et professionnel, garantissant une formation de qualité internationale.',
+        isPublic: true,
+        order: 2,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    },
+    {
+        id: 'team-3',
+        name: 'Direction Artistique',
+        position: 'Créateurs & Stylistes',
+        role: 'stylist',
+        description: 'Notre équipe artistique travaille en étroite collaboration avec les créateurs pour offrir des prestations exceptionnelles et des événements mémorables.',
+        isPublic: true,
+        order: 3,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     }
 ];

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -283,7 +283,7 @@ const Home: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/80 to-transparent"></div>
         <div className="relative z-10 p-6 animate-fade-in w-full max-w-5xl space-y-8">
           <div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter px-4" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
               L'Élégance Redéfinie
             </h1>
             <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
@@ -292,15 +292,15 @@ const Home: React.FC = () => {
           </div>
           
           {nextEvent ? (
-              <div className="mt-10 bg-black/50 backdrop-blur-sm py-6 px-4 rounded-lg border border-pm-gold/20">
-                  <h3 className="text-2xl md:text-3xl font-playfair text-white mb-2">
+              <div className="mt-10 bg-black/50 backdrop-blur-sm py-4 sm:py-6 px-2 sm:px-4 rounded-lg border border-pm-gold/20 mx-2 sm:mx-4">
+                  <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-playfair text-white mb-2 px-2">
                       Prochain Événement : Perfect Fashion Day - Édition {nextEvent.edition}
                   </h3>
                   <p className="text-lg md:text-xl text-pm-gold mb-6">"{nextEvent.theme}"</p>
                   <div className="my-6">
                      <CountdownTimer targetDate={nextEvent.date} />
                   </div>
-                  <Link to="/fashion-day-application" className="mt-4 inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+                  <Link to="/fashion-day-application" className="mt-4 inline-block px-4 sm:px-6 md:px-8 py-2 sm:py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs sm:text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
                       Participer à l'Édition 2
                   </Link>
               </div>
@@ -358,6 +358,81 @@ const Home: React.FC = () => {
             <div className="text-center mt-12">
               <Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                 Découvrir tous nos services
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* 3.5. Perfect Fashion Day Editions */}
+        <section>
+          <div className="content-section">
+            <h2 className="section-title">Perfect Fashion Day</h2>
+            <p className="text-center text-pm-off-white/80 mb-12 max-w-3xl mx-auto">
+              Découvrez nos éditions exceptionnelles qui célèbrent la mode gabonaise et l'élégance africaine.
+            </p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {fashionDayEvents.map(event => (
+                <div key={event.edition} className="group">
+                  <Link to="/fashion-day" className="block">
+                    <div className="bg-black border border-pm-gold/20 rounded-xl overflow-hidden hover:border-pm-gold transition-all duration-300 hover:shadow-2xl hover:shadow-pm-gold/20">
+                      {event.imageUrl && (
+                        <div className="relative h-64 overflow-hidden">
+                          <img 
+                            src={event.imageUrl} 
+                            alt={`Affiche officielle Perfect Fashion Day Édition ${event.edition} - ${event.theme}`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                          <div className="absolute bottom-4 left-4 right-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-2xl font-playfair text-white font-bold">
+                                  Édition {event.edition}
+                                </h3>
+                                <p className="text-pm-gold text-lg font-medium">
+                                  "{event.theme}"
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-white/80 text-sm">
+                                  {new Date(event.date).getFullYear()}
+                                </p>
+                                {event.location && (
+                                  <p className="text-white/60 text-xs">
+                                    {event.location}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div className="p-6">
+                        <p className="text-pm-off-white/80 text-sm leading-relaxed line-clamp-3">
+                          {event.description}
+                        </p>
+                        <div className="mt-4 flex items-center justify-between">
+                          <span className="text-pm-gold text-sm font-medium">
+                            Découvrir l'édition
+                          </span>
+                          <div className="w-6 h-6 border border-pm-gold rounded-full flex items-center justify-center group-hover:bg-pm-gold transition-colors duration-300">
+                            <svg className="w-3 h-3 text-pm-gold group-hover:text-pm-dark transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+            
+            <div className="text-center mt-12">
+              <Link to="/fashion-day" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+                Voir toutes les éditions
               </Link>
             </div>
           </div>

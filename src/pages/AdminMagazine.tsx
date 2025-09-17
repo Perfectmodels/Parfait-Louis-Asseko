@@ -4,7 +4,7 @@ import { Article } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, StarIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
+import ImageUpload from '../components/ImageUpload';
 import { FacebookIcon } from '../components/SocialIcons';
 import AIAssistant from '../components/AIAssistant';
 import ArticleGenerator from '../components/ArticleGenerator';
@@ -248,7 +248,14 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
                             label="Titre" name="title" value={formData.title} onChange={handleChange}
                             onAIAssist={() => openAssistant('Titre', `Propose 5 titres accrocheurs pour un article de mode sur le thème: "${formData.title || 'nouveau sujet'}"`)}
                         />
-                        <ImageInput label="Image de l'article" value={formData.imageUrl} onChange={handleImageChange} />
+                        <div>
+                            <label className="admin-label">Image de l'article</label>
+                            <ImageUpload 
+                                currentImage={formData.imageUrl}
+                                onImageUploaded={handleImageChange}
+                                placeholder="Cliquez pour uploader l'image de l'article"
+                            />
+                        </div>
                         <FormInput label="Catégorie" name="category" value={formData.category} onChange={handleChange} />
                         <FormTextArea 
                             label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
