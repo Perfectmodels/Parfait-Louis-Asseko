@@ -18,6 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import MultipleImageUpload from '../components/MultipleImageUpload';
+import AIAssistant from '../components/AIAssistant';
 
 const AdminGallery: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -286,8 +287,8 @@ const AlbumForm: React.FC<{
     }));
     setPhotos(newPhotos);
     
-    // Set cover image if not already set
-    if (!formData.coverImage && newPhotos.length > 0) {
+    // Set cover image automatically to the first image
+    if (newPhotos.length > 0) {
       setFormData(prev => ({ ...prev, coverImage: newPhotos[0].url }));
     }
   };
@@ -321,13 +322,24 @@ const AlbumForm: React.FC<{
               onChange={handleChange} 
               required
             />
-            <FormTextArea 
-              label="Description" 
-              name="description" 
-              value={formData.description} 
-              onChange={handleChange} 
-              rows={3}
-            />
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="admin-label">Description</label>
+                <AIAssistant
+                  onContentGenerated={(content) => setFormData(prev => ({ ...prev, description: content }))}
+                  context="album-description"
+                  placeholder="Décrivez le style de l'album (ex: séance mode élégante, portrait artistique...)"
+                />
+              </div>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="admin-input"
+                rows={3}
+                placeholder="Décrivez l'album..."
+              />
+            </div>
             <FormInput 
               label="Thème" 
               name="theme" 
@@ -348,14 +360,14 @@ const AlbumForm: React.FC<{
                 maxImages={50}
                 placeholder="Ajouter des photos à l'album"
               />
+              {formData.coverImage && (
+                <div className="mt-4 p-3 bg-pm-gold/10 border border-pm-gold/30 rounded-lg">
+                  <p className="text-sm text-pm-gold font-medium">
+                    ✓ Image de couverture définie automatiquement (première image)
+                  </p>
+                </div>
+              )}
             </div>
-            <FormInput 
-              label="Image de couverture (URL)" 
-              name="coverImage" 
-              value={formData.coverImage} 
-              onChange={handleChange} 
-              placeholder="URL de l'image de couverture"
-            />
           </div>
 
           <div className="space-y-6">

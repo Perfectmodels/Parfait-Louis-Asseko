@@ -26,9 +26,9 @@ const SocialLogin = lazy(() => import('./pages/SocialLogin'));
 const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
-const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
-const ForumThread = lazy(() => import('./pages/ForumThread'));
+const BeginnerDashboard = lazy(() => import('./pages/BeginnerDashboard')); // Profil Débutant
 const Chat = lazy(() => import('./pages/Chat'));
+const Checkout = lazy(() => import('./pages/Checkout'));
 
 // Admin Pages
 const Admin = lazy(() => import('./pages/Admin'));
@@ -138,9 +138,10 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/fashion-day" element={<FashionDay />} />
                         <ReactRouterDOM.Route path="/magazine" element={<Magazine />} />
                         <ReactRouterDOM.Route path="/magazine/:slug" element={<ArticleDetail />} />
-                        <ReactRouterDOM.Route path="/contact" element={<Contact />} />
-                        <ReactRouterDOM.Route path="/services" element={<Services />} />
-                        <ReactRouterDOM.Route path="/services/:slug" element={<ServiceDetail />} />
+            <ReactRouterDOM.Route path="/contact" element={<Contact />} />
+            <ReactRouterDOM.Route path="/services" element={<Services />} />
+            <ReactRouterDOM.Route path="/services/:slug" element={<ServiceDetail />} />
+            <ReactRouterDOM.Route path="/checkout" element={<Checkout />} />
                         <ReactRouterDOM.Route path="/casting" element={<Casting />} />
                         <ReactRouterDOM.Route path="/casting-formulaire" element={<CastingForm />} />
                         <ReactRouterDOM.Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
@@ -152,16 +153,11 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/test-upload" element={<TestImageUpload />} />
                         <ReactRouterDOM.Route path="/galerie" element={<Gallery />} />
 
-                        {/* Protected Routes - Classroom Unifiée */}
-                        <ReactRouterDOM.Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
+                        {/* Protected Routes - Classroom Unifiée (Débutants + Pros) */}
+                        <ReactRouterDOM.Route path="/formations" element={<ProtectedRoute role="classroom"><Activity /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="classroom"><ChapterDetail /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
-                        
-                        {/* Routes pour débutants redirigées vers la classroom unifiée */}
-                        <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><Activity /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><ChapterDetail /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/profil-debutant" element={<ProtectedRoute role="beginner"><BeginnerDashboard /></ProtectedRoute>} />
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
@@ -206,17 +202,7 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
 
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(registration => {
-          console.log('SW registered: ', registration);
-        }).catch(registrationError => {
-          console.log('SW registration failed: ', registrationError);
-        });
-      });
-    }
-  }, []);
+  // Service worker removed for development
 
   return (
     <DataProvider>

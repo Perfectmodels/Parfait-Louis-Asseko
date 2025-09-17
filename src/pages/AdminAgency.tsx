@@ -5,6 +5,7 @@ import { Service, AchievementCategory } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import AIAssistant from '../components/AIAssistant';
 
 type EditableData = Pick<AppData, 'agencyInfo' | 'agencyTimeline' | 'agencyServices' | 'agencyAchievements'>;
 
@@ -125,9 +126,23 @@ const AdminAgency: React.FC = () => {
                                         <FormInput label="Icône (Heroicons)" value={item.icon} onChange={e => onChange('icon', e.target.value)} />
                                         <p className="text-xs text-pm-off-white/60 -mt-2">Utilisez le nom exact d'une icône de Heroicons (ex: AcademicCapIcon, CameraIcon, etc.)</p>
                                         <FormInput label="Titre" value={item.title} onChange={e => onChange('title', e.target.value)} />
-                                        <FormTextArea 
-                                            label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} 
-                                        />
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="admin-label">Description</label>
+                                                <AIAssistant
+                                                    onContentGenerated={(content) => onChange('description', content)}
+                                                    context="service-description"
+                                                    placeholder="Décrivez le service (ex: formation mannequinat, séances photo...)"
+                                                />
+                                            </div>
+                                            <textarea
+                                                value={item.description}
+                                                onChange={e => onChange('description', e.target.value)}
+                                                className="admin-input"
+                                                rows={3}
+                                                placeholder="Décrivez le service..."
+                                            />
+                                        </div>
                                         <FormInput label="Texte du Bouton" value={item.buttonText} onChange={e => onChange('buttonText', e.target.value)} />
                                         <FormInput label="Lien du Bouton" value={item.buttonLink} onChange={e => onChange('buttonLink', e.target.value)} />
 

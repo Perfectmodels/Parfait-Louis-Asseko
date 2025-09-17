@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { XMarkIcon, PlusIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import React, { useState, useRef } from 'react';
+import { XMarkIcon, PlusIcon, PhotoIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import ImageUpload from './ImageUpload';
 
 interface MultipleImageUploadProps {
@@ -18,6 +18,8 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
   className = ""
 }) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUploaded = (imageUrl: string, index: number) => {
     if (imageUrl) {
@@ -38,8 +40,125 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
     }
   };
 
+  const handleMultipleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    const remainingSlots = maxImages - images.length;
+    const filesToUpload = files.slice(0, remainingSlots);
+
+    if (files.length > remainingSlots) {
+      setUploadError(`Seulement ${remainingSlots} images peuvent être ajoutées (limite: ${maxImages})`);
+    }
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const uploadPromises = filesToUpload.map(uploadSingleImage);
+      const uploadedUrls = await Promise.all(uploadPromises);
+      
+      const validUrls = uploadedUrls.filter(url => url !== null) as string[];
+      onImagesChange([...images, ...validUrls]);
+    } catch (error) {
+      console.error('Erreur lors de l\'upload multiple:', error);
+      setUploadError('Erreur lors de l\'upload de certaines images');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const uploadSingleImage = async (file: File): Promise<string | null> => {
+    try {
+      // Vérifier la taille du fichier (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error(`Le fichier ${file.name} est trop volumineux. Taille maximale : 5MB`);
+      }
+
+      // Vérifier le type de fichier
+      if (!file.type.startsWith('image/')) {
+        throw new Error(`Le fichier ${file.name} n'est pas une image valide`);
+      }
+
+      // Créer FormData
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614');
+
+      // Upload vers ImgBB
+      const response = await fetch('https://api.imgbb.com/1/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur lors de l'upload de ${file.name}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        return data.data.url;
+      } else {
+        throw new Error(data.error?.message || `Erreur lors de l'upload de ${file.name}`);
+      }
+    } catch (error) {
+      console.error(`Erreur upload ${file.name}:`, error);
+      return null;
+    }
+  };
+
+  const handleBulkUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className={`space-y-4 ${className}`}>
+      {/* Input pour sélection multiple */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleMultipleFileSelect}
+        className="hidden"
+      />
+
+      {/* Boutons d'action */}
+      <div className="flex gap-3 flex-wrap">
+        <button
+          type="button"
+          onClick={handleBulkUpload}
+          disabled={isUploading || images.length >= maxImages}
+          className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-medium rounded-lg hover:bg-pm-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <CloudArrowUpIcon className="w-5 h-5" />
+          {isUploading ? 'Upload en cours...' : 'Sélectionner plusieurs images'}
+        </button>
+        
+        {images.length < maxImages && (
+          <button
+            type="button"
+            onClick={handleAddImage}
+            className="flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold/30 text-pm-gold font-medium rounded-lg hover:bg-pm-gold/10 transition-colors"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Ajouter une image
+          </button>
+        )}
+      </div>
+
+      {/* Affichage des erreurs */}
+      {uploadError && (
+        <div className="p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
+          {uploadError}
+        </div>
+      )}
+
+      {/* Grille des images */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {images.map((imageUrl, index) => (
           <div key={index} className="relative">
@@ -61,25 +180,15 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
         ))}
       </div>
 
-      {images.length < maxImages && (
-        <button
-          type="button"
-          onClick={handleAddImage}
-          className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors"
-        >
-          <PlusIcon className="w-8 h-8 text-gray-400 mb-2" />
-          <p className="text-sm text-gray-600">{placeholder}</p>
-          <p className="text-xs text-gray-500 mt-1">
-            {images.length}/{maxImages} images
-          </p>
-        </button>
-      )}
-
-      {images.length >= maxImages && (
-        <p className="text-sm text-gray-500 text-center">
-          Limite de {maxImages} images atteinte
+      {/* Compteur d'images */}
+      <div className="text-center">
+        <p className="text-sm text-gray-500">
+          {images.length}/{maxImages} images
+          {images.length >= maxImages && (
+            <span className="text-red-500 ml-2">• Limite atteinte</span>
+          )}
         </p>
-      )}
+      </div>
     </div>
   );
 };

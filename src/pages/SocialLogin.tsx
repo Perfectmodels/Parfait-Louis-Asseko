@@ -112,7 +112,7 @@ const SocialLogin: React.FC = () => {
       setSuccess('Connexion réussie ! Redirection...');
       
       setTimeout(() => {
-        navigate('/formations/forum');
+        navigate('/formations');
       }, 1500);
 
     } catch (err) {
@@ -187,7 +187,7 @@ const SocialLogin: React.FC = () => {
       setSuccess('Inscription réussie ! Bienvenue dans la communauté PMM !');
       
       setTimeout(() => {
-        navigate('/formations/forum');
+        navigate('/formations');
       }, 2000);
 
     } catch (err) {

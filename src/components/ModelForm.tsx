@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Model, ModelDistinction } from '../types';
 import ImageUpload from './ImageUpload';
 import MultipleImageUpload from './MultipleImageUpload';
+import AIAssistant from './AIAssistant';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
@@ -169,12 +170,48 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                         </div>
                     )}
                     <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
-                    <FormTextArea 
-                        label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5}
-                    />
-                    <FormTextArea 
-                        label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} 
-                    />
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="admin-label">Expérience</label>
+                            {isAdmin && (
+                                <AIAssistant
+                                    onContentGenerated={(content) => setFormData(prev => ({ ...prev, experience: content }))}
+                                    context="model-bio"
+                                    placeholder="Décrivez l'expérience du mannequin (ex: mannequin expérimentée, nouveau talent...)"
+                                />
+                            )}
+                        </div>
+                        <textarea
+                            name="experience"
+                            value={formData.experience}
+                            onChange={handleChange}
+                            disabled={!isAdmin}
+                            rows={5}
+                            className="admin-input"
+                            placeholder="Décrivez l'expérience professionnelle du mannequin..."
+                        />
+                    </div>
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="admin-label">Parcours</label>
+                            {isAdmin && (
+                                <AIAssistant
+                                    onContentGenerated={(content) => setFormData(prev => ({ ...prev, journey: content }))}
+                                    context="model-bio"
+                                    placeholder="Décrivez le parcours du mannequin (ex: formation, débuts, évolution...)"
+                                />
+                            )}
+                        </div>
+                        <textarea
+                            name="journey"
+                            value={formData.journey}
+                            onChange={handleChange}
+                            disabled={!isAdmin}
+                            rows={5}
+                            className="admin-input"
+                            placeholder="Décrivez le parcours et l'évolution du mannequin..."
+                        />
+                    </div>
                 </Section>
                 
                 <Section title="Photos du Portfolio">

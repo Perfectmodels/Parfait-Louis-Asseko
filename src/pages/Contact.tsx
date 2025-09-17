@@ -411,8 +411,8 @@ const Contact: React.FC = () => {
                                     answer="Nous nous efforçons de répondre à tous les messages dans les 24 heures ouvrées. Pour les demandes urgentes, n'hésitez pas à nous appeler directement."
                                 />
                                 <FAQItem
-                                    question="Quels sont vos tarifs pour un booking ?"
-                                    answer="Nos tarifs varient selon le type de projet, la durée et les mannequins demandés. Contactez-nous pour un devis personnalisé adapté à vos besoins."
+                                    question="Quels sont vos tarifs sur devis pour un booking ?"
+                                    answer="Nos tarifs sur devis varient selon le type de projet, la durée et les mannequins demandés. Contactez-nous pour un devis personnalisé adapté à vos besoins."
                                 />
                                 <FAQItem
                                     question="Proposez-vous des services de formation ?"

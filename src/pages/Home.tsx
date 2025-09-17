@@ -337,8 +337,12 @@ const Home: React.FC = () => {
                         <p className="text-lg text-pm-off-white/80 mb-6 leading-relaxed">
                             {agencyInfo.about.p1}
                         </p>
-                        <div className="flex justify-center md:justify-start gap-x-4 text-sm font-bold text-pm-gold/90 mb-8 uppercase tracking-wider">
-                            <span>Professionnalisme</span><span>•</span><span>Excellence</span><span>•</span><span>Éthique</span>
+                        <div className="flex flex-wrap justify-center md:justify-start gap-x-2 gap-y-1 text-sm font-bold text-pm-gold/90 mb-8 uppercase tracking-wider">
+                            <span>Professionnalisme</span>
+                            <span className="hidden sm:inline">•</span>
+                            <span>Excellence</span>
+                            <span className="hidden sm:inline">•</span>
+                            <span>Éthique</span>
                         </div>
                         <Link to="/agence" className="inline-block px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
                             Découvrir l'agence
