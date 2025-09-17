@@ -331,7 +331,7 @@ const Home: React.FC = () => {
                 <h2 className="section-title">Notre Agence</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center mt-8">
                     <div className="p-1 border-2 border-pm-gold/30 hover:border-pm-gold transition-all duration-300 rounded-lg">
-                        <img src={siteImages.about} alt="L'équipe de Perfect Models Management" className="w-full h-full object-cover rounded-md"/>
+                        <img src={siteImages.about} alt="L'équipe de Perfect Models Management" className="w-full h-full object-cover rounded-md" loading="lazy"/>
                     </div>
                     <div className="text-center md:text-left">
                         <p className="text-lg text-pm-off-white/80 mb-6 leading-relaxed">

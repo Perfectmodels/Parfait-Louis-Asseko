@@ -41,6 +41,7 @@ const ServiceDetail: React.FC = () => {
                             src={data?.siteImages.about} 
                             alt={`Illustration pour ${service.title}`} 
                             className="w-full h-full object-cover rounded-md"
+                            loading="lazy"
                         />
                     </div>
                     <div>

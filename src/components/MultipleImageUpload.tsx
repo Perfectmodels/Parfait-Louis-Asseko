@@ -71,6 +71,18 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
     }
   };
 
+  // Fonction pour compresser l'image via l'API TinyPNG (backend local)
+  async function compressImageWithTinyPng(file: File): Promise<Blob> {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await fetch('http://localhost:3001/api/compress-image', {
+      method: 'POST',
+      body: formData
+    });
+    if (!response.ok) throw new Error('Compression échouée');
+    return await response.blob();
+  }
+
   const uploadSingleImage = async (file: File): Promise<string | null> => {
     try {
       // Vérifier la taille du fichier (max 5MB)
@@ -83,9 +95,20 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
         throw new Error(`Le fichier ${file.name} n'est pas une image valide`);
       }
 
-      // Créer FormData
+      // Compresser l'image via TinyPNG (API backend)
+      let compressedBlob: Blob;
+      try {
+        compressedBlob = await compressImageWithTinyPng(file);
+      } catch (err) {
+        // Si la compression échoue, fallback sur l'image originale
+        console.warn('Compression TinyPNG échouée, upload de l\'original:', err);
+        compressedBlob = file;
+      }
+      const compressedFile = new File([compressedBlob], file.name, { type: compressedBlob.type || file.type });
+
+      // Créer FormData pour ImgBB
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('image', compressedFile);
       formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614');
 
       // Upload vers ImgBB
