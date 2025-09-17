@@ -196,16 +196,16 @@ const LogoutButton: React.FC<{
   isOpen?: boolean; 
   delay?: number; 
 }> = ({ onClick, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
-  const mobileAnimationClasses = isMobile
+    const mobileAnimationClasses = isMobile
     ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
     : '';
 
-  return (
+    return (
     <motion.button
-      onClick={onClick}
+            onClick={onClick}
       className={`flex items-center gap-1.5 py-1.5 px-2.5 text-pm-off-white uppercase text-xs tracking-widest transition-all duration-300 hover:text-pm-gold focus-style-self focus-visible:text-pm-gold rounded-lg hover:bg-pm-gold/10 ${className} ${mobileAnimationClasses}`}
-      aria-label="Déconnexion"
-      style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
+            aria-label="Déconnexion"
+            style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
@@ -222,67 +222,67 @@ const SocialLinksComponent: React.FC<{
   isOpen?: boolean; 
   delay?: number 
 }> = ({ socialLinks, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
-  if (!socialLinks || (!socialLinks.facebook && !socialLinks.instagram && !socialLinks.youtube)) {
-    return null;
-  }
+    if (!socialLinks || (!socialLinks.facebook && !socialLinks.instagram && !socialLinks.youtube)) {
+        return null;
+    }
 
-  const socialIcons = [
-    { key: 'facebook', href: socialLinks.facebook, icon: FacebookIcon, label: 'Facebook' },
-    { key: 'instagram', href: socialLinks.instagram, icon: InstagramIcon, label: 'Instagram' },
-    { key: 'youtube', href: socialLinks.youtube, icon: YoutubeIcon, label: 'YouTube' }
-  ].filter(item => item.href);
+    const socialIcons = [
+        { key: 'facebook', href: socialLinks.facebook, icon: FacebookIcon, label: 'Facebook' },
+        { key: 'instagram', href: socialLinks.instagram, icon: InstagramIcon, label: 'Instagram' },
+        { key: 'youtube', href: socialLinks.youtube, icon: YoutubeIcon, label: 'YouTube' }
+    ].filter(item => item.href);
 
-  if (isMobile) {
-    return (
-      <motion.div 
+    if (isMobile) {
+        return (
+            <motion.div 
         className={`flex items-center gap-4 ${className}`}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ 
-          opacity: isOpen ? 1 : 0, 
-          y: isOpen ? 0 : -20 
-        }}
-        transition={{ 
-          duration: 0.3, 
-          delay: isOpen ? delay : 0,
-          ease: [0.25, 0.46, 0.45, 0.94]
-        }}
-      >
-        {socialIcons.map((social, index) => (
-          <motion.a
-            key={social.key}
-            href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ 
+                    opacity: isOpen ? 1 : 0, 
+                    y: isOpen ? 0 : -20 
+                }}
+                transition={{ 
+                    duration: 0.3, 
+                    delay: isOpen ? delay : 0,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                }}
+            >
+                {socialIcons.map((social, index) => (
+                    <motion.a
+                        key={social.key}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
             className="text-pm-off-white hover:text-pm-gold transition-colors duration-300"
-            whileHover={{ scale: 1.2, rotate: 5 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-          >
+                        whileHover={{ scale: 1.2, rotate: 5 }}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                    >
             <social.icon className="w-5 h-5" />
-          </motion.a>
-        ))}
-      </motion.div>
-    );
-  }
+                    </motion.a>
+                ))}
+            </motion.div>
+        );
+    }
 
-  return (
+    return (
     <div className={`flex items-center gap-2 ${className}`}>
       {socialIcons.map((social) => (
-        <motion.a
-          key={social.key}
-          href={social.href}
-          target="_blank"
-          rel="noopener noreferrer"
+                <motion.a
+                    key={social.key}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
           className="text-pm-off-white hover:text-pm-gold transition-colors duration-300"
-          whileHover={{ scale: 1.2, rotate: 5 }}
-          whileTap={{ scale: 0.9 }}
-          transition={{ duration: 0.2 }}
-        >
+                    whileHover={{ scale: 1.2, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                >
           <social.icon className="w-4 h-4" />
-        </motion.a>
-      ))}
-    </div>
-  );
+                </motion.a>
+            ))}
+        </div>
+    );
 };
 
 const Header: React.FC = () => {
@@ -306,33 +306,33 @@ const Header: React.FC = () => {
 
       const focusableElementsQuery = 'a[href], button:not([disabled])';
       const focusableElements = mobileMenuRef.current?.querySelectorAll<HTMLElement>(focusableElementsQuery);
-      
+
       if (focusableElements && focusableElements.length > 0) {
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
         const handleTabKey = (e: KeyboardEvent) => {
-          if (e.key === 'Tab') {
+        if (e.key === 'Tab') {
             if (e.shiftKey) {
-              if (document.activeElement === firstElement) {
-                e.preventDefault();
-                lastElement.focus();
-              }
+            if (document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement.focus();
+            }
             } else {
-              if (document.activeElement === lastElement) {
-                e.preventDefault();
-                firstElement.focus();
-              }
+            if (document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement.focus();
             }
           }
-        };
-
+        }
+      };
+      
         document.addEventListener('keydown', handleTabKey);
         firstElement.focus();
 
-        return () => {
+      return () => {
           document.removeEventListener('keydown', handleTabKey);
-        };
+      };
       }
     } else {
       document.body.style.overflow = originalBodyOverflow;
@@ -446,15 +446,15 @@ const Header: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
-            {siteConfig?.logo && (
+          {siteConfig?.logo && (
               <Link to="/" onClick={() => setIsOpen(false)}>
                 <img 
                   src={siteConfig.logo} 
                   alt="Perfect Models Management Logo" 
                   className="h-8 lg:h-10 w-auto transition-all duration-300 rounded-lg" 
                 />
-              </Link>
-            )}
+            </Link>
+          )}
           </motion.div>
           
           {/* Desktop Navigation */}
@@ -476,8 +476,8 @@ const Header: React.FC = () => {
               <Link 
                 to="/casting-formulaire" 
                 className="px-3 xl:px-4 py-1.5 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-yellow-400 hover:shadow-lg hover:shadow-pm-gold/30 whitespace-nowrap"
-              >
-                Postuler
+                >
+                  Postuler
               </Link>
             </motion.div>
             
@@ -502,29 +502,29 @@ const Header: React.FC = () => {
           {/* Mobile Menu Button - Disabled for Simple Navigation */}
           {/* Navigation mobile simplifiée en bas de l'écran */}
         </div>
-
+      
         {/* Mobile Menu Overlay */}
-        <AnimatePresence>
-          {isOpen && (
+      <AnimatePresence>
+        {isOpen && (
             <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
                 className="fixed inset-0 bg-black/50 z-40 lg:hidden"
                 onClick={() => setIsOpen(false)}
-              />
-              
-              <motion.div
-                ref={mobileMenuRef}
+          />
+      
+      <motion.div 
+        ref={mobileMenuRef}
                 initial={{ x: '100%', opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: '100%', opacity: 0 }}
-                transition={{ 
-                  duration: 0.4, 
-                  ease: [0.25, 0.46, 0.45, 0.94] 
-                }}
+        transition={{ 
+          duration: 0.4, 
+          ease: [0.25, 0.46, 0.45, 0.94] 
+        }}
                 className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-black/95 backdrop-blur-xl border-l border-pm-gold/20 z-50 lg:hidden overflow-y-auto"
               >
                 <div className="p-6 pt-20">
@@ -538,7 +538,7 @@ const Header: React.FC = () => {
                       />
                     )}
                     <h2 className="text-pm-gold font-bold text-base">Menu</h2>
-                  </div>
+        </div>
 
                   {/* Mobile Navigation */}
                   <nav className="space-y-1 mb-6">
@@ -551,33 +551,33 @@ const Header: React.FC = () => {
                   </nav>
 
                   {/* Mobile Apply Button */}
-                  <motion.div 
+              <motion.div 
                     className="text-center mb-6"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ 
-                      opacity: isOpen ? 1 : 0, 
-                      y: isOpen ? 0 : -20 
-                    }}
-                    transition={{ 
-                      duration: 0.3, 
-                      delay: isOpen ? applyButtonDelay : 0,
-                      ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ 
+                  opacity: isOpen ? 1 : 0, 
+                  y: isOpen ? 0 : -20 
+                }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: isOpen ? applyButtonDelay : 0,
+                  ease: [0.25, 0.46, 0.45, 0.94]
+                }}
+              >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Link
+                    <Link
                         to="/casting-formulaire"
                         onClick={() => setIsOpen(false)}
                         className="inline-block px-6 py-2.5 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-yellow-400 hover:shadow-lg hover:shadow-pm-gold/30"
-                      >
-                        Postuler
-                      </Link>
-                    </motion.div>
+                        >
+                          Postuler
+                    </Link>
                   </motion.div>
+              </motion.div>
 
                   {/* Mobile Social Links */}
                   <motion.div 
@@ -593,12 +593,12 @@ const Header: React.FC = () => {
                       ease: [0.25, 0.46, 0.45, 0.94]
                     }}
                   >
-                    <SocialLinksComponent 
-                      socialLinks={socialLinks} 
-                      isMobile={true} 
-                      isOpen={isOpen}
-                      delay={socialLinksDelay}
-                    />
+             <SocialLinksComponent 
+                socialLinks={socialLinks} 
+                isMobile={true}
+                isOpen={isOpen}
+                delay={socialLinksDelay}
+             />
                   </motion.div>
 
                   {/* Mobile Logout */}
@@ -624,8 +624,8 @@ const Header: React.FC = () => {
                       />
                     </motion.div>
                   )}
-                </div>
-              </motion.div>
+        </div>
+      </motion.div>
             </>
           )}
         </AnimatePresence>

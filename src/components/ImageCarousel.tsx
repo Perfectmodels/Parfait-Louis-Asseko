@@ -32,6 +32,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, altText }) => {
           src={images[currentIndex]} 
           alt={`${altText} ${currentIndex + 1}`} 
           className="w-full h-full object-cover transition-opacity duration-500"
+          loading="lazy"
         />
       </div>
       <div className="absolute top-1/2 -translate-y-1/2 left-2 text-white/50 group-hover:text-white cursor-pointer p-2 bg-black/30 rounded-full transition-all" onClick={goToPrevious}>
