@@ -38,12 +38,9 @@ const SimpleMobileNav: React.FC = () => {
       requiredRole: 'classroom' 
     },
     { 
-<<<<<<< HEAD
       path: isLoggedIn && userRole === 'student' ? '/profil' : 
-           isLoggedIn && userRole === 'beginner' ? '/profil-debutant' : '/login', 
-=======
-      path: isLoggedIn ? `/profil/${sessionStorage.getItem('userId')}` : '/login', 
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
+           isLoggedIn && userRole === 'beginner' ? '/profil-debutant' : 
+           isLoggedIn ? `/profil/${sessionStorage.getItem('userId')}` : '/login',
       label: 'Profil', 
       icon: UserIcon, 
       isProtected: true 

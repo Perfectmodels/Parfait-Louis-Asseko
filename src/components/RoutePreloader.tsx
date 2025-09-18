@@ -11,10 +11,7 @@ const preloadComponents = () => {
     
     // Preload user components
     import('../pages/ModelDashboard');
-<<<<<<< HEAD
     import('../pages/BeginnerDashboard');
-=======
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
     import('../pages/Activity');
     
     // Preload public components

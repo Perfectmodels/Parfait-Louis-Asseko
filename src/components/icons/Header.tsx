@@ -364,11 +364,7 @@ const Header: React.FC = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-<<<<<<< HEAD
-        className={`fixed top-12 left-4 right-4 z-50 transition-all duration-500 print-hide ${
-=======
         className={`fixed top-12 left-4 right-4 z-50 transition-all duration-500 print-hide hidden lg:block ${
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
           isScrolled 
             ? 'bg-black/90 backdrop-blur-xl shadow-2xl shadow-pm-gold/30 border border-pm-gold/20' 
             : 'bg-black/70 backdrop-blur-lg shadow-xl shadow-pm-gold/20 border border-pm-gold/10'
