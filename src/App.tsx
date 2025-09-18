@@ -182,12 +182,8 @@ const AppContent: React.FC = () => {
                         {/* Protected Routes - Classroom Unifiée (Débutants + Pros) */}
                         <ReactRouterDOM.Route path="/formations" element={<ProtectedRouteWrapper role="classroom"><Activity /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRouteWrapper role="classroom"><ChapterDetail /></ProtectedRouteWrapper>} />
-<<<<<<< HEAD
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRouteWrapper role="student"><ModelDashboard /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/profil-debutant" element={<ProtectedRouteWrapper role="beginner"><BeginnerDashboard /></ProtectedRouteWrapper>} />
-=======
                         <ReactRouterDOM.Route path="/profil/:userId" element={<ProtectedRouteWrapper role="classroom"><ProfilePage /></ProtectedRouteWrapper>} />
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRouteWrapper role="jury"><JuryCasting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRouteWrapper role="registration"><RegistrationCasting /></ProtectedRouteWrapper>} />
