@@ -4,7 +4,8 @@ import {
     Cog6ToothIcon, 
     UserIcon, 
     ChartBarIcon, 
-    PlusIcon 
+    PlusIcon,
+    PhotoIcon
 } from '@heroicons/react/24/outline';
 
 // Définir une interface simple pour DashboardCardProps
@@ -30,7 +31,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, 
     </Link>
 );
 
-export const ParametresView: React.FC<{ data: any }> = React.memo(({ data }) => (
+export const ParametresView: React.FC<{ data: any }> = React.memo(({ data: _data }) => (
     <div className="space-y-4">
         <div>
             <h2 className="text-2xl font-bold text-pm-gold">Paramètres</h2>
@@ -49,6 +50,12 @@ export const ParametresView: React.FC<{ data: any }> = React.memo(({ data }) => 
                 link="/admin/team" 
                 description="Gérer les membres de l'équipe"
             />
+            {/* <DashboardCard 
+                title="Gestion des Images" 
+                icon={PhotoIcon} 
+                link="/admin/images" 
+                description="Optimiser et migrer les images vers Cloudinary"
+            /> */}
             <DashboardCard 
                 title="Suivi des Mannequins" 
                 icon={ChartBarIcon} 

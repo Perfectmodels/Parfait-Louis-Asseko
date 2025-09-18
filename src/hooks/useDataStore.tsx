@@ -190,6 +190,7 @@ export const useDataStore = () => {
                 
                 // Synchroniser les mannequins du système centralisé
                 const syncedData = syncModelAccessWithData(mergedData);
+                
                 setData(syncedData);
             } else {
                 // If DB is empty, seed it with initial data

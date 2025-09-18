@@ -304,7 +304,16 @@ const ArticleDetail: React.FC = () => {
     }
   };
 
-  if (!isInitialized) return <div className="min-h-screen bg-pm-dark"></div>;
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
+          <p className="text-pm-gold">Chargement de l'article...</p>
+        </div>
+      </div>
+    );
+  }
   if (!article) return <NotFound />;
   
   const safeContent = Array.isArray(article.content) ? article.content : [];
