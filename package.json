@@ -15,15 +15,10 @@
     "browser-image-compression": "^2.0.2",
     "firebase": "^12.2.1",
     "framer-motion": "^12.23.13",
-<<<<<<< HEAD
-    "html2canvas": "^1.4.1",
-    "jspdf": "^3.0.2",
-=======
     "fs-extra": "^11.3.2",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.2",
     "node-fetch": "^2.7.0",
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "^6.30.1"
