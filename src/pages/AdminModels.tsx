@@ -106,7 +106,7 @@ const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: Cont
 const AdminModels: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localModels, setLocalModels] = useState<Model[]>([]);
-    const [editingModel, setEditableModel] = useState<Model | null>(null);
+    const [editingModel, setEditingModel] = useState<Model | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [demoteDropdownOpen, setDemoteDropdownOpen] = useState<string | null>(null);
 
