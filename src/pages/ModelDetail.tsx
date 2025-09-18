@@ -130,6 +130,35 @@ const ModelDetail: React.FC = () => {
   
   const model = data?.models.find(m => m.id === id);
 
+  // Vérifier si les données sont chargées et si le modèle existe
+  if (!isInitialized || !data) {
+    return (
+      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
+          <p className="text-pm-off-white/70">Chargement du profil...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!model) {
+    return (
+      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">Profil Non Trouvé</h1>
+          <p className="text-pm-off-white/70 mb-6">Ce mannequin n'existe pas ou n'est pas accessible.</p>
+          <button
+            onClick={() => window.history.back()}
+            className="px-6 py-3 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
+          >
+            Retour
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const modalRef = useRef<HTMLDivElement>(null);
   const prevActiveElement = useRef<HTMLElement | null>(null);
 
@@ -286,11 +315,11 @@ const ModelDetail: React.FC = () => {
                           <div className="col-span-full mt-4">
                               <h3 className="text-lg font-bold text-pm-off-white/80 border-b border-pm-gold/20 pb-1 mb-3">Palmarès & Distinctions</h3>
                               <div className="space-y-3">
-                                  {model.distinctions.map((distinction, index) => (
+                                  {(model.distinctions || []).map((distinction, index) => (
                                       <div key={index}>
                                           <h4 className="font-semibold text-pm-off-white">{distinction.name}</h4>
                                           <ul className="list-disc list-inside text-pm-off-white/90 pl-4 text-base">
-                                              {distinction.titles.map((title, titleIndex) => (
+                                              {(distinction.titles || []).map((title, titleIndex) => (
                                                   <li key={titleIndex}>{title}</li>
                                               ))}
                                           </ul>
@@ -332,7 +361,7 @@ const ModelDetail: React.FC = () => {
             <section className="mt-16">
               <h2 className="section-title">Portfolio</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {model.portfolioImages.map((img, index) => (
+                {(model.portfolioImages || []).map((img, index) => (
                   <button key={index} onClick={() => setSelectedImage(img)} className="group block aspect-[3/4] bg-pm-dark overflow-hidden transition-all duration-300 hover:scale-105 border-2 border-transparent hover:border-pm-gold">
                     <img src={img} alt={`${model.name} portfolio image ${index + 1}`} className="w-full h-full object-cover" />
                   </button>

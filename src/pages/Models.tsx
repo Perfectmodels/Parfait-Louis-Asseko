@@ -38,7 +38,31 @@ const Models: React.FC = () => {
   );
 
   if (!isInitialized) {
-      return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement des mannequins...</div>;
+      return (
+        <div className="min-h-screen flex items-center justify-center text-pm-gold">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
+            <p>Chargement des mannequins...</p>
+          </div>
+        </div>
+      );
+  }
+
+  if (!data) {
+      return (
+        <div className="min-h-screen flex items-center justify-center text-pm-gold">
+          <div className="text-center">
+            <h2 className="text-xl font-bold mb-4">Erreur de chargement</h2>
+            <p>Impossible de charger les données des mannequins.</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 px-6 py-2 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
+            >
+              Recharger la page
+            </button>
+          </div>
+        </div>
+      );
   }
 
   return (

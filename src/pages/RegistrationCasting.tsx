@@ -130,7 +130,14 @@ const RegistrationCasting: React.FC = () => {
     };
 
     if (!isInitialized) {
-        return <div className="min-h-screen flex items-center justify-center bg-pm-dark text-pm-gold">Chargement...</div>;
+        return (
+            <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
+                    <p className="text-pm-gold">Chargement des inscriptions...</p>
+                </div>
+            </div>
+        );
     }
 
     return (

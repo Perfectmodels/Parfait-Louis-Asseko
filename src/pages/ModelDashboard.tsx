@@ -33,6 +33,48 @@ const ModelDashboard: React.FC = () => {
     const isBeginner = !!originalBeginner && !originalModel;
     const currentUser = isBeginner ? originalBeginner : originalModel;
     
+    // Vérifier si l'utilisateur existe dans le système centralisé
+    const { allModelAccess } = require('../data/modelAccess');
+    const centralAccess = allModelAccess.find(access => access.id === userId);
+    
+    // Si l'utilisateur n'existe pas dans les données principales mais existe dans le système centralisé
+    if (!currentUser && centralAccess) {
+        console.log(`🔄 Utilisateur ${centralAccess.name} trouvé dans le système centralisé, synchronisation en cours...`);
+        // Créer un profil temporaire basé sur les données centralisées
+        const tempUser = {
+            id: centralAccess.id,
+            name: centralAccess.name,
+            username: centralAccess.username,
+            type: centralAccess.type,
+            // Autres champs par défaut
+            level: centralAccess.type === 'pro' ? 'Professionnel' : 'Débutant',
+            gender: 'Femme',
+            height: '',
+            imageUrl: '',
+            isPublic: false,
+            measurements: { chest: '', waist: '', hips: '', shoeSize: '' },
+            categories: [],
+            experience: '',
+            journey: '',
+            portfolioImages: [],
+            distinctions: [],
+            adminAccess: false,
+            paymentStatus: {
+                isUpToDate: false,
+                nextDueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                amount: centralAccess.type === 'pro' ? 50000 : 15000,
+                currency: 'FCFA',
+                warnings: []
+            }
+        };
+        
+        if (centralAccess.type === 'pro') {
+            setEditableModel(tempUser as Model);
+        } else {
+            setEditableBeginner(tempUser as BeginnerStudent);
+        }
+    }
+    
     const courseModulesWithQuizzes = data?.courseData?.filter(m => m.quiz && m.quiz.length > 0) || [];
 
     const myBriefs = data?.photoshootBriefs.filter(b => b.modelId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
@@ -146,12 +188,13 @@ const ModelDashboard: React.FC = () => {
         }
     };
 
-    if (!sessionUserId || sessionUserId !== userId) {
+    // Vérification d'accès plus flexible
+    if (!sessionUserId) {
         return (
             <div className="min-h-screen bg-pm-dark text-pm-off-white flex items-center justify-center">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-red-500 mb-4">Accès Refusé</h1>
-                    <p className="text-pm-off-white/70 mb-6">Vous n'avez pas la permission d'accéder à ce profil.</p>
+                    <h1 className="text-2xl font-bold text-red-500 mb-4">Session Expirée</h1>
+                    <p className="text-pm-off-white/70 mb-6">Veuillez vous reconnecter pour accéder à votre profil.</p>
                     <button
                         onClick={() => navigate('/login')}
                         className="px-6 py-3 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
@@ -163,7 +206,24 @@ const ModelDashboard: React.FC = () => {
         );
     }
 
-    if (!currentUser || (!editableModel && !editableBeginner)) {
+    if (!currentUser && !centralAccess) {
+        return (
+            <div className="bg-pm-dark text-pm-off-white min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-500 mb-4">Profil Non Trouvé</h1>
+                    <p className="text-pm-off-white/70 mb-6">Ce profil n'existe pas ou n'est pas accessible.</p>
+                    <button
+                        onClick={() => navigate('/login')}
+                        className="px-6 py-3 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
+                    >
+                        Retour à la connexion
+                    </button>
+                </div>
+            </div>
+        );
+    }
+    
+    if (!editableModel && !editableBeginner) {
         return (
             <div className="bg-pm-dark text-pm-off-white min-h-screen flex items-center justify-center">
                 <p>Chargement du profil...</p>

@@ -14,8 +14,7 @@ import PageTransition, { LoadingTransition } from './components/PageTransition';
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
 const Agency = lazy(() => import('./pages/Agency'));
-// Temporarily use regular import to debug
-import Models from './pages/Models';
+const Models = lazy(() => import('./pages/Models'));
 const ModelDetail = lazy(() => import('./pages/ModelDetail'));
 const FashionDay = lazy(() => import('./pages/FashionDay'));
 const Magazine = lazy(() => import('./pages/Magazine'));
@@ -47,6 +46,7 @@ const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents')
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
+// const AdminImageManagement = lazy(() => import('./pages/AdminImageManagement'));
 const AdminNews = lazy(() => import('./pages/AdminNews'));
 const AdminUserManagement = lazy(() => import('./pages/AdminUserManagement'));
 const AdminPaymentSubmissions = lazy(() => import('./pages/AdminPaymentSubmissions'));
@@ -193,6 +193,7 @@ const AppContent: React.FC = () => {
                 <ReactRouterDOM.Route path="/admin/payment-status" element={<ProtectedRouteWrapper role="admin"><AdminPaymentStatus /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRouteWrapper role="admin"><AdminAccounting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRouteWrapper role="admin"><AdminModels /></ProtectedRouteWrapper>} />
+                        {/* <ReactRouterDOM.Route path="/admin/images" element={<ProtectedRouteWrapper role="admin"><AdminImageManagement /></ProtectedRouteWrapper>} /> */}
                         <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRouteWrapper role="admin"><AdminMagazine /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRouteWrapper role="admin"><AdminGallery /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/team" element={<ProtectedRouteWrapper role="admin"><AdminTeam /></ProtectedRouteWrapper>} />
