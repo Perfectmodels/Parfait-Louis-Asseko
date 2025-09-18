@@ -1,24 +1,18 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { 
   ArrowRightOnRectangleIcon, 
   ChevronRightIcon,
-  Bars3Icon,
-  XMarkIcon,
-  SparklesIcon,
-  UserIcon,
-  BellIcon
+  UserIcon
 } from '@heroicons/react/24/outline';
-import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
 // Breadcrumb Component
 export const Breadcrumb: React.FC = () => {
   const location = useLocation();
-  const { data } = useData();
   
   const breadcrumbNameMap: Record<string, string> = {
     '/': 'Accueil',
@@ -48,7 +42,7 @@ export const Breadcrumb: React.FC = () => {
 
     // Build breadcrumbs from path
     let currentPath = '';
-    pathnames.forEach((name, index) => {
+    pathnames.forEach((name, _index) => {
       currentPath += `/${name}`;
       const label = breadcrumbNameMap[currentPath] || name.charAt(0).toUpperCase() + name.slice(1);
       currentCrumbs.push({ label, path: currentPath });
@@ -247,7 +241,7 @@ const SocialLinksComponent: React.FC<{
                     ease: [0.25, 0.46, 0.45, 0.94]
                 }}
             >
-                {socialIcons.map((social, index) => (
+                {socialIcons.map((social, _index) => (
                     <motion.a
                         key={social.key}
                         href={social.href}
@@ -286,7 +280,6 @@ const SocialLinksComponent: React.FC<{
 };
 
 const Header: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
   const location = useLocation();
@@ -295,66 +288,8 @@ const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSocialLoggedIn, setIsSocialLoggedIn] = useState(false);
 
-  const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  // Scroll detection for header styling
 
-  // Focus management and body scroll lock for mobile menu
-  useEffect(() => {
-    const originalBodyOverflow = window.getComputedStyle(document.body).overflow;
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-
-      const focusableElementsQuery = 'a[href], button:not([disabled])';
-      const focusableElements = mobileMenuRef.current?.querySelectorAll<HTMLElement>(focusableElementsQuery);
-
-      if (focusableElements && focusableElements.length > 0) {
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-
-        const handleTabKey = (e: KeyboardEvent) => {
-        if (e.key === 'Tab') {
-            if (e.shiftKey) {
-            if (document.activeElement === firstElement) {
-              e.preventDefault();
-              lastElement.focus();
-            }
-            } else {
-            if (document.activeElement === lastElement) {
-              e.preventDefault();
-              firstElement.focus();
-            }
-          }
-        }
-      };
-      
-        document.addEventListener('keydown', handleTabKey);
-        firstElement.focus();
-
-      return () => {
-          document.removeEventListener('keydown', handleTabKey);
-      };
-      }
-    } else {
-      document.body.style.overflow = originalBodyOverflow;
-    }
-
-    return () => {
-      document.body.style.overflow = originalBodyOverflow;
-    };
-  }, [isOpen]);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-        hamburgerButtonRef.current?.focus();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
 
   // Handle scroll
   useEffect(() => {
@@ -378,7 +313,6 @@ const Header: React.FC = () => {
   }, [location]);
 
   const handleLogout = () => {
-    setIsOpen(false);
     sessionStorage.clear();
     setIsLoggedIn(false);
     setUserRole(null);
@@ -405,7 +339,7 @@ const Header: React.FC = () => {
   const effectiveNavLinks = navLinksFromData.length > 0 ? navLinksFromData : fallbackNavLinks;
 
   const processedNavLinks = useMemo(() => {
-    const links = effectiveNavLinks.map(link => {
+    const links = effectiveNavLinks.map((link, _index) => {
         if (link.label === 'Classroom') {
             if (userRole === 'student' || userRole === 'beginner') {
                 const userId = sessionStorage.getItem('userId');
@@ -422,9 +356,6 @@ const Header: React.FC = () => {
     return links;
   }, [effectiveNavLinks, userRole, isLoggedIn, isSocialLoggedIn]);
 
-  const applyButtonDelay = 150 + processedNavLinks.length * 50;
-  const logoutButtonDelay = 150 + (processedNavLinks.length + 1) * 50;
-  const socialLinksDelay = 150 + (isLoggedIn ? processedNavLinks.length + 2 : processedNavLinks.length + 1) * 50;
 
   return (
     <>
@@ -447,7 +378,7 @@ const Header: React.FC = () => {
             transition={{ duration: 0.2 }}
           >
           {siteConfig?.logo && (
-              <Link to="/" onClick={() => setIsOpen(false)}>
+              <Link to="/">
                 <img 
                   src={siteConfig.logo} 
                   alt="Perfect Models Management Logo" 
@@ -499,136 +430,13 @@ const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button - Disabled for Simple Navigation */}
-          {/* Navigation mobile simplifiée en bas de l'écran */}
+          {/* Mobile Menu Button - Hidden, using bottom navigation instead */}
+          <div className="lg:hidden">
+            {/* Mobile menu button removed - using SimpleMobileNav instead */}
+          </div>
         </div>
       
-        {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isOpen && (
-            <>
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-                onClick={() => setIsOpen(false)}
-          />
-      
-      <motion.div 
-        ref={mobileMenuRef}
-                initial={{ x: '100%', opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: '100%', opacity: 0 }}
-        transition={{ 
-          duration: 0.4, 
-          ease: [0.25, 0.46, 0.45, 0.94] 
-        }}
-                className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-black/95 backdrop-blur-xl border-l border-pm-gold/20 z-50 lg:hidden overflow-y-auto"
-              >
-                <div className="p-6 pt-20">
-                  {/* Mobile Logo */}
-                  <div className="mb-6 text-center">
-                    {siteConfig?.logo && (
-                      <img 
-                        src={siteConfig.logo} 
-                        alt="Perfect Models Management Logo" 
-                        className="h-10 w-auto mx-auto mb-3 rounded-lg" 
-                      />
-                    )}
-                    <h2 className="text-pm-gold font-bold text-base">Menu</h2>
-        </div>
-
-                  {/* Mobile Navigation */}
-                  <nav className="space-y-1 mb-6">
-                    <NavLinks 
-                      navLinks={processedNavLinks} 
-                      onLinkClick={() => setIsOpen(false)} 
-                      isMobile={true} 
-                      isOpen={isOpen}
-                    />
-                  </nav>
-
-                  {/* Mobile Apply Button */}
-              <motion.div 
-                    className="text-center mb-6"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ 
-                  opacity: isOpen ? 1 : 0, 
-                  y: isOpen ? 0 : -20 
-                }}
-                transition={{ 
-                  duration: 0.3, 
-                  delay: isOpen ? applyButtonDelay : 0,
-                  ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-              >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Link
-                        to="/casting-formulaire"
-                        onClick={() => setIsOpen(false)}
-                        className="inline-block px-6 py-2.5 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-yellow-400 hover:shadow-lg hover:shadow-pm-gold/30"
-                        >
-                          Postuler
-                    </Link>
-                  </motion.div>
-              </motion.div>
-
-                  {/* Mobile Social Links */}
-                  <motion.div 
-                    className="text-center mb-6"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ 
-                      opacity: isOpen ? 1 : 0, 
-                      y: isOpen ? 0 : -20 
-                    }}
-                    transition={{ 
-                      duration: 0.3, 
-                      delay: isOpen ? socialLinksDelay : 0,
-                      ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                  >
-             <SocialLinksComponent 
-                socialLinks={socialLinks} 
-                isMobile={true}
-                isOpen={isOpen}
-                delay={socialLinksDelay}
-             />
-                  </motion.div>
-
-                  {/* Mobile Logout */}
-                  {isLoggedIn && (
-                    <motion.div 
-                      className="text-center"
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ 
-                        opacity: isOpen ? 1 : 0, 
-                        y: isOpen ? 0 : -20 
-                      }}
-                      transition={{ 
-                        duration: 0.3, 
-                        delay: isOpen ? logoutButtonDelay : 0,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                      }}
-                    >
-                      <LogoutButton 
-                        onClick={handleLogout} 
-                        isMobile={true} 
-                        isOpen={isOpen}
-                        delay={logoutButtonDelay}
-                      />
-                    </motion.div>
-                  )}
-        </div>
-      </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+        {/* Mobile Menu Overlay - Removed, using SimpleMobileNav instead */}
       </motion.header>
     </>
   );
