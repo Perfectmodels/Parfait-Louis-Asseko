@@ -430,15 +430,10 @@ const Header: React.FC = () => {
             )}
           </div>
 
-<<<<<<< HEAD
-          {/* Mobile Menu Button - Disabled for Simple Navigation */}
-          {/* Navigation mobile simplifiée en bas de l'écran */}
-=======
           {/* Mobile Menu Button - Hidden, using bottom navigation instead */}
           <div className="lg:hidden">
             {/* Mobile menu button removed - using SimpleMobileNav instead */}
           </div>
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
         </div>
       
         {/* Mobile Menu Overlay - Removed, using SimpleMobileNav instead */}

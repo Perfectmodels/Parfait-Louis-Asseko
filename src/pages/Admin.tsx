@@ -14,12 +14,9 @@ import { useData } from '../contexts/DataContext';
 import InteractiveDashboardCard from '../components/InteractiveDashboardCard';
 import { useAdminNavigation } from '../hooks/useAdminNavigation';
 import AdminNavigationDebug from '../components/AdminNavigationDebug';
-<<<<<<< HEAD
-=======
 import { ComptabiliteView } from './AdminComptabilite';
 import { ParametresView } from './AdminParametres';
 import { updateModelPaymentStatus } from '../utils/paymentUtils';
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
 
 
 type AdminTab = 'dashboard' | 'mannequins' | 'casting' | 'content' | 'comptabilite' | 'parametres';
@@ -358,20 +355,12 @@ const Admin: React.FC = () => {
                        {/* Main Content */}
                        <main className="flex-1 lg:ml-0">
                            <div className="p-4">
-<<<<<<< HEAD
-                        {activeTab === 'dashboard' && <DashboardView stats={stats} activeUsers={activeUsers} />}
-                        {activeTab === 'talents' && <TalentsView newCastingApps={newCastingApps} data={data} generateNotifications={generateNotifications} />}
-                        {activeTab === 'content' && <ContentView />}
-                        {activeTab === 'accounting' && <AccountingView newBookingRequests={newBookingRequests} newFashionDayApps={newFashionDayApps} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} data={data} generateNotifications={generateNotifications} />}
-                        {activeTab === 'analytics' && <AnalyticsView data={data} />}
-=======
                         {activeTab === 'dashboard' && <DashboardView stats={stats} activeUsers={activeUsers} onNavigate={handleTabChange} />}
                         {activeTab === 'mannequins' && <MannequinsView data={data} />}
                         {activeTab === 'casting' && <CastingView newCastingApps={newCastingApps} newFashionDayApps={newFashionDayApps} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'content' && <ContentView />}
                         {activeTab === 'comptabilite' && <ComptabiliteView newBookingRequests={newBookingRequests} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'parametres' && <ParametresView data={data} />}
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                     </div>
                 </main>
             </div>
@@ -407,11 +396,7 @@ const Admin: React.FC = () => {
 };
 
 // Dashboard View Component
-<<<<<<< HEAD
-const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> = React.memo(({ stats, activeUsers }) => (
-=======
 const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[]; onNavigate: (view: AdminTab, params?: any) => void }> = React.memo(({ stats, activeUsers, onNavigate }) => (
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
     <div className="space-y-4">
         <div className="flex items-center justify-between">
             <div>
@@ -480,7 +465,6 @@ const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[]; on
                 />
             </div>
         </div>
-<<<<<<< HEAD
     </div>
 ));
 
@@ -650,8 +634,6 @@ const AnalyticsView: React.FC<{ data: any }> = React.memo(({ data }) => (
                         <span className="text-pm-off-white/70">Messages Non Lus</span>
                         <span className="text-red-400 font-semibold">{(data?.contactMessages?.filter((msg: any) => msg.status === 'Nouveau').length || 0)}</span>
                     </div>
-=======
-
         <div className="mt-8">
             <h2 className="text-xl font-bold text-pm-gold mb-4">Actions Rapides</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -662,15 +644,11 @@ const AnalyticsView: React.FC<{ data: any }> = React.memo(({ data }) => (
                 >
                     <h3 className="font-semibold text-white mb-2">Gérer les Paiements</h3>
                     <p className="text-sm text-gray-400">Enregistrer les inscriptions et cotisations des mannequins.</p>
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                 </div>
             </div>
         </div>
     </div>
 ));
-<<<<<<< HEAD
-=======
-
 // Mannequins View Component - Gestion simplifiée des mannequins
 const MannequinsView: React.FC<{ data: any }> = React.memo(({ data }) => (
     <div className="space-y-4">
@@ -806,7 +784,6 @@ const ContentView: React.FC = React.memo(() => (
         </div>
     </div>
 ));
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
 
 // Stat Card Component
 const StatCard: React.FC<{ 

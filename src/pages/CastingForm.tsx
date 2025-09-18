@@ -6,12 +6,7 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
-<<<<<<< HEAD
-import ImageUpload from '../components/ImageUpload'; // Importer le composant
-=======
 import ImageUpload from '../components/ImageUpload';
-// import { CLOUDINARY_CONFIG } from '../config/cloudinary'; // Importer le composant
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 const ApplicationGuide: React.FC = () => (
@@ -169,7 +164,6 @@ const CastingForm: React.FC = () => {
                         <div className="space-y-6 pt-4">
                             <h3 className="text-lg font-semibold text-pm-off-white/90">Photos Requises</h3>
                             <p className="text-sm text-pm-off-white/60">Veuillez soumettre des photos récentes, claires et non retouchées (polas).</p>
-<<<<<<< HEAD
                             <div className="grid md:grid-cols-3 gap-6">
                                 <ImageUpload
                                     label="Photo Portrait (visage)"
@@ -187,22 +181,6 @@ const CastingForm: React.FC = () => {
                                     apiKey={data?.apiKeys.imgbbApiKey || ''}
                                 />
                             </div>
-=======
-        <div className="grid md:grid-cols-3 gap-6">
-            <ImageUpload
-                placeholder="Photo Portrait (visage)"
-                onImageUploaded={handlePhotoUpload('portrait')}
-            />
-            <ImageUpload
-                placeholder="Photo Plein Pied"
-                onImageUploaded={handlePhotoUpload('fullBody')}
-            />
-            <ImageUpload
-                placeholder="Photo de Profil"
-                onImageUploaded={handlePhotoUpload('profile')}
-            />
-        </div>
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                         </div>
                     </Section>
 
