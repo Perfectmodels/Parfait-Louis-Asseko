@@ -194,10 +194,7 @@ const AppContent: React.FC = () => {
                 <ReactRouterDOM.Route path="/admin/payment-status" element={<ProtectedRouteWrapper role="admin"><AdminPaymentStatus /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRouteWrapper role="admin"><AdminAccounting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRouteWrapper role="admin"><AdminModels /></ProtectedRouteWrapper>} />
-<<<<<<< HEAD
-=======
                         {/* <ReactRouterDOM.Route path="/admin/images" element={<ProtectedRouteWrapper role="admin"><AdminImageManagement /></ProtectedRouteWrapper>} /> */}
->>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                         <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRouteWrapper role="admin"><AdminMagazine /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRouteWrapper role="admin"><AdminGallery /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/team" element={<ProtectedRouteWrapper role="admin"><AdminTeam /></ProtectedRouteWrapper>} />
