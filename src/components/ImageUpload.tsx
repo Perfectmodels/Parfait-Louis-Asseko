@@ -1,18 +1,26 @@
 import React, { useState, useRef } from 'react';
 import { CloudArrowUpIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import imageCompression from 'browser-image-compression';
+import { uploadImage as uploadToCloudinary, getOptimizedImageUrl, CLOUDINARY_CONFIG } from '../config/cloudinary';
 
 interface ImageUploadProps {
   onImageUploaded: (imageUrl: string) => void;
   currentImage?: string;
   placeholder?: string;
   className?: string;
+  useCloudinary?: boolean;
+  folder?: string;
+  transformations?: any;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
   onImageUploaded,
   currentImage,
   placeholder = "Cliquez pour sélectionner une image",
-  className = ""
+  className = "",
+  useCloudinary = false,
+  folder = 'perfect-models',
+  transformations = CLOUDINARY_CONFIG.defaultTransformations
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -41,29 +49,51 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         throw new Error('Veuillez sélectionner un fichier image valide');
       }
 
-      // Créer FormData
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614');
+      let imageUrl: string;
 
-      // Upload vers ImgBB
-      const response = await fetch('https://api.imgbb.com/1/upload', {
-        method: 'POST',
-        body: formData
-      });
+      if (useCloudinary) {
+        // Upload vers ImgBB (fallback)
+        const result = await uploadImage(file, folder);
+        imageUrl = result.url;
+      } else {
+        // Méthode locale avec compression
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true
+        };
+        
+        const compressedFile = await imageCompression(file, options);
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de l\'upload de l\'image');
+        // Créer FormData
+        const formData = new FormData();
+        formData.append('image', compressedFile);
+        formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614');
+
+        // Upload vers ImgBB
+        const response = await fetch('https://api.imgbb.com/1/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de l\'upload de l\'image');
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+          imageUrl = data.data.url;
+        } else {
+          throw new Error(data.error?.message || 'Erreur lors de l\'upload');
+        }
       }
 
-      const data = await response.json();
-      
-      if (data.success) {
-        const imageUrl = data.data.url;
-        setPreviewUrl(imageUrl);
+      setPreviewUrl(imageUrl);
+      if (typeof onImageUploaded === 'function') {
         onImageUploaded(imageUrl);
       } else {
-        throw new Error(data.error?.message || 'Erreur lors de l\'upload');
+        console.error("ImageUpload component requires an 'onImageUploaded' function prop.");
       }
     } catch (error) {
       console.error('Erreur upload:', error);
@@ -75,7 +105,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   const handleRemoveImage = () => {
     setPreviewUrl(null);
-    onImageUploaded('');
+    if (typeof onImageUploaded === 'function') {
+      onImageUploaded('');
+    }
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -101,6 +133,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             src={previewUrl}
             alt="Preview"
             className="w-full h-48 object-cover rounded-lg border-2 border-gray-200"
+            loading="lazy"
           />
           <button
             onClick={handleRemoveImage}

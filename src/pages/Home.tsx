@@ -246,8 +246,32 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
 
-  if (!isInitialized || !data) {
-    return <div className="min-h-screen bg-pm-dark"></div>;
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
+          <p className="text-pm-gold">Chargement de la page d'accueil...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold mb-4 text-red-500">Erreur de chargement</h2>
+          <p className="text-pm-off-white/70 mb-6">Impossible de charger les données de la page d'accueil.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-2 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
+          >
+            Recharger la page
+          </button>
+        </div>
+      </div>
+    );
   }
 
   const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems, apiKeys } = data;
@@ -331,7 +355,7 @@ const Home: React.FC = () => {
                 <h2 className="section-title">Notre Agence</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center mt-8">
                     <div className="p-1 border-2 border-pm-gold/30 hover:border-pm-gold transition-all duration-300 rounded-lg">
-                        <img src={siteImages.about} alt="L'équipe de Perfect Models Management" className="w-full h-full object-cover rounded-md"/>
+                        <img src={siteImages.about} alt="L'équipe de Perfect Models Management" className="w-full h-full object-cover rounded-md" loading="lazy"/>
                     </div>
                     <div className="text-center md:text-left">
                         <p className="text-lg text-pm-off-white/80 mb-6 leading-relaxed">

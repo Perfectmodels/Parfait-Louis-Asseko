@@ -14,8 +14,15 @@ import { useData } from '../contexts/DataContext';
 import InteractiveDashboardCard from '../components/InteractiveDashboardCard';
 import { useAdminNavigation } from '../hooks/useAdminNavigation';
 import AdminNavigationDebug from '../components/AdminNavigationDebug';
+<<<<<<< HEAD
+=======
+import { ComptabiliteView } from './AdminComptabilite';
+import { ParametresView } from './AdminParametres';
+import { updateModelPaymentStatus } from '../utils/paymentUtils';
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
 
-type AdminTab = 'dashboard' | 'talents' | 'content' | 'accounting' | 'analytics';
+
+type AdminTab = 'dashboard' | 'mannequins' | 'casting' | 'content' | 'comptabilite' | 'parametres';
 
 interface ActiveUser {
     name: string;
@@ -201,11 +208,12 @@ const Admin: React.FC = () => {
     const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
 
     const navigationItems: { id: AdminTab; label: string; icon: React.ElementType; description: string }[] = [
-        { id: 'dashboard', label: 'Tableau de Bord', icon: HomeIcon, description: 'Vue d\'ensemble et statistiques' },
-        { id: 'talents', label: 'Gestion des Talents', icon: UsersIcon, description: 'Mannequins et recrutement' },
-        { id: 'content', label: 'Contenu & Formation', icon: BookOpenIcon, description: 'Magazine et formations' },
-        { id: 'accounting', label: 'Comptabilité & Suivi', icon: BriefcaseIcon, description: 'Paiements et opérations' },
-        { id: 'analytics', label: 'Analytiques', icon: ChartBarIcon, description: 'Statistiques et rapports' },
+        { id: 'dashboard', label: 'Tableau de Bord', icon: HomeIcon, description: 'Vue d\'ensemble et notifications' },
+        { id: 'mannequins', label: 'Mannequins', icon: UsersIcon, description: 'Gestion des mannequins et accès' },
+        { id: 'casting', label: 'Casting & Événements', icon: ClipboardDocumentListIcon, description: 'Candidatures et Fashion Day' },
+        { id: 'content', label: 'Contenu', icon: BookOpenIcon, description: 'Magazine et formations' },
+        { id: 'comptabilite', label: 'Comptabilité', icon: CurrencyDollarIcon, description: 'Paiements et finances' },
+        { id: 'parametres', label: 'Paramètres', icon: Cog6ToothIcon, description: 'Configuration du site' },
     ];
 
     return (
@@ -350,11 +358,20 @@ const Admin: React.FC = () => {
                        {/* Main Content */}
                        <main className="flex-1 lg:ml-0">
                            <div className="p-4">
+<<<<<<< HEAD
                         {activeTab === 'dashboard' && <DashboardView stats={stats} activeUsers={activeUsers} />}
                         {activeTab === 'talents' && <TalentsView newCastingApps={newCastingApps} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'content' && <ContentView />}
                         {activeTab === 'accounting' && <AccountingView newBookingRequests={newBookingRequests} newFashionDayApps={newFashionDayApps} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'analytics' && <AnalyticsView data={data} />}
+=======
+                        {activeTab === 'dashboard' && <DashboardView stats={stats} activeUsers={activeUsers} onNavigate={handleTabChange} />}
+                        {activeTab === 'mannequins' && <MannequinsView data={data} />}
+                        {activeTab === 'casting' && <CastingView newCastingApps={newCastingApps} newFashionDayApps={newFashionDayApps} data={data} generateNotifications={generateNotifications} />}
+                        {activeTab === 'content' && <ContentView />}
+                        {activeTab === 'comptabilite' && <ComptabiliteView newBookingRequests={newBookingRequests} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} data={data} generateNotifications={generateNotifications} />}
+                        {activeTab === 'parametres' && <ParametresView data={data} />}
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                     </div>
                 </main>
             </div>
@@ -390,7 +407,11 @@ const Admin: React.FC = () => {
 };
 
 // Dashboard View Component
+<<<<<<< HEAD
 const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> = React.memo(({ stats, activeUsers }) => (
+=======
+const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[]; onNavigate: (view: AdminTab, params?: any) => void }> = React.memo(({ stats, activeUsers, onNavigate }) => (
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
     <div className="space-y-4">
         <div className="flex items-center justify-between">
             <div>
@@ -459,6 +480,7 @@ const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[] }> 
                 />
             </div>
         </div>
+<<<<<<< HEAD
     </div>
 ));
 
@@ -628,11 +650,163 @@ const AnalyticsView: React.FC<{ data: any }> = React.memo(({ data }) => (
                         <span className="text-pm-off-white/70">Messages Non Lus</span>
                         <span className="text-red-400 font-semibold">{(data?.contactMessages?.filter((msg: any) => msg.status === 'Nouveau').length || 0)}</span>
                     </div>
+=======
+
+        <div className="mt-8">
+            <h2 className="text-xl font-bold text-pm-gold mb-4">Actions Rapides</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Card pour la gestion des paiements */}
+                <div 
+                    className="bg-pm-dark/50 p-4 rounded-xl border border-pm-gold/20 hover:border-pm-gold/40 transition-colors cursor-pointer"
+                    onClick={() => onNavigate('comptabilite', { subView: 'payments' })}
+                >
+                    <h3 className="font-semibold text-white mb-2">Gérer les Paiements</h3>
+                    <p className="text-sm text-gray-400">Enregistrer les inscriptions et cotisations des mannequins.</p>
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                 </div>
             </div>
         </div>
     </div>
 ));
+<<<<<<< HEAD
+=======
+
+// Mannequins View Component - Gestion simplifiée des mannequins
+const MannequinsView: React.FC<{ data: any }> = React.memo(({ data }) => (
+    <div className="space-y-4">
+        <div>
+            <h2 className="text-2xl font-bold text-pm-gold">Gestion des Mannequins</h2>
+            <p className="text-pm-off-white/60">Gérer les mannequins professionnels et débutants</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <DashboardCard 
+                title="Mannequins Professionnels" 
+                icon={UsersIcon} 
+                link="/admin/models" 
+                description="Gérer les profils des mannequins professionnels"
+            />
+            <DashboardCard 
+                title="Mannequins Débutants" 
+                icon={UserGroupIcon} 
+                link="/admin/beginner-students-access" 
+                description="Consulter et promouvoir les mannequins en formation"
+            />
+            <DashboardCard 
+                title="Gestion des Paiements" 
+                icon={CurrencyDollarIcon} 
+                link="/admin/payments" 
+                description="Enregistrer les paiements directement depuis la liste des mannequins"
+            />
+            <DashboardCard 
+                title="Accès et Identifiants" 
+                icon={KeyIcon} 
+                link="/admin/model-access" 
+                description="Consulter les identifiants de connexion"
+            />
+            <DashboardCard 
+                title="Soumissions de Paiement" 
+                icon={ClipboardDocumentCheckIcon} 
+                link="/admin/payment-submissions" 
+                description="Valider les paiements soumis par les mannequins"
+            />
+            <DashboardCard 
+                title="Direction Artistique" 
+                icon={PaintBrushIcon} 
+                link="/admin/artistic-direction" 
+                description="Assigner des thèmes de séance photo"
+            />
+        </div>
+    </div>
+));
+
+// Casting View Component - Gestion des candidatures et événements
+const CastingView: React.FC<{ newCastingApps: number; newFashionDayApps: number; data: any; generateNotifications: any }> = React.memo(({ newCastingApps, newFashionDayApps, data, generateNotifications }) => (
+    <div className="space-y-4">
+        <div>
+            <h2 className="text-2xl font-bold text-pm-gold">Casting & Événements</h2>
+            <p className="text-pm-off-white/60">Gérer les candidatures et événements</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <InteractiveDashboardCard 
+                title="Candidatures Casting" 
+                icon={ClipboardDocumentListIcon} 
+                link="/admin/casting-applications" 
+                description="Traiter les candidatures pour les castings" 
+                notificationCount={newCastingApps}
+                notifications={generateNotifications(data, 'casting')}
+            />
+            <DashboardCard 
+                title="Résultats Casting" 
+                icon={ClipboardDocumentCheckIcon} 
+                link="/admin/casting-results" 
+                description="Valider les candidats et créer leurs profils"
+            />
+            <InteractiveDashboardCard 
+                title="Candidatures Fashion Day" 
+                icon={SparklesIcon} 
+                link="/admin/fashion-day-applications" 
+                description="Gérer les candidatures pour le PFD" 
+                notificationCount={newFashionDayApps}
+                notifications={generateNotifications(data, 'fashion-day')}
+            />
+            <DashboardCard 
+                title="Événements PFD" 
+                icon={CalendarDaysIcon} 
+                link="/admin/fashion-day-events" 
+                description="Configurer les éditions du Perfect Fashion Day"
+            />
+        </div>
+    </div>
+));
+
+// Content View Component - Gestion du contenu simplifiée
+const ContentView: React.FC = React.memo(() => (
+    <div className="space-y-4">
+        <div>
+            <h2 className="text-2xl font-bold text-pm-gold">Contenu</h2>
+            <p className="text-pm-off-white/60">Gérer le contenu du site et les formations</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <DashboardCard 
+                title="Magazine" 
+                icon={NewspaperIcon} 
+                link="/admin/magazine" 
+                description="Créer et gérer les articles du magazine"
+            />
+            <DashboardCard 
+                title="Galerie Photos" 
+                icon={PhotoIcon} 
+                link="/admin/gallery" 
+                description="Organiser les albums photos par thème"
+            />
+            <DashboardCard 
+                title="Actualités" 
+                icon={PresentationChartLineIcon} 
+                link="/admin/news" 
+                description="Publier les actualités de la page d'accueil"
+            />
+            <DashboardCard 
+                title="Contenu de l'Agence" 
+                icon={BuildingStorefrontIcon} 
+                link="/admin/agency" 
+                description="Mettre à jour les services et réalisations"
+            />
+            <DashboardCard 
+                title="Formations" 
+                icon={BookOpenIcon} 
+                link="/admin/classroom" 
+                description="Gérer les modules de formation"
+            />
+            <DashboardCard 
+                title="Commentaires" 
+                icon={ChatBubbleLeftRightIcon} 
+                link="/admin/comments" 
+                description="Modérer les commentaires du magazine"
+            />
+        </div>
+    </div>
+));
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
 
 // Stat Card Component
 const StatCard: React.FC<{ 

@@ -155,6 +155,36 @@ export const models: Model[] = [
             'module-2-techniques-de-podium-catwalk': { score: 2, total: 2, timesLeft: 0, timestamp: '2024-07-05T10:00:00Z' } 
         },
     },
+    {
+        id: 'dorcas-saphou',
+        name: 'Dorcas SAPHOU',
+        username: 'Man-PMMD01',
+        password: 'dorcas2024',
+        level: 'Mannequin',
+        email: 'dorcas.saphou@example.com',
+        phone: '+241077000004',
+        age: 24,
+        height: '1m76',
+        gender: 'Femme',
+        location: 'Libreville',
+        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        isPublic: true,
+        portfolioImages: [
+            'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+            'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+            'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+        ],
+        distinctions: [
+            { name: "Nouvelle Révélation", titles: ["Découverte de l'Année - PMM 2024", "Meilleure Débutante - Fashion Week Libreville"] }
+        ],
+        measurements: { chest: '84cm', waist: '61cm', hips: '89cm', shoeSize: '39' },
+        categories: ['Défilé', 'Éditorial', 'Beauté'],
+        experience: "Dorcas est une nouvelle recrue prometteuse de l'agence. Avec son charisme naturel et sa détermination, elle s'impose rapidement comme un talent à suivre dans l'univers de la mode gabonaise.",
+        journey: "Découverte lors d'un casting organisé par l'agence, Dorcas a immédiatement séduit par son potentiel et sa personnalité. Elle suit actuellement une formation intensive pour perfectionner ses techniques.",
+        quizScores: { 
+            'module-1-les-fondamentaux-du-mannequinat': { score: 2, total: 3, timesLeft: 1, timestamp: '2024-07-07T10:00:00Z' } 
+        },
+    },
 ];
 
 export const testimonials: Testimonial[] = [

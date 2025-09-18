@@ -106,7 +106,7 @@ const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: Cont
 const AdminModels: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localModels, setLocalModels] = useState<Model[]>([]);
-    const [editingModel, setEditableModel] = useState<Model | null>(null);
+    const [editingModel, setEditingModel] = useState<Model | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [demoteDropdownOpen, setDemoteDropdownOpen] = useState<string | null>(null);
 
@@ -115,6 +115,17 @@ const AdminModels: React.FC = () => {
             setLocalModels([...data.models].sort((a,b) => a.name.localeCompare(b.name)));
         }
     }, [data?.models, isInitialized]);
+
+    if (!isInitialized) {
+        return (
+            <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
+                    <p className="text-pm-gold">Chargement des mannequins...</p>
+                </div>
+            </div>
+        );
+    }
 
     // Fermer le menu déroulant quand on clique ailleurs
     useEffect(() => {

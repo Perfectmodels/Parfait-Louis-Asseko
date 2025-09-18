@@ -14,7 +14,14 @@ const ServiceDetail: React.FC = () => {
     }, [data, slug]);
 
     if (!isInitialized) {
-        return <div className="min-h-screen bg-pm-dark"></div>;
+        return (
+            <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
+                    <p className="text-pm-gold">Chargement du service...</p>
+                </div>
+            </div>
+        );
     }
 
     if (!service) {
@@ -41,6 +48,7 @@ const ServiceDetail: React.FC = () => {
                             src={data?.siteImages.about} 
                             alt={`Illustration pour ${service.title}`} 
                             className="w-full h-full object-cover rounded-md"
+                            loading="lazy"
                         />
                     </div>
                     <div>

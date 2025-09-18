@@ -14,8 +14,7 @@ import PageTransition, { LoadingTransition } from './components/PageTransition';
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
 const Agency = lazy(() => import('./pages/Agency'));
-// Temporarily use regular import to debug
-import Models from './pages/Models';
+const Models = lazy(() => import('./pages/Models'));
 const ModelDetail = lazy(() => import('./pages/ModelDetail'));
 const FashionDay = lazy(() => import('./pages/FashionDay'));
 const Magazine = lazy(() => import('./pages/Magazine'));
@@ -31,7 +30,7 @@ const SocialLogin = lazy(() => import('./pages/SocialLogin'));
 const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
-const BeginnerDashboard = lazy(() => import('./pages/BeginnerDashboard')); // Profil Débutant
+const ProfilePage = lazy(() => import('./pages/Profile'));
 const Chat = lazy(() => import('./pages/Chat'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 
@@ -47,6 +46,7 @@ const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents')
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
+// const AdminImageManagement = lazy(() => import('./pages/AdminImageManagement'));
 const AdminNews = lazy(() => import('./pages/AdminNews'));
 const AdminUserManagement = lazy(() => import('./pages/AdminUserManagement'));
 const AdminPaymentSubmissions = lazy(() => import('./pages/AdminPaymentSubmissions'));
@@ -63,7 +63,7 @@ const AdminComments = lazy(() => import('./pages/AdminComments'));
 const AdminBookings = lazy(() => import('./pages/AdminBookings'));
 const AdminMessages = lazy(() => import('./pages/AdminMessages'));
 const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
-const AdminPayments = lazy(() => import('./pages/AdminPayments'));
+const AdminPayments = lazy(() => import('./pages/AdminPaymentsNew'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 
@@ -111,7 +111,7 @@ const LoadingFallback: React.FC = () => (
 
 const AppContent: React.FC = () => {
     const location = ReactRouterDOM.useLocation();
-    const { data } = useData();
+    const { data, isInitialized } = useData();
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -143,6 +143,10 @@ const AppContent: React.FC = () => {
         };
     }, [location.pathname, data]);
 
+    // Attendre que les données soient initialisées avant de rendre le contenu
+    if (!isInitialized) {
+        return <LoadingTransition />;
+    }
 
     return (
         <>
@@ -178,8 +182,12 @@ const AppContent: React.FC = () => {
                         {/* Protected Routes - Classroom Unifiée (Débutants + Pros) */}
                         <ReactRouterDOM.Route path="/formations" element={<ProtectedRouteWrapper role="classroom"><Activity /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRouteWrapper role="classroom"><ChapterDetail /></ProtectedRouteWrapper>} />
+<<<<<<< HEAD
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRouteWrapper role="student"><ModelDashboard /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/profil-debutant" element={<ProtectedRouteWrapper role="beginner"><BeginnerDashboard /></ProtectedRouteWrapper>} />
+=======
+                        <ReactRouterDOM.Route path="/profil/:userId" element={<ProtectedRouteWrapper role="classroom"><ProfilePage /></ProtectedRouteWrapper>} />
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRouteWrapper role="jury"><JuryCasting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRouteWrapper role="registration"><RegistrationCasting /></ProtectedRouteWrapper>} />
@@ -190,6 +198,10 @@ const AppContent: React.FC = () => {
                 <ReactRouterDOM.Route path="/admin/payment-status" element={<ProtectedRouteWrapper role="admin"><AdminPaymentStatus /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRouteWrapper role="admin"><AdminAccounting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRouteWrapper role="admin"><AdminModels /></ProtectedRouteWrapper>} />
+<<<<<<< HEAD
+=======
+                        {/* <ReactRouterDOM.Route path="/admin/images" element={<ProtectedRouteWrapper role="admin"><AdminImageManagement /></ProtectedRouteWrapper>} /> */}
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
                         <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRouteWrapper role="admin"><AdminMagazine /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRouteWrapper role="admin"><AdminGallery /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/team" element={<ProtectedRouteWrapper role="admin"><AdminTeam /></ProtectedRouteWrapper>} />

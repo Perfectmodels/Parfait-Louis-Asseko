@@ -4,7 +4,7 @@ import { useDataStore, AppData } from '../hooks/useDataStore';
 
 interface DataContextType {
   data: AppData | null;
-  saveData: (newData: AppData) => void;
+  saveData: (newData: AppData) => Promise<void>;
   isInitialized: boolean;
 }
 

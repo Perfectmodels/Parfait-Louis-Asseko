@@ -1,24 +1,18 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { 
   ArrowRightOnRectangleIcon, 
   ChevronRightIcon,
-  Bars3Icon,
-  XMarkIcon,
-  SparklesIcon,
-  UserIcon,
-  BellIcon
+  UserIcon
 } from '@heroicons/react/24/outline';
-import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
 // Breadcrumb Component
 export const Breadcrumb: React.FC = () => {
   const location = useLocation();
-  const { data } = useData();
   
   const breadcrumbNameMap: Record<string, string> = {
     '/': 'Accueil',
@@ -31,7 +25,6 @@ export const Breadcrumb: React.FC = () => {
     '/contact': 'Contact',
     '/formations': 'Formations',
     '/profil': 'Mon Profil',
-    '/profil-debutant': 'Profil Débutant',
     '/casting': 'Casting',
     '/casting-formulaire': 'Formulaire de Casting',
     '/fashion-day-application': 'Candidature PFD',
@@ -49,7 +42,7 @@ export const Breadcrumb: React.FC = () => {
 
     // Build breadcrumbs from path
     let currentPath = '';
-    pathnames.forEach((name, index) => {
+    pathnames.forEach((name, _index) => {
       currentPath += `/${name}`;
       const label = breadcrumbNameMap[currentPath] || name.charAt(0).toUpperCase() + name.slice(1);
       currentCrumbs.push({ label, path: currentPath });
@@ -197,16 +190,16 @@ const LogoutButton: React.FC<{
   isOpen?: boolean; 
   delay?: number; 
 }> = ({ onClick, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
-  const mobileAnimationClasses = isMobile
+    const mobileAnimationClasses = isMobile
     ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
     : '';
 
-  return (
+    return (
     <motion.button
-      onClick={onClick}
+            onClick={onClick}
       className={`flex items-center gap-1.5 py-1.5 px-2.5 text-pm-off-white uppercase text-xs tracking-widest transition-all duration-300 hover:text-pm-gold focus-style-self focus-visible:text-pm-gold rounded-lg hover:bg-pm-gold/10 ${className} ${mobileAnimationClasses}`}
-      aria-label="Déconnexion"
-      style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
+            aria-label="Déconnexion"
+            style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
@@ -223,71 +216,70 @@ const SocialLinksComponent: React.FC<{
   isOpen?: boolean; 
   delay?: number 
 }> = ({ socialLinks, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
-  if (!socialLinks || (!socialLinks.facebook && !socialLinks.instagram && !socialLinks.youtube)) {
-    return null;
-  }
+    if (!socialLinks || (!socialLinks.facebook && !socialLinks.instagram && !socialLinks.youtube)) {
+        return null;
+    }
 
-  const socialIcons = [
-    { key: 'facebook', href: socialLinks.facebook, icon: FacebookIcon, label: 'Facebook' },
-    { key: 'instagram', href: socialLinks.instagram, icon: InstagramIcon, label: 'Instagram' },
-    { key: 'youtube', href: socialLinks.youtube, icon: YoutubeIcon, label: 'YouTube' }
-  ].filter(item => item.href);
+    const socialIcons = [
+        { key: 'facebook', href: socialLinks.facebook, icon: FacebookIcon, label: 'Facebook' },
+        { key: 'instagram', href: socialLinks.instagram, icon: InstagramIcon, label: 'Instagram' },
+        { key: 'youtube', href: socialLinks.youtube, icon: YoutubeIcon, label: 'YouTube' }
+    ].filter(item => item.href);
 
-  if (isMobile) {
-    return (
-      <motion.div 
+    if (isMobile) {
+        return (
+            <motion.div 
         className={`flex items-center gap-4 ${className}`}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ 
-          opacity: isOpen ? 1 : 0, 
-          y: isOpen ? 0 : -20 
-        }}
-        transition={{ 
-          duration: 0.3, 
-          delay: isOpen ? delay : 0,
-          ease: [0.25, 0.46, 0.45, 0.94]
-        }}
-      >
-        {socialIcons.map((social, index) => (
-          <motion.a
-            key={social.key}
-            href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ 
+                    opacity: isOpen ? 1 : 0, 
+                    y: isOpen ? 0 : -20 
+                }}
+                transition={{ 
+                    duration: 0.3, 
+                    delay: isOpen ? delay : 0,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                }}
+            >
+                {socialIcons.map((social, _index) => (
+                    <motion.a
+                        key={social.key}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
             className="text-pm-off-white hover:text-pm-gold transition-colors duration-300"
-            whileHover={{ scale: 1.2, rotate: 5 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-          >
+                        whileHover={{ scale: 1.2, rotate: 5 }}
+                        whileTap={{ scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                    >
             <social.icon className="w-5 h-5" />
-          </motion.a>
-        ))}
-      </motion.div>
-    );
-  }
+                    </motion.a>
+                ))}
+            </motion.div>
+        );
+    }
 
-  return (
+    return (
     <div className={`flex items-center gap-2 ${className}`}>
       {socialIcons.map((social) => (
-        <motion.a
-          key={social.key}
-          href={social.href}
-          target="_blank"
-          rel="noopener noreferrer"
+                <motion.a
+                    key={social.key}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
           className="text-pm-off-white hover:text-pm-gold transition-colors duration-300"
-          whileHover={{ scale: 1.2, rotate: 5 }}
-          whileTap={{ scale: 0.9 }}
-          transition={{ duration: 0.2 }}
-        >
+                    whileHover={{ scale: 1.2, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                >
           <social.icon className="w-4 h-4" />
-        </motion.a>
-      ))}
-    </div>
-  );
+                </motion.a>
+            ))}
+        </div>
+    );
 };
 
 const Header: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
   const location = useLocation();
@@ -296,66 +288,8 @@ const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSocialLoggedIn, setIsSocialLoggedIn] = useState(false);
 
-  const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  // Scroll detection for header styling
 
-  // Focus management and body scroll lock for mobile menu
-  useEffect(() => {
-    const originalBodyOverflow = window.getComputedStyle(document.body).overflow;
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-
-      const focusableElementsQuery = 'a[href], button:not([disabled])';
-      const focusableElements = mobileMenuRef.current?.querySelectorAll<HTMLElement>(focusableElementsQuery);
-      
-      if (focusableElements && focusableElements.length > 0) {
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        
-        const handleTabKey = (e: KeyboardEvent) => {
-          if (e.key === 'Tab') {
-            if (e.shiftKey) {
-              if (document.activeElement === firstElement) {
-                e.preventDefault();
-                lastElement.focus();
-              }
-            } else {
-              if (document.activeElement === lastElement) {
-                e.preventDefault();
-                firstElement.focus();
-              }
-            }
-          }
-        };
-
-        document.addEventListener('keydown', handleTabKey);
-        firstElement.focus();
-
-        return () => {
-          document.removeEventListener('keydown', handleTabKey);
-        };
-      }
-    } else {
-      document.body.style.overflow = originalBodyOverflow;
-    }
-
-    return () => {
-      document.body.style.overflow = originalBodyOverflow;
-    };
-  }, [isOpen]);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-        hamburgerButtonRef.current?.focus();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
 
   // Handle scroll
   useEffect(() => {
@@ -379,7 +313,6 @@ const Header: React.FC = () => {
   }, [location]);
 
   const handleLogout = () => {
-    setIsOpen(false);
     sessionStorage.clear();
     setIsLoggedIn(false);
     setUserRole(null);
@@ -406,9 +339,12 @@ const Header: React.FC = () => {
   const effectiveNavLinks = navLinksFromData.length > 0 ? navLinksFromData : fallbackNavLinks;
 
   const processedNavLinks = useMemo(() => {
-    const links = effectiveNavLinks.map(link => {
+    const links = effectiveNavLinks.map((link, _index) => {
         if (link.label === 'Classroom') {
-            if (userRole === 'student') return { ...link, label: 'Mon Profil', path: '/profil' };
+            if (userRole === 'student' || userRole === 'beginner') {
+                const userId = sessionStorage.getItem('userId');
+                return { ...link, label: 'Mon Profil', path: `/profil/${userId}` };
+            }
             if (userRole === 'admin') return { ...link, path: '/admin/classroom' };
             return null;
         }
@@ -420,9 +356,6 @@ const Header: React.FC = () => {
     return links;
   }, [effectiveNavLinks, userRole, isLoggedIn, isSocialLoggedIn]);
 
-  const applyButtonDelay = 150 + processedNavLinks.length * 50;
-  const logoutButtonDelay = 150 + (processedNavLinks.length + 1) * 50;
-  const socialLinksDelay = 150 + (isLoggedIn ? processedNavLinks.length + 2 : processedNavLinks.length + 1) * 50;
 
   return (
     <>
@@ -431,7 +364,11 @@ const Header: React.FC = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+<<<<<<< HEAD
         className={`fixed top-12 left-4 right-4 z-50 transition-all duration-500 print-hide ${
+=======
+        className={`fixed top-12 left-4 right-4 z-50 transition-all duration-500 print-hide hidden lg:block ${
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
           isScrolled 
             ? 'bg-black/90 backdrop-blur-xl shadow-2xl shadow-pm-gold/30 border border-pm-gold/20' 
             : 'bg-black/70 backdrop-blur-lg shadow-xl shadow-pm-gold/20 border border-pm-gold/10'
@@ -444,15 +381,15 @@ const Header: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
-            {siteConfig?.logo && (
-              <Link to="/" onClick={() => setIsOpen(false)}>
+          {siteConfig?.logo && (
+              <Link to="/">
                 <img 
                   src={siteConfig.logo} 
                   alt="Perfect Models Management Logo" 
                   className="h-8 lg:h-10 w-auto transition-all duration-300 rounded-lg" 
                 />
-              </Link>
-            )}
+            </Link>
+          )}
           </motion.div>
           
           {/* Desktop Navigation */}
@@ -474,8 +411,8 @@ const Header: React.FC = () => {
               <Link 
                 to="/casting-formulaire" 
                 className="px-3 xl:px-4 py-1.5 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-yellow-400 hover:shadow-lg hover:shadow-pm-gold/30 whitespace-nowrap"
-              >
-                Postuler
+                >
+                  Postuler
               </Link>
             </motion.div>
             
@@ -497,136 +434,18 @@ const Header: React.FC = () => {
             )}
           </div>
 
+<<<<<<< HEAD
           {/* Mobile Menu Button - Disabled for Simple Navigation */}
           {/* Navigation mobile simplifiée en bas de l'écran */}
+=======
+          {/* Mobile Menu Button - Hidden, using bottom navigation instead */}
+          <div className="lg:hidden">
+            {/* Mobile menu button removed - using SimpleMobileNav instead */}
+          </div>
+>>>>>>> 0fd50ed03d4931c5a199740f2fa0e126a09a12d1
         </div>
-
-        {/* Mobile Menu Overlay */}
-        <AnimatePresence>
-          {isOpen && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-                onClick={() => setIsOpen(false)}
-              />
-              
-              <motion.div
-                ref={mobileMenuRef}
-                initial={{ x: '100%', opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: '100%', opacity: 0 }}
-                transition={{ 
-                  duration: 0.4, 
-                  ease: [0.25, 0.46, 0.45, 0.94] 
-                }}
-                className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-black/95 backdrop-blur-xl border-l border-pm-gold/20 z-50 lg:hidden overflow-y-auto"
-              >
-                <div className="p-6 pt-20">
-                  {/* Mobile Logo */}
-                  <div className="mb-6 text-center">
-                    {siteConfig?.logo && (
-                      <img 
-                        src={siteConfig.logo} 
-                        alt="Perfect Models Management Logo" 
-                        className="h-10 w-auto mx-auto mb-3 rounded-lg" 
-                      />
-                    )}
-                    <h2 className="text-pm-gold font-bold text-base">Menu</h2>
-                  </div>
-
-                  {/* Mobile Navigation */}
-                  <nav className="space-y-1 mb-6">
-                    <NavLinks 
-                      navLinks={processedNavLinks} 
-                      onLinkClick={() => setIsOpen(false)} 
-                      isMobile={true} 
-                      isOpen={isOpen}
-                    />
-                  </nav>
-
-                  {/* Mobile Apply Button */}
-                  <motion.div 
-                    className="text-center mb-6"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ 
-                      opacity: isOpen ? 1 : 0, 
-                      y: isOpen ? 0 : -20 
-                    }}
-                    transition={{ 
-                      duration: 0.3, 
-                      delay: isOpen ? applyButtonDelay : 0,
-                      ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Link
-                        to="/casting-formulaire"
-                        onClick={() => setIsOpen(false)}
-                        className="inline-block px-6 py-2.5 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-yellow-400 hover:shadow-lg hover:shadow-pm-gold/30"
-                      >
-                        Postuler
-                      </Link>
-                    </motion.div>
-                  </motion.div>
-
-                  {/* Mobile Social Links */}
-                  <motion.div 
-                    className="text-center mb-6"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ 
-                      opacity: isOpen ? 1 : 0, 
-                      y: isOpen ? 0 : -20 
-                    }}
-                    transition={{ 
-                      duration: 0.3, 
-                      delay: isOpen ? socialLinksDelay : 0,
-                      ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                  >
-                    <SocialLinksComponent 
-                      socialLinks={socialLinks} 
-                      isMobile={true} 
-                      isOpen={isOpen}
-                      delay={socialLinksDelay}
-                    />
-                  </motion.div>
-
-                  {/* Mobile Logout */}
-                  {isLoggedIn && (
-                    <motion.div 
-                      className="text-center"
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ 
-                        opacity: isOpen ? 1 : 0, 
-                        y: isOpen ? 0 : -20 
-                      }}
-                      transition={{ 
-                        duration: 0.3, 
-                        delay: isOpen ? logoutButtonDelay : 0,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                      }}
-                    >
-                      <LogoutButton 
-                        onClick={handleLogout} 
-                        isMobile={true} 
-                        isOpen={isOpen}
-                        delay={logoutButtonDelay}
-                      />
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+      
+        {/* Mobile Menu Overlay - Removed, using SimpleMobileNav instead */}
       </motion.header>
     </>
   );

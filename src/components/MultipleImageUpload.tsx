@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { XMarkIcon, PlusIcon, PhotoIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, PlusIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import ImageUpload from './ImageUpload';
+import imageCompression from 'browser-image-compression';
 
 interface MultipleImageUploadProps {
   images: string[];
@@ -83,9 +84,18 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
         throw new Error(`Le fichier ${file.name} n'est pas une image valide`);
       }
 
+      // Options de compression
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true
+      };
+      
+      const compressedFile = await imageCompression(file, options);
+
       // Créer FormData
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('image', compressedFile);
       formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614');
 
       // Upload vers ImgBB
