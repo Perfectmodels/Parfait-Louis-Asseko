@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-type AdminTab = 'dashboard' | 'talents' | 'content' | 'accounting' | 'analytics';
+type AdminTab = 'dashboard' | 'mannequins' | 'casting' | 'content' | 'comptabilite' | 'parametres' | 'technique' | 'messagerie';
 
 export const useAdminNavigation = () => {
     const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');

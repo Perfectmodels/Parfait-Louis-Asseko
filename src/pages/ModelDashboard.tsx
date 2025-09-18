@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     BookOpenIcon, UserIcon, ArrowRightOnRectangleIcon,
     EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon, Bars3Icon, XMarkIcon,
-    BellIcon, TrophyIcon, UserCircleIcon
+    BellIcon, TrophyIcon, UserCircleIcon, ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 import { Model, BeginnerStudent, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
@@ -381,6 +381,14 @@ const ModelDashboard: React.FC = () => {
                                            <span className="text-sm">Portfolio Public</span>
                                        </Link>
                                    )}
+                                   <Link
+                                       to="/messaging"
+                                       className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
+                                       onClick={() => setSidebarOpen(false)}
+                                   >
+                                       <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                                       <span className="text-sm">Messagerie Interne</span>
+                                   </Link>
                                    <Link
                                        to="/contact"
                                        className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"

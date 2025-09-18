@@ -62,10 +62,24 @@ const AdminSettings = lazy(() => import('./pages/AdminSettings'));
 const AdminComments = lazy(() => import('./pages/AdminComments'));
 const AdminBookings = lazy(() => import('./pages/AdminBookings'));
 const AdminMessages = lazy(() => import('./pages/AdminMessages'));
+const AdminMessaging = lazy(() => import('./pages/AdminMessaging'));
+const ModelMessaging = lazy(() => import('./pages/ModelMessaging'));
 const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
 const AdminPayments = lazy(() => import('./pages/AdminPaymentsNew'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+const AdminServer = lazy(() => import('./pages/AdminServer'));
+const AdminDatabase = lazy(() => import('./pages/AdminDatabase'));
+const AdminApiKeys = lazy(() => import('./pages/AdminApiKeys'));
+const AdminSecurity = lazy(() => import('./pages/AdminSecurity'));
+const AdminBrevoTest = lazy(() => import('./pages/AdminBrevoTest'));
+const AdminEmailDiagnostic = lazy(() => import('./pages/AdminEmailDiagnostic'));
+const AdminLinkTest = lazy(() => import('./pages/AdminLinkTest'));
+const AdminNewEmail = lazy(() => import('./pages/AdminNewEmail'));
+const AdminMarketingCampaigns = lazy(() => import('./pages/AdminMarketingCampaigns'));
+const AdminImportContacts = lazy(() => import('./pages/AdminImportContacts'));
+const AdminContactManagement = lazy(() => import('./pages/AdminContactManagement'));
+const AdminMessagingDashboard = lazy(() => import('./pages/AdminMessagingDashboard'));
 
 // Test component
 const LoadingTest = lazy(() => import('./components/LoadingTest'));
@@ -184,6 +198,7 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRouteWrapper role="classroom"><ChapterDetail /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRouteWrapper role="student"><ModelDashboard /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/profil/:userId" element={<ProtectedRouteWrapper role="classroom"><ProfilePage /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/messaging" element={<ProtectedRouteWrapper role="student"><ModelMessaging /></ProtectedRouteWrapper>} />
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRouteWrapper role="jury"><JuryCasting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRouteWrapper role="registration"><RegistrationCasting /></ProtectedRouteWrapper>} />
@@ -213,10 +228,23 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/recovery-requests" element={<ProtectedRouteWrapper role="admin"><AdminRecovery /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/comments" element={<ProtectedRouteWrapper role="admin"><AdminComments /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/messages" element={<ProtectedRouteWrapper role="admin"><AdminMessages /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/messaging" element={<ProtectedRouteWrapper role="admin"><AdminMessaging /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/bookings" element={<ProtectedRouteWrapper role="admin"><AdminBookings /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/payments" element={<ProtectedRouteWrapper role="admin"><AdminPayments /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/absences" element={<ProtectedRouteWrapper role="admin"><AdminAbsences /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/artistic-direction" element={<ProtectedRouteWrapper role="admin"><AdminArtisticDirection /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/server" element={<ProtectedRouteWrapper role="admin"><AdminServer /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/database" element={<ProtectedRouteWrapper role="admin"><AdminDatabase /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/api-keys" element={<ProtectedRouteWrapper role="admin"><AdminApiKeys /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/security" element={<ProtectedRouteWrapper role="admin"><AdminSecurity /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/brevo-test" element={<ProtectedRouteWrapper role="admin"><AdminBrevoTest /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/email-diagnostic" element={<ProtectedRouteWrapper role="admin"><AdminEmailDiagnostic /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/link-test" element={<ProtectedRouteWrapper role="admin"><AdminLinkTest /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/new-email" element={<ProtectedRouteWrapper role="admin"><AdminNewEmail /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/marketing-campaigns" element={<ProtectedRouteWrapper role="admin"><AdminMarketingCampaigns /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/import-contacts" element={<ProtectedRouteWrapper role="admin"><AdminImportContacts /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/contact-management" element={<ProtectedRouteWrapper role="admin"><AdminContactManagement /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/messaging-dashboard" element={<ProtectedRouteWrapper role="admin"><AdminMessagingDashboard /></ProtectedRouteWrapper>} />
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                         </ReactRouterDOM.Routes>

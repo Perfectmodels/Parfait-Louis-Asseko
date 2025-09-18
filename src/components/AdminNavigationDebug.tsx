@@ -1,9 +1,11 @@
 import React from 'react';
 
+type AdminTab = 'dashboard' | 'mannequins' | 'casting' | 'content' | 'comptabilite' | 'parametres' | 'technique' | 'messagerie';
+
 interface AdminNavigationDebugProps {
-    activeTab: string;
+    activeTab: AdminTab;
     sidebarOpen: boolean;
-    onTabChange: (tab: string) => void;
+    onTabChange: (tab: AdminTab) => void;
     onToggleSidebar: () => void;
 }
 
@@ -13,7 +15,7 @@ const AdminNavigationDebug: React.FC<AdminNavigationDebugProps> = ({
     onTabChange,
     onToggleSidebar
 }) => {
-    const tabs = ['dashboard', 'talents', 'content', 'accounting', 'analytics'];
+    const tabs: AdminTab[] = ['dashboard', 'mannequins', 'casting', 'content', 'comptabilite', 'messagerie', 'parametres', 'technique'];
 
     return (
         <div className="fixed top-20 right-4 bg-black/80 backdrop-blur-sm border border-pm-gold/20 rounded-lg p-4 z-50 max-w-xs">
