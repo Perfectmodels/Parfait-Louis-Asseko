@@ -5,7 +5,7 @@ import {
     SparklesIcon, CalendarDaysIcon, BookOpenIcon, NewspaperIcon,
     ChartBarIcon, UserIcon, ServerIcon, ShieldCheckIcon,
     CpuChipIcon, EnvelopeIcon, Cog6ToothIcon, ChatBubbleLeftRightIcon,
-    PaperAirplaneIcon, DocumentArrowUpIcon
+    PaperAirplaneIcon, DocumentArrowUpIcon, BellIcon
 } from '@heroicons/react/24/outline';
 import DashboardCard from '../../components/DashboardCard';
 import InteractiveDashboardCard from '../../components/InteractiveDashboardCard';
@@ -285,6 +285,18 @@ export const ParametresView: React.FC<{ data: any }> = React.memo(({ data }) => 
                 icon={UserIcon} 
                 link="/admin/profile" 
                 description="Gérer mes informations personnelles et préférences"
+            />
+            <DashboardCard 
+                title="Analytics" 
+                icon={ChartBarIcon} 
+                link="/admin/analytics" 
+                description="Métriques et performances en temps réel"
+            />
+            <DashboardCard 
+                title="Notifications" 
+                icon={BellIcon} 
+                link="/admin/notifications" 
+                description="Centre d'alertes et notifications"
             />
             <DashboardCard 
                 title="Paramètres du Site" 

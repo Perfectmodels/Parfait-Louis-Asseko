@@ -78,6 +78,8 @@ const AdminBrevoTest = lazy(() => import('./pages/AdminBrevoTest'));
 const AdminEmailDiagnostic = lazy(() => import('./pages/AdminEmailDiagnostic'));
 const AdminLinkTest = lazy(() => import('./pages/AdminLinkTest'));
 const AdminProfile = lazy(() => import('./pages/AdminProfile'));
+const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
+const AdminNotifications = lazy(() => import('./pages/AdminNotifications'));
 const AdminNewEmail = lazy(() => import('./pages/AdminNewEmail'));
 const AdminMarketingCampaigns = lazy(() => import('./pages/AdminMarketingCampaigns'));
 const AdminImportContacts = lazy(() => import('./pages/AdminImportContacts'));
@@ -249,6 +251,8 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/contact-management" element={<ProtectedRouteWrapper role="admin"><AdminContactManagement /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/messaging-dashboard" element={<ProtectedRouteWrapper role="admin"><AdminMessagingDashboard /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/profile" element={<ProtectedRouteWrapper role="admin"><AdminProfile /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/analytics" element={<ProtectedRouteWrapper role="admin"><AdminAnalytics /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/notifications" element={<ProtectedRouteWrapper role="admin"><AdminNotifications /></ProtectedRouteWrapper>} />
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                         </ReactRouterDOM.Routes>
