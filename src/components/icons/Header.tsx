@@ -58,20 +58,20 @@ export const Breadcrumb: React.FC = () => {
   }
 
   return (
-    <nav className="bg-black/30 backdrop-blur-sm border-b border-pm-gold/10 py-3">
+    <nav className="bg-gradient-to-r from-pm-dark/80 to-pm-dark/60 backdrop-blur-sm border-b border-pm-gold/20 py-2 shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center space-x-2 text-sm">
           {breadcrumbs.map((crumb, index) => (
             <React.Fragment key={crumb.path}>
               {index > 0 && (
-                <ChevronRightIcon className="w-4 h-4 text-pm-gold/60" />
+                <ChevronRightIcon className="w-3 h-3 text-pm-gold/50" />
               )}
               {index === breadcrumbs.length - 1 ? (
-                <span className="text-pm-gold font-medium">{crumb.label}</span>
+                <span className="text-pm-gold font-semibold text-base">{crumb.label}</span>
               ) : (
                 <Link
                   to={crumb.path}
-                  className="text-pm-off-white/70 hover:text-pm-gold transition-colors duration-200"
+                  className="text-pm-off-white/60 hover:text-pm-gold transition-colors duration-200 text-sm"
                 >
                   {crumb.label}
                 </Link>

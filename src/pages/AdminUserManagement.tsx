@@ -44,6 +44,7 @@ const AdminUserManagement: React.FC = () => {
         };
 
         try {
+            const adminUsers = data.adminUsers || [];
             let updatedUsers;
             if (editingUser) {
                 updatedUsers = adminUsers.map(u => u.id === user.id ? user : u);
@@ -76,6 +77,7 @@ const AdminUserManagement: React.FC = () => {
         if (!data || !window.confirm('Supprimer cet utilisateur ?')) return;
         
         try {
+            const adminUsers = data.adminUsers || [];
             const updatedUsers = adminUsers.filter(u => u.id !== userId);
             await saveData({ ...data, adminUsers: updatedUsers });
         } catch (error) {

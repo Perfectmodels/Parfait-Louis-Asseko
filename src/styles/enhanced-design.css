@@ -1,0 +1,362 @@
+/* ===================== ENHANCED DESIGN SYSTEM ===================== */
+
+/* Variables CSS étendues */
+:root {
+  /* Couleurs étendues */
+  --pm-gold-light: #E6C547;
+  --pm-gold-dark: #B8941F;
+  --pm-dark-light: #2a2a2a;
+  --pm-dark-lighter: #3a3a3a;
+  --pm-accent: #FF6B6B;
+  --pm-success: #4ECDC4;
+  --pm-warning: #FFE66D;
+  --pm-info: #4A90E2;
+  
+  /* Ombres avancées */
+  --shadow-gold: 0 10px 40px rgba(212, 175, 55, 0.3);
+  --shadow-dark: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.5);
+  
+  /* Gradients */
+  --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #E6C547 100%);
+  --gradient-dark: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(212, 175, 55, 0.1) 100%);
+  --gradient-card: linear-gradient(135deg, rgba(42, 42, 42, 0.8) 0%, rgba(26, 26, 26, 0.9) 100%);
+  
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-elastic: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ===================== GLASSMORPHISM ===================== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-hover {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+/* ===================== OMBRES DYNAMIQUES ===================== */
+.shadow-gold {
+  box-shadow: var(--shadow-gold);
+}
+
+.shadow-card-hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-8px);
+}
+
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+/* ===================== ANIMATIONS AVANCÉES ===================== */
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-20px); 
+  }
+}
+
+@keyframes glow {
+  from { 
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); 
+  }
+  to { 
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.8); 
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ===================== BOUTONS AMÉLIORÉS ===================== */
+.btn-primary {
+  @apply relative px-8 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full overflow-hidden transition-all duration-300;
+  background: var(--gradient-gold);
+}
+
+.btn-primary::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full transition-transform duration-700;
+}
+
+.btn-primary:hover::before {
+  @apply translate-x-full;
+}
+
+.btn-primary:hover {
+  @apply shadow-gold transform scale-105;
+}
+
+.btn-secondary {
+  @apply relative px-8 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest rounded-full overflow-hidden transition-all duration-300;
+}
+
+.btn-secondary::before {
+  content: '';
+  @apply absolute inset-0 bg-pm-gold -translate-x-full transition-transform duration-300;
+}
+
+.btn-secondary:hover::before {
+  @apply translate-x-0;
+}
+
+.btn-secondary:hover {
+  @apply text-pm-dark;
+}
+
+.btn-secondary span {
+  @apply relative z-10;
+}
+
+/* ===================== CARDS AMÉLIORÉES ===================== */
+.enhanced-card {
+  @apply relative bg-gray-900/40 border border-pm-gold/20 rounded-xl p-8 transition-all duration-500 overflow-hidden;
+}
+
+.enhanced-card::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-pm-gold/5 to-transparent -translate-x-full transition-transform duration-1000;
+}
+
+.enhanced-card:hover::before {
+  @apply translate-x-full;
+}
+
+.enhanced-card:hover {
+  @apply border-pm-gold shadow-2xl shadow-pm-gold/20 bg-gray-900/60 transform -translate-y-2;
+}
+
+/* ===================== EFFETS DE TEXTE ===================== */
+.text-glow {
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.text-glow-strong {
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+}
+
+.text-gradient {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===================== LOADING STATES ===================== */
+.loading-skeleton {
+  @apply bg-gray-700 animate-pulse rounded;
+}
+
+.loading-shimmer {
+  @apply relative overflow-hidden;
+}
+
+.loading-shimmer::after {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer;
+}
+
+/* ===================== MICRO-INTERACTIONS ===================== */
+.hover-lift {
+  @apply transition-transform duration-300;
+}
+
+.hover-lift:hover {
+  @apply transform -translate-y-2;
+}
+
+.hover-scale {
+  @apply transition-transform duration-300;
+}
+
+.hover-scale:hover {
+  @apply transform scale-105;
+}
+
+.hover-rotate {
+  @apply transition-transform duration-300;
+}
+
+.hover-rotate:hover {
+  @apply transform rotate-3;
+}
+
+/* ===================== RESPONSIVE DESIGN ===================== */
+@media (max-width: 640px) {
+  .enhanced-card {
+    @apply p-6;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    @apply px-6 py-3 text-sm;
+  }
+}
+
+@media (min-width: 1024px) {
+  .enhanced-card {
+    @apply p-10;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    @apply px-10 py-4 text-base;
+  }
+}
+
+/* ===================== ACCESSIBILITÉ ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-glow,
+  .animate-shimmer,
+  .animate-pulse-glow {
+    animation: none;
+  }
+  
+  .hover-lift:hover,
+  .hover-scale:hover,
+  .hover-rotate:hover {
+    transform: none;
+  }
+}
+
+/* ===================== PERFORMANCE ===================== */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ===================== THÈME SOMBRE AMÉLIORÉ ===================== */
+.dark-theme {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --accent-primary: #D4AF37;
+  --accent-secondary: #E6C547;
+  --border-primary: rgba(212, 175, 55, 0.2);
+  --border-hover: rgba(212, 175, 55, 0.4);
+  --shadow-primary: 0 10px 40px rgba(0, 0, 0, 0.5);
+  --shadow-accent: 0 10px 40px rgba(212, 175, 55, 0.3);
+}
+
+/* ===================== UTILITAIRES ===================== */
+.backdrop-blur-glass {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.border-gradient {
+  border: 2px solid transparent;
+  background: linear-gradient(45deg, #1a1a1a, #1a1a1a) padding-box,
+              linear-gradient(45deg, #D4AF37, #E6C547) border-box;
+}
+
+.text-shadow-gold {
+  text-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+}
+
+/* ===================== ANIMATIONS D'ENTRÉE ===================== */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.fade-in-left {
+  animation: fadeInLeft 0.6s ease-out forwards;
+}
+
+.fade-in-right {
+  animation: fadeInRight 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

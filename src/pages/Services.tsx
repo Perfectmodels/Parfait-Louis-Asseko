@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { Service } from '../types';
-import ServiceCardModern from '../components/ServiceCardModern';
+import EnhancedServiceCard from '../components/EnhancedServiceCard';
 import FloatingCart from '../components/FloatingCart';
 import { CartProvider } from '../contexts/CartContext';
 import { 
@@ -145,7 +145,7 @@ const ServicesContent: React.FC = () => {
                     {/* Services Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {servicesByCategory[activeCategory]?.map((service, index) => (
-                            <ServiceCardModern key={service.id || index} service={service} />
+                            <EnhancedServiceCard key={service.id || index} service={service} index={index} />
                     ))}
                 </div>
 

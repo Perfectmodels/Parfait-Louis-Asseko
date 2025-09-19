@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ModelCard from '../components/ModelCard';
+import EnhancedModelCard from '../components/EnhancedModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
@@ -156,7 +156,7 @@ const Models: React.FC = () => {
                 }}
                 whileHover={{ y: -5 }}
               >
-                <ModelCard model={model} />
+                <EnhancedModelCard model={model} index={index} />
               </motion.div>
             ))}
           </AnimatePresence>
