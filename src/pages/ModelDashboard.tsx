@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     BookOpenIcon, UserIcon, ArrowRightOnRectangleIcon,
     EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon, Bars3Icon, XMarkIcon,
-    BellIcon, TrophyIcon, UserCircleIcon, ChatBubbleLeftRightIcon
+    BellIcon, TrophyIcon, UserCircleIcon, ChatBubbleLeftRightIcon, CameraIcon
 } from '@heroicons/react/24/outline';
 import { Model, BeginnerStudent, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
@@ -388,6 +388,14 @@ const ModelDashboard: React.FC = () => {
                                    >
                                        <ChatBubbleLeftRightIcon className="w-4 h-4" />
                                        <span className="text-sm">Messagerie Interne</span>
+                                   </Link>
+                                   <Link
+                                       to="/model-photo-upload"
+                                       className="flex items-center gap-3 p-3 rounded-lg text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 transition-colors"
+                                       onClick={() => setSidebarOpen(false)}
+                                   >
+                                       <CameraIcon className="w-4 h-4" />
+                                       <span className="text-sm">Mes Photos</span>
                                    </Link>
                                    <Link
                                        to="/contact"
