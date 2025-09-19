@@ -20,7 +20,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     const initChat = async () => {
       try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+        const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GOOGLE_AI_API_KEY! });
         const chatSession = ai.chats.create({
           model: 'gemini-2.5-flash',
           config: {
