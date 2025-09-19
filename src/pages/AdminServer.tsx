@@ -9,7 +9,7 @@ import {
     CheckCircleIcon,
     ClockIcon,
     WifiIcon,
-    DatabaseIcon,
+    ServerIcon,
     CloudIcon
 } from '@heroicons/react/24/outline';
 
@@ -168,7 +168,7 @@ const AdminServer: React.FC = () => {
                     <div className="bg-black border border-pm-gold/10 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-semibold text-pm-gold">Base de Données</h3>
-                            <DatabaseIcon className="w-5 h-5 text-pm-gold" />
+                            <ServerIcon className="w-5 h-5 text-pm-gold" />
                         </div>
                         <div className="space-y-2">
                             <div className="flex justify-between">

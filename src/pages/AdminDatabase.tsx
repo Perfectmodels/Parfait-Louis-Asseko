@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useData } from useData } from '../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { 
-    DatabaseIcon, 
+    ServerIcon, 
     TrashIcon, 
     DocumentArrowDownIcon,
     DocumentArrowUpIcon,
@@ -113,7 +113,7 @@ const AdminDatabase: React.FC = () => {
                     <div className="bg-black border border-pm-gold/10 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-semibold text-pm-gold">Collections</h3>
-                            <DatabaseIcon className="w-5 h-5 text-pm-gold" />
+                            <ServerIcon className="w-5 h-5 text-pm-gold" />
                         </div>
                         <div className="text-3xl font-bold text-pm-gold">{databaseStats.totalCollections}</div>
                         <p className="text-pm-off-white/70 text-sm">Collections actives</p>
