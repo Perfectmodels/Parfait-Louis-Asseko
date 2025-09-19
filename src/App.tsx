@@ -80,6 +80,9 @@ const AdminLinkTest = lazy(() => import('./pages/AdminLinkTest'));
 const AdminProfile = lazy(() => import('./pages/AdminProfile'));
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 const AdminNotifications = lazy(() => import('./pages/AdminNotifications'));
+const AdminPhotoUpload = lazy(() => import('./pages/AdminPhotoUpload'));
+const ModelPhotoUpload = lazy(() => import('./pages/ModelPhotoUpload'));
+const ArtisticDirectionAccess = lazy(() => import('./pages/ArtisticDirectionAccess'));
 const AdminNewEmail = lazy(() => import('./pages/AdminNewEmail'));
 const AdminMarketingCampaigns = lazy(() => import('./pages/AdminMarketingCampaigns'));
 const AdminImportContacts = lazy(() => import('./pages/AdminImportContacts'));
@@ -204,6 +207,7 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRouteWrapper role="student"><ModelDashboard /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/profil/:userId" element={<ProtectedRouteWrapper role="classroom"><ProfilePage /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/messaging" element={<ProtectedRouteWrapper role="student"><ModelMessaging /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/model-photo-upload" element={<ProtectedRouteWrapper role="student"><ModelPhotoUpload /></ProtectedRouteWrapper>} />
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRouteWrapper role="jury"><JuryCasting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRouteWrapper role="registration"><RegistrationCasting /></ProtectedRouteWrapper>} />
@@ -253,6 +257,8 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/profile" element={<ProtectedRouteWrapper role="admin"><AdminProfile /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/analytics" element={<ProtectedRouteWrapper role="admin"><AdminAnalytics /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/notifications" element={<ProtectedRouteWrapper role="admin"><AdminNotifications /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/photo-upload" element={<ProtectedRouteWrapper role="admin"><AdminPhotoUpload /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/artistic-direction" element={<ArtisticDirectionAccess />} />
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                         </ReactRouterDOM.Routes>
