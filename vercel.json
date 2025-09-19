@@ -1,4 +1,7 @@
 {
+  "buildCommand": "npm ci && npm run build",
+  "installCommand": "npm ci --legacy-peer-deps",
+  "framework": "vite",
   "headers": [
     {
       "source": "/(.*)",
