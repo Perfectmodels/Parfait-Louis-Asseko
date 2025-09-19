@@ -92,7 +92,7 @@ export const updateModelPaymentStatus = async (
           paymentMethod: paymentData.paymentMethod || 'cash',
           nextDueDate: paymentData.paymentType === 'cotisation' 
             ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-            : proModel.paymentStatus?.nextDueDate,
+            : proModel.paymentStatus?.nextDueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           notes: paymentData.notes,
           paymentType: paymentData.paymentType,
           description: paymentData.description || `Paiement ${paymentData.paymentType}`,
@@ -116,7 +116,7 @@ export const updateModelPaymentStatus = async (
           paymentMethod: paymentData.paymentMethod || 'cash',
           nextDueDate: paymentData.paymentType === 'cotisation' 
             ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-            : beginner.paymentStatus?.nextDueDate,
+            : beginner.paymentStatus?.nextDueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           notes: paymentData.notes,
           paymentType: paymentData.paymentType,
           description: paymentData.description || `Paiement ${paymentData.paymentType}`,
