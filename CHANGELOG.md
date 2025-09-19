@@ -5,6 +5,43 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Versioning Sémantique](https://semver.org/lang/fr/).
 
+## [1.3.0] - 2024-12-19
+
+### 🚀 Améliorations Majeures du Panel Admin
+
+#### 🎨 Direction Artistique Optimisée
+- **Refactorisation complète** du composant AdminArtisticDirection
+- **Recherche avancée** par thème, mannequin, lieu, statut
+- **Système de tri dynamique** par date, modèle, thème, statut
+- **Validation robuste** des formulaires avec messages d'erreur
+- **Interface enrichie** avec indicateurs visuels (retard, à venir)
+- **Gestion d'état** améliorée avec chargement et feedback
+- **Cartes de briefing** plus informatives et interactives
+
+#### 📊 Dashboard Analytics Avancé
+- **Métriques en temps réel** : revenus, mannequins, événements, paiements
+- **Graphiques interactifs** avec comparaisons périodiques
+- **Alertes intelligentes** pour paiements en retard et événements
+- **Actions rapides** pour accès direct aux fonctionnalités
+- **Filtres par période** : 7j, 30j, 90j, 1an
+- **Export des données** et génération de rapports
+
+#### 🔔 Système de Notifications Unifié
+- **Centre de notifications** avec filtres par type
+- **Recherche dans les notifications** pour trouver rapidement
+- **Gestion des priorités** : urgent, élevé, moyen, faible
+- **Actions contextuelles** : marquer comme lu, supprimer, agir
+- **Notifications automatiques** basées sur les données
+- **Interface responsive** et intuitive
+
+#### 🔧 Améliorations Techniques
+- **Validation des formulaires** en temps réel
+- **Gestion d'erreurs robuste** avec messages clairs
+- **États de chargement** et feedback utilisateur
+- **Interface responsive** et accessible
+- **Performance optimisée** avec mémorisation
+- **Navigation améliorée** avec raccourcis
+
 ## [1.2.0] - 2024-12-19
 
 ### ✨ Ajouté
