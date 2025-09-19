@@ -3,7 +3,27 @@ import { useData } from '../contexts/DataContext';
 import { PhotoshootBrief, Model } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, PlusIcon, TrashIcon, XMarkIcon, PencilIcon, SparklesIcon, CheckCircleIcon, ArchiveBoxIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { 
+    ChevronLeftIcon, 
+    PlusIcon, 
+    TrashIcon, 
+    XMarkIcon, 
+    PencilIcon, 
+    SparklesIcon, 
+    CheckCircleIcon, 
+    ArchiveBoxIcon, 
+    ChevronDownIcon,
+    CalendarDaysIcon,
+    MapPinIcon,
+    UserIcon,
+    EyeIcon,
+    ClockIcon,
+    CameraIcon,
+    MagnifyingGlassIcon,
+    FunnelIcon,
+    DocumentTextIcon,
+    PhotoIcon
+} from '@heroicons/react/24/outline';
 import AIAssistant from '../components/AIAssistant';
 
 type BriefStatus = PhotoshootBrief['status'];
@@ -23,19 +43,56 @@ const AdminArtisticDirection: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBrief, setEditingBrief] = useState<PhotoshootBrief | null>(null);
     const [filter, setFilter] = useState<FilterStatus>('Nouveau');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortBy, setSortBy] = useState<'date' | 'model' | 'theme' | 'status'>('date');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const [loading, setLoading] = useState(false);
 
     const briefs = useMemo(() => {
-        return [...(data?.photoshootBriefs || [])].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [data?.photoshootBriefs]);
+        return [...(data?.photoshootBriefs || [])].sort((a, b) => {
+            let comparison = 0;
+            switch (sortBy) {
+                case 'date':
+                    comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+                    break;
+                case 'model':
+                    comparison = a.modelName.localeCompare(b.modelName);
+                    break;
+                case 'theme':
+                    comparison = a.theme.localeCompare(b.theme);
+                    break;
+                case 'status':
+                    comparison = a.status.localeCompare(b.status);
+                    break;
+            }
+            return sortOrder === 'asc' ? comparison : -comparison;
+        });
+    }, [data?.photoshootBriefs, sortBy, sortOrder]);
 
     const models = useMemo(() => {
         return [...(data?.models || [])].sort((a, b) => a.name.localeCompare(b.name));
     }, [data?.models]);
 
     const filteredBriefs = useMemo(() => {
-        if (filter === 'Toutes') return briefs;
-        return briefs.filter(b => b.status === filter);
-    }, [filter, briefs]);
+        let filtered = briefs;
+        
+        // Filtre par statut
+        if (filter !== 'Toutes') {
+            filtered = filtered.filter(b => b.status === filter);
+        }
+        
+        // Filtre par recherche
+        if (searchTerm) {
+            filtered = filtered.filter(b => 
+                b.theme.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                b.modelName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                b.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                b.clothingStyle.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        
+        return filtered;
+    }, [briefs, filter, searchTerm]);
 
     const handleOpenModal = (brief: PhotoshootBrief | null = null) => {
         if (brief) {
@@ -52,34 +109,62 @@ const AdminArtisticDirection: React.FC = () => {
 
     const handleSave = async (briefData: PhotoshootBrief) => {
         if (!data) return;
-        const model = models.find(m => m.id === briefData.modelId);
-        if (!model) {
-            alert("Mannequin non trouvé.");
-            return;
-        }
-
-        let updatedBriefs;
-        if (editingBrief && editingBrief.id) {
-            updatedBriefs = briefs.map(b => b.id === briefData.id ? { ...briefData, modelName: model.name } : b);
-        } else {
-            const newBriefWithId = {
-                ...briefData,
-                id: `brief-${Date.now()}`,
-                modelName: model.name,
-                createdAt: new Date().toISOString(),
-                status: 'Nouveau' as BriefStatus,
-            };
-            updatedBriefs = [newBriefWithId, ...briefs];
-        }
-
+        
+        setLoading(true);
+        
         try {
+            const model = models.find(m => m.id === briefData.modelId);
+            if (!model) {
+                throw new Error("Mannequin non trouvé.");
+            }
+
+            // Validation des données
+            if (!briefData.theme.trim()) {
+                throw new Error("Le thème est requis.");
+            }
+            if (!briefData.modelId) {
+                throw new Error("Un mannequin doit être sélectionné.");
+            }
+            if (!briefData.dateTime) {
+                throw new Error("La date et l'heure sont requises.");
+            }
+            if (!briefData.location.trim()) {
+                throw new Error("Le lieu est requis.");
+            }
+
+            let updatedBriefs;
+            if (editingBrief && editingBrief.id) {
+                updatedBriefs = briefs.map(b => 
+                    b.id === briefData.id 
+                        ? { ...briefData, modelName: model.name, updatedAt: new Date().toISOString() } 
+                        : b
+                );
+            } else {
+                const newBriefWithId = {
+                    ...briefData,
+                    id: `brief-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    modelName: model.name,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    status: 'Nouveau' as BriefStatus,
+                };
+                updatedBriefs = [newBriefWithId, ...briefs];
+            }
+
             await saveData({ ...data, photoshootBriefs: updatedBriefs });
             setIsModalOpen(false);
             setEditingBrief(null);
-            alert("Briefing sauvegardé avec succès !");
+            
+            // Notification de succès
+            const successMessage = editingBrief && editingBrief.id 
+                ? "Briefing modifié avec succès !" 
+                : "Nouveau briefing créé avec succès !";
+            alert(successMessage);
         } catch (error) {
-            console.error("Erreur:", error);
-            alert("Impossible de sauvegarder le briefing.");
+            console.error("Erreur lors de la sauvegarde:", error);
+            alert(error instanceof Error ? error.message : "Impossible de sauvegarder le briefing.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -117,20 +202,72 @@ const AdminArtisticDirection: React.FC = () => {
                         <h1 className="admin-page-title">Direction Artistique</h1>
                         <p className="admin-page-subtitle">Créez et assignez des briefings de séance photo.</p>
                     </div>
-                    <button onClick={() => handleOpenModal()} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
+                    <button 
+                        onClick={() => handleOpenModal()} 
+                        className="action-btn !flex !items-center !gap-2 !px-4 !py-2"
+                        disabled={loading}
+                    >
                         <PlusIcon className="w-5 h-5"/> Nouveau Briefing
                     </button>
                 </div>
                 
-                <div className="border-b border-pm-gold/20 mb-8">
-                    <nav className="-mb-px flex space-x-6" aria-label="Tabs">
-                        {tabs.map(tab => (
-                            <button key={tab.value} onClick={() => setFilter(tab.value)}
-                                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${filter === tab.value ? 'border-pm-gold text-pm-gold' : 'border-transparent text-pm-off-white/70 hover:text-pm-gold hover:border-pm-gold/50'}`}>
-                                {tab.label} ({tab.value === 'Toutes' ? briefs.length : briefs.filter(b => b.status === tab.value).length})
+                {/* Barre de recherche et filtres */}
+                <div className="mb-8 space-y-4">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        {/* Recherche */}
+                        <div className="flex-1">
+                            <div className="relative">
+                                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-pm-off-white/60" />
+                                <input
+                                    type="text"
+                                    placeholder="Rechercher par thème, mannequin, lieu..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-pm-gold/20 rounded-lg text-pm-off-white placeholder-pm-off-white/60 focus:border-pm-gold focus:outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Tri */}
+                        <div className="flex gap-2">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as any)}
+                                className="bg-gray-900 border border-pm-gold/20 rounded-lg px-4 py-3 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            >
+                                <option value="date">Date</option>
+                                <option value="model">Mannequin</option>
+                                <option value="theme">Thème</option>
+                                <option value="status">Statut</option>
+                            </select>
+                            <button
+                                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                                className="px-4 py-3 bg-gray-900 border border-pm-gold/20 rounded-lg text-pm-off-white hover:bg-gray-800 transition-colors"
+                                title={`Trier ${sortOrder === 'asc' ? 'décroissant' : 'croissant'}`}
+                            >
+                                {sortOrder === 'asc' ? '↑' : '↓'}
                             </button>
-                        ))}
-                    </nav>
+                        </div>
+                    </div>
+
+                    {/* Filtres par statut */}
+                    <div className="border-b border-pm-gold/20">
+                        <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                            {tabs.map(tab => (
+                                <button 
+                                    key={tab.value} 
+                                    onClick={() => setFilter(tab.value)}
+                                    className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                                        filter === tab.value 
+                                            ? 'border-pm-gold text-pm-gold' 
+                                            : 'border-transparent text-pm-off-white/70 hover:text-pm-gold hover:border-pm-gold/50'
+                                    }`}
+                                >
+                                    {tab.label} ({tab.value === 'Toutes' ? briefs.length : briefs.filter(b => b.status === tab.value).length})
+                                </button>
+                            ))}
+                        </nav>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -169,6 +306,7 @@ interface BriefCardProps {
 }
 const BriefCard: React.FC<BriefCardProps> = ({ brief, model, onEdit, onDelete, onUpdateStatus }) => {
     const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const statusMenuRef = useRef<HTMLDivElement>(null);
     const statusInfo = getStatusInfo(brief.status);
 
@@ -199,24 +337,92 @@ const BriefCard: React.FC<BriefCardProps> = ({ brief, model, onEdit, onDelete, o
     };
 
     const availableStatuses: BriefStatus[] = ['Nouveau', 'Lu', 'Archivé'];
+    
+    const formatDateTime = (dateTime: string) => {
+        const date = new Date(dateTime);
+        const now = new Date();
+        const diffTime = date.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) {
+            return `Il y a ${Math.abs(diffDays)} jour${Math.abs(diffDays) > 1 ? 's' : ''}`;
+        } else if (diffDays === 0) {
+            return "Aujourd'hui";
+        } else if (diffDays === 1) {
+            return "Demain";
+        } else {
+            return `Dans ${diffDays} jours`;
+        }
+    };
+
+    const isUpcoming = new Date(brief.dateTime) > new Date();
+    const isOverdue = new Date(brief.dateTime) < new Date() && brief.status === 'Nouveau';
 
     return (
-        <div className="bg-black border border-pm-gold/20 rounded-lg flex flex-col justify-between hover:border-pm-gold transition-all duration-300">
+        <div className={`bg-black border rounded-lg flex flex-col justify-between hover:border-pm-gold transition-all duration-300 ${
+            isOverdue ? 'border-red-500/50 bg-red-500/5' : 
+            isUpcoming ? 'border-pm-gold/50' : 'border-pm-gold/20'
+        }`}>
             <div className="p-4">
                 <div className="flex justify-between items-start mb-3">
-                    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs rounded-full ${statusInfo.color}`}>
-                        {statusInfo.icon} {brief.status}
-                    </span>
-                    {model && <img src={model.imageUrl} alt={model.name} className="w-10 h-10 rounded-full object-cover border-2 border-pm-gold/50"/>}
+                    <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs rounded-full ${statusInfo.color}`}>
+                            {statusInfo.icon} {brief.status}
+                        </span>
+                        {isOverdue && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-red-500/20 text-red-300">
+                                <ClockIcon className="w-3 h-3" />
+                                En retard
+                            </span>
+                        )}
+                    </div>
+                    {model && (
+                        <div className="flex items-center gap-2">
+                            <img 
+                                src={model.imageUrl} 
+                                alt={model.name} 
+                                className="w-10 h-10 rounded-full object-cover border-2 border-pm-gold/50"
+                            />
+                        </div>
+                    )}
                 </div>
-                <h3 className="font-playfair text-xl text-pm-gold truncate">{brief.theme}</h3>
-                <p className="text-sm text-pm-off-white/80 font-semibold">{brief.modelName}</p>
-                <p className="text-xs text-pm-off-white/60 mt-1">{new Date(brief.dateTime).toLocaleString('fr-FR', {dateStyle: 'long', timeStyle: 'short'})}</p>
-                <p className="text-xs text-pm-off-white/60">{brief.location}</p>
-                <p className="text-sm text-pm-off-white/70 mt-3 h-10 overflow-hidden text-ellipsis">
-                    {brief.clothingStyle}
-                </p>
+                
+                <h3 className="font-playfair text-xl text-pm-gold truncate mb-2">{brief.theme}</h3>
+                <p className="text-sm text-pm-off-white/80 font-semibold mb-2">{brief.modelName}</p>
+                
+                <div className="space-y-2 mb-3">
+                    <div className="flex items-center gap-2 text-xs text-pm-off-white/60">
+                        <CalendarDaysIcon className="w-4 h-4" />
+                        <span>{new Date(brief.dateTime).toLocaleString('fr-FR', {dateStyle: 'long', timeStyle: 'short'})}</span>
+                        <span className="text-pm-gold/70">({formatDateTime(brief.dateTime)})</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-pm-off-white/60">
+                        <MapPinIcon className="w-4 h-4" />
+                        <span>{brief.location}</span>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <p className="text-sm text-pm-off-white/70">
+                        <span className="font-medium">Style:</span> {brief.clothingStyle}
+                    </p>
+                    {brief.accessories && (
+                        <p className="text-sm text-pm-off-white/70">
+                            <span className="font-medium">Accessoires:</span> {brief.accessories}
+                        </p>
+                    )}
+                </div>
+
+                {/* Bouton pour voir plus de détails */}
+                <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="mt-3 text-xs text-pm-gold/70 hover:text-pm-gold flex items-center gap-1"
+                >
+                    {isExpanded ? 'Voir moins' : 'Voir plus'}
+                    <ChevronDownIcon className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                </button>
             </div>
+            
             <div className="p-2 bg-pm-dark/50 border-t border-pm-gold/20 flex items-center justify-between">
                 <div ref={statusMenuRef} className="relative">
                     <button
@@ -242,8 +448,12 @@ const BriefCard: React.FC<BriefCardProps> = ({ brief, model, onEdit, onDelete, o
                     )}
                 </div>
                 <div className="flex items-center gap-1">
-                    <button onClick={onEdit} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
-                    <button onClick={onDelete} className="p-2 text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
+                    <button onClick={onEdit} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Modifier">
+                        <PencilIcon className="w-5 h-5"/>
+                    </button>
+                    <button onClick={onDelete} className="p-2 text-red-500/70 hover:text-red-500" title="Supprimer">
+                        <TrashIcon className="w-5 h-5"/>
+                    </button>
                 </div>
             </div>
         </div>
@@ -260,15 +470,62 @@ interface BriefFormModalProps {
 const BriefFormModal: React.FC<BriefFormModalProps> = ({ brief, models, onClose, onSave }) => {
     const [formData, setFormData] = useState(brief);
     const [assistantState, setAssistantState] = useState({ isOpen: false, fieldName: '', initialPrompt: '' });
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        
+        // Effacer l'erreur quand l'utilisateur commence à taper
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+        
+        if (!formData.theme.trim()) {
+            newErrors.theme = 'Le thème est requis';
+        }
+        if (!formData.modelId) {
+            newErrors.modelId = 'Un mannequin doit être sélectionné';
+        }
+        if (!formData.dateTime) {
+            newErrors.dateTime = 'La date et l\'heure sont requises';
+        }
+        if (!formData.location.trim()) {
+            newErrors.location = 'Le lieu est requis';
+        }
+        if (!formData.clothingStyle.trim()) {
+            newErrors.clothingStyle = 'Le style vestimentaire est requis';
+        }
+        
+        // Vérifier que la date n'est pas dans le passé
+        if (formData.dateTime && new Date(formData.dateTime) < new Date()) {
+            newErrors.dateTime = 'La date ne peut pas être dans le passé';
+        }
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(formData);
+        
+        if (!validateForm()) {
+            return;
+        }
+        
+        setIsSubmitting(true);
+        try {
+            await onSave(formData);
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
     
     const openAssistant = (fieldName: string, initialPrompt: string) => {
@@ -292,23 +549,86 @@ const BriefFormModal: React.FC<BriefFormModalProps> = ({ brief, models, onClose,
                         </header>
                         <main className="p-6 flex-grow overflow-y-auto space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormSelect label="Assigner à" name="modelId" value={formData.modelId} onChange={handleChange} required>
+                                <FormSelect 
+                                    label="Assigner à" 
+                                    name="modelId" 
+                                    value={formData.modelId} 
+                                    onChange={handleChange} 
+                                    required
+                                    error={errors.modelId}
+                                >
                                     <option value="">Sélectionner un mannequin...</option>
                                     {models.map(model => <option key={model.id} value={model.id}>{model.name}</option>)}
                                 </FormSelect>
-                                <FormInput label="Thème" name="theme" value={formData.theme} onChange={handleChange} required onAIAssist={() => openAssistant('theme', 'Génère 5 thèmes créatifs pour une séance photo de mode.')} />
+                                <FormInput 
+                                    label="Thème" 
+                                    name="theme" 
+                                    value={formData.theme} 
+                                    onChange={handleChange} 
+                                    required 
+                                    error={errors.theme}
+                                    onAIAssist={() => openAssistant('theme', 'Génère 5 thèmes créatifs pour une séance photo de mode.')} 
+                                />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                               <FormInput label="Lieu" name="location" value={formData.location} onChange={handleChange} required />
-                               <FormInput label="Date et Heure" name="dateTime" type="datetime-local" value={formData.dateTime} onChange={handleChange} required />
+                               <FormInput 
+                                   label="Lieu" 
+                                   name="location" 
+                                   value={formData.location} 
+                                   onChange={handleChange} 
+                                   required 
+                                   error={errors.location}
+                               />
+                               <FormInput 
+                                   label="Date et Heure" 
+                                   name="dateTime" 
+                                   type="datetime-local" 
+                                   value={formData.dateTime} 
+                                   onChange={handleChange} 
+                                   required 
+                                   error={errors.dateTime}
+                               />
                             </div>
-                            <FormTextArea label="Style Vestimentaire" name="clothingStyle" value={formData.clothingStyle} onChange={handleChange} rows={4} onAIAssist={() => openAssistant('clothingStyle', `Pour un shooting sur le thème "${formData.theme}", décris un style vestimentaire détaillé (vêtements, tissus, couleurs).`)} />
-                            <FormTextArea label="Accessoires" name="accessories" value={formData.accessories} onChange={handleChange} rows={3} onAIAssist={() => openAssistant('accessories', `Pour un shooting sur le thème "${formData.theme}" avec le style "${formData.clothingStyle}", liste 5 accessoires pertinents.`)} />
+                            <FormTextArea 
+                                label="Style Vestimentaire" 
+                                name="clothingStyle" 
+                                value={formData.clothingStyle} 
+                                onChange={handleChange} 
+                                rows={4} 
+                                error={errors.clothingStyle}
+                                onAIAssist={() => openAssistant('clothingStyle', `Pour un shooting sur le thème "${formData.theme}", décris un style vestimentaire détaillé (vêtements, tissus, couleurs).`)} 
+                            />
+                            <FormTextArea 
+                                label="Accessoires" 
+                                name="accessories" 
+                                value={formData.accessories} 
+                                onChange={handleChange} 
+                                rows={3} 
+                                onAIAssist={() => openAssistant('accessories', `Pour un shooting sur le thème "${formData.theme}" avec le style "${formData.clothingStyle}", liste 5 accessoires pertinents.`)} 
+                            />
                         </main>
                         <footer className="p-4 flex-shrink-0 flex justify-end gap-4 border-t border-pm-gold/20">
-                            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-bold uppercase tracking-wider">Annuler</button>
-                            <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
-                                Sauvegarder
+                            <button 
+                                type="button" 
+                                onClick={onClose} 
+                                className="px-4 py-2 text-sm font-bold uppercase tracking-wider"
+                                disabled={isSubmitting}
+                            >
+                                Annuler
+                            </button>
+                            <button 
+                                type="submit" 
+                                className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pm-dark"></div>
+                                        Sauvegarde...
+                                    </>
+                                ) : (
+                                    'Sauvegarder'
+                                )}
                             </button>
                         </footer>
                     </form>
@@ -325,25 +645,71 @@ const BriefFormModal: React.FC<BriefFormModalProps> = ({ brief, models, onClose,
     );
 };
 
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: React.ChangeEventHandler<HTMLInputElement>, type?: string, required?: boolean, onAIAssist?: () => void}> = ({ label, onAIAssist, ...props }) => (
+const FormInput: React.FC<{
+    label: string, 
+    name: string, 
+    value: string, 
+    onChange: React.ChangeEventHandler<HTMLInputElement>, 
+    type?: string, 
+    required?: boolean, 
+    onAIAssist?: () => void,
+    error?: string
+}> = ({ label, onAIAssist, error, ...props }) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={props.name} className="admin-label !mb-0">{label}</label>
             {onAIAssist && <AIAssistButton onClick={onAIAssist} />}
         </div>
-        <input {...props} id={props.name} className="admin-input" />
+        <input 
+            {...props} 
+            id={props.name} 
+            className={`admin-input ${error ? 'border-red-500 focus:border-red-500' : ''}`} 
+        />
+        {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
 );
-const FormSelect: React.FC<{label: string, name: string, value: string, onChange: React.ChangeEventHandler<HTMLSelectElement>, required?: boolean, children: React.ReactNode}> = (props) => (
-    <div><label className="admin-label">{props.label}</label><select {...props} className="admin-input">{props.children}</select></div>
+
+const FormSelect: React.FC<{
+    label: string, 
+    name: string, 
+    value: string, 
+    onChange: React.ChangeEventHandler<HTMLSelectElement>, 
+    required?: boolean, 
+    children: React.ReactNode,
+    error?: string
+}> = ({ error, ...props }) => (
+    <div>
+        <label className="admin-label">{props.label}</label>
+        <select 
+            {...props} 
+            className={`admin-input ${error ? 'border-red-500 focus:border-red-500' : ''}`}
+        >
+            {props.children}
+        </select>
+        {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+    </div>
 );
-const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: React.ChangeEventHandler<HTMLTextAreaElement>, rows: number, onAIAssist?: () => void}> = ({ label, onAIAssist, ...props }) => (
+
+const FormTextArea: React.FC<{
+    label: string, 
+    name: string, 
+    value: string, 
+    onChange: React.ChangeEventHandler<HTMLTextAreaElement>, 
+    rows: number, 
+    onAIAssist?: () => void,
+    error?: string
+}> = ({ label, onAIAssist, error, ...props }) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={props.name} className="admin-label !mb-0">{label}</label>
             {onAIAssist && <AIAssistButton onClick={onAIAssist} />}
         </div>
-        <textarea {...props} id={props.name} className="admin-textarea" />
+        <textarea 
+            {...props} 
+            id={props.name} 
+            className={`admin-textarea ${error ? 'border-red-500 focus:border-red-500' : ''}`} 
+        />
+        {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
 );
 const AIAssistButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
