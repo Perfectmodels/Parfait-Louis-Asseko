@@ -239,6 +239,7 @@ const AdminPayments: React.FC = () => {
       setSelectedModel(null);
     } catch (error) {
       console.error('Erreur lors de la mise à jour du paiement:', error);
+      alert(`Erreur lors de l'enregistrement: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     }
   };
 

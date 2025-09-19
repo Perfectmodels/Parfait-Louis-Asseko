@@ -108,6 +108,7 @@ const AdminAccounting: React.FC = () => {
             setShowTransactionForm(false);
         } catch (error) {
             console.error('Erreur lors de l\'ajout de la transaction:', error);
+            alert(`Erreur lors de l'enregistrement: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
         }
     };
 

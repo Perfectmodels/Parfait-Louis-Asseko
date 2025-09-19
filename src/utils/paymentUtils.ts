@@ -130,17 +130,34 @@ export const updateModelPaymentStatus = async (
   // Créer une transaction comptable automatiquement
   const accountingTransaction: AccountingTransaction = {
     id: `trans-${Date.now()}`,
-    date: new Date().toISOString(),
-    modelId: modelId,
-    modelName: model.name,
-    description: paymentData.description || `Paiement pour ${model.name}`,
+    date: new Date().toISOString().split('T')[0], // Format YYYY-MM-DD
+    description: paymentData.description || `Paiement ${paymentData.paymentType} pour ${model.name}`,
+    category: 'revenue', // Les paiements des mannequins sont des revenus pour l'agence
+    subcategory: paymentData.paymentType === 'cotisation' ? 'Cotisations mensuelles' : 
+                 paymentData.paymentType === 'inscription' ? 'Frais d\'inscription' :
+                 paymentData.paymentType === 'cotisation_inscription' ? 'Cotisations + Inscriptions' :
+                 'Paiements en avance',
     amount: paymentData.amount,
-    type: 'credit', // Les paiements des mannequins sont des crédits pour l'agence
-    category: paymentData.paymentType.includes('inscription') ? 'Inscription' : 'Cotisation',
-    paymentMethod: paymentData.paymentMethod || 'Non spécifié',
+    currency: paymentData.currency || 'FCFA',
+    paymentMethod: (paymentData.paymentMethod as any) || 'cash',
+    reference: `${paymentData.paymentType?.toUpperCase()}-${model.name}-${new Date().getFullYear()}`,
+    notes: paymentData.notes || `Paiement ${paymentData.paymentType} pour ${model.name}`,
+    relatedModelId: modelId,
+    relatedModelName: model.name,
+    createdBy: 'admin',
+    createdAt: new Date().toISOString()
   };
 
   try {
+    // Validation des données avant sauvegarde
+    if (!accountingTransaction.amount || accountingTransaction.amount <= 0) {
+      throw new Error('Le montant doit être supérieur à 0');
+    }
+    
+    if (!accountingTransaction.description || accountingTransaction.description.trim() === '') {
+      throw new Error('La description est requise');
+    }
+
     // Ajouter la transaction comptable
     const updatedTransactions = [...(data.accountingTransactions || []), accountingTransaction];
     
@@ -155,6 +172,7 @@ export const updateModelPaymentStatus = async (
     return true;
   } catch (error) {
     console.error('Erreur lors de la mise à jour du paiement:', error);
+    alert(`Erreur lors de l'enregistrement: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     return false;
   }
 };
