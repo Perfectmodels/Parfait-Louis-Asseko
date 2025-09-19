@@ -1,6 +1,8 @@
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import React, { lazy, Suspense, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -270,6 +272,8 @@ const App: React.FC = () => {
       >
         <ScrollToTop />
         <AppContent />
+        <Analytics />
+        <SpeedInsights />
       </ReactRouterDOM.HashRouter>
     </DataProvider>
   );

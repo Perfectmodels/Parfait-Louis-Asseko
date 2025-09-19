@@ -145,7 +145,7 @@ const AdminPaymentSubmissions: React.FC = () => {
       setAdminNotes('');
     } catch (error) {
       console.error('Erreur lors de l\'approbation:', error);
-      alert('Une erreur est survenue lors de l\'approbation du paiement.');
+      alert(`Erreur lors de l'enregistrement: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     }
   };
 
