@@ -592,7 +592,7 @@ const AdminAccounting: React.FC = () => {
                         <div className="flex items-center gap-3">
                             <ArrowTrendingUpIcon className="w-8 h-8 text-green-400" />
                             <div>
-                                <p className="text-green-400/60 text-sm">Revenus</p>
+                                <p className="text-green-400/60 text-sm">💰 Revenus (Paiements mannequins)</p>
                                 <p className="text-2xl font-bold text-green-400">
                                     {balance.totalRevenue.toLocaleString()} {balance.currency}
                                 </p>
@@ -604,7 +604,7 @@ const AdminAccounting: React.FC = () => {
                         <div className="flex items-center gap-3">
                             <ArrowTrendingDownIcon className="w-8 h-8 text-red-400" />
                             <div>
-                                <p className="text-red-400/60 text-sm">Dépenses</p>
+                                <p className="text-red-400/60 text-sm">💸 Dépenses (Loyer, salaires, frais)</p>
                                 <p className="text-2xl font-bold text-red-400">
                                     {balance.totalExpenses.toLocaleString()} {balance.currency}
                                 </p>
@@ -672,7 +672,7 @@ const AdminAccounting: React.FC = () => {
                                                         ? 'bg-green-500/20 text-green-300'
                                                         : 'bg-red-500/20 text-red-300'
                                                 }`}>
-                                                    {transaction.category === 'revenue' ? 'Revenu' : 'Dépense'}
+                                                    {transaction.category === 'revenue' ? '💰 Revenu' : '💸 Dépense'}
                                                 </span>
                                                 <span className="text-pm-gold font-medium">{transaction.subcategory}</span>
                                                 <span className="text-pm-off-white/60">{transaction.date}</span>
@@ -842,9 +842,12 @@ const AdminAccounting: React.FC = () => {
                                             className="admin-input"
                                             required
                                         >
-                                            <option value="revenue">Revenu</option>
-                                            <option value="expense">Dépense</option>
+                                            <option value="revenue">💰 Revenu (Paiements reçus des mannequins)</option>
+                                            <option value="expense">💸 Dépense (Loyer, salaires, frais)</option>
                                         </select>
+                                        <p className="text-xs text-pm-off-white/60 mt-1">
+                                            💡 Les paiements des mannequins (cotisations, inscriptions) sont des REVENUS pour l'agence
+                                        </p>
                                     </div>
                                 </div>
                                 
