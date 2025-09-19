@@ -281,6 +281,12 @@ export const ParametresView: React.FC<{ data: any }> = React.memo(({ data }) => 
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <DashboardCard 
+                title="Mon Profil" 
+                icon={UserIcon} 
+                link="/admin/profile" 
+                description="Gérer mes informations personnelles et préférences"
+            />
+            <DashboardCard 
                 title="Paramètres du Site" 
                 icon={Cog6ToothIcon} 
                 link="/admin/settings" 
