@@ -1,3 +1,6 @@
+/* Import du système de design avancé */
+@import './styles/enhanced-design.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

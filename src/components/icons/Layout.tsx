@@ -14,7 +14,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Marquee />
       <Header />
       <main className="flex-grow pt-20 lg:pt-24 pb-20 lg:pb-0">
-        <Breadcrumb />
+        {/* Breadcrumb masqué - décommentez la ligne suivante pour l'activer */}
+        {/* <Breadcrumb /> */}
         {children}
       </main>
       <Footer />

@@ -10,11 +10,14 @@ import {
     ServerIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
+import { useRealData } from '../hooks/useRealData';
 import { useAdminNavigation } from '../hooks/useAdminNavigation';
 import AdminNavigationDebug from '../components/AdminNavigationDebug';
 import { ComptabiliteView } from './AdminComptabilite';
 import { ParametresView } from './AdminParametres';
 import { MannequinsView, CastingView, ContentView, TechniqueView, MessagerieView } from './admin/AdminViews';
+import RealDataDashboard from '../components/RealDataDashboard';
+import UserCreationTest from '../components/UserCreationTest';
 
 
 type AdminTab = 'dashboard' | 'mannequins' | 'casting' | 'content' | 'comptabilite' | 'parametres' | 'technique' | 'messagerie';
@@ -146,6 +149,7 @@ const generateNotifications = (data: any, section: string): any[] => {
 const Admin: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useData();
+    const { getRealStats, getRecentActivity, getDatabaseHealth } = useRealData();
     const { activeTab, sidebarOpen, handleTabChange, toggleSidebar, closeSidebar } = useAdminNavigation();
     const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
     const [showDebug, setShowDebug] = useState(false);
@@ -155,6 +159,11 @@ const Admin: React.FC = () => {
         newApplications: 0,
         pendingTasks: 0
     });
+
+    // Utiliser les vraies données
+    const realStats = getRealStats();
+    const recentActivity = getRecentActivity();
+    const databaseHealth = getDatabaseHealth();
 
     useEffect(() => {
         const checkActivity = () => {
@@ -181,10 +190,10 @@ const Admin: React.FC = () => {
             const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
 
             setStats({
-                totalModels: data.models?.length || 0,
-                totalBeginners: data.beginnerStudents?.length || 0,
-                newApplications: newCastingApps + newFashionDayApps,
-                pendingTasks: newRecoveryRequests + newBookingRequests + newMessages
+                totalModels: realStats.totalModels,
+                totalBeginners: realStats.totalBeginnerStudents,
+                newApplications: realStats.totalCastingApplications + realStats.totalFashionDayApplications,
+                pendingTasks: realStats.totalRecoveryRequests + realStats.totalBookingRequests + realStats.totalContactMessages
             });
         }
     }, [data]);
@@ -354,7 +363,12 @@ const Admin: React.FC = () => {
                        {/* Main Content */}
                        <main className="flex-1 lg:ml-0">
                            <div className="p-4">
-                        {activeTab === 'dashboard' && <DashboardView stats={stats} activeUsers={activeUsers} onNavigate={(view: AdminTab) => handleTabChange(view)} />}
+                        {activeTab === 'dashboard' && (
+                            <div className="space-y-6">
+                                <RealDataDashboard />
+                                <UserCreationTest />
+                            </div>
+                        )}
                         {activeTab === 'mannequins' && <MannequinsView data={data} />}
                         {activeTab === 'casting' && <CastingView newCastingApps={newCastingApps} newFashionDayApps={newFashionDayApps} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'content' && <ContentView />}

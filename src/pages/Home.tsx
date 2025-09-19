@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
-import ModelCard from '../components/ModelCard';
-import ServiceCard from '../components/ServiceCard';
+import EnhancedModelCard from '../components/EnhancedModelCard';
+import EnhancedServiceCard from '../components/EnhancedServiceCard';
 import { ApiKeys, NewsItem } from '../types';
 import CountdownTimer from '../components/CountdownTimer';
 import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
@@ -307,23 +307,56 @@ const Home: React.FC = () => {
         schema={organizationSchema}
       />
 
-      {/* 1. Hero Section with Integrated Event */}
-      <section 
-        className="relative h-[90vh] lg:h-screen flex flex-col items-center justify-center text-center bg-cover bg-center" 
-        style={{ backgroundImage: `url('${siteImages.hero}')` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/80 to-transparent"></div>
+      {/* 1. Hero Section with Enhanced Animations */}
+      <section className="relative h-[90vh] lg:h-screen flex flex-col items-center justify-center text-center bg-cover bg-center bg-fixed overflow-hidden" 
+        style={{ backgroundImage: `url('${siteImages.hero}')` }}>
+        
+        {/* Overlay avec gradient animé */}
+        <div className="absolute inset-0 bg-gradient-to-br from-pm-dark/80 via-pm-dark/60 to-pm-gold/20"></div>
+        
+        {/* Particules flottantes */}
+        <div className="absolute inset-0">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-pm-gold/30 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -20, 0],
+                opacity: [0.3, 0.8, 0.3],
+              }}
+              transition={{
+                duration: 6 + Math.random() * 4,
+                repeat: Infinity,
+                delay: Math.random() * 6,
+              }}
+            />
+          ))}
+        </div>
+        
         <div className="relative z-10 p-6 w-full max-w-5xl space-y-8">
-          <TextReveal>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter px-4" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2 }}
+          >
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter px-4 text-glow-strong">
               L'Élégance Redéfinie
             </h1>
-          </TextReveal>
-          <TextReveal delay={0.2}>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.4 }}
+          >
             <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
               Nous révélons les talents et valorisons la beauté africaine.
             </p>
-          </TextReveal>
+          </motion.div>
           
           {nextEvent ? (
               <div className="mt-10 bg-black/50 backdrop-blur-sm py-4 sm:py-6 px-2 sm:px-4 rounded-lg border border-pm-gold/20 mx-2 sm:mx-4">
@@ -334,9 +367,17 @@ const Home: React.FC = () => {
                   <div className="my-6">
                      <CountdownTimer targetDate={nextEvent.date} />
                   </div>
-                  <Link to="/fashion-day-application" className="mt-4 inline-block px-4 sm:px-6 md:px-8 py-2 sm:py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs sm:text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-                      Participer à l'Édition 2
-                  </Link>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                    className="relative inline-block"
+                  >
+                    <Link to="/fashion-day-application" className="relative px-4 sm:px-6 md:px-8 py-2 sm:py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs sm:text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform overflow-hidden group">
+                      <span className="relative z-10">Participer à l'Édition 2</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    </Link>
+                  </motion.div>
               </div>
           ) : (
               <div className="mt-10">
@@ -346,12 +387,28 @@ const Home: React.FC = () => {
               </div>
           )}
         </div>
+        
+        {/* Scroll indicator avec animation */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <div className="w-6 h-10 border-2 border-pm-gold rounded-full flex justify-center">
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1 h-3 bg-pm-gold rounded-full mt-2"
+            />
+          </div>
+        </motion.div>
       </section>
 
       <div className="page-container">
         {/* 2. Agency Presentation */}
         <section>
-            <div className="bg-black/30 backdrop-blur-sm border border-pm-gold/20 p-6 sm:p-8 lg:p-10 rounded-lg">
+            <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg">
                 <h2 className="section-title">Notre Agence</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center mt-8">
                     <div className="p-1 border-2 border-pm-gold/30 hover:border-pm-gold transition-all duration-300 rounded-lg">
@@ -386,20 +443,20 @@ const Home: React.FC = () => {
 
         {/* 3. Services */}
         <section>
-          <div className="content-section">
+          <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg">
             <ScrollReveal>
               <h2 className="section-title">Nos Prestations</h2>
             </ScrollReveal>
             <StaggerOnScroll staggerDelay={0.15}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                {featuredServices.map(service => (
-                  <ServiceCard key={service.title} service={service} />
+                {featuredServices.map((service, index) => (
+                  <EnhancedServiceCard key={service.title} service={service} index={index} />
                 ))}
               </div>
             </StaggerOnScroll>
             <ScrollReveal delay={0.4}>
               <div className="text-center mt-12">
-                <Link to="/services" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                <Link to="/services" className="btn-primary">
                   Découvrir nos prestations
                 </Link>
               </div>
@@ -409,7 +466,7 @@ const Home: React.FC = () => {
 
         {/* 3.5. Perfect Fashion Day Editions */}
         <section>
-          <div className="content-section">
+          <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg">
             <ScrollReveal>
               <h2 className="section-title">Perfect Fashion Day</h2>
             </ScrollReveal>
@@ -479,9 +536,9 @@ const Home: React.FC = () => {
             </div>
             
             <div className="text-center mt-12">
-              <Link to="/fashion-day" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                Voir les éditions
-              </Link>
+                <Link to="/fashion-day" className="btn-secondary">
+                  Voir les éditions
+                </Link>
             </div>
           </div>
         </section>
@@ -495,14 +552,14 @@ const Home: React.FC = () => {
             </ScrollReveal>
             <StaggerOnScroll staggerDelay={0.1}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {publicModels.map(model => (
-                  <ModelCard key={model.id} model={model} />
+                {publicModels.map((model, index) => (
+                  <EnhancedModelCard key={model.id} model={model} index={index} />
                 ))}
               </div>
             </StaggerOnScroll>
             <ScrollReveal delay={0.3}>
               <div className="text-center mt-12">
-                <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+                <Link to="/mannequins" className="btn-secondary">
                   Voir les mannequins
                 </Link>
               </div>
@@ -514,7 +571,7 @@ const Home: React.FC = () => {
         {/* 7. Testimonials */}
         {testimonials && testimonials.length > 0 && (
           <section>
-            <div className="content-section">
+            <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg">
               <ScrollReveal>
                 <h2 className="section-title">Témoignages</h2>
               </ScrollReveal>
@@ -529,7 +586,7 @@ const Home: React.FC = () => {
 
         {/* 8. Call to Action */}
         <section>
-          <div className="content-section text-center">
+          <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg text-center">
             <ScrollReveal>
               <h2 className="section-title">Prêts à nous rejoindre ?</h2>
             </ScrollReveal>
@@ -540,10 +597,10 @@ const Home: React.FC = () => {
             </TextReveal>
             <StaggerOnScroll staggerDelay={0.1} direction="up">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                <Link to="/casting-formulaire" className="w-full sm:w-auto btn-primary">
                   Postuler
                 </Link>
-                <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+                <Link to="/contact" className="w-full sm:w-auto btn-secondary">
                   Nous Contacter
                 </Link>
               </div>

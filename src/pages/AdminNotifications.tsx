@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useRealData } from '../hooks/useRealData';
 import SEO from '../components/SEO';
 import { 
     BellIcon, 
@@ -33,6 +34,7 @@ interface Notification {
 
 const AdminNotifications: React.FC = () => {
     const { data, saveData } = useData();
+    const { getRealStats, getRecentActivity, getDatabaseHealth } = useRealData();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [filter, setFilter] = useState<'all' | 'unread' | 'payment' | 'event' | 'model' | 'system' | 'security'>('all');
     const [searchTerm, setSearchTerm] = useState('');

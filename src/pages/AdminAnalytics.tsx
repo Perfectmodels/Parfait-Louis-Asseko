@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useRealData } from '../hooks/useRealData';
 import SEO from '../components/SEO';
 import { 
     ChartBarIcon, 
@@ -55,6 +56,7 @@ interface AnalyticsData {
 
 const AdminAnalytics: React.FC = () => {
     const { data } = useData();
+    const { getRealStats, getRecentActivity, getDatabaseHealth } = useRealData();
     const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
