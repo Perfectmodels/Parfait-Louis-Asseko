@@ -24,52 +24,111 @@ export default defineConfig({
       'firebase/database',
       'firebase/auth'
     ],
-    exclude: ['@vite/client', '@vite/env']
+    exclude: ['@vite/client', '@vite/env'],
+    force: true
   },
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunks
-          'react-vendor': ['react', 'react-dom'],
-          'router': ['react-router-dom'],
-          'ui': ['framer-motion', '@heroicons/react'],
-          'firebase': ['firebase/app', 'firebase/database', 'firebase/auth'],
-          'utils': ['html2canvas', 'jspdf'],
-          'email': ['src/services/emailConfirmationService.ts'],
+        manualChunks: (id) => {
+          // Vendor chunks - séparer les grosses dépendances
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('react-router-dom')) {
+              return 'router';
+            }
+            if (id.includes('framer-motion') || id.includes('@heroicons')) {
+              return 'ui';
+            }
+            if (id.includes('firebase')) {
+              return 'firebase';
+            }
+            if (id.includes('html2canvas')) {
+              return 'html2canvas';
+            }
+            if (id.includes('jspdf')) {
+              return 'jspdf';
+            }
+            if (id.includes('dompurify')) {
+              return 'dompurify';
+            }
+            // Autres dépendances node_modules
+            return 'vendor';
+          }
           
-          // Admin chunks
-          'admin-core': [
-            'src/pages/admin/Admin.tsx',
-            'src/pages/admin/AdminAnalytics.tsx',
-            'src/pages/admin/AdminNotifications.tsx'
-          ],
-          'admin-forms': [
-            'src/pages/admin/AdminUserManagement.tsx',
-            'src/pages/admin/AdminAccounting.tsx',
-            'src/pages/admin/AdminPayments.tsx'
-          ],
-          'admin-content': [
-            'src/pages/admin/AdminGallery.tsx',
-            'src/pages/admin/AdminMagazine.tsx',
-            'src/pages/admin/AdminArtisticDirection.tsx'
-          ],
+          // Admin chunks - diviser en plus petits chunks
+          if (id.includes('src/pages/admin/')) {
+            if (id.includes('Admin.tsx') || id.includes('AdminAnalytics.tsx') || id.includes('AdminNotifications.tsx')) {
+              return 'admin-core';
+            }
+            if (id.includes('AdminUserManagement.tsx') || id.includes('AdminAccounting.tsx') || id.includes('AdminPayments.tsx')) {
+              return 'admin-forms';
+            }
+            if (id.includes('AdminGallery.tsx') || id.includes('AdminMagazine.tsx') || id.includes('AdminArtisticDirection.tsx')) {
+              return 'admin-content';
+            }
+            if (id.includes('AdminModels.tsx') || id.includes('AdminCasting.tsx') || id.includes('AdminFashionDay.tsx')) {
+              return 'admin-models';
+            }
+            if (id.includes('AdminSettings.tsx') || id.includes('AdminTeam.tsx') || id.includes('AdminServer.tsx')) {
+              return 'admin-settings';
+            }
+            // Autres pages admin
+            return 'admin-other';
+          }
           
-          // Public chunks
-          'public-forms': [
-            'src/pages/Contact.tsx',
-            'src/pages/FashionDayApplicationForm.tsx',
-            'src/pages/CastingForm.tsx'
-          ],
-          'public-pages': [
-            'src/pages/Home.tsx',
-            'src/pages/Models.tsx',
-            'src/pages/Services.tsx',
-            'src/pages/Gallery.tsx'
-          ]
+          // Services chunks
+          if (id.includes('src/services/')) {
+            return 'services';
+          }
+          
+          // Components chunks
+          if (id.includes('src/components/')) {
+            if (id.includes('Enhanced') || id.includes('ModelCard') || id.includes('ServiceCard')) {
+              return 'components-enhanced';
+            }
+            if (id.includes('Admin') || id.includes('Loading') || id.includes('Error')) {
+              return 'components-admin';
+            }
+            return 'components';
+          }
+          
+          // Public pages chunks
+          if (id.includes('src/pages/') && !id.includes('admin/')) {
+            if (id.includes('Home.tsx') || id.includes('Models.tsx') || id.includes('Services.tsx')) {
+              return 'public-main';
+            }
+            if (id.includes('Contact.tsx') || id.includes('FashionDayApplicationForm.tsx') || id.includes('CastingForm.tsx')) {
+              return 'public-forms';
+            }
+            if (id.includes('Gallery.tsx') || id.includes('Magazine.tsx') || id.includes('Agency.tsx')) {
+              return 'public-content';
+            }
+            return 'public-other';
+          }
+          
+          // Hooks et utils
+          if (id.includes('src/hooks/') || id.includes('src/utils/')) {
+            return 'hooks-utils';
+          }
+          
+          // Types et constants
+          if (id.includes('src/types.ts') || id.includes('src/constants/')) {
+            return 'types-constants';
+          }
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 500,
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
   }
 })
