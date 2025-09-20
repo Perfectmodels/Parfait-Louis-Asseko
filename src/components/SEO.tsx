@@ -59,7 +59,7 @@ const SEO: React.FC<SEOProps> = ({
       "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
     const defaultKeywords =
       'mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting';
-    const defaultImage = siteConfig.logo;
+    const defaultImage = 'https://www.perfectmodels.ga/logo-seo.svg';
     const siteUrl = window.location.href;
     const siteName = 'Perfect Models Management';
 

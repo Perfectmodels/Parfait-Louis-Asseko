@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.perfectmodels.ga/sitemap.xml
+
+# Crawl-delay pour éviter la surcharge
+Crawl-delay: 1
+
+# Interdire l'indexation des pages admin
+Disallow: /admin/
+Disallow: /#/admin/
+
+# Interdire l'indexation des pages de test
+Disallow: /test/
+Disallow: /debug/
+
+# Permettre l'indexation des pages publiques
+Allow: /
+Allow: /mannequins
+Allow: /services
+Allow: /galerie
+Allow: /magazine
+Allow: /contact
+Allow: /agence
+Allow: /fashion-day
+Allow: /casting
