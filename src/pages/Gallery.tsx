@@ -106,6 +106,21 @@ const Gallery: React.FC = () => {
             </div>
           </div>
 
+          {/* YouTube Gallery Section */}
+          <div className="mb-12">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-pm-gold mb-4">Nos Vidéos</h2>
+              <p className="text-pm-off-white/70 text-lg">
+                Découvrez nos créations vidéo et nos coulisses de shooting
+              </p>
+            </div>
+            
+            {/* YouTube Gallery Widget */}
+            <div className="bg-black/50 rounded-lg p-6 border border-pm-gold/20">
+              <div className="elfsight-app-5b1c2fd7-c3ca-4e37-be1d-4ff3e82c7788" data-elfsight-app-lazy></div>
+            </div>
+          </div>
+
           {/* Albums Grid */}
           {filteredAlbums.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

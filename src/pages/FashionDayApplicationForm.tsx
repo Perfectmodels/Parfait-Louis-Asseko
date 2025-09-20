@@ -18,6 +18,7 @@ import {
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationRole } from '../types';
+import { emailConfirmationService } from '../services/emailConfirmationService';
 
 const FashionDayApplicationForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -110,7 +111,21 @@ const FashionDayApplicationForm: React.FC = () => {
             const updatedApplications = [...(data.fashionDayApplications || []), newApplication];
             await saveData({ ...data, fashionDayApplications: updatedApplications });
 
+            // Envoyer notification admin
             await sendFashionDayEmailNotification(newApplication, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
+            
+            // Envoyer confirmation à l'utilisateur
+            try {
+                await emailConfirmationService.sendFashionDayConfirmation({
+                    recipientEmail: formData.email,
+                    recipientName: formData.name,
+                    formType: 'fashion-day',
+                    submissionData: newApplication,
+                    submissionId: newApplication.id
+                });
+            } catch (error) {
+                console.warn('Erreur lors de l\'envoi de la confirmation:', error);
+            }
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée ! L\'équipe du Perfect Fashion Day vous recontactera prochainement.');

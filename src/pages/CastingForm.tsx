@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
+import { emailConfirmationService } from '../services/emailConfirmationService';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import ImageUpload from '../components/ImageUpload';
@@ -80,8 +81,21 @@ const CastingForm: React.FC = () => {
             const updatedApplications = [...(data.castingApplications || []), newApplication];
             await saveData({ ...data, castingApplications: updatedApplications });
             
-            // Envoyer la notification par e-mail
+            // Envoyer notification admin
             await sendEmailNotification(newApplication, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
+            
+            // Envoyer confirmation à l'utilisateur
+            try {
+                await emailConfirmationService.sendCastingConfirmation({
+                    recipientEmail: formData.email,
+                    recipientName: `${formData.firstName} ${formData.lastName}`,
+                    formType: 'casting',
+                    submissionData: newApplication,
+                    submissionId: newApplication.id
+                });
+            } catch (error) {
+                console.warn('Erreur lors de l\'envoi de la confirmation:', error);
+            }
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');

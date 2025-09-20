@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import DashboardCard from '../../components/DashboardCard';
 import InteractiveDashboardCard from '../../components/InteractiveDashboardCard';
+import AdminDataIntegrity from '../../components/AdminDataIntegrity';
 
 // Mannequins View Component - Gestion harmonisée des mannequins
 export const MannequinsView: React.FC<{ data: any }> = React.memo(({ data }) => (
@@ -226,11 +227,17 @@ export const MessagerieView: React.FC<{ data: any }> = React.memo(() => (
 
 // Technique View Component - Outils techniques harmonisés
 export const TechniqueView: React.FC<{ data: any }> = React.memo(({ data }) => (
-    <div className="space-y-4">
+    <div className="space-y-6">
         <div>
             <h2 className="text-2xl font-bold text-pm-gold">Outils Techniques</h2>
             <p className="text-pm-off-white/60">Monitoring, sécurité et maintenance du système</p>
         </div>
+        
+        {/* Intégrité des données */}
+        <div className="bg-black/50 border border-pm-gold/20 rounded-lg p-6">
+            <AdminDataIntegrity />
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <DashboardCard 
                 title="Monitoring Serveur" 
