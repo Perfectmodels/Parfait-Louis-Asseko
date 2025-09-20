@@ -3,24 +3,49 @@ import { motion, AnimatePresence } from 'framer-motion';
 import EnhancedModelCard from '../components/EnhancedModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
+import AdvancedLoader from '../components/AdvancedLoader';
+import { MagnifyingGlassIcon, FunnelIcon, HeartIcon, Squares2X2Icon, ListBulletIcon, Bars3Icon } from '@heroicons/react/24/outline';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
+type ViewMode = 'grid' | 'list' | 'masonry';
+type SortBy = 'name' | 'age' | 'height' | 'experience';
 
 const Models: React.FC = () => {
   const { data, isInitialized } = useData();
   const [filter, setFilter] = useState<GenderFilter>('Tous');
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [sortBy, setSortBy] = useState<SortBy>('name');
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
 
   const models = data?.models || [];
   
   const publicModels = useMemo(() => models.filter(model => model.isPublic === true), [models]);
 
   const filteredModels = useMemo(() => {
-    return publicModels
+    let filtered = publicModels
       .filter(model => filter === 'Tous' || model.gender === filter)
       .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [filter, searchTerm, publicModels]);
+    
+    // Tri des modèles
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'age':
+          return (a.age || 0) - (b.age || 0);
+        case 'height':
+          return (a.height || '').localeCompare(b.height || '');
+        case 'experience':
+          return (a.experience || '').localeCompare(b.experience || '');
+        default:
+          return 0;
+      }
+    });
+    
+    return filtered;
+  }, [filter, searchTerm, publicModels, sortBy]);
   
   const seoDescription = useMemo(() => {
       const modelNames = publicModels.slice(0, 3).map(m => m.name).join(', ');
@@ -39,12 +64,14 @@ const Models: React.FC = () => {
 
   if (!isInitialized) {
       return (
-        <div className="min-h-screen flex items-center justify-center text-pm-gold">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
-            <p>Chargement des mannequins...</p>
+        <AdvancedLoader>
+          <div className="min-h-screen flex items-center justify-center text-pm-gold">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
+              <p>Chargement des mannequins...</p>
+            </div>
           </div>
-        </div>
+        </AdvancedLoader>
       );
   }
 
@@ -94,52 +121,133 @@ const Models: React.FC = () => {
 
       <div className="page-container">
 
-        {/* Filters and Search */}
+        {/* Contrôles avancés */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col md:flex-row justify-between items-center gap-6 mb-6 lg:mb-8"
+          className="space-y-6 mb-8"
         >
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex items-center gap-4"
-          >
-            <div className="flex items-center gap-2 text-pm-gold/70">
-              <FunnelIcon className="w-5 h-5" />
-              <span className="text-sm font-medium">Filtrer :</span>
+          {/* Barre de recherche et filtres */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
+              {/* Recherche */}
+              <div className="relative flex-1 max-w-md">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-pm-gold/50" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un mannequin..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-black/50 border border-pm-gold/30 rounded-full pl-10 pr-4 py-3 text-pm-off-white placeholder-pm-off-white/50 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/30 focus:bg-black/70 transition-all duration-300"
+                />
+              </div>
+              
+              {/* Bouton de filtres */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 px-4 py-3 bg-pm-gold/10 border border-pm-gold/30 rounded-full text-pm-gold hover:bg-pm-gold/20 transition-colors"
+              >
+                <FunnelIcon className="w-5 h-5" />
+                <span className="text-sm font-medium">Filtres</span>
+                <Bars3Icon className="w-4 h-4" />
+              </button>
             </div>
-            <FilterButton gender="Tous" />
-            <FilterButton gender="Femme" />
-            <FilterButton gender="Homme" />
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="w-full md:w-auto relative"
-          >
-            <label htmlFor="search-model" className="sr-only">Rechercher un mannequin</label>
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-pm-gold/50" />
-              <input
-                id="search-model"
-                type="text"
-                placeholder="Rechercher un mannequin..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full md:w-80 bg-black/50 border border-pm-gold/30 rounded-full pl-10 pr-4 py-3 text-pm-off-white placeholder-pm-off-white/50 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/30 focus:bg-black/70 transition-all duration-300"
-              />
+            
+            {/* Contrôles de vue */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 bg-black/50 rounded-full p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-full transition-colors ${
+                    viewMode === 'grid' ? 'bg-pm-gold text-pm-dark' : 'text-pm-off-white/70 hover:text-pm-gold'
+                  }`}
+                >
+                  <Squares2X2Icon className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-full transition-colors ${
+                    viewMode === 'list' ? 'bg-pm-gold text-pm-dark' : 'text-pm-off-white/70 hover:text-pm-gold'
+                  }`}
+                >
+                  <ListBulletIcon className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-          </motion.div>
+          </div>
+          
+          {/* Panneau de filtres avancés */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-black/50 backdrop-blur-sm border border-pm-gold/20 rounded-2xl p-6"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {/* Filtre par genre */}
+                  <div>
+                    <label className="block text-sm font-medium text-pm-gold mb-2">Genre</label>
+                    <div className="flex gap-2">
+                      <FilterButton gender="Tous" />
+                      <FilterButton gender="Femme" />
+                      <FilterButton gender="Homme" />
+                    </div>
+                  </div>
+                  
+                  {/* Tri */}
+                  <div>
+                    <label className="block text-sm font-medium text-pm-gold mb-2">Trier par</label>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as SortBy)}
+                      className="w-full bg-black/50 border border-pm-gold/30 rounded-lg px-3 py-2 text-pm-off-white focus:outline-none focus:border-pm-gold"
+                    >
+                      <option value="name">Nom</option>
+                      <option value="age">Âge</option>
+                      <option value="height">Taille</option>
+                      <option value="experience">Expérience</option>
+                    </select>
+                  </div>
+                  
+                  {/* Favoris */}
+                  <div>
+                    <label className="block text-sm font-medium text-pm-gold mb-2">Favoris</label>
+                    <button
+                      onClick={() => setFavorites([])}
+                      className="flex items-center gap-2 px-3 py-2 bg-pm-gold/10 border border-pm-gold/30 rounded-lg text-pm-gold hover:bg-pm-gold/20 transition-colors"
+                    >
+                      <HeartIcon className="w-4 h-4" />
+                      <span className="text-sm">Effacer ({favorites.length})</span>
+                    </button>
+                  </div>
+                  
+                  {/* Statistiques */}
+                  <div>
+                    <label className="block text-sm font-medium text-pm-gold mb-2">Résultats</label>
+                    <div className="text-pm-off-white/70 text-sm">
+                      {filteredModels.length} mannequin{filteredModels.length > 1 ? 's' : ''}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
-        {/* Models Grid */}
+        {/* Models Grid avec vues adaptatives */}
         <motion.div 
           layout
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          className={`${
+            viewMode === 'grid' 
+              ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'
+              : viewMode === 'list'
+              ? 'space-y-4'
+              : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'
+          }`}
         >
           <AnimatePresence>
             {filteredModels.map((model, index) => (
@@ -151,12 +259,29 @@ const Models: React.FC = () => {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ 
                   duration: 0.4, 
-                  delay: index * 0.1,
+                  delay: index * 0.05,
                   ease: "easeOut"
                 }}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: viewMode === 'grid' ? -5 : 0 }}
+                className={`${
+                  viewMode === 'list' 
+                    ? 'bg-black/50 backdrop-blur-sm border border-pm-gold/20 rounded-xl p-4 hover:border-pm-gold transition-colors'
+                    : ''
+                }`}
               >
-                <EnhancedModelCard model={model} index={index} />
+                <EnhancedModelCard 
+                  model={model} 
+                  index={index}
+                  viewMode={viewMode}
+                  isFavorite={favorites.includes(model.id)}
+                  onToggleFavorite={(id) => {
+                    setFavorites(prev => 
+                      prev.includes(id) 
+                        ? prev.filter(fav => fav !== id)
+                        : [...prev, id]
+                    );
+                  }}
+                />
               </motion.div>
             ))}
           </AnimatePresence>
