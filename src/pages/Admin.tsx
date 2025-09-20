@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
     UsersIcon, BookOpenIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     ArrowRightOnRectangleIcon,
-    ChatBubbleLeftRightIcon, EnvelopeIcon,
-    UserGroupIcon, HomeIcon, CurrencyDollarIcon,
-    SignalIcon, Bars3Icon, XMarkIcon, BellIcon, UserCircleIcon, ClockIcon,
+    ChatBubbleLeftRightIcon,
+    HomeIcon, CurrencyDollarIcon,
+    SignalIcon, Bars3Icon, XMarkIcon, BellIcon, UserCircleIcon,
     ServerIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 import { useRealData } from '../hooks/useRealData';
 import { useAdminNavigation } from '../hooks/useAdminNavigation';
+import { useAdminDataSync } from '../services/adminDataSync';
 import AdminNavigationDebug from '../components/AdminNavigationDebug';
 import { ComptabiliteView } from './AdminComptabilite';
 import { ParametresView } from './AdminParametres';
 import { MannequinsView, CastingView, ContentView, TechniqueView, MessagerieView } from './admin/AdminViews';
 import RealDataDashboard from '../components/RealDataDashboard';
-import UserCreationTest from '../components/UserCreationTest';
+import AdminDataIntegrity from '../components/AdminDataIntegrity';
 
 
 type AdminTab = 'dashboard' | 'mannequins' | 'casting' | 'content' | 'comptabilite' | 'parametres' | 'technique' | 'messagerie';
@@ -149,7 +150,8 @@ const generateNotifications = (data: any, section: string): any[] => {
 const Admin: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useData();
-    const { getRealStats, getRecentActivity, getDatabaseHealth } = useRealData();
+    const { getRealStats } = useRealData();
+    const { syncAllData, generateReport } = useAdminDataSync();
     const { activeTab, sidebarOpen, handleTabChange, toggleSidebar, closeSidebar } = useAdminNavigation();
     const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
     const [showDebug, setShowDebug] = useState(false);
@@ -162,8 +164,6 @@ const Admin: React.FC = () => {
 
     // Utiliser les vraies données
     const realStats = getRealStats();
-    const recentActivity = getRecentActivity();
-    const databaseHealth = getDatabaseHealth();
 
     useEffect(() => {
         const checkActivity = () => {
@@ -183,11 +183,14 @@ const Admin: React.FC = () => {
 
     useEffect(() => {
         if (data) {
-            const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
-            const newFashionDayApps = data.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
-            const newRecoveryRequests = data.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
-            const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
-            const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
+            // Synchroniser toutes les données admin
+            syncAllData().then((syncData) => {
+                console.log('Données admin synchronisées:', syncData);
+                const report = generateReport(syncData);
+                console.log('Rapport de synchronisation:', report);
+            }).catch((error) => {
+                console.error('Erreur lors de la synchronisation:', error);
+            });
 
             setStats({
                 totalModels: realStats.totalModels,
@@ -196,7 +199,7 @@ const Admin: React.FC = () => {
                 pendingTasks: realStats.totalRecoveryRequests + realStats.totalBookingRequests + realStats.totalContactMessages
             });
         }
-    }, [data]);
+    }, [data, realStats, syncAllData, generateReport]);
 
 
     const handleLogout = () => {
@@ -363,12 +366,7 @@ const Admin: React.FC = () => {
                        {/* Main Content */}
                        <main className="flex-1 lg:ml-0">
                            <div className="p-4">
-                        {activeTab === 'dashboard' && (
-                            <div className="space-y-6">
-                                <RealDataDashboard />
-                                <UserCreationTest />
-                            </div>
-                        )}
+                        {activeTab === 'dashboard' && <RealDataDashboard />}
                         {activeTab === 'mannequins' && <MannequinsView data={data} />}
                         {activeTab === 'casting' && <CastingView newCastingApps={newCastingApps} newFashionDayApps={newFashionDayApps} data={data} generateNotifications={generateNotifications} />}
                         {activeTab === 'content' && <ContentView />}
@@ -410,145 +408,8 @@ const Admin: React.FC = () => {
     );
 };
 
-// Dashboard View Component
-const DashboardView: React.FC<{ stats: AdminStats; activeUsers: ActiveUser[]; onNavigate: (view: AdminTab, params?: any) => void }> = React.memo(({ stats }) => (
-    <div className="space-y-4">
-        <div className="flex items-center justify-between">
-            <div>
-                <h2 className="text-2xl font-bold text-pm-gold">Tableau de Bord</h2>
-                <p className="text-pm-off-white/60">Vue d'ensemble de la plateforme</p>
-            </div>
-            <div className="text-sm text-pm-off-white/60">
-                Dernière mise à jour: {new Date().toLocaleTimeString()}
-            </div>
-        </div>
+// Dashboard View Component - Supprimé car non utilisé
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard 
-                title="Mannequins Pro" 
-                value={stats.totalModels} 
-                icon={UsersIcon} 
-                color="text-pm-gold" 
-                bgColor="bg-pm-gold/10" 
-            />
-            <StatCard 
-                title="Débutants" 
-                value={stats.totalBeginners} 
-                icon={UserGroupIcon} 
-                color="text-blue-400" 
-                bgColor="bg-blue-500/10" 
-            />
-            <StatCard 
-                title="Nouvelles Candidatures" 
-                value={stats.newApplications} 
-                icon={ClipboardDocumentListIcon} 
-                color="text-green-400" 
-                bgColor="bg-green-500/10" 
-            />
-            <StatCard 
-                title="Tâches en Attente" 
-                value={stats.pendingTasks} 
-                icon={ClockIcon} 
-                color="text-orange-400" 
-                bgColor="bg-orange-500/10" 
-            />
-                </div>
-                
-        {/* Quick Actions */}
-        <div className="bg-black/50 rounded-lg p-6 border border-pm-gold/20">
-            <h3 className="text-lg font-semibold text-pm-gold mb-4">Actions Rapides</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <QuickActionCard 
-                    title="Nouvelle Candidature" 
-                    description="Traiter les candidatures en attente"
-                    icon={ClipboardDocumentListIcon}
-                    link="/admin/casting-applications"
-                    count={stats.newApplications}
-                />
-                <QuickActionCard 
-                    title="Messages" 
-                    description="Répondre aux messages clients"
-                    icon={EnvelopeIcon}
-                    link="/admin/messages"
-                />
-                <QuickActionCard 
-                    title="Messagerie Interne" 
-                    description="Communiquer avec les modèles et étudiants"
-                    icon={ChatBubbleLeftRightIcon}
-                    link="/admin/messaging"
-                />
-                <QuickActionCard 
-                    title="Outils Techniques" 
-                    description="Monitoring et maintenance"
-                    icon={ServerIcon}
-                    link="/admin/server"
-                />
-                <QuickActionCard 
-                    title="Paramètres" 
-                    description="Configurer la plateforme"
-                    icon={Cog6ToothIcon}
-                    link="/admin/settings"
-                />
-            </div>
-        </div>
-    </div>
-));
-
-
-
-
-
-
-
-
-// Stat Card Component
-const StatCard: React.FC<{ 
-    title: string; 
-    value: number; 
-    icon: React.ElementType; 
-    color: string; 
-    bgColor: string; 
-}> = ({ title, value, icon: Icon, color, bgColor }) => (
-    <div className="bg-black/50 rounded-lg p-6 border border-pm-gold/20">
-        <div className="flex items-center justify-between">
-            <div>
-                <p className="text-pm-off-white/60 text-sm">{title}</p>
-                <p className={`text-2xl font-bold ${color}`}>{value}</p>
-            </div>
-            <div className={`p-3 rounded-lg ${bgColor}`}>
-                <Icon className={`w-6 h-6 ${color}`} />
-                </div>
-            </div>
-        </div>
-    );
-
-// Quick Action Card Component
-const QuickActionCard: React.FC<{ 
-    title: string; 
-    description: string; 
-    icon: React.ElementType; 
-    link: string; 
-    count?: number; 
-}> = ({ title, description, icon: Icon, link, count }) => (
-    <Link to={link} className="group block p-4 rounded-lg border border-pm-gold/20 hover:border-pm-gold hover:bg-pm-gold/5 transition-all duration-200">
-        <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-pm-gold/10 group-hover:bg-pm-gold/20 transition-colors">
-                <Icon className="w-5 h-5 text-pm-gold" />
-            </div>
-            <div className="flex-1">
-                <h4 className="font-medium text-pm-off-white group-hover:text-pm-gold transition-colors">{title}</h4>
-                <p className="text-sm text-pm-off-white/60">{description}</p>
-            </div>
-            {count && count > 0 && (
-                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                    {count}
-                </span>
-            )}
-        </div>
-    </Link>
-);
-
-// Dashboard Card Component
+// Composants supprimés car non utilisés
 
 export default Admin;

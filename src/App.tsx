@@ -5,10 +5,8 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
 import ProtectedRouteWrapper from './components/ProtectedRouteWrapper';
 import PublicRouteWrapper from './components/PublicRouteWrapper';
-import DataLoadingWrapper from './components/DataLoadingWrapper';
 import RoutePreloader from './components/RoutePreloader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
 import PageTransition, { LoadingTransition } from './components/PageTransition';
@@ -88,6 +86,8 @@ const AdminMarketingCampaigns = lazy(() => import('./pages/AdminMarketingCampaig
 const AdminImportContacts = lazy(() => import('./pages/AdminImportContacts'));
 const AdminContactManagement = lazy(() => import('./pages/AdminContactManagement'));
 const AdminMessagingDashboard = lazy(() => import('./pages/AdminMessagingDashboard'));
+const AdminSMS = lazy(() => import('./pages/AdminSMS'));
+const AdminCastingLive = lazy(() => import('./pages/AdminCastingLive'));
 
 // Test component
 const LoadingTest = lazy(() => import('./components/LoadingTest'));
@@ -167,7 +167,14 @@ const AppContent: React.FC = () => {
 
     // Attendre que les données soient initialisées avant de rendre le contenu
     if (!isInitialized) {
-        return <LoadingTransition />;
+        return (
+            <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-pm-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-pm-gold text-lg">Chargement...</p>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -254,6 +261,8 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/import-contacts" element={<ProtectedRouteWrapper role="admin"><AdminImportContacts /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/contact-management" element={<ProtectedRouteWrapper role="admin"><AdminContactManagement /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/messaging-dashboard" element={<ProtectedRouteWrapper role="admin"><AdminMessagingDashboard /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/sms" element={<ProtectedRouteWrapper role="admin"><AdminSMS /></ProtectedRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/admin/casting-live" element={<ProtectedRouteWrapper role="admin"><AdminCastingLive /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/profile" element={<ProtectedRouteWrapper role="admin"><AdminProfile /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/analytics" element={<ProtectedRouteWrapper role="admin"><AdminAnalytics /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/admin/notifications" element={<ProtectedRouteWrapper role="admin"><AdminNotifications /></ProtectedRouteWrapper>} />

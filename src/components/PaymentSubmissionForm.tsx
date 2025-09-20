@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CheckCircleIcon, ExclamationTriangleIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { emailConfirmationService } from '../services/emailConfirmationService';
 
 interface PaymentSubmission {
   id: string;
@@ -86,6 +87,19 @@ const PaymentSubmissionForm: React.FC<PaymentSubmissionFormProps> = ({
         ...data, 
         paymentSubmissions: updatedSubmissions 
       });
+
+      // Envoyer confirmation par email
+      try {
+        await emailConfirmationService.sendPaymentConfirmation({
+          recipientEmail: formData.email,
+          recipientName: modelName,
+          formType: 'payment',
+          submissionData: newSubmission,
+          submissionId: newSubmission.id
+        });
+      } catch (error) {
+        console.warn('Erreur lors de l\'envoi de la confirmation:', error);
+      }
 
       alert('Paiement soumis avec succès ! Il sera validé par l\'administration dans les plus brefs délais.');
       onClose();

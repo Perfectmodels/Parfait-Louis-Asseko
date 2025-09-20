@@ -1,0 +1,23 @@
+{
+  "name": "perfect-models-migration",
+  "version": "1.0.0",
+  "description": "Scripts de migration Firebase vers Neon Database",
+  "type": "module",
+  "scripts": {
+    "start": "node start-migration.js",
+    "setup": "node setup-env.js",
+    "test": "node test-connections.js",
+    "test-neon": "node test-neon-connection.js",
+    "migrate": "node migrate-perfect-models.js",
+    "migrate-neon": "node migrate-with-neon-env.js",
+    "migrate-all": "node migrate-firebase-to-neon.js"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "firebase": "^10.7.1",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

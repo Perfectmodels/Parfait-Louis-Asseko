@@ -17,6 +17,7 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
 import { ContactMessage, BookingRequest } from '../types';
+import { emailConfirmationService } from '../services/emailConfirmationService';
 
 const Contact: React.FC = () => {
     const { data, saveData } = useData();
@@ -84,7 +85,21 @@ const Contact: React.FC = () => {
                 const updatedMessages = [...(data.contactMessages || []), newContactMessage];
                 await saveData({ ...data, contactMessages: updatedMessages });
                 
+                // Envoyer notification admin
                 await sendContactEmailNotification(newContactMessage, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
+                
+                // Envoyer confirmation à l'utilisateur
+                try {
+                    await emailConfirmationService.sendContactConfirmation({
+                        recipientEmail: formData.email,
+                        recipientName: formData.name,
+                        formType: 'contact',
+                        submissionData: newContactMessage,
+                        submissionId: newContactMessage.id
+                    });
+                } catch (error) {
+                    console.warn('Erreur lors de l\'envoi de la confirmation:', error);
+                }
 
                 setStatus('success');
                 setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
@@ -105,7 +120,21 @@ const Contact: React.FC = () => {
                 const updatedRequests = [...(data.bookingRequests || []), newBookingRequest];
                 await saveData({ ...data, bookingRequests: updatedRequests });
                 
+                // Envoyer notification admin
                 await sendBookingEmailNotification(newBookingRequest, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
+                
+                // Envoyer confirmation à l'utilisateur
+                try {
+                    await emailConfirmationService.sendBookingConfirmation({
+                        recipientEmail: formData.clientEmail,
+                        recipientName: formData.clientName,
+                        formType: 'booking',
+                        submissionData: newBookingRequest,
+                        submissionId: newBookingRequest.id
+                    });
+                } catch (error) {
+                    console.warn('Erreur lors de l\'envoi de la confirmation:', error);
+                }
                 
                 setStatus('success');
                 setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');
