@@ -33,7 +33,7 @@ const AdminPayments: React.FC = () => {
       name: student.name,
       username: student.matricule || student.name.toLowerCase().replace(/\s+/g, ''),
       level: 'Mannequin' as const,
-      imageUrl: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg', // Image par défaut
+      imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model', // Image par défaut
       paymentStatus: {
         isUpToDate: false,
         nextDueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),

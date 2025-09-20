@@ -77,7 +77,7 @@ const SocialPostCard: React.FC<SocialPostCardProps> = ({
         postId: post.id,
         authorId: currentUser.id,
         authorName: currentUser.name,
-        authorImage: currentUser.imageUrl || 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
+        authorImage: currentUser.imageUrl || 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model',
         content: newComment.trim(),
         likes: [],
         replies: [],
@@ -166,7 +166,7 @@ const SocialPostCard: React.FC<SocialPostCardProps> = ({
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full overflow-hidden bg-pm-gold/20 flex-shrink-0">
               <img 
-                src={post.authorImage || 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg'} 
+                src={post.authorImage || 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model'} 
                 alt={post.authorName}
                 className="w-full h-full object-cover"
               />
@@ -357,7 +357,7 @@ const SocialPostCard: React.FC<SocialPostCardProps> = ({
             <div key={comment.id} className="flex gap-3">
               <div className="w-8 h-8 rounded-full overflow-hidden bg-pm-gold/20 flex-shrink-0">
                 <img 
-                  src={comment.authorImage || 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg'} 
+                  src={comment.authorImage || 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model'} 
                   alt={comment.authorName}
                   className="w-full h-full object-cover"
                 />
@@ -391,7 +391,7 @@ const SocialPostCard: React.FC<SocialPostCardProps> = ({
           <div className="flex gap-3">
             <div className="w-8 h-8 rounded-full overflow-hidden bg-pm-gold/20 flex-shrink-0">
               <img 
-                src={currentUser?.imageUrl || 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg'} 
+                src={currentUser?.imageUrl || 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model'} 
                 alt={currentUser?.name || 'Utilisateur'}
                 className="w-full h-full object-cover"
               />

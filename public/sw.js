@@ -59,11 +59,13 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ignorer les URLs Vercel Analytics et Speed Insights en développement
+  // Ignorer complètement les URLs Vercel Analytics et Speed Insights
   if (url.pathname.includes('/_vercel/insights/') || 
       url.pathname.includes('/_vercel/speed-insights/') ||
-      url.hostname === 'www.google-analytics.com') {
-    return; // Ne pas intercepter ces requêtes
+      url.hostname === 'www.google-analytics.com' ||
+      url.hostname === 'www.googletagmanager.com') {
+    // Ne pas intercepter ces requêtes du tout
+    return;
   }
 
   // Stratégie de cache pour les assets statiques
