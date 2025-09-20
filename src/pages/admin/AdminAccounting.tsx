@@ -151,7 +151,7 @@ const AdminAccounting: React.FC = () => {
 
             // Charger et ajouter le logo
             try {
-                const logoUrl = 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg';
+                const logoUrl = 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model';
                 const logoImg = new Image();
                 logoImg.crossOrigin = 'anonymous';
                 
@@ -339,7 +339,7 @@ const AdminAccounting: React.FC = () => {
 
             // Charger et ajouter le logo
             try {
-                const logoUrl = 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg';
+                const logoUrl = 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model';
                 const logoImg = new Image();
                 logoImg.crossOrigin = 'anonymous';
                 

@@ -301,8 +301,8 @@ const App: React.FC = () => {
           >
             <ScrollToTop />
             <AppContent />
-            {process.env.NODE_ENV === 'production' && <Analytics />}
-            {process.env.NODE_ENV === 'production' && <SpeedInsights />}
+            {import.meta.env.PROD && <Analytics />}
+            {import.meta.env.PROD && <SpeedInsights />}
           </ReactRouterDOM.HashRouter>
         </DataProvider>
       </ScriptPreloader>
