@@ -4,14 +4,13 @@ import { useLocation } from 'react-router-dom';
 // Preload critical components
 const preloadComponents = () => {
     // Preload admin components
-    import('../pages/Admin');
-    import('../pages/AdminModels');
-    import('../pages/AdminMagazine');
-    import('../pages/AdminGallery');
+    import('../pages/admin/Admin');
+    import('../pages/admin/AdminModels');
+    import('../pages/admin/AdminMagazine');
+    import('../pages/admin/AdminGallery');
     
     // Preload user components
     import('../pages/ModelDashboard');
-    import('../pages/Activity');
     
     // Preload public components
     import('../pages/Home');
@@ -39,9 +38,9 @@ const RoutePreloader: React.FC = () => {
             
             if (path.startsWith('/admin')) {
                 // Preload other admin components
-                import('../pages/AdminSettings');
-                import('../pages/AdminAgency');
-                import('../pages/AdminCasting');
+                import('../pages/admin/AdminSettings');
+                import('../pages/admin/AdminAgency');
+                import('../pages/admin/AdminCasting');
             } else if (path.startsWith('/formations') || path.startsWith('/profil')) {
                 // Preload classroom components
                 import('../pages/ChapterDetail');

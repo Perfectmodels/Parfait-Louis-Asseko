@@ -10,6 +10,7 @@ import {
 import DashboardCard from '../../components/DashboardCard';
 import InteractiveDashboardCard from '../../components/InteractiveDashboardCard';
 import AdminDataIntegrity from '../../components/AdminDataIntegrity';
+import LoadingDiagnostic from '../../components/LoadingDiagnostic';
 
 // Mannequins View Component - Gestion harmonisée des mannequins
 export const MannequinsView: React.FC<{ data: any }> = React.memo(({ data }) => (
@@ -236,6 +237,11 @@ export const TechniqueView: React.FC<{ data: any }> = React.memo(({ data }) => (
         {/* Intégrité des données */}
         <div className="bg-black/50 border border-pm-gold/20 rounded-lg p-6">
             <AdminDataIntegrity />
+        </div>
+        
+        {/* Diagnostic de chargement */}
+        <div className="bg-black/50 border border-pm-gold/20 rounded-lg p-6">
+            <LoadingDiagnostic />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

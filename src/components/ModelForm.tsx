@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Model, ModelDistinction } from '../types';
 import ImageUpload from './ImageUpload';
 import MultipleImageUpload from './MultipleImageUpload';
-import AIAssistant from './AIAssistant';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
@@ -173,13 +172,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <label className="admin-label">Expérience</label>
-                            {isAdmin && (
-                                <AIAssistant
-                                    onContentGenerated={(content) => setFormData(prev => ({ ...prev, experience: content }))}
-                                    context="model-bio"
-                                    placeholder="Décrivez l'expérience du mannequin (ex: mannequin expérimentée, nouveau talent...)"
-                                />
-                            )}
+                            {/* AI Assistant removed */}
                         </div>
                         <textarea
                             name="experience"
@@ -194,13 +187,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <label className="admin-label">Parcours</label>
-                            {isAdmin && (
-                                <AIAssistant
-                                    onContentGenerated={(content) => setFormData(prev => ({ ...prev, journey: content }))}
-                                    context="model-bio"
-                                    placeholder="Décrivez le parcours du mannequin (ex: formation, débuts, évolution...)"
-                                />
-                            )}
+                            {/* AI Assistant removed */}
                         </div>
                         <textarea
                             name="journey"

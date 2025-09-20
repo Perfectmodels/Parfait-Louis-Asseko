@@ -77,7 +77,18 @@ export class AdminDataSyncService {
   /**
    * Synchronise toutes les données admin
    */
-  async syncAllData(): Promise<AdminDataSync> {
+  async syncAllData(forceSync: boolean = false): Promise<AdminDataSync> {
+    // Vérifier si une synchronisation récente existe
+    const lastSync = this.data?.adminSyncMetadata?.lastSync;
+    const now = new Date();
+    const lastSyncTime = lastSync ? new Date(lastSync) : null;
+    
+    // Si une synchronisation a eu lieu dans les 5 dernières minutes et qu'on ne force pas
+    if (!forceSync && lastSyncTime && (now.getTime() - lastSyncTime.getTime()) < 5 * 60 * 1000) {
+      console.log('Synchronisation récente détectée, utilisation des données en cache');
+      return this.data?.adminSyncMetadata?.data || this.getEmptySyncData();
+    }
+
     const syncData: AdminDataSync = {
       models: this.getModelsData(),
       beginnerStudents: this.getBeginnerStudentsData(),
@@ -92,6 +103,21 @@ export class AdminDataSyncService {
     await this.updateSyncMetadata(syncData);
 
     return syncData;
+  }
+
+  /**
+   * Retourne des données vides pour éviter les erreurs
+   */
+  private getEmptySyncData(): AdminDataSync {
+    return {
+      models: { total: 0, active: 0, inactive: 0, newThisMonth: 0, paymentStatus: { upToDate: 0, pending: 0, overdue: 0 } },
+      beginnerStudents: { total: 0, active: 0, graduated: 0, newThisMonth: 0 },
+      financial: { totalRevenue: 0, monthlyRevenue: 0, pendingPayments: 0, overduePayments: 0, totalExpenses: 0, netProfit: 0 },
+      events: { totalEvents: 0, upcomingEvents: 0, completedEvents: 0, totalParticipants: 0 },
+      applications: { castingApplications: 0, fashionDayApplications: 0, newApplications: 0, pendingApplications: 0 },
+      communication: { totalMessages: 0, unreadMessages: 0, totalNotifications: 0, unreadNotifications: 0 },
+      content: { totalArticles: 0, publishedArticles: 0, totalAlbums: 0, totalPhotos: 0 }
+    };
   }
 
   /**
@@ -285,8 +311,8 @@ export const useAdminDataSync = () => {
 
   const syncService = new AdminDataSyncService(data, saveData);
 
-  const syncAllData = async () => {
-    return await syncService.syncAllData();
+  const syncAllData = async (forceSync: boolean = false) => {
+    return await syncService.syncAllData(forceSync);
   };
 
   const generateReport = (syncData: AdminDataSync) => {
