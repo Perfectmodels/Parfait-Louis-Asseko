@@ -24,7 +24,8 @@ const AdminDataIntegrity: React.FC = () => {
     const [lastSync, setLastSync] = useState<string | null>(null);
 
     useEffect(() => {
-        runIntegrityChecks();
+        // Ne pas exécuter automatiquement les vérifications à chaque changement de data
+        // L'utilisateur doit cliquer sur "Vérifier" manuellement
     }, [data]);
 
     const runIntegrityChecks = async () => {

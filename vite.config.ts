@@ -13,6 +13,19 @@ export default defineConfig({
   resolve: {
     dedupe: ['react', 'react-dom']
   },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'framer-motion',
+      '@heroicons/react/24/outline',
+      'firebase/app',
+      'firebase/database',
+      'firebase/auth'
+    ],
+    exclude: ['@vite/client', '@vite/env']
+  },
   build: {
     rollupOptions: {
       output: {
@@ -27,19 +40,19 @@ export default defineConfig({
           
           // Admin chunks
           'admin-core': [
-            'src/pages/Admin.tsx',
-            'src/pages/AdminAnalytics.tsx',
-            'src/pages/AdminNotifications.tsx'
+            'src/pages/admin/Admin.tsx',
+            'src/pages/admin/AdminAnalytics.tsx',
+            'src/pages/admin/AdminNotifications.tsx'
           ],
           'admin-forms': [
-            'src/pages/AdminUserManagement.tsx',
-            'src/pages/AdminAccounting.tsx',
-            'src/pages/AdminPayments.tsx'
+            'src/pages/admin/AdminUserManagement.tsx',
+            'src/pages/admin/AdminAccounting.tsx',
+            'src/pages/admin/AdminPayments.tsx'
           ],
           'admin-content': [
-            'src/pages/AdminGallery.tsx',
-            'src/pages/AdminMagazine.tsx',
-            'src/pages/AdminArtisticDirection.tsx'
+            'src/pages/admin/AdminGallery.tsx',
+            'src/pages/admin/AdminMagazine.tsx',
+            'src/pages/admin/AdminArtisticDirection.tsx'
           ],
           
           // Public chunks

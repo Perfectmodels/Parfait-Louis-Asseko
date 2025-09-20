@@ -2,7 +2,7 @@
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory, AdminUser, AdminPermission, TeamMember, SocialUser, SocialPost, SocialNotification } from '../types';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
+  logo: 'https://via.placeholder.com/200x200/D4AF37/FFFFFF?text=PMM',
 };
 
 export const navLinks: NavLink[] = [
@@ -30,20 +30,20 @@ export const contactInfo: ContactInfo = {
 };
 
 export const siteImages: SiteImages = {
-    hero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-    about: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
-    fashionDayBg: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
-    agencyHistory: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
-    classroomBg: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
-    castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+    hero: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelK2wS0Pz/hero-bg.jpg',
+    about: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model3WfK9Xg/about-img.jpg',
+    fashionDayBg: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelC5rcPJHz/titostyle-53.jpg',
+    agencyHistory: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModeljH0YvJg/agency-history.jpg',
+    classroomBg: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelTBt9FBSv/AJC-4630.jpg',
+    castingBg: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelz5TzL2M/casting-bg.jpg',
     // Hero backgrounds for main sections
-    servicesHero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-    modelsHero: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
-    magazineHero: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
-    galleryHero: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
-    contactHero: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
-    agencyHero: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
-    castingHero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+    servicesHero: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelK2wS0Pz/hero-bg.jpg',
+    modelsHero: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model3WfK9Xg/about-img.jpg',
+    magazineHero: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelC5rcPJHz/titostyle-53.jpg',
+    galleryHero: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModeljH0YvJg/agency-history.jpg',
+    contactHero: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelTBt9FBSv/AJC-4630.jpg',
+    agencyHero: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelz5TzL2M/casting-bg.jpg',
+    castingHero: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelK2wS0Pz/hero-bg.jpg',
 };
 
 export const apiKeys: ApiKeys = {
@@ -55,7 +55,7 @@ export const apiKeys: ApiKeys = {
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
     geminiApiKey: 'AIzaSyCEVGrbdck61n5l0kl5uGMUwiolTfl1yM4',
-    brevoApiKey: import.meta.env.VITE_BREVO_API_KEY || '',
+    brevoApiKey: process.env.VITE_BREVO_API_KEY || '',
 };
 
 export const juryMembers: JuryMember[] = [
@@ -85,12 +85,12 @@ export const models: Model[] = [
         height: '1m78',
         gender: 'Femme',
         location: 'Libreville',
-        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelmCcD1Gfq/DSC-0272.jpg',
         isPublic: true,
         portfolioImages: [
-            'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
-            'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-            'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+            'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelz5TzL2M/casting-bg.jpg',
+            'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelK2wS0Pz/hero-bg.jpg',
+            'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelC5rcPJHz/titostyle-53.jpg',
         ],
         distinctions: [
             { name: "Palmarès National & International", titles: ["Miss Gabon 2022", "Top Model Afrique Centrale 2023"] }
@@ -139,10 +139,10 @@ export const models: Model[] = [
         level: 'Mannequin',
         height: '1m88',
         gender: 'Homme',
-        imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+        imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelRk1fG3ph/farelmd-37.jpg',
         isPublic: true,
         portfolioImages: [
-             'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+             'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelTBt9FBSv/AJC-4630.jpg',
         ],
         distinctions: [
             { name: "Podiums Masculins", titles: ["Mannequin Homme de l'Année - PFD Awards 2025", "Prix de l'Élégance Masculine - Libreville Fashion Week"] }
@@ -167,12 +167,12 @@ export const models: Model[] = [
         height: '1m76',
         gender: 'Femme',
         location: 'Libreville',
-        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelmCcD1Gfq/DSC-0272.jpg',
         isPublic: true,
         portfolioImages: [
-            'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
-            'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-            'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+            'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelz5TzL2M/casting-bg.jpg',
+            'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelK2wS0Pz/hero-bg.jpg',
+            'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelC5rcPJHz/titostyle-53.jpg',
         ],
         distinctions: [
             { name: "Nouvelle Révélation", titles: ["Découverte de l'Année - PMM 2024", "Meilleure Débutante - Fashion Week Libreville"] }
@@ -192,19 +192,19 @@ export const testimonials: Testimonial[] = [
         name: 'Franck B.',
         role: 'Créateur de Mode',
         quote: "Collaborer avec Perfect Models Management est un gage de professionnalisme. Leurs mannequins sont non seulement magnifiques mais aussi incroyablement bien formés et ponctuels. Un vrai plaisir.",
-        imageUrl: 'https://i.ibb.co/s5zW7gZ/testimonial-1.jpg',
+        imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Models5zW7gZ/testimonial-1.jpg',
     },
     {
         name: 'Nadia K.',
         role: 'Directrice Artistique',
         quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond perfectly aux besoins créatifs de nos campagnes publicitaires.",
-        imageUrl: 'https://i.ibb.co/y4x9Y8X/testimonial-2.jpg',
+        imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modely4x9Y8X/testimonial-2.jpg',
     },
     {
         name: 'Noemi Kim',
         role: 'Mannequin de l\'agence',
         quote: "PMM est bien plus qu'une agence, c'est une famille qui nous pousse à donner le meilleur de nous-mêmes. La formation et l'encadrement sont exceptionnels.",
-        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelmCcD1Gfq/DSC-0272.jpg',
     },
 ];
 
@@ -333,9 +333,9 @@ export const beginnerStudents: BeginnerStudent[] = [
 
 
 export const newsItems: NewsItem[] = [
-    { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
-    { id: '2', title: "Perfect Fashion Day Édition 2", date: '2026-01-31', imageUrl: 'https://i.ibb.co/Zpc4WJVF/L-art-de-se-reveler-080-Z.png', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
-    { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: 'https://i.ibb.co/3WfK9Xg/about-img.jpg', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
+    { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelz5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
+    { id: '2', title: "Perfect Fashion Day Édition 2", date: '2026-01-31', imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelZpc4WJVF/L-art-de-se-reveler-080-Z.png', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
+    { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model3WfK9Xg/about-img.jpg', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
 ];
 
 export const fashionDayEvents: FashionDayEvent[] = [
@@ -344,7 +344,7 @@ export const fashionDayEvents: FashionDayEvent[] = [
       date: "2025-01-25T18:00:00",
       theme: "Racines et Modernité",
       location: "La Gare du Nord – Hôtel Restaurant Bar Casino, Carrefour Acaé",
-      imageUrl: "https://i.ibb.co/35tKdsRr/482986573-631604006390611-5475849692479591284-n.jpg",
+      imageUrl: "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model35tKdsRr/482986573-631604006390611-5475849692479591284-n.jpg",
       promoter: "Parfait Asseko",
       description: "La 1ère Édition de la Perfect Fashion Day a tenu toutes ses promesses en réunissant mode, art, culture et professionnalisme. Le thème « Racines et Modernité » a permis d'explorer la richesse de la culture gabonaise tout en ouvrant un dialogue avec les tendances contemporaines, posant ainsi les bases solides d'un événement de référence pour la mode gabonaise.",
       stylists: [
@@ -352,80 +352,80 @@ export const fashionDayEvents: FashionDayEvent[] = [
           name: "AG Style",
           description: "Un mélange parfait de tradition et de modernité.",
           images: [
-            "https://i.ibb.co/Gfxgf00z/agstyle-42.jpg", "https://i.ibb.co/4g4x6Dkp/agstyle-41.jpg", "https://i.ibb.co/0y7Pqv9y/agstyle-36.jpg", "https://i.ibb.co/yc5kxJKT/agstyle-33.jpg",
-            "https://i.ibb.co/8DTp4Qqy/agstyle-28.jpg", "https://i.ibb.co/DfF1Z4T9/agstyle-23.jpg", "https://i.ibb.co/h1mPDBy4/agstyle-21.jpg", "https://i.ibb.co/d4D6QLnf/agstyle-17.jpg",
-            "https://i.ibb.co/60RSnzxY/agstyle-13.jpg", "https://i.ibb.co/hR9Sfy5Q/agstyle-15.jpg", "https://i.ibb.co/KpRpVrg3/agstyle-7.jpg", "https://i.ibb.co/vCNg8h6j/AG-Style.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelGfxgf00z/agstyle-42.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model4g4x6Dkp/agstyle-41.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model0y7Pqv9y/agstyle-36.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelyc5kxJKT/agstyle-33.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model8DTp4Qqy/agstyle-28.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelDfF1Z4T9/agstyle-23.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelh1mPDBy4/agstyle-21.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modeld4D6QLnf/agstyle-17.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model60RSnzxY/agstyle-13.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelhR9Sfy5Q/agstyle-15.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelKpRpVrg3/agstyle-7.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelvCNg8h6j/AG-Style.jpg"
           ]
         },
         {
           name: "Farel MD",
           description: "Élégance masculine & attitude.",
           images: [
-            "https://i.ibb.co/mC32jrDj/farelmd-31.jpg", "https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg", "https://i.ibb.co/Z6LnsF9F/farelmd-33.jpg", "https://i.ibb.co/0yVgwzxH/farelmd-28.jpg",
-            "https://i.ibb.co/bZWLkcw/farelmd-30.jpg", "https://i.ibb.co/LDjkT30K/farelmd-21.jpg", "https://i.ibb.co/rKm9BH3j/farelmd-26.jpg", "https://i.ibb.co/KpY1tHHg/farelmd-10.jpg",
-            "https://i.ibb.co/tp51KKMX/farelmd-16.jpg", "https://i.ibb.co/fTrvQht/farelmd-5.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelmC32jrDj/farelmd-31.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelRk1fG3ph/farelmd-37.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelZ6LnsF9F/farelmd-33.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model0yVgwzxH/farelmd-28.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelbZWLkcw/farelmd-30.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelLDjkT30K/farelmd-21.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelrKm9BH3j/farelmd-26.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelKpY1tHHg/farelmd-10.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modeltp51KKMX/farelmd-16.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelfTrvQht/farelmd-5.jpg"
           ]
         },
         {
           name: "Ventex Custom",
           description: "Une prestation haute en audace et en style.",
           images: [
-            "https://i.ibb.co/LDm73BY2/ventex-44.jpg", "https://i.ibb.co/LXj51t0G/ventex-43.jpg", "https://i.ibb.co/hRnhS3gP/ventex-31.jpg", "https://i.ibb.co/fdM74zWJ/ventex-36.jpg",
-            "https://i.ibb.co/HTb9F9rc/ventex-21.jpg", "https://i.ibb.co/bjWPHcc3/ventex-28.jpg", "https://i.ibb.co/JW2VY4JY/ventex-18.jpg", "https://i.ibb.co/6JwgLJk2/ventex-4.jpg",
-            "https://i.ibb.co/vvYkS6nQ/ventex-14.jpg", "https://i.ibb.co/ch7Fxy8J/ventex-7.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelLDm73BY2/ventex-44.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelLXj51t0G/ventex-43.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelhRnhS3gP/ventex-31.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelfdM74zWJ/ventex-36.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelHTb9F9rc/ventex-21.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelbjWPHcc3/ventex-28.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelJW2VY4JY/ventex-18.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model6JwgLJk2/ventex-4.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelvvYkS6nQ/ventex-14.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelch7Fxy8J/ventex-7.jpg"
           ]
         },
         {
           name: "Miguel Fashion Style",
           description: "La finesse sur-mesure.",
           images: [
-            "https://i.ibb.co/R4j44vxH/miguel-25.jpg", "https://i.ibb.co/DF36zP1/miguel-24.jpg", "https://i.ibb.co/5hHnGSgR/miguel-23.jpg", "https://i.ibb.co/KccH1yVW/miguel-21.jpg",
-            "https://i.ibb.co/tTwH0qkd/miguel-19.jpg", "https://i.ibb.co/PztGS4cG/miguel-13.jpg", "https://i.ibb.co/HfHQDqs9/miguel-12.jpg", "https://i.ibb.co/DPbZq0X5/miguel-6.jpg",
-            "https://i.ibb.co/fYzb35qV/miguel-10.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelR4j44vxH/miguel-25.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelDF36zP1/miguel-24.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model5hHnGSgR/miguel-23.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelKccH1yVW/miguel-21.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModeltTwH0qkd/miguel-19.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelPztGS4cG/miguel-13.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelHfHQDqs9/miguel-12.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelDPbZq0X5/miguel-6.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelfYzb35qV/miguel-10.jpg"
           ]
         },
         {
           name: "Faran",
           description: "Parade des Miss du Gabon.",
           images: [
-            "https://i.ibb.co/xqxq0t42/faran-72.jpg", "https://i.ibb.co/5WRGVpN2/faran-63.jpg", "https://i.ibb.co/C3rMvpRH/faran-62.jpg", "https://i.ibb.co/ccTm9fqZ/faran-45.jpg",
-            "https://i.ibb.co/W4JbLKPY/faran-31.jpg", "https://i.ibb.co/kVvx62Cd/faran-7.jpg", "https://i.ibb.co/1fpzHFCR/faran-18.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelxqxq0t42/faran-72.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model5WRGVpN2/faran-63.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelC3rMvpRH/faran-62.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelccTm9fqZ/faran-45.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelW4JbLKPY/faran-31.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelkVvx62Cd/faran-7.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model1fpzHFCR/faran-18.jpg"
           ]
         },
         {
           name: "Madame Luc (Abiale)",
           description: "Une allure élégante et intemporelle.",
           images: [
-            "https://i.ibb.co/TM8ZvfwY/madameluc-35.jpg", "https://i.ibb.co/N2n3N649/madameluc-27.jpg", "https://i.ibb.co/HfGP2hfY/madameluc-23.jpg", "https://i.ibb.co/v4bptydm/madameluc-14.jpg",
-            "https://i.ibb.co/Nk9JnK8/madameluc-10.jpg", "https://i.ibb.co/wN3028xM/madameluc-1.jpg", "https://i.ibb.co/Z64LbfNr/madameluc-4.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelTM8ZvfwY/madameluc-35.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelN2n3N649/madameluc-27.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelHfGP2hfY/madameluc-23.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelv4bptydm/madameluc-14.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelNk9JnK8/madameluc-10.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelwN3028xM/madameluc-1.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelZ64LbfNr/madameluc-4.jpg"
           ]
         },
         {
           name: "Brand’O",
           description: "Une énergie flamboyante au podium.",
           images: [
-            "https://i.ibb.co/jkztFFQV/brando-50.jpg", "https://i.ibb.co/Mxvqp922/brando-45.jpg", "https://i.ibb.co/b5NYjLqm/brando-39.jpg", "https://i.ibb.co/mFGznJJd/brando-34.jpg",
-            "https://i.ibb.co/pjQ61C7X/brando-28.jpg", "https://i.ibb.co/mrj3sfP7/brando-26.jpg", "https://i.ibb.co/GQfNYbHh/brando-25.jpg", "https://i.ibb.co/bgJd82zf/brando-24.jpg",
-            "https://i.ibb.co/GQzzgTZw/brando-22.jpg", "https://i.ibb.co/4gNj73vP/brando-17.jpg", "https://i.ibb.co/spywFpR6/brando-13.jpg", "https://i.ibb.co/GfYXkKVK/brando-11.jpg",
-            "https://i.ibb.co/ymw3cwt9/brando-10.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModeljkztFFQV/brando-50.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelMxvqp922/brando-45.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelb5NYjLqm/brando-39.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelmFGznJJd/brando-34.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelpjQ61C7X/brando-28.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelmrj3sfP7/brando-26.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelGQfNYbHh/brando-25.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelbgJd82zf/brando-24.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelGQzzgTZw/brando-22.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model4gNj73vP/brando-17.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelspywFpR6/brando-13.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelGfYXkKVK/brando-11.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelymw3cwt9/brando-10.jpg"
           ]
         },
         {
           name: "Tito Style",
           description: "Audace urbaine & inspiration afro.",
           images: [
-            "https://i.ibb.co/C5rcPJHz/titostyle-53.jpg", "https://i.ibb.co/gMf55YY9/titostyle-51.jpg", "https://i.ibb.co/8Ty8sGT/titostyle-50.jpg", "https://i.ibb.co/d0tXVs0v/titostyle-45.jpg",
-            "https://i.ibb.co/21VQys2y/titostyle-43.jpg", "https://i.ibb.co/wNPRTQrS/titostyle-41.jpg", "https://i.ibb.co/vvc0k6TQ/titostyle-36.jpg", "https://i.ibb.co/PGP9HTrw/titostyle-33.jpg",
-            "https://i.ibb.co/QvjHXZFY/titostyle-19.jpg", "https://i.ibb.co/21cjYs2K/titostyle-25.jpg", "https://i.ibb.co/ynCg04LR/titostyle-17.jpg", "https://i.ibb.co/cXkw3btJ/titostyle-4.jpg",
-            "https://i.ibb.co/qY64DbG0/titostyle-12.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelC5rcPJHz/titostyle-53.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelgMf55YY9/titostyle-51.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model8Ty8sGT/titostyle-50.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modeld0tXVs0v/titostyle-45.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model21VQys2y/titostyle-43.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelwNPRTQrS/titostyle-41.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelvvc0k6TQ/titostyle-36.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelPGP9HTrw/titostyle-33.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelQvjHXZFY/titostyle-19.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model21cjYs2K/titostyle-25.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelynCg04LR/titostyle-17.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelcXkw3btJ/titostyle-4.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelqY64DbG0/titostyle-12.jpg"
           ]
         },
         {
           name: "Edele A",
           description: "Le final tout en poésie.",
           images: [
-            "https://i.ibb.co/N26jYJCm/edelea-40.jpg", "https://i.ibb.co/zhtZj7wG/edelea-38.jpg", "https://i.ibb.co/BKwMNJBw/edelea-31.jpg", "https://i.ibb.co/mVJhr45j/edelea-24.jpg",
-            "https://i.ibb.co/35dDJXpV/edelea-22.jpg", "https://i.ibb.co/Xx03RWJx/edelea-16.jpg", "https://i.ibb.co/Tq77XgYg/edelea-3.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelN26jYJCm/edelea-40.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelzhtZj7wG/edelea-38.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelBKwMNJBw/edelea-31.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelmVJhr45j/edelea-24.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model35dDJXpV/edelea-22.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelXx03RWJx/edelea-16.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelTq77XgYg/edelea-3.jpg"
           ]
         }
       ],
@@ -438,9 +438,9 @@ export const fashionDayEvents: FashionDayEvent[] = [
           name: "Lady Riaba",
           description: "Slam poétique intitulé « Racines et Modernité » en ouverture de soirée.",
           images: [
-            "https://i.ibb.co/WCYYHQ1/ladyriaba-28.jpg", "https://i.ibb.co/rfLBb0t3/ladyriaba-26.jpg", "https://i.ibb.co/hRFn9tyT/ladyriaba-22.jpg",
-            "https://i.ibb.co/Cs3pHkbD/ladyriaba-20.jpg", "https://i.ibb.co/Cp50mQwn/ladyriaba-14.jpg", "https://i.ibb.co/Fq4NQ0gN/ladyriaba-10.jpg",
-            "https://i.ibb.co/zhj0xKNN/ladyriaba-8.jpg", "https://i.ibb.co/x8mGQcCG/ladyriaba-6.jpg", "https://i.ibb.co/Kx1WMT87/ladyriaba-5.jpg", "https://i.ibb.co/JRs6P128/ladyriaba-1.jpg"
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelWCYYHQ1/ladyriaba-28.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelrfLBb0t3/ladyriaba-26.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelhRFn9tyT/ladyriaba-22.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelCs3pHkbD/ladyriaba-20.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelCp50mQwn/ladyriaba-14.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelFq4NQ0gN/ladyriaba-10.jpg",
+            "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelzhj0xKNN/ladyriaba-8.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Modelx8mGQcCG/ladyriaba-6.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelKx1WMT87/ladyriaba-5.jpg", "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelJRs6P128/ladyriaba-1.jpg"
           ]
         }
       ],
@@ -456,7 +456,7 @@ export const fashionDayEvents: FashionDayEvent[] = [
       date: "2026-01-31T18:00:00",
       theme: "L'Art de se révéler",
       location: "Complexe Hôtelier Le Nalys, Angondjé (à confirmer)",
-      imageUrl: "https://i.ibb.co/Zpc4WJVF/L-art-de-se-reveler-080-Z.png",
+      imageUrl: "https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelZpc4WJVF/L-art-de-se-reveler-080-Z.png",
       description: "Après une première édition marquante, riche en émotions et en élégance, Perfect Models Management est fier d'annoncer le retour de la Perfect Fashion Day pour une deuxième édition inédite. Cette nouvelle rencontre mettra à l'honneur une mode profondément enracinée dans la culture, l'histoire personnelle et l'affirmation de soi.",
       stylists: [],
       featuredModels: [],
@@ -991,11 +991,11 @@ export const defaultAlbums = [
         title: 'Shooting Mode Élégante',
         description: 'Une collection de photos mettant en valeur l\'élégance et le raffinement de nos mannequins dans des tenues sophistiquées.',
         theme: 'Mode Élégante',
-        coverImage: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        coverImage: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelmCcD1Gfq/DSC-0272.jpg',
         photos: [
             {
                 id: 'photo-1-1',
-                url: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+                url: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelmCcD1Gfq/DSC-0272.jpg',
                 title: 'Portrait Élégant',
                 description: 'Portrait en noir et blanc mettant en valeur les traits fins',
                 uploadedAt: new Date().toISOString(),
@@ -1004,7 +1004,7 @@ export const defaultAlbums = [
             },
             {
                 id: 'photo-1-2',
-                url: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+                url: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelK2wS0Pz/hero-bg.jpg',
                 title: 'Pose Sophistiquée',
                 description: 'Pose classique dans un environnement moderne',
                 uploadedAt: new Date().toISOString(),
@@ -1029,11 +1029,11 @@ export const defaultAlbums = [
         title: 'Nature & Beauté',
         description: 'Shooting en extérieur mettant en harmonie la beauté naturelle de nos mannequins avec les paysages gabonais.',
         theme: 'Nature',
-        coverImage: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+        coverImage: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelC5rcPJHz/titostyle-53.jpg',
         photos: [
             {
                 id: 'photo-2-1',
-                url: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+                url: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=ModelC5rcPJHz/titostyle-53.jpg',
                 title: 'Harmonie Naturelle',
                 description: 'Mise en valeur de la beauté naturelle',
                 uploadedAt: new Date().toISOString(),
@@ -1063,7 +1063,7 @@ export const defaultTeamMembers: TeamMember[] = [
         position: 'Fondateur & Directeur',
         role: 'founder',
         description: 'Visionnaire passionné, Parfait Asseko a créé Perfect Models Management avec l\'ambition de révolutionner la mode gabonaise et de former les futurs talents de l\'industrie.',
-        imageUrl: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
+        imageUrl: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
         email: 'parfait@perfectmodelsmanagement.ga',
         phone: '+241 XX XX XX XX',
         socialLinks: {
@@ -1113,7 +1113,14 @@ export const defaultSocialUsers: SocialUser[] = [
         isVerified: true,
         isOnline: false,
         createdAt: new Date().toISOString(),
-        lastActive: new Date().toISOString()
+        lastActive: new Date().toISOString(),
+        lastSeen: new Date().toISOString(),
+        badges: [],
+        privacy: {
+            profileVisibility: 'public',
+            showEmail: false,
+            showLastSeen: true
+        }
     },
     {
         id: 'social-user-2',
@@ -1127,7 +1134,14 @@ export const defaultSocialUsers: SocialUser[] = [
         isVerified: true,
         isOnline: false,
         createdAt: new Date().toISOString(),
-        lastActive: new Date().toISOString()
+        lastActive: new Date().toISOString(),
+        lastSeen: new Date().toISOString(),
+        badges: [],
+        privacy: {
+            profileVisibility: 'public',
+            showEmail: false,
+            showLastSeen: true
+        }
     }
 ];
 
@@ -1136,7 +1150,7 @@ export const defaultSocialPosts: SocialPost[] = [
         id: 'post-1',
         authorId: 'social-user-1',
         authorName: 'Parfait Louis Asseko',
-        authorImage: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
+        authorImage: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
         content: 'Bienvenue dans la communauté Perfect Models Management ! 🎉 Partagez vos expériences, posez vos questions et connectez-vous avec d\'autres talents de la mode.',
         type: 'text',
         category: 'general',
@@ -1154,7 +1168,7 @@ export const defaultSocialPosts: SocialPost[] = [
         id: 'post-2',
         authorId: 'social-user-2',
         authorName: 'Marie Claire',
-        authorImage: 'https://i.ibb.co/3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
+        authorImage: 'https://via.placeholder.com/400x600/D4AF37/FFFFFF?text=Model3yD48r0J/480946208-616728137878198-6925216743970681454-n.jpg',
         content: 'Conseil du jour : La confiance en soi est la clé du succès en mannequinat. Travaillez votre posture et votre présence ! 💪',
         type: 'text',
         category: 'tips',
