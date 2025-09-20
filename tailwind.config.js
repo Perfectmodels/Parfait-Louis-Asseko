@@ -24,7 +24,6 @@ export default {
         'montserrat': ['"Montserrat"', 'sans-serif'],
       },
       animation: {
-          'marquee': 'marquee 60s linear infinite',
           'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           'fade-in': 'fadeIn 0.5s ease-in-out',
           'float': 'float 6s ease-in-out infinite',
@@ -36,10 +35,6 @@ export default {
           'fade-in-right': 'fadeInRight 0.6s ease-out forwards',
       },
       keyframes: {
-          marquee: {
-              '0%': { transform: 'translateX(0%)' },
-              '100%': { transform: 'translateX(-50%)' },
-          },
           fadeIn: {
               '0%': { opacity: 0 },
               '100%': { opacity: 1 },
