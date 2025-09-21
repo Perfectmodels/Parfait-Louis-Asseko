@@ -79,7 +79,6 @@ const navigationSections = [
     {
         title: "MANNEQUINS & ACCÈS",
         links: [
-            { name: "Gestion des Modèles", path: "/admin/models", icon: UsersIcon },
             { name: "Accès Débutants", path: "/admin/beginner-students-access", icon: AcademicCapIcon },
             { name: "Accès Modèles Pro", path: "/admin/model-access", icon: SparklesIcon },
             { name: "Suivi & Performance", path: "/admin/model-tracking", icon: SignalIcon },

@@ -1,615 +1,181 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import React from 'react';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
-import { useData } from '../contexts/DataContext';
 import EnhancedModelCard from '../components/EnhancedModelCard';
-import EnhancedServiceCard from '../components/EnhancedServiceCard';
-import { ApiKeys, Article } from '../types';
-import CountdownTimer from '../components/CountdownTimer';
-import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
-import { 
-  ScrollReveal, 
-  StaggerOnScroll, 
-  ScaleOnScroll, 
-  TextReveal,
-  FloatingElement,
-  PulseElement 
-} from '../components/ScrollAnimations';
-
-// --- Helper & Modal Components for Sharing ---
-const generateShortLink = async (
-  options: { link: string; title: string; description: string; imageUrl: string; },
-  apiKeys: ApiKeys | undefined
-): Promise<string> => {
-  const { link, title, description, imageUrl } = options;
-  const dynamicLinksConfig = apiKeys?.firebaseDynamicLinks;
-
-  if (!dynamicLinksConfig?.webApiKey) {
-    console.warn('Firebase Dynamic Links API key not configured. Falling back to long link.');
-    return link;
-  }
-
-  const endpoint = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${dynamicLinksConfig.webApiKey}`;
-
-  const requestBody = {
-    dynamicLinkInfo: {
-      domainUriPrefix: dynamicLinksConfig.domainUriPrefix,
-      link: link,
-      socialMetaTagInfo: {
-        socialTitle: title,
-        socialDescription: description,
-        socialImageLink: imageUrl,
-      },
-    },
-    suffix: { option: "SHORT" }
-  };
-
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error.message || 'Failed to generate short link.');
-    }
-    const data = await response.json();
-    return data.shortLink || link;
-  } catch (error) {
-    console.error('Error generating dynamic link:', error);
-    return link;
-  }
-};
-
-const ShareModal: React.FC<{
-    isOpen: boolean;
-    onClose: () => void;
-    title: string;
-    url: string;
-    isGenerating: boolean;
-}> = ({ isOpen, onClose, title, url, isGenerating }) => {
-    const [copied, setCopied] = useState(false);
-
-    useEffect(() => {
-        if (!isOpen) return;
-        setCopied(false);
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, url, onClose]);
-
-    const handleCopy = () => {
-        navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    if (!isOpen) return null;
-    
-    const shareText = encodeURIComponent(title);
-    const encodedUrl = encodeURIComponent(url);
-
-    return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={onClose}>
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
-                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
-                    <h2 className="text-xl font-playfair text-pm-gold">Partager</h2>
-                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
-                </header>
-                <main className="p-6 space-y-4">
-                    {isGenerating ? (
-                        <div className="flex items-center justify-center h-24">
-                            <p className="text-pm-gold animate-pulse">Génération du lien...</p>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="flex items-center gap-2">
-                                <input type="text" readOnly value={url} className="admin-input flex-grow !pr-10" />
-                                <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
-                                    {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
-                                </button>
-                            </div>
-                            <div className="flex justify-center gap-4 pt-2">
-                                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><FacebookIcon className="w-10 h-10" /></a>
-                                <a href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><TwitterIcon className="w-10 h-10 bg-white rounded-full p-1" /></a>
-                                <a href={`https://api.whatsapp.com/send?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><WhatsAppIcon className="w-10 h-10" /></a>
-                            </div>
-                        </>
-                    )}
-                </main>
-            </div>
-        </div>
-    );
-};
-
-// --- News Carousel Component ---
-interface NewsCarouselProps {
-    articles: Article[];
-    apiKeys: ApiKeys | undefined;
-}
-
-const NewsCarousel: React.FC<NewsCarouselProps> = ({ articles, apiKeys }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isShareOpen, setIsShareOpen] = useState(false);
-    const [shortUrl, setShortUrl] = useState('');
-    const [isGeneratingLink, setIsGeneratingLink] = useState(false);
-    
-    useEffect(() => {
-        if (articles.length < 2) return;
-        const intervalId = setInterval(() => {
-            setCurrentIndex(prevIndex => (prevIndex + 1) % articles.length);
-        }, 30000);
-        return () => clearInterval(intervalId);
-    }, [articles.length]);
-
-    const goToNews = (index: number) => {
-        setCurrentIndex(index);
-    };
-    
-    const handleShareClick = async () => {
-        setIsShareOpen(true);
-        setShortUrl('');
-        setIsGeneratingLink(true);
-
-        const currentArticle = articles[currentIndex];
-        if (!currentArticle) return;
-
-        const longUrl = `${window.location.origin}/#/magazine/${currentArticle.slug}`;
-        const generatedUrl = await generateShortLink({
-            link: longUrl,
-            title: currentArticle.title,
-            description: currentArticle.excerpt,
-            imageUrl: currentArticle.imageUrl,
-        }, apiKeys);
-
-        setShortUrl(generatedUrl);
-        setIsGeneratingLink(false);
-    };
-
-
-    const currentArticle = articles[currentIndex];
-    if (!currentArticle) return null;
-
-    return (
-        <>
-            <div className="relative max-w-6xl mx-auto bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-2xl shadow-black/50">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentIndex}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="relative aspect-video w-full flex items-end justify-start text-left"
-                    >
-                        <img src={currentArticle.imageUrl} alt={currentArticle.title} className="absolute inset-0 w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
-                        <div className="relative z-10 p-6 md:p-10 lg:p-12 text-white md:w-3/4 lg:w-2/3">
-                            <h3 className="text-2xl md:text-4xl font-playfair text-pm-gold font-extrabold mb-3">{currentArticle.title}</h3>
-                            <p className="text-sm md:text-base text-pm-off-white/90 mb-5">{currentArticle.excerpt}</p>
-                             <div className="flex items-center gap-4">
-                                <Link to={`/magazine/${currentArticle.slug}`} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                                    Lire la suite
-                                </Link>
-                                <button onClick={handleShareClick} className="p-3 bg-pm-dark/50 border border-pm-gold/30 rounded-full text-pm-gold hover:bg-pm-gold/20 transition-colors" aria-label="Partager cette actualité">
-                                    <ShareIcon className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
-
-                {articles.length > 1 && (
-                    <>
-                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
-                            {articles.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => goToNews(index)}
-                                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${currentIndex === index ? 'bg-pm-gold scale-125' : 'bg-white/40 hover:bg-white/80'}`}
-                                    aria-label={`Aller à l'actualité ${index + 1}`}
-                                />
-                            ))}
-                        </div>
-                        <div className="absolute bottom-0 left-0 w-full h-1 bg-pm-gold/20 z-10">
-                             <motion.div
-                                key={currentIndex}
-                                className="h-full bg-pm-gold"
-                                initial={{ width: '0%' }}
-                                animate={{ width: '100%' }}
-                                transition={{ duration: 30, ease: 'linear' }}
-                             />
-                        </div>
-                    </>
-                )}
-            </div>
-             <ShareModal
-                isOpen={isShareOpen}
-                onClose={() => setIsShareOpen(false)}
-                title={currentArticle.title}
-                url={shortUrl}
-                isGenerating={isGeneratingLink}
-            />
-        </>
-    );
-};
-
+import { ArrowRightIcon, StarIcon, UserGroupIcon, BriefcaseIcon } from '@heroicons/react/24/outline';
 
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
 
-  if (!isInitialized) {
-    return (
-      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
-          <p className="text-pm-gold">Chargement de la page d'accueil...</p>
-        </div>
-      </div>
-    );
+  if (!isInitialized || !data) {
+    return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  if (!data) {
-    return (
-      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-bold mb-4 text-red-500">Erreur de chargement</h2>
-          <p className="text-pm-off-white/70 mb-6">Impossible de charger les données de la page d'accueil.</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-6 py-2 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
-          >
-            Recharger la page
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, articles, apiKeys } = data;
-  const publicModels = models.filter(m => m.isPublic).sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 4);
-  const featuredServices = agencyServices.slice(0, 4);
-  const featuredArticles = articles.filter(a => a.isFeatured).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
-  
-  const nextEvent = fashionDayEvents
-    .filter(e => new Date(e.date).getTime() > new Date().getTime())
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
-
-
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Perfect Models Management",
-    "url": window.location.origin,
-    "logo": siteConfig.logo,
-    "sameAs": [
-      socialLinks.facebook,
-      socialLinks.instagram,
-      socialLinks.youtube
-    ].filter(Boolean)
-  };
+  const { models, agencyServices, testimonials, siteImages } = data;
+  const publicModels = models.filter(m => m.isPublic).slice(0, 4);
+  const featuredServices = agencyServices.slice(0, 3);
 
   return (
     <div className="bg-pm-dark text-pm-off-white">
-
       <SEO 
-        title="Perfect Models Management"
-        description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
-        keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
+        title="Perfect Models Management - L'Élégance Redéfinie"
+        description="L'agence de mannequins de référence au Gabon. Découvrez nos talents, nos services et notre vision qui façonne l'avenir de la mode."
         image={siteImages.hero}
-        schema={organizationSchema}
       />
 
-      {/* 1. Hero Section with Enhanced Animations */}
-      <section className="relative h-[90vh] lg:h-screen flex flex-col items-center justify-center text-center bg-cover bg-center bg-fixed overflow-hidden" 
-        style={{ backgroundImage: `url('${siteImages.hero}')` }}>
-        
-        {/* Overlay avec gradient animé */}
-        <div className="absolute inset-0 bg-gradient-to-br from-pm-dark/80 via-pm-dark/60 to-pm-gold/20"></div>
-        
-        {/* Particules flottantes */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 bg-pm-gold/30 rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -20, 0],
-                opacity: [0.3, 0.8, 0.3],
-              }}
-              transition={{
-                duration: 6 + Math.random() * 4,
-                repeat: Infinity,
-                delay: Math.random() * 6,
-              }}
-            />
-          ))}
-        </div>
-        
-        <div className="relative z-10 p-6 w-full max-w-5xl space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
+      {/* Hero Section */}
+      <section 
+        className="relative h-screen flex items-center justify-center text-center bg-cover bg-center"
+        style={{ backgroundImage: `url(${siteImages.hero})` }}
+      >
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative z-10 p-6 max-w-4xl mx-auto">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="text-5xl md:text-7xl lg:text-8xl font-playfair font-bold text-white leading-tight"
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter px-4 text-glow-strong">
-              L'Élégance Redéfinie
-            </h1>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            L'Élégance Redéfinie
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+            className="mt-6 text-lg md:text-xl text-pm-off-white/90 max-w-2xl mx-auto"
           >
-            <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
-              Nous révélons les talents et valorisons la beauté africaine.
-            </p>
+            Perfect Models Management : l'agence qui révèle les talents et sublime la beauté africaine.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+            className="mt-10"
+          >
+            <Link to="/contact" className="inline-flex items-center gap-3 bg-pm-gold text-pm-dark font-bold px-8 py-4 rounded-full text-lg hover:bg-white transition-all shadow-lg shadow-pm-gold/20">
+              Démarrez votre projet
+              <ArrowRightIcon className="w-5 h-5" />
+            </Link>
           </motion.div>
-          
-          {nextEvent ? (
-              <div className="mt-10 bg-black/50 backdrop-blur-sm py-4 sm:py-6 px-2 sm:px-4 rounded-lg border border-pm-gold/20 mx-2 sm:mx-4">
-                  <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-playfair text-white mb-2 px-2">
-                      Prochain Événement : Perfect Fashion Day - Édition {nextEvent.edition}
-                  </h3>
-                  <p className="text-lg md:text-xl text-pm-gold mb-6">"{nextEvent.theme}"</p>
-                  <div className="my-6">
-                     <CountdownTimer targetDate={nextEvent.date} />
-                  </div>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                    className="relative inline-block"
-                  >
-                    <Link to="/fashion-day-application" className="relative px-4 sm:px-6 md:px-8 py-2 sm:py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs sm:text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform overflow-hidden group">
-                      <span className="relative z-10">Participer à l'Édition {nextEvent.edition}</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                    </Link>
-                  </motion.div>
-              </div>
-          ) : (
-              <div className="mt-10">
-                  <p className="text-pm-off-white/80 max-w-3xl mx-auto">
-                      Restez à l'écoute pour l'annonce de notre prochaine édition !
-                  </p>
-              </div>
-          )}
         </div>
-        
-        {/* Scroll indicator avec animation */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        >
-          <div className="w-6 h-10 border-2 border-pm-gold rounded-full flex justify-center">
-            <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-1 h-3 bg-pm-gold rounded-full mt-2"
-            />
-          </div>
-        </motion.div>
       </section>
 
-      <div className="page-container">
-        {/* 2. Agency Presentation */}
-        <section>
-            <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg">
-                <h2 className="section-title">Notre Agence</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center mt-8">
-                    <div className="p-1 border-2 border-pm-gold/30 hover:border-pm-gold transition-all duration-300 rounded-lg">
-                        <img src={siteImages.about} alt="L'équipe de Perfect Models Management" className="w-full h-full object-cover rounded-md" loading="lazy"/>
-                    </div>
-                    <div className="text-center md:text-left">
-                        <p className="text-lg text-pm-off-white/80 mb-6 leading-relaxed">
-                            {agencyInfo.about.p1}
-                        </p>
-                        <div className="flex flex-wrap justify-center md:justify-start gap-x-2 gap-y-1 text-sm font-bold text-pm-gold/90 mb-8 uppercase tracking-wider">
-                            <span>Professionnalisme</span>
-                            <span className="hidden sm:inline">•</span>
-                            <span>Excellence</span>
-                            <span className="hidden sm:inline">•</span>
-                            <span>Éthique</span>
+      <div className="py-20 md:py-28 space-y-20 md:space-y-28">
+
+        {/* About Section */}
+        <FeatureSection
+            title="Notre Agence"
+            description="Fondée sur l'excellence et la passion, Perfect Models Management est le leader de la mode au Gabon, dédiée à la promotion de talents exceptionnels."
+            link={{ to: "/agence", text: "Découvrir l'agence" }}
+            image={siteImages.about}
+        />
+
+        {/* Services Section */}
+        <section className="container mx-auto px-6">
+            <h2 className="text-3xl md:text-4xl font-bold font-playfair text-center mb-12 text-pm-off-white">Nos Services</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+                {featuredServices.map((service, index) => (
+                    <motion.div
+                        key={service.id}
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
+                        viewport={{ once: true }}
+                        className="bg-black/30 border border-pm-gold/20 rounded-xl p-8 text-center transition-all duration-300 hover:border-pm-gold hover:shadow-xl hover:shadow-pm-gold/10"
+                    >
+                        <div className="w-16 h-16 bg-pm-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <BriefcaseIcon className="w-8 h-8 text-pm-gold" />
                         </div>
-                        <Link to="/agence" className="inline-block px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                            Découvrir l'agence
-                        </Link>
-                    </div>
+                        <h3 className="text-2xl font-playfair text-pm-gold mb-3">{service.title}</h3>
+                        <p className="text-pm-off-white/70 line-clamp-3">{service.description}</p>
+                    </motion.div>
+                ))}
+            </div>
+            <div className="text-center mt-12">
+              <Link to="/services" className="text-pm-gold font-semibold text-lg inline-flex items-center gap-2 group">
+                Voir tous les services
+                <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+        </section>
+
+        {/* Models Section */}
+        <section className="bg-black/20 py-20 md:py-28">
+            <div className="container mx-auto px-6">
+                <h2 className="text-3xl md:text-4xl font-bold font-playfair text-center mb-12 text-pm-off-white">Nos Mannequins</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {publicModels.map((model, index) => (
+                        <EnhancedModelCard key={model.id} model={model} index={index} viewMode='grid' />
+                    ))}
+                </div>
+                <div className="text-center mt-12">
+                    <Link to="/mannequins" className="text-pm-gold font-semibold text-lg inline-flex items-center gap-2 group">
+                        Découvrir tous les talents
+                        <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    </Link>
                 </div>
             </div>
         </section>
 
-        {/* News Carousel Section */}
-        {featuredArticles && featuredArticles.length > 0 && (
-            <section>
-                <h2 className="section-title">Nos Actualités</h2>
-                <NewsCarousel articles={featuredArticles} apiKeys={apiKeys} />
+        {/* Testimonials Section */}
+        {testimonials && testimonials.length > 0 && (
+            <section className="container mx-auto px-6">
+                <h2 className="text-3xl md:text-4xl font-bold font-playfair text-center mb-12 text-pm-off-white">Ce qu'ils disent de nous</h2>
+                <TestimonialCarousel />
             </section>
         )}
 
-        {/* 3. Services */}
-        <section>
-          <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg">
-            <ScrollReveal>
-              <h2 className="section-title">Nos Prestations</h2>
-            </ScrollReveal>
-            <StaggerOnScroll staggerDelay={0.15}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                {featuredServices.map((service, index) => (
-                  <EnhancedServiceCard key={service.title} service={service} index={index} />
-                ))}
-              </div>
-            </StaggerOnScroll>
-            <ScrollReveal delay={0.4}>
-              <div className="text-center mt-12">
-                <Link to="/services" className="btn-primary">
-                  Découvrir nos prestations
-                </Link>
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* 3.5. Perfect Fashion Day Editions */}
-        <section>
-          <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg">
-            <ScrollReveal>
-              <h2 className="section-title">Perfect Fashion Day</h2>
-            </ScrollReveal>
-            <TextReveal delay={0.2}>
-              <p className="text-center text-pm-off-white/80 mb-12 max-w-3xl mx-auto">
-                Découvrez nos éditions exceptionnelles qui célèbrent la mode gabonaise et l'élégance africaine.
-              </p>
-            </TextReveal>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {fashionDayEvents.map(event => (
-                <div key={event.edition} className="group">
-                  <Link to="/fashion-day" className="block">
-                    <div className="bg-black border border-pm-gold/20 rounded-xl overflow-hidden hover:border-pm-gold transition-all duration-300 hover:shadow-2xl hover:shadow-pm-gold/20">
-                      {event.imageUrl && (
-                        <div className="relative h-64 overflow-hidden">
-                          <img 
-                            src={event.imageUrl} 
-                            alt={`Affiche officielle Perfect Fashion Day Édition ${event.edition} - ${event.theme}`}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            loading="lazy"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                          <div className="absolute bottom-4 left-4 right-4">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h3 className="text-2xl font-playfair text-white font-bold">
-                                  Édition {event.edition}
-                                </h3>
-                                <p className="text-pm-gold text-lg font-medium">
-                                  "{event.theme}"
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-white/80 text-sm">
-                                  {new Date(event.date).getFullYear()}
-                                </p>
-                                {event.location && (
-                                  <p className="text-white/60 text-xs">
-                                    {event.location}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <div className="p-6">
-                        <p className="text-pm-off-white/80 text-sm leading-relaxed line-clamp-3">
-                          {event.description}
-                        </p>
-                        <div className="mt-4 flex items-center justify-between">
-                          <span className="text-pm-gold text-sm font-medium">
-                            Découvrir l'édition
-                          </span>
-                          <div className="w-6 h-6 border border-pm-gold rounded-full flex items-center justify-center group-hover:bg-pm-gold transition-colors duration-300">
-                            <svg className="w-3 h-3 text-pm-gold group-hover:text-pm-dark transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-            
-            <div className="text-center mt-12">
-                <Link to="/fashion-day" className="btn-secondary">
-                  Voir les éditions
+        {/* Final CTA */}
+        <section className="container mx-auto px-6">
+            <div className="bg-gradient-to-r from-pm-gold to-yellow-400 rounded-2xl p-12 md:p-16 text-center shadow-2xl shadow-pm-gold/20">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Prêt à créer l'exceptionnel ?</h2>
+                <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8">Contactez-nous pour donner vie à vos projets les plus ambitieux.</p>
+                <Link to="/contact" className="inline-flex items-center gap-3 bg-white text-pm-gold font-bold px-8 py-4 rounded-full text-lg hover:bg-gray-100 transition-all">
+                    Contactez notre équipe
                 </Link>
             </div>
-          </div>
         </section>
       </div>
-      
-      {/* 4. Models (Full bleed for visual variety) */}
-      <section className="bg-black py-20 lg:py-28">
-        <div className="container mx-auto px-6">
-            <ScrollReveal>
-              <h2 className="section-title">Nos Mannequins</h2>
-            </ScrollReveal>
-            <StaggerOnScroll staggerDelay={0.1}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {publicModels.map((model, index) => (
-                  <EnhancedModelCard key={model.id} model={model} index={index} />
-                ))}
-              </div>
-            </StaggerOnScroll>
-            <ScrollReveal delay={0.3}>
-              <div className="text-center mt-12">
-                <Link to="/mannequins" className="btn-secondary">
-                  Voir les mannequins
-                </Link>
-              </div>
-            </ScrollReveal>
-        </div>
-      </section>
-
-      <div className="page-container">
-        {/* 7. Testimonials */}
-        {testimonials && testimonials.length > 0 && (
-          <section>
-            <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg">
-              <ScrollReveal>
-                <h2 className="section-title">Témoignages</h2>
-              </ScrollReveal>
-              <ScaleOnScroll delay={0.2}>
-                <div className="mt-8">
-                  <TestimonialCarousel />
-                </div>
-              </ScaleOnScroll>
-            </div>
-          </section>
-        )}
-
-        {/* 8. Call to Action */}
-        <section>
-          <div className="glass-card p-6 sm:p-8 lg:p-10 rounded-lg text-center">
-            <ScrollReveal>
-              <h2 className="section-title">Prêts à nous rejoindre ?</h2>
-            </ScrollReveal>
-            <TextReveal delay={0.2}>
-              <p className="section-subtitle">
-                Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
-              </p>
-            </TextReveal>
-            <StaggerOnScroll staggerDelay={0.1} direction="up">
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link to="/casting-formulaire" className="w-full sm:w-auto btn-primary">
-                  Postuler
-                </Link>
-                <Link to="/contact" className="w-full sm:w-auto btn-secondary">
-                  Nous Contacter
-                </Link>
-              </div>
-            </StaggerOnScroll>
-          </div>
-        </section>
-      </div>
-
     </div>
   );
 };
+
+const FeatureSection: React.FC<{
+    title: string;
+    description: string;
+    link: { to: string; text: string; };
+    image: string;
+}> = ({ title, description, link, image }) => (
+    <section className="container mx-auto px-6">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                viewport={{ once: true }}
+                className="rounded-2xl overflow-hidden shadow-2xl"
+            >
+                <img src={image} alt={title} className="w-full h-auto object-cover" />
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                viewport={{ once: true }}
+            >
+                <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-6 text-pm-off-white">{title}</h2>
+                <p className="text-lg text-pm-off-white/80 mb-8 leading-relaxed">{description}</p>
+                <Link to={link.to} className="text-pm-gold font-semibold text-lg inline-flex items-center gap-2 group">
+                    {link.text}
+                    <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+            </motion.div>
+        </div>
+    </section>
+);
 
 export default Home;

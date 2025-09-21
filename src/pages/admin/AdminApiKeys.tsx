@@ -54,6 +54,15 @@ const AdminApiKeys: React.FC = () => {
             status: data?.apiKeys?.googleAnalyticsId ? 'configured' : 'missing',
             lastUsed: '2024-01-15 10:45:00',
             usage: 'Active'
+        },
+        {
+            id: 'replicate',
+            name: 'Replicate API',
+            description: 'Génération de contenu IA avancé',
+            value: data?.apiKeys?.replicateApiKey || '',
+            status: data?.apiKeys?.replicateApiKey ? 'configured' : 'missing',
+            lastUsed: 'N/A',
+            usage: 'Inactive'
         }
     ];
 

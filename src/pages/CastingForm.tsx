@@ -1,50 +1,25 @@
 
-
 import React, { useState } from 'react';
-import SEO from '../components/SEO';
+import { Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
-import { emailConfirmationService } from '../services/emailConfirmationService';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { Link } from 'react-router-dom';
+import PublicPageLayout from '../components/PublicPageLayout';
 import ImageUpload from '../components/ImageUpload';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
-
-const ApplicationGuide: React.FC = () => (
-    <div className="bg-pm-dark/50 border border-pm-gold/20 p-6 rounded-lg mb-12 shadow-inner">
-        <div className="flex items-start gap-4">
-            <InformationCircleIcon className="w-8 h-8 text-pm-gold mt-1 flex-shrink-0" />
-            <div>
-                <h2 className="text-xl font-playfair text-pm-gold mb-3">Avant de commencer, lisez attentivement :</h2>
-                <p className="text-pm-off-white/80 mb-4 text-sm">Pour que votre candidature soit considérée, vous devez remplir les critères suivants. Assurez-vous d'avoir des photos naturelles (polas) prêtes.</p>
-                <ul className="list-disc list-inside space-y-2 text-pm-off-white/90 text-sm">
-                    <li><span className="font-semibold">Âge :</span> Ouvert aux candidats de 16 à 25 ans.</li>
-                    <li><span className="font-semibold">Taille minimale :</span> 175cm pour les femmes, 180cm pour les hommes.</li>
-                    <li><span className="font-semibold">Photos :</span> Des photos récentes, sans maquillage, sans filtres et sur fond neutre sont requises.
-                        <ul className="list-['-_'] list-inside ml-4 mt-1 text-pm-off-white/70">
-                            <li>Un portrait (visage et épaules)</li>
-                            <li>Une photo en pied (corps entier)</li>
-                            <li>Une photo de profil</li>
-                        </ul>
-                    </li>
-                    <li><span className="font-semibold">Attitude :</span> Nous recherchons des personnes sérieuses, motivées et professionnelles.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-);
+import { 
+    UserIcon, CakeIcon, GlobeAltIcon, MapPinIcon, EnvelopeIcon, PhoneIcon, ArrowUpOnSquareIcon,
+    ArrowRightIcon, CheckCircleIcon, SparklesIcon, LinkIcon, BeakerIcon
+} from '@heroicons/react/24/outline';
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
     const [formData, setFormData] = useState({
-        firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
-        gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
-        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
+        firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: 'Gabonaise', city: 'Libreville',
+        gender: 'Femme', height: '', weight: '', experience: 'none', instagram: ''
     });
     const [photoUrls, setPhotoUrls] = useState({
-        portrait: null,
-        fullBody: null,
-        profile: null,
+        portrait: null as string | null,
+        fullBody: null as string | null,
+        profile: null as string | null,
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
@@ -60,18 +35,27 @@ const CastingForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStatus('loading');
+        setStatusMessage('');
 
-        if (!data) {
+        if (!data || !saveData) {
             setStatus('error');
-            setStatusMessage('Erreur: Impossible de charger les données de l\'application.');
+            setStatusMessage('Erreur: Impossible de charger les données. Veuillez rafraîchir la page.');
+            return;
+        }
+        
+        if (!photoUrls.portrait || !photoUrls.fullBody || !photoUrls.profile) {
+            setStatus('error');
+            setStatusMessage('Veuillez télécharger les trois photos requises avant de soumettre.');
             return;
         }
 
         const newApplication: CastingApplication = {
-            ...formData,
             id: `casting-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
+            ...formData,
+            height: parseInt(formData.height, 10) || 0,
+            weight: parseInt(formData.weight, 10) || 0,
             photoPortraitUrl: photoUrls.portrait,
             photoFullBodyUrl: photoUrls.fullBody,
             photoProfileUrl: photoUrls.profile,
@@ -80,250 +64,143 @@ const CastingForm: React.FC = () => {
         try {
             const updatedApplications = [...(data.castingApplications || []), newApplication];
             await saveData({ ...data, castingApplications: updatedApplications });
-            
-            // Envoyer notification admin
-            await sendEmailNotification(newApplication, data.apiKeys.brevoApiKey, data.contactInfo.notificationEmail);
-            
-            // Envoyer confirmation à l'utilisateur
-            try {
-                await emailConfirmationService.sendCastingConfirmation({
-                    recipientEmail: formData.email,
-                    recipientName: `${formData.firstName} ${formData.lastName}`,
-                    formType: 'casting',
-                    submissionData: newApplication,
-                    submissionId: newApplication.id
-                });
-            } catch (error) {
-                console.warn('Erreur lors de l\'envoi de la confirmation:', error);
-            }
 
             setStatus('success');
-            setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');
-            setFormData({ // Reset form
-                firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
-                gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
-                eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
-            });
-            setPhotoUrls({ portrait: null, fullBody: null, profile: null }); // Reset photos
-
+            setStatusMessage('Candidature envoyée ! Nous avons bien reçu vos informations. Notre équipe vous contactera si votre profil est retenu.');
         } catch (error) {
             setStatus('error');
-            setStatusMessage("Une erreur est survenue lors de l'envoi de votre candidature.");
-            console.error(error);
+            setStatusMessage("Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
+            console.error("Casting form submission error:", error);
         }
     };
     
+    if (status === 'success') {
+        return (
+            <PublicPageLayout title="Candidature Envoyée" subtitle="">
+                <div className="text-center max-w-2xl mx-auto py-20">
+                    <CheckCircleIcon className="w-24 h-24 text-green-500 mx-auto mb-6" />
+                    <h2 className="text-3xl font-playfair text-pm-gold mb-4">Merci !</h2>
+                    <p className="text-lg text-pm-off-white/80">{statusMessage}</p>
+                    <Link to="/" className="inline-flex items-center gap-2 text-pm-gold font-semibold text-lg group mt-8">
+                        <ArrowRightIcon className="w-5 h-5 transform rotate-180" />
+                        Retour à l'accueil
+                    </Link>
+                </div>
+            </PublicPageLayout>
+        );
+    }
+
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Formulaire de Casting" description="Postulez en ligne pour rejoindre Perfect Models Management. Remplissez notre formulaire pour soumettre votre candidature." noIndex />
-            <div className="container mx-auto px-6 max-w-4xl">
-                <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Postuler au Casting</h1>
-                <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
-                    Remplissez ce formulaire avec attention. C'est votre première étape pour peut-être nous rejoindre.
-                </p>
-                
-                <ApplicationGuide />
-
-                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-8 rounded-lg shadow-lg">
-                    <Section title="Informations Personnelles">
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Prénom" name="firstName" value={formData.firstName} onChange={handleChange} required />
-                            <FormInput label="Nom" name="lastName" value={formData.lastName} onChange={handleChange} required />
-                        </div>
-                         <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Date de Naissance" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} required />
-                            <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange} required>
-                                <option value="Femme">Femme</option>
-                                <option value="Homme">Homme</option>
-                            </FormSelect>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-6">
-                           <FormInput label="Nationalité" name="nationality" value={formData.nationality} onChange={handleChange} required />
-                           <FormInput label="Ville de résidence" name="city" value={formData.city} onChange={handleChange} required />
-                        </div>
-                         <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-                            <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
-                        </div>
-                    </Section>
-
-                    <Section title="Mensurations & Physique">
-                        <div className="grid md:grid-cols-3 gap-6">
-                            <FormInput label="Taille (cm)" name="height" type="number" value={formData.height} onChange={handleChange} required />
-                            <FormInput label="Poids (kg)" name="weight" type="number" value={formData.weight} onChange={handleChange} required />
-                             <FormInput label="Pointure (EU)" name="shoeSize" type="number" value={formData.shoeSize} onChange={handleChange} required />
-                        </div>
-                         <div className="grid md:grid-cols-3 gap-6">
-                            <FormInput label="Poitrine (cm)" name="chest" type="number" value={formData.chest} onChange={handleChange} />
-                            <FormInput label="Taille (vêtement, cm)" name="waist" type="number" value={formData.waist} onChange={handleChange} />
-                            <FormInput label="Hanches (cm)" name="hips" type="number" value={formData.hips} onChange={handleChange} />
-                        </div>
-                         <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Couleur des yeux" name="eyeColor" value={formData.eyeColor} onChange={handleChange} />
-                            <FormInput label="Couleur des cheveux" name="hairColor" value={formData.hairColor} onChange={handleChange} />
-                        </div>
-                    </Section>
-                    
-                     <Section title="Expérience & Portfolio">
-                        <FormSelect label="Niveau d'expérience" name="experience" value={formData.experience} onChange={handleChange} required>
-                            <option value="none">Aucune expérience</option>
-                            <option value="beginner">Débutant(e) (shootings amateurs)</option>
-                            <option value="intermediate">Intermédiaire (agence locale, défilés)</option>
-                            <option value="professional">Professionnel(le)</option>
-                        </FormSelect>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Profil Instagram" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="@pseudo" />
-                            <FormInput label="Lien vers portfolio (optionnel)" name="portfolioLink" value={formData.portfolioLink} onChange={handleChange} />
-                        </div>
-                        <div className="space-y-6 pt-4">
-                            <h3 className="text-lg font-semibold text-pm-off-white/90">Photos Requises</h3>
-                            <p className="text-sm text-pm-off-white/60">Veuillez soumettre des photos récentes, claires et non retouchées (polas).</p>
-                            <div className="grid md:grid-cols-3 gap-6">
-                                <ImageUpload
-                                    label="Photo Portrait (visage)"
-                                    onUploadComplete={handlePhotoUpload('portrait')}
-                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
-                                />
-                                <ImageUpload
-                                    label="Photo Plein Pied"
-                                    onUploadComplete={handlePhotoUpload('fullBody')}
-                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
-                                />
-                                <ImageUpload
-                                    label="Photo de Profil"
-                                    onUploadComplete={handlePhotoUpload('profile')}
-                                    apiKey={data?.apiKeys.imgbbApiKey || ''}
-                                />
-                            </div>
-                        </div>
-                    </Section>
-
-                    <div className="pt-6">
-                        <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
-                            {status === 'loading' ? 'Envoi...' : 'Soumettre ma candidature'}
-                        </button>
+        <PublicPageLayout 
+            title="Devenez Mannequin" 
+            subtitle="Remplissez ce formulaire pour soumettre votre candidature. C'est votre première étape vers une carrière exceptionnelle."
+            heroImage={data?.siteImages.castingFormHero}
+        >
+            <div className="grid lg:grid-cols-3 gap-12">
+                <div className="lg:col-span-1">
+                    <div className="sticky top-28 bg-black/30 border border-pm-gold/20 rounded-xl p-8 space-y-6">
+                        <h3 className="text-2xl font-playfair text-pm-gold">Instructions</h3>
+                        <p className="text-pm-off-white/70">Pour une candidature réussie, veuillez respecter les consignes suivantes.</p>
+                        <InstructionItem icon={UserIcon} title="Critères de base" description="Femmes (16-25 ans, 1m75+), Hommes (18-28 ans, 1m80+)." />
+                        <InstructionItem icon={ArrowUpOnSquareIcon} title="Photos requises" description="Soumettez 3 photos naturelles (polas) : portrait, plein pied et profil. Sans maquillage, sans filtres, sur fond neutre." />
+                        <InstructionItem icon={SparklesIcon} title="Soyez professionnel(le)" description="Ce formulaire est votre premier contact avec nous. Remplissez-le avec sérieux et précision." />
                     </div>
+                </div>
 
-                    {statusMessage && (
-                        <p className={`text-center text-sm p-4 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                            {statusMessage}
-                            {status === 'success' && <Link to="/" className="underline ml-2">Retour à l'accueil</Link>}
-                        </p>
-                    )}
-                </form>
+                <div className="lg:col-span-2">
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <FormSection title="1. Informations Personnelles">
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <FormInput icon={UserIcon} name="firstName" placeholder="Prénom" value={formData.firstName} onChange={handleChange} required />
+                                <FormInput icon={UserIcon} name="lastName" placeholder="Nom" value={formData.lastName} onChange={handleChange} required />
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <FormInput icon={CakeIcon} name="birthDate" type="date" placeholder="Date de Naissance" value={formData.birthDate} onChange={handleChange} required />
+                                <FormSelect name="gender" value={formData.gender} onChange={handleChange}>
+                                    <option>Femme</option>
+                                    <option>Homme</option>
+                                </FormSelect>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <FormInput icon={GlobeAltIcon} name="nationality" placeholder="Nationalité" value={formData.nationality} onChange={handleChange} required />
+                                <FormInput icon={MapPinIcon} name="city" placeholder="Ville de résidence" value={formData.city} onChange={handleChange} required />
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <FormInput icon={EnvelopeIcon} name="email" type="email" placeholder="Adresse Email" value={formData.email} onChange={handleChange} required />
+                                <FormInput icon={PhoneIcon} name="phone" type="tel" placeholder="Numéro de téléphone" value={formData.phone} onChange={handleChange} required />
+                            </div>
+                        </FormSection>
+
+                        <FormSection title="2. Mensurations et Expérience">
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <FormInput icon={BeakerIcon} name="height" type="number" placeholder="Taille (cm)" value={formData.height} onChange={handleChange} required />
+                                <FormInput icon={BeakerIcon} name="weight" type="number" placeholder="Poids (kg)" value={formData.weight} onChange={handleChange} required />
+                                 <FormSelect name="experience" value={formData.experience} onChange={handleChange}>
+                                    <option value="none">Débutant(e)</option>
+                                    <option value="beginner">Quelques shoots</option>
+                                    <option value="intermediate">En agence locale</option>
+                                    <option value="professional">Professionnel(le)</option>
+                                </FormSelect>
+                            </div>
+                             <FormInput icon={LinkIcon} name="instagram" placeholder="Profil Instagram (ex: @perfectmodels.ga)" value={formData.instagram} onChange={handleChange} />
+                        </FormSection>
+
+                        <FormSection title="3. Photos (Polas)">
+                             <p className="text-sm text-pm-off-white/60 -mt-4 mb-4">Photos naturelles, sans maquillage, sans filtres, sur fond neutre.</p>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <ImageUpload label="Portrait (visage)" onUploadComplete={handlePhotoUpload('portrait')} apiKey={data?.apiKeys.imgbbApiKey} />
+                                <ImageUpload label="Plein Pied (corps entier)" onUploadComplete={handlePhotoUpload('fullBody')} apiKey={data?.apiKeys.imgbbApiKey} />
+                                <ImageUpload label="Profil" onUploadComplete={handlePhotoUpload('profile')} apiKey={data?.apiKeys.imgbbApiKey} />
+                            </div>
+                        </FormSection>
+
+                        <div className="pt-6">
+                            {statusMessage && (
+                                <div className={`mb-6 flex items-center gap-3 p-4 rounded-lg text-sm ${status === 'error' ? 'bg-red-500/10 text-red-300 border border-red-500/20' : 'bg-yellow-500/10 text-yellow-300 border border-yellow-500/20'}`}>
+                                    <BeakerIcon className="w-5 h-5" />
+                                    {statusMessage}
+                                </div>
+                            )}
+                            <button type="submit" disabled={status === 'loading'} className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-pm-gold text-pm-dark font-bold text-lg rounded-full hover:bg-white transition-all disabled:opacity-60">
+                                {status === 'loading' ? 'Envoi en cours...' : 'Soumettre ma candidature'}
+                                <ArrowRightIcon className="w-5 h-5" />
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
+        </PublicPageLayout>
     );
 };
 
-// Reusable components
-const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
-    <div className="space-y-6 pt-6 border-t border-pm-gold/10 first:pt-0 first:border-none">
-        <h2 className="text-xl font-playfair text-pm-gold">{title}</h2>
+const InstructionItem: React.FC<{ icon: React.ElementType, title: string, description: string }> = ({ icon: Icon, title, description }) => (
+    <div className="flex items-start gap-4">
+        <Icon className="w-6 h-6 text-pm-gold flex-shrink-0 mt-1" />
+        <div>
+            <h4 className="font-semibold text-pm-off-white">{title}</h4>
+            <p className="text-sm text-pm-off-white/70">{description}</p>
+        </div>
+    </div>
+);
+
+const FormSection: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
+    <fieldset className="space-y-6 border-t border-pm-gold/20 pt-6">
+        <legend className="text-xl font-playfair text-pm-gold font-bold px-2 -ml-2">{title}</legend>
         <div className="space-y-6">{children}</div>
+    </fieldset>
+);
+
+const FormInput: React.FC<any> = ({ icon: Icon, ...props }) => (
+    <div className="relative">
+        {Icon && <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"><Icon className="w-5 h-5 text-pm-gold/50" /></div>}
+        <input {...props} className={`w-full bg-black/40 border border-pm-gold/30 rounded-full py-3 text-pm-off-white placeholder:text-pm-off-white/50 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 transition-all ${Icon ? 'pl-12 pr-4' : 'px-5'}`} />
     </div>
 );
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <input {...props} id={props.name} className="admin-input" />
-    </div>
-);
-const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <select {...props} id={props.name} className="admin-input">{props.children}</select>
-    </div>
+
+const FormSelect: React.FC<any> = ({ children, ...props }) => (
+    <select {...props} className="w-full bg-black/40 border border-pm-gold/30 rounded-full px-5 py-3 text-pm-off-white focus:outline-none focus:ring-2 focus:ring-pm-gold/50 transition-all appearance-none">
+        {children}
+    </select>
 );
 
 export default CastingForm;
-
-async function sendEmailNotification(application: CastingApplication, apiKey?: string, notificationEmail?: string) {
-    if (!apiKey || !notificationEmail) {
-        console.warn("Brevo API key or notification email is not configured. Skipping email notification.");
-        return;
-    }
-
-    const emailHtml = `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-            <h1 style="color: #D4AF37;">Nouvelle Candidature au Casting</h1>
-            <p>Une nouvelle candidature a été soumise via le formulaire du site.</p>
-            
-            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Informations Personnelles</h2>
-            <ul>
-                <li><strong>Nom:</strong> ${application.firstName} ${application.lastName}</li>
-                <li><strong>Date de naissance:</strong> ${application.birthDate}</li>
-                <li><strong>Email:</strong> ${application.email}</li>
-                <li><strong>Téléphone:</strong> ${application.phone}</li>
-                <li><strong>Nationalité:</strong> ${application.nationality}</li>
-                <li><strong>Ville:</strong> ${application.city}</li>
-            </ul>
-
-            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Mensurations & Physique</h2>
-            <ul>
-                <li><strong>Genre:</strong> ${application.gender}</li>
-                <li><strong>Taille:</strong> ${application.height} cm</li>
-                <li><strong>Poids:</strong> ${application.weight} kg</li>
-                <li><strong>Poitrine:</strong> ${application.chest} cm</li>
-                <li><strong>Taille (vêtement):</strong> ${application.waist} cm</li>
-                <li><strong>Hanches:</strong> ${application.hips} cm</li>
-                <li><strong>Pointure:</strong> ${application.shoeSize}</li>
-                <li><strong>Couleur des yeux:</strong> ${application.eyeColor}</li>
-                <li><strong>Couleur des cheveux:</strong> ${application.hairColor}</li>
-            </ul>
-
-            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Expérience & Portfolio</h2>
-            <ul>
-                <li><strong>Expérience:</strong> ${application.experience}</li>
-                <li><strong>Instagram:</strong> <a href="https://instagram.com/${application.instagram.replace('@', '')}">${application.instagram}</a></li>
-                <li><strong>Portfolio:</strong> <a href="${application.portfolioLink}">${application.portfolioLink}</a></li>
-            </ul>
-            
-            <h2 style="border-bottom: 2px solid #D4AF37; padding-bottom: 5px;">Photos Soumises</h2>
-            <p>
-                <a href="${application.photoPortraitUrl}">Voir le portrait</a> | 
-                <a href="${application.photoFullBodyUrl}">Voir la photo plein pied</a> | 
-                <a href="${application.photoProfileUrl}">Voir la photo de profil</a>
-            </p>
-
-            <hr>
-            <p style="font-size: 0.8em; color: #888;">Cet e-mail a été envoyé automatiquement depuis le site Perfect Models Management.</p>
-        </div>
-    `;
-
-    const emailData = {
-        sender: {
-            name: "PMM Site Web",
-            email: "noreply@perfectmodels.ga"
-        },
-        to: [
-            {
-                email: notificationEmail,
-                name: "Admin PMM"
-            }
-        ],
-        subject: `Nouvelle Candidature Casting: ${application.firstName} ${application.lastName}`,
-        htmlContent: emailHtml
-    };
-
-    try {
-        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'api-key': apiKey
-            },
-            body: JSON.stringify(emailData)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Erreur API Brevo: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
-        }
-
-        console.log("Email de notification envoyé avec succès !");
-
-    } catch (error) {
-        console.error("Erreur lors de l'envoi de l'e-mail de notification:", error);
-    }
-}

@@ -41,7 +41,7 @@ src/
 - **Styling** : Tailwind CSS, Framer Motion
 - **Routing** : React Router DOM
 - **État** : Context API + Local Storage
-- **APIs Externes** : ImgBB (images), Gemini AI (contenu)
+- **APIs Externes** : ImgBB (images), Gemini AI (contenu), Replicate (IA avancée)
 - **PDF** : jsPDF + html2canvas
 - **PWA** : Service Worker
 
@@ -242,7 +242,7 @@ src/
 - Interface moderne avec sidebar
 
 ### Gestion des Mannequins (`/admin/models`)
-**Fichier** : `src/pages/AdminModels.tsx`
+**Fichier** : `src/pages/admin/models/ModelManagement.tsx`
 
 **Fonctionnalités** :
 - CRUD complet des mannequins
@@ -453,6 +453,7 @@ src/
 ```env
 VITE_IMGBB_API_KEY=your_imgbb_key
 VITE_GEMINI_API_KEY=your_gemini_key
+VITE_REPLICATE_API_KEY=your_replicate_api_key
 ```
 
 ### Scripts Disponibles
@@ -569,7 +570,18 @@ npm run preview  # Aperçu build
 - [ ] Internationalisation
 
 ---
+## 📝 Journal des Modifications
 
-*Dernière mise à jour : Septembre 2025*
-*Version : 1.0.1*
+- **v1.0.3 (05/08/2024)** : 
+    - **Intégration** : Ajout de la clé API Replicate pour les fonctionnalités d'IA avancées.
+    - **Sécurité** : Mise à jour du panel de sécurité pour surveiller la nouvelle clé.
+    - **Documentation** : Création de `.env.example` et mise à jour de la fiche technique.
+- **v1.0.2 (05/08/2024)** : 
+    - **Refactorisation** : Fusion des composants `AdminModels` et `ModelList` en un seul composant `ModelManagement`.
+    - **Nettoyage** : Suppression des fichiers et routes obsolètes.
+    - **Documentation** : Mise à jour de la fiche technique pour refléter les changements.
+
+---
+*Dernière mise à jour : 5 Aout 2024*
+*Version : 1.0.3*
 *Développé par : Perfect Models Management / Graphik Studio*

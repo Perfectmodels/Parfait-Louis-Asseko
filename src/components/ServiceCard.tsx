@@ -1,49 +1,68 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Service } from '../types';
-import { 
-    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
-    MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
+import { motion } from 'framer-motion';
+import { ArrowRightIcon } from '@heroicons/react/24/solid';
+import {
+    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon,
+    MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon,
     PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon, HeartIcon,
     UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon
-} from '@heroicons/react/24/outline';
+} from '@heroicons/react/24/solid';
 
 const iconMap: { [key: string]: React.ElementType } = {
-  AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
-  MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
-  PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon,
-  UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon
+    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
+    MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
+    PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon,
+    UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon
 };
 
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
     const Icon = iconMap[service.icon] || HeartIcon;
-    return (
-        <div className="relative card-base p-8 flex flex-col h-full text-left">
+
+    const cardContent = (
+        <div className="relative p-8 flex flex-col h-full text-left overflow-hidden bg-black/50 rounded-2xl border border-pm-gold/20">
             {service.isComingSoon && (
-                <span className="absolute top-4 right-4 bg-pm-dark text-pm-gold text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-pm-gold/50">
-                    Bientôt disponible
-                </span>
+                 <div className="absolute top-0 right-0 px-3 py-1 bg-pm-gold text-pm-dark text-xs font-bold uppercase tracking-wider">
+                    Bientôt
+                </div>
             )}
-            <div className="flex-shrink-0 mb-4">
-                <Icon className="w-12 h-12 text-pm-gold" aria-hidden="true" />
+            
+            <div className="mb-6">
+                <div className="w-16 h-16 bg-pm-gold/10 rounded-xl flex items-center justify-center">
+                    <Icon className="w-8 h-8 text-pm-gold" />
+                </div>
             </div>
+
             <div className="flex-grow">
-                <h3 className="text-2xl font-playfair text-pm-gold mb-3">{service.title}</h3>
-                <p className="text-pm-off-white/80 mb-6">{service.description}</p>
+                <h3 className="text-2xl font-playfair font-bold text-white mb-3">{service.title}</h3>
+                <p className="text-pm-off-white/70 leading-relaxed">{service.description}</p>
             </div>
-            <div className="mt-auto pt-6">
-                <Link 
-                    to={`/services/${service.slug}`}
-                    className={`inline-block px-8 py-3 font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 shadow-md ${
-                        service.isComingSoon 
-                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600' 
-                        : 'bg-pm-gold text-pm-dark hover:bg-white hover:scale-105 shadow-pm-gold/20'
-                    }`}
-                >
-                    Voir les détails
-                </Link>
+
+            <div className="mt-8">
+                <div className={`flex items-center gap-3 font-semibold text-sm ${service.isComingSoon ? 'text-pm-off-white/50' : 'text-pm-gold'}`}>
+                    <span>{service.isComingSoon ? 'Indisponible' : 'En savoir plus'}</span>
+                    {!service.isComingSoon && <ArrowRightIcon className="w-4 h-4" />}
+                </div>
             </div>
         </div>
+    );
+
+    return (
+        <motion.div
+            whileHover={{ y: -8, scale: 1.02 }}
+            className="h-full"
+            transition={{ type: 'spring', stiffness: 300 }}
+        >
+            {service.isComingSoon ? (
+                <div className="h-full cursor-not-allowed">{cardContent}</div>
+            ) : (
+                <Link to={`/services/${service.slug}`} className="h-full block">
+                    {cardContent}
+                </Link>
+            )}
+        </motion.div>
     );
 };
 

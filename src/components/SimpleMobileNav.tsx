@@ -1,130 +1,98 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  HomeIcon, 
-  UserGroupIcon, 
-  SparklesIcon, 
-  NewspaperIcon, 
+import { useData } from '../contexts/DataContext';
+import {
+  HomeIcon,
+  UserGroupIcon,
+  SparklesIcon,
+  NewspaperIcon,
   PhotoIcon,
-  Cog6ToothIcon,
-  UserIcon
-} from '@heroicons/react/24/outline';
+  ArrowRightOnRectangleIcon,
+  UserIcon,
+} from '@heroicons/react/24/solid'; // Using solid icons for better visibility
 import { motion } from 'framer-motion';
 
-interface NavItem {
-  path: string;
-  label: string;
-  icon: React.ElementType;
-  isProtected?: boolean;
-  requiredRole?: string;
-}
+const iconMap: { [key: string]: React.ElementType } = {
+  Accueil: HomeIcon,
+  Mannequins: UserGroupIcon,
+  'Perfect Fashion Day': SparklesIcon,
+  PFD: SparklesIcon,
+  Magazine: NewspaperIcon,
+  Galerie: PhotoIcon,
+  Profil: UserIcon,
+};
+
+const MobileNavItem: React.FC<{ path: string; label: string; icon: React.ElementType; isActive: boolean; }> = ({ path, label, icon: Icon, isActive }) => {
+  return (
+    <Link to={path} className="flex-1 flex flex-col items-center justify-center py-2 relative">
+      <Icon className={`w-6 h-6 mb-1 transition-colors ${isActive ? 'text-pm-gold' : 'text-pm-off-white/60'}`} />
+      <span className={`text-xs font-medium transition-colors ${isActive ? 'text-white' : 'text-pm-off-white/70'}`}>
+        {label}
+      </span>
+      {isActive && (
+        <motion.div
+          layoutId="mobile-active-indicator"
+          className="absolute bottom-0 h-1 w-8 bg-pm-gold rounded-full"
+        />
+      )}
+    </Link>
+  );
+};
+
 
 const SimpleMobileNav: React.FC = () => {
   const location = useLocation();
+  const { data } = useData();
   const isLoggedIn = sessionStorage.getItem('classroom_access') === 'granted';
   const userRole = sessionStorage.getItem('classroom_role');
+  const userId = sessionStorage.getItem('userId');
 
-  const navItems: NavItem[] = [
-    { path: '/', label: 'Accueil', icon: HomeIcon },
-    { path: '/mannequins', label: 'Mannequins', icon: UserGroupIcon },
-    { path: '/fashion-day', label: 'PFD', icon: SparklesIcon },
-    { path: '/magazine', label: 'Magazine', icon: NewspaperIcon },
-    { path: '/galerie', label: 'Galerie', icon: PhotoIcon },
-    { 
-      path: '/formations', 
-      label: 'Formations', 
-      icon: Cog6ToothIcon, 
-      isProtected: true, 
-      requiredRole: 'classroom' 
+  const navLinks = data?.navLinks?.filter(l => l.inMobileNav) || [];
+
+  const getProfilePath = () => {
+    if (!isLoggedIn) return '/login';
+    if (userRole === 'admin') return '/admin';
+    return `/profil/${userId}`;
+  };
+
+  const finalNavItems = [
+    ...navLinks.map(link => ({
+      path: link.path,
+      label: link.mobileLabel || link.label,
+      icon: iconMap[link.label] || HomeIcon,
+    })),
+    {
+      path: getProfilePath(),
+      label: isLoggedIn ? 'Profil' : 'Connexion',
+      icon: isLoggedIn ? UserIcon : ArrowRightOnRectangleIcon,
     },
-    { 
-      path: isLoggedIn && userRole === 'student' ? '/profil' : 
-           isLoggedIn && userRole === 'beginner' ? '/profil-debutant' : 
-           isLoggedIn ? `/profil/${sessionStorage.getItem('userId')}` : '/login',
-      label: 'Profil', 
-      icon: UserIcon, 
-      isProtected: true 
-    }
   ];
 
   const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
-    }
+    if (path === '/') return location.pathname === '/';
+    if (path.startsWith('/profil') && isLoggedIn) return location.pathname.startsWith('/profil');
     return location.pathname.startsWith(path);
-  };
-
-  const canAccess = (item: NavItem) => {
-    if (!item.isProtected) return true;
-    if (!isLoggedIn) return false;
-    if (item.requiredRole === 'classroom') {
-      return userRole === 'student' || userRole === 'beginner';
-    }
-    return true;
   };
 
   return (
     <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
+      initial={{ y: '100%' }}
+      animate={{ y: '0%' }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed bottom-0 left-0 right-0 z-40 lg:hidden print-hide"
     >
-      <div className="bg-black/90 backdrop-blur-xl border-t border-pm-gold/20 shadow-2xl">
-        <div className="flex items-center justify-around py-2 px-4">
-          {navItems.map((item, index) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            const accessible = canAccess(item);
-
-            return (
-              <motion.div
-                key={item.path}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ 
-                  duration: 0.3, 
-                  delay: index * 0.05,
-                  ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-                className="flex-1"
-              >
-                <Link
-                  to={accessible ? item.path : '/login'}
-                  className={`flex flex-col items-center justify-center py-2 px-1 rounded-lg transition-all duration-300 ${
-                    active 
-                      ? 'text-pm-gold bg-pm-gold/10' 
-                      : accessible 
-                        ? 'text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/5' 
-                        : 'text-pm-off-white/30'
-                  }`}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Icon className={`w-5 h-5 mb-1 ${active ? 'text-pm-gold' : ''}`} />
-                  </motion.div>
-                  <span className={`text-xs font-medium leading-tight ${
-                    active ? 'text-pm-gold' : ''
-                  }`}>
-                    {item.label}
-                  </span>
-                  
-                  {/* Active indicator */}
-                  {active && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-pm-gold rounded-full"
-                    />
-                  )}
-                </Link>
-              </motion.div>
-            );
-          })}
+      <div className="bg-black/80 backdrop-blur-lg border-t border-pm-gold/20">
+        <div className="flex justify-around items-start pt-1 pb-safe">
+          {finalNavItems.map((item) => (
+            <MobileNavItem
+              key={item.path}
+              path={item.path}
+              label={item.label}
+              icon={item.icon}
+              isActive={isActive(item.path)}
+            />
+          ))}
         </div>
       </div>
     </motion.div>
