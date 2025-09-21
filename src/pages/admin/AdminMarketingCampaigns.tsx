@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { 
     ArrowLeftIcon, 
     PlusIcon, 
@@ -12,32 +13,33 @@ import {
     PauseIcon,
     DocumentArrowUpIcon
 } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
-import { getCampaigns, getContacts, Campaign, Contact } from '../../services/contactService';
+import { Link, useNavigate } from 'react-router-dom';
+import { useData } from '../../contexts/DataContext';
+import { Campaign } from '../../types';
 import SEO from '../../components/SEO';
 
 const AdminMarketingCampaigns: React.FC = () => {
-    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-    const [contacts, setContacts] = useState<Contact[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data, saveData } = useData();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
-    // Charger les données au montage du composant
-    useEffect(() => {
-        const loadData = () => {
+    const campaigns = data?.campaigns || [];
+    const contacts = data?.contacts || [];
+
+    const handleDeleteCampaign = async (campaignId: string) => {
+        if (!data) return;
+
+        if (window.confirm("Êtes-vous sûr de vouloir supprimer cette campagne ? Cette action est irréversible.")) {
             try {
-                const loadedCampaigns = getCampaigns();
-                const loadedContacts = getContacts();
-                setCampaigns(loadedCampaigns);
-                setContacts(loadedContacts);
+                const updatedCampaigns = data.campaigns.filter(c => c.id !== campaignId);
+                await saveData({ ...data, campaigns: updatedCampaigns });
+                alert("Campagne supprimée avec succès.");
             } catch (error) {
-                console.error('Erreur lors du chargement des données:', error);
-            } finally {
-                setLoading(false);
+                console.error("Erreur lors de la suppression de la campagne:", error);
+                alert("Une erreur est survenue lors de la suppression.");
             }
-        };
-
-        loadData();
-    }, []);
+        }
+    };
 
     const getStatusColor = (status: Campaign['status']) => {
         switch (status) {
@@ -94,13 +96,13 @@ const AdminMarketingCampaigns: React.FC = () => {
                                 <DocumentArrowUpIcon className="w-5 h-5" />
                                 Importer Contacts
                             </Link>
-                            <Link
-                                to="/admin/create-campaign"
+                            <button
+                                onClick={() => navigate('/admin/create-campaign')}
                                 className="flex items-center gap-2 bg-pm-gold text-pm-dark px-4 py-2 rounded-lg font-semibold hover:bg-pm-gold/80 transition-colors"
                             >
                                 <PlusIcon className="w-5 h-5" />
                                 Nouvelle Campagne
-                            </Link>
+                            </button>
                         </div>
                     </div>
 
@@ -129,7 +131,7 @@ const AdminMarketingCampaigns: React.FC = () => {
                                 <ChartBarIcon className="w-8 h-8 text-pm-gold" />
                                 <div>
                                     <div className="text-2xl font-bold text-pm-gold">
-                                        {campaigns.length > 0 ? Math.round(campaigns.reduce((acc, c) => acc + c.opened, 0) / campaigns.reduce((acc, c) => acc + c.sent, 0) * 100) || 0 : 0}%
+                                        {campaigns.length > 0 ? Math.round(campaigns.reduce((acc, c) => acc + c.openCount, 0) / campaigns.reduce((acc, c) => acc + c.sentCount, 0) * 100) || 0 : 0}%
                                     </div>
                                     <div className="text-pm-off-white/70 text-sm">Taux d'ouverture</div>
                                 </div>
@@ -140,7 +142,7 @@ const AdminMarketingCampaigns: React.FC = () => {
                                 <EyeIcon className="w-8 h-8 text-pm-gold" />
                                 <div>
                                     <div className="text-2xl font-bold text-pm-gold">
-                                        {campaigns.length > 0 ? Math.round(campaigns.reduce((acc, c) => acc + c.clicked, 0) / campaigns.reduce((acc, c) => acc + c.sent, 0) * 100) || 0 : 0}%
+                                        {campaigns.length > 0 ? Math.round(campaigns.reduce((acc, c) => acc + c.clickCount, 0) / campaigns.reduce((acc, c) => acc + c.sentCount, 0) * 100) || 0 : 0}%
                                     </div>
                                     <div className="text-pm-off-white/70 text-sm">Taux de clic</div>
                                 </div>
@@ -182,12 +184,12 @@ const AdminMarketingCampaigns: React.FC = () => {
                                                     {getStatusText(campaign.status)}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-pm-off-white/80">{campaign.recipients.length}</td>
+                                            <td className="px-6 py-4 text-pm-off-white/80">{campaign.recipients.value.join(', ')}</td>
                                             <td className="px-6 py-4 text-pm-off-white/80">
-                                                {campaign.opened} ({campaign.recipients.length > 0 ? Math.round((campaign.opened / campaign.recipients.length) * 100) : 0}%)
+                                                {campaign.openCount} ({campaign.sentCount > 0 ? Math.round((campaign.openCount / campaign.sentCount) * 100) : 0}%)
                                             </td>
                                             <td className="px-6 py-4 text-pm-off-white/80">
-                                                {campaign.clicked} ({campaign.recipients.length > 0 ? Math.round((campaign.clicked / campaign.recipients.length) * 100) : 0}%)
+                                                {campaign.clickCount} ({campaign.sentCount > 0 ? Math.round((campaign.clickCount / campaign.sentCount) * 100) : 0}%)
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
@@ -206,7 +208,7 @@ const AdminMarketingCampaigns: React.FC = () => {
                                                             <PlayIcon className="w-4 h-4" />
                                                         </button>
                                                     ) : null}
-                                                    <button className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                                                    <button onClick={() => handleDeleteCampaign(campaign.id)} className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
                                                         <TrashIcon className="w-4 h-4" />
                                                     </button>
                                                 </div>

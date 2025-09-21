@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { Service } from '../types';
@@ -17,22 +17,23 @@ import {
 const ServicesContent: React.FC = () => {
     const { data } = useData();
     const services = data?.agencyServices || [];
+    const testimonialsCount = data?.testimonials?.length || 0;
 
-    const servicesByCategory = services.reduce((acc, service) => {
+    const servicesByCategory = useMemo(() => services.reduce((acc, service) => {
         const category = service.category || 'Services Premium';
         if (!acc[category]) {
             acc[category] = [];
         }
         acc[category].push(service);
         return acc;
-    }, {} as Record<string, Service[]>);
+    }, {} as Record<string, Service[]>), [services]);
 
-    const categoryOrder: (keyof typeof servicesByCategory)[] = [
+    const categoryOrder: (keyof typeof servicesByCategory)[] = useMemo(() => [
         'Services Mannequinat',
         'Services Mode et Stylisme',
         'Services Événementiels',
         'Services Premium'
-    ];
+    ], []);
     
     const [activeCategory, setActiveCategory] = useState<string>(categoryOrder[0]);
 
@@ -72,14 +73,14 @@ const ServicesContent: React.FC = () => {
                             Commandez en ligne avec notre système moderne et sécurisé.
                         </p>
                         
-                        {/* Stats */}
+                        {/* Stats dynamiques */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
                             <div className="text-center">
-                                <div className="text-3xl font-bold mb-2">500+</div>
+                                <div className="text-3xl font-bold mb-2">{testimonialsCount}+</div>
                                 <div className="text-white/80">Clients satisfaits</div>
                             </div>
                             <div className="text-center">
-                                <div className="text-3xl font-bold mb-2">50+</div>
+                                <div className="text-3xl font-bold mb-2">{services.length}+</div>
                                 <div className="text-white/80">Services disponibles</div>
                             </div>
                             <div className="text-center">

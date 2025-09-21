@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { siteConfig, socialLinks } from '../constants/data';
 
 interface SEOProps {
@@ -7,9 +9,9 @@ interface SEOProps {
   keywords?: string;
   image?: string;
   noIndex?: boolean;
-  schema?: object; // JSON-LD personnalisé
-  canonicalUrl?: string; // Nouveau : URL canonique
-  type?: 'website' | 'article' | 'profile' | 'event'; // Nouveau : type Open Graph
+  schema?: object;
+  canonicalUrl?: string;
+  type?: 'website' | 'article' | 'profile' | 'event';
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -17,123 +19,92 @@ const SEO: React.FC<SEOProps> = ({
   description,
   keywords,
   image,
-  noIndex,
+  noIndex = false,
   schema,
   canonicalUrl,
   type = 'website',
 }) => {
-  useEffect(() => {
-    const defaultTitle = 'Perfect Models Management';
-    const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
+  const location = useLocation();
+  const siteUrl = `${window.location.origin}${location.pathname}${location.search}`;
 
-    document.title = pageTitle;
+  const defaultTitle = siteConfig.name || 'Perfect Models Management';
+  const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
 
-    const setMeta = (name: string, content: string | undefined, isProperty: boolean = false) => {
-      if (!content) return;
-      const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
-      let element = document.head.querySelector(selector) as HTMLMetaElement;
-      if (!element) {
-        element = document.createElement('meta');
-        if (isProperty) {
-          element.setAttribute('property', name);
-        } else {
-          element.setAttribute('name', name);
-        }
-        document.head.appendChild(element);
-      }
-      element.setAttribute('content', content);
-    };
+  const defaultDescription =
+    siteConfig.description || 
+    "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
+  const finalDescription = description || defaultDescription;
 
-    const setLink = (rel: string, href: string) => {
-      if (!href) return;
-      let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
-      if (!link) {
-        link = document.createElement('link');
-        link.setAttribute('rel', rel);
-        document.head.appendChild(link);
-      }
-      link.setAttribute('href', href);
-    };
+  const defaultKeywords =
+    'mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting';
+  const finalKeywords = keywords ? `${keywords}, ${defaultKeywords}` : defaultKeywords;
+  
+  // Utilise le logo du site si aucune image n'est fournie, sinon une image par défaut
+  const defaultImage = `${window.location.origin}${siteConfig.logo || '/logo-seo.svg'}`;
+  const finalImage = image || defaultImage;
 
-    const defaultDescription =
-      "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
-    const defaultKeywords =
-      'mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting';
-    const defaultImage = 'https://www.perfectmodels.ga/logo-seo.svg';
-    const siteUrl = window.location.href;
-    const siteName = 'Perfect Models Management';
+  const siteName = siteConfig.name || 'Perfect Models Management';
 
-    // Balises standard
-    setMeta('description', description || defaultDescription);
-    setMeta('keywords', keywords || defaultKeywords);
-    setMeta('author', siteName);
-    setMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
+  // Schema JSON-LD par défaut
+  const defaultSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": siteName,
+    "url": window.location.origin,
+    "logo": defaultImage,
+    "sameAs": [
+      socialLinks.facebook,
+      socialLinks.instagram,
+      socialLinks.youtube
+    ].filter(Boolean)
+  };
 
-    // Canonical
-    setLink('canonical', canonicalUrl || siteUrl);
+  const finalSchema = schema || defaultSchema;
 
-    // Open Graph
-    setMeta('og:title', pageTitle, true);
-    setMeta('og:description', description || defaultDescription, true);
-    setMeta('og:image', image || defaultImage, true);
-    setMeta('og:url', siteUrl, true);
-    setMeta('og:site_name', siteName, true);
-    setMeta('og:type', type, true);
-    setMeta('og:locale', 'fr_FR', true);
-    setMeta('og:image:width', '1200', true);
-    setMeta('og:image:height', '630', true);
-    
-    // Métadonnées spécifiques aux événements
-    if (type === 'event' && image) {
-      setMeta('og:image:alt', `Affiche officielle de l'événement ${title}`, true);
-      setMeta('og:image:type', 'image/png', true);
-    }
+  return (
+    <Helmet>
+      {/* --- Balises Standard --- */}
+      <title>{pageTitle}</title>
+      <meta name="description" content={finalDescription} />
+      <meta name="keywords" content={finalKeywords} />
+      <meta name="author" content={siteName} />
+      {noIndex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : (
+        <meta name="robots" content="index, follow" />
+      )}
+      <link rel="canonical" href={canonicalUrl || siteUrl} />
 
-    // Twitter Card
-    setMeta('twitter:card', 'summary_large_image');
-    setMeta('twitter:title', pageTitle);
-    setMeta('twitter:description', description || defaultDescription);
-    setMeta('twitter:image', image || defaultImage);
+      {/* --- Open Graph (pour Facebook, WhatsApp, etc.) --- */}
+      <meta property="og:title" content={pageTitle} />
+      <meta property="og:description" content={finalDescription} />
+      <meta property="og:image" content={finalImage} />
+      <meta property="og:url" content={siteUrl} />
+      <meta property="og:site_name" content={siteName} />
+      <meta property="og:type" content={type} />
+      <meta property="og:locale" content="fr_FR" />
+      {/* Dimensions recommandées pour les images Open Graph */}
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      {type === 'event' && <meta property="og:image:alt" content={`Affiche de l'événement ${title}`} />}
 
-    // JSON-LD Schema
-    const schemaElementId = 'seo-schema-script';
-    let schemaElement = document.getElementById(schemaElementId) as HTMLScriptElement | null;
+      {/* --- Twitter Card --- */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={pageTitle} />
+      <meta name="twitter:description" content={finalDescription} />
+      <meta name="twitter:image" content={finalImage} />
+      {/* Si vous avez un compte Twitter associé, décommentez et remplacez */}
+      {/* <meta name="twitter:site" content="@VotreCompteTwitter" /> */}
+      {/* <meta name="twitter:creator" content="@AuteurOuCompteTwitter" /> */}
 
-    const defaultSchema = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": siteName,
-      "url": window.location.origin,
-      "logo": siteConfig.logo,
-      "sameAs": [
-        socialLinks.facebook,
-        socialLinks.instagram,
-        socialLinks.youtube
-      ].filter(Boolean)
-    };
-
-    const finalSchema = schema || defaultSchema;
-
-    if (finalSchema) {
-      if (!schemaElement) {
-        schemaElement = document.createElement('script');
-        schemaElement.id = schemaElementId;
-        schemaElement.type = 'application/ld+json';
-        document.head.appendChild(schemaElement);
-      }
-      schemaElement.innerHTML = JSON.stringify(finalSchema);
-    } else {
-      if (schemaElement) schemaElement.remove();
-    }
-
-    // Cleanup
-    return () => {
-      const el = document.getElementById(schemaElementId);
-      if (el) el.remove();
-    };
-  }, [title, description, keywords, image, noIndex, schema, canonicalUrl, type]);
-
-  return null;
+      {/* --- Schema JSON-LD (pour le SEO Google) --- */}
+      {finalSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(finalSchema)}
+        </script>
+      )}
+    </Helmet>
+  );
 };
 
 export default SEO;

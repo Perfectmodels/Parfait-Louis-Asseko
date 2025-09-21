@@ -1,55 +1,42 @@
 import React, { useState, useRef } from 'react';
-import { XMarkIcon, PlusIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
-import ImageUpload from './ImageUpload';
+import { useData } from '../contexts/DataContext';
+import { Photo } from '../../types'; // Importer le type Photo
+import { XMarkIcon, PlusIcon, CloudArrowUpIcon, StarIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import imageCompression from 'browser-image-compression';
 
 interface MultipleImageUploadProps {
-  images: string[];
-  onImagesChange: (images: string[]) => void;
+  photos: Photo[];
+  onPhotosChange: (photos: Photo[]) => void;
   maxImages?: number;
-  placeholder?: string;
   className?: string;
 }
 
 const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
-  images,
-  onImagesChange,
-  maxImages = 10,
-  placeholder = "Cliquez pour ajouter des images",
+  photos,
+  onPhotosChange,
+  maxImages = 50,
   className = ""
 }) => {
+  const { data } = useData();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUploaded = (imageUrl: string, index: number) => {
-    if (imageUrl) {
-      const newImages = [...images];
-      newImages[index] = imageUrl;
-      onImagesChange(newImages);
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index);
-    onImagesChange(newImages);
-  };
-
-  const handleAddImage = () => {
-    if (images.length < maxImages) {
-      onImagesChange([...images, '']);
-    }
+  const handleRemovePhoto = (index: number) => {
+    const newPhotos = photos.filter((_, i) => i !== index);
+    onPhotosChange(newPhotos);
   };
 
   const handleMultipleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
-    const remainingSlots = maxImages - images.length;
+    const remainingSlots = maxImages - photos.length;
     const filesToUpload = files.slice(0, remainingSlots);
 
     if (files.length > remainingSlots) {
-      setUploadError(`Seulement ${remainingSlots} images peuvent être ajoutées (limite: ${maxImages})`);
+      setUploadError(`Vous ne pouvez téléverser que ${remainingSlots} image(s) supplémentaire(s) (limite: ${maxImages}).`);
     }
 
     setIsUploading(true);
@@ -57,13 +44,10 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
 
     try {
       const uploadPromises = filesToUpload.map(uploadSingleImage);
-      const uploadedUrls = await Promise.all(uploadPromises);
-      
-      const validUrls = uploadedUrls.filter(url => url !== null) as string[];
-      onImagesChange([...images, ...validUrls]);
+      const uploadedPhotos = (await Promise.all(uploadPromises)).filter(p => p !== null) as Photo[];
+      onPhotosChange([...photos, ...uploadedPhotos]);
     } catch (error) {
-      console.error('Erreur lors de l\'upload multiple:', error);
-      setUploadError('Erreur lors de l\'upload de certaines images');
+      setUploadError('Une erreur est survenue lors du téléversement.');
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -72,132 +56,114 @@ const MultipleImageUpload: React.FC<MultipleImageUploadProps> = ({
     }
   };
 
-  const uploadSingleImage = async (file: File): Promise<string | null> => {
+  const uploadSingleImage = async (file: File): Promise<Photo | null> => {
+    const imgbbApiKey = data?.apiKeys?.imgbbApiKey;
+    if (!imgbbApiKey) {
+      setUploadError("Clé d'API ImgBB manquante.");
+      return null;
+    }
+
     try {
-      // Vérifier la taille du fichier (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        throw new Error(`Le fichier ${file.name} est trop volumineux. Taille maximale : 5MB`);
-      }
+      if (file.size > 20 * 1024 * 1024) throw new Error(`Taille max : 20MB.`);
+      if (!file.type.startsWith('image/')) throw new Error('Fichier non valide.');
 
-      // Vérifier le type de fichier
-      if (!file.type.startsWith('image/')) {
-        throw new Error(`Le fichier ${file.name} n'est pas une image valide`);
-      }
-
-      // Options de compression
-      const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true
-      };
-      
-      const compressedFile = await imageCompression(file, options);
-
-      // Créer FormData
+      const compressedFile = await imageCompression(file, { maxSizeMB: 2, maxWidthOrHeight: 1920 });
       const formData = new FormData();
       formData.append('image', compressedFile);
-      formData.append('key', '59f0176178bae04b1f2cbd7f5bc03614');
+      formData.append('key', imgbbApiKey);
 
-      // Upload vers ImgBB
-      const response = await fetch('https://api.imgbb.com/1/upload', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur lors de l'upload de ${file.name}`);
-      }
-
-      const data = await response.json();
+      const response = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: formData });
+      if (!response.ok) throw new Error('Échec de l\'upload');
       
-      if (data.success) {
-        return data.data.url;
-      } else {
-        throw new Error(data.error?.message || `Erreur lors de l'upload de ${file.name}`);
-      }
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error?.message || 'Erreur ImgBB.');
+
+      return {
+        id: `photo_${Date.now()}_${Math.random()}`,
+        url: result.data.url,
+        title: '',
+        alt: '',
+        uploadedAt: new Date().toISOString(),
+        uploadedBy: 'admin', // A adapter avec le user actuel si possible
+        featured: false
+      };
+
     } catch (error) {
       console.error(`Erreur upload ${file.name}:`, error);
+      setUploadError(error instanceof Error ? `Erreur: ${error.message}` : 'Erreur inconnue');
       return null;
     }
   };
 
-  const handleBulkUpload = () => {
-    fileInputRef.current?.click();
+  const handleMetaChange = (index: number, field: 'title' | 'alt', value: string) => {
+    const newPhotos = [...photos];
+    const photoToUpdate = { ...newPhotos[index], [field]: value };
+    newPhotos[index] = photoToUpdate;
+    onPhotosChange(newPhotos);
   };
+
+  const handleToggleFeatured = (index: number) => {
+    const newPhotos = [...photos];
+    newPhotos[index] = { ...newPhotos[index], featured: !newPhotos[index].featured };
+    onPhotosChange(newPhotos);
+  }
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Input pour sélection multiple */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleMultipleFileSelect}
-        className="hidden"
-      />
-
-      {/* Boutons d'action */}
+      <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleMultipleFileSelect} className="hidden" />
+      
       <div className="flex gap-3 flex-wrap">
-        <button
-          type="button"
-          onClick={handleBulkUpload}
-          disabled={isUploading || images.length >= maxImages}
-          className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-medium rounded-lg hover:bg-pm-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploading || photos.length >= maxImages} className="action-btn">
           <CloudArrowUpIcon className="w-5 h-5" />
-          {isUploading ? 'Upload en cours...' : 'Sélectionner plusieurs images'}
+          {isUploading ? 'Téléversement...' : 'Ajouter des images'}
         </button>
-        
-        {images.length < maxImages && (
-          <button
-            type="button"
-            onClick={handleAddImage}
-            className="flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold/30 text-pm-gold font-medium rounded-lg hover:bg-pm-gold/10 transition-colors"
-          >
-            <PlusIcon className="w-5 h-5" />
-            Ajouter une image
-          </button>
+      </div>
+
+      {uploadError && <div className="p-3 bg-red-900/50 border border-red-500/50 rounded-lg text-red-300 text-sm">{uploadError}</div>}
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {photos.map((photo, index) => (
+          <div key={photo.id} className="relative group aspect-square bg-pm-dark border border-pm-dark-lighter rounded-lg overflow-hidden">
+            <img src={photo.url} alt={photo.alt || `Aperçu ${index + 1}`} className="w-full h-full object-cover"/>
+            
+            <div className="absolute top-1 right-1 flex flex-col gap-1">
+                <button type="button" onClick={() => handleToggleFeatured(index)} className="p-1.5 bg-black/50 text-white rounded-full hover:bg-pm-gold hover:text-pm-dark transition-colors backdrop-blur-sm">
+                    {photo.featured ? <StarIconSolid className="w-4 h-4 text-yellow-300" /> : <StarIcon className="w-4 h-4" />}
+                </button>
+                <button type="button" onClick={() => handleRemovePhoto(index)} className="p-1.5 bg-black/50 text-white rounded-full hover:bg-red-500 transition-colors backdrop-blur-sm">
+                    <XMarkIcon className="w-4 h-4" />
+                </button>
+            </div>
+
+            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent transition-opacity opacity-0 group-hover:opacity-100">
+              <input 
+                type="text" 
+                placeholder="Titre (optionnel)" 
+                value={photo.title || ''}
+                onChange={e => handleMetaChange(index, 'title', e.target.value)}
+                className="admin-input-sm w-full text-xs" 
+              />
+              <input 
+                type="text" 
+                placeholder="Texte alternatif (SEO)" 
+                value={photo.alt || ''}
+                onChange={e => handleMetaChange(index, 'alt', e.target.value)}
+                className="admin-input-sm w-full mt-1 text-xs" 
+              />
+            </div>
+          </div>
+        ))}
+
+        {photos.length < maxImages && !isUploading && (
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="relative aspect-square flex flex-col items-center justify-center bg-pm-dark/50 border-2 border-dashed border-pm-gold/20 rounded-lg hover:bg-pm-gold/5 transition-colors text-pm-gold/60 hover:text-pm-gold">
+                <PlusIcon className="w-10 h-10"/>
+                <span className="text-xs mt-1">Ajouter</span>
+            </button>
         )}
       </div>
 
-      {/* Affichage des erreurs */}
-      {uploadError && (
-        <div className="p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
-          {uploadError}
-        </div>
-      )}
-
-      {/* Grille des images */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {images.map((imageUrl, index) => (
-          <div key={index} className="relative">
-            <ImageUpload
-              currentImage={imageUrl}
-              onImageUploaded={(url) => handleImageUploaded(url, index)}
-              placeholder={`Image ${index + 1}`}
-              className="h-32"
-            />
-            {imageUrl && (
-              <button
-                onClick={() => handleRemoveImage(index)}
-                className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-              >
-                <XMarkIcon className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Compteur d'images */}
-      <div className="text-center">
-        <p className="text-sm text-gray-500">
-          {images.length}/{maxImages} images
-          {images.length >= maxImages && (
-            <span className="text-red-500 ml-2">• Limite atteinte</span>
-          )}
-        </p>
+      <div className="text-center mt-4">
+        <p className="text-sm text-pm-off-white/50">{photos.length}/{maxImages} images | Max 20MB/image</p>
       </div>
     </div>
   );

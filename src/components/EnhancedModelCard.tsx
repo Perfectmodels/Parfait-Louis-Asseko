@@ -1,8 +1,10 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRightIcon, StarIcon, HeartIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { Model } from '../types';
+import { useData } from '../contexts/DataContext'; // Import useData
 
 interface EnhancedModelCardProps {
   model: Model;
@@ -19,6 +21,12 @@ const EnhancedModelCard: React.FC<EnhancedModelCardProps> = ({
   isFavorite = false,
   onToggleFavorite
 }) => {
+  const { incrementModelViewCount } = useData(); // Use the hook to get the function
+
+  const handleCardClick = () => {
+    incrementModelViewCount(model.id);
+  };
+
   // Rendu conditionnel selon le mode de vue
   if (viewMode === 'list') {
     return (
@@ -31,6 +39,7 @@ const EnhancedModelCard: React.FC<EnhancedModelCardProps> = ({
           ease: [0.25, 0.46, 0.45, 0.94]
         }}
         className="group flex items-center gap-4 p-4 hover:bg-pm-gold/5 transition-colors rounded-xl"
+        onClick={handleCardClick} // Add click handler
       >
         {/* Image en liste */}
         <div className="relative w-20 h-24 overflow-hidden rounded-lg bg-gray-900 flex-shrink-0">
@@ -64,7 +73,10 @@ const EnhancedModelCard: React.FC<EnhancedModelCardProps> = ({
         <div className="flex items-center gap-2">
           {onToggleFavorite && (
             <button
-              onClick={() => onToggleFavorite(model.id)}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card click from firing
+                onToggleFavorite(model.id);
+              }}
               className={`p-2 rounded-full transition-colors ${
                 isFavorite 
                   ? 'bg-red-500/20 text-red-400' 
@@ -99,6 +111,7 @@ const EnhancedModelCard: React.FC<EnhancedModelCardProps> = ({
         transition: { duration: 0.3 }
       }}
       className="group block"
+      onClick={handleCardClick} // Add click handler
     >
       <Link 
         to={`/mannequins/${model.id}`} 

@@ -1,11 +1,10 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-// FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, AdminPermission, PaymentSubmission, Album, AccountingCategory, AccountingTransaction, PaymentList, TeamMember, ModelActivity, ModelPerformance, ModelTrackingData, SocialPost, SocialComment, SocialNotification, SocialUser } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, AdminPermission, PaymentSubmission, Album, AccountingCategory, AccountingTransaction, PaymentList, TeamMember, ModelActivity, ModelPerformance, ModelTrackingData, SocialPost, SocialComment, SocialNotification, SocialUser, Campaign, Contact, SecurityCheck, SecurityThreat, SecurityActivityLog } from '../types';
 import { syncModelAccessWithData } from '../data/modelAccess';
 
-// Import initial data to seed the database if it's empty
 import { 
     models as initialModels, 
     siteConfig as initialSiteConfig, 
@@ -38,8 +37,8 @@ import {
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
     faqData as initialFaqData,
-    defaultAccountingCategories as initialAccountingCategories,
-    defaultAccountingTransactions as initialAccountingTransactions,
+    accountingCategories as initialAccountingCategories,
+    accountingTransactions as initialAccountingTransactions,
     defaultAdminUsers as initialAdminUsers,
     defaultAdminPermissions as initialAdminPermissions,
     defaultAlbums as initialAlbums,
@@ -51,7 +50,6 @@ import {
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
-// FIX: Import beginnerCourseData directly to resolve module path error.
 import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
 
 export interface AppData {
@@ -91,7 +89,7 @@ export interface AppData {
     faqData: FAQCategory[];
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
-    photoshootBriefs: PhotoshootBrief[];
+    photoshootBriefs: PhotoshootBriefs[];
     accountingCategories: AccountingCategory[];
     accountingTransactions: AccountingTransaction[];
     paymentLists: PaymentList[];
@@ -106,6 +104,11 @@ export interface AppData {
     socialPosts: SocialPost[];
     socialNotifications: SocialNotification[];
     socialUsers: SocialUser[];
+    campaigns: Campaign[];
+    contacts: Contact[];
+    securityChecks: SecurityCheck[];
+    securityThreats: SecurityThreat[];
+    securityActivityLogs: SecurityActivityLog[];
 }
 
 export const useDataStore = () => {
@@ -161,6 +164,11 @@ export const useDataStore = () => {
         socialPosts: initialSocialPosts,
         socialNotifications: initialSocialNotifications,
         socialUsers: initialSocialUsers,
+        campaigns: [],
+        contacts: [],
+        securityChecks: [],
+        securityThreats: [],
+        securityActivityLogs: [],
     }), []);
     
     useEffect(() => {
@@ -170,7 +178,6 @@ export const useDataStore = () => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
             if (dbData) {
-                // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
                 const mergedData = {
                     ...initialData,
                     ...dbData,
@@ -183,17 +190,19 @@ export const useDataStore = () => {
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
+                    campaigns: (dbData.campaigns && dbData.campaigns.length > 0) ? dbData.campaigns : initialData.campaigns,
+                    contacts: (dbData.contacts && dbData.contacts.length > 0) ? dbData.contacts : initialData.contacts,
+                    securityChecks: (dbData.securityChecks && dbData.securityChecks.length > 0) ? dbData.securityChecks : initialData.securityChecks,
+                    securityThreats: (dbData.securityThreats && dbData.securityThreats.length > 0) ? dbData.securityThreats : initialData.securityThreats,
+                    securityActivityLogs: (dbData.securityActivityLogs && dbData.securityActivityLogs.length > 0) ? dbData.securityActivityLogs : initialData.securityActivityLogs,
                 };
                 
-                // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
                 
-                // Synchroniser les mannequins du système centralisé
                 const syncedData = syncModelAccessWithData(mergedData);
                 
                 setData(syncedData);
             } else {
-                // If DB is empty, seed it with initial data
                 const syncedInitialData = syncModelAccessWithData(initialData);
                 set(dbRef, syncedInitialData).then(() => {
                     setData(syncedInitialData);
@@ -205,26 +214,39 @@ export const useDataStore = () => {
             setIsInitialized(true);
         }, (error) => {
             console.error("Firebase read failed: " + error.message);
-            // Fallback to local data if Firebase fails
             setData(getInitialData());
             setIsInitialized(true);
         });
 
-        // Detach the listener when the component unmounts
         return () => unsubscribe();
     }, [getInitialData]);
 
     const saveData = useCallback(async (newData: AppData) => {
         try {
             await set(ref(db, '/'), newData);
-            // The local state will be updated by the 'on' listener,
-            // but we can set it here for immediate UI feedback if desired.
             setData(newData);
         } catch (error) {
             console.error("Error saving data to Firebase:", error);
-            throw error; // Re-throw to be caught by the caller
+            throw error;
         }
     }, []);
 
-    return { data, saveData, isInitialized };
+    const incrementModelViewCount = useCallback((modelId: string) => {
+        if (!data) return;
+
+        const updatedModels = data.models.map(model => {
+            if (model.id === modelId) {
+                return {
+                    ...model,
+                    viewCount: (model.viewCount || 0) + 1
+                };
+            }
+            return model;
+        });
+        
+        const newData = { ...data, models: updatedModels };
+        saveData(newData);
+    }, [data, saveData]);
+
+    return { data, saveData, isInitialized, incrementModelViewCount };
 };
