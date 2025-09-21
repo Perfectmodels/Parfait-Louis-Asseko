@@ -23,6 +23,7 @@
 ### **1. Système de Design Avancé**
 
 #### **Nouvelles Variables CSS**
+{% raw %}
 ```css
 :root {
   /* Couleurs étendues */
@@ -45,8 +46,10 @@
   --gradient-hero: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(212, 175, 55, 0.1) 100%);
 }
 ```
+{% endraw %}
 
 #### **Nouvelles Classes Utilitaires**
+{% raw %}
 ```css
 /* Effets de glassmorphism */
 .glass-card {
@@ -84,10 +87,12 @@
   to { box-shadow: 0 0 30px rgba(212, 175, 55, 0.8); }
 }
 ```
+{% endraw %}
 
 ### **2. Amélioration des Cartes**
 
 #### **ModelCard Avancé**
+{% raw %}
 ```tsx
 const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   return (
@@ -130,10 +135,12 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 ```
+{% endraw %}
 
 ### **3. Hero Section Amélioré**
 
 #### **Effets Visuels Avancés**
+{% raw %}
 ```tsx
 const HeroSection = () => {
   return (
@@ -220,10 +227,12 @@ const HeroSection = () => {
   );
 };
 ```
+{% endraw %}
 
 ### **4. Navigation Améliorée**
 
 #### **Header avec Effets Avancés**
+{% raw %}
 ```tsx
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -293,10 +302,12 @@ const Header = () => {
   );
 };
 ```
+{% endraw %}
 
 ### **5. Micro-interactions**
 
 #### **Boutons avec Effets Avancés**
+{% raw %}
 ```css
 .btn-primary {
   @apply relative px-8 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full overflow-hidden transition-all duration-300;
@@ -315,10 +326,12 @@ const Header = () => {
   @apply shadow-gold transform scale-105;
 }
 ```
+{% endraw %}
 
 ### **6. Animations de Scroll Avancées**
 
 #### **Composant d'Animation Amélioré**
+{% raw %}
 ```tsx
 const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; direction?: 'up' | 'down' | 'left' | 'right' }> = ({ 
   children, 
@@ -377,10 +390,12 @@ const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; direct
   );
 };
 ```
+{% endraw %}
 
 ### **7. Thème Sombre Amélioré**
 
 #### **Variables CSS pour le Thème**
+{% raw %}
 ```css
 :root {
   /* Mode sombre amélioré */
@@ -398,10 +413,12 @@ const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; direct
   --shadow-accent: 0 10px 40px rgba(212, 175, 55, 0.3);
 }
 ```
+{% endraw %}
 
 ### **8. Responsive Design Avancé**
 
 #### **Breakpoints Personnalisés**
+{% raw %}
 ```css
 /* Mobile First Approach */
 @media (max-width: 640px) {
@@ -434,6 +451,7 @@ const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; direct
   }
 }
 ```
+{% endraw %}
 
 ---
 
@@ -464,6 +482,7 @@ const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; direct
 ## 📱 **Optimisations Mobile**
 
 ### **Touch Interactions**
+{% raw %}
 ```css
 .touch-target {
   min-height: 44px;
@@ -475,8 +494,10 @@ const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; direct
   transition: transform 0.1s ease;
 }
 ```
+{% endraw %}
 
 ### **Performance Mobile**
+{% raw %}
 ```css
 /* Optimisations pour mobile */
 @media (max-width: 768px) {
@@ -489,6 +510,7 @@ const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number; direct
   }
 }
 ```
+{% endraw %}
 
 ---
 
