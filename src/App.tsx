@@ -7,7 +7,6 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRouteWrapper from './components/ProtectedRouteWrapper';
-import PublicRouteWrapper from './components/PublicRouteWrapper';
 import RoutePreloader from './components/RoutePreloader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
 import PageTransition, { LoadingTransition } from './components/PageTransition';
@@ -190,26 +189,26 @@ const AppContent: React.FC = () => {
                     <PageTransition>
                         <ReactRouterDOM.Routes>
                         <ReactRouterDOM.Route path="/" element={<HomePage />} />
-                        <ReactRouterDOM.Route path="/agence" element={<PublicRouteWrapper><Agency /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/mannequins" element={<PublicRouteWrapper><Models /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/mannequins/:id" element={<PublicRouteWrapper><ModelDetail /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/fashion-day" element={<PublicRouteWrapper><FashionDay /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/magazine" element={<PublicRouteWrapper><Magazine /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/magazine/:slug" element={<PublicRouteWrapper><ArticleDetail /></PublicRouteWrapper>} />
-            <ReactRouterDOM.Route path="/contact" element={<PublicRouteWrapper><Contact /></PublicRouteWrapper>} />
-            <ReactRouterDOM.Route path="/services" element={<PublicRouteWrapper><Services /></PublicRouteWrapper>} />
-            <ReactRouterDOM.Route path="/services/:slug" element={<PublicRouteWrapper><ServiceDetail /></PublicRouteWrapper>} />
-            <ReactRouterDOM.Route path="/formations" element={<PublicRouteWrapper><Trainings /></PublicRouteWrapper>} />
-            <ReactRouterDOM.Route path="/checkout" element={<PublicRouteWrapper><Checkout /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/casting" element={<PublicRouteWrapper><Casting /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/casting-formulaire" element={<PublicRouteWrapper><CastingForm /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/fashion-day-application" element={<PublicRouteWrapper><FashionDayApplicationForm /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/login" element={<PublicRouteWrapper><Login /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/social-login" element={<PublicRouteWrapper><SocialLogin /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/agence" element={<Agency />} />
+                        <ReactRouterDOM.Route path="/mannequins" element={<Models />} />
+                        <ReactRouterDOM.Route path="/mannequins/:id" element={<ModelDetail />} />
+                        <ReactRouterDOM.Route path="/fashion-day" element={<FashionDay />} />
+                        <ReactRouterDOM.Route path="/magazine" element={<Magazine />} />
+                        <ReactRouterDOM.Route path="/magazine/:slug" element={<ArticleDetail />} />
+            <ReactRouterDOM.Route path="/contact" element={<Contact />} />
+            <ReactRouterDOM.Route path="/services" element={<Services />} />
+            <ReactRouterDOM.Route path="/services/:slug" element={<ServiceDetail />} />
+            <ReactRouterDOM.Route path="/formations" element={<Trainings />} />
+            <ReactRouterDOM.Route path="/checkout" element={<Checkout />} />
+                        <ReactRouterDOM.Route path="/casting" element={<Casting />} />
+                        <ReactRouterDOM.Route path="/casting-formulaire" element={<CastingForm />} />
+                        <ReactRouterDOM.Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
+                        <ReactRouterDOM.Route path="/login" element={<Login />} />
+                        <ReactRouterDOM.Route path="/social-login" element={<SocialLogin />} />
                         <ReactRouterDOM.Route path="/privacy-policy" element={<PrivacyPolicy />} />
                         <ReactRouterDOM.Route path="/terms-of-use" element={<TermsOfUse />} />
-                        <ReactRouterDOM.Route path="/chat" element={<PublicRouteWrapper><Chat /></PublicRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/galerie" element={<PublicRouteWrapper><Gallery /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/chat" element={<Chat />} />
+                        <ReactRouterDOM.Route path="/galerie" element={<Gallery />} />
 
                         {/* Protected Routes - Classroom Unifiée (Débutants + Pros) */}
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRouteWrapper role="classroom"><ChapterDetail /></ProtectedRouteWrapper>} />
