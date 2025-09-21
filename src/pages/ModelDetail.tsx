@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
-import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import BookingForm from '../components/BookingForm';
@@ -130,7 +130,7 @@ const ModelDetail: React.FC = () => {
   
   const model = data?.models.find(m => m.id === id);
 
-  // Vérifier si les données sont chargées et si le modèle existe
+  // Check if data is loaded and model exists
   if (!isInitialized || !data) {
     return (
       <div className="min-h-screen bg-pm-dark flex items-center justify-center">
@@ -326,6 +326,19 @@ const ModelDetail: React.FC = () => {
                                       </div>
                                   ))}
                               </div>
+                          </div>
+                       )}
+                       {isViewingOwnProfile && (
+                          <div className="col-span-full mt-6 p-6 bg-pm-gold/5 border border-pm-gold/10 rounded-lg">
+                            <h3 className="text-xl font-bold text-pm-gold flex items-center gap-2">
+                              <ShieldCheckIcon className="w-6 h-6" />
+                              Informations Privées
+                            </h3>
+                            <p className="text-xs text-pm-off-white/50 mb-4">Ces informations ne sont visibles que par vous.</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-base">
+                                {model.email && <InfoItem label="Email" value={model.email} />}
+                                {model.phone && <InfoItem label="Téléphone" value={model.phone} />}
+                            </div>
                           </div>
                        )}
                     </div>

@@ -1,3 +1,4 @@
+jett
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import React, { lazy, Suspense, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
@@ -24,6 +25,7 @@ const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
+const Trainings = lazy(() => import('./pages/Trainings'));
 const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
@@ -36,7 +38,8 @@ const Chat = lazy(() => import('./pages/Chat'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 
 // Admin Pages
-const Admin = lazy(() => import('./pages/admin/Admin'));
+const AdminLayout = lazy(() => import('./pages/admin/Admin'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminAgency = lazy(() => import('./pages/admin/AdminAgency'));
 const AdminCasting = lazy(() => import('./pages/admin/AdminCasting'));
 const AdminCastingResults = lazy(() => import('./pages/admin/AdminCastingResults'));
@@ -47,6 +50,8 @@ const AdminFashionDayEvents = lazy(() => import('./pages/admin/AdminFashionDayEv
 const AdminMagazine = lazy(() => import('./pages/admin/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/admin/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/admin/AdminModels'));
+const AdminServiceOrders = lazy(() => import('./pages/admin/AdminServiceOrders'));
+const AdminServices = lazy(() => import('./pages/admin/AdminServices'));
 // const AdminImageManagement = lazy(() => import('./pages/admin/AdminImageManagement'));
 const AdminNews = lazy(() => import('./pages/admin/AdminNews'));
 const AdminUserManagement = lazy(() => import('./pages/admin/AdminUserManagement'));
@@ -83,6 +88,7 @@ const ModelPhotoUpload = lazy(() => import('./pages/ModelPhotoUpload'));
 const ArtisticDirectionAccess = lazy(() => import('./pages/ArtisticDirectionAccess'));
 const AdminNewEmail = lazy(() => import('./pages/admin/AdminNewEmail'));
 const AdminMarketingCampaigns = lazy(() => import('./pages/admin/AdminMarketingCampaigns'));
+const CreateCampaign = lazy(() => import('./pages/admin/CreateCampaign'));
 const AdminImportContacts = lazy(() => import('./pages/admin/AdminImportContacts'));
 const AdminContactManagement = lazy(() => import('./pages/admin/AdminContactManagement'));
 const AdminMessagingDashboard = lazy(() => import('./pages/admin/AdminMessagingDashboard'));
@@ -193,6 +199,7 @@ const AppContent: React.FC = () => {
             <ReactRouterDOM.Route path="/contact" element={<PublicRouteWrapper><Contact /></PublicRouteWrapper>} />
             <ReactRouterDOM.Route path="/services" element={<PublicRouteWrapper><Services /></PublicRouteWrapper>} />
             <ReactRouterDOM.Route path="/services/:slug" element={<PublicRouteWrapper><ServiceDetail /></PublicRouteWrapper>} />
+            <ReactRouterDOM.Route path="/formations" element={<PublicRouteWrapper><Trainings /></PublicRouteWrapper>} />
             <ReactRouterDOM.Route path="/checkout" element={<PublicRouteWrapper><Checkout /></PublicRouteWrapper>} />
                         <ReactRouterDOM.Route path="/casting" element={<PublicRouteWrapper><Casting /></PublicRouteWrapper>} />
                         <ReactRouterDOM.Route path="/casting-formulaire" element={<PublicRouteWrapper><CastingForm /></PublicRouteWrapper>} />
@@ -214,56 +221,42 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRouteWrapper role="jury"><JuryCasting /></ProtectedRouteWrapper>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRouteWrapper role="registration"><RegistrationCasting /></ProtectedRouteWrapper>} />
                         
-                        <ReactRouterDOM.Route path="/admin" element={<ProtectedRouteWrapper role="admin"><Admin /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/user-management" element={<ProtectedRouteWrapper role="admin"><AdminUserManagement /></ProtectedRouteWrapper>} />
-                <ReactRouterDOM.Route path="/admin/payment-submissions" element={<ProtectedRouteWrapper role="admin"><AdminPaymentSubmissions /></ProtectedRouteWrapper>} />
-                <ReactRouterDOM.Route path="/admin/payment-status" element={<ProtectedRouteWrapper role="admin"><AdminPaymentStatus /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/accounting" element={<ProtectedRouteWrapper role="admin"><AdminAccounting /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/models" element={<ProtectedRouteWrapper role="admin"><AdminModels /></ProtectedRouteWrapper>} />
-                        {/* <ReactRouterDOM.Route path="/admin/images" element={<ProtectedRouteWrapper role="admin"><AdminImageManagement /></ProtectedRouteWrapper>} /> */}
-                        <ReactRouterDOM.Route path="/admin/magazine" element={<ProtectedRouteWrapper role="admin"><AdminMagazine /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRouteWrapper role="admin"><AdminGallery /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/team" element={<ProtectedRouteWrapper role="admin"><AdminTeam /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/model-tracking" element={<ProtectedRouteWrapper role="admin"><AdminModelTracking /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/classroom" element={<ProtectedRouteWrapper role="admin"><AdminClassroom /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/settings" element={<ProtectedRouteWrapper role="admin"><AdminSettings /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/agency" element={<ProtectedRouteWrapper role="admin"><AdminAgency /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/casting-applications" element={<ProtectedRouteWrapper role="admin"><AdminCasting /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/casting-results" element={<ProtectedRouteWrapper role="admin"><AdminCastingResults /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/fashion-day-applications" element={<ProtectedRouteWrapper role="admin"><AdminFashionDay /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/fashion-day-events" element={<ProtectedRouteWrapper role="admin"><AdminFashionDayEvents /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/news" element={<ProtectedRouteWrapper role="admin"><AdminNews /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/classroom-progress" element={<ProtectedRouteWrapper role="admin"><AdminClassroomProgress /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/model-access" element={<ProtectedRouteWrapper role="admin"><AdminModelAccess /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/beginner-students-access" element={<ProtectedRouteWrapper role="admin"><AdminBeginnerStudents /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/recovery-requests" element={<ProtectedRouteWrapper role="admin"><AdminRecovery /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/comments" element={<ProtectedRouteWrapper role="admin"><AdminComments /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/messages" element={<ProtectedRouteWrapper role="admin"><AdminMessages /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/messaging" element={<ProtectedRouteWrapper role="admin"><AdminMessaging /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/bookings" element={<ProtectedRouteWrapper role="admin"><AdminBookings /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/payments" element={<ProtectedRouteWrapper role="admin"><AdminPayments /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/absences" element={<ProtectedRouteWrapper role="admin"><AdminAbsences /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/artistic-direction" element={<ProtectedRouteWrapper role="admin"><AdminArtisticDirection /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/server" element={<ProtectedRouteWrapper role="admin"><AdminServer /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/database" element={<ProtectedRouteWrapper role="admin"><AdminDatabase /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/api-keys" element={<ProtectedRouteWrapper role="admin"><AdminApiKeys /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/security" element={<ProtectedRouteWrapper role="admin"><AdminSecurity /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/brevo-test" element={<ProtectedRouteWrapper role="admin"><AdminBrevoTest /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/email-diagnostic" element={<ProtectedRouteWrapper role="admin"><AdminEmailDiagnostic /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/link-test" element={<ProtectedRouteWrapper role="admin"><AdminLinkTest /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/new-email" element={<ProtectedRouteWrapper role="admin"><AdminNewEmail /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/marketing-campaigns" element={<ProtectedRouteWrapper role="admin"><AdminMarketingCampaigns /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/import-contacts" element={<ProtectedRouteWrapper role="admin"><AdminImportContacts /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/contact-management" element={<ProtectedRouteWrapper role="admin"><AdminContactManagement /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/messaging-dashboard" element={<ProtectedRouteWrapper role="admin"><AdminMessagingDashboard /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/sms" element={<ProtectedRouteWrapper role="admin"><AdminSMS /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/casting-live" element={<ProtectedRouteWrapper role="admin"><AdminCastingLive /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/profile" element={<ProtectedRouteWrapper role="admin"><AdminProfile /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/analytics" element={<ProtectedRouteWrapper role="admin"><AdminAnalytics /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/notifications" element={<ProtectedRouteWrapper role="admin"><AdminNotifications /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/admin/photo-upload" element={<ProtectedRouteWrapper role="admin"><AdminPhotoUpload /></ProtectedRouteWrapper>} />
-                        <ReactRouterDOM.Route path="/artistic-direction" element={<ArtisticDirectionAccess />} />
-
+                        <ReactRouterDOM.Route path="/admin" element={<ProtectedRouteWrapper role="admin"><AdminLayout /></ProtectedRouteWrapper>}>
+                           <ReactRouterDOM.Route index element={<AdminDashboard />} />
+                           <ReactRouterDOM.Route path="agency" element={<AdminAgency />} />
+                           <ReactRouterDOM.Route path="team" element={<AdminTeam />} />
+                           <ReactRouterDOM.Route path="models" element={<AdminModels />} />
+                           <ReactRouterDOM.Route path="beginner-students-access" element={<AdminBeginnerStudents />} />
+                           <ReactRouterDOM.Route path="model-access" element={<AdminModelAccess />} />
+                           <ReactRouterDOM.Route path="model-tracking" element={<AdminModelTracking />} />
+                           <ReactRouterDOM.Route path="services" element={<AdminServices />} />
+                           <ReactRouterDOM.Route path="service-orders" element={<AdminServiceOrders />} />
+                           <ReactRouterDOM.Route path="accounting" element={<AdminAccounting />} />
+                           <ReactRouterDOM.Route path="payments" element={<AdminPayments />} />
+                           <ReactRouterDOM.Route path="payment-submissions" element={<AdminPaymentSubmissions />} />
+                           <ReactRouterDOM.Route path="casting-applications" element={<AdminCasting />} />
+                           <ReactRouterDOM.Route path="casting-results" element={<AdminCastingResults />} />
+                           <ReactRouterDOM.Route path="fashion-day-applications" element={<AdminFashionDay />} />
+                           <ReactRouterDOM.Route path="fashion-day-events" element={<AdminFashionDayEvents />} />
+                           <ReactRouterDOM.Route path="magazine" element={<AdminMagazine />} />
+                           <ReactRouterDOM.Route path="gallery" element={<AdminGallery />} />
+                           <ReactRouterDOM.Route path="classroom" element={<AdminClassroom />} />
+                           <ReactRouterDOM.Route path="classroom-progress" element={<AdminClassroomProgress />} />
+                           <ReactRouterDOM.Route path="artistic-direction" element={<AdminArtisticDirection />} />
+                           <ReactRouterDOM.Route path="messages" element={<AdminMessages />} />
+                           <ReactRouterDOM.Route path="comments" element={<AdminComments />} />
+                           <ReactRouterDOM.Route path="contact-management" element={<AdminContactManagement />} />
+                           <ReactRouterDOM.Route path="marketing-campaigns" element={<AdminMarketingCampaigns />} />
+                           <ReactRouterDOM.Route path="settings" element={<AdminSettings />} />
+                           <ReactRouterDOM.Route path="user-management" element={<AdminUserManagement />} />
+                           <ReactRouterDOM.Route path="security" element={<AdminSecurity />} />
+                           <ReactRouterDOM.Route path="api-keys" element={<AdminApiKeys />} />
+                           <ReactRouterDOM.Route path="server" element={<AdminServer />} />
+                           <ReactRouterDOM.Route path="database" element={<AdminDatabase />} />
+                           <ReactRouterDOM.Route path="email-diagnostic" element={<AdminEmailDiagnostic />} />
+                           <ReactRouterDOM.Route path="link-test" element={<AdminLinkTest />} />
+                        </ReactRouterDOM.Route>
+                        
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                         </ReactRouterDOM.Routes>
                     </PageTransition>

@@ -6,7 +6,7 @@ import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
 import EnhancedModelCard from '../components/EnhancedModelCard';
 import EnhancedServiceCard from '../components/EnhancedServiceCard';
-import { ApiKeys, NewsItem } from '../types';
+import { ApiKeys, Article } from '../types';
 import CountdownTimer from '../components/CountdownTimer';
 import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
@@ -130,23 +130,23 @@ const ShareModal: React.FC<{
 
 // --- News Carousel Component ---
 interface NewsCarouselProps {
-    newsItems: NewsItem[];
+    articles: Article[];
     apiKeys: ApiKeys | undefined;
 }
 
-const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
+const NewsCarousel: React.FC<NewsCarouselProps> = ({ articles, apiKeys }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isShareOpen, setIsShareOpen] = useState(false);
     const [shortUrl, setShortUrl] = useState('');
     const [isGeneratingLink, setIsGeneratingLink] = useState(false);
     
     useEffect(() => {
-        if (newsItems.length < 2) return;
+        if (articles.length < 2) return;
         const intervalId = setInterval(() => {
-            setCurrentIndex(prevIndex => (prevIndex + 1) % newsItems.length);
+            setCurrentIndex(prevIndex => (prevIndex + 1) % articles.length);
         }, 30000);
         return () => clearInterval(intervalId);
-    }, [newsItems.length]);
+    }, [articles.length]);
 
     const goToNews = (index: number) => {
         setCurrentIndex(index);
@@ -157,15 +157,15 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
         setShortUrl('');
         setIsGeneratingLink(true);
 
-        const currentNews = newsItems[currentIndex];
-        if (!currentNews) return;
+        const currentArticle = articles[currentIndex];
+        if (!currentArticle) return;
 
-        const longUrl = currentNews.link ? `${window.location.origin}/#${currentNews.link}` : window.location.origin;
+        const longUrl = `${window.location.origin}/#/magazine/${currentArticle.slug}`;
         const generatedUrl = await generateShortLink({
             link: longUrl,
-            title: currentNews.title,
-            description: currentNews.excerpt,
-            imageUrl: currentNews.imageUrl,
+            title: currentArticle.title,
+            description: currentArticle.excerpt,
+            imageUrl: currentArticle.imageUrl,
         }, apiKeys);
 
         setShortUrl(generatedUrl);
@@ -173,8 +173,8 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
     };
 
 
-    const currentNews = newsItems[currentIndex];
-    if (!currentNews) return null;
+    const currentArticle = articles[currentIndex];
+    if (!currentArticle) return null;
 
     return (
         <>
@@ -188,17 +188,15 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
                         transition={{ duration: 0.8 }}
                         className="relative aspect-video w-full flex items-end justify-start text-left"
                     >
-                        <img src={currentNews.imageUrl} alt={currentNews.title} className="absolute inset-0 w-full h-full object-cover" />
+                        <img src={currentArticle.imageUrl} alt={currentArticle.title} className="absolute inset-0 w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
                         <div className="relative z-10 p-6 md:p-10 lg:p-12 text-white md:w-3/4 lg:w-2/3">
-                            <h3 className="text-2xl md:text-4xl font-playfair text-pm-gold font-extrabold mb-3">{currentNews.title}</h3>
-                            <p className="text-sm md:text-base text-pm-off-white/90 mb-5">{currentNews.excerpt}</p>
+                            <h3 className="text-2xl md:text-4xl font-playfair text-pm-gold font-extrabold mb-3">{currentArticle.title}</h3>
+                            <p className="text-sm md:text-base text-pm-off-white/90 mb-5">{currentArticle.excerpt}</p>
                              <div className="flex items-center gap-4">
-                                {currentNews.link && (
-                                    <Link to={currentNews.link} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                                        Lire la suite
-                                    </Link>
-                                )}
+                                <Link to={`/magazine/${currentArticle.slug}`} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                                    Lire la suite
+                                </Link>
                                 <button onClick={handleShareClick} className="p-3 bg-pm-dark/50 border border-pm-gold/30 rounded-full text-pm-gold hover:bg-pm-gold/20 transition-colors" aria-label="Partager cette actualité">
                                     <ShareIcon className="w-5 h-5" />
                                 </button>
@@ -207,10 +205,10 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
                     </motion.div>
                 </AnimatePresence>
 
-                {newsItems.length > 1 && (
+                {articles.length > 1 && (
                     <>
                         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
-                            {newsItems.map((_, index) => (
+                            {articles.map((_, index) => (
                                 <button
                                     key={index}
                                     onClick={() => goToNews(index)}
@@ -234,7 +232,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
              <ShareModal
                 isOpen={isShareOpen}
                 onClose={() => setIsShareOpen(false)}
-                title={currentNews.title}
+                title={currentArticle.title}
                 url={shortUrl}
                 isGenerating={isGeneratingLink}
             />
@@ -274,9 +272,10 @@ const Home: React.FC = () => {
     );
   }
 
-  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems, apiKeys } = data;
-  const publicModels = models.filter(m => m.isPublic).slice(0, 4);
+  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, articles, apiKeys } = data;
+  const publicModels = models.filter(m => m.isPublic).sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
+  const featuredArticles = articles.filter(a => a.isFeatured).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
   
   const nextEvent = fashionDayEvents
     .filter(e => new Date(e.date).getTime() > new Date().getTime())
@@ -374,7 +373,7 @@ const Home: React.FC = () => {
                     className="relative inline-block"
                   >
                     <Link to="/fashion-day-application" className="relative px-4 sm:px-6 md:px-8 py-2 sm:py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs sm:text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform overflow-hidden group">
-                      <span className="relative z-10">Participer à l'Édition 2</span>
+                      <span className="relative z-10">Participer à l'Édition {nextEvent.edition}</span>
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                     </Link>
                   </motion.div>
@@ -434,10 +433,10 @@ const Home: React.FC = () => {
         </section>
 
         {/* News Carousel Section */}
-        {newsItems && newsItems.length > 0 && (
+        {featuredArticles && featuredArticles.length > 0 && (
             <section>
                 <h2 className="section-title">Nos Actualités</h2>
-                <NewsCarousel newsItems={newsItems} apiKeys={apiKeys} />
+                <NewsCarousel articles={featuredArticles} apiKeys={apiKeys} />
             </section>
         )}
 

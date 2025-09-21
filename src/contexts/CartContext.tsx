@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Service } from '../types';
+import { useData } from './DataContext'; // Importer useData
 
 interface CartItem {
   service: Service;
@@ -34,6 +35,7 @@ interface CartProviderProps {
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const { data } = useData(); // Obtenir les données globales de l'application
 
   // Sauvegarder le panier dans localStorage
   useEffect(() => {
@@ -89,10 +91,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const getTotalPrice = () => {
+    if (!data || !data.services) return 0;
+
     return items.reduce((total, item) => {
-      // Pour l'instant, on utilise un prix fictif basé sur le type de service
-      const basePrice = getServicePrice(item.service);
-      return total + (basePrice * item.quantity);
+        const serviceData = data.services.find(s => s.id === item.service.id);
+        const price = serviceData?.price || 0;
+        return total + (price * item.quantity);
     }, 0);
   };
 
@@ -120,32 +124,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       {children}
     </CartContext.Provider>
   );
-};
-
-// Fonction utilitaire pour obtenir le prix d'un service
-const getServicePrice = (service: Service): number => {
-  // Prix fictifs basés sur le type de service
-  const priceMap: Record<string, number> = {
-    'Formation Mannequinat': 150000,
-    'Séance Photo': 80000,
-    'Coaching Personnalisé': 120000,
-    'Développement de Carrière': 200000,
-    'Styling': 60000,
-    'Maquillage Professionnel': 40000,
-    'Événementiel': 300000,
-    'Défilé': 500000,
-  };
-
-  // Chercher par titre ou catégorie
-  for (const [key, price] of Object.entries(priceMap)) {
-    if (service.title.toLowerCase().includes(key.toLowerCase()) || 
-        service.category?.toLowerCase().includes(key.toLowerCase())) {
-      return price;
-    }
-  }
-
-  // Prix par défaut
-  return 100000;
 };
 
 export default CartContext;

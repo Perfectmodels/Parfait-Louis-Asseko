@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export interface Model {
@@ -134,9 +135,11 @@ export interface SocialLinks {
 }
 
 export interface Service {
+  id: string;
   slug: string;
   icon: string;
   title: string;
+  price: number;
   category: 'Services Mannequinat' | 'Services Mode et Stylisme' | 'Services Événementiels';
   description: string;
   details?: { 
@@ -717,8 +720,7 @@ export interface SocialUser {
     showOnlineStatus: boolean;
     allowMentions: boolean;
     allowDirectMessages: boolean;
-  };
-  createdAt?: string;
+t: string;
   lastActive?: string;
 }
 
@@ -735,4 +737,110 @@ export interface SocialPoll {
   expiresAt?: string;
   totalVotes: number;
   createdAt: string;
+}
+
+// Types pour le marketing
+export interface Contact {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  phone?: string;
+  source: 'import' | 'manual' | 'website_form';
+  tags: string[];
+  isSubscribed: boolean;
+  createdAt: string;
+}
+
+export interface Campaign {
+  id: string;
+  name: string;
+  subject: string;
+  fromName: string;
+  fromEmail: string;
+  htmlContent: string;
+  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'paused' | 'archived';
+  tags: string[];
+  recipients: {
+    type: 'tag' | 'list';
+    value: string[]; // Array of tags or contact IDs
+  };
+  scheduledAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  // Stats
+  sentCount: number;
+  openCount: number;
+  clickCount: number;
+  bounceCount: number;
+  unsubscribeCount: number;
+}
+
+// Types pour la sécurité
+export type SecurityCheckStatus = 'pass' | 'fail' | 'warning' | 'info';
+
+export interface SecurityCheck {
+  id: string; // e.g., 'https-enabled'
+  name: string;
+  status: SecurityCheckStatus;
+  description: string;
+  recommendation?: string;
+  lastChecked: string;
+}
+
+export type SecurityThreatSeverity = 'Low' | 'Medium' | 'High' | 'Critical';
+
+export interface SecurityThreat {
+  id: string;
+  type: 'Failed Login' | 'Brute Force Attempt' | 'Suspicious IP' | 'API Key Misuse' | 'Data Leak';
+  severity: SecurityThreatSeverity;
+  description: string;
+  timestamp: string;
+  ipAddress?: string;
+  userId?: string;
+  status: 'new' | 'investigating' | 'resolved' | 'ignored';
+}
+
+export interface SecurityActivityLog {
+  id: string;
+  action: 'Admin Login' | 'Failed Admin Login' | 'API Key Generated' | 'Security Scan' | 'Password Policy Change' | 'User Blocked';
+  userId: string; // Admin User ID
+  username: string;
+  timestamp: string;
+  ipAddress: string;
+  details: string;
+  status: 'Success' | 'Failure';
+}
+
+export interface ServiceOrderItem {
+  serviceId: string;
+  serviceTitle: string;
+  quantity: number;
+  price: number; // Price per unit at the time of order
+}
+
+export interface ServiceOrder {
+  id: string;
+  submissionDate: string;
+  status: 'Nouveau' | 'En traitement' | 'Terminé' | 'Annulé';
+  
+  // Customer info
+  clientInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+  };
+
+  // Order details
+  items: ServiceOrderItem[];
+  totalPrice: number;
+  notes?: string;
+  
+  // Payment info
+  paymentMethod: 'mobile_money' | 'bank_transfer' | 'cash';
+  paymentStatus: 'En attente' | 'Payé' | 'Échoué';
 }

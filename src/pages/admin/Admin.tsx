@@ -1,451 +1,289 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+/*
+ * =================================================================================================
+ * NOTE IMPORTANTE POUR LE DÉVELOPPEUR :
+ * =================================================================================================
+ * Ce composant est maintenant un "Layout" ou une "Coquille" pour l'ensemble du panneau d'administration.
+ * Il ne contient plus la logique d'affichage des différentes vues.
+ * Il affiche une barre de navigation latérale persistante et une zone de contenu principale.
+ *
+ * Pour que cela fonctionne, vous DEVEZ mettre à jour votre fichier de routage (ex: App.tsx).
+ * Les routes de l'administration doivent être déclarées comme des enfants de ce composant.
+ *
+ * EXEMPLE DE MISE À JOUR DU ROUTEUR :
+ *
+ * // Dans votre fichier de routes (par exemple, App.tsx)
+ *
+ * import AdminLayout from './pages/admin/Admin';
+ * import AdminDashboard from './pages/admin/AdminDashboard'; // Créez ce composant pour la page d'accueil de l'admin
+ * import AdminModels from './pages/admin/AdminModels';
+ * // ... importez toutes vos autres pages admin
+ *
+ * function App() {
+ *   return (
+ *     <Routes>
+ *       // ... autres routes
+ *       <Route path="/admin" element={<AdminLayout />}>
+ *         <Route index element={<AdminDashboard />} />
+ *         <Route path="models" element={<AdminModels />} />
+ *         <Route path="beginner-students-access" element={<AdminBeginnerStudents />} />
+ *         <Route path="payments" element={<AdminPayments />} />
+ *         // ... Ajoutez toutes les autres routes admin ici
+ *       </Route>
+ *       // ... autres routes
+ *     </Routes>
+ *   );
+ * }
+ * =================================================================================================
+ */
+
+import React, { useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import SEO from '../../components/SEO';
-import { 
-    UsersIcon, BookOpenIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
-    ArrowRightOnRectangleIcon,
+import {
+    HomeIcon,
+    UsersIcon,
+    CreditCardIcon,
+    ClipboardDocumentListIcon,
+    BookOpenIcon,
     ChatBubbleLeftRightIcon,
-    HomeIcon, CurrencyDollarIcon,
-    SignalIcon, Bars3Icon, XMarkIcon, BellIcon, UserCircleIcon,
-    ServerIcon
+    Cog6ToothIcon,
+    ServerIcon,
+    ArrowRightOnRectangleIcon,
+    ChevronDownIcon,
+    SignalIcon,
+    Bars3Icon,
+    XMarkIcon,
+    UserGroupIcon,
+    CurrencyDollarIcon,
+    MegaphoneIcon,
+    SparklesIcon,
+    PhotoIcon,
+    AcademicCapIcon,
+    ShieldCheckIcon,
+    EnvelopeIcon,
+    ShoppingCartIcon,
+    BriefcaseIcon
 } from '@heroicons/react/24/outline';
-import { useData } from '../../contexts/DataContext';
-import { useRealData } from '../../hooks/useRealData';
-import { useAdminNavigation } from '../../hooks/useAdminNavigation';
-import { useAdminDataSync } from '../../services/adminDataSync';
-import { useAdminCache } from '../../hooks/useAdminCache';
-import AdminNavigationDebug from '../../components/AdminNavigationDebug';
-import { ComptabiliteView } from './AdminComptabilite';
-import { ParametresView } from './AdminParametres';
-import { MannequinsView, CastingView, ContentView, TechniqueView, MessagerieView } from './AdminViews';
-import RealDataDashboard from '../../components/RealDataDashboard';
-import AdminDataIntegrity from '../../components/AdminDataIntegrity';
+
+// Définition de la structure de navigation
+const navigationSections = [
+    {
+        title: "GESTION CENTRALE",
+        links: [
+            { name: "Tableau de Bord", path: "/admin", icon: HomeIcon, exact: true },
+            { name: "Informations Agence", path: "/admin/agency", icon: UserGroupIcon },
+            { name: "Gestion de l'Équipe", path: "/admin/team", icon: UsersIcon },
+        ]
+    },
+    {
+        title: "MANNEQUINS & ACCÈS",
+        links: [
+            { name: "Gestion des Modèles", path: "/admin/models", icon: UsersIcon },
+            { name: "Accès Débutants", path: "/admin/beginner-students-access", icon: AcademicCapIcon },
+            { name: "Accès Modèles Pro", path: "/admin/model-access", icon: SparklesIcon },
+            { name: "Suivi & Performance", path: "/admin/model-tracking", icon: SignalIcon },
+        ]
+    },
+    {
+        title: "FINANCES & COMMANDES",
+        links: [
+            { name: "Gestion des Services", path: "/admin/services", icon: BriefcaseIcon },
+            { name: "Commandes de Services", path: "/admin/service-orders", icon: ShoppingCartIcon },
+            { name: "Comptabilité", path: "/admin/accounting", icon: CurrencyDollarIcon },
+            { name: "Gestion des Paiements", path: "/admin/payments", icon: CreditCardIcon },
+            { name: "Soumissions de Paiement", path: "/admin/payment-submissions", icon: EnvelopeIcon },
+        ]
+    },
+    {
+        title: "ÉVÉNEMENTS & CASTING",
+        links: [
+            { name: "Candidatures Casting", path: "/admin/casting-applications", icon: ClipboardDocumentListIcon },
+            { name: "Résultats Casting", path: "/admin/casting-results", icon: MegaphoneIcon },
+            { name: "Candidatures Fashion Day", path: "/admin/fashion-day-applications", icon: ClipboardDocumentListIcon },
+            { name: "Événements Fashion Day", path: "/admin/fashion-day-events", icon: SparklesIcon },
+        ]
+    },
+    {
+        title: "CONTENU & FORMATION",
+        links: [
+            { name: "Gestion du Magazine", path: "/admin/magazine", icon: BookOpenIcon },
+            { name: "Gestion de la Galerie", path: "/admin/gallery", icon: PhotoIcon },
+            { name: "Gestion 'Classroom'", path: "/admin/classroom", icon: AcademicCapIcon },
+            { name: "Progrès 'Classroom'", path: "/admin/classroom-progress", icon: SignalIcon },
+            { name: "Direction Artistique", path: "/admin/artistic-direction", icon: SparklesIcon },
+        ]
+    },
+    {
+        title: "COMMUNICATION",
+        links: [
+            { name: "Messages de Contact", path: "/admin/messages", icon: EnvelopeIcon },
+            { name: "Modération Commentaires", path: "/admin/comments", icon: ChatBubbleLeftRightIcon },
+            { name: "Gestion des Contacts CRM", path: "/admin/contact-management", icon: UserGroupIcon },
+            { name: "Campagnes Marketing", path: "/admin/marketing-campaigns", icon: MegaphoneIcon },
+        ]
+    },
+    {
+        title: "CONFIGURATION",
+        links: [
+            { name: "Paramètres Généraux", path: "/admin/settings", icon: Cog6ToothIcon },
+            { name: "Gestion Utilisateurs", path: "/admin/user-management", icon: UsersIcon },
+            { name: "Sécurité", path: "/admin/security", icon: ShieldCheckIcon },
+            { name: "Clés API", path: "/admin/api-keys", icon: Cog6ToothIcon },
+        ]
+    },
+    {
+        title: "SYSTÈME & TECHNIQUE",
+        links: [
+            { name: "État du Serveur", path: "/admin/server", icon: ServerIcon },
+            { name: "Base de Données", path: "/admin/database", icon: ServerIcon },
+            { name: "Diagnostic Email", path: "/admin/email-diagnostic", icon: EnvelopeIcon },
+            { name: "Test des Liens", path: "/admin/link-test", icon: ShieldCheckIcon },
+        ]
+    },
+];
 
 
-type AdminTab = 'dashboard' | 'mannequins' | 'casting' | 'content' | 'comptabilite' | 'parametres' | 'technique' | 'messagerie';
-
-interface ActiveUser {
-    name: string;
-    role: string;
-    loginTime: number;
-}
-
-interface AdminStats {
-    totalModels: number;
-    totalBeginners: number;
-    newApplications: number;
-    pendingTasks: number;
-}
-
-const getRoleDisplayName = (role: string) => {
-    switch (role) {
-        case 'admin': return 'Administrateur';
-        case 'student': return 'Mannequin Pro';
-        case 'beginner': return 'Débutant';
-        case 'jury': return 'Jury';
-        case 'registration': return 'Enregistrement';
-        default: return role;
-    }
-};
-
-const getRoleColor = (role: string) => {
-    switch (role) {
-        case 'admin': return 'bg-red-500/20 text-red-300';
-        case 'student': return 'bg-pm-gold/20 text-pm-gold';
-        case 'beginner': return 'bg-blue-500/20 text-blue-300';
-        case 'jury': return 'bg-purple-500/20 text-purple-300';
-        case 'registration': return 'bg-teal-500/20 text-teal-300';
-        default: return 'bg-gray-500/20 text-gray-300';
-    }
-}
-
-// Helper function to generate notifications for different sections
-const generateNotifications = (data: any, section: string): any[] => {
-    const notifications: any[] = [];
-
-    switch (section) {
-        case 'casting':
-            const castingApps = data?.castingApplications || [];
-            castingApps.forEach((app: any, index: number) => {
-                if (index < 3) { // Show only first 3
-                    notifications.push({
-                        id: `casting-${app.id}`,
-                        title: `Nouvelle candidature`,
-                        message: `${app.firstName} ${app.lastName} a postulé pour le casting`,
-                        type: 'info' as const,
-                        timestamp: new Date(app.createdAt).toLocaleDateString('fr-FR'),
-                        link: '/admin/casting-applications'
-                    });
-                }
-            });
-            break;
-
-        case 'booking':
-            const bookings = data?.bookingRequests || [];
-            bookings.forEach((booking: any, index: number) => {
-                if (index < 3) {
-                    notifications.push({
-                        id: `booking-${booking.id}`,
-                        title: `Demande de booking`,
-                        message: `Nouvelle demande de ${booking.clientName} pour ${booking.eventType}`,
-                        type: 'warning' as const,
-                        timestamp: new Date(booking.createdAt).toLocaleDateString('fr-FR'),
-                        link: '/admin/bookings'
-                    });
-                }
-            });
-            break;
-
-        case 'fashion-day':
-            const fashionApps = data?.fashionDayApplications || [];
-            fashionApps.forEach((app: any, index: number) => {
-                if (index < 3) {
-                    notifications.push({
-                        id: `fashion-${app.id}`,
-                        title: `Candidature PFD`,
-                        message: `${app.firstName} ${app.lastName} souhaite participer au Perfect Fashion Day`,
-                        type: 'success' as const,
-                        timestamp: new Date(app.createdAt).toLocaleDateString('fr-FR'),
-                        link: '/admin/fashion-day-applications'
-                    });
-                }
-            });
-            break;
-
-        case 'messages':
-            const messages = data?.contactMessages || [];
-            messages.forEach((message: any, index: number) => {
-                if (index < 3) {
-                    notifications.push({
-                        id: `message-${message.id}`,
-                        title: `Message de ${message.name}`,
-                        message: message.message.substring(0, 100) + '...',
-                        type: 'info' as const,
-                        timestamp: new Date(message.createdAt).toLocaleDateString('fr-FR'),
-                        link: '/admin/messages'
-                    });
-                }
-            });
-            break;
-
-        case 'recovery':
-            const recoveries = data?.recoveryRequests || [];
-            recoveries.forEach((recovery: any, index: number) => {
-                if (index < 3) {
-                    notifications.push({
-                        id: `recovery-${recovery.id}`,
-                        title: `Demande de récupération`,
-                        message: `${recovery.name} a oublié ses identifiants`,
-                        type: 'error' as const,
-                        timestamp: new Date(recovery.createdAt).toLocaleDateString('fr-FR'),
-                        link: '/admin/recovery-requests'
-                    });
-                }
-            });
-            break;
-    }
-
-    return notifications;
-};
-
-const Admin: React.FC = () => {
-    const navigate = useNavigate();
-    const { data } = useData();
-    const { getRealStats } = useRealData();
-    const { syncAllData, generateReport } = useAdminDataSync();
-    const { isInitialized: cacheInitialized, getCachedData, forceUpdateCache } = useAdminCache();
-    const { activeTab, sidebarOpen, handleTabChange, toggleSidebar, closeSidebar } = useAdminNavigation();
-    const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
-    const [showDebug, setShowDebug] = useState(false);
-    const [stats, setStats] = useState<AdminStats>({
-        totalModels: 0,
-        totalBeginners: 0,
-        newApplications: 0,
-        pendingTasks: 0
+const AdminLayout: React.FC = () => {
+    const location = useLocation();
+    const [openSection, setOpenSection] = useState<string | null>(() => {
+        // Initialiser la section ouverte en fonction de l'URL actuelle
+        for (const section of navigationSections) {
+            if (section.links.some(link => location.pathname.startsWith(link.path) && (location.pathname === link.path || !link.exact))) {
+                return section.title;
+            }
+        }
+        return "GESTION CENTRALE";
     });
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    // Utiliser les vraies données
-    const realStats = getRealStats();
-
-    useEffect(() => {
-        const checkActivity = () => {
-            const now = Date.now();
-            const fifteenMinutes = 15 * 60 * 1000;
-            const currentActivityJSON = localStorage.getItem('pmm_active_users');
-            const allUsers: ActiveUser[] = currentActivityJSON ? JSON.parse(currentActivityJSON) : [];
-            const recentUsers = allUsers.filter(user => (now - user.loginTime) < fifteenMinutes);
-            setActiveUsers(recentUsers);
-        };
-
-        checkActivity();
-        const interval = setInterval(checkActivity, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    // État pour contrôler la synchronisation
-    const [lastSyncTime, setLastSyncTime] = useState<number>(0);
-    const [isInitialized, setIsInitialized] = useState(false);
-
-    useEffect(() => {
-        if (data && !isInitialized && cacheInitialized) {
-            // Synchronisation initiale uniquement
-            syncAllData().then((syncData) => {
-                console.log('Données admin synchronisées:', syncData);
-                const report = generateReport(syncData);
-                console.log('Rapport de synchronisation:', report);
-                setLastSyncTime(Date.now());
-                setIsInitialized(true);
-            }).catch((error) => {
-                console.error('Erreur lors de la synchronisation:', error);
-                setIsInitialized(true);
-            });
-        }
-
-        if (data) {
-            setStats({
-                totalModels: realStats.totalModels,
-                totalBeginners: realStats.totalBeginnerStudents,
-                newApplications: realStats.totalCastingApplications + realStats.totalFashionDayApplications,
-                pendingTasks: realStats.totalRecoveryRequests + realStats.totalBookingRequests + realStats.totalContactMessages
-            });
-        }
-    }, [data, realStats, isInitialized, cacheInitialized]);
-
+    const toggleSection = (sectionTitle: string) => {
+        setOpenSection(prevOpenSection => (prevOpenSection === sectionTitle ? null : sectionTitle));
+    };
 
     const handleLogout = () => {
-        sessionStorage.clear();
-        navigate('/login');
+        // Logique de déconnexion
+        console.log("Déconnexion");
     };
 
-    // Fonction de synchronisation manuelle
-    const handleManualSync = async () => {
-        try {
-            // Forcer la mise à jour du cache
-            forceUpdateCache();
-            
-            const syncData = await syncAllData(true); // Force la synchronisation
-            console.log('Synchronisation manuelle effectuée:', syncData);
-            const report = generateReport(syncData);
-            console.log('Rapport de synchronisation:', report);
-            setLastSyncTime(Date.now());
-        } catch (error) {
-            console.error('Erreur lors de la synchronisation manuelle:', error);
-        }
-    };
-    
-    const newCastingApps = data?.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newFashionDayApps = data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newRecoveryRequests = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
-    const newBookingRequests = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
-    const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
+    const NavLink: React.FC<{ link: typeof navigationSections[0]['links'][0] }> = ({ link }) => {
+        const isActive = link.exact
+            ? location.pathname === link.path
+            : location.pathname.startsWith(link.path);
 
-    const navigationItems: { id: AdminTab; label: string; icon: React.ElementType; description: string }[] = [
-        { id: 'dashboard', label: 'Tableau de Bord', icon: HomeIcon, description: 'Vue d\'ensemble et notifications' },
-        { id: 'mannequins', label: 'Mannequins', icon: UsersIcon, description: 'Gestion des mannequins et accès' },
-        { id: 'casting', label: 'Casting & Événements', icon: ClipboardDocumentListIcon, description: 'Candidatures et Fashion Day' },
-        { id: 'content', label: 'Contenu', icon: BookOpenIcon, description: 'Magazine et formations' },
-        { id: 'comptabilite', label: 'Comptabilité', icon: CurrencyDollarIcon, description: 'Paiements et finances' },
-        { id: 'messagerie', label: 'Messagerie', icon: ChatBubbleLeftRightIcon, description: 'Communication et campagnes' },
-        { id: 'parametres', label: 'Paramètres', icon: Cog6ToothIcon, description: 'Configuration du site' },
-        { id: 'technique', label: 'Technique', icon: ServerIcon, description: 'Monitoring et maintenance' },
-    ];
+        return (
+            <Link
+                to={link.path}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
+                    isActive
+                        ? 'bg-pm-gold text-pm-dark font-bold'
+                        : 'text-pm-off-white/70 hover:bg-pm-dark/50 hover:text-white'
+                }`}
+            >
+                <link.icon className="w-5 h-5 flex-shrink-0" />
+                <span className="truncate">{link.name}</span>
+            </Link>
+        );
+    };
 
     return (
-        <div className="min-h-screen bg-pm-dark">
-            <SEO title="Admin Dashboard" noIndex />
-            
-            {/* Header */}
-            <header className="bg-black/50 backdrop-blur-sm border-b border-pm-gold/20 sticky top-0 z-50">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    toggleSidebar();
-                                }}
-                                onMouseDown={(e) => e.preventDefault()}
-                                className="lg:hidden p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors cursor-pointer select-none"
-                                style={{ 
-                                    WebkitTapHighlightColor: 'transparent',
-                                    touchAction: 'manipulation'
-                                }}
-                                aria-label="Toggle navigation menu"
-                            >
-                                {sidebarOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-                            </button>
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-pm-gold rounded-lg flex items-center justify-center">
-                                    <UserCircleIcon className="w-5 h-5 text-black" />
-                                </div>
-                    <div>
-                                    <h1 className="text-lg font-bold text-pm-gold">Admin Panel</h1>
-                                    <p className="text-xs text-pm-off-white/60">Perfect Models Management</p>
-                                </div>
-                            </div>
-                    </div>
-                        
-                        <div className="flex items-center gap-4">
-                            {/* Synchronisation manuelle */}
-                            <button
-                                onClick={handleManualSync}
-                                className="p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors"
-                                title={`Synchroniser les données${lastSyncTime ? ` (Dernière sync: ${new Date(lastSyncTime).toLocaleTimeString()})` : ''}`}
-                            >
-                                <SignalIcon className="w-5 h-5" />
-                            </button>
+        <div className="min-h-screen bg-pm-dark text-pm-off-white flex">
+            <SEO title="Admin Panel" noIndex />
 
-                            {/* Debug Toggle */}
-                            <button
-                                onClick={() => setShowDebug(!showDebug)}
-                                className="p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors"
-                                title="Toggle Debug Panel"
-                            >
-                                <Cog6ToothIcon className="w-5 h-5" />
-                            </button>
-
-                            {/* Notifications */}
-                            <div className="relative">
-                                <button className="p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors relative">
-                                    <BellIcon className="w-5 h-5" />
-                                    {(stats.newApplications + stats.pendingTasks) > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-                                            {stats.newApplications + stats.pendingTasks}
-                                        </span>
-                                    )}
-                                </button>
+            {/* Sidebar pour grands écrans */}
+            <aside className="hidden lg:flex flex-col w-72 bg-black border-r border-pm-gold/10">
+                <div className="flex items-center justify-center h-20 border-b border-pm-gold/10">
+                    <h1 className="text-2xl font-playfair text-pm-gold">Perfect Models</h1>
                 </div>
-
-                            {/* User Info */}
-                            <div className="hidden sm:flex items-center gap-3 text-sm">
-                                <div className="text-right">
-                                    <p className="text-pm-gold font-medium">Administrateur</p>
-                                    <p className="text-pm-off-white/60 text-xs">Connecté</p>
-                                </div>
-                                <button
-                                    onClick={handleLogout}
-                                    className="p-2 rounded-md text-pm-gold hover:bg-pm-gold/10 transition-colors"
-                                    title="Déconnexion"
-                                >
-                                    <ArrowRightOnRectangleIcon className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <div className="flex">
-                {/* Sidebar */}
-                <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-black/80 backdrop-blur-sm border-r border-pm-gold/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <div className="flex flex-col h-full pt-16 lg:pt-0">
-                        <nav className="flex-1 px-4 py-6 space-y-2">
-                            {navigationItems.map((item) => (
+                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                    {navigationSections.map((section) => (
+                        <div key={section.title}>
                             <button
-                                    key={item.id}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        handleTabChange(item.id);
-                                    }}
-                                    onMouseDown={(e) => {
-                                        e.preventDefault(); // Prevent focus issues
-                                    }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 cursor-pointer select-none ${
-                                        activeTab === item.id
-                                            ? 'bg-pm-gold/20 text-pm-gold border border-pm-gold/30 shadow-lg'
-                                            : 'text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 hover:shadow-md'
+                                onClick={() => toggleSection(section.title)}
+                                className="w-full flex justify-between items-center text-left px-3 py-2 text-xs font-bold uppercase tracking-wider text-pm-gold/60 hover:text-pm-gold"
+                            >
+                                <span>{section.title}</span>
+                                <ChevronDownIcon
+                                    className={`w-4 h-4 transition-transform ${
+                                        openSection === section.title ? 'rotate-180' : ''
                                     }`}
-                                    style={{ 
-                                        WebkitTapHighlightColor: 'transparent',
-                                        touchAction: 'manipulation'
-                                    }}
-                                >
-                                    <item.icon className="w-5 h-5 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-medium">{item.label}</p>
-                                        <p className="text-xs opacity-60">{item.description}</p>
-                                    </div>
+                                />
                             </button>
-                        ))}
-                    </nav>
-                        
-                        {/* Active Users */}
-                        <div className="p-4 border-t border-pm-gold/20">
-                            <h3 className="text-sm font-medium text-pm-gold mb-3 flex items-center gap-2">
-                                <SignalIcon className="w-4 h-4" />
-                                Utilisateurs Actifs
-                            </h3>
-                            <div className="space-y-2 max-h-32 overflow-y-auto">
-                                {activeUsers.length > 0 ? (
-                                    activeUsers.map(user => (
-                                        <div key={user.name} className="flex items-center gap-2 p-2 rounded-md bg-pm-dark/50">
-                                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-medium text-pm-off-white truncate">{user.name}</p>
-                                                <p className={`text-xs px-1 py-0.5 rounded-full inline-block ${getRoleColor(user.role)}`}>
-                                                    {getRoleDisplayName(user.role)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-pm-off-white/60">Aucun utilisateur actif</p>
-                                )}
-                            </div>
+                            {openSection === section.title && (
+                                <div className="mt-2 pl-3 border-l border-pm-gold/20 space-y-1.5">
+                                    {section.links.map((link) => (
+                                        <NavLink key={link.path} link={link} />
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                    </div>
-                </aside>
+                    ))}
+                </nav>
+                 <div className="p-4 border-t border-pm-gold/10">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-pm-off-white/70 hover:bg-red-500/20 hover:text-white transition-colors"
+                    >
+                        <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                        <span>Déconnexion</span>
+                    </button>
+                </div>
+            </aside>
+            
+            {/* Sidebar pour mobile */}
+            {sidebarOpen && (
+                 <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
+            )}
+            <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col w-72 bg-black border-r border-pm-gold/10 transform transition-transform duration-300 ease-in-out lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                 <div className="flex items-center justify-between h-20 border-b border-pm-gold/10 px-4">
+                    <h1 className="text-2xl font-playfair text-pm-gold">Perfect Models</h1>
+                    <button onClick={() => setSidebarOpen(false)} className="p-2">
+                        <XMarkIcon className="w-6 h-6 text-pm-off-white"/>
+                    </button>
+                </div>
+                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                    {navigationSections.map((section) => (
+                        <div key={section.title}>
+                            <button
+                                onClick={() => toggleSection(section.title)}
+                                className="w-full flex justify-between items-center text-left px-3 py-2 text-xs font-bold uppercase tracking-wider text-pm-gold/60 hover:text-pm-gold"
+                            >
+                                <span>{section.title}</span>
+                                <ChevronDownIcon className={`w-4 h-4 transition-transform ${openSection === section.title ? 'rotate-180' : ''}`} />
+                            </button>
+                            {openSection === section.title && (
+                                <div className="mt-2 pl-3 border-l border-pm-gold/20 space-y-1.5">
+                                    {section.links.map((link) => (
+                                        <NavLink key={link.path} link={link} />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </nav>
+                <div className="p-4 border-t border-pm-gold/10">
+                    <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-pm-off-white/70 hover:bg-red-500/20 hover:text-white transition-colors">
+                        <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                        <span>Déconnexion</span>
+                    </button>
+                </div>
+            </aside>
 
-                       {/* Main Content */}
-                       <main className="flex-1 lg:ml-0">
-                           <div className="p-4">
-                        {activeTab === 'dashboard' && <RealDataDashboard />}
-                        {activeTab === 'mannequins' && <MannequinsView data={data} />}
-                        {activeTab === 'casting' && <CastingView newCastingApps={newCastingApps} newFashionDayApps={newFashionDayApps} data={data} generateNotifications={generateNotifications} />}
-                        {activeTab === 'content' && <ContentView />}
-                        {activeTab === 'comptabilite' && <ComptabiliteView newBookingRequests={newBookingRequests} newMessages={newMessages} newRecoveryRequests={newRecoveryRequests} data={data} generateNotifications={generateNotifications} />}
-                        {activeTab === 'messagerie' && <MessagerieView data={data} />}
-                        {activeTab === 'parametres' && <ParametresView data={data} />}
-                        {activeTab === 'technique' && <TechniqueView data={data} />}
-                    </div>
+            {/* Contenu principal */}
+            <div className="flex-1 flex flex-col">
+                <header className="flex items-center h-20 px-6 lg:hidden border-b border-pm-dark/50">
+                    <button onClick={() => setSidebarOpen(true)} className="p-2">
+                        <Bars3Icon className="w-6 h-6 text-pm-off-white" />
+                    </button>
+                </header>
+                <main className="flex-1 p-6 lg:p-10 overflow-y-auto">
+                    {/* Le contenu de la page enfant sera rendu ici */}
+                    <Outlet />
                 </main>
             </div>
-
-            {/* Mobile overlay */}
-            {sidebarOpen && (
-                <div 
-                    className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        closeSidebar();
-                    }}
-                    onMouseDown={(e) => e.preventDefault()}
-                    style={{ 
-                        WebkitTapHighlightColor: 'transparent',
-                        touchAction: 'manipulation'
-                    }}
-                />
-            )}
-
-            {/* Debug Panel */}
-            {showDebug && (
-                <AdminNavigationDebug
-                    activeTab={activeTab}
-                    sidebarOpen={sidebarOpen}
-                    onTabChange={handleTabChange}
-                    onToggleSidebar={toggleSidebar}
-                />
-            )}
         </div>
     );
 };
 
-// Dashboard View Component - Supprimé car non utilisé
-
-// Composants supprimés car non utilisés
-
-export default Admin;
+export default AdminLayout;

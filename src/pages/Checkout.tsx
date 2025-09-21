@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useCart } from '../contexts/CartContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { useData } from '../contexts/DataContext';
+import { ServiceOrder, ServiceOrderItem } from '../types';
 import { 
   ArrowLeftIcon,
   CheckIcon,
@@ -16,7 +18,7 @@ import {
 
 const Checkout: React.FC = () => {
   const { items, getTotalPrice, clearCart } = useCart();
-  const navigate = useNavigate();
+  const { data, saveData } = useData();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -25,10 +27,11 @@ const Checkout: React.FC = () => {
     address: '',
     city: '',
     notes: '',
-    paymentMethod: 'mobile_money'
+    paymentMethod: 'mobile_money' as 'mobile_money' | 'bank_transfer' | 'cash'
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const totalPrice = getTotalPrice();
 
@@ -48,13 +51,69 @@ const Checkout: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+    setError(null);
 
-    // Simulation du traitement de la commande
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    if (!data || !data.services) {
+        setError("Les données de l'application n'ont pas pu être chargées.");
+        setIsProcessing(false);
+        return;
+    }
 
-    setIsProcessing(false);
-    setOrderComplete(true);
-    clearCart();
+    const orderItems: ServiceOrderItem[] = items.map(item => {
+        const serviceData = data.services.find(s => s.id === item.service.id);
+        return {
+            serviceId: item.service.id,
+            serviceTitle: item.service.title,
+            quantity: item.quantity,
+            price: serviceData?.price || 0
+        }
+    });
+
+    const newOrder: ServiceOrder = {
+        id: `order-${Date.now()}`,
+        submissionDate: new Date().toISOString(),
+        status: 'Nouveau',
+        clientInfo: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+        },
+        items: orderItems,
+        totalPrice: totalPrice,
+        notes: formData.notes,
+        paymentMethod: formData.paymentMethod,
+        paymentStatus: 'En attente'
+    };
+
+    try {
+        const updatedOrders = [...(data.serviceOrders || []), newOrder];
+        await saveData({ ...data, serviceOrders: updatedOrders });
+        
+        // Envoyer les emails
+        await fetch('/api/send-service-order-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                order: newOrder,
+                agencyName: "Perfect Models Management",
+                adminEmail: data.contact.notificationEmail
+            }),
+        });
+
+        setIsProcessing(false);
+        setOrderComplete(true);
+        clearCart();
+
+    } catch (err) {
+        console.error("Erreur lors de la sauvegarde de la commande:", err);
+        setError("Une erreur est survenue lors de la soumission de votre commande. Veuillez réessayer.");
+        setIsProcessing(false);
+    }
   };
 
   if (items.length === 0 && !orderComplete) {
@@ -83,7 +142,7 @@ const Checkout: React.FC = () => {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Commande confirmée !</h1>
           <p className="text-gray-600 mb-6">
-            Votre commande a été enregistrée avec succès. Notre équipe vous contactera dans les plus brefs délais.
+            Votre commande a été enregistrée avec succès. Un e-mail de confirmation vous a été envoyé. Notre équipe vous contactera dans les plus brefs délais.
           </p>
           <div className="space-y-3">
             <Link
@@ -252,6 +311,12 @@ const Checkout: React.FC = () => {
                     />
                   </div>
 
+                    {error && (
+                        <div className="p-4 bg-red-100 text-red-700 rounded-xl">
+                            {error}
+                        </div>
+                    )}
+
                   <button
                     type="submit"
                     disabled={isProcessing}
@@ -289,7 +354,7 @@ const Checkout: React.FC = () => {
                         <p className="text-xs text-gray-500">Quantité: {item.quantity}</p>
                       </div>
                       <span className="font-semibold text-pm-gold text-sm">
-                        {formatPrice(getServicePrice(item.service) * item.quantity)}
+                        {formatPrice((data?.services.find(s => s.id === item.service.id)?.price || 0) * item.quantity)}
                       </span>
                     </div>
                   ))}
@@ -328,28 +393,6 @@ const Checkout: React.FC = () => {
       </div>
     </div>
   );
-};
-
-// Fonction utilitaire pour obtenir le prix d'un service
-const getServicePrice = (service: any): number => {
-  const priceMap: Record<string, number> = {
-    'Formation Mannequinat': 150000,
-    'Séance Photo': 80000,
-    'Coaching Personnalisé': 120000,
-    'Développement de Carrière': 200000,
-    'Styling': 60000,
-    'Maquillage Professionnel': 40000,
-    'Événementiel': 300000,
-    'Défilé': 500000,
-  };
-
-  for (const [key, price] of Object.entries(priceMap)) {
-    if (service.title.toLowerCase().includes(key.toLowerCase()) || 
-        service.category?.toLowerCase().includes(key.toLowerCase())) {
-      return price;
-    }
-  }
-  return 100000;
 };
 
 export default Checkout;
