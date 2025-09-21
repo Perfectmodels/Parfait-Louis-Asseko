@@ -1,478 +1,160 @@
-import React, { useState, useEffect, useRef } from 'react';
+
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import NotFound from './NotFound';
-import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
-import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import NotFound from './NotFound';
+import PublicPageLayout from '../components/PublicPageLayout';
 import BookingForm from '../components/BookingForm';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
-
-// --- Helper & Modal Components for Sharing ---
-const generateShortLink = async (
-  options: { link: string; title: string; description: string; imageUrl: string; },
-  apiKeys: any
-): Promise<string> => {
-  const { link, title, description, imageUrl } = options;
-  const dynamicLinksConfig = apiKeys?.firebaseDynamicLinks;
-
-  if (!dynamicLinksConfig?.webApiKey) {
-    console.warn('Firebase Dynamic Links API key not configured. Falling back to long link.');
-    return link;
-  }
-
-  const endpoint = `https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=${dynamicLinksConfig.webApiKey}`;
-
-  const requestBody = {
-    dynamicLinkInfo: {
-      domainUriPrefix: dynamicLinksConfig.domainUriPrefix,
-      link: link,
-      socialMetaTagInfo: {
-        socialTitle: title,
-        socialDescription: description,
-        socialImageLink: imageUrl,
-      },
-    },
-    suffix: { option: "SHORT" }
-  };
-
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error.message || 'Failed to generate short link.');
-    }
-    const data = await response.json();
-    return data.shortLink || link;
-  } catch (error) {
-    console.error('Error generating dynamic link:', error);
-    return link;
-  }
-};
-
-const ShareModal: React.FC<{
-    isOpen: boolean;
-    onClose: () => void;
-    title: string;
-    url: string;
-    isGenerating: boolean;
-}> = ({ isOpen, onClose, title, url, isGenerating }) => {
-    const [copied, setCopied] = useState(false);
-
-    useEffect(() => {
-        if (!isOpen) return;
-        setCopied(false);
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, url, onClose]);
-
-    const handleCopy = () => {
-        navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    if (!isOpen) return null;
-    
-    const shareText = encodeURIComponent(title);
-    const encodedUrl = encodeURIComponent(url);
-
-    return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={onClose}>
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
-                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
-                    <h2 className="text-xl font-playfair text-pm-gold">Partager le Profil</h2>
-                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
-                </header>
-                <main className="p-6 space-y-4">
-                    {isGenerating ? (
-                        <div className="flex items-center justify-center h-24">
-                            <p className="text-pm-gold animate-pulse">Génération du lien...</p>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="flex items-center gap-2">
-                                <input type="text" readOnly value={url} className="admin-input flex-grow !pr-10" />
-                                <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
-                                    {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
-                                </button>
-                            </div>
-                            <div className="flex justify-center gap-4 pt-2">
-                                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><FacebookIcon className="w-10 h-10" /></a>
-                                <a href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><TwitterIcon className="w-10 h-10 bg-white rounded-full p-1" /></a>
-                                <a href={`https://api.whatsapp.com/send?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><WhatsAppIcon className="w-10 h-10" /></a>
-                            </div>
-                        </>
-                    )}
-                </main>
-            </div>
-        </div>
-    );
-};
-
+import { 
+    ArrowLeftIcon, 
+    XMarkIcon,
+    PhotoIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    SparklesIcon,
+    CalendarIcon,
+    UserIcon
+} from '@heroicons/react/24/outline';
 
 const ModelDetail: React.FC = () => {
   const { data, isInitialized } = useData();
   const { id } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState('details');
-  const [isViewingOwnProfile, setIsViewingOwnProfile] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [isShareOpen, setIsShareOpen] = useState(false);
-  const [shortUrl, setShortUrl] = useState('');
-  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
-  
+  const [isBookingOpen, setBookingOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+
   const model = data?.models.find(m => m.id === id);
 
-  // Check if data is loaded and model exists
-  if (!isInitialized || !data) {
-    return (
-      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pm-gold mx-auto mb-4"></div>
-          <p className="text-pm-off-white/70">Chargement du profil...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!model) {
-    return (
-      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-4">Profil Non Trouvé</h1>
-          <p className="text-pm-off-white/70 mb-6">Ce mannequin n'existe pas ou n'est pas accessible.</p>
-          <button
-            onClick={() => window.history.back()}
-            className="px-6 py-3 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
-          >
-            Retour
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const modalRef = useRef<HTMLDivElement>(null);
-  const prevActiveElement = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const userRole = sessionStorage.getItem('classroom_role');
-    const userId = sessionStorage.getItem('userId');
-    setIsViewingOwnProfile(userRole === 'student' && userId === id);
-  }, [id]);
-
-  useEffect(() => {
-    const isModalOpen = isBookingModalOpen || !!selectedImage || isShareOpen;
-    if (isModalOpen) {
-        prevActiveElement.current = document.activeElement as HTMLElement;
-        
-        setTimeout(() => {
-            modalRef.current?.focus();
-            const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            if (!focusableElements || focusableElements.length === 0) return;
-
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
-
-            const handleKeyDown = (e: KeyboardEvent) => {
-                if (e.key === 'Escape') {
-                    setIsBookingModalOpen(false);
-                    setSelectedImage(null);
-                    setIsShareOpen(false);
-                }
-                if (e.key === 'Tab') {
-                    if (e.shiftKey) {
-                        if (document.activeElement === firstElement) {
-                            e.preventDefault();
-                            lastElement.focus();
-                        }
-                    } else {
-                        if (document.activeElement === lastElement) {
-                            e.preventDefault();
-                            firstElement.focus();
-                        }
-                    }
-                }
-            };
-            
-            document.addEventListener('keydown', handleKeyDown);
-
-            return () => {
-                document.removeEventListener('keydown', handleKeyDown);
-                prevActiveElement.current?.focus();
-            };
-        }, 100);
-
-    }
-  }, [isBookingModalOpen, selectedImage, isShareOpen]);
-
-  const handleShare = async () => {
-    if (!model) return;
-    setIsShareOpen(true);
-    if (shortUrl) return;
-
-    setIsGeneratingLink(true);
-    const longUrl = window.location.href;
-    const generatedUrl = await generateShortLink(
-        {
-            link: longUrl,
-            title: model.name,
-            description: `Découvrez le portfolio de ${model.name}, mannequin chez Perfect Models Management.`,
-            imageUrl: model.imageUrl,
-        },
-        data?.apiKeys
-    );
-    setShortUrl(generatedUrl);
-    setIsGeneratingLink(false);
-  };
-
   if (!isInitialized) {
-    return <div className="min-h-screen bg-pm-dark"></div>;
+    return <div className="min-h-screen bg-pm-dark" />;
   }
 
   if (!model) {
     return <NotFound />;
   }
-  
-  const modelSchema = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": model.name,
-    "jobTitle": "Mannequin",
-    "image": model.imageUrl,
-    "gender": model.gender === 'Homme' ? 'https://schema.org/Male' : 'https://schema.org/Female',
-    "height": {
-        "@type": "QuantitativeValue",
-        "value": model.height.replace('m', '.').replace(/[^0-9.]/g, ''),
-        "unitCode": "MTR"
-    },
-    "worksFor": {
-        "@type": "Organization",
-        "name": "Perfect Models Management",
-        "url": window.location.origin
-    },
-    "url": window.location.href,
-    "description": `Portfolio de ${model.name}, mannequin chez Perfect Models Management.`
-  };
 
-  const seoDescription = `Explorez le portfolio de ${model.name}, mannequin ${model.gender} de ${model.height} chez Perfect Models Management. Découvrez ses photos, mensurations (${model.measurements.chest}-${model.measurements.waist}-${model.measurements.hips}), et son parcours unique dans la mode.`;
+  const portfolioImages = model.portfolioImages || [];
 
   return (
-    <>
-      <SEO
-        title={`${model.name} | Portfolio`}
-        description={seoDescription}
-        keywords={`${model.name}, mannequin ${model.gender}, modèle photo gabon, agence pmm, booker ${model.name}, mensurations mannequin`}
-        image={model.imageUrl}
-        schema={modelSchema}
-      />
-      <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-        <div className="container mx-auto px-6">
-          <Link to="/mannequins" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">
-            <ChevronLeftIcon className="w-5 h-5" />
-            Retour au catalogue
-          </Link>
-          <div className="flex flex-col lg:flex-row gap-12 bg-black p-4 sm:p-8 border border-pm-gold/20">
-            <div className="lg:w-1/3">
-              <div className="aspect-[3/4] border-2 border-pm-gold p-2">
-                  <img src={model.imageUrl} alt={model.name} className="w-full h-full object-cover" />
-              </div>
+    <PublicPageLayout
+      title={model.name}
+      subtitle={`Découvrez le portfolio de ${model.name}, un de nos talents exceptionnels.`}
+      heroImage={model.imageUrl}
+      callToAction={{ text: "Booker ce mannequin", onClick: () => setBookingOpen(true) }}
+    >
+      <div className="space-y-16">
+        <section className="grid md:grid-cols-3 gap-12">
+            <div className="md:col-span-1 space-y-6">
+                <InfoSection title="Mensurations">
+                    <InfoItem label="Taille" value={model.height} />
+                    <InfoItem label="Poitrine" value={model.measurements.chest} />
+                    <InfoItem label="Taille (vêtement)" value={model.measurements.waist} />
+                    <InfoItem label="Hanches" value={model.measurements.hips} />
+                    <InfoItem label="Pointure" value={model.measurements.shoeSize} />
+                </InfoSection>
+                <InfoSection title="Informations">
+                    {model.age && <InfoItem label="Âge" value={`${model.age} ans`} />}
+                    {model.location && <InfoItem label="Lieu" value={model.location} />}
+                     <InfoItem label="Catégories" value={model.categories.join(', ')} />
+                </InfoSection>
             </div>
-            <div className="lg:w-2/3">
-              <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold">{model.name}</h1>
-              
-              <div className="border-b border-pm-gold/20 mt-6 mb-6">
-                <nav role="tablist" aria-label="Informations du mannequin" className="flex space-x-8">
-                  <TabButton name="Détails" isActive={activeTab === 'details'} onClick={() => setActiveTab('details')} id="tab-details" controls="tab-panel-details" />
-                  <TabButton name="Expérience & Parcours" isActive={activeTab === 'experience'} onClick={() => setActiveTab('experience')} id="tab-experience" controls="tab-panel-experience" />
-                </nav>
-              </div>
+            <div className="md:col-span-2 space-y-8">
+                <BioSection icon={UserIcon} title="Parcours" content={model.journey} />
+                <BioSection icon={SparklesIcon} title="Expérience" content={model.experience} />
+            </div>
+        </section>
 
-              <div>
-                <div role="tabpanel" id="tab-panel-details" aria-labelledby="tab-details" hidden={activeTab !== 'details'}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-lg animate-fade-in">
-                      <InfoItem label="Taille" value={model.height} />
-                      <InfoItem label="Genre" value={model.gender} />
-                      {model.age && <InfoItem label="Âge" value={`${model.age} ans`} />}
-                      {model.location && <InfoItem label="Lieu" value={model.location} />}
-                      <InfoItem label="Poitrine" value={model.measurements?.chest || 'N/A'} />
-                      <InfoItem label="Taille (vêtement)" value={model.measurements?.waist || 'N/A'} />
-                      <InfoItem label="Hanches" value={model.measurements?.hips || 'N/A'} />
-                      <InfoItem label="Pointure" value={model.measurements?.shoeSize || 'N/A'} />
-                      <div className="col-span-full">
-                          <InfoItem label="Catégories" value={(model.categories || []).join(', ')} />
-                      </div>
-                       {model.distinctions && model.distinctions.length > 0 && (
-                          <div className="col-span-full mt-4">
-                              <h3 className="text-lg font-bold text-pm-off-white/80 border-b border-pm-gold/20 pb-1 mb-3">Palmarès & Distinctions</h3>
-                              <div className="space-y-3">
-                                  {(model.distinctions || []).map((distinction, index) => (
-                                      <div key={index}>
-                                          <h4 className="font-semibold text-pm-off-white">{distinction.name}</h4>
-                                          <ul className="list-disc list-inside text-pm-off-white/90 pl-4 text-base">
-                                              {(distinction.titles || []).map((title, titleIndex) => (
-                                                  <li key={titleIndex}>{title}</li>
-                                              ))}
-                                          </ul>
-                                      </div>
-                                  ))}
-                              </div>
-                          </div>
-                       )}
-                       {isViewingOwnProfile && (
-                          <div className="col-span-full mt-6 p-6 bg-pm-gold/5 border border-pm-gold/10 rounded-lg">
-                            <h3 className="text-xl font-bold text-pm-gold flex items-center gap-2">
-                              <ShieldCheckIcon className="w-6 h-6" />
-                              Informations Privées
-                            </h3>
-                            <p className="text-xs text-pm-off-white/50 mb-4">Ces informations ne sont visibles que par vous.</p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-base">
-                                {model.email && <InfoItem label="Email" value={model.email} />}
-                                {model.phone && <InfoItem label="Téléphone" value={model.phone} />}
+        {portfolioImages.length > 0 && (
+            <section>
+                <h2 className="text-3xl md:text-4xl font-bold font-playfair text-center mb-12 text-pm-off-white">Portfolio</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {portfolioImages.map((img, index) => (
+                        <div key={index} onClick={() => setSelectedImageIndex(index)} className="aspect-[4/5] rounded-lg overflow-hidden cursor-pointer group">
+                            <img src={img} alt={`${model.name} portfolio ${index + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <PhotoIcon className="w-10 h-10 text-white" />
                             </div>
-                          </div>
-                       )}
-                    </div>
+                        </div>
+                    ))}
                 </div>
-                <div role="tabpanel" id="tab-panel-experience" aria-labelledby="tab-experience" hidden={activeTab !== 'experience'}>
-                  <div className="space-y-6 animate-fade-in">
-                    <div>
-                      <h2 className="text-2xl font-playfair text-pm-gold mb-2">Expérience</h2>
-                      <p className="text-pm-off-white/80 leading-relaxed whitespace-pre-wrap">{model.experience}</p>
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-playfair text-pm-gold mb-2">Parcours</h2>
-                      <p className="text-pm-off-white/80 leading-relaxed whitespace-pre-wrap">{model.journey}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-               <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
-                  {!isViewingOwnProfile && (
-                    <button onClick={() => setIsBookingModalOpen(true)} className="w-full sm:w-auto px-10 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                        Booker ce mannequin
-                    </button>
-                  )}
-                   <button onClick={handleShare} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
-                      <ShareIcon className="w-5 h-5" /> Partager
-                  </button>
-               </div>
-            </div>
-          </div>
-
-          {model.portfolioImages && model.portfolioImages.length > 0 && (
-            <section className="mt-16">
-              <h2 className="section-title">Portfolio</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {(model.portfolioImages || []).map((img, index) => (
-                  <button key={index} onClick={() => setSelectedImage(img)} className="group block aspect-[3/4] bg-pm-dark overflow-hidden transition-all duration-300 hover:scale-105 border-2 border-transparent hover:border-pm-gold">
-                    <img src={img} alt={`${model.name} portfolio image ${index + 1}`} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
             </section>
-          )}
-        </div>
+        )}
+
+        <Link to="/models" className="inline-flex items-center gap-2 text-pm-gold font-semibold text-lg group mt-12">
+            <ArrowLeftIcon className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+            Retour au catalogue
+        </Link>
       </div>
 
-      {isBookingModalOpen && (
-        <div
-          ref={isBookingModalOpen ? modalRef : null}
-          tabIndex={-1}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="booking-modal-title"
-        >
-          <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <header className="p-4 flex justify-between items-center border-b border-pm-gold/20 flex-shrink-0">
-                <h2 id="booking-modal-title" className="text-2xl font-playfair text-pm-gold">Booking: {model.name}</h2>
-                <button onClick={() => setIsBookingModalOpen(false)} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer la fenêtre de booking"><XMarkIcon className="w-6 h-6"/></button>
-            </header>
-            <main className="p-6 overflow-y-auto flex-grow">
-              <BookingForm 
-                prefilledModelName={model.name}
-                onSuccess={() => {
-                  setTimeout(() => setIsBookingModalOpen(false), 3000);
-                }}
-              />
-            </main>
-          </div>
-        </div>
+      {isBookingOpen && (
+          <BookingModal modelName={model.name} onClose={() => setBookingOpen(false)} />
       )}
 
-      {selectedImage && (
-        <div 
-          ref={selectedImage ? modalRef : null}
-          tabIndex={-1}
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 cursor-pointer"
-          onClick={() => setSelectedImage(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Vue agrandie de l'image"
-        >
-          <button 
-            className="absolute top-4 right-4 text-white hover:text-pm-gold transition-colors z-10 p-2 bg-black/50 rounded-full" 
-            aria-label="Fermer"
-            onClick={() => setSelectedImage(null)}
-          >
-            <XMarkIcon className="w-8 h-8"/>
-          </button>
-          <div className="relative max-w-5xl max-h-[90vh] cursor-default" onClick={(e) => e.stopPropagation()}>
-            <img 
-              src={selectedImage} 
-              alt="Vue agrandie" 
-              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl shadow-pm-gold/20" 
-            />
-          </div>
-        </div>
+      {selectedImageIndex !== null && (
+          <Lightbox 
+            photos={portfolioImages}
+            currentIndex={selectedImageIndex}
+            onClose={() => setSelectedImageIndex(null)}
+          />
       )}
-
-      <ShareModal
-        isOpen={isShareOpen}
-        onClose={() => setIsShareOpen(false)}
-        title={`Découvrez ${model.name} - Perfect Models Management`}
-        url={shortUrl}
-        isGenerating={isGeneratingLink}
-      />
-    </>
+    </PublicPageLayout>
   );
 };
 
-const TabButton: React.FC<{name: string, isActive: boolean, onClick: () => void, id: string, controls: string}> = ({ name, isActive, onClick, id, controls }) => (
-    <button
-        role="tab"
-        id={id}
-        aria-controls={controls}
-        aria-selected={isActive}
-        onClick={onClick}
-        className={`relative py-2 font-medium text-lg uppercase tracking-wider transition-colors ${
-            isActive 
-            ? 'text-pm-gold' 
-            : 'text-pm-off-white/70 hover:text-pm-gold'
-        }`}
-    >
-        {name}
-        <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0'}`}/>
-    </button>
-);
-
-const InfoItem: React.FC<{label: string, value: string}> = ({ label, value }) => (
-    <div>
-        <span className="font-bold text-pm-off-white/60 block text-sm uppercase tracking-wider">{label}</span> 
-        <span className="text-pm-off-white/90">{value}</span>
+const InfoSection: React.FC<{title: string, children: React.ReactNode}> = ({ title, children }) => (
+    <div className="bg-black/30 border border-pm-gold/20 rounded-xl p-6">
+        <h3 className="text-xl font-playfair text-pm-gold mb-4">{title}</h3>
+        <div className="space-y-3">{children}</div>
     </div>
 );
 
+const InfoItem: React.FC<{label: string, value: string}> = ({ label, value }) => (
+    <div className="flex justify-between items-baseline text-sm border-b border-pm-gold/10 pb-2">
+        <span className="text-pm-off-white/70">{label}</span>
+        <span className="font-semibold text-pm-off-white text-right">{value}</span>
+    </div>
+);
+
+const BioSection: React.FC<{icon: React.ElementType, title: string, content: string}> = ({ icon: Icon, title, content}) => (
+    <div>
+        <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4">
+            <Icon className="w-6 h-6" />
+            {title}
+        </h3>
+        <p className="text-pm-off-white/80 leading-relaxed whitespace-pre-wrap">{content}</p>
+    </div>
+);
+
+const BookingModal: React.FC<{ modelName: string, onClose: () => void }> = ({ modelName, onClose }) => (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div className="bg-pm-dark border border-pm-gold/30 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <header className="p-4 flex justify-between items-center border-b border-pm-gold/20 flex-shrink-0">
+                <h2 className="text-2xl font-playfair text-pm-gold">Booking: {modelName}</h2>
+                <button onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-8 h-8" /></button>
+            </header>
+            <main className="p-6 overflow-y-auto">
+                <BookingForm prefilledModelName={modelName} onSuccess={() => setTimeout(onClose, 3000)} />
+            </main>
+        </div>
+    </div>
+);
+
+const Lightbox: React.FC<{ photos: string[], currentIndex: number, onClose: () => void }> = ({ photos, currentIndex, onClose }) => {
+    const [index, setIndex] = useState(currentIndex);
+
+    const handleNext = () => setIndex((prev) => (prev + 1) % photos.length);
+    const handlePrev = () => setIndex((prev) => (prev - 1 + photos.length) % photos.length);
+
+    return (
+        <div className="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
+             <button onClick={onClose} className="absolute top-6 right-6 text-white/70 hover:text-white z-10"><XMarkIcon className="w-10 h-10" /></button>
+            <div className="relative w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                <button onClick={handlePrev} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><ChevronLeftIcon className="w-8 h-8 text-white" /></button>
+                <img src={photos[index]} alt={`Portfolio ${index + 1}`} className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl" />
+                <button onClick={handleNext} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><ChevronRightIcon className="w-8 h-8 text-white" /></button>
+                <div className="absolute bottom-6 text-center text-white text-sm">{index + 1} / {photos.length}</div>
+            </div>
+        </div>
+    );
+};
 
 export default ModelDetail;

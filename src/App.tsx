@@ -1,4 +1,4 @@
-jett
+
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import React, { lazy, Suspense, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
@@ -15,7 +15,7 @@ import ScriptPreloader from './components/ScriptPreloader';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazy-loaded Pages
-const Home = lazy(() => import('./pages/Home'));
+const HomePage = lazy(() => import('./pages/HomePage'));
 const Agency = lazy(() => import('./pages/Agency'));
 const Models = lazy(() => import('./pages/Models'));
 const ModelDetail = lazy(() => import('./pages/ModelDetail'));
@@ -49,7 +49,7 @@ const AdminFashionDay = lazy(() => import('./pages/admin/AdminFashionDay'));
 const AdminFashionDayEvents = lazy(() => import('./pages/admin/AdminFashionDayEvents'));
 const AdminMagazine = lazy(() => import('./pages/admin/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/admin/AdminModelAccess'));
-const AdminModels = lazy(() => import('./pages/admin/AdminModels'));
+const ModelManagement = lazy(() => import('./pages/admin/models/ModelManagement'));
 const AdminServiceOrders = lazy(() => import('./pages/admin/AdminServiceOrders'));
 const AdminServices = lazy(() => import('./pages/admin/AdminServices'));
 // const AdminImageManagement = lazy(() => import('./pages/admin/AdminImageManagement'));
@@ -189,7 +189,7 @@ const AppContent: React.FC = () => {
                 <Suspense fallback={<LoadingFallback />}>
                     <PageTransition>
                         <ReactRouterDOM.Routes>
-                        <ReactRouterDOM.Route path="/" element={<PublicRouteWrapper><Home /></PublicRouteWrapper>} />
+                        <ReactRouterDOM.Route path="/" element={<HomePage />} />
                         <ReactRouterDOM.Route path="/agence" element={<PublicRouteWrapper><Agency /></PublicRouteWrapper>} />
                         <ReactRouterDOM.Route path="/mannequins" element={<PublicRouteWrapper><Models /></PublicRouteWrapper>} />
                         <ReactRouterDOM.Route path="/mannequins/:id" element={<PublicRouteWrapper><ModelDetail /></PublicRouteWrapper>} />
@@ -225,7 +225,7 @@ const AppContent: React.FC = () => {
                            <ReactRouterDOM.Route index element={<AdminDashboard />} />
                            <ReactRouterDOM.Route path="agency" element={<AdminAgency />} />
                            <ReactRouterDOM.Route path="team" element={<AdminTeam />} />
-                           <ReactRouterDOM.Route path="models" element={<AdminModels />} />
+                           <ReactRouterDOM.Route path="models" element={<ModelManagement />} />
                            <ReactRouterDOM.Route path="beginner-students-access" element={<AdminBeginnerStudents />} />
                            <ReactRouterDOM.Route path="model-access" element={<AdminModelAccess />} />
                            <ReactRouterDOM.Route path="model-tracking" element={<AdminModelTracking />} />

@@ -1,6 +1,8 @@
+
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import Breadcrumb from '../Breadcrumb';
 import SimpleMobileNav from '../SimpleMobileNav';
 
 interface LayoutProps {
@@ -9,15 +11,22 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="bg-pm-dark min-h-screen flex flex-col font-montserrat">
+    <div className="bg-pm-dark min-h-screen flex flex-col font-sans">
       <Header />
-      <main className="flex-grow pt-20 lg:pt-24 pb-20 lg:pb-0">
-        {/* Breadcrumb masqué - décommentez la ligne suivante pour l'activer */}
-        {/* <Breadcrumb /> */}
-        {children}
-      </main>
+      
+      <div className="flex-grow">
+        {/* The pt-20 on main is to push content below the fixed header */}
+        <main className="pt-20 lg:pt-0">
+            <Breadcrumb />
+            {children}
+        </main>
+      </div>
+
       <Footer />
       <SimpleMobileNav />
+
+      {/* Spacer for mobile nav */}
+      <div className="h-20 lg:hidden print-hide" />
     </div>
   );
 };

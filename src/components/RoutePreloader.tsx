@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 const preloadComponents = () => {
     // Preload admin components
     import('../pages/admin/Admin');
-    import('../pages/admin/AdminModels');
+    import('../pages/admin/models/ModelManagement');
     import('../pages/admin/AdminMagazine');
     import('../pages/admin/AdminGallery');
     
@@ -13,7 +13,7 @@ const preloadComponents = () => {
     import('../pages/ModelDashboard');
     
     // Preload public components
-    import('../pages/Home');
+    import('../pages/HomePage');
     import('../pages/Models');
     import('../pages/Magazine');
     import('../pages/Services');
