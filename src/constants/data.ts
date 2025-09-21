@@ -2,7 +2,7 @@
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AccountingTransaction, AccountingCategory, AdminUser, AdminPermission, TeamMember, SocialUser, SocialPost, SocialNotification } from '../types';
 
 export const siteConfig = {
-  logo: 'https://via.placeholder.com/200x200/D4AF37/FFFFFF?text=PMM',
+  logo: '/logo-social.png',
   name: 'Perfect Models Management',
   description: "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain."
 };
