@@ -144,6 +144,7 @@ const useProgressiveLoading = () => {
 ```
 
 #### **Composant de Chargement Avancé**
+{% raw %}
 ```typescript
 const AdvancedLoader: React.FC<{ progress: number }> = ({ progress }) => (
   <div className="fixed inset-0 bg-pm-dark z-50 flex items-center justify-center">
@@ -168,6 +169,7 @@ const AdvancedLoader: React.FC<{ progress: number }> = ({ progress }) => (
   </div>
 );
 ```
+{% endraw %}
 
 ### **3. 🎨 INTERFACE UTILISATEUR AVANCÉE**
 
