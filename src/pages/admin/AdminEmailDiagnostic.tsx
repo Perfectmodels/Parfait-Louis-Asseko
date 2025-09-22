@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../contexts/DataContext';
 import SEO from '../../components/SEO';
+import EmailManagementNav from '../../components/EmailManagementNav';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckCircleIcon, XCircleIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 
@@ -135,6 +136,9 @@ const AdminEmailDiagnostic: React.FC = () => {
                     <h1 className="text-4xl font-playfair text-pm-gold">Diagnostic Email</h1>
                     <p className="text-pm-off-white/70 mt-2">Testez et configurez l'envoi d'emails via l'API Brevo.</p>
                 </div>
+
+                {/* Navigation secondaire pour les emails */}
+                <EmailManagementNav className="mb-8" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Configuration API */}

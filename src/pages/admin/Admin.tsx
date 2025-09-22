@@ -63,7 +63,10 @@ import {
     ShieldCheckIcon,
     EnvelopeIcon,
     ShoppingCartIcon,
-    BriefcaseIcon
+    BriefcaseIcon,
+    DocumentTextIcon,
+    WrenchScrewdriverIcon,
+    ChartBarIcon
 } from '@heroicons/react/24/outline';
 
 // Définition de la structure de navigation
@@ -114,9 +117,12 @@ const navigationSections = [
         ]
     },
     {
-        title: "COMMUNICATION",
+        title: "COMMUNICATION & EMAILS",
         links: [
             { name: "Messages de Contact", path: "/admin/messages", icon: EnvelopeIcon },
+            { name: "Gestion des Emails", path: "/admin/email-management", icon: ChartBarIcon },
+            { name: "Modèles d'Emails", path: "/admin/email-templates", icon: DocumentTextIcon },
+            { name: "Diagnostic Email", path: "/admin/email-diagnostic", icon: WrenchScrewdriverIcon },
             { name: "Modération Commentaires", path: "/admin/comments", icon: ChatBubbleLeftRightIcon },
             { name: "Gestion des Contacts CRM", path: "/admin/contact-management", icon: UserGroupIcon },
             { name: "Campagnes Marketing", path: "/admin/marketing-campaigns", icon: MegaphoneIcon },
@@ -136,7 +142,6 @@ const navigationSections = [
         links: [
             { name: "État du Serveur", path: "/admin/server", icon: ServerIcon },
             { name: "Base de Données", path: "/admin/database", icon: ServerIcon },
-            { name: "Diagnostic Email", path: "/admin/email-diagnostic", icon: EnvelopeIcon },
             { name: "Test des Liens", path: "/admin/link-test", icon: ShieldCheckIcon },
         ]
     },

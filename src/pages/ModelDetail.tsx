@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import NotFound from './NotFound';
-import PublicPageLayout from '../components/PublicPageLayout';
 import BookingForm from '../components/BookingForm';
+import SEO from '../components/SEO';
 import { 
     ArrowLeftIcon, 
     XMarkIcon,
@@ -35,13 +35,41 @@ const ModelDetail: React.FC = () => {
   const portfolioImages = model.portfolioImages || [];
 
   return (
-    <PublicPageLayout
-      title={model.name}
-      subtitle={`Découvrez le portfolio de ${model.name}, un de nos talents exceptionnels.`}
-      heroImage={model.imageUrl}
-      callToAction={{ text: "Booker ce mannequin", onClick: () => setBookingOpen(true) }}
-    >
-      <div className="space-y-16">
+    <div className="bg-pm-dark text-pm-off-white">
+      <SEO title={`${model.name} - Portfolio`} />
+      
+      {/* Hero Section */}
+      <div className="relative h-[70vh] min-h-[500px] text-white overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={model.imageUrl} 
+            alt={model.name}
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/60 to-transparent" />
+        </div>
+        
+        <div className="container mx-auto px-6 h-full flex flex-col justify-end pb-16 relative">
+          <div className="max-w-4xl">
+            <h1 className="text-5xl md:text-7xl font-playfair font-bold text-white mb-4">
+              {model.name}
+            </h1>
+            <p className="text-lg md:text-xl text-pm-off-white/80 max-w-2xl mb-6">
+              Découvrez le portfolio de {model.name}, un de nos talents exceptionnels.
+            </p>
+            <button 
+              onClick={() => setBookingOpen(true)}
+              className="px-8 py-3 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-yellow-400 transition-colors"
+            >
+              Booker ce mannequin
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto px-6 py-16">
+        <div className="space-y-16">
         <section className="grid md:grid-cols-3 gap-12">
             <div className="md:col-span-1 space-y-6">
                 <InfoSection title="Mensurations">
@@ -83,10 +111,14 @@ const ModelDetail: React.FC = () => {
             <ArrowLeftIcon className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
             Retour au catalogue
         </Link>
+        </div>
       </div>
 
-      {isBookingOpen && (
-          <BookingModal modelName={model.name} onClose={() => setBookingOpen(false)} />
+      {bookingOpen && (
+        <BookingModal 
+          modelName={model.name}
+          onClose={() => setBookingOpen(false)}
+        />
       )}
 
       {selectedImageIndex !== null && (
@@ -96,7 +128,7 @@ const ModelDetail: React.FC = () => {
             onClose={() => setSelectedImageIndex(null)}
           />
       )}
-    </PublicPageLayout>
+    </div>
   );
 };
 

@@ -32,7 +32,7 @@ const AdminClassroom: React.FC = () => {
   };
 
   const handleDeleteModule = (moduleIndex: number) => {
-      if (window.confirm(`Supprimer le module \"${course[moduleIndex].title}\" ?`)) {
+      if (window.confirm(`Supprimer le module "${course[moduleIndex].title}" ?`)) {
           setCourse(course.filter((_, index) => index !== moduleIndex));
       }
   };
@@ -56,7 +56,7 @@ const AdminClassroom: React.FC = () => {
   };
 
   const handleDeleteChapter = (moduleIndex: number, chapterIndex: number) => {
-      if (window.confirm(`Supprimer le chapitre \"${course[moduleIndex].chapters[chapterIndex].title}\" ?`)) {
+      if (window.confirm(`Supprimer le chapitre "${course[moduleIndex].chapters[chapterIndex].title}" ?`)) {
           const updatedCourse = [...course];
           updatedCourse[moduleIndex].chapters = updatedCourse[moduleIndex].chapters.filter((_, index) => index !== chapterIndex);
           setCourse(updatedCourse);
