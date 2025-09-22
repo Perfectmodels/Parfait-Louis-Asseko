@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../../contexts/DataContext';
 import { ContactMessage, InternalMessage } from '../../types';
 import SEO from '../../components/SEO';
+import EmailManagementNav from '../../components/EmailManagementNav';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, PaperAirplaneIcon, ArrowUturnLeftIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
@@ -12,6 +13,7 @@ const AdminMessages: React.FC = () => {
     const [filter, setFilter] = useState<StatusFilter>('Toutes');
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [replyContent, setReplyContent] = useState('');
+    const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
 
     const messages = data?.contactMessages || [];
 
@@ -31,10 +33,54 @@ const AdminMessages: React.FC = () => {
     };
 
     const handleDelete = async (messageId: string) => {
-        if (!data) return;
+        if (!data || !window.confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) return;
         
-        const updatedMessages = messages.filter(msg => msg.id !== messageId);
-        await saveData({ ...data, contactMessages: updatedMessages });
+        try {
+            const updatedMessages = messages.filter(msg => msg.id !== messageId);
+            await saveData({ ...data, contactMessages: updatedMessages });
+        } catch (error) {
+            console.error('Erreur lors de la suppression:', error);
+            alert('Erreur lors de la suppression du message');
+        }
+    };
+
+    const handleBulkDelete = async (messageIds: string[]) => {
+        if (!data || !window.confirm(`Êtes-vous sûr de vouloir supprimer ${messageIds.length} message(s) ?`)) return;
+        
+        try {
+            const updatedMessages = messages.filter(msg => !messageIds.includes(msg.id));
+            await saveData({ ...data, contactMessages: updatedMessages });
+        } catch (error) {
+            console.error('Erreur lors de la suppression en lot:', error);
+            alert('Erreur lors de la suppression des messages');
+        }
+    };
+
+    const handleDeleteAll = async () => {
+        if (!data || !window.confirm('Êtes-vous sûr de vouloir supprimer TOUS les messages ? Cette action est irréversible.')) return;
+        
+        try {
+            await saveData({ ...data, contactMessages: [] });
+        } catch (error) {
+            console.error('Erreur lors de la suppression totale:', error);
+            alert('Erreur lors de la suppression des messages');
+        }
+    };
+
+    const handleSelectMessage = (messageId: string) => {
+        setSelectedMessages(prev => 
+            prev.includes(messageId) 
+                ? prev.filter(id => id !== messageId)
+                : [...prev, messageId]
+        );
+    };
+
+    const handleSelectAll = () => {
+        if (selectedMessages.length === filteredMessages.length) {
+            setSelectedMessages([]);
+        } else {
+            setSelectedMessages(filteredMessages.map(msg => msg.id));
+        }
     };
 
     const handleReply = async (messageId: string) => {
@@ -133,6 +179,9 @@ const AdminMessages: React.FC = () => {
                     </Link>
                 </div>
 
+                {/* Navigation secondaire pour les emails */}
+                <EmailManagementNav className="mb-8" />
+
                 <div className="flex items-center gap-4 mb-8 flex-wrap">
                     {(['Toutes', 'Nouveau', 'Lu', 'Archivé'] as const).map(f => (
                         <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all ${filter === f ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
@@ -141,14 +190,69 @@ const AdminMessages: React.FC = () => {
                     ))}
                 </div>
 
+                {/* Actions de suppression en lot */}
+                {filteredMessages.length > 0 && (
+                    <div className="bg-black p-4 border border-pm-gold/10 rounded-lg mb-6">
+                        <div className="flex items-center justify-between flex-wrap gap-4">
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2 text-pm-gold">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedMessages.length === filteredMessages.length && filteredMessages.length > 0}
+                                        onChange={handleSelectAll}
+                                        className="rounded border-pm-gold/20 text-pm-gold focus:ring-pm-gold"
+                                    />
+                                    <span className="text-sm font-semibold">
+                                        {selectedMessages.length === filteredMessages.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                    </span>
+                                </label>
+                                
+                                {selectedMessages.length > 0 && (
+                                    <span className="text-pm-off-white/70 text-sm">
+                                        {selectedMessages.length} message(s) sélectionné(s)
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                {selectedMessages.length > 0 && (
+                                    <button
+                                        onClick={() => handleBulkDelete(selectedMessages)}
+                                        className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                                    >
+                                        <TrashIcon className="w-4 h-4" />
+                                        Supprimer ({selectedMessages.length})
+                                    </button>
+                                )}
+                                
+                                <button
+                                    onClick={handleDeleteAll}
+                                    className="px-4 py-2 bg-red-800 text-white font-bold rounded-lg hover:bg-red-900 transition-colors flex items-center gap-2"
+                                >
+                                    <TrashIcon className="w-4 h-4" />
+                                    Tout Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="space-y-4">
                     {filteredMessages.map(msg => (
                         <div key={msg.id} className="bg-black p-4 border border-pm-gold/10 rounded-lg">
                             <div className="flex justify-between items-start flex-wrap gap-4">
-                                <div>
-                                    <span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(msg.status)}`}>{msg.status}</span>
-                                    <h2 className="text-xl font-bold text-pm-gold mt-2">{msg.subject}</h2>
-                                    <p className="text-sm text-pm-off-white/80">de <span className="font-semibold">{msg.name}</span> ({msg.email})</p>
+                                <div className="flex items-start gap-3 flex-1">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedMessages.includes(msg.id)}
+                                        onChange={() => handleSelectMessage(msg.id)}
+                                        className="mt-2 rounded border-pm-gold/20 text-pm-gold focus:ring-pm-gold"
+                                    />
+                                    <div>
+                                        <span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(msg.status)}`}>{msg.status}</span>
+                                        <h2 className="text-xl font-bold text-pm-gold mt-2">{msg.subject}</h2>
+                                        <p className="text-sm text-pm-off-white/80">de <span className="font-semibold">{msg.name}</span> ({msg.email})</p>
+                                    </div>
                                 </div>
                                 <div className="text-right flex-shrink-0">
                                     <p className="text-xs text-pm-off-white/60">Reçu le {new Date(msg.submissionDate).toLocaleString('fr-FR')}</p>
