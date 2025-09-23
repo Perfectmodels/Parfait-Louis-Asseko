@@ -10,9 +10,9 @@ const Footer: React.FC = () => {
     const navLinks = data?.navLinks || [];
     const socialLinks = data?.socialLinks;
     const contactInfo = data?.contactInfo;
-
+    
     const footerLinks = navLinks.filter(link => link.inFooter);
-    const allFooterLinks = [{ path: '/', label: 'Accueil', inFooter: true }, ...footerLinks];
+    const allFooterLinks = footerLinks;
 
     const keyServices = [
         { label: "Booking Mannequins", link: "/contact?service=Booking+Mannequins", icon: <UsersIcon className="w-5 h-5 text-pm-gold" /> },
@@ -95,7 +95,7 @@ const Footer: React.FC = () => {
                                 L'élégance redéfinie. Berceau de talents et plateforme dédiée à l'avenir de la mode africaine.
                             </p>
                         </div>
-                        {socialLinks && (
+                         {socialLinks && (
                             <div className="space-y-3">
                                 <h4 className="text-sm font-bold text-pm-gold uppercase tracking-wider">Suivez-nous</h4>
                                 <div className="flex space-x-4">
@@ -136,7 +136,7 @@ const Footer: React.FC = () => {
                             ))}
                         </ul>
                     </div>
-
+                    
                     {/* Column 3: Services */}
                     <div className="hover:translate-y-1 transition-transform duration-300">
                         <h3 className="text-lg font-playfair text-pm-gold mb-6 relative">
@@ -144,14 +144,14 @@ const Footer: React.FC = () => {
                             <div className="absolute -bottom-2 left-0 w-12 h-0.5 bg-pm-gold"></div>
                         </h3>
                         <ul className="space-y-3">
-                            {keyServices.map(service => (
-                                <li key={service.label}>
+                           {keyServices.map(service => (
+                               <li key={service.label}>
                                     <Link to={service.link} className="group flex items-center gap-3 text-sm text-pm-off-white/80 hover:text-pm-gold transition-all duration-300 hover:translate-x-1">
                                         {service.icon}
-                                        {service.label}
-                                    </Link>
-                                </li>
-                            ))}
+                                       {service.label}
+                                   </Link>
+                               </li>
+                           ))}
                         </ul>
                     </div>
 
@@ -184,8 +184,8 @@ const Footer: React.FC = () => {
                             </ul>
                         )}
                     </div>
+                    </div>
                 </div>
-            </div>
 
             {/* Bottom Section */}
             <div className="border-t border-pm-gold/20 bg-black/50">
