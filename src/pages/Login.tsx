@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { useAuth } from '../hooks/useAuth';
 import { RecoveryRequest } from '../types';
 
 // Interface for storing active user data in localStorage
@@ -41,6 +42,7 @@ const Login: React.FC = () => {
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,28 +58,41 @@ const Login: React.FC = () => {
 
     // Admin Login
     if (normalizedUsername === 'admin' && password === 'admin2025') {
-      sessionStorage.setItem('classroom_access', 'granted');
-      sessionStorage.setItem('classroom_role', 'admin');
-      updateUserActivity('Administrateur', 'admin');
-      navigate('/admin');
+      const success = login({
+        email: 'admin@perfectmodels.com',
+        name: 'Administrateur',
+        role: 'admin'
+      });
+      
+      if (success) {
+        updateUserActivity('Administrateur', 'admin');
+        navigate('/admin');
+      } else {
+        setError('Erreur lors de la connexion');
+      }
       return;
     }
 
     // Model Login
-    const loggedInModel = data.models.find(m => 
+    const loggedInModel = data.models.find((m: any) => 
         m.username.toLowerCase() === normalizedUsername || 
         m.name.toLowerCase() === normalizedUsername
     );
     if (loggedInModel && loggedInModel.password === password) {
-        sessionStorage.setItem('classroom_access', 'granted');
-        sessionStorage.setItem('classroom_role', 'student');
-        sessionStorage.setItem('userId', loggedInModel.id);
+        const success = login({
+          email: loggedInModel.email,
+          name: loggedInModel.name,
+          role: 'student'
+        });
         
-        const updatedModels = data.models.map(m => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
-        await saveData({ ...data, models: updatedModels });
-        updateUserActivity(loggedInModel.name, 'student');
-        
-        navigate('/profil');
+        if (success) {
+          const updatedModels = data.models.map((m: any) => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
+          await saveData({ ...data, models: updatedModels });
+          updateUserActivity(loggedInModel.name, 'student');
+          navigate('/profil');
+        } else {
+          setError('Erreur lors de la connexion');
+        }
         return;
     }
     

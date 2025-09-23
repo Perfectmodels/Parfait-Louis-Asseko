@@ -5,9 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:clean": "node scripts/dev-cleanup.js && vite",
+    "dev:clear-sw": "node scripts/clear-sw.js && vite",
+    "test:setup": "node scripts/test-setup.js",
     "build": "vite build",
+    "build:analyze": "vite build --mode analyze",
     "preview": "vite preview",
-    "generate-sitemap": "node scripts/generate-sitemap.js"
+    "preview:clean": "vite preview --host",
+    "generate-sitemap": "node scripts/generate-sitemap.js",
+    "clean": "node scripts/clean-all.js",
+    "clean:quick": "rm -rf dist node_modules/.vite",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",
@@ -27,9 +35,10 @@
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "terser": "^5.44.0",
     "typescript": "^5.2.2",
     "vite": "^7.1.7"
   }

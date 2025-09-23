@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { Service } from '../types';
-import ServiceCard from '../components/ServiceCard';
 import EnhancedServiceCard from '../components/EnhancedServiceCard';
 
 const Services: React.FC = () => {
@@ -18,11 +17,11 @@ const Services: React.FC = () => {
         return acc;
     }, {} as Record<string, Service[]>);
 
-    const categoryOrder: (keyof typeof servicesByCategory)[] = [
+    const categoryOrder = [
         'Services Mannequinat',
         'Services Mode et Stylisme',
         'Services Événementiels'
-    ];
+    ] as const;
     
     const [activeCategory, setActiveCategory] = useState<string>(categoryOrder[0]);
 
@@ -74,7 +73,7 @@ const Services: React.FC = () => {
                 
                  {/* Tab Navigation */}
                 <div role="tablist" aria-label="Catégories de services" className="flex justify-center flex-wrap gap-2 sm:gap-4 border-b border-pm-gold/20 mb-12">
-                    {categoryOrder.map(category => (
+                    {categoryOrder.map((category: string) => (
                         servicesByCategory[category] && (
                              <button
                                 key={category}
@@ -94,7 +93,7 @@ const Services: React.FC = () => {
 
                 {/* Tab Content */}
                 <div>
-                    {categoryOrder.map(category => (
+                    {categoryOrder.map((category: string) => (
                         servicesByCategory[category] && (
                             <div
                                 key={category}
@@ -105,7 +104,7 @@ const Services: React.FC = () => {
                                 className={`animate-fade-in ${activeCategory === category ? 'block' : 'hidden'}`}
                             >
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {servicesByCategory[category].map((service, index) => (
+                                    {servicesByCategory[category].map((service: Service, index: number) => (
                                         <EnhancedServiceCard key={index} service={service} index={index} />
                                     ))}
                                 </div>

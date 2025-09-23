@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import StatsigPageTracker from './components/StatsigPageTracker';
 import { useStatsig } from './hooks/useStatsig';
 
+
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
 const Agency = lazy(() => import('./pages/Agency'));
@@ -61,8 +62,13 @@ const AdminContent = lazy(() => import('./pages/AdminContent'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminTechnical = lazy(() => import('./pages/AdminTechnical'));
 const AdminProfile = lazy(() => import('./pages/AdminProfile'));
+const AdminCastingLive = lazy(() => import('./pages/AdminCastingLive'));
 const ModelMessaging = lazy(() => import('./pages/ModelMessaging'));
 const ModelPayments = lazy(() => import('./pages/ModelPayments'));
+const Testimonials = lazy(() => import('./pages/Testimonials'));
+const Motivation = lazy(() => import('./pages/Motivation'));
+const International = lazy(() => import('./pages/International'));
+const Application = lazy(() => import('./pages/Application'));
 
 // Role-specific pages
 const JuryCasting = lazy(() => import('./pages/JuryCasting'));
@@ -97,11 +103,11 @@ const useAdminTitle = (data: any) => {
     const originalTitle = "Perfect Models Management";
     if (pathname.startsWith('/admin')) {
       const newNotifications = 
-        (data?.castingApplications?.filter(a => a.status === 'Nouveau').length || 0) +
-        (data?.fashionDayApplications?.filter(a => a.status === 'Nouveau').length || 0) +
-        (data?.recoveryRequests?.filter(a => a.status === 'Nouveau').length || 0) +
-        (data?.bookingRequests?.filter(a => a.status === 'Nouveau').length || 0) +
-        (data?.contactMessages?.filter(a => a.status === 'Nouveau').length || 0);
+        (data?.castingApplications?.filter((a: any) => a.status === 'Nouveau').length || 0) +
+        (data?.fashionDayApplications?.filter((a: any) => a.status === 'Nouveau').length || 0) +
+        (data?.recoveryRequests?.filter((a: any) => a.status === 'Nouveau').length || 0) +
+        (data?.bookingRequests?.filter((a: any) => a.status === 'Nouveau').length || 0) +
+        (data?.contactMessages?.filter((a: any) => a.status === 'Nouveau').length || 0);
       document.title = newNotifications > 0 ? `(${newNotifications}) Admin | ${originalTitle}` : `Admin | ${originalTitle}`;
     } else {
       document.title = originalTitle;
@@ -148,6 +154,10 @@ const AppContent: React.FC = () => {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-use" element={<TermsOfUse />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/temoignages" element={<Testimonials />} />
+            <Route path="/motivation" element={<Motivation />} />
+            <Route path="/international" element={<International />} />
+            <Route path="/application" element={<Application />} />
 
             {/* Protected Routes */}
             <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -194,6 +204,7 @@ const AppContent: React.FC = () => {
               <Route path="users" element={<AdminUsers />} />
               <Route path="technical" element={<AdminTechnical />} />
               <Route path="profile" element={<AdminProfile />} />
+              <Route path="casting-live" element={<AdminCastingLive />} />
             </Route>
 
             {/* Fallback */}
@@ -207,18 +218,21 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('SW registered: ', reg))
-          .catch(err => console.log('SW registration failed: ', err));
+    // Gérer le Service Worker selon l'environnement
+    if ((import.meta as any).env?.DEV) {
+      // En développement, désactiver complètement le SW
+      import('./config/sw-config').then(({ disableServiceWorker }) => disableServiceWorker());
+    } else {
+      // En production, activer le SW
+      import('./config/sw-config').then(({ enableServiceWorker }) => {
+        window.addEventListener('load', enableServiceWorker);
       });
     }
   }, []);
 
   return (
     <DataProvider>
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ScrollToTop />
         <AppContent />
       </BrowserRouter>

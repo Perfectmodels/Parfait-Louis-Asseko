@@ -2,16 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import AdminLayout from '../components/AdminLayout';
 import AdminTable from '../components/admin/AdminTable';
-import AdminModal from '../components/admin/AdminModal';
 import { 
     PaintBrushIcon,
     PhotoIcon,
-    UserIcon,
     CalendarIcon,
-    PlusIcon,
-    PencilIcon,
-    TrashIcon,
-    EyeIcon
+    PlusIcon
 } from '@heroicons/react/24/outline';
 
 interface PhotoSession {
@@ -29,24 +24,10 @@ interface PhotoSession {
 }
 
 const AdminArtisticDirection: React.FC = () => {
-    const { data, saveData } = useData();
+    const { data } = useData();
     const [photoSessions, setPhotoSessions] = useState<PhotoSession[]>([]);
-    const [selectedSession, setSelectedSession] = useState<PhotoSession | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
     const [filter, setFilter] = useState<'all' | 'planned' | 'in_progress' | 'completed' | 'cancelled'>('all');
     const [searchTerm, setSearchTerm] = useState('');
-
-    const [formData, setFormData] = useState({
-        title: '',
-        theme: '',
-        description: '',
-        assignedModels: [] as string[],
-        date: '',
-        location: '',
-        requirements: [] as string[],
-        status: 'planned' as const
-    });
 
     useEffect(() => {
         // Charger les séances photo depuis les données
@@ -75,60 +56,6 @@ const AdminArtisticDirection: React.FC = () => {
         return matchesFilter && matchesSearch;
     });
 
-    const handleSave = () => {
-        if (isEditing && selectedSession) {
-            setPhotoSessions(prev => 
-                prev.map(session => 
-                    session.id === selectedSession.id 
-                        ? { ...formData, id: selectedSession.id, createdBy: selectedSession.createdBy, createdAt: selectedSession.createdAt }
-                        : session
-                )
-            );
-        } else {
-            const newSession: PhotoSession = {
-                ...formData,
-                id: Date.now().toString(),
-                createdBy: 'Admin',
-                createdAt: new Date().toISOString()
-            };
-            setPhotoSessions(prev => [...prev, newSession]);
-        }
-
-        if (data) {
-            const updatedSessions = isEditing 
-                ? photoSessions.map(session => 
-                    session.id === selectedSession?.id 
-                        ? { ...formData, id: session.id, createdBy: session.createdBy, createdAt: session.createdAt }
-                        : session
-                )
-                : [...photoSessions, {
-                    ...formData,
-                    id: Date.now().toString(),
-                    createdBy: 'Admin',
-                    createdAt: new Date().toISOString()
-                }];
-
-            const updatedData = {
-                ...data,
-                photoSessions: updatedSessions
-            };
-            saveData(updatedData);
-        }
-
-        setIsModalOpen(false);
-        setIsEditing(false);
-        setSelectedSession(null);
-        setFormData({
-            title: '',
-            theme: '',
-            description: '',
-            assignedModels: [],
-            date: '',
-            location: '',
-            requirements: [],
-            status: 'planned'
-        });
-    };
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -198,7 +125,7 @@ const AdminArtisticDirection: React.FC = () => {
                     <span className="text-pm-off-white">
                         {new Date(session.date).toLocaleDateString('fr-FR')}
                     </span>
-                </div>
+            </div>
             )
         },
         {
@@ -207,7 +134,7 @@ const AdminArtisticDirection: React.FC = () => {
             render: (session: PhotoSession) => (
                 <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${getStatusColor(session.status)}`}>
                     <span className="text-sm font-medium">{getStatusText(session.status)}</span>
-                </div>
+        </div>
             )
         }
     ];
@@ -259,34 +186,22 @@ const AdminArtisticDirection: React.FC = () => {
                                 </div>
                             </div>
                             <p className="text-3xl font-bold text-pm-gold">{stat.value}</p>
-                        </div>
-                    ))}
                 </div>
+                    ))}
+            </div>
 
                 {/* Actions et Filtres */}
                 <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <button
                             onClick={() => {
-                                setIsEditing(false);
-                                setSelectedSession(null);
-                                setFormData({
-                                    title: '',
-                                    theme: '',
-                                    description: '',
-                                    assignedModels: [],
-                                    date: '',
-                                    location: '',
-                                    requirements: [],
-                                    status: 'planned'
-                                });
-                                setIsModalOpen(true);
+                                console.log('Nouvelle séance');
                             }}
                             className="flex items-center gap-2 px-4 py-3 bg-pm-gold text-pm-dark font-semibold rounded-lg hover:bg-yellow-400 transition-colors duration-200"
                         >
                             <PlusIcon className="w-5 h-5" />
                             Nouvelle séance
-                        </button>
+                    </button>
                         
                         <div className="flex-1">
                             <input
@@ -312,9 +227,9 @@ const AdminArtisticDirection: React.FC = () => {
                                     {status === 'all' ? 'Toutes' : getStatusText(status)}
                                 </button>
                             ))}
-                        </div>
-                    </div>
                 </div>
+            </div>
+        </div>
 
                 {/* Tableau des séances */}
                 <AdminTable
@@ -323,7 +238,7 @@ const AdminArtisticDirection: React.FC = () => {
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
                 />
-            </div>
+                            </div>
         </AdminLayout>
     );
 };

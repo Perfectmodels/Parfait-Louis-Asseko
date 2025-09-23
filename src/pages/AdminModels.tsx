@@ -4,7 +4,6 @@ import { Model, ContactInfo } from '../types';
 import AdminLayout from '../components/AdminLayout';
 import AdminTable from '../components/admin/AdminTable';
 import AdminModal from '../components/admin/AdminModal';
-import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, FunnelIcon, UsersIcon, AcademicCapIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm'; 
 
@@ -248,7 +247,7 @@ const AdminModels: React.FC = () => {
         {
             key: 'image',
             label: 'Photo',
-            render: (value: any, model: Model) => (
+            render: (_: any, model: Model) => (
                 <div className="flex items-center">
                     <img 
                         src={model.imageUrl} 
@@ -262,7 +261,7 @@ const AdminModels: React.FC = () => {
             key: 'name',
             label: 'Nom',
             sortable: true,
-            render: (value: any, model: Model) => (
+            render: (_: any, model: Model) => (
                 <div>
                     <div className="font-semibold text-pm-off-white">{model.name}</div>
                     <div className="text-sm text-pm-off-white/60">@{model.username}</div>
@@ -273,7 +272,7 @@ const AdminModels: React.FC = () => {
             key: 'level',
             label: 'Niveau',
             sortable: true,
-            render: (value: any, model: Model) => (
+            render: (_: any, model: Model) => (
                 <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                     model.level === 'Pro' 
                         ? 'bg-pm-gold/20 text-pm-gold border border-pm-gold/30' 
@@ -287,7 +286,7 @@ const AdminModels: React.FC = () => {
             key: 'isPublic',
             label: 'Visibilité',
             sortable: true,
-            render: (value: any, model: Model) => (
+            render: (_: any, model: Model) => (
                 <div className="flex items-center gap-2">
                     {model.isPublic ? (
                         <div className="flex items-center gap-1 text-green-400">
@@ -306,7 +305,7 @@ const AdminModels: React.FC = () => {
         {
             key: 'actions',
             label: 'Actions',
-            render: (value: any, model: Model) => (
+            render: (_: any, model: Model) => (
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => handleTogglePublic(model.id)}

@@ -3,10 +3,9 @@ import { useData } from '../contexts/DataContext';
 import { 
     ChatBubbleLeftRightIcon, 
     PaperAirplaneIcon,
-    UserIcon,
-    ClockIcon
+    UserIcon
 } from '@heroicons/react/24/outline';
-import { InternalMessage, Conversation } from '../types';
+import { InternalMessage } from '../types';
 import SEO from '../components/SEO';
 
 const ModelMessaging: React.FC = () => {
@@ -140,7 +139,7 @@ const ModelMessaging: React.FC = () => {
                                     Administration
                                 </h3>
                                 <p className="text-pm-off-white/70">
-                                    {conversation?.unreadCount > 0 && (
+                                    {conversation && conversation.unreadCount > 0 && (
                                         <span className="text-pm-gold">
                                             {conversation.unreadCount} message(s) non lu(s)
                                         </span>

@@ -1,4 +1,3 @@
-import React from 'react';
 
 export interface Model {
   id: string;
@@ -593,33 +592,80 @@ export interface PhotoSession {
 
 // Interface principale pour les données de l'application
 export interface AppData {
+    // Données de base
     models: Model[];
     beginnerStudents: BeginnerStudent[];
+    juryMembers: any[];
+    registrationStaff: any[];
+    
+    // Applications et candidatures
     castingApplications: CastingApplication[];
     fashionDayApplications: FashionDayApplication[];
-    news: NewsItem[];
-    pageContents: any[];
+    recoveryRequests: RecoveryRequest[];
+    bookingRequests: any[];
+    contactMessages: any[];
+    
+    // Contenu et médias
+    articles: any[];
+    newsItems: any[];
+    testimonials: any[];
+    agencyServices: any[];
+    fashionDayEvents: any[];
+    faqData: any[];
     siteImages: Record<string, string>;
+    
+    // Configuration du site
+    siteConfig: any;
+    navLinks: NavLink[];
+    socialLinks: SocialLinks;
+    contactInfo: any;
+    agencyInfo: any;
+    modelDistinctions: any[];
+    agencyTimeline: any[];
+    agencyAchievements: any[];
+    agencyPartners: any[];
+    
+    // Système de messagerie
     internalMessages: InternalMessage[];
     conversations: Conversation[];
+    
+    // Système de paiement
     paymentSubmissions: PaymentSubmission[];
     accountingTransactions: AccountingTransaction[];
+    monthlyPayments: any[];
+    
+    // Gestion des médias
     albums: Album[];
     teamMembers: TeamMember[];
+    
+    // Rapports et notifications
     financialReports: FinancialReport[];
     notifications: Notification[];
+    
+    // Gestion du contenu
+    pageContents: PageContent[];
     contentPages: any[];
+    
+    // Gestion des utilisateurs
     users: any[];
     technicalSettings: any[];
+    
+    // Système d'emails
     emailTemplates: EmailTemplate[];
     emailCampaigns: EmailCampaign[];
     emailStats: EmailStats;
+    
+    // Gestion des absences et sessions
     absenceRequests: AbsenceRequest[];
     photoSessions: PhotoSession[];
-    paymentSubmissions: PaymentSubmission[];
-    pageContents: PageContent[];
-    internalMessages: InternalMessage[];
     castingSessions: CastingSession[];
+    
+    // Données de cours
+    courseData: any[];
+    beginnerCourseData: any[];
+    
+    // Clés API
+    apiKeys: any;
 }
 
 export interface PageContent {

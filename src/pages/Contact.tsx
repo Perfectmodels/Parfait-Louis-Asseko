@@ -97,7 +97,7 @@ const Contact: React.FC = () => {
             image: "https://i.ibb.co/s5zW7gZ/testimonial-1.jpg"
         }
     ];
-
+    
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const service = params.get('service');
@@ -259,7 +259,7 @@ const Contact: React.FC = () => {
                                 <div className="text-3xl font-bold text-pm-gold">100%</div>
                                 <div className="text-pm-off-white/70">Personnalisé</div>
                             </div>
-                            <div className="text-center">
+                <div className="text-center">
                                 <div className="text-3xl font-bold text-pm-gold">5★</div>
                                 <div className="text-pm-off-white/70">Satisfaction</div>
                             </div>
@@ -328,7 +328,7 @@ const Contact: React.FC = () => {
                         >
                             {/* Contact Info & Form */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                                {/* Contact Info */}
+                    {/* Contact Info */}
                                 <motion.div
                                     initial={{ opacity: 0, x: -30 }}
                                     whileInView={{ opacity: 1, x: 0 }}
@@ -341,7 +341,7 @@ const Contact: React.FC = () => {
                                         Nos Coordonnées
                                     </h2>
                                     
-                                    {contactInfo && (
+                        {contactInfo && (
                                         <div className="space-y-6 mb-8">
                                             <ContactInfoCard 
                                                 icon={MapPinIcon} 
@@ -363,8 +363,8 @@ const Contact: React.FC = () => {
                                                 href={`mailto:${contactInfo.email}`}
                                                 color="purple"
                                             />
-                                        </div>
-                                    )}
+                            </div>
+                        )}
 
                                     {/* Business Hours */}
                                     <div className="bg-pm-gold/10 border border-pm-gold/30 rounded-xl p-6 mb-8">
@@ -394,14 +394,14 @@ const Contact: React.FC = () => {
                                             <GlobeAltIcon className="w-6 h-6" />
                                             Suivez-nous
                                         </h3>
-                                        {socialLinks && (
+                            {socialLinks && (
                                             <div className="flex space-x-4">
                                                 {socialLinks.facebook && <EnhancedSocialLink href={socialLinks.facebook} icon={FacebookIcon} platform="Facebook" />}
                                                 {socialLinks.instagram && <EnhancedSocialLink href={socialLinks.instagram} icon={InstagramIcon} platform="Instagram" />}
                                                 {socialLinks.youtube && <EnhancedSocialLink href={socialLinks.youtube} icon={YoutubeIcon} platform="YouTube" />}
-                                            </div>
-                                        )}
-                                    </div>
+                                </div>
+                            )}
+                        </div>
                                 </motion.div>
 
                                 {/* Unified Contact & Booking Form */}
@@ -417,9 +417,9 @@ const Contact: React.FC = () => {
                                         Contact & Booking
                                     </h2>
                                     
-                                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                                         {/* Service Type Selection */}
-                                        <div>
+                            <div>
                                             <label className="block text-sm font-medium text-pm-gold mb-3">
                                                 Type de demande <span className="text-red-400">*</span>
                                             </label>
@@ -447,8 +447,8 @@ const Contact: React.FC = () => {
                                                 >
                                                     <CalendarDaysIcon className="w-5 h-5 mx-auto mb-1" />
                                                     <span className="text-sm font-medium">Réservation</span>
-                                                </button>
-                                            </div>
+                                </button>
+                            </div>
                                         </div>
 
                                         {/* Basic Information */}
@@ -584,7 +584,7 @@ const Contact: React.FC = () => {
                                         </motion.button>
                                         
                                         <AnimatePresence>
-                                            {statusMessage && (
+                            {statusMessage && (
                                                 <motion.div
                                                     initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
@@ -600,13 +600,13 @@ const Contact: React.FC = () => {
                                                     ) : (
                                                         <XCircleIcon className="w-5 h-5 flex-shrink-0" />
                                                     )}
-                                                    {statusMessage}
+                                    {statusMessage}
                                                 </motion.div>
-                                            )}
+                            )}
                                         </AnimatePresence>
-                                    </form>
+                        </form>
                                 </motion.div>
-                            </div>
+                    </div>
                         </motion.div>
                     )}
 
@@ -628,7 +628,7 @@ const Contact: React.FC = () => {
                                 <p className="text-pm-off-white/80 text-lg">
                                     Trouvez rapidement les réponses à vos questions les plus courantes.
                                 </p>
-                            </div>
+                </div>
 
                             <div className="space-y-4">
                                 {faqData.map((faq, index) => (
@@ -660,7 +660,7 @@ const Contact: React.FC = () => {
                                 <p className="text-pm-off-white/80 text-lg">
                                     Rencontrez les professionnels qui font de PMM une référence en Afrique Centrale.
                                 </p>
-                            </div>
+                </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {teamData.map((member, index) => (
@@ -703,7 +703,7 @@ const ContactInfoCard: React.FC<{
             whileHover={{ scale: 1.02 }}
             className={`p-4 rounded-xl border ${colorClasses[color]} transition-all duration-300`}
         >
-            <div className="flex items-start gap-4">
+    <div className="flex items-start gap-4">
                 <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
                     <Icon className="w-6 h-6" />
                 </div>
@@ -717,7 +717,7 @@ const ContactInfoCard: React.FC<{
                         <p className="text-pm-off-white/80 text-sm">{content}</p>
                     )}
                 </div>
-            </div>
+    </div>
         </motion.div>
     );
 };

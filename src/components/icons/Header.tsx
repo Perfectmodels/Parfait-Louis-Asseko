@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
+import { useAuth } from '../../hooks/useAuth';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
@@ -64,11 +65,11 @@ const LoginButton: React.FC<{ className?: string, isMobile?: boolean; isOpen?: b
     return (
         <Link
             to="/login"
-            className={`flex items-center gap-2 py-2 px-4 text-pm-gold border border-pm-gold uppercase text-sm tracking-widest transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark focus-style-self focus-visible:bg-pm-gold focus-visible:text-pm-dark rounded-full ${className} ${mobileAnimationClasses}`}
+            className={`flex items-center gap-1 py-1 px-2 text-pm-gold border border-pm-gold uppercase text-xs tracking-wide transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark focus-style-self focus-visible:bg-pm-gold focus-visible:text-pm-dark rounded-full ${className} ${mobileAnimationClasses}`}
             aria-label="Connexion"
             style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
         >
-            <ArrowRightOnRectangleIcon className="w-5 h-5" />
+            <ArrowRightOnRectangleIcon className="w-2 h-2" />
             <span>Connexion</span>
         </Link>
     );
@@ -218,9 +219,7 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
   const location = useLocation();
-  const navigate = useNavigate();
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -272,16 +271,15 @@ const Header: React.FC = () => {
     }
   }, [isOpen]);
 
+  // Gérer le scroll et fermer le menu mobile
   useEffect(() => {
-    const role = sessionStorage.getItem('classroom_role');
-    const access = sessionStorage.getItem('classroom_access') === 'granted';
-    setUserRole(role);
-    setIsLoggedIn(access);
-    
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [location]);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   
   useEffect(() => {
     if (isOpen) setIsOpen(false);
@@ -289,10 +287,7 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     setIsOpen(false);
-    sessionStorage.clear();
-    setIsLoggedIn(false);
-    setUserRole(null);
-    navigate('/login');
+    logout();
   };
   
   const siteConfig = data?.siteConfig;
@@ -300,19 +295,36 @@ const Header: React.FC = () => {
   const socialLinks = data?.socialLinks;
 
   const processedNavLinks = useMemo(() => {
-    return navLinksFromData.map((link: any) => {
+    try {
+      return navLinksFromData.map((link: any) => {
+        // Gérer les liens spéciaux selon le rôle
         if (link.label === 'Classroom') {
-            if (userRole === 'student') return { ...link, label: 'Mon Profil', path: '/profil' };
-            if (userRole === 'admin') return { ...link, path: '/admin/classroom' };
-            return null;
+          if (user?.role === 'student') {
+            return { ...link, label: 'Mon Profil', path: '/profil' };
+          }
+          if (user?.role === 'admin') {
+            return { ...link, label: 'Admin', path: '/admin' };
+          }
+          // Si pas connecté, ne pas afficher le lien Classroom
+          return null;
         }
+        
+        // Gérer les autres liens selon l'authentification
+        if (link.path === '/admin' && user?.role !== 'admin') {
+          return null; // Cacher les liens admin pour les non-admins
+        }
+        
         return link;
-    }).filter((link: any): link is NavLinkType => link !== null);
-  }, [navLinksFromData, userRole]);
+      }).filter((link: any): link is NavLinkType => link !== null);
+    } catch (error) {
+      console.error('Erreur lors du traitement des liens de navigation:', error);
+      return navLinksFromData; // Retourner les liens originaux en cas d'erreur
+    }
+  }, [navLinksFromData, user, isAuthenticated]);
 
   const applyButtonDelay = 150 + processedNavLinks.length * 50;
   const logoutButtonDelay = 150 + (processedNavLinks.length + 1) * 50;
-  const socialLinksDelay = 150 + (isLoggedIn ? processedNavLinks.length + 2 : processedNavLinks.length + 1) * 50;
+  const socialLinksDelay = 150 + (isAuthenticated ? processedNavLinks.length + 2 : processedNavLinks.length + 1) * 50;
 
 
   return (
@@ -336,9 +348,9 @@ const Header: React.FC = () => {
                 <Link to="/casting-formulaire" className="px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
                     Postuler
                 </Link>
-                {!isLoggedIn && <LoginButton />}
+                {!isAuthenticated && <LoginButton />}
                 <SocialLinksComponent socialLinks={socialLinks} />
-                {isLoggedIn && <LogoutButton onClick={handleLogout} />}
+                {isAuthenticated && <LogoutButton onClick={handleLogout} />}
             </div>
           </nav>
 
@@ -385,8 +397,8 @@ const Header: React.FC = () => {
                       Postuler
                   </Link>
               </div>
-              {!isLoggedIn && <LoginButton isMobile={true} isOpen={isOpen} delay={applyButtonDelay + 50} />}
-              {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
+              {!isAuthenticated && <LoginButton isMobile={true} isOpen={isOpen} delay={applyButtonDelay + 50} />}
+              {isAuthenticated && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
             </nav>
         </div>
         <div className="p-8 border-t border-pm-gold/20 flex-shrink-0">

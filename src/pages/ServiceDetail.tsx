@@ -121,7 +121,7 @@ const ServiceDetail: React.FC = () => {
 
     return (
         <>
-            <SEO 
+            <SEO
                 title={`${service.title} - Perfect Models Management`}
                 description={service.description}
                 keywords={`${service.title}, mannequinat, mode, Gabon, Libreville, ${service.category}`}
@@ -198,7 +198,7 @@ const ServiceDetail: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                    </div>
                             </motion.div>
 
                             {/* Détails du service */}
@@ -209,8 +209,8 @@ const ServiceDetail: React.FC = () => {
                                 className="bg-black/50 border border-pm-gold/20 rounded-2xl p-8"
                             >
                                 <h2 className="text-2xl font-playfair text-pm-gold mb-6">Détails du service</h2>
-                                
-                                {service.details && (
+
+                        {service.details && (
                                     <div className="space-y-6">
                                         {Object.entries(service.details).map(([key, value]) => (
                                             <div key={key}>
@@ -218,21 +218,21 @@ const ServiceDetail: React.FC = () => {
                                                     {key.replace(/([A-Z])/g, ' $1').trim()}
                                                 </h3>
                                                 {Array.isArray(value) ? (
-                                                    <ul className="space-y-2">
+                                <ul className="space-y-2">
                                                         {value.map((item: string, index: number) => (
-                                                            <li key={index} className="flex items-start gap-3">
+                                        <li key={index} className="flex items-start gap-3">
                                                                 <CheckCircleIcon className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
                                                                 <span className="text-pm-off-white/80">{item}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
+                                        </li>
+                                    ))}
+                                </ul>
                                                 ) : (
                                                     <p className="text-pm-off-white/80">{value as string}</p>
                                                 )}
                                             </div>
                                         ))}
-                                    </div>
-                                )}
+                            </div>
+                        )}
                             </motion.div>
 
                             {/* Processus de réservation */}
@@ -298,8 +298,8 @@ const ServiceDetail: React.FC = () => {
                                 <button
                                     onClick={handleContact}
                                     className="w-full bg-gradient-to-r from-pm-gold to-yellow-400 text-pm-dark font-semibold py-3 px-6 rounded-lg hover:from-yellow-400 hover:to-pm-gold transition-all duration-200 transform hover:scale-105"
-                                >
-                                    {service.buttonText}
+                        >
+                            {service.buttonText}
                                 </button>
 
                                 <p className="text-xs text-pm-off-white/60 text-center mt-4">
@@ -363,13 +363,13 @@ const ServiceDetail: React.FC = () => {
                                                 <p className="text-sm text-pm-off-white/60 line-clamp-2">
                                                     {similarService.description}
                                                 </p>
-                                            </Link>
+                        </Link>
                                         ))}
                                 </div>
                             </motion.div>
-                        </div>
                     </div>
                 </div>
+            </div>
 
                 {/* Modal de contact */}
                 {showContactForm && (
@@ -438,7 +438,7 @@ const ServiceDetail: React.FC = () => {
                         </motion.div>
                     </div>
                 )}
-            </div>
+        </div>
         </>
     );
 };

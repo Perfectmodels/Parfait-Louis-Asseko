@@ -11,7 +11,6 @@ import {
     UserIcon,
     ClockIcon,
     CheckCircleIcon,
-    XCircleIcon,
     EyeIcon
 } from '@heroicons/react/24/outline';
 
@@ -28,7 +27,7 @@ interface CastingSession {
 }
 
 const AdminCastingLive: React.FC = () => {
-    const { data, saveData } = useData();
+    const { data } = useData();
     const [sessions, setSessions] = useState<CastingSession[]>([]);
     const [selectedSession, setSelectedSession] = useState<CastingSession | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);

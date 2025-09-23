@@ -22,7 +22,7 @@ import { getStatusColor, getStatusIcon, getStatusText } from '../utils/status';
 
 const AdminTechnical: React.FC = () => {
     const { data } = useData();
-    const [systemStatus, setSystemStatus] = useState({
+    const [systemStatus] = useState({
         database: 'connected',
         api: 'operational',
         storage: 'healthy',
