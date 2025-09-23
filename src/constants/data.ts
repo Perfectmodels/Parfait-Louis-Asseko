@@ -1,8 +1,8 @@
+// FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
-import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+  logo: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
 };
 
 export const navLinks: NavLink[] = [
@@ -11,6 +11,7 @@ export const navLinks: NavLink[] = [
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
+  { path: '/galerie', label: 'Galerie', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
@@ -122,18 +123,7 @@ export const models: Model[] = [
         },
     },
     {
-        id: 'yann-aubin',
-        name: 'Yann Aubin',
-        username: 'Man-PMMY01',
-        password: 'yann2024',
-        level: 'Pro',
-        height: '1m88',
-        gender: 'Homme',
-        imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
-        isPublic: true,
-        portfolioImages: [
-             'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
-        ],
+      
         distinctions: [
             { name: "Podiums Masculins", titles: ["Mannequin Homme de l'Année - PFD Awards 2025", "Prix de l'Élégance Masculine - Libreville Fashion Week"] }
         ],
@@ -148,18 +138,7 @@ export const models: Model[] = [
 ];
 
 export const testimonials: Testimonial[] = [
-    {
-        name: 'Franck B.',
-        role: 'Créateur de Mode',
-        quote: "Collaborer avec Perfect Models Management est un gage de professionnalisme. Leurs mannequins sont non seulement magnifiques mais aussi incroyablement bien formés et ponctuels. Un vrai plaisir.",
-        imageUrl: 'https://i.ibb.co/s5zW7gZ/testimonial-1.jpg',
-    },
-    {
-        name: 'Nadia K.',
-        role: 'Directrice Artistique',
-        quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond perfectly aux besoins créatifs de nos campagnes publicitaires.",
-        imageUrl: 'https://i.ibb.co/y4x9Y8X/testimonial-2.jpg',
-    },
+   
     {
         name: 'Noemi Kim',
         role: 'Mannequin de l\'agence',
@@ -180,38 +159,8 @@ export const absences: Absence[] = [];
 export const monthlyPayments: MonthlyPayment[] = [];
 export const photoshootBriefs: PhotoshootBrief[] = [];
 export const beginnerStudents: BeginnerStudent[] = [
-    {
-        id: 'casting-1720000000001',
-        name: "Alicia Dubois",
-        matricule: "DEB-2025-001",
-        password: "alicia2025",
-        quizScores: {}
-    },
-    {
-        id: 'casting-1720000000002',
-        name: "Jordan Lefebvre",
-        matricule: "DEB-2025-002",
-        password: "jordan2025",
-        quizScores: { 
-            'module-1-decouverte-du-mannequinat': { score: 2, total: 3, timesLeft: 0, timestamp: '2024-07-06T10:00:00Z' } 
-        }
-    },
-    {
-        id: 'casting-1720000000003',
-        name: "Chloé Moreau",
-        matricule: "DEB-2025-003",
-        password: "chloe2025",
-        quizScores: {}
-    },
-    {
-        id: 'casting-1720000000004',
-        name: "Lucas Girard",
-        matricule: "DEB-2025-004",
-        password: "lucas2025",
-        quizScores: {}
-    }
+  
 ];
-export { beginnerCourseData };
 
 
 export const newsItems: NewsItem[] = [

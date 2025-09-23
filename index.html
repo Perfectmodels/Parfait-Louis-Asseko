@@ -29,6 +29,14 @@
     <!-- Tailwind Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+    // Supprimer l'avertissement de production pour Tailwind CDN
+    if (typeof window !== 'undefined') {
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = window.tailwind.config || {};
+      window.tailwind.config.safelist = ['*'];
+    }
+    </script>
+    <script>
     tailwind.config = {
       theme: {
         extend: {
@@ -230,6 +238,6 @@
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="./src/index.tsx"></script>
 </body>
 </html>

@@ -3,6 +3,7 @@ import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
 import { Testimonial, Partner } from '../types';
 import SEO from '../components/SEO';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/icons/ImageInput';

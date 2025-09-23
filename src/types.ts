@@ -393,3 +393,256 @@ export interface NavLink {
     inFooter: boolean;
     footerLabel?: string;
 }
+
+export interface EmailRecipient {
+    email: string;
+    name?: string;
+}
+
+export interface EmailTemplate {
+    id: string;
+    name: string;
+    subject: string;
+    htmlContent: string;
+    textContent?: string;
+    sender: {
+        name: string;
+        email: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface EmailCampaign {
+    id: string;
+    name: string;
+    subject: string;
+    htmlContent: string;
+    textContent?: string;
+    sender: {
+        name: string;
+        email: string;
+    };
+    recipients: EmailRecipient[];
+    scheduledAt?: string;
+    status: 'draft' | 'scheduled' | 'sent' | 'failed';
+    createdAt: string;
+    sentAt?: string;
+    openRate?: number;
+    clickRate?: number;
+    messageId?: string;
+}
+
+export interface EmailStats {
+    totalSent: number;
+    totalDelivered: number;
+    totalOpened: number;
+    totalClicked: number;
+    totalBounced: number;
+    totalBlocked: number;
+    openRate: number;
+    clickRate: number;
+    bounceRate: number;
+}
+
+// Types pour le système de paiements
+export interface PaymentSubmission {
+    id: string;
+    submissionDate: string;
+    modelId: string;
+    modelName: string;
+    amount: number;
+    type: 'cotisation' | 'inscription';
+    method: 'Virement' | 'Espèces' | 'Mobile Money' | 'Autre';
+    proofImageUrl?: string;
+    notes?: string;
+    status: 'En attente' | 'Approuvé' | 'Rejeté';
+    processedBy?: string;
+    processedAt?: string;
+}
+
+export interface AccountingTransaction {
+    id: string;
+    date: string;
+    type: 'revenu' | 'depense';
+    category: string;
+    description: string;
+    amount: number;
+    paymentMethod: string;
+    reference?: string;
+    notes?: string;
+    createdBy: string;
+    createdAt: string;
+}
+
+// Types pour la messagerie interne
+export interface InternalMessage {
+    id: string;
+    conversationId: string;
+    senderId: string;
+    senderName: string;
+    senderRole: 'admin' | 'model' | 'beginner';
+    recipientId: string;
+    recipientName: string;
+    recipientRole: 'admin' | 'model' | 'beginner';
+    content: string;
+    timestamp: string;
+    isRead: boolean;
+    messageType: 'text' | 'image' | 'file';
+    replyTo?: string;
+}
+
+export interface Conversation {
+    id: string;
+    participant: {
+        id: string;
+        name: string;
+        role: 'model' | 'beginner';
+        imageUrl?: string;
+    };
+    lastMessage?: InternalMessage;
+    unreadCount: number;
+    updatedAt: string;
+}
+
+// Types pour la galerie
+export interface Album {
+    id: string;
+    title: string;
+    description?: string;
+    coverImage: string;
+    images: string[];
+    category: 'mannequins' | 'evenements' | 'fashion-day' | 'casting' | 'formations' | 'agence';
+    isPublic: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+// Types pour l'équipe
+export interface TeamMember {
+    id: string;
+    name: string;
+    role: string;
+    position: string;
+    bio: string;
+    imageUrl: string;
+    email?: string;
+    phone?: string;
+    socialLinks?: {
+        linkedin?: string;
+        instagram?: string;
+        facebook?: string;
+    };
+    order: number;
+    isActive: boolean;
+}
+
+// Types pour les rapports
+export interface FinancialReport {
+    id: string;
+    title: string;
+    period: {
+        start: string;
+        end: string;
+    };
+    totalRevenue: number;
+    totalExpenses: number;
+    netProfit: number;
+    transactions: AccountingTransaction[];
+    generatedAt: string;
+    generatedBy: string;
+}
+
+// Types pour les notifications
+export interface Notification {
+    id: string;
+    userId: string;
+    title: string;
+    message: string;
+    type: 'info' | 'success' | 'warning' | 'error';
+    isRead: boolean;
+    createdAt: string;
+    actionUrl?: string;
+}
+
+export interface AbsenceRequest {
+    id: string;
+    modelId: string;
+    modelName: string;
+    date: string;
+    reason: string;
+    status: 'pending' | 'approved' | 'rejected';
+    submittedAt: string;
+    documents?: string[];
+    adminNotes?: string;
+}
+
+export interface PhotoSession {
+    id: string;
+    title: string;
+    theme: string;
+    description: string;
+    assignedModels: string[];
+    date: string;
+    location: string;
+    status: 'planned' | 'in_progress' | 'completed' | 'cancelled';
+    requirements: string[];
+    createdBy: string;
+    createdAt: string;
+}
+
+// Interface principale pour les données de l'application
+export interface AppData {
+    models: Model[];
+    beginnerStudents: BeginnerStudent[];
+    castingApplications: CastingApplication[];
+    fashionDayApplications: FashionDayApplication[];
+    news: NewsItem[];
+    pageContents: any[];
+    siteImages: Record<string, string>;
+    internalMessages: InternalMessage[];
+    conversations: Conversation[];
+    paymentSubmissions: PaymentSubmission[];
+    accountingTransactions: AccountingTransaction[];
+    albums: Album[];
+    teamMembers: TeamMember[];
+    financialReports: FinancialReport[];
+    notifications: Notification[];
+    contentPages: any[];
+    users: any[];
+    technicalSettings: any[];
+    emailTemplates: EmailTemplate[];
+    emailCampaigns: EmailCampaign[];
+    emailStats: EmailStats;
+    absenceRequests: AbsenceRequest[];
+    photoSessions: PhotoSession[];
+    paymentSubmissions: PaymentSubmission[];
+    pageContents: PageContent[];
+    internalMessages: InternalMessage[];
+    castingSessions: CastingSession[];
+}
+
+export interface PageContent {
+    id: string;
+    page: string;
+    slug: string;
+    title: string;
+    content: string;
+    metaDescription: string;
+    featuredImage: string;
+    isPublished: boolean;
+    lastModified: string;
+    modifiedBy: string;
+}
+
+export interface CastingSession {
+    id: string;
+    title: string;
+    status: 'scheduled' | 'live' | 'ended';
+    startTime: string;
+    endTime?: string;
+    participants: string[];
+    currentParticipant?: string;
+    notes: string;
+    createdAt: string;
+}

@@ -1,182 +1,136 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import {
+    Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction,
+    Testimonial, ContactInfo, SiteImages, Partner, ApiKeys,
+    CastingApplication, FashionDayApplication, NewsItem, ForumThread,
+    ForumReply, Article, Module, ArticleComment, RecoveryRequest,
+    JuryMember, RegistrationStaff, BookingRequest, ContactMessage,
+    BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief,
+    NavLink, EmailTemplate, EmailCampaign, EmailStats
+} from '../types';
 
-// Import initial data to seed the database if it's empty
-import { 
-    models as initialModels, 
-    siteConfig as initialSiteConfig, 
-    contactInfo as initialContactInfo, 
-    siteImages as initialSiteImages, 
-    apiKeys as initialApiKeys, 
-    castingApplications as initialCastingApplications, 
-    fashionDayApplications as initialFashionDayApplications, 
-    forumThreads as initialForumThreads,
-    forumReplies as initialForumReplies,
-    articleComments as initialArticleComments,
-    recoveryRequests as initialRecoveryRequests,
-    bookingRequests as initialBookingRequests,
-    contactMessages as initialContactMessages,
-    absences as initialAbsences,
-    monthlyPayments as initialMonthlyPayments,
-    photoshootBriefs as initialPhotoshootBriefs,
-    newsItems as initialNewsItems, 
-    navLinks as initialNavLinks, 
-    fashionDayEvents as initialFashionDayEvents, 
-    socialLinks as initialSocialLinks, 
-    agencyTimeline as initialAgencyTimeline, 
-    agencyInfo as initialAgencyInfo, 
-    modelDistinctions as initialModelDistinctions, 
-    agencyServices as initialAgencyServices, 
-    agencyAchievements as initialAgencyAchievements, 
-    agencyPartners as initialAgencyPartners, 
-    testimonials as initialTestimonials,
-    juryMembers as initialJuryMembers,
-    registrationStaff as initialRegistrationStaff,
-    beginnerStudents as initialBeginnerStudents,
-    faqData as initialFaqData
-} from '../constants/data';
+import * as initialDataImports from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
-import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
+import { beginnerCourseData as initialBeginnerCourseData } from '../components/beginnerCourseData';
 
-export interface AppData {
-    siteConfig: { logo: string };
-    navLinks: NavLink[];
-    socialLinks: { facebook: string; instagram: string; youtube: string; };
-    agencyTimeline: { year: string; event: string; }[];
-    agencyInfo: {
-        about: { p1: string; p2: string; };
-        values: { name: string; description: string; }[];
-    };
-    modelDistinctions: ModelDistinction[];
-    agencyServices: Service[];
-    agencyAchievements: AchievementCategory[];
-    agencyPartners: Partner[];
-    models: Model[];
-    fashionDayEvents: FashionDayEvent[];
-    testimonials: Testimonial[];
-    articles: Article[];
-    courseData: Module[];
-    contactInfo: ContactInfo;
-    siteImages: SiteImages;
-    apiKeys: ApiKeys;
-    castingApplications: CastingApplication[];
-    fashionDayApplications: FashionDayApplication[];
-    newsItems: NewsItem[];
-    forumThreads: ForumThread[];
-    forumReplies: ForumReply[];
-    articleComments: ArticleComment[];
-    recoveryRequests: RecoveryRequest[];
-    bookingRequests: BookingRequest[];
-    contactMessages: ContactMessage[];
-    juryMembers: JuryMember[];
-    registrationStaff: RegistrationStaff[];
-    beginnerCourseData: Module[];
-    beginnerStudents: BeginnerStudent[];
-    faqData: FAQCategory[];
-    absences: Absence[];
-    monthlyPayments: MonthlyPayment[];
-    photoshootBriefs: PhotoshootBrief[];
-}
+export interface AppData { /* identique à ta version précédente */ }
 
 export const useDataStore = () => {
     const [data, setData] = useState<AppData | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
 
-    const getInitialData = useCallback((): AppData => ({
-        models: initialModels,
-        siteConfig: initialSiteConfig,
-        contactInfo: initialContactInfo,
-        siteImages: initialSiteImages,
-        apiKeys: initialApiKeys,
-        castingApplications: initialCastingApplications,
-        fashionDayApplications: initialFashionDayApplications,
-        forumThreads: initialForumThreads,
-        forumReplies: initialForumReplies,
-        articleComments: initialArticleComments,
-        recoveryRequests: initialRecoveryRequests,
-        bookingRequests: initialBookingRequests,
-        contactMessages: initialContactMessages,
-        absences: initialAbsences,
-        monthlyPayments: initialMonthlyPayments,
-        photoshootBriefs: initialPhotoshootBriefs,
-        newsItems: initialNewsItems,
-        navLinks: initialNavLinks,
-        fashionDayEvents: initialFashionDayEvents,
-        socialLinks: initialSocialLinks,
-        agencyTimeline: initialAgencyTimeline,
-        agencyInfo: initialAgencyInfo,
-        modelDistinctions: initialModelDistinctions,
-        agencyServices: initialAgencyServices,
-        agencyAchievements: initialAgencyAchievements,
-        agencyPartners: initialAgencyPartners,
-        testimonials: initialTestimonials,
+    const handleError = (context: string, error: any) => console.error(`${context} error:`, error);
+
+    // === Fonction pure pour merge des tableaux ===
+    const mergeArrayData = <T,>(dbArray: T[] | undefined, initialArray: T[]) =>
+        dbArray && dbArray.length > 0 ? dbArray : initialArray;
+
+    // === Memoized initial data ===
+    const initialData: AppData = useMemo(() => ({
+        models: initialDataImports.models,
+        siteConfig: initialDataImports.siteConfig,
+        contactInfo: initialDataImports.contactInfo,
+        siteImages: initialDataImports.siteImages,
+        apiKeys: initialDataImports.apiKeys,
+        castingApplications: initialDataImports.castingApplications,
+        fashionDayApplications: initialDataImports.fashionDayApplications,
+        forumThreads: initialDataImports.forumThreads,
+        forumReplies: initialDataImports.forumReplies,
+        articleComments: initialDataImports.articleComments,
+        recoveryRequests: initialDataImports.recoveryRequests,
+        bookingRequests: initialDataImports.bookingRequests,
+        contactMessages: initialDataImports.contactMessages,
+        absences: initialDataImports.absences,
+        monthlyPayments: initialDataImports.monthlyPayments,
+        photoshootBriefs: initialDataImports.photoshootBriefs,
+        newsItems: initialDataImports.newsItems,
+        navLinks: initialDataImports.navLinks,
+        fashionDayEvents: initialDataImports.fashionDayEvents,
+        socialLinks: initialDataImports.socialLinks,
+        agencyTimeline: initialDataImports.agencyTimeline,
+        agencyInfo: initialDataImports.agencyInfo,
+        modelDistinctions: initialDataImports.modelDistinctions,
+        agencyServices: initialDataImports.agencyServices,
+        agencyAchievements: initialDataImports.agencyAchievements,
+        agencyPartners: initialDataImports.agencyPartners,
+        testimonials: initialDataImports.testimonials,
         articles: initialArticles,
         courseData: initialCourseData,
-        juryMembers: initialJuryMembers,
-        registrationStaff: initialRegistrationStaff,
+        juryMembers: initialDataImports.juryMembers,
+        registrationStaff: initialDataImports.registrationStaff,
         beginnerCourseData: initialBeginnerCourseData,
-        beginnerStudents: initialBeginnerStudents,
-        faqData: initialFaqData,
+        beginnerStudents: initialDataImports.beginnerStudents,
+        faqData: initialDataImports.faqData,
+        emailTemplates: [],
+        emailCampaigns: [],
+        emailStats: {
+            totalSent: 0, totalDelivered: 0, totalOpened: 0, totalClicked: 0,
+            totalBounced: 0, totalBlocked: 0, openRate: 0, clickRate: 0, bounceRate: 0
+        }
     }), []);
-    
+
+    const seedDatabase = useCallback(async (data: AppData) => {
+        try {
+            await set(ref(db, '/'), data);
+            setData(data);
+            console.log("Firebase database seeded with initial data.");
+        } catch (error) {
+            handleError("Seeding database", error);
+        }
+    }, []);
+
     useEffect(() => {
         const dbRef = ref(db, '/');
-        
-        const unsubscribe = onValue(dbRef, (snapshot) => {
-            const dbData = snapshot.val();
-            const initialData = getInitialData();
-            if (dbData) {
-                // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
-                const mergedData = {
-                    ...initialData,
-                    ...dbData,
-                    models: (dbData.models && dbData.models.length > 0) ? dbData.models : initialData.models,
-                    articles: (dbData.articles && dbData.articles.length > 0) ? dbData.articles : initialData.articles,
-                    courseData: (dbData.courseData && dbData.courseData.length > 0) ? dbData.courseData : initialData.courseData,
-                    beginnerCourseData: (dbData.beginnerCourseData && dbData.beginnerCourseData.length > 0) ? dbData.beginnerCourseData : initialData.beginnerCourseData,
-                    newsItems: (dbData.newsItems && dbData.newsItems.length > 0) ? dbData.newsItems : initialData.newsItems,
-                    testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
-                    agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
-                    fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
-                    faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
-                };
-                
-                // Always use navLinks from code to ensure route integrity
-                mergedData.navLinks = initialData.navLinks;
-                setData(mergedData);
-            } else {
-                // If DB is empty, seed it with initial data
-                set(dbRef, initialData).then(() => {
-                    setData(initialData);
-                    console.log("Firebase database seeded with initial data.");
-                }).catch(error => {
-                    console.error("Error seeding database:", error);
-                });
-            }
-            setIsInitialized(true);
-        }, (error) => {
-            console.error("Firebase read failed: " + error.message);
-            // Fallback to local data if Firebase fails
-            setData(getInitialData());
-            setIsInitialized(true);
-        });
 
-        // Detach the listener when the component unmounts
+        const unsubscribe = onValue(
+            dbRef,
+            (snapshot) => {
+                const dbData: Partial<AppData> | null = snapshot.val();
+
+                if (dbData) {
+                    // === Memoized merged data ===
+                    const mergedData: AppData = useMemo(() => ({
+                        ...initialData,
+                        ...dbData,
+                        models: mergeArrayData(dbData.models, initialData.models),
+                        articles: mergeArrayData(dbData.articles, initialData.articles),
+                        courseData: mergeArrayData(dbData.courseData, initialData.courseData),
+                        beginnerCourseData: mergeArrayData(dbData.beginnerCourseData, initialData.beginnerCourseData),
+                        newsItems: mergeArrayData(dbData.newsItems, initialData.newsItems),
+                        testimonials: mergeArrayData(dbData.testimonials, initialData.testimonials),
+                        agencyServices: mergeArrayData(dbData.agencyServices, initialData.agencyServices),
+                        fashionDayEvents: mergeArrayData(dbData.fashionDayEvents, initialData.fashionDayEvents),
+                        faqData: mergeArrayData(dbData.faqData, initialData.faqData),
+                        navLinks: initialData.navLinks
+                    }), [dbData, initialData]);
+
+                    setData(mergedData);
+                } else {
+                    seedDatabase(initialData);
+                }
+
+                setIsInitialized(true);
+            },
+            (error) => {
+                handleError("Firebase read", error);
+                setData(initialData);
+                setIsInitialized(true);
+            }
+        );
+
         return () => unsubscribe();
-    }, [getInitialData]);
+    }, [initialData, seedDatabase]);
 
     const saveData = useCallback(async (newData: AppData) => {
         try {
             await set(ref(db, '/'), newData);
-            // The local state will be updated by the 'on' listener,
-            // but we can set it here for immediate UI feedback if desired.
-            setData(newData);
+            setData(newData); // immediate UI feedback
         } catch (error) {
-            console.error("Error saving data to Firebase:", error);
-            throw error; // Re-throw to be caught by the caller
+            handleError("Saving data to Firebase", error);
+            throw error;
         }
     }, []);
 

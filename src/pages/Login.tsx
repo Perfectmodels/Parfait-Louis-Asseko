@@ -151,76 +151,173 @@ const Login: React.FC = () => {
 
   return (
     <>
-      <div className="bg-pm-dark text-pm-off-white flex items-center justify-center min-h-screen py-20">
+      <div className="relative min-h-screen bg-gradient-to-br from-pm-dark via-black to-pm-dark overflow-hidden">
         <SEO title="Accès Privé" noIndex />
-        <div className="w-full max-w-md mx-auto px-6">
-          <div className="bg-black p-8 md:p-12 border border-pm-gold/20 text-center">
-            <LockClosedIcon className="w-16 h-16 text-pm-gold mx-auto mb-6" />
-            <h1 className="text-4xl font-playfair text-pm-gold mb-4">Accès Privé</h1>
-            <p className="text-pm-off-white/80 mb-8">
-              Veuillez entrer vos identifiants pour accéder à votre espace.
-            </p>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                   <label htmlFor="username" className="sr-only">Identifiant</label>
-                   <div className="relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <UserIcon className="h-5 w-5 text-pm-off-white/50" />
-                      </div>
-                      <input
-                        id="username"
-                        type="text"
-                        value={username}
-                        onChange={(e) => {
-                          setUsername(e.target.value);
-                          setError('');
-                        }}
-                        placeholder="Identifiant ou Nom complet"
-                        className="w-full bg-pm-dark border border-pm-off-white/30 rounded-lg p-3 pl-10 text-center focus:outline-none focus:border-pm-gold transition-colors"
-                        aria-label="Identifiant"
-                        autoFocus
-                        required
-                      />
-                   </div>
-              </div>
-              <div>
-                   <label htmlFor="password-input" className="sr-only">Mot de passe</label>
-                   <div className="relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                           <LockClosedIcon className="h-5 w-5 text-pm-off-white/50" />
-                      </div>
-                      <input
-                        id="password-input"
-                        type="password"
-                        value={password}
-                        onChange={(e) => {
-                          setPassword(e.target.value);
-                          setError('');
-                        }}
-                        placeholder="Mot de passe"
-                        className="w-full bg-pm-dark border border-pm-off-white/30 rounded-lg p-3 pl-10 text-center focus:outline-none focus:border-pm-gold transition-colors"
-                        aria-label="Mot de passe"
-                        required
-                      />
-                   </div>
-              </div>
+        
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23D4AF37' fill-opacity='0.1'%3E%3Cpath d='M50 0L60 40L100 50L60 60L50 100L40 60L0 50L40 40Z'/%3E%3C/g%3E%3C/svg%3E")`,
+          }} />
+        </div>
 
-              {error && <p className="text-red-500 text-sm !mt-6">{error}</p>}
-              <button
-                type="submit"
-                disabled={!isInitialized}
-                className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-lg transition-all duration-300 hover:bg-white !mt-8 disabled:opacity-50 disabled:cursor-wait"
-              >
-                {isInitialized ? 'Entrer' : 'Chargement...'}
-              </button>
-            </form>
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => setIsRecoveryModalOpen(true)}
-                className="text-sm text-pm-off-white/60 hover:text-pm-gold hover:underline"
-              >
-                Coordonnées oubliées ?
-              </button>
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-pm-gold/10 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-32 h-32 bg-pm-gold/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-pm-gold/8 rounded-full blur-xl animate-pulse delay-2000"></div>
+
+        <div className="relative z-10 flex items-center justify-center min-h-screen py-20 px-6">
+          <div className="w-full max-w-md">
+            {/* Main Login Card */}
+            <div className="relative group">
+              {/* Card Glow Effect */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-pm-gold via-pm-gold/50 to-pm-gold rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              
+              {/* Main Card */}
+              <div className="relative bg-gradient-to-br from-black/90 via-pm-dark/95 to-black/90 backdrop-blur-sm border border-pm-gold/30 rounded-2xl shadow-2xl overflow-hidden">
+                {/* Header Section */}
+                <div className="relative px-8 pt-12 pb-8 text-center">
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-pm-gold to-transparent"></div>
+                  
+                  {/* Icon with Animation */}
+                  <div className="relative mb-6">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-pm-gold/20 to-pm-gold/5 rounded-full flex items-center justify-center border border-pm-gold/30">
+                      <LockClosedIcon className="w-10 h-10 text-pm-gold animate-pulse" />
+                    </div>
+                    {/* Rotating Ring */}
+                    <div className="absolute inset-0 w-20 h-20 mx-auto border-2 border-pm-gold/20 rounded-full animate-spin" style={{ animationDuration: '8s' }}></div>
+                  </div>
+
+                  <h1 className="text-3xl md:text-4xl font-playfair text-pm-gold mb-3 bg-gradient-to-r from-pm-gold to-yellow-300 bg-clip-text text-transparent">
+                    Accès Privé
+                  </h1>
+                  <p className="text-pm-off-white/80 text-sm leading-relaxed">
+                    Connectez-vous à votre espace personnel pour accéder aux fonctionnalités exclusives
+                  </p>
+                </div>
+
+                {/* Form Section */}
+                <div className="px-8 pb-8">
+                  <form onSubmit={handleLogin} className="space-y-6">
+                    {/* Username Field */}
+                    <div className="space-y-2">
+                      <label htmlFor="username" className="block text-sm font-medium text-pm-gold/90">
+                        Identifiant
+                      </label>
+                      <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                          <UserIcon className="h-5 w-5 text-pm-gold/60 group-focus-within:text-pm-gold transition-colors" />
+                        </div>
+                        <input
+                          id="username"
+                          type="text"
+                          value={username}
+                          onChange={(e) => {
+                            setUsername(e.target.value);
+                            setError('');
+                          }}
+                          placeholder="Nom d'utilisateur ou nom complet"
+                          className="w-full bg-pm-off-white/5 border border-pm-gold/30 rounded-xl pl-12 pr-4 py-4 text-pm-off-white placeholder:text-pm-off-white/50 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold transition-all duration-300 hover:border-pm-gold/50"
+                          aria-label="Identifiant"
+                          autoFocus
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Password Field */}
+                    <div className="space-y-2">
+                      <label htmlFor="password-input" className="block text-sm font-medium text-pm-gold/90">
+                        Mot de passe
+                      </label>
+                      <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                          <LockClosedIcon className="h-5 w-5 text-pm-gold/60 group-focus-within:text-pm-gold transition-colors" />
+                        </div>
+                        <input
+                          id="password-input"
+                          type="password"
+                          value={password}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                            setError('');
+                          }}
+                          placeholder="Votre mot de passe"
+                          className="w-full bg-pm-off-white/5 border border-pm-gold/30 rounded-xl pl-12 pr-4 py-4 text-pm-off-white placeholder:text-pm-off-white/50 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold transition-all duration-300 hover:border-pm-gold/50"
+                          aria-label="Mot de passe"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Error Message */}
+                    {error && (
+                      <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                        <p className="text-red-400 text-sm text-center">{error}</p>
+                      </div>
+                    )}
+
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={!isInitialized}
+                      className="w-full relative group bg-gradient-to-r from-pm-gold to-yellow-400 text-pm-dark font-bold uppercase tracking-wider py-4 rounded-xl transition-all duration-300 hover:from-yellow-400 hover:to-pm-gold hover:shadow-lg hover:shadow-pm-gold/25 hover:scale-105 disabled:opacity-50 disabled:cursor-wait disabled:hover:scale-100 disabled:hover:shadow-none"
+                    >
+                      <span className="relative z-10">
+                        {isInitialized ? 'Se connecter' : 'Chargement...'}
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-pm-gold to-yellow-400 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </form>
+
+                  {/* Recovery Link */}
+                  <div className="mt-6 text-center">
+                    <button
+                      onClick={() => setIsRecoveryModalOpen(true)}
+                      className="text-sm text-pm-off-white/60 hover:text-pm-gold transition-colors duration-300 hover:underline group"
+                    >
+                      <span className="group-hover:tracking-wider transition-all duration-300">
+                        Coordonnées oubliées ?
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Footer Info */}
+                <div className="px-8 pb-6">
+                  <div className="border-t border-pm-gold/20 pt-4">
+                    <p className="text-xs text-pm-off-white/50 text-center">
+                      Accès sécurisé • Chiffrement SSL • Données protégées
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Info Card */}
+            <div className="mt-8 bg-pm-off-white/5 border border-pm-gold/20 rounded-xl p-6 backdrop-blur-sm">
+              <div className="text-center">
+                <h3 className="text-sm font-semibold text-pm-gold mb-2">Types d'accès disponibles</h3>
+                <div className="grid grid-cols-2 gap-3 text-xs text-pm-off-white/70">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-pm-gold rounded-full"></div>
+                    <span>Mannequins</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-pm-gold rounded-full"></div>
+                    <span>Étudiants</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-pm-gold rounded-full"></div>
+                    <span>Jury</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-pm-gold rounded-full"></div>
+                    <span>Administration</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -240,41 +337,85 @@ const RecoveryModal: React.FC<{onClose: () => void, onSubmit: (name: string, pho
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
-      <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-playfair text-pm-gold">Demande de Coordonnées</h2>
-            <button onClick={onClose} className="text-pm-off-white/70 hover:text-white">
-              <XMarkIcon className="w-6 h-6" />
-            </button>
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
+      <div className="relative group w-full max-w-md">
+        {/* Modal Glow Effect */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-pm-gold via-pm-gold/50 to-pm-gold rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+        
+        {/* Main Modal */}
+        <div className="relative bg-gradient-to-br from-black/95 via-pm-dark/98 to-black/95 backdrop-blur-sm border border-pm-gold/30 rounded-2xl shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="px-6 pt-6 pb-4">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-pm-gold/20 rounded-lg flex items-center justify-center">
+                  <PhoneIcon className="w-4 h-4 text-pm-gold" />
+                </div>
+                <h2 className="text-xl font-playfair text-pm-gold">Récupération d'accès</h2>
+              </div>
+              <button 
+                onClick={onClose} 
+                className="p-2 text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10 rounded-lg transition-all duration-300"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-sm text-pm-off-white/80 leading-relaxed">
+              Entrez vos informations pour que l'administrateur puisse vous contacter et vous fournir vos accès.
+            </p>
           </div>
-          <p className="text-sm text-pm-off-white/70 mb-6">
-            Veuillez entrer votre nom de mannequin et votre numéro de téléphone. L'administrateur vous contactera pour vous fournir vos accès.
-          </p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="modelName" className="sr-only">Nom de mannequin</label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <UserIcon className="h-5 w-5 text-pm-off-white/50" />
+
+          {/* Form */}
+          <div className="px-6 pb-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="modelName" className="block text-sm font-medium text-pm-gold/90">
+                  Nom complet
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <UserIcon className="h-5 w-5 text-pm-gold/60 group-focus-within:text-pm-gold transition-colors" />
+                  </div>
+                  <input 
+                    id="modelName" 
+                    type="text" 
+                    value={modelName} 
+                    onChange={e => setModelName(e.target.value)} 
+                    placeholder="Votre nom complet de mannequin" 
+                    className="w-full bg-pm-off-white/5 border border-pm-gold/30 rounded-xl pl-12 pr-4 py-3 text-pm-off-white placeholder:text-pm-off-white/50 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold transition-all duration-300 hover:border-pm-gold/50" 
+                    required 
+                  />
                 </div>
-                <input id="modelName" type="text" value={modelName} onChange={e => setModelName(e.target.value)} placeholder="Votre nom complet de mannequin" className="admin-input pl-10" required />
               </div>
-            </div>
-            <div>
-              <label htmlFor="phone" className="sr-only">Numéro de téléphone</label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <PhoneIcon className="h-5 w-5 text-pm-off-white/50" />
+              
+              <div className="space-y-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-pm-gold/90">
+                  Numéro de téléphone
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <PhoneIcon className="h-5 w-5 text-pm-gold/60 group-focus-within:text-pm-gold transition-colors" />
+                  </div>
+                  <input 
+                    id="phone" 
+                    type="tel" 
+                    value={phone} 
+                    onChange={e => setPhone(e.target.value)} 
+                    placeholder="Votre numéro de téléphone" 
+                    className="w-full bg-pm-off-white/5 border border-pm-gold/30 rounded-xl pl-12 pr-4 py-3 text-pm-off-white placeholder:text-pm-off-white/50 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold transition-all duration-300 hover:border-pm-gold/50" 
+                    required 
+                  />
                 </div>
-                <input id="phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Votre numéro de téléphone" className="admin-input pl-10" required />
               </div>
-            </div>
-            <button type="submit" className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-lg transition-all duration-300 hover:bg-white mt-4">
-              Envoyer la demande
-            </button>
-          </form>
+              
+              <button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-pm-gold to-yellow-400 text-pm-dark font-bold uppercase tracking-wider py-3 rounded-xl transition-all duration-300 hover:from-yellow-400 hover:to-pm-gold hover:shadow-lg hover:shadow-pm-gold/25 hover:scale-105 mt-6"
+              >
+                Envoyer la demande
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
