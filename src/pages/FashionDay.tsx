@@ -1,181 +1,235 @@
-import React, { useState, useEffect } from 'react';
+
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useData } from '../contexts/DataContext';
-import { FashionDayEvent, Stylist } from '../types';
+import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
-import { StarIcon, UserGroupIcon, SparklesIcon, XMarkIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
-import { motion } from 'framer-motion';
+import { useData } from '../contexts/DataContext';
+import { FashionDayEvent } from '../types';
 
 const FashionDay: React.FC = () => {
   const { data, isInitialized } = useData();
-  const [edition, setEdition] = useState<FashionDayEvent | null>(null);
+  const fashionDayEvents = data?.fashionDayEvents || [];
+  
+  const [selectedEdition, setSelectedEdition] = useState<FashionDayEvent | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const prevActiveElement = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (isInitialized && data?.fashionDayEvents) {
-      const sortedEditions = [...data.fashionDayEvents].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      setEdition(sortedEditions[0] || null);
+    if (fashionDayEvents.length > 0) {
+      setSelectedEdition(fashionDayEvents[0]);
     }
-  }, [isInitialized, data]);
+  }, [fashionDayEvents]);
+
+  useEffect(() => {
+    if (selectedImage) {
+        prevActiveElement.current = document.activeElement as HTMLElement;
+        setTimeout(() => {
+            modalRef.current?.focus();
+            const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (!focusableElements || focusableElements.length === 0) return;
+
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            const handleKeyDown = (e: KeyboardEvent) => {
+                if (e.key === 'Escape') setSelectedImage(null);
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        if (document.activeElement === firstElement) {
+                            e.preventDefault();
+                            lastElement.focus();
+                        }
+                    } else {
+                        if (document.activeElement === lastElement) {
+                            e.preventDefault();
+                            firstElement.focus();
+                        }
+                    }
+                }
+            };
+            
+            document.addEventListener('keydown', handleKeyDown);
+
+            return () => {
+                document.removeEventListener('keydown', handleKeyDown);
+                prevActiveElement.current?.focus();
+            };
+        }, 100);
+    }
+  }, [selectedImage]);
 
   if (!isInitialized || !data) {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
-
-  if (!edition) {
-    return (
-        <div className="bg-pm-dark">
-          <SEO title="Perfect Fashion Day" description="Bientôt de nouvelles informations sur notre prochain événement." />
-            <div className="text-center py-40 text-pm-off-white">
-                <h1 className="text-4xl font-playfair mb-4">Perfect Fashion Day</h1>
-                <p className="text-pm-off-white/70">Aucun événement n'est programmé. Revenez bientôt !</p>
-            </div>
-        </div>
-    );
+  
+  if (fashionDayEvents.length === 0 || !selectedEdition) {
+    return <div className="min-h-screen flex items-center justify-center">Aucun événement à afficher.</div>;
   }
 
-  const { theme, description, imageUrl, stylists, partners, featuredModels } = edition;
-
   return (
-    <div className="bg-pm-dark">
-        <SEO
-            title={`Perfect Fashion Day: ${theme}`}
-            description={description}
-            image={imageUrl}
+    <>
+      <div className="bg-pm-dark text-pm-off-white">
+        <SEO 
+          title="Perfect Fashion Day | L'Événement Mode de Référence"
+          description="Vibrez au rythme du Perfect Fashion Day, l'événement mode incontournable à Libreville. Revivez les éditions, découvrez les créateurs gabonais et les moments forts qui célèbrent la mode africaine."
+          keywords="perfect fashion day, défilé de mode gabon, événement mode libreville, créateurs gabonais, mode africaine, fashion week gabon"
+          image={data?.siteImages.fashionDayBg}
         />
-        
-        {/* Hero Section */}
-        <div className="relative h-[90vh] min-h-[700px] text-white overflow-hidden">
-            <motion.div
-                initial={{ scale: 1.1 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0"
-            >
-                <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url(${imageUrl})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/60 to-transparent" />
-            </motion.div>
-            <div className="container mx-auto px-6 h-full flex flex-col justify-end pb-24 relative">
-                <motion.h1
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-                    className="text-6xl md:text-8xl font-playfair font-bold text-white mb-6"
-                >Perfect Fashion Day</motion.h1>
-                <motion.p
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
-                    className="text-lg md:text-xl text-pm-off-white/80 max-w-2xl mb-8"
-                >{description}</motion.p>
-                <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-                >
-                    <Link
-                        to="/fashion-day-application-form"
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-pm-gold text-pm-dark font-bold text-lg rounded-full hover:bg-white transition-all shadow-lg hover:shadow-pm-gold/20"
-                    >
-                        <span>Participer</span>
-                        <ArrowRightIcon className="w-5 h-5" />
-                    </Link>
-                </motion.div>
-            </div>
-        </div>
+        <div className="page-container">
+          <h1 className="page-title">Perfect Fashion Day</h1>
+          <p className="page-subtitle">
+            Plus qu'un défilé, une célébration de la créativité, de la culture et de l'identité gabonaise.
+          </p>
 
-        {/* Main Content */}
-        <div className="container mx-auto px-6 py-20 md:py-28">
-            <div className="space-y-20">
-                <section className="text-center max-w-3xl mx-auto">
-                    <div className="inline-flex items-center gap-2 bg-pm-gold/10 border border-pm-gold/20 rounded-full px-4 py-2 mb-4">
-                        <StarIcon className="w-5 h-5 text-pm-gold" />
-                        <span className="text-pm-gold font-semibold text-sm">Thème de l'édition :</span>
+          {/* Edition Selector */}
+          <div className="flex justify-center gap-4 mb-10 lg:mb-14" role="group" aria-label="Sélection de l'édition">
+            {fashionDayEvents.map(event => (
+              <button
+                key={event.edition}
+                onClick={() => setSelectedEdition(event)}
+                aria-pressed={selectedEdition.edition === event.edition}
+                className={`px-6 py-2 text-sm uppercase tracking-widest rounded-full transition-colors duration-300 ${selectedEdition.edition === event.edition ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold hover:text-pm-dark'}`}
+              >
+                Édition {event.edition} ({event.date.split(' ').pop()})
+              </button>
+            ))}
+          </div>
+
+          {/* Event Details */}
+          <div className="content-section">
+            <h2 className="text-4xl font-playfair text-center text-pm-gold mb-2">Thème : "{selectedEdition.theme}"</h2>
+            <p className="text-center text-pm-off-white/70 mb-8">{selectedEdition.date}</p>
+            <p className="text-center max-w-3xl mx-auto mb-12">{selectedEdition.description}</p>
+            
+            {selectedEdition.location && (
+              <div className="flex flex-wrap justify-center gap-8 mb-12 text-center border-y border-pm-gold/20 py-8">
+                <InfoPill icon={CalendarDaysIcon} title="Date" content={selectedEdition.date} />
+                <InfoPill icon={MapPinIcon} title="Lieu" content={selectedEdition.location} />
+                <InfoPill icon={SparklesIcon} title="Promoteur" content={selectedEdition.promoter || 'Parfait Asseko'} />
+              </div>
+            )}
+            
+            {selectedEdition.edition === 2 && (
+              <div className="text-center my-12 py-8 bg-pm-dark/50 rounded-lg">
+                  <h3 className="text-3xl font-playfair text-pm-gold mb-4">Rejoignez l'Aventure de l'Édition 2</h3>
+                  <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+                      Pour cette nouvelle édition, nous recherchons des talents visionnaires pour donner vie au thème "L’Art de Se Révler". Que vous soyez mannequin, styliste, partenaire, photographe ou que vous ayez un autre talent à partager, nous vous invitons à rejoindre cette célébration de la mode.
+                  </p>
+                  <div className="mt-8">
+                      <Link to="/fashion-day-application" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20">
+                          Participer à l'événement
+                      </Link>
+                  </div>
+              </div>
+            )}
+
+            {/* Featured Artists and Models */}
+            {selectedEdition.artists && selectedEdition.featuredModels && (
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12 pt-8 border-t border-pm-gold/10">
+                  <div>
+                      <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><MicrophoneIcon className="w-6 h-6" aria-hidden="true"/> Artistes & Performances</h3>
+                      <ul className="list-disc list-inside text-pm-off-white/80 space-y-2">
+                          {/* FIX: Correctly render artist name and description. An Artist object cannot be rendered directly as a ReactNode. */}
+                          {selectedEdition.artists.map((artist, index) => <li key={index}>{artist.name} - <span className="text-xs text-pm-off-white/70">{artist.description}</span></li>)}
+                      </ul>
+                  </div>
+                  <div>
+                      <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><UserGroupIcon className="w-6 h-6" aria-hidden="true"/> Mannequins Vedettes</h3>
+                      <p className="text-pm-off-white/80">
+                          {selectedEdition.featuredModels.join(', ')} et toute la Perfect Models Squad.
+                      </p>
+                  </div>
+               </div> 
+            )}
+
+            {/* Stylists Gallery */}
+            {selectedEdition.stylists && (
+              <div>
+                <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Stylistes Participants</h3>
+                <div className="space-y-12">
+                  {selectedEdition.stylists.map((stylist) => (
+                    <div key={stylist.name} className="bg-pm-dark p-6 border border-pm-gold/10 rounded-lg">
+                      <div className="text-center mb-4">
+                        <h4 className="text-2xl font-bold font-playfair text-pm-gold">{stylist.name}</h4>
+                        <p className="text-sm text-pm-off-white/70">{stylist.description}</p>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                          {stylist.images.map((img, idx) => (
+                              <button key={idx} onClick={() => setSelectedImage(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${stylist.name}`} className="aspect-square block bg-black group overflow-hidden border border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300">
+                                  <img src={img} alt={`${stylist.name} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+                              </button>
+                          ))}
+                      </div>
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-playfair text-pm-off-white">"{theme}"</h2>
-                </section>
-                
-                {stylists && stylists.length > 0 && (
-                    <section>
-                        <h3 className="text-3xl md:text-4xl font-bold font-playfair text-center mb-12 text-pm-off-white">Les Créateurs à l'honneur</h3>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {stylists.map(stylist => (
-                                <StylistCard key={stylist.name} stylist={stylist} onImageClick={setSelectedImage} />
-                            ))}
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {selectedEdition.partners && (
+              <div className="mt-20">
+                <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Partenaires & Sponsors</h3>
+                <div className="flex justify-center items-center gap-12 flex-wrap">
+                    {selectedEdition.partners.map(p => (
+                        <div key={p.name} className="text-center">
+                            <p className="text-pm-gold/80 text-sm">{p.type}</p>
+                            <p className="text-2xl font-bold tracking-wider">{p.name}</p>
                         </div>
-                    </section>
-                )}
-
-                {featuredModels && featuredModels.length > 0 && (
-                    <section className="text-center bg-black/30 border border-pm-gold/20 rounded-2xl p-12">
-                        <UserGroupIcon className="w-16 h-16 text-pm-gold mx-auto mb-6" />
-                        <h3 className="text-3xl font-bold font-playfair mb-6 text-pm-off-white">Mannequins Vedettes</h3>
-                        <p className="text-lg text-pm-off-white/70 max-w-2xl mx-auto">
-                            {featuredModels.join(', ')} et toute la Perfect Models Squad ont illuminé le podium de leur talent et de leur prestance.
-                        </p>
-                    </section>
-                )}
-
-                {partners && partners.length > 0 && (
-                    <section>
-                        <h3 className="text-3xl md:text-4xl font-bold font-playfair text-center mb-12 text-pm-off-white">Nos Partenaires</h3>
-                        <div className="flex justify-center items-center flex-wrap gap-x-12 gap-y-8 max-w-4xl mx-auto">
-                            {partners.map(p => (
-                                <div key={p.name} className="text-center">
-                                    <p className="text-2xl font-bold tracking-wider text-pm-off-white">{p.name}</p>
-                                    <p className="text-sm text-pm-gold/80 font-semibold uppercase tracking-widest">{p.type}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                )}
-            </div>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-
-        {selectedImage && (
-            <ImageLightbox image={selectedImage} onClose={() => setSelectedImage(null)} />
-        )}
-    </div>
+      </div>
+      
+      {/* Lightbox */}
+      {selectedImage && (
+        <div 
+          ref={modalRef}
+          tabIndex={-1}
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 cursor-pointer"
+          onClick={() => setSelectedImage(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Vue agrandie de l'image"
+        >
+          <button 
+            className="absolute top-4 right-4 text-white hover:text-pm-gold transition-colors z-10" 
+            aria-label="Fermer"
+            onClick={() => setSelectedImage(null)}
+          >
+            <XMarkIcon className="w-8 h-8"/>
+          </button>
+          <div className="relative max-w-5xl max-h-[90vh] cursor-default" onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={selectedImage} 
+              alt="Vue agrandie" 
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl shadow-pm-gold/20" 
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
-const StylistCard: React.FC<{ stylist: Stylist, onImageClick: (img: string) => void }> = ({ stylist, onImageClick }) => (
-    <div className="bg-black/30 border border-pm-gold/20 rounded-xl overflow-hidden group">
-        <div className="h-48 overflow-hidden">
-             <img src={stylist.images?.[0]} alt={stylist.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-        </div>
-        <div className="p-6">
-            <h4 className="text-2xl font-playfair text-pm-gold mb-2">{stylist.name}</h4>
-            <p className="text-sm text-pm-off-white/70 mb-4 line-clamp-2">{stylist.description}</p>
-            {stylist.images && stylist.images.length > 1 && (
-                <button onClick={() => onImageClick(stylist.images?.[0] || '')} className="font-semibold text-pm-gold text-sm hover:underline">
-                    Voir la collection ({stylist.images.length} photos)
-                </button>
-            )}
+interface InfoPillProps {
+    icon: React.ElementType;
+    title: string;
+    content: string;
+}
+const InfoPill: React.FC<InfoPillProps> = ({ icon: Icon, title, content }) => (
+    <div className="flex items-center gap-3">
+        <Icon className="w-10 h-10 text-pm-gold" aria-hidden="true"/>
+        <div>
+            <span className="font-bold block text-left">{title}</span>
+            <span className="block text-left">{content}</span>
         </div>
     </div>
 );
 
-const ImageLightbox: React.FC<{ image: string, onClose: () => void }> = ({ image, onClose }) => (
-    <div 
-      className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 cursor-pointer"
-      onClick={onClose}
-      role="dialog" aria-modal="true"
-    >
-      <button 
-        className="absolute top-6 right-6 text-white hover:text-pm-gold transition-colors z-10" 
-        aria-label="Fermer"
-        onClick={onClose}
-      >
-        <XMarkIcon className="w-10 h-10"/>
-      </button>
-      <div className="relative max-w-4xl max-h-[90vh] cursor-default" onClick={e => e.stopPropagation()}>
-        <img src={image} alt="Vue agrandie" className="w-auto h-auto max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" />
-      </div>
-    </div>
-);
 
 export default FashionDay;

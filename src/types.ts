@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export interface Model {
@@ -16,7 +15,7 @@ export interface Model {
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
   isPublic?: boolean; 
-  level?: 'Mannequin';
+  level?: 'Pro' | 'Débutant';
   measurements: {
     chest: string;
     waist: string;
@@ -36,47 +35,6 @@ export interface Model {
   };
   lastLogin?: string;
   lastActivity?: string;
-  paymentStatus?: PaymentStatus;
-  adminAccess?: boolean;
-}
-
-export interface PaymentStatus {
-  isUpToDate?: boolean;
-  lastPaymentDate?: string;
-  nextDueDate?: string;
-  amount?: number;
-  currency?: string;
-  paymentMethod?: string;
-  notes?: string;
-  warnings?: PaymentWarning[];
-  paymentType?: 'cotisation' | 'inscription' | 'avance' | 'cotisation_inscription';
-  description?: string;
-}
-
-export interface PaymentWarning {
-  id: string;
-  type: 'overdue' | 'reminder' | 'final_notice';
-  title: string;
-  message: string;
-  date: string;
-  isRead: boolean;
-}
-
-export interface PaymentSubmission {
-  id: string;
-  modelId: string;
-  modelName: string;
-  amount: number;
-  currency: string;
-  paymentType: 'cotisation' | 'inscription' | 'avance' | 'cotisation_inscription';
-  description: string;
-  paymentMethod: string;
-  notes: string;
-  submittedAt: string;
-  status: 'pending' | 'approved' | 'rejected';
-  adminNotes?: string;
-  approvedAt?: string;
-  approvedBy?: string;
 }
 
 export interface BeginnerStudent {
@@ -84,10 +42,6 @@ export interface BeginnerStudent {
   name: string;
   matricule: string;
   password: string;
-  email?: string;
-  phone?: string;
-  city?: string;
-  instagram?: string;
   quizScores: { 
     [chapterSlug: string]: {
       score: number;
@@ -98,7 +52,6 @@ export interface BeginnerStudent {
   };
   lastLogin?: string;
   lastActivity?: string;
-  paymentStatus?: PaymentStatus;
 }
 
 export interface Stylist {
@@ -118,7 +71,6 @@ export interface FashionDayEvent {
   date: string;
   theme: string;
   location?: string;
-  imageUrl?: string;
   mc?: string;
   promoter?: string;
   stylists?: Stylist[];
@@ -135,11 +87,9 @@ export interface SocialLinks {
 }
 
 export interface Service {
-  id: string;
   slug: string;
   icon: string;
   title: string;
-  price: number;
   category: 'Services Mannequinat' | 'Services Mode et Stylisme' | 'Services Événementiels';
   description: string;
   details?: { 
@@ -235,14 +185,6 @@ export interface SiteImages {
   agencyHistory: string;
   classroomBg: string;
   castingBg: string;
-  // Hero backgrounds for main sections
-  servicesHero: string;
-  modelsHero: string;
-  magazineHero: string;
-  galleryHero: string;
-  contactHero: string;
-  agencyHero: string;
-  castingHero: string;
 }
 
 export interface Partner {
@@ -257,9 +199,6 @@ export interface ApiKeys {
     domainUriPrefix: string;
   };
   imgbbApiKey?: string;
-  geminiApiKey?: string;
-  brevoApiKey?: string;
-  replicateApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -335,21 +274,6 @@ export interface FashionDayApplication {
   role: FashionDayApplicationRole;
   message: string;
   status: FashionDayApplicationStatus;
-  // Nouveaux champs enrichis
-  age?: number;
-  gender?: 'Homme' | 'Femme';
-  location?: string;
-  experience?: string;
-  portfolioUrl?: string;
-  socialMedia?: {
-    instagram?: string;
-    facebook?: string;
-    website?: string;
-  };
-  availability?: string;
-  motivation?: string;
-  previousParticipation?: boolean;
-  specialRequirements?: string;
 }
 
 export interface ForumThread {
@@ -450,52 +374,6 @@ export interface MonthlyPayment {
   notes?: string;
 }
 
-// Types pour le système comptable
-export interface AccountingTransaction {
-  id: string;
-  date: string; // YYYY-MM-DD
-  description: string;
-  category: 'revenue' | 'expense';
-  subcategory: string;
-  amount: number;
-  currency: string;
-  paymentMethod: 'cash' | 'bank_transfer' | 'mobile_money' | 'check' | 'other';
-  reference?: string; // Numéro de facture, référence, etc.
-  notes?: string;
-  relatedModelId?: string; // Si lié à un mannequin
-  relatedModelName?: string;
-  createdBy: string; // Admin qui a créé la transaction
-  createdAt: string;
-}
-
-export interface AccountingCategory {
-  id: string;
-  name: string;
-  type: 'revenue' | 'expense';
-  subcategories: string[];
-  description?: string;
-}
-
-export interface AccountingBalance {
-  totalRevenue: number;
-  totalExpenses: number;
-  netIncome: number;
-  currency: string;
-  period: string; // YYYY-MM
-}
-
-export interface PaymentList {
-  id: string;
-  title: string;
-  type: 'cotisations' | 'inscriptions' | 'custom';
-  date: string;
-  transactions: AccountingTransaction[];
-  totalAmount: number;
-  currency: string;
-  generatedBy: string;
-  generatedAt: string;
-}
-
 export interface PhotoshootBrief {
   id: string;
   modelId: string;
@@ -514,334 +392,4 @@ export interface NavLink {
     label: string;
     inFooter: boolean;
     footerLabel?: string;
-}
-
-export interface AdminUser {
-  id: string;
-  username: string;
-  password: string;
-  name: string;
-  email?: string;
-  role: 'admin' | 'manager' | 'staff';
-  permissions: AdminPermission[];
-  isActive: boolean;
-  lastLogin?: string;
-  createdAt: string;
-  createdBy: string;
-}
-
-export interface AdminPermission {
-  id: string;
-  name: string;
-  description: string;
-  category: 'models' | 'content' | 'accounting' | 'system' | 'reports';
-  actions: string[]; // ['read', 'write', 'delete', 'export']
-}
-
-export interface Photo {
-  id: string;
-  url: string;
-  title?: string;
-  description?: string;
-  alt?: string;
-  uploadedAt: string;
-  uploadedBy: string;
-  tags?: string[];
-  featured?: boolean;
-}
-
-export interface Album {
-  id: string;
-  title: string;
-  description: string;
-  theme: string;
-  coverImage: string;
-  photos: Photo[];
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  isPublic: boolean;
-  featured?: boolean;
-  tags?: string[];
-  location?: string;
-  date?: string;
-  models?: string[]; // IDs des mannequins présents
-  stylists?: string[];
-  photographers?: string[];
-}
-
-export interface TeamMember {
-  id: string;
-  name: string;
-  position: string;
-  role: 'founder' | 'director' | 'trainer' | 'stylist' | 'photographer' | 'coordinator' | 'other';
-  description: string;
-  imageUrl?: string;
-  email?: string;
-  phone?: string;
-  socialLinks?: {
-    linkedin?: string;
-    instagram?: string;
-    facebook?: string;
-  };
-  isPublic: boolean;
-  order: number; // Pour l'ordre d'affichage
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ModelActivity {
-  id: string;
-  modelId: string;
-  type: 'login' | 'quiz_completed' | 'payment_submitted' | 'profile_updated' | 'booking_requested' | 'casting_applied' | 'forum_post' | 'classroom_access';
-  title: string;
-  description: string;
-  timestamp: string;
-  metadata?: {
-    quizScore?: number;
-    quizChapter?: string;
-    paymentAmount?: number;
-    bookingDetails?: string;
-    castingEvent?: string;
-    forumThread?: string;
-  };
-  isRead: boolean;
-}
-
-export interface ModelPerformance {
-  modelId: string;
-  totalQuizAttempts: number;
-  averageQuizScore: number;
-  totalLoginDays: number;
-  lastLoginDate: string;
-  totalBookings: number;
-  totalCastings: number;
-  forumPosts: number;
-  paymentCompliance: number; // Pourcentage de paiements à jour
-  overallScore: number; // Score global de performance
-  lastUpdated: string;
-}
-
-export interface ModelTrackingData {
-  modelId: string;
-  activities: ModelActivity[];
-  performance: ModelPerformance;
-  notes: string;
-  tags: string[];
-  status: 'active' | 'inactive' | 'suspended' | 'graduated';
-  lastAdminReview: string;
-  nextReviewDate: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Types pour le système social/forum
-export interface SocialPost {
-  id: string;
-  authorId: string;
-  authorName: string;
-  authorImage?: string;
-  content: string;
-  images?: string[];
-  type: 'text' | 'image' | 'video' | 'poll' | 'event';
-  category: 'general' | 'tips' | 'inspiration' | 'question' | 'achievement' | 'news';
-  tags: string[];
-  mentions: string[]; // IDs des utilisateurs mentionnés
-  likes: string[]; // IDs des utilisateurs qui ont liké
-  shares: string[]; // IDs des utilisateurs qui ont partagé
-  comments: SocialComment[];
-  isPublic: boolean;
-  isPinned: boolean;
-  createdAt: string;
-  updatedAt: string;
-  editedAt?: string;
-  location?: string;
-  mood?: 'happy' | 'excited' | 'grateful' | 'proud' | 'motivated' | 'inspired';
-}
-
-export interface SocialComment {
-  id: string;
-  postId: string;
-  authorId: string;
-  authorName: string;
-  authorImage?: string;
-  content: string;
-  likes: string[];
-  replies: SocialComment[];
-  createdAt: string;
-  updatedAt: string;
-  editedAt?: string;
-  isEdited: boolean;
-}
-
-export interface SocialReaction {
-  id: string;
-  postId: string;
-  userId: string;
-  type: 'like' | 'love' | 'laugh' | 'wow' | 'sad' | 'angry';
-  createdAt: string;
-}
-
-export interface SocialShare {
-  id: string;
-  originalPostId: string;
-  sharedBy: string;
-  sharedByName: string;
-  comment?: string; // Commentaire ajouté lors du partage
-  createdAt: string;
-}
-
-export interface SocialNotification {
-  id: string;
-  userId: string;
-  type: 'like' | 'comment' | 'share' | 'mention' | 'follow' | 'achievement';
-  title: string;
-  message: string;
-  relatedPostId?: string;
-  relatedUserId?: string;
-  isRead: boolean;
-  createdAt: string;
-}
-
-export interface SocialUser {
-  id: string;
-  name: string;
-  username: string;
-  email?: string;
-  imageUrl?: string;
-  bio?: string;
-  followers: string[];
-  following: string[];
-  postsCount: number;
-  isVerified: boolean;
-  isOnline: boolean;
-  lastSeen: string;
-  badges: string[]; // Badges d'achievement
-  privacy: {
-    showOnlineStatus: boolean;
-    allowMentions: boolean;
-    allowDirectMessages: boolean;
-t: string;
-  lastActive?: string;
-}
-
-export interface SocialPoll {
-  id: string;
-  postId: string;
-  question: string;
-  options: {
-    id: string;
-    text: string;
-    votes: string[]; // IDs des utilisateurs qui ont voté
-  }[];
-  allowMultipleVotes: boolean;
-  expiresAt?: string;
-  totalVotes: number;
-  createdAt: string;
-}
-
-// Types pour le marketing
-export interface Contact {
-  id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  company?: string;
-  phone?: string;
-  source: 'import' | 'manual' | 'website_form';
-  tags: string[];
-  isSubscribed: boolean;
-  createdAt: string;
-}
-
-export interface Campaign {
-  id: string;
-  name: string;
-  subject: string;
-  fromName: string;
-  fromEmail: string;
-  htmlContent: string;
-  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'paused' | 'archived';
-  tags: string[];
-  recipients: {
-    type: 'tag' | 'list';
-    value: string[]; // Array of tags or contact IDs
-  };
-  scheduledAt?: string;
-  createdAt: string;
-  updatedAt: string;
-  // Stats
-  sentCount: number;
-  openCount: number;
-  clickCount: number;
-  bounceCount: number;
-  unsubscribeCount: number;
-}
-
-// Types pour la sécurité
-export type SecurityCheckStatus = 'pass' | 'fail' | 'warning' | 'info';
-
-export interface SecurityCheck {
-  id: string; // e.g., 'https-enabled'
-  name: string;
-  status: SecurityCheckStatus;
-  description: string;
-  recommendation?: string;
-  lastChecked: string;
-}
-
-export type SecurityThreatSeverity = 'Low' | 'Medium' | 'High' | 'Critical';
-
-export interface SecurityThreat {
-  id: string;
-  type: 'Failed Login' | 'Brute Force Attempt' | 'Suspicious IP' | 'API Key Misuse' | 'Data Leak';
-  severity: SecurityThreatSeverity;
-  description: string;
-  timestamp: string;
-  ipAddress?: string;
-  userId?: string;
-  status: 'new' | 'investigating' | 'resolved' | 'ignored';
-}
-
-export interface SecurityActivityLog {
-  id: string;
-  action: 'Admin Login' | 'Failed Admin Login' | 'API Key Generated' | 'Security Scan' | 'Password Policy Change' | 'User Blocked';
-  userId: string; // Admin User ID
-  username: string;
-  timestamp: string;
-  ipAddress: string;
-  details: string;
-  status: 'Success' | 'Failure';
-}
-
-export interface ServiceOrderItem {
-  serviceId: string;
-  serviceTitle: string;
-  quantity: number;
-  price: number; // Price per unit at the time of order
-}
-
-export interface ServiceOrder {
-  id: string;
-  submissionDate: string;
-  status: 'Nouveau' | 'En traitement' | 'Terminé' | 'Annulé';
-  
-  // Customer info
-  clientInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    address: string;
-    city: string;
-  };
-
-  // Order details
-  items: ServiceOrderItem[];
-  totalPrice: number;
-  notes?: string;
-  
-  // Payment info
-  paymentMethod: 'mobile_money' | 'bank_transfer' | 'cash';
-  paymentStatus: 'En attente' | 'Payé' | 'Échoué';
 }

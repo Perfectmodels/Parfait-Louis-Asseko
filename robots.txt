@@ -7,6 +7,7 @@ Disallow: /admin
 Disallow: /login
 Disallow: /profil
 Disallow: /formations
+Disallow: /classroom-debutant
 Disallow: /jury
 Disallow: /enregistrement
 Disallow: /chat

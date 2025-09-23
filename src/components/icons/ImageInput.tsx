@@ -19,7 +19,7 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
             <div className="flex items-center gap-4">
                 <div className="w-24 h-24 flex-shrink-0 bg-black border border-pm-off-white/20 rounded-md flex items-center justify-center">
                     {value ? (
-                        <img src={value} alt="Prévisualisation" className="w-full h-full object-cover rounded-md" loading="lazy" />
+                        <img src={value} alt="Prévisualisation" className="w-full h-full object-cover rounded-md" />
                     ) : (
                         <PhotoIcon className="w-10 h-10 text-pm-off-white/30" />
                     )}

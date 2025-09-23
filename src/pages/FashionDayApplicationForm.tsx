@@ -1,26 +1,24 @@
 
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationRole } from '../types';
-import PublicPageLayout from '../components/PublicPageLayout';
-import { 
-    UserIcon, 
-    EnvelopeIcon, 
-    PhoneIcon, 
-    BriefcaseIcon,
-    ArrowRightIcon,
-    CheckCircleIcon,
-    ExclamationTriangleIcon
-} from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 
 const FashionDayApplicationForm: React.FC = () => {
     const { data, saveData } = useData();
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        name: string;
+        email: string;
+        phone: string;
+        role: FashionDayApplicationRole;
+        message: string;
+    }>({
         name: '',
         email: '',
         phone: '',
-        role: 'Mannequin' as FashionDayApplicationRole,
+        role: 'Mannequin',
         message: ''
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -33,19 +31,18 @@ const FashionDayApplicationForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStatus('loading');
-        setStatusMessage('');
 
-        if (!data || !saveData) {
+        if (!data) {
             setStatus('error');
-            setStatusMessage('Une erreur de configuration empêche l\'envoi. Veuillez nous contacter directement.');
+            setStatusMessage('Erreur: Impossible de charger les données de l\'application.');
             return;
         }
 
         const newApplication: FashionDayApplication = {
+            ...formData,
             id: `pfd-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
-            ...formData,
         };
 
         try {
@@ -53,95 +50,81 @@ const FashionDayApplicationForm: React.FC = () => {
             await saveData({ ...data, fashionDayApplications: updatedApplications });
 
             setStatus('success');
-            setStatusMessage('Votre candidature a été envoyée ! Nous vous remercions de votre intérêt pour le Perfect Fashion Day.');
+            setStatusMessage('Votre candidature a été envoyée ! L\'équipe du Perfect Fashion Day vous recontactera prochainement.');
+            setFormData({ name: '', email: '', phone: '', role: 'Mannequin', message: '' });
+
         } catch (error) {
             setStatus('error');
-            setStatusMessage('Un problème est survenu. Veuillez réessayer ou nous contacter si le problème persiste.');
-            console.error("Fashion Day form submission error:", error);
+            setStatusMessage("Une erreur est survenue lors de l'envoi de votre candidature.");
+            console.error(error);
         }
     };
-
-    if (status === 'success') {
-        return (
-            <PublicPageLayout title="Candidature Reçue" subtitle="">
-                <div className="text-center max-w-2xl mx-auto py-20">
-                    <CheckCircleIcon className="w-24 h-24 text-green-500 mx-auto mb-6" />
-                    <h2 className="text-3xl font-playfair text-pm-gold mb-4">Merci !</h2>
-                    <p className="text-lg text-pm-off-white/80">{statusMessage}</p>
-                    <Link to="/fashion-day" className="inline-flex items-center gap-2 text-pm-gold font-semibold text-lg group mt-8">
-                        <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:scale-110" style={{transform: 'rotate(180deg)'}}/>
-                        Retour à la page Fashion Day
-                    </Link>
-                </div>
-            </PublicPageLayout>
-        );
-    }
-
+    
     return (
-        <PublicPageLayout
-            title="Participer au Fashion Day"
-            subtitle="Mannequins, créateurs, photographes, partenaires... Rejoignez l'événement mode de l'année au Gabon."
-            heroImage={data?.siteImages.fashionDayHero}
-        >
-            <div className="max-w-2xl mx-auto bg-black/30 border border-pm-gold/20 rounded-2xl p-8 md:p-12 shadow-2xl">
-                <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+            <SEO title="Candidature Perfect Fashion Day" description="Postulez pour participer à la prochaine édition du Perfect Fashion Day. Mannequins, stylistes, photographes, partenaires, rejoignez l'aventure." noIndex />
+            <div className="container mx-auto px-6 max-w-2xl">
+                <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Candidature Perfect Fashion Day</h1>
+                <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
+                    Vous souhaitez participer à la prochaine édition ? Remplissez le formulaire ci-dessous.
+                </p>
+                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg">
+                    <FormInput label="Nom Complet ou Nom de la Marque" name="name" value={formData.name} onChange={handleChange} required />
                     <div className="grid md:grid-cols-2 gap-6">
-                        <FormInput icon={UserIcon} name="name" placeholder="Votre nom ou marque" value={formData.name} onChange={handleChange} required />
-                        <FormSelect name="role" value={formData.role} onChange={handleChange}>
-                            <option>Mannequin</option>
-                            <option>Styliste</option>
-                            <option>Photographe</option>
-                            <option>Partenaire</option>
-                            <option>MUA</option>
-                            <option>Autre</option>
-                        </FormSelect>
+                        <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                        <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
                     </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <FormInput icon={EnvelopeIcon} name="email" type="email" placeholder="Adresse Email" value={formData.email} onChange={handleChange} required />
-                        <FormInput icon={PhoneIcon} name="phone" type="tel" placeholder="Téléphone" value={formData.phone} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <textarea
-                            name="message"
-                            value={formData.message}
-                            onChange={handleChange}
-                            rows={5}
-                            className="w-full bg-black/40 border border-pm-gold/30 rounded-xl p-4 text-pm-off-white placeholder:text-pm-off-white/50 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 transition-all"
-                            placeholder="Votre message, lien vers votre portfolio, ou toute information pertinente..."
-                            required
-                        />
-                    </div>
-                    <div className="pt-4">
-                        {statusMessage && (
-                            <div className={`mb-6 flex items-center gap-3 p-4 rounded-lg text-sm border ${status === 'error' ? 'bg-red-900/50 text-red-300 border-red-500/30' : ''}`}>
-                                <ExclamationTriangleIcon className="w-5 h-5" />
-                                {statusMessage}
-                            </div>
-                        )}
-                        <button type="submit" disabled={status === 'loading'} className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-pm-gold text-pm-dark font-bold text-lg rounded-full hover:bg-white transition-all disabled:opacity-60">
+                    <FormSelect label="Je postule en tant que" name="role" value={formData.role} onChange={handleChange} required>
+                        <option value="Mannequin">Mannequin</option>
+                        <option value="Styliste">Styliste / Créateur</option>
+                        <option value="Partenaire">Partenaire / Sponsor</option>
+                        <option value="Photographe">Photographe / Vidéaste</option>
+                        <option value="MUA">Maquilleur(se) / Coiffeur(se) (MUA)</option>
+                        <option value="Autre">Autre (précisez dans le message)</option>
+                    </FormSelect>
+                    <FormTextArea
+                        label="Message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        rows={6}
+                        placeholder="Présentez-vous, décrivez votre projet, ou laissez un lien vers votre portfolio..."
+                        required
+                    />
+                     <div className="pt-4">
+                        <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
                             {status === 'loading' ? 'Envoi en cours...' : 'Envoyer ma candidature'}
-                            <ArrowRightIcon className="w-5 h-5" />
                         </button>
                     </div>
+
+                    {statusMessage && (
+                        <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                            {statusMessage}
+                            {status === 'success' && <Link to="/fashion-day" className="underline ml-2">Retour à la page de l'événement</Link>}
+                        </p>
+                    )}
                 </form>
             </div>
-        </PublicPageLayout>
+        </div>
     );
 };
 
-const FormInput: React.FC<any> = ({ icon: Icon, ...props }) => (
-    <div className="relative">
-        {Icon && <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"><Icon className="w-5 h-5 text-pm-gold/50" /></div>}
-        <input {...props} className={`w-full bg-black/40 border border-pm-gold/30 rounded-full py-3 text-pm-off-white placeholder:text-pm-off-white/50 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 transition-all ${Icon ? 'pl-12 pr-4' : 'px-5'}`} />
+const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
+    <div>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <input {...props} id={props.name} className="admin-input" />
     </div>
 );
-
-const FormSelect: React.FC<any> = ({ children, ...props }) => (
-    <div className="relative">
-        <BriefcaseIcon className="w-5 h-5 text-pm-gold/50 absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none" />
-         <select {...props} className="w-full bg-black/40 border border-pm-gold/30 rounded-full py-3 pl-12 pr-4 text-pm-off-white focus:outline-none focus:ring-2 focus:ring-pm-gold/50 transition-all appearance-none">
-            {children}
-        </select>
+const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode}> = (props) => (
+    <div>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <select {...props} id={props.name} className="admin-input">{props.children}</select>
+    </div>
+);
+const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, rows: number, required?: boolean, placeholder?: string}> = (props) => (
+    <div>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <textarea {...props} id={props.name} className="admin-input admin-textarea" />
     </div>
 );
 
