@@ -78,6 +78,46 @@ const Agency: React.FC = () => {
         keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
         image={siteImages.agencyHistory}
       />
+      {/* Hero Section */}
+      <section className="relative py-20 bg-gradient-to-br from-pm-dark via-black to-pm-dark overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23D4AF37' fill-opacity='0.1'%3E%3Cpath d='M40 0L50 30L80 40L50 50L40 80L30 50L0 40L30 30Z'/%3E%3C/g%3E%3C/svg%3E")`,
+          }} />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+          <h1 className="text-5xl md:text-6xl font-playfair text-pm-gold mb-6">
+            Notre Agence
+          </h1>
+          <p className="text-xl text-pm-off-white/80 max-w-4xl mx-auto mb-8">
+            Depuis 2021, Perfect Models Management redéfinit l'excellence du mannequinat au Gabon. 
+            Notre mission : révéler et valoriser la beauté africaine sur la scène internationale.
+          </p>
+          
+          {/* Agency Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-pm-gold">2021</div>
+              <div className="text-pm-off-white/70">Année de création</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-pm-gold">50+</div>
+              <div className="text-pm-off-white/70">Mannequins</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-pm-gold">100+</div>
+              <div className="text-pm-off-white/70">Projets</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-pm-gold">100%</div>
+              <div className="text-pm-off-white/70">Gabonais</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="page-container space-y-20 lg:space-y-28">
 
         {/* À Propos */}

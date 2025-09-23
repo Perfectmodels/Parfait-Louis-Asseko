@@ -1,5 +1,5 @@
-import firebase from "firebase/compat/app";
-import "firebase/compat/database";
+// Importation modulaire Firebase
+import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
@@ -13,8 +13,8 @@ const firebaseConfig = {
     measurementId: "G-8LFX4M3PGS"
 };
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
+// Initialisation de Firebase
+const app = initializeApp(firebaseConfig);
 
-// Get a reference to the database service
+// Exportation de la base de données
 export const db = getDatabase(app);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { Model, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
 
@@ -110,6 +110,12 @@ const ModelDashboard: React.FC = () => {
                              <UserIcon className="w-8 h-8 text-pm-gold mb-3" />
                             <h2 className="text-xl font-playfair text-pm-gold mb-1">Voir mon Portfolio Public</h2>
                             <p className="text-sm text-pm-off-white/70">Consultez votre profil public.</p>
+                        </Link>
+                        
+                        <Link to="/messaging" className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
+                             <ChatBubbleLeftRightIcon className="w-8 h-8 text-pm-gold mb-3" />
+                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Messagerie Interne</h2>
+                            <p className="text-sm text-pm-off-white/70">Communiquez avec l'administration.</p>
                         </Link>
                     </aside>
                     
