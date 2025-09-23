@@ -77,9 +77,9 @@ const EnhancedModelCard: React.FC<EnhancedModelCardProps> = ({ model, index = 0 
               </div>
             )}
             
-            {model.bio && (
+            {model.experience && (
               <div className="text-sm text-pm-off-white/60 line-clamp-2">
-                {model.bio}
+                {model.experience}
               </div>
             )}
           </div>

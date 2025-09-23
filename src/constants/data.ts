@@ -1,12 +1,11 @@
 // FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
 };
 
 export const navLinks: NavLink[] = [
-  { path: '/', label: 'Accueil', inFooter: true },
   { path: '/agence', label: 'Agence', inFooter: true },
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
@@ -123,7 +122,20 @@ export const models: Model[] = [
         },
     },
     {
-      
+        id: 'yann-athlete',
+        name: 'Yann Athlète',
+        username: 'Man-PMMH01',
+        password: 'yann2024',
+        level: 'Pro',
+        height: '1m85',
+        gender: 'Homme',
+        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        isPublic: true,
+        portfolioImages: [
+            'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+            'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+            'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+        ],
         distinctions: [
             { name: "Podiums Masculins", titles: ["Mannequin Homme de l'Année - PFD Awards 2025", "Prix de l'Élégance Masculine - Libreville Fashion Week"] }
         ],

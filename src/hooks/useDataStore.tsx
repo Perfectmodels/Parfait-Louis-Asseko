@@ -1,22 +1,97 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import {
-    Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction,
-    Testimonial, ContactInfo, SiteImages, Partner, ApiKeys,
-    CastingApplication, FashionDayApplication, NewsItem, ForumThread,
-    ForumReply, Article, Module, ArticleComment, RecoveryRequest,
-    JuryMember, RegistrationStaff, BookingRequest, ContactMessage,
-    BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief,
-    NavLink, EmailTemplate, EmailCampaign, EmailStats
-} from '../types';
 
 import * as initialDataImports from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
 import { beginnerCourseData as initialBeginnerCourseData } from '../components/beginnerCourseData';
 
-export interface AppData { /* identique à ta version précédente */ }
+export interface AppData {
+    // Données de base
+    models: any[];
+    beginnerStudents: any[];
+    juryMembers: any[];
+    registrationStaff: any[];
+    
+    // Applications et candidatures
+    castingApplications: any[];
+    fashionDayApplications: any[];
+    recoveryRequests: any[];
+    bookingRequests: any[];
+    contactMessages: any[];
+    
+    // Contenu et médias
+    articles: any[];
+    newsItems: any[];
+    testimonials: any[];
+    agencyServices: any[];
+    fashionDayEvents: any[];
+    faqData: any[];
+    siteImages: Record<string, string>;
+    
+    // Configuration du site
+    siteConfig: any;
+    navLinks: any[];
+    socialLinks: any;
+    contactInfo: any;
+    agencyInfo: any;
+    modelDistinctions: any[];
+    agencyTimeline: any[];
+    agencyAchievements: any[];
+    agencyPartners: any[];
+    
+    // Système de messagerie
+    internalMessages: any[];
+    conversations: any[];
+    
+    // Système de paiement
+    paymentSubmissions: any[];
+    accountingTransactions: any[];
+    monthlyPayments: any[];
+    
+    // Gestion des médias
+    albums: any[];
+    teamMembers: any[];
+    
+    // Rapports et notifications
+    financialReports: any[];
+    notifications: any[];
+    
+    // Gestion du contenu
+    pageContents: any[];
+    contentPages: any[];
+    
+    // Gestion des utilisateurs
+    users: any[];
+    technicalSettings: any[];
+    
+    // Système d'emails
+    emailTemplates: any[];
+    emailCampaigns: any[];
+    emailStats: any;
+    
+    // Gestion des absences et sessions
+    absenceRequests: any[];
+    photoSessions: any[];
+    castingSessions: any[];
+    
+    // Données de cours
+    courseData: any[];
+    beginnerCourseData: any[];
+    
+    // Clés API
+    apiKeys: any;
+    
+    // Forum et commentaires
+    forumThreads: any[];
+    forumReplies: any[];
+    articleComments: any[];
+    
+    // Autres
+    absences: any[];
+    photoshootBriefs: any[];
+}
 
 export const useDataStore = () => {
     const [data, setData] = useState<AppData | null>(null);
@@ -28,12 +103,12 @@ export const useDataStore = () => {
     const mergeArrayData = <T,>(dbArray: T[] | undefined, initialArray: T[]) =>
         dbArray && dbArray.length > 0 ? dbArray : initialArray;
 
-    // === Memoized initial data ===
-    const initialData: AppData = useMemo(() => ({
+    // === Fonction pure pour les données initiales ===
+    const getInitialData = (): AppData => ({
         models: initialDataImports.models,
         siteConfig: initialDataImports.siteConfig,
         contactInfo: initialDataImports.contactInfo,
-        siteImages: initialDataImports.siteImages,
+        siteImages: initialDataImports.siteImages as any,
         apiKeys: initialDataImports.apiKeys,
         castingApplications: initialDataImports.castingApplications,
         fashionDayApplications: initialDataImports.fashionDayApplications,
@@ -69,8 +144,23 @@ export const useDataStore = () => {
         emailStats: {
             totalSent: 0, totalDelivered: 0, totalOpened: 0, totalClicked: 0,
             totalBounced: 0, totalBlocked: 0, openRate: 0, clickRate: 0, bounceRate: 0
-        }
-    }), []);
+        },
+        absenceRequests: [],
+        photoSessions: [],
+        paymentSubmissions: [],
+        pageContents: [],
+        internalMessages: [],
+        castingSessions: [],
+        conversations: [],
+        accountingTransactions: [],
+        albums: [],
+        teamMembers: [],
+        financialReports: [],
+        notifications: [],
+        contentPages: [],
+        users: [],
+        technicalSettings: []
+    });
 
     const seedDatabase = useCallback(async (data: AppData) => {
         try {
@@ -91,38 +181,39 @@ export const useDataStore = () => {
                 const dbData: Partial<AppData> | null = snapshot.val();
 
                 if (dbData) {
-                    // === Memoized merged data ===
-                    const mergedData: AppData = useMemo(() => ({
+                    // === Données fusionnées ===
+                    const initialData = getInitialData();
+                    const mergedData: AppData = {
                         ...initialData,
                         ...dbData,
-                        models: mergeArrayData(dbData.models, initialData.models),
-                        articles: mergeArrayData(dbData.articles, initialData.articles),
-                        courseData: mergeArrayData(dbData.courseData, initialData.courseData),
-                        beginnerCourseData: mergeArrayData(dbData.beginnerCourseData, initialData.beginnerCourseData),
-                        newsItems: mergeArrayData(dbData.newsItems, initialData.newsItems),
-                        testimonials: mergeArrayData(dbData.testimonials, initialData.testimonials),
-                        agencyServices: mergeArrayData(dbData.agencyServices, initialData.agencyServices),
-                        fashionDayEvents: mergeArrayData(dbData.fashionDayEvents, initialData.fashionDayEvents),
-                        faqData: mergeArrayData(dbData.faqData, initialData.faqData),
+                        models: mergeArrayData((dbData as any).models, initialData.models),
+                        articles: mergeArrayData((dbData as any).articles, initialData.articles),
+                        courseData: mergeArrayData((dbData as any).courseData, initialData.courseData),
+                        beginnerCourseData: mergeArrayData((dbData as any).beginnerCourseData, initialData.beginnerCourseData),
+                        newsItems: mergeArrayData((dbData as any).newsItems, initialData.newsItems),
+                        testimonials: mergeArrayData((dbData as any).testimonials, initialData.testimonials),
+                        agencyServices: mergeArrayData((dbData as any).agencyServices, initialData.agencyServices),
+                        fashionDayEvents: mergeArrayData((dbData as any).fashionDayEvents, initialData.fashionDayEvents),
+                        faqData: mergeArrayData((dbData as any).faqData, initialData.faqData),
                         navLinks: initialData.navLinks
-                    }), [dbData, initialData]);
+                    };
 
                     setData(mergedData);
                 } else {
-                    seedDatabase(initialData);
+                    seedDatabase(getInitialData());
                 }
 
                 setIsInitialized(true);
             },
             (error) => {
                 handleError("Firebase read", error);
-                setData(initialData);
+                setData(getInitialData());
                 setIsInitialized(true);
             }
         );
 
         return () => unsubscribe();
-    }, [initialData, seedDatabase]);
+    }, [seedDatabase]);
 
     const saveData = useCallback(async (newData: AppData) => {
         try {

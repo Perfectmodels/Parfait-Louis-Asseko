@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import ModelCard from '../components/ModelCard';
 import EnhancedModelCard from '../components/EnhancedModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';

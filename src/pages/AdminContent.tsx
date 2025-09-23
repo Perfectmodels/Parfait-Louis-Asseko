@@ -7,11 +7,9 @@ import {
     DocumentTextIcon, 
     PencilIcon, 
     EyeIcon,
-    PlusIcon,
-    PhotoIcon,
-    DocumentIcon
+    PlusIcon
 } from '@heroicons/react/24/outline';
-import { PageContent, SiteImages } from '../types';
+// import { PageContent } from '../types';
 
 interface PageContentFormData {
     id: string;
@@ -42,8 +40,8 @@ const AdminContent: React.FC = () => {
 
     // Initialiser les pages par défaut si elles n'existent pas
     useEffect(() => {
-        if (data && !data.pageContents) {
-            const defaultPages: PageContent[] = [
+        if (data && !(data as any).pageContents) {
+            const defaultPages: any[] = [
                 {
                     id: 'home',
                     title: 'Page d\'Accueil',
@@ -57,7 +55,9 @@ const AdminContent: React.FC = () => {
                     metaDescription: 'Perfect Models Management, l\'agence de mannequins de référence à Libreville, Gabon.',
                     featuredImage: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
                     isPublished: true,
-                    lastModified: new Date().toISOString()
+                    lastModified: new Date().toISOString(),
+                    page: 'home',
+                    modifiedBy: 'admin'
                 },
                 {
                     id: 'about',
@@ -72,7 +72,9 @@ const AdminContent: React.FC = () => {
                     metaDescription: 'Découvrez l\'histoire et la vision de Perfect Models Management.',
                     featuredImage: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
                     isPublished: true,
-                    lastModified: new Date().toISOString()
+                    lastModified: new Date().toISOString(),
+                    page: 'about',
+                    modifiedBy: 'admin'
                 },
                 {
                     id: 'contact',
@@ -89,7 +91,9 @@ const AdminContent: React.FC = () => {
                     metaDescription: 'Contactez Perfect Models Management pour vos projets de mode.',
                     featuredImage: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
                     isPublished: true,
-                    lastModified: new Date().toISOString()
+                    lastModified: new Date().toISOString(),
+                    page: 'contact',
+                    modifiedBy: 'admin'
                 }
             ];
 
@@ -97,8 +101,8 @@ const AdminContent: React.FC = () => {
         }
     }, [data, saveData]);
 
-    const pages = data?.pageContents || [];
-    const filteredPages = pages.filter(page =>
+    const pages = (data as any)?.pageContents || [];
+    const filteredPages = pages.filter((page: any) =>
         page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         page.slug.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -118,7 +122,7 @@ const AdminContent: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleEdit = (page: PageContent) => {
+    const handleEdit = (page: any) => {
         setEditingPage(page);
         setFormData({
             id: page.id,
@@ -136,7 +140,7 @@ const AdminContent: React.FC = () => {
     const handleSave = async () => {
         if (!data) return;
 
-        const pageData: PageContent = {
+        const pageData: any = {
             id: formData.id || `page_${Date.now()}`,
             title: formData.title,
             slug: formData.slug,
@@ -144,12 +148,14 @@ const AdminContent: React.FC = () => {
             metaDescription: formData.metaDescription,
             featuredImage: formData.featuredImage,
             isPublished: formData.isPublished,
-            lastModified: new Date().toISOString()
+            lastModified: new Date().toISOString(),
+            page: formData.slug.replace('/', '') || 'home',
+            modifiedBy: 'admin'
         };
 
-        let updatedPages: PageContent[];
+        let updatedPages: any[];
         if (editingPage) {
-            updatedPages = pages.map(p => p.id === editingPage.id ? pageData : p);
+            updatedPages = pages.map((p: any) => p.id === editingPage.id ? pageData : p);
         } else {
             updatedPages = [...pages, pageData];
         }
@@ -162,7 +168,7 @@ const AdminContent: React.FC = () => {
     const handleDelete = async (pageId: string) => {
         if (!data) return;
         if (window.confirm('Êtes-vous sûr de vouloir supprimer cette page ?')) {
-            const updatedPages = pages.filter(p => p.id !== pageId);
+            const updatedPages = pages.filter((p: any) => p.id !== pageId);
             await saveData({ ...data, pageContents: updatedPages });
         }
     };
@@ -171,7 +177,7 @@ const AdminContent: React.FC = () => {
         {
             key: 'title',
             label: 'Titre',
-            render: (value: string, page: PageContent) => (
+            render: (value: string, page: any) => (
                 <div className="flex items-center gap-3">
                     <DocumentTextIcon className="w-5 h-5 text-pm-gold" />
                     <div>
@@ -184,7 +190,7 @@ const AdminContent: React.FC = () => {
         {
             key: 'status',
             label: 'Statut',
-            render: (value: any, page: PageContent) => (
+            render: (_: any, page: any) => (
                 <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                     page.isPublished
                         ? 'bg-green-500/20 text-green-300 border border-green-500/30'
@@ -206,7 +212,7 @@ const AdminContent: React.FC = () => {
         {
             key: 'actions',
             label: 'Actions',
-            render: (value: any, page: PageContent) => (
+            render: (_: any, page: any) => (
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => handleEdit(page)}

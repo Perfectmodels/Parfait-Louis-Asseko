@@ -55,15 +55,29 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((response) => {
-        const fetchPromise = fetch(event.request).then((networkResponse) => {
-          // Check if we received a valid response and if the request is for an HTTP/HTTPS scheme
-          if (networkResponse && networkResponse.ok && (event.request.url.startsWith('http:') || event.request.url.startsWith('https:'))) {
-            cache.put(event.request, networkResponse.clone());
-          }
-          return networkResponse;
-        });
+        if (response) {
+          return response;
+        }
         
-        return response || fetchPromise;
+        // Only fetch if it's a safe request and not a development server request
+        if ((event.request.url.startsWith('http:') || event.request.url.startsWith('https:')) && 
+            !event.request.url.includes('localhost') && 
+            !event.request.url.includes('127.0.0.1')) {
+          return fetch(event.request).then((networkResponse) => {
+            // Check if we received a valid response
+            if (networkResponse && networkResponse.ok) {
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          }).catch((error) => {
+            console.log('SW fetch failed:', error);
+            // Return a fallback response if fetch fails
+            return new Response('Network error', { status: 408, statusText: 'Request Timeout' });
+          });
+        }
+        
+        // Return a fallback for non-HTTP requests
+        return new Response('Invalid request', { status: 400, statusText: 'Bad Request' });
       });
     })
   );

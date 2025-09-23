@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import TestimonialCarousel from '../components/TestimonialCarousel';
 import HeroSection from '../components/HeroSection';
 import FeaturesSection from '../components/FeaturesSection';
 import TestimonialsSection from '../components/TestimonialsSection';
@@ -10,7 +9,6 @@ import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
 import { ApiKeys, NewsItem } from '../types';
-import CountdownTimer from '../components/CountdownTimer';
 import { ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
 
@@ -245,7 +243,7 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
 
-  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, newsItems, apiKeys } = data;
+  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, agencyServices, newsItems, apiKeys } = data;
   const publicModels = models.filter(m => m.isPublic).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
   

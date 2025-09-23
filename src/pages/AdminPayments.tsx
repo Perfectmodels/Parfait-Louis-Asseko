@@ -10,9 +10,6 @@ import {
     XCircleIcon, 
     ClockIcon,
     EyeIcon,
-    PencilIcon,
-    TrashIcon,
-    PlusIcon,
     FunnelIcon
 } from '@heroicons/react/24/outline';
 import { PaymentSubmission } from '../types';
@@ -23,7 +20,6 @@ const AdminPayments: React.FC = () => {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [typeFilter, setTypeFilter] = useState<string>('all');
     const [selectedPayment, setSelectedPayment] = useState<PaymentSubmission | null>(null);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     const payments = useMemo(() => {
         return [...(data?.paymentSubmissions || [])].sort((a, b) => 
@@ -59,7 +55,7 @@ const AdminPayments: React.FC = () => {
             key: 'modelName',
             label: 'Mannequin',
             sortable: true,
-            render: (value: any, payment: PaymentSubmission) => (
+            render: (_: any, payment: PaymentSubmission) => (
                 <div>
                     <div className="font-semibold text-pm-off-white">{payment.modelName}</div>
                     <div className="text-sm text-pm-off-white/60">ID: {payment.modelId}</div>
@@ -69,7 +65,7 @@ const AdminPayments: React.FC = () => {
         {
             key: 'type',
             label: 'Type',
-            render: (value: any, payment: PaymentSubmission) => (
+            render: (_: any, payment: PaymentSubmission) => (
                 <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                     payment.type === 'cotisation' 
                         ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
@@ -83,7 +79,7 @@ const AdminPayments: React.FC = () => {
             key: 'amount',
             label: 'Montant',
             sortable: true,
-            render: (value: any, payment: PaymentSubmission) => (
+            render: (_: any, payment: PaymentSubmission) => (
                 <div className="text-pm-gold font-semibold">
                     {payment.amount.toLocaleString()} FCFA
                 </div>
@@ -92,14 +88,14 @@ const AdminPayments: React.FC = () => {
         {
             key: 'method',
             label: 'Méthode',
-            render: (value: any, payment: PaymentSubmission) => (
+            render: (_: any, payment: PaymentSubmission) => (
                 <div className="text-pm-off-white/70">{payment.method}</div>
             )
         },
         {
             key: 'status',
             label: 'Statut',
-            render: (value: any, payment: PaymentSubmission) => {
+            render: (_: any, payment: PaymentSubmission) => {
                 const statusColors = {
                     'En attente': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
                     'Approuvé': 'bg-green-500/20 text-green-300 border-green-500/30',
@@ -116,7 +112,7 @@ const AdminPayments: React.FC = () => {
             key: 'submissionDate',
             label: 'Date de soumission',
             sortable: true,
-            render: (value: any, payment: PaymentSubmission) => (
+            render: (_: any, payment: PaymentSubmission) => (
                 <div className="text-sm text-pm-off-white/70">
                     {new Date(payment.submissionDate).toLocaleDateString('fr-FR')}
                 </div>
@@ -125,7 +121,7 @@ const AdminPayments: React.FC = () => {
         {
             key: 'actions',
             label: 'Actions',
-            render: (value: any, payment: PaymentSubmission) => (
+            render: (_: any, payment: PaymentSubmission) => (
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setSelectedPayment(payment)}

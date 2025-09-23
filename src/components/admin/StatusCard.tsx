@@ -1,10 +1,7 @@
 import React from 'react';
 import { getStatusColor, getStatusText } from '../../utils/status';
 import { 
-    CheckCircleIcon, 
-    ExclamationTriangleIcon, 
-    CogIcon,
-    XCircleIcon
+    CheckCircleIcon
 } from '@heroicons/react/24/outline';
 
 interface StatusCardProps {
@@ -27,19 +24,7 @@ const StatusCard: React.FC<StatusCardProps> = ({
             <div className="flex items-center justify-between mb-3">
                 <h3 className="text-lg font-semibold text-pm-off-white">{title}</h3>
                 <div className={`p-2 rounded-full ${getStatusColor(status)}`}>
-                    {icon || (() => {
-                        const iconName = getStatusIcon(status);
-                        switch (iconName) {
-                            case 'CheckCircleIcon':
-                                return <CheckCircleIcon className="w-5 h-5" />;
-                            case 'ExclamationTriangleIcon':
-                                return <ExclamationTriangleIcon className="w-5 h-5" />;
-                            case 'XCircleIcon':
-                                return <XCircleIcon className="w-5 h-5" />;
-                            default:
-                                return <CogIcon className="w-5 h-5" />;
-                        }
-                    })()}
+                    {icon || <CheckCircleIcon className="w-5 h-5" />}
                 </div>
             </div>
             {description ? (

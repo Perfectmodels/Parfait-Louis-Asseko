@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import AdminCard from '../components/admin/AdminCard';
 import AdminStats from '../components/admin/AdminStats';
@@ -6,7 +6,7 @@ import StatsigDebug from '../components/admin/StatsigDebug';
 import { 
     UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
-    BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
+    BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, EnvelopeIcon,
     ClipboardDocumentCheckIcon, UserGroupIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
     PhotoIcon, ChartBarIcon, DocumentTextIcon, CogIcon
 } from '@heroicons/react/24/outline';
@@ -14,7 +14,6 @@ import { useData } from '../contexts/DataContext';
 
 // ---- Types ----
 type AdminTab = 'dashboard' | 'talents' | 'content' | 'communication' | 'finance' | 'analytics';
-interface ActiveUser { name: string; role: string; loginTime: number; }
 
 // ---- Utils ----
 
@@ -22,28 +21,28 @@ interface ActiveUser { name: string; role: string; loginTime: number; }
 const Admin: React.FC = () => {
     const { data } = useData();
     const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
-    const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
+    // const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
 
     // ---- Utilisateurs actifs ----
-    useEffect(() => {
-        const refreshActivity = () => {
-            const now = Date.now();
-            const fifteenMin = 15 * 60 * 1000;
-            const usersJSON = localStorage.getItem('pmm_active_users');
-            const users: ActiveUser[] = usersJSON ? JSON.parse(usersJSON) : [];
-            setActiveUsers(users.filter(u => now - u.loginTime < fifteenMin));
-        };
-        refreshActivity();
-        const interval = setInterval(refreshActivity, 5000);
-        return () => clearInterval(interval);
-    }, []);
+    // useEffect(() => {
+    //     const refreshActivity = () => {
+    //         const now = Date.now();
+    //         const fifteenMin = 15 * 60 * 1000;
+    //         const usersJSON = localStorage.getItem('pmm_active_users');
+    //         const users: ActiveUser[] = usersJSON ? JSON.parse(usersJSON) : [];
+    //         setActiveUsers(users.filter(u => now - u.loginTime < fifteenMin));
+    //     };
+    //     refreshActivity();
+    //     const interval = setInterval(refreshActivity, 5000);
+    //     return () => clearInterval(interval);
+    // }, []);
 
     // ---- Comptage notifications ----
-    const newCastingApps = useMemo(() => data?.castingApplications?.filter(a => a.status === 'Nouveau').length || 0, [data]);
-    const newFashionDayApps = useMemo(() => data?.fashionDayApplications?.filter(a => a.status === 'Nouveau').length || 0, [data]);
-    const newRecoveryRequests = useMemo(() => data?.recoveryRequests?.filter(a => a.status === 'Nouveau').length || 0, [data]);
-    const newBookingRequests = useMemo(() => data?.bookingRequests?.filter(a => a.status === 'Nouveau').length || 0, [data]);
-    const newMessages = useMemo(() => data?.contactMessages?.filter(a => a.status === 'Nouveau').length || 0, [data]);
+    const newCastingApps = useMemo(() => (data as any)?.castingApplications?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
+    const newFashionDayApps = useMemo(() => (data as any)?.fashionDayApplications?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
+    const newRecoveryRequests = useMemo(() => (data as any)?.recoveryRequests?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
+    const newBookingRequests = useMemo(() => (data as any)?.bookingRequests?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
+    const newMessages = useMemo(() => (data as any)?.contactMessages?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
 
     const tabs: { id: AdminTab; label: string; icon: React.ElementType }[] = [
         { id: 'dashboard', label: 'Dashboard', icon: PresentationChartLineIcon },
@@ -55,10 +54,10 @@ const Admin: React.FC = () => {
     ];
 
     // ---- Statistiques ----
-    const totalModels = data?.models?.length || 0;
-    const totalArticles = data?.articles?.length || 0;
-    const totalCastingApps = data?.castingApplications?.length || 0;
-    const totalRevenue = data?.monthlyPayments?.reduce((sum, payment) => sum + payment.amount, 0) || 0;
+    const totalModels = (data as any)?.models?.length || 0;
+    const totalArticles = (data as any)?.articles?.length || 0;
+    const totalCastingApps = (data as any)?.castingApplications?.length || 0;
+    const totalRevenue = (data as any)?.monthlyPayments?.reduce((sum: any, payment: any) => sum + payment.amount, 0) || 0;
 
     return (
         <AdminLayout 

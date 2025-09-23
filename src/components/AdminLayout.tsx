@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import SEO from './SEO';
 import { 
     HomeIcon, ArrowRightOnRectangleIcon, MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
+import { useAuth } from '../hooks/useAuth';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -23,14 +24,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
     showSearch = false,
     onSearch 
 }) => {
-    const location = useLocation();
-    const navigate = useNavigate();
     const { data } = useData();
+    const { logout } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleLogout = () => {
-        sessionStorage.clear();
-        navigate('/login');
+        logout();
     };
 
     const handleSearch = (e: React.FormEvent) => {
@@ -41,11 +40,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
     };
 
     // Notifications count
-    const newCastingApps = data?.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newFashionDayApps = data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newRecoveryRequests = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
-    const newBookingRequests = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
-    const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
+    const newCastingApps = (data as any)?.castingApplications?.filter((app: any) => app.status === 'Nouveau').length || 0;
+    const newFashionDayApps = (data as any)?.fashionDayApplications?.filter((app: any) => app.status === 'Nouveau').length || 0;
+    const newRecoveryRequests = (data as any)?.recoveryRequests?.filter((req: any) => req.status === 'Nouveau').length || 0;
+    const newBookingRequests = (data as any)?.bookingRequests?.filter((req: any) => req.status === 'Nouveau').length || 0;
+    const newMessages = (data as any)?.contactMessages?.filter((msg: any) => msg.status === 'Nouveau').length || 0;
     const totalNotifications = newCastingApps + newFashionDayApps + newRecoveryRequests + newBookingRequests + newMessages;
 
     return (

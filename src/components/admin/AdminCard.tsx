@@ -36,19 +36,6 @@ const AdminCard: React.FC<AdminCardProps> = ({
         pink: 'from-pink-500 to-pink-400 hover:from-pink-400 hover:to-pink-500'
     };
 
-    const iconColorClasses = {
-        gold: 'text-pm-gold',
-        blue: 'text-blue-400',
-        green: 'text-green-400',
-        purple: 'text-purple-400',
-        red: 'text-red-400',
-        orange: 'text-orange-400',
-        yellow: 'text-yellow-400',
-        indigo: 'text-indigo-400',
-        teal: 'text-teal-400',
-        gray: 'text-gray-400',
-        pink: 'text-pink-400'
-    };
 
     const cardContent = (
         <div className={`group relative bg-gradient-to-br from-black/50 to-black/30 border border-pm-gold/20 rounded-2xl p-6 transition-all duration-300 hover:border-pm-gold/40 hover:scale-105 hover:shadow-lg hover:shadow-pm-gold/25 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
