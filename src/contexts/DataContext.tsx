@@ -2,19 +2,17 @@
 import React, { createContext, useContext } from 'react';
 import { useDataStore, AppData } from '../hooks/useDataStore';
 
-// Le type inclut maintenant toutes les valeurs et fonctions retournées par useDataStore
-interface DataContextType extends ReturnType<typeof useDataStore> {}
+interface DataContextType {
+  data: AppData | null;
+  saveData: (newData: AppData) => void;
+  isInitialized: boolean;
+}
 
 const DataContext = createContext<DataContextType | null>(null);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const store = useDataStore();
-
-  return (
-    <DataContext.Provider value={store}>
-      {children}
-    </DataContext.Provider>
-  );
+  return <DataContext.Provider value={store}>{children}</DataContext.Provider>;
 };
 
 export const useData = (): DataContextType => {

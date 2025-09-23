@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Model, ModelDistinction } from '../types';
-import ImageUpload from './ImageUpload';
-import MultipleImageUpload from './MultipleImageUpload';
+import ImageInput from './icons/ImageInput';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
@@ -49,6 +48,19 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
         }));
     };
 
+    const handlePortfolioImagesChange = (index: number, value: string) => {
+        const newImages = [...(formData.portfolioImages || [])];
+        newImages[index] = value;
+        setFormData(prev => ({ ...prev, portfolioImages: newImages }));
+    };
+
+    const handleAddPortfolioImage = () => {
+        setFormData(prev => ({ ...prev, portfolioImages: [...(prev.portfolioImages || []), ''] }));
+    };
+
+    const handleRemovePortfolioImage = (index: number) => {
+        setFormData(prev => ({ ...prev, portfolioImages: (prev.portfolioImages || []).filter((_, i) => i !== index) }));
+    };
 
     const handleImageChange = (value: string) => {
         setFormData(prev => ({ ...prev, imageUrl: value }));
@@ -81,11 +93,15 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
                 
                 {isAdmin && (
-                    <Section title="Accès & Visibilité (Admin)">
+                    <Section title="Accès, Niveau & Visibilité (Admin)">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormInput label="Identifiant (Matricule)" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
                             <FormInput label="Mot de passe" name="password" value={formData.password} onChange={handleChange} />
                         </div>
+                        <FormSelect label="Niveau" name="level" value={formData.level || 'Débutant'} onChange={handleChange}>
+                            <option value="Débutant">Débutant</option>
+                            <option value="Pro">Pro</option>
+                        </FormSelect>
                         <div className="flex items-center gap-3 pt-2">
                             <input 
                                 type="checkbox"
@@ -111,14 +127,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
 
                 <Section title="Physique & Mensurations">
-                    <div>
-                        <label className="admin-label">Photo Principale</label>
-                        <ImageUpload 
-                            currentImage={formData.imageUrl}
-                            onImageUploaded={handleImageChange}
-                            placeholder="Cliquez pour uploader une photo de profil"
-                        />
-                    </div>
+                    <ImageInput label="Photo Principale" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementChange} />
@@ -169,45 +178,34 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                         </div>
                     )}
                     <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="admin-label">Expérience</label>
-                            {/* AI Assistant removed */}
-                        </div>
-                        <textarea
-                            name="experience"
-                            value={formData.experience}
-                            onChange={handleChange}
-                            disabled={!isAdmin}
-                            rows={5}
-                            className="admin-input"
-                            placeholder="Décrivez l'expérience professionnelle du mannequin..."
-                        />
-                    </div>
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="admin-label">Parcours</label>
-                            {/* AI Assistant removed */}
-                        </div>
-                        <textarea
-                            name="journey"
-                            value={formData.journey}
-                            onChange={handleChange}
-                            disabled={!isAdmin}
-                            rows={5}
-                            className="admin-input"
-                            placeholder="Décrivez le parcours et l'évolution du mannequin..."
-                        />
-                    </div>
+                    <FormTextArea 
+                        label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5}
+                    />
+                    <FormTextArea 
+                        label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} 
+                    />
                 </Section>
                 
                 <Section title="Photos du Portfolio">
-                    <MultipleImageUpload
-                        images={formData.portfolioImages || []}
-                        onImagesChange={(newImages) => setFormData(prev => ({ ...prev, portfolioImages: newImages }))}
-                        maxImages={10}
-                        placeholder="Ajouter des photos au portfolio"
-                    />
+                    <div className="space-y-4">
+                        {(formData.portfolioImages || []).map((url, index) => (
+                            <div key={index} className="flex items-end gap-2">
+                                <div className="flex-grow">
+                                    <ImageInput 
+                                        label={`Photo ${index + 1}`} 
+                                        value={url} 
+                                        onChange={(value) => handlePortfolioImagesChange(index, value)} 
+                                    />
+                                </div>
+                                <button type="button" onClick={() => handleRemovePortfolioImage(index)} className="p-2 text-red-500/80 hover:text-red-500 bg-black rounded-md border border-pm-off-white/10 mb-2">
+                                    <TrashIcon className="w-5 h-5" />
+                                </button>
+                            </div>
+                        ))}
+                        <button type="button" onClick={handleAddPortfolioImage} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-2">
+                            <PlusIcon className="w-4 h-4" /> Ajouter une photo
+                        </button>
+                    </div>
                 </Section>
 
                 <div className="flex justify-end gap-4 pt-4">
