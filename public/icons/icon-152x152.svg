@@ -1,0 +1,24 @@
+
+<svg width="152" height="152" viewBox="0 0 152 152" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8941F;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="152" height="152" rx="30.400000000000002" fill="#111111"/>
+  
+  <!-- Main circle -->
+  <circle cx="76" cy="76" r="53.199999999999996" fill="url(#goldGradient)" stroke="#D4AF37" stroke-width="3.04"/>
+  
+  <!-- Letter P -->
+  <text x="76" y="91.2" font-family="Arial, sans-serif" font-size="60.800000000000004" font-weight="bold" text-anchor="middle" fill="#111111">P</text>
+  
+  <!-- Decorative elements -->
+  <circle cx="38" cy="38" r="7.6000000000000005" fill="#D4AF37" opacity="0.6"/>
+  <circle cx="114" cy="38" r="7.6000000000000005" fill="#D4AF37" opacity="0.6"/>
+  <circle cx="38" cy="114" r="7.6000000000000005" fill="#D4AF37" opacity="0.6"/>
+  <circle cx="114" cy="114" r="7.6000000000000005" fill="#D4AF37" opacity="0.6"/>
+</svg>

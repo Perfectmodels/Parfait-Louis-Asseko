@@ -1,105 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import imageUploadService from '../../services/imageUploadService';
 
 interface ImageUploadProps {
-    onImageSelect: (imageUrl: string) => void;
-    currentImage?: string;
-    className?: string;
+  onImageSelect: (file: File) => void;
+  onImageRemove?: () => void;
+  currentImage?: string;
+  className?: string;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({
-    onImageSelect,
-    currentImage,
-    className = ""
+const ImageUpload: React.FC<ImageUploadProps> = ({ 
+  onImageSelect, 
+  onImageRemove, 
+  currentImage,
+  className = '' 
 }) => {
-    const [isUploading, setIsUploading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
+  const handleFileSelect = (file: File) => {
+    if (file && file.type.startsWith('image/')) {
+      onImageSelect(file);
+    }
+  };
 
-        setIsUploading(true);
-        setError(null);
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileSelect(files[0]);
+    }
+  };
 
-        try {
-            // Redimensionner l'image si nécessaire (optionnel)
-            const resizedFile = await imageUploadService.resizeImage(file);
-            
-            // Upload vers ImgBB
-            const result = await imageUploadService.uploadImage(resizedFile);
-            
-            if (result.success && result.imageUrl) {
-                onImageSelect(result.imageUrl);
-            } else {
-                setError(result.error || 'Erreur lors de l\'upload de l\'image');
-            }
-        } catch (err) {
-            setError('Erreur lors de l\'upload de l\'image');
-            console.error('Upload error:', err);
-        } finally {
-            setIsUploading(false);
-        }
-    };
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileSelect(files[0]);
+    }
+  };
 
-    const removeImage = () => {
-        onImageSelect('');
-    };
-
-    return (
-        <div className={`space-y-4 ${className}`}>
-            {currentImage ? (
-                <div className="relative">
-                    <img
-                        src={currentImage}
-                        alt="Image sélectionnée"
-                        className="w-full h-48 object-cover rounded-lg border border-pm-gold/20"
-                    />
-                    <button
-                        type="button"
-                        onClick={removeImage}
-                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200"
-                    >
-                        <XMarkIcon className="w-4 h-4" />
-                    </button>
-                </div>
-            ) : (
-                <div className="border-2 border-dashed border-pm-gold/30 rounded-lg p-8 text-center hover:border-pm-gold/50 transition-colors duration-200">
-                    <PhotoIcon className="w-12 h-12 text-pm-gold/50 mx-auto mb-4" />
-                    <p className="text-pm-off-white/70 mb-4">
-                        {isUploading ? 'Upload en cours...' : 'Cliquez pour sélectionner une image'}
-                    </p>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        disabled={isUploading}
-                        className="hidden"
-                        id="image-upload"
-                    />
-                    <label
-                        htmlFor="image-upload"
-                        className={`inline-block px-6 py-2 bg-pm-gold text-pm-dark font-medium rounded-lg cursor-pointer hover:bg-yellow-400 transition-colors duration-200 ${
-                            isUploading ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                    >
-                        {isUploading ? 'Upload...' : 'Sélectionner une image'}
-                    </label>
-                </div>
+  return (
+    <div className={`relative ${className}`}>
+      <div
+        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          isDragging
+            ? 'border-pm-gold bg-pm-gold/10'
+            : 'border-pm-gold/30 hover:border-pm-gold/50'
+        }`}
+        onDrop={handleDrop}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
+        onDragLeave={() => setIsDragging(false)}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        {currentImage ? (
+          <div className="relative">
+            <img
+              src={currentImage}
+              alt="Uploaded"
+              className="max-w-full max-h-48 mx-auto rounded-lg"
+            />
+            {onImageRemove && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onImageRemove();
+                }}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
             )}
-
-            {error && (
-                <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                    {error}
-                </div>
-            )}
-
-            <div className="text-xs text-pm-off-white/60">
-                Formats acceptés: JPG, PNG, GIF, WebP (max 5MB)
-            </div>
-        </div>
-    );
+          </div>
+        ) : (
+          <div>
+            <PhotoIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
+            <p className="text-pm-gold font-medium mb-2">
+              Cliquez ou glissez une image ici
+            </p>
+            <p className="text-pm-off-white/70 text-sm">
+              PNG, JPG, GIF jusqu'à 10MB
+            </p>
+          </div>
+        )}
+      </div>
+      
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileInput}
+        className="hidden"
+      />
+    </div>
+  );
 };
 
 export default ImageUpload;

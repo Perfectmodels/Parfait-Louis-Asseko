@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import PublicPageLoader from '../components/PublicPageLoader';
 import HeroSection from '../components/HeroSection';
 import FeaturesSection from '../components/FeaturesSection';
 import TestimonialsSection from '../components/TestimonialsSection';
@@ -238,9 +239,27 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
 
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
+  const [hasError, setHasError] = useState(false);
+
+  // Détecter les erreurs de chargement
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isInitialized) {
+        setHasError(true);
+      }
+    }, 10000); // 10 secondes
+
+    return () => clearTimeout(timer);
+  }, [isInitialized]);
 
   if (!isInitialized || !data) {
-    return <div className="min-h-screen bg-pm-dark"></div>;
+    return (
+      <PublicPageLoader 
+        isInitialized={isInitialized}
+        hasError={hasError}
+        onRetry={() => window.location.reload()}
+      />
+    );
   }
 
   const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, agencyServices, newsItems, apiKeys } = data;
@@ -298,6 +317,11 @@ const Home: React.FC = () => {
         keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
         image={siteImages.hero}
         schema={organizationSchema}
+        socialImage={{
+          title: "L'Élégance Redéfinie",
+          subtitle: "Perfect Models Management",
+          backgroundImage: siteImages.hero
+        }}
       />
 
       {/* 1. Hero Section */}

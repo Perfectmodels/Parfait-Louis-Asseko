@@ -4,6 +4,8 @@ import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import StatsigPageTracker from './components/StatsigPageTracker';
+import CacheAlert from './components/CacheAlert';
+import ErrorBoundary from './components/ErrorBoundary';
 import { useStatsig } from './hooks/useStatsig';
 
 
@@ -34,6 +36,11 @@ const Gallery = lazy(() => import('./pages/Gallery'));
 
 // Admin Pages
 const Admin = lazy(() => import('./pages/Admin'));
+const AdminModels = lazy(() => import('./pages/AdminModels'));
+const AdminContent = lazy(() => import('./pages/AdminContent'));
+const AdminCommunication = lazy(() => import('./pages/AdminCommunication'));
+const AdminFinance = lazy(() => import('./pages/AdminFinance'));
+const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 const AdminAgency = lazy(() => import('./pages/AdminAgency'));
 const AdminCasting = lazy(() => import('./pages/AdminCasting'));
 const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
@@ -43,7 +50,6 @@ const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
 const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
-const AdminModels = lazy(() => import('./pages/AdminModels'));
 const AdminNews = lazy(() => import('./pages/AdminNews'));
 const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
 const AdminSettings = lazy(() => import('./pages/AdminSettings'));
@@ -58,7 +64,6 @@ const AdminEmails = lazy(() => import('./pages/AdminEmails'));
 const AdminMedia = lazy(() => import('./pages/AdminMedia'));
 const AdminAccounting = lazy(() => import('./pages/AdminAccounting'));
 const AdminMessaging = lazy(() => import('./pages/AdminMessaging'));
-const AdminContent = lazy(() => import('./pages/AdminContent'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminTechnical = lazy(() => import('./pages/AdminTechnical'));
 const AdminProfile = lazy(() => import('./pages/AdminProfile'));
@@ -133,6 +138,7 @@ const AppContent: React.FC = () => {
   return (
     <StatsigPageTracker>
       <Layout>
+        <CacheAlert />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             {/* Public Pages */}
@@ -176,7 +182,14 @@ const AppContent: React.FC = () => {
 
             {/* Admin Routes Group */}
             <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>}>
+              {/* Nouvelles routes principales */}
               <Route path="models" element={<AdminModels />} />
+              <Route path="content" element={<AdminContent />} />
+              <Route path="communication" element={<AdminCommunication />} />
+              <Route path="finance" element={<AdminFinance />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
+              
+              {/* Routes existantes */}
               <Route path="magazine" element={<AdminMagazine />} />
               <Route path="classroom" element={<AdminClassroom />} />
               <Route path="settings" element={<AdminSettings />} />
@@ -231,12 +244,14 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <DataProvider>
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <ScrollToTop />
-        <AppContent />
-      </BrowserRouter>
-    </DataProvider>
+    <ErrorBoundary>
+      <DataProvider>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ScrollToTop />
+          <AppContent />
+        </BrowserRouter>
+      </DataProvider>
+    </ErrorBoundary>
   );
 };
 

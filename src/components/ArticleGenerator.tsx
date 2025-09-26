@@ -3,6 +3,7 @@ import { GoogleGenAI, Type } from '@google/genai';
 import { Article } from '../types';
 import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
+import { GEMINI_CONFIG } from '../config/geminiConfig';
 
 interface ArticleGeneratorProps {
     isOpen: boolean;
@@ -95,10 +96,10 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
         };
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+            const ai = new GoogleGenAI({ apiKey: GEMINI_CONFIG.apiKey });
             
             const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: GEMINI_CONFIG.model,
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",

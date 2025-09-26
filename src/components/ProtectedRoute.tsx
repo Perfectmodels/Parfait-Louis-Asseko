@@ -14,7 +14,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   if (hasAccess && userRole === role) {
     return children;
   }
-  
   return <Navigate to="/login" state={{ from: location }} replace />;
 };
 

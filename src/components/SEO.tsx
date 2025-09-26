@@ -10,6 +10,11 @@ interface SEOProps {
   schema?: object; // JSON-LD personnalisé
   canonicalUrl?: string; // Nouveau : URL canonique
   type?: 'website' | 'article' | 'profile' | 'event'; // Nouveau : type Open Graph
+  socialImage?: {
+    title: string;
+    subtitle?: string;
+    backgroundImage?: string;
+  };
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -21,6 +26,7 @@ const SEO: React.FC<SEOProps> = ({
   schema,
   canonicalUrl,
   type = 'website',
+  socialImage,
 }) => {
   useEffect(() => {
     const defaultTitle = 'Perfect Models Management';
@@ -59,7 +65,25 @@ const SEO: React.FC<SEOProps> = ({
       "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
     const defaultKeywords =
       'mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting';
-    const defaultImage = siteConfig.logo;
+    
+    // Image optimisée pour les réseaux sociaux
+    const getOptimizedImage = () => {
+      if (image) return image;
+      if (socialImage) {
+        // Générer une URL pour l'image sociale personnalisée
+        const params = new URLSearchParams({
+          title: socialImage.title,
+          subtitle: socialImage.subtitle || 'Perfect Models Management',
+          background: socialImage.backgroundImage || '',
+          width: '1200',
+          height: '630'
+        });
+        return `/api/social-image?${params.toString()}`;
+      }
+      return siteConfig.logo;
+    };
+    
+    const optimizedImage = getOptimizedImage();
     const siteUrl = window.location.href;
     const siteName = 'Perfect Models Management';
 
@@ -75,19 +99,21 @@ const SEO: React.FC<SEOProps> = ({
     // Open Graph
     setMeta('og:title', pageTitle, true);
     setMeta('og:description', description || defaultDescription, true);
-    setMeta('og:image', image || defaultImage, true);
+    setMeta('og:image', optimizedImage, true);
+    setMeta('og:image:width', '1200', true);
+    setMeta('og:image:height', '630', true);
+    setMeta('og:image:alt', `${pageTitle} - Perfect Models Management`, true);
     setMeta('og:url', siteUrl, true);
     setMeta('og:site_name', siteName, true);
     setMeta('og:type', type, true);
     setMeta('og:locale', 'fr_FR', true);
-    setMeta('og:image:width', '1200', true);
-    setMeta('og:image:height', '630', true);
 
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', pageTitle);
     setMeta('twitter:description', description || defaultDescription);
-    setMeta('twitter:image', image || defaultImage);
+    setMeta('twitter:image', optimizedImage);
+    setMeta('twitter:image:alt', `${pageTitle} - Perfect Models Management`);
 
     // JSON-LD Schema
     const schemaElementId = 'seo-schema-script';
@@ -125,7 +151,7 @@ const SEO: React.FC<SEOProps> = ({
       const el = document.getElementById(schemaElementId);
       if (el) el.remove();
     };
-  }, [title, description, keywords, image, noIndex, schema, canonicalUrl, type]);
+  }, [title, description, keywords, image, noIndex, schema, canonicalUrl, type, socialImage]);
 
   return null;
 };

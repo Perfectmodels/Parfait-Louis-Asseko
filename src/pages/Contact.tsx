@@ -11,7 +11,6 @@ import {
   CalendarDaysIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ExclamationTriangleIcon,
   GlobeAltIcon,
   ChevronDownIcon,
   PaperAirplaneIcon,
@@ -19,6 +18,7 @@ import {
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
+import ModernTabs from '../components/ModernTabs';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
 import { ContactMessage } from '../types';
@@ -45,7 +45,6 @@ const Contact: React.FC = () => {
     const [statusMessage, setStatusMessage] = useState('');
     const [activeTab, setActiveTab] = useState<'contact' | 'faq' | 'team'>('contact');
     const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-    const [isFormValid, setIsFormValid] = useState(false);
     const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
     
     // FAQ Data
@@ -106,8 +105,8 @@ const Contact: React.FC = () => {
         }
     }, [location.search]);
 
-    // Form validation
-    useEffect(() => {
+    // Form validation - only on submit
+    const validateForm = () => {
         const errors: {[key: string]: string} = {};
         
         if (!formData.name.trim()) errors.name = 'Le nom est requis';
@@ -126,15 +125,25 @@ const Contact: React.FC = () => {
             if (!formData.budget.trim()) errors.budget = 'Le budget est requis';
         }
         
-        setFormErrors(errors);
-        setIsFormValid(Object.keys(errors).length === 0);
-    }, [formData]);
+        return errors;
+    };
 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validate form
+        const errors = validateForm();
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            setStatus('error');
+            setStatusMessage('Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+        
         setStatus('loading');
         setStatusMessage('');
+        setFormErrors({});
 
         if (!data) {
             setStatus('error');
@@ -286,34 +295,16 @@ const Contact: React.FC = () => {
             
             <div className="page-container relative z-10">
                 {/* Navigation Tabs */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    viewport={{ once: true, amount: 0.3 }}
-                    className="flex justify-center mb-12 pt-16"
-                >
-                    <div className="bg-black/30 border border-pm-gold/20 rounded-full p-2">
-                        {[
-                            { id: 'contact', label: 'Contact & Booking', icon: ChatBubbleLeftRightIcon },
-                            { id: 'faq', label: 'FAQ', icon: QuestionMarkCircleIcon },
-                            { id: 'team', label: 'Équipe', icon: UserGroupIcon }
-                        ].map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id as any)}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 ${
-                                    activeTab === tab.id
-                                        ? 'bg-pm-gold text-pm-dark'
-                                        : 'text-pm-off-white hover:bg-pm-gold/20'
-                                }`}
-                            >
-                                <tab.icon className="w-5 h-5" />
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-                </motion.div>
+                <ModernTabs
+                    tabs={[
+                        { id: 'contact', label: 'Contact & Booking', icon: ChatBubbleLeftRightIcon },
+                        { id: 'faq', label: 'FAQ', icon: QuestionMarkCircleIcon },
+                        { id: 'team', label: 'Équipe', icon: UserGroupIcon }
+                    ]}
+                    activeTab={activeTab}
+                    onTabChange={(tabId) => setActiveTab(tabId as any)}
+                    className="pt-16"
+                />
 
                 {/* Tab Content */}
                 <AnimatePresence mode="wait">
@@ -557,14 +548,14 @@ const Contact: React.FC = () => {
                                         
                                         <motion.button 
                                             type="submit" 
-                                            disabled={status === 'loading' || !isFormValid}
+                                            disabled={status === 'loading'}
                                             className={`w-full px-8 py-4 font-bold uppercase tracking-widest rounded-full transition-all duration-300 flex items-center justify-center gap-3 ${
-                                                isFormValid && status !== 'loading'
+                                                status !== 'loading'
                                                     ? 'bg-pm-gold text-pm-dark hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/30'
                                                     : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                             }`}
-                                            whileHover={isFormValid && status !== 'loading' ? { scale: 1.05 } : {}}
-                                            whileTap={isFormValid && status !== 'loading' ? { scale: 0.95 } : {}}
+                                            whileHover={status !== 'loading' ? { scale: 1.05 } : {}}
+                                            whileTap={status !== 'loading' ? { scale: 0.95 } : {}}
                                         >
                                             {status === 'loading' ? (
                                                 <>
@@ -750,7 +741,7 @@ const EnhancedFormInput: React.FC<{
 }> = ({ label, name, value, onChange, type = 'text', required, error, placeholder }) => (
     <div>
         <label htmlFor={name} className="block text-sm font-medium text-pm-gold mb-2">
-            {label} {required && <span className="text-red-400">*</span>}
+            {label} {required && <span className="text-pm-gold/70">*</span>}
         </label>
         <input
             type={type}
@@ -760,21 +751,11 @@ const EnhancedFormInput: React.FC<{
             onChange={onChange}
             className={`w-full px-4 py-3 bg-black/30 border rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 ${
                 error 
-                    ? 'border-red-500/50 focus:border-red-500' 
+                    ? 'border-pm-gold/50 focus:border-pm-gold' 
                     : 'border-pm-gold/30 focus:border-pm-gold'
             } text-pm-off-white placeholder:text-pm-off-white/50`}
             placeholder={placeholder || `Entrez votre ${label.toLowerCase()}`}
         />
-        {error && (
-            <motion.p
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm mt-1 flex items-center gap-1"
-            >
-                <ExclamationTriangleIcon className="w-4 h-4" />
-                {error}
-            </motion.p>
-        )}
     </div>
 );
 
@@ -789,7 +770,7 @@ const EnhancedFormTextArea: React.FC<{
 }> = ({ label, name, value, onChange, required, error, placeholder }) => (
     <div>
         <label htmlFor={name} className="block text-sm font-medium text-pm-gold mb-2">
-            {label} {required && <span className="text-red-400">*</span>}
+            {label} {required && <span className="text-pm-gold/70">*</span>}
         </label>
         <textarea
             name={name}
@@ -799,21 +780,11 @@ const EnhancedFormTextArea: React.FC<{
             rows={5}
             className={`w-full px-4 py-3 bg-black/30 border rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 resize-none ${
                 error 
-                    ? 'border-red-500/50 focus:border-red-500' 
+                    ? 'border-pm-gold/50 focus:border-pm-gold' 
                     : 'border-pm-gold/30 focus:border-pm-gold'
             } text-pm-off-white placeholder:text-pm-off-white/50`}
             placeholder={placeholder || `Décrivez votre ${label.toLowerCase()}`}
         />
-        {error && (
-            <motion.p
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm mt-1 flex items-center gap-1"
-            >
-                <ExclamationTriangleIcon className="w-4 h-4" />
-                {error}
-            </motion.p>
-        )}
     </div>
 );
 

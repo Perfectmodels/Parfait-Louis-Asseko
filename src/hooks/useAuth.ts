@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { sessionService } from '../services/sessionService';
 
 export interface AuthUser {
   email: string;
@@ -16,6 +17,24 @@ export const useAuth = () => {
   // Fonction pour vérifier l'authentification
   const checkAuth = useCallback(() => {
     try {
+      // Essayer de restaurer la session depuis localStorage
+      const sessionRestored = sessionService.restoreSession();
+      
+      if (sessionRestored) {
+        const role = sessionStorage.getItem('classroom_role');
+        const email = sessionStorage.getItem('user_email');
+        const name = sessionStorage.getItem('user_name');
+
+        setUser({
+          email: email || '',
+          name: name || '',
+          role: role || 'student',
+          isAuthenticated: true
+        });
+        return true;
+      }
+
+      // Vérifier sessionStorage (pour compatibilité)
       const role = sessionStorage.getItem('classroom_role');
       const access = sessionStorage.getItem('classroom_access') === 'granted';
       const email = sessionStorage.getItem('user_email');
@@ -41,19 +60,29 @@ export const useAuth = () => {
   }, []);
 
   // Fonction de connexion
-  const login = useCallback((userData: { email: string; name: string; role: string }) => {
+  const login = useCallback((userData: { 
+    email: string; 
+    name: string; 
+    role: string; 
+    id?: string;
+    userType?: string;
+  }) => {
     try {
-      sessionStorage.setItem('classroom_access', 'granted');
-      sessionStorage.setItem('user_email', userData.email);
-      sessionStorage.setItem('user_name', userData.name);
-      sessionStorage.setItem('classroom_role', userData.role);
+      // Créer une session de 72h
+      sessionService.createSession({
+        id: userData.id || userData.email,
+        name: userData.name,
+        role: userData.role as 'admin' | 'model' | 'beginner',
+        email: userData.email,
+        userType: userData.userType
+      });
 
       setUser({
         ...userData,
         isAuthenticated: true
       });
 
-      console.log('✅ Connexion réussie:', userData.email);
+      console.log('✅ Connexion réussie avec session 72h:', userData.email);
       return true;
     } catch (error) {
       console.error('❌ Erreur lors de la connexion:', error);
@@ -64,11 +93,8 @@ export const useAuth = () => {
   // Fonction de déconnexion
   const logout = useCallback(() => {
     try {
-      sessionStorage.removeItem('classroom_role');
-      sessionStorage.removeItem('classroom_access');
-      sessionStorage.removeItem('user_email');
-      sessionStorage.removeItem('user_name');
-
+      // Nettoyer la session
+      sessionService.clearSession();
       setUser(null);
       navigate('/login');
       

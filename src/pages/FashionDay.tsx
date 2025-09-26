@@ -19,6 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
+import ModernTabs from '../components/ModernTabs';
 import { useData } from '../contexts/DataContext';
 import { FashionDayEvent, Artist } from '../types';
 
@@ -434,35 +435,16 @@ const FashionDay: React.FC = () => {
           </section>
 
           {/* Navigation Tabs */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, amount: 0.3 }}
-            className="flex justify-center mb-12"
-          >
-            <div className="bg-black/30 border border-pm-gold/20 rounded-full p-2">
-              {[
-                { id: 'overview', label: 'Aperçu', icon: EyeIcon },
-                { id: 'gallery', label: 'Galerie', icon: PhotoIcon },
-                { id: 'artists', label: 'Artistes', icon: MicrophoneIcon },
-                { id: 'partners', label: 'Partenaires', icon: UsersIcon }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 ${
-                    activeTab === tab.id
-                      ? 'bg-pm-gold text-pm-dark'
-                      : 'text-pm-off-white hover:bg-pm-gold/20'
-                  }`}
-                >
-                  <tab.icon className="w-5 h-5" />
-                  {tab.label}
-                </button>
-              ))}
-          </div>
-          </motion.div>
+          <ModernTabs
+            tabs={[
+              { id: 'overview', label: 'Aperçu', icon: EyeIcon },
+              { id: 'gallery', label: 'Galerie', icon: PhotoIcon },
+              { id: 'artists', label: 'Artistes', icon: MicrophoneIcon },
+              { id: 'partners', label: 'Partenaires', icon: UsersIcon }
+            ]}
+            activeTab={activeTab}
+            onTabChange={(tabId) => setActiveTab(tabId as any)}
+          />
 
           {/* Tab Content */}
           <AnimatePresence mode="wait">
