@@ -1,34 +1,50 @@
 import React from 'react';
 
 interface StatCardProps {
-    title: string;
-    value: string | number;
-    subtitle: string;
-    icon?: React.ReactNode;
-    className?: string;
+  title: string;
+  value: string | number;
+  change?: string;
+  changeType?: 'positive' | 'negative' | 'neutral';
+  icon?: React.ElementType;
+  description?: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({ 
-    title, 
-    value, 
-    subtitle, 
-    icon,
-    className = ""
+  title, 
+  value, 
+  change, 
+  changeType = 'neutral',
+  icon: Icon,
+  description 
 }) => {
-    return (
-        <div className={`bg-black/50 border border-pm-gold/20 rounded-xl p-6 hover:shadow-lg hover:shadow-pm-gold/10 transition-all duration-300 ${className}`}>
-            <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold text-pm-off-white">{title}</h3>
-                {icon && (
-                    <div className="p-2 rounded-full bg-pm-gold/20 text-pm-gold">
-                        {icon}
-                    </div>
-                )}
-            </div>
-            <p className="text-3xl font-bold text-pm-gold mb-1">{value}</p>
-            <p className="text-sm text-pm-off-white/60">{subtitle}</p>
+  const getChangeColor = () => {
+    switch (changeType) {
+      case 'positive':
+        return 'text-green-400';
+      case 'negative':
+        return 'text-red-400';
+      default:
+        return 'text-pm-gold';
+    }
+  };
+
+  return (
+    <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-pm-gold">{title}</h3>
+        {Icon && <Icon className="w-6 h-6 text-pm-gold" />}
+      </div>
+      <div className="text-3xl font-bold text-pm-off-white mb-2">{value}</div>
+      {change && (
+        <div className={`text-sm font-medium ${getChangeColor()}`}>
+          {change}
         </div>
-    );
+      )}
+      {description && (
+        <p className="text-sm text-pm-off-white/70 mt-2">{description}</p>
+      )}
+    </div>
+  );
 };
 
 export default StatCard;

@@ -1,14 +1,18 @@
 import React from 'react';
 
-const StatsigDebug: React.FC = () => {
-    return (
-        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
-            <h3 className="text-yellow-400 font-semibold mb-2">Statsig Debug</h3>
-            <p className="text-yellow-300 text-sm">
-                Service Statsig non configuré. Les fonctionnalités d'analytics sont désactivées.
-            </p>
-        </div>
-    );
+interface StatsigDebugProps {
+  className?: string;
+}
+
+const StatsigDebug: React.FC<StatsigDebugProps> = ({ className = '' }) => {
+  return (
+    <div className={`bg-black/50 border border-pm-gold/20 rounded-xl p-6 ${className}`}>
+      <h3 className="text-lg font-semibold text-pm-gold mb-4">Statsig Debug</h3>
+      <div className="text-pm-off-white/70 text-sm">
+        <p>Configuration Statsig en cours de développement...</p>
+      </div>
+    </div>
+  );
 };
 
 export default StatsigDebug;

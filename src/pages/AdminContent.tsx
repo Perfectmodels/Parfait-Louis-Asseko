@@ -1,370 +1,268 @@
-import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
+import React, { useState, useMemo } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import AdminTable from '../components/admin/AdminTable';
-import AdminModal from '../components/admin/AdminModal';
+import AdminCard from '../components/admin/AdminCard';
+import { StatCard } from '../components/admin/AdminStats';
 import { 
-    DocumentTextIcon, 
-    PencilIcon, 
-    EyeIcon,
-    PlusIcon
+    NewspaperIcon, PresentationChartLineIcon, DocumentTextIcon, BookOpenIcon,
+    CameraIcon
 } from '@heroicons/react/24/outline';
-// import { PageContent } from '../types';
-
-interface PageContentFormData {
-    id: string;
-    title: string;
-    slug: string;
-    content: string;
-    metaDescription: string;
-    featuredImage: string;
-    isPublished: boolean;
-    lastModified: string;
-}
+import { useData } from '../contexts/DataContext';
 
 const AdminContent: React.FC = () => {
-    const { data, saveData } = useData();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingPage, setEditingPage] = useState<PageContentFormData | null>(null);
-    const [formData, setFormData] = useState<PageContentFormData>({
-        id: '',
-        title: '',
-        slug: '',
-        content: '',
-        metaDescription: '',
-        featuredImage: '',
-        isPublished: false,
-        lastModified: new Date().toISOString()
-    });
+    const { data } = useData();
+    const [activeSection, setActiveSection] = useState<'articles' | 'pages' | 'media' | 'classroom'>('articles');
 
-    // Initialiser les pages par défaut si elles n'existent pas
-    useEffect(() => {
-        if (data && !(data as any).pageContents) {
-            const defaultPages: any[] = [
-                {
-                    id: 'home',
-                    title: 'Page d\'Accueil',
-                    slug: '/',
-                    content: `
-                        <h1>Bienvenue chez Perfect Models Management</h1>
-                        <p>L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine.</p>
-                        <h2>Notre Mission</h2>
-                        <p>Nous nous engageons à promouvoir la beauté africaine et à offrir des opportunités exceptionnelles à nos mannequins.</p>
-                    `,
-                    metaDescription: 'Perfect Models Management, l\'agence de mannequins de référence à Libreville, Gabon.',
-                    featuredImage: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-                    isPublished: true,
-                    lastModified: new Date().toISOString(),
-                    page: 'home',
-                    modifiedBy: 'admin'
-                },
-                {
-                    id: 'about',
-                    title: 'À Propos',
-                    slug: '/agence',
-                    content: `
-                        <h1>Notre Histoire</h1>
-                        <p>Fondée avec passion et détermination, Perfect Models Management est devenue l'agence de référence au Gabon.</p>
-                        <h2>Notre Vision</h2>
-                        <p>Redéfinir l'élégance africaine et promouvoir la diversité dans l'industrie de la mode.</p>
-                    `,
-                    metaDescription: 'Découvrez l\'histoire et la vision de Perfect Models Management.',
-                    featuredImage: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
-                    isPublished: true,
-                    lastModified: new Date().toISOString(),
-                    page: 'about',
-                    modifiedBy: 'admin'
-                },
-                {
-                    id: 'contact',
-                    title: 'Contact',
-                    slug: '/contact',
-                    content: `
-                        <h1>Contactez-nous</h1>
-                        <p>Nous sommes là pour répondre à toutes vos questions et vous accompagner dans vos projets.</p>
-                        <h2>Nos Coordonnées</h2>
-                        <p>Adresse: Libreville, Gabon</p>
-                        <p>Téléphone: +241 XX XX XX XX</p>
-                        <p>Email: contact@perfectmodels.ga</p>
-                    `,
-                    metaDescription: 'Contactez Perfect Models Management pour vos projets de mode.',
-                    featuredImage: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-                    isPublished: true,
-                    lastModified: new Date().toISOString(),
-                    page: 'contact',
-                    modifiedBy: 'admin'
-                }
-            ];
+    // ---- Statistiques ----
+    const totalArticles = (data as any)?.articles?.length || 0;
+    const totalPages = (data as any)?.pageContents?.length || 0;
+    const totalMedia = data?.siteImages ? Object.keys(data.siteImages).length : 0;
+    const totalClassroomModules = (data as any)?.classroomModules?.length || 0;
 
-            saveData({ ...data, pageContents: defaultPages });
-        }
-    }, [data, saveData]);
-
-    const pages = (data as any)?.pageContents || [];
-    const filteredPages = pages.filter((page: any) =>
-        page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        page.slug.toLowerCase().includes(searchQuery.toLowerCase())
+    // ---- Filtrage des articles ----
+    const publishedArticles = useMemo(() => 
+        (data as any)?.articles?.filter((article: any) => article.status === 'Publié') || [], 
+        [data]
     );
 
-    const handleCreate = () => {
-        setEditingPage(null);
-        setFormData({
-            id: '',
-            title: '',
-            slug: '',
-            content: '',
-            metaDescription: '',
-            featuredImage: '',
-            isPublished: false,
-            lastModified: new Date().toISOString()
-        });
-        setIsModalOpen(true);
-    };
+    const draftArticles = useMemo(() => 
+        (data as any)?.articles?.filter((article: any) => article.status === 'Brouillon') || [], 
+        [data]
+    );
 
-    const handleEdit = (page: any) => {
-        setEditingPage(page);
-        setFormData({
-            id: page.id,
-            title: page.title,
-            slug: page.slug,
-            content: page.content,
-            metaDescription: page.metaDescription,
-            featuredImage: page.featuredImage,
-            isPublished: page.isPublished,
-            lastModified: page.lastModified
-        });
-        setIsModalOpen(true);
-    };
-
-    const handleSave = async () => {
-        if (!data) return;
-
-        const pageData: any = {
-            id: formData.id || `page_${Date.now()}`,
-            title: formData.title,
-            slug: formData.slug,
-            content: formData.content,
-            metaDescription: formData.metaDescription,
-            featuredImage: formData.featuredImage,
-            isPublished: formData.isPublished,
-            lastModified: new Date().toISOString(),
-            page: formData.slug.replace('/', '') || 'home',
-            modifiedBy: 'admin'
-        };
-
-        let updatedPages: any[];
-        if (editingPage) {
-            updatedPages = pages.map((p: any) => p.id === editingPage.id ? pageData : p);
-        } else {
-            updatedPages = [...pages, pageData];
-        }
-
-        await saveData({ ...data, pageContents: updatedPages });
-        setIsModalOpen(false);
-        setEditingPage(null);
-    };
-
-    const handleDelete = async (pageId: string) => {
-        if (!data) return;
-        if (window.confirm('Êtes-vous sûr de vouloir supprimer cette page ?')) {
-            const updatedPages = pages.filter((p: any) => p.id !== pageId);
-            await saveData({ ...data, pageContents: updatedPages });
-        }
-    };
-
-    const columns = [
-        {
-            key: 'title',
-            label: 'Titre',
-            render: (value: string, page: any) => (
-                <div className="flex items-center gap-3">
-                    <DocumentTextIcon className="w-5 h-5 text-pm-gold" />
-                    <div>
-                        <div className="font-semibold text-pm-off-white">{value}</div>
-                        <div className="text-sm text-pm-off-white/60">{page.slug}</div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            key: 'status',
-            label: 'Statut',
-            render: (_: any, page: any) => (
-                <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    page.isPublished
-                        ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                        : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                }`}>
-                    {page.isPublished ? 'Publié' : 'Brouillon'}
-                </span>
-            )
-        },
-        {
-            key: 'lastModified',
-            label: 'Modifié',
-            render: (value: string) => (
-                <span className="text-pm-off-white/70">
-                    {new Date(value).toLocaleDateString('fr-FR')}
-                </span>
-            )
-        },
-        {
-            key: 'actions',
-            label: 'Actions',
-            render: (_: any, page: any) => (
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => handleEdit(page)}
-                        className="p-2 text-pm-gold hover:bg-pm-gold/10 rounded-lg transition-colors duration-200"
-                        title="Modifier"
-                    >
-                        <PencilIcon className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => window.open(page.slug, '_blank')}
-                        className="p-2 text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors duration-200"
-                        title="Voir"
-                    >
-                        <EyeIcon className="w-4 h-4" />
-                    </button>
-                </div>
-            )
-        }
+    const sections = [
+        { id: 'articles', label: 'Articles & Actualités', icon: NewspaperIcon, count: totalArticles },
+        { id: 'pages', label: 'Pages du Site', icon: DocumentTextIcon, count: totalPages },
+        { id: 'media', label: 'Médias', icon: CameraIcon, count: totalMedia },
+        { id: 'classroom', label: 'Formation', icon: BookOpenIcon, count: totalClassroomModules },
     ];
 
     return (
         <AdminLayout 
             title="Gestion du Contenu" 
-            description="Modifiez le contenu de vos pages"
+            description="Créer et gérer le contenu du site web et de la formation"
             breadcrumbs={[
-                { label: "Contenu" }
+                { label: 'Admin', href: '/admin' },
+                { label: 'Contenu', href: '/admin/content' }
             ]}
-            showSearch={true}
-            onSearch={setSearchQuery}
         >
-            <div className="space-y-6">
-                {/* Actions */}
-                <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-playfair text-pm-gold">Pages du Site</h2>
-                    <button
-                        onClick={handleCreate}
-                        className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-semibold rounded-lg hover:bg-yellow-400 transition-colors duration-200"
-                    >
-                        <PlusIcon className="w-5 h-5" />
-                        Nouvelle Page
-                    </button>
-                </div>
-
-                {/* Table */}
-                <AdminTable
-                    data={filteredPages}
-                    columns={columns}
-                    onDelete={handleDelete}
+            {/* Statistiques */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                    title="Articles Publiés"
+                    value={publishedArticles.length}
+                    icon={NewspaperIcon}
+                    color="blue"
+                    change={{
+                        value: 5,
+                        type: 'increase',
+                        label: 'cette semaine'
+                    }}
                 />
+                <StatCard
+                    title="Pages du Site"
+                    value={totalPages}
+                    icon={DocumentTextIcon}
+                    color="green"
+                />
+                <StatCard
+                    title="Médias Stockés"
+                    value={totalMedia}
+                    icon={CameraIcon}
+                    color="purple"
+                />
+                <StatCard
+                    title="Modules Formation"
+                    value={totalClassroomModules}
+                    icon={BookOpenIcon}
+                    color="orange"
+                />
+            </div>
 
-                {/* Modal */}
-                <AdminModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    title={editingPage ? 'Modifier la Page' : 'Nouvelle Page'}
-                    size="lg"
-                >
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="admin-label">Titre de la Page</label>
-                                <input
-                                    type="text"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                    className="admin-input"
-                                    placeholder="Ex: À Propos"
-                                />
-                            </div>
-                            <div>
-                                <label className="admin-label">URL (Slug)</label>
-                                <input
-                                    type="text"
-                                    value={formData.slug}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                                    className="admin-input"
-                                    placeholder="Ex: /a-propos"
-                                />
-                            </div>
-                        </div>
+            {/* Navigation des sections */}
+            <div className="mb-8">
+                <nav className="flex space-x-1 bg-black/30 p-1 rounded-lg">
+                    {sections.map(section => (
+                        <button
+                            key={section.id}
+                            onClick={() => setActiveSection(section.id as any)}
+                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                                activeSection === section.id
+                                    ? 'bg-pm-gold text-black'
+                                    : 'text-pm-off-white/70 hover:text-pm-gold hover:bg-pm-gold/10'
+                            }`}
+                        >
+                            <section.icon className="w-4 h-4" />
+                            {section.label}
+                            <span className="bg-black/20 px-2 py-1 rounded-full text-xs">
+                                {section.count}
+                            </span>
+                        </button>
+                    ))}
+                </nav>
+            </div>
 
-                        <div>
-                            <label className="admin-label">Description Meta</label>
-                            <textarea
-                                value={formData.metaDescription}
-                                onChange={(e) => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
-                                className="admin-textarea"
-                                rows={3}
-                                placeholder="Description pour les moteurs de recherche"
-                            />
-                        </div>
+            {/* Actions rapides */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <AdminCard 
+                    title="Nouvel Article" 
+                    icon={NewspaperIcon} 
+                    description="Créer un nouvel article pour le magazine."
+                    color="blue"
+                    onClick={() => {/* TODO: Ouvrir modal création article */}}
+                />
+                <AdminCard 
+                    title="Actualité" 
+                    icon={PresentationChartLineIcon} 
+                    description="Publier une actualité sur la page d'accueil."
+                    color="green"
+                    onClick={() => {/* TODO: Ouvrir modal actualité */}}
+                />
+                <AdminCard 
+                    title="Page du Site" 
+                    icon={DocumentTextIcon} 
+                    description="Créer ou modifier une page du site."
+                    color="purple"
+                    onClick={() => {/* TODO: Ouvrir modal page */}}
+                />
+                <AdminCard 
+                    title="Module Formation" 
+                    icon={BookOpenIcon} 
+                    description="Ajouter un module de formation."
+                    color="orange"
+                    onClick={() => {/* TODO: Ouvrir modal module */}}
+                />
+            </div>
 
-                        <div>
-                            <label className="admin-label">Image de Couverture</label>
-                            <input
-                                type="url"
-                                value={formData.featuredImage}
-                                onChange={(e) => setFormData(prev => ({ ...prev, featuredImage: e.target.value }))}
-                                className="admin-input"
-                                placeholder="URL de l'image"
-                            />
-                            {formData.featuredImage && (
-                                <div className="mt-2">
-                                    <img 
-                                        src={formData.featuredImage} 
-                                        alt="Aperçu" 
-                                        className="w-32 h-20 object-cover rounded-lg border border-pm-gold/20"
-                                    />
+            {/* Contenu selon la section active */}
+            {activeSection === 'articles' && (
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Articles publiés */}
+                        <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                            <h3 className="text-xl font-playfair text-pm-gold mb-4">
+                                Articles Publiés ({publishedArticles.length})
+                            </h3>
+                            {publishedArticles.length === 0 ? (
+                                <p className="text-pm-off-white/70">Aucun article publié.</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {publishedArticles.slice(0, 5).map((article: any, index: number) => (
+                                        <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+                                            <div>
+                                                <h4 className="text-pm-gold font-medium">{article.title}</h4>
+                                                <p className="text-pm-off-white/70 text-sm">
+                                                    {new Date(article.publishedAt).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button className="px-3 py-1 bg-pm-gold/20 text-pm-gold text-xs rounded hover:bg-pm-gold/30">
+                                                    Modifier
+                                                </button>
+                                                <button className="px-3 py-1 bg-red-500/20 text-red-400 text-xs rounded hover:bg-red-500/30">
+                                                    Dépublier
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
 
-                        <div>
-                            <label className="admin-label">Contenu de la Page (HTML)</label>
-                            <textarea
-                                value={formData.content}
-                                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                                className="admin-textarea"
-                                rows={10}
-                                placeholder="Contenu HTML de la page..."
-                            />
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.isPublished}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
-                                    className="w-4 h-4 text-pm-gold bg-pm-dark border-pm-gold/30 rounded focus:ring-pm-gold/50"
-                                />
-                                <span className="text-pm-off-white">Publier la page</span>
-                            </label>
-                        </div>
-
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="px-4 py-2 text-pm-gold border border-pm-gold/30 rounded-lg hover:bg-pm-gold/10 transition-colors duration-200"
-                            >
-                                Annuler
-                            </button>
-                            <button
-                                onClick={handleSave}
-                                className="px-6 py-2 bg-pm-gold text-pm-dark font-semibold rounded-lg hover:bg-yellow-400 transition-colors duration-200"
-                            >
-                                {editingPage ? 'Mettre à jour' : 'Créer'}
-                            </button>
+                        {/* Brouillons */}
+                        <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                            <h3 className="text-xl font-playfair text-pm-gold mb-4">
+                                Brouillons ({draftArticles.length})
+                            </h3>
+                            {draftArticles.length === 0 ? (
+                                <p className="text-pm-off-white/70">Aucun brouillon.</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {draftArticles.slice(0, 5).map((article: any, index: number) => (
+                                        <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg">
+                                            <div>
+                                                <h4 className="text-pm-gold font-medium">{article.title}</h4>
+                                                <p className="text-pm-off-white/70 text-sm">
+                                                    Modifié le {new Date(article.updatedAt).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button className="px-3 py-1 bg-pm-gold/20 text-pm-gold text-xs rounded hover:bg-pm-gold/30">
+                                                    Modifier
+                                                </button>
+                                                <button className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded hover:bg-green-500/30">
+                                                    Publier
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
-                </AdminModal>
-            </div>
+                </div>
+            )}
+
+            {activeSection === 'pages' && (
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <h3 className="text-xl font-playfair text-pm-gold mb-4">
+                        Pages du Site ({totalPages})
+                    </h3>
+                    {totalPages === 0 ? (
+                        <p className="text-pm-off-white/70">Aucune page créée.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {(data as any)?.pageContents?.map((page: any, index: number) => (
+                                <div key={index} className="bg-black/30 border border-pm-gold/10 rounded-lg p-4">
+                                    <h4 className="text-pm-gold font-medium mb-2">{page.title}</h4>
+                                    <p className="text-pm-off-white/70 text-sm mb-3">{page.description}</p>
+                                    <div className="flex gap-2">
+                                        <button className="flex-1 px-3 py-1 bg-pm-gold/20 text-pm-gold text-xs rounded hover:bg-pm-gold/30">
+                                            Modifier
+                                        </button>
+                                        <button className="flex-1 px-3 py-1 bg-blue-500/20 text-blue-400 text-xs rounded hover:bg-blue-500/30">
+                                            Prévisualiser
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {activeSection === 'media' && (
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <h3 className="text-xl font-playfair text-pm-gold mb-4">
+                        Médias Stockés ({totalMedia})
+                    </h3>
+                    <div className="text-center py-12">
+                        <CameraIcon className="w-16 h-16 text-pm-gold/50 mx-auto mb-4" />
+                        <p className="text-pm-off-white/70 text-lg mb-4">
+                            Gestion des médias à implémenter
+                        </p>
+                        <button className="px-6 py-2 bg-pm-gold text-black rounded-lg hover:bg-pm-gold/90 transition-colors">
+                            Uploader des fichiers
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {activeSection === 'classroom' && (
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <h3 className="text-xl font-playfair text-pm-gold mb-4">
+                        Modules de Formation ({totalClassroomModules})
+                    </h3>
+                    <div className="text-center py-12">
+                        <BookOpenIcon className="w-16 h-16 text-pm-gold/50 mx-auto mb-4" />
+                        <p className="text-pm-off-white/70 text-lg mb-4">
+                            Gestion de la formation à implémenter
+                        </p>
+                        <button className="px-6 py-2 bg-pm-gold text-black rounded-lg hover:bg-pm-gold/90 transition-colors">
+                            Créer un module
+                        </button>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 };

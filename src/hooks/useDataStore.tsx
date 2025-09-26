@@ -149,7 +149,7 @@ export const useDataStore = () => {
         photoSessions: [],
         paymentSubmissions: [],
         pageContents: [],
-        internalMessages: [],
+        internalMessages: initialDataImports.internalMessages,
         castingSessions: [],
         conversations: [],
         accountingTransactions: [],
@@ -173,11 +173,21 @@ export const useDataStore = () => {
     }, []);
 
     useEffect(() => {
+        // Timeout de sécurité pour éviter que les pages restent bloquées
+        const timeoutId = setTimeout(() => {
+            if (!isInitialized) {
+                console.warn('Firebase timeout - using fallback data');
+                setData(getInitialData());
+                setIsInitialized(true);
+            }
+        }, 5000); // 5 secondes de timeout
+
         const dbRef = ref(db, '/');
 
         const unsubscribe = onValue(
             dbRef,
             (snapshot) => {
+                clearTimeout(timeoutId);
                 const dbData: Partial<AppData> | null = snapshot.val();
 
                 if (dbData) {
@@ -206,14 +216,19 @@ export const useDataStore = () => {
                 setIsInitialized(true);
             },
             (error) => {
+                clearTimeout(timeoutId);
                 handleError("Firebase read", error);
+                console.warn('Firebase error - using fallback data');
                 setData(getInitialData());
                 setIsInitialized(true);
             }
         );
 
-        return () => unsubscribe();
-    }, [seedDatabase]);
+        return () => {
+            clearTimeout(timeoutId);
+            unsubscribe();
+        };
+    }, [seedDatabase, isInitialized]);
 
     const saveData = useCallback(async (newData: AppData) => {
         try {

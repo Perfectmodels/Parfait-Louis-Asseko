@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon, ChatBubbleLeftRightIcon, BellIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { Model, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
+import NotificationManager from '../components/NotificationManager';
+import SessionStatus from '../components/SessionStatus';
+import CacheManager from '../components/CacheManager';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 
@@ -16,7 +19,13 @@ const ModelDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<ActiveTab>('profile');
     const [expandedBriefId, setExpandedBriefId] = useState<string | null>(null);
 
-    const originalModel = data?.models.find(m => m.id === userId);
+    // Chercher dans les mannequins pro d'abord, puis dans les débutants
+    const originalModel = data?.models.find(m => m.id === userId) || 
+                         data?.beginnerStudents.find(s => s.id === userId);
+    
+    // Déterminer le type d'utilisateur
+    const userType = sessionStorage.getItem('userType') || 'pro';
+    const isBeginner = userType === 'beginner';
     const courseModulesWithQuizzes = data?.courseData?.filter(m => m.quiz && m.quiz.length > 0) || [];
 
     const myBriefs = data?.photoshootBriefs.filter(b => b.modelId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
@@ -31,11 +40,20 @@ const ModelDashboard: React.FC = () => {
     const handleSave = async (updatedModel: Model) => {
         if (!data || !editableModel) return;
         
-        const updatedModels = data.models.map(m => 
-            m.id === updatedModel.id ? updatedModel : m
-        );
+        if (isBeginner) {
+            // Sauvegarder dans beginnerStudents
+            const updatedBeginners = data.beginnerStudents.map(s => 
+                s.id === updatedModel.id ? updatedModel : s
+            );
+            await saveData({ ...data, beginnerStudents: updatedBeginners });
+        } else {
+            // Sauvegarder dans models
+            const updatedModels = data.models.map(m => 
+                m.id === updatedModel.id ? updatedModel : m
+            );
+            await saveData({ ...data, models: updatedModels });
+        }
         
-        await saveData({ ...data, models: updatedModels });
         alert("Profil mis à jour avec succès.");
     };
     
@@ -74,7 +92,12 @@ const ModelDashboard: React.FC = () => {
     if (!editableModel) {
         return (
             <div className="bg-pm-dark text-pm-off-white min-h-screen flex items-center justify-center">
-                <p>Chargement du profil...</p>
+                <div className="text-center">
+                    <p>Chargement du profil...</p>
+                    <p className="text-sm text-pm-gold/70 mt-2">
+                        {isBeginner ? 'Étudiant débutant' : 'Mannequin professionnel'}
+                    </p>
+                </div>
             </div>
         );
     }
@@ -91,8 +114,14 @@ const ModelDashboard: React.FC = () => {
             <div className="container mx-auto px-6 max-w-7xl">
                 <header className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
                     <div>
-                        <h1 className="text-4xl font-playfair text-pm-gold">Bienvenue, {editableModel.name.split(' ')[0]}</h1>
-                        <p className="text-pm-off-white/80">Votre espace personnel pour gérer votre profil et suivre votre progression.</p>
+                        <h1 className="text-4xl font-playfair text-pm-gold">
+                            Bienvenue, {editableModel.name.split(' ')[0]}
+                            {isBeginner && <span className="text-lg text-pm-gold/70 ml-2">(Débutant)</span>}
+                        </h1>
+                        <p className="text-pm-off-white/80">
+                            Votre espace personnel pour gérer votre profil et suivre votre progression.
+                            {isBeginner && ' En tant qu\'étudiant débutant, vous avez accès aux formations de base.'}
+                        </p>
                     </div>
                      <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
                         <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
@@ -130,13 +159,51 @@ const ModelDashboard: React.FC = () => {
                         
                         <div>
                             {activeTab === 'profile' && (
-                                <ModelForm 
-                                    model={editableModel}
-                                    onSave={handleSave}
-                                    onCancel={handleCancel}
-                                    mode="model"
-                                    isCreating={false}
-                                />
+                                <div className="space-y-6">
+                                    {/* Statut de session */}
+                                    <div className="bg-gradient-to-r from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-xl p-6">
+                                        <h3 className="text-lg font-playfair text-blue-400 mb-4 flex items-center gap-2">
+                                            <ClockIcon className="w-5 h-5" />
+                                            Session
+                                        </h3>
+                                        <SessionStatus 
+                                            onSessionExpired={() => {
+                                                alert('Votre session a expiré. Veuillez vous reconnecter.');
+                                                navigate('/login');
+                                            }}
+                                            showDetails={true}
+                                        />
+                                    </div>
+
+                                    {/* Gestionnaire de notifications */}
+                                    <div className="bg-gradient-to-r from-pm-gold/10 to-pm-gold/5 border border-pm-gold/20 rounded-xl p-6">
+                                        <h3 className="text-lg font-playfair text-pm-gold mb-4 flex items-center gap-2">
+                                            <BellIcon className="w-5 h-5" />
+                                            Notifications
+                                        </h3>
+                                        <NotificationManager 
+                                            onNotificationChange={(isEnabled) => {
+                                                console.log('Notifications:', isEnabled ? 'activées' : 'désactivées');
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Gestionnaire de cache */}
+                                    <CacheManager 
+                                        onCacheCleared={() => {
+                                            console.log('Cache vidé avec succès');
+                                        }}
+                                    />
+
+                                    {/* Formulaire de profil */}
+                                    <ModelForm 
+                                        model={editableModel}
+                                        onSave={handleSave}
+                                        onCancel={handleCancel}
+                                        mode="model"
+                                        isCreating={false}
+                                    />
+                                </div>
                             )}
                             {activeTab === 'results' && (
                                 <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30">

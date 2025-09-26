@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Sociale - Perfect Models Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Playfair Display', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: white;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 1200px;
+            height: 630px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .content {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            height: 80px;
+            width: auto;
+            margin-bottom: 40px;
+        }
+        
+        .title {
+            font-size: 4rem;
+            font-weight: bold;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .subtitle {
+            font-size: 1.8rem;
+            color: #D4AF37;
+            font-weight: 500;
+        }
+        
+        .decoration-1 {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+        }
+        
+        .decoration-2 {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 80px;
+            height: 80px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+        }
+        
+        .pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23D4AF37' fill-opacity='0.1'%3E%3Cpath d='M30 0L35 20L55 25L35 30L30 50L25 30L5 25L25 20Z'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                width: 100vw;
+                height: 100vh;
+                padding: 40px;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="overlay"></div>
+        <div class="pattern"></div>
+        
+        <div class="content">
+            <img src="/assets/logo.png" alt="Perfect Models Management" class="logo" id="logo">
+            <h1 class="title" id="title">Perfect Models Management</h1>
+            <p class="subtitle" id="subtitle">L'Élégance Redéfinie</p>
+        </div>
+        
+        <div class="decoration-1"></div>
+        <div class="decoration-2"></div>
+    </div>
+
+    <script>
+        // Récupérer les paramètres de l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const title = urlParams.get('title') || 'Perfect Models Management';
+        const subtitle = urlParams.get('subtitle') || 'L\'Élégance Redéfinie';
+        const background = urlParams.get('background');
+        const width = urlParams.get('width') || '1200';
+        const height = urlParams.get('height') || '630';
+        
+        // Appliquer les paramètres
+        document.getElementById('title').textContent = title;
+        document.getElementById('subtitle').textContent = subtitle;
+        
+        // Appliquer l'image de fond si fournie
+        if (background) {
+            document.body.style.backgroundImage = `url(${background})`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+        }
+        
+        // Ajuster la taille du conteneur
+        document.querySelector('.container').style.width = width + 'px';
+        document.querySelector('.container').style.height = height + 'px';
+        
+        // Ajuster la taille du titre selon la longueur
+        const titleElement = document.getElementById('title');
+        if (title.length > 30) {
+            titleElement.style.fontSize = '3rem';
+        } else if (title.length > 20) {
+            titleElement.style.fontSize = '3.5rem';
+        }
+    </script>
+</body>
+</html>

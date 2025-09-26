@@ -79,16 +79,24 @@ const Login: React.FC = () => {
         m.name.toLowerCase() === normalizedUsername
     );
     if (loggedInModel && loggedInModel.password === password) {
-        const success = login({
-          email: loggedInModel.email,
-          name: loggedInModel.name,
-          role: 'student'
-        });
+           const success = login({
+             email: loggedInModel.email,
+             name: loggedInModel.name,
+             role: 'student',
+             id: loggedInModel.id,
+             userType: 'pro'
+           });
         
         if (success) {
+          // Ajouter l'userId dans sessionStorage pour ModelDashboard
+          sessionStorage.setItem('userId', loggedInModel.id);
+          sessionStorage.setItem('userName', loggedInModel.name);
+          sessionStorage.setItem('userType', 'pro'); // Marquer comme mannequin pro
+          
           const updatedModels = data.models.map((m: any) => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
           await saveData({ ...data, models: updatedModels });
           updateUserActivity(loggedInModel.name, 'student');
+          
           navigate('/profil');
         } else {
           setError('Erreur lors de la connexion');
@@ -102,16 +110,29 @@ const Login: React.FC = () => {
         bs.name.toLowerCase() === normalizedUsername
     );
     if (loggedInBeginner && loggedInBeginner.password === password) {
-        sessionStorage.setItem('classroom_access', 'granted');
-        sessionStorage.setItem('classroom_role', 'beginner');
-        sessionStorage.setItem('userId', loggedInBeginner.id);
-        sessionStorage.setItem('userName', loggedInBeginner.name);
+        // Utiliser la même logique que les mannequins pro
+           const success = login({
+             email: loggedInBeginner.email || `${loggedInBeginner.name.toLowerCase().replace(/\s+/g, '.')}@perfectmodels.ga`,
+             name: loggedInBeginner.name,
+             role: 'student', // Même rôle que les mannequins pro
+             id: loggedInBeginner.id,
+             userType: 'beginner'
+           });
         
-        const updatedBeginners = data.beginnerStudents.map(bs => bs.id === loggedInBeginner.id ? { ...bs, lastLogin: timestamp } : bs);
-        await saveData({ ...data, beginnerStudents: updatedBeginners });
-        updateUserActivity(loggedInBeginner.name, 'beginner');
-
-        navigate('/classroom-debutant');
+        if (success) {
+          // Ajouter l'userId dans sessionStorage pour ModelDashboard
+          sessionStorage.setItem('userId', loggedInBeginner.id);
+          sessionStorage.setItem('userName', loggedInBeginner.name);
+          sessionStorage.setItem('userType', 'beginner'); // Marquer comme débutant
+          
+          const updatedBeginners = data.beginnerStudents.map(bs => bs.id === loggedInBeginner.id ? { ...bs, lastLogin: timestamp } : bs);
+          await saveData({ ...data, beginnerStudents: updatedBeginners });
+          updateUserActivity(loggedInBeginner.name, 'beginner');
+          
+          navigate('/profil');
+        } else {
+          setError('Erreur lors de la connexion');
+        }
         return;
     }
 

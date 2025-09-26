@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfect Fashion Day - Perfect Models Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Playfair Display', 'Times New Roman', serif;
+            width: 1080px;
+            height: 1080px;
+            background: url('/assets/fashion-day-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .logo {
+            height: 80px;
+            width: auto;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+        
+        .title {
+            font-size: 4rem;
+            font-weight: bold;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .subtitle {
+            font-size: 1.8rem;
+            color: #D4AF37;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        
+        .decoration-1 {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+        }
+        
+        .decoration-2 {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 80px;
+            height: 80px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+        }
+        
+        .pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23D4AF37' fill-opacity='0.1'%3E%3Cpath d='M30 0L35 20L55 25L35 30L30 50L25 30L5 25L25 20Z'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="pattern"></div>
+    
+    <div class="container">
+        <img src="/assets/logo.png" alt="Perfect Models Management" class="logo">
+        <h1 class="title">Perfect Fashion Day</h1>
+        <p class="subtitle">L'Événement Mode de l'Année</p>
+    </div>
+    
+    <div class="decoration-1"></div>
+    <div class="decoration-2"></div>
+</body>
+</html>

@@ -1,32 +1,34 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  base: './',
   plugins: [react()],
+  server: {
+    port: 5173,
+    host: true,
+    hmr: {
+      port: 5173,
+      host: 'localhost',
+      clientPort: 5173
+    },
+    watch: {
+      usePolling: true
+    }
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          firebase: ['firebase/app', 'firebase/firestore', 'firebase/auth', 'firebase/database'],
-          icons: ['@heroicons/react/24/outline', '@heroicons/react/24/solid'],
-          motion: ['framer-motion']
+          router: ['react-router-dom']
         }
       }
     }
   },
-  server: {
-    port: 5173,
-    host: true
-  },
-  preview: {
-    port: 4173,
-    host: true
+  optimizeDeps: {
+    force: true,
+    include: ['react', 'react-dom', 'react-router-dom']
   }
-})
+});

@@ -13,8 +13,16 @@
     "preview": "vite preview",
     "preview:clean": "vite preview --host",
     "generate-sitemap": "node scripts/generate-sitemap.js",
+    "generate-pwa-icons": "node scripts/generate-pwa-icons.js",
+    "clear-cache": "node scripts/clear-cache.js",
+    "disable-sw": "node scripts/disable-sw.js",
+    "enable-sw": "node scripts/enable-sw.js",
+    "cleanup": "node scripts/cleanup-project.js",
+    "fix-vite": "node scripts/fix-vite-cache.js",
+    "emergency-fix": "node scripts/emergency-fix.js",
+    "fix-images": "node scripts/fix-image-urls.js",
     "clean": "node scripts/clean-all.js",
-    "clean:quick": "rm -rf dist node_modules/.vite",
+    "clean:quick": "powershell -Command \"Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue; Remove-Item -Recurse -Force node_modules\\.vite -ErrorAction SilentlyContinue\"",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

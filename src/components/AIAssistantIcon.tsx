@@ -1,18 +1,50 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { SparklesIcon } from '@heroicons/react/24/solid';
+import { SparklesIcon } from '@heroicons/react/24/outline';
 
-const AIAssistantIcon: React.FC = () => {
-    return (
-        <Link 
-            to="/chat"
-            className="fixed bottom-8 right-8 bg-pm-gold text-pm-dark p-4 rounded-full shadow-lg shadow-pm-gold/30 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pm-gold focus:ring-offset-pm-dark transition-all duration-300 z-30 transform hover:scale-110 animate-pulse-slow"
-            aria-label="Ouvrir l'assistant IA"
-            title="Assistant IA"
-        >
-            <SparklesIcon className="h-8 w-8" />
-        </Link>
-    );
+interface AIAssistantIconProps {
+  onClick: () => void;
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+}
+
+const AIAssistantIcon: React.FC<AIAssistantIconProps> = ({ 
+  onClick, 
+  className = '', 
+  size = 'md',
+  disabled = false 
+}) => {
+  const sizeClasses = {
+    sm: 'w-4 h-4',
+    md: 'w-5 h-5',
+    lg: 'w-6 h-6'
+  };
+
+  const textSizeClasses = {
+    sm: 'text-xs',
+    md: 'text-sm',
+    lg: 'text-base'
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        inline-flex items-center gap-1 
+        ${textSizeClasses[size]} 
+        text-pm-gold/70 hover:text-pm-gold 
+        transition-colors duration-200
+        disabled:opacity-50 disabled:cursor-not-allowed
+        ${className}
+      `}
+      title="Assistant IA"
+    >
+      <SparklesIcon className={sizeClasses[size]} />
+      <span>Assister</span>
+    </button>
+  );
 };
 
 export default AIAssistantIcon;

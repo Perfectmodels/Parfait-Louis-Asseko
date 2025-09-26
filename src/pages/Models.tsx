@@ -67,6 +67,11 @@ const Models: React.FC = () => {
         description={seoDescription}
         keywords="mannequins hommes gabon, mannequins femmes gabon, book mannequins, agence de modèles photo, casting modèles libreville"
         image={publicModels[0]?.imageUrl || data?.siteImages.about}
+        socialImage={{
+          title: "Nos Mannequins",
+          subtitle: "Le Visage de la Mode Gabonaise",
+          backgroundImage: publicModels[0]?.imageUrl || data?.siteImages.about
+        }}
       />
       
       {/* Hero Section */}

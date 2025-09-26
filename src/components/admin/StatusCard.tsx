@@ -1,41 +1,47 @@
 import React from 'react';
-import { getStatusColor, getStatusText } from '../../utils/status';
-import { 
-    CheckCircleIcon
-} from '@heroicons/react/24/outline';
 
 interface StatusCardProps {
-    title: string;
-    status: string;
-    description?: string;
-    icon?: React.ReactNode;
-    className?: string;
+  title: string;
+  status: 'online' | 'offline' | 'warning' | 'error';
+  value: string | number;
+  description?: string;
+  icon?: React.ElementType;
 }
 
 const StatusCard: React.FC<StatusCardProps> = ({ 
-    title, 
-    status, 
-    description, 
-    icon,
-    className = ""
+  title, 
+  status, 
+  value, 
+  description, 
+  icon: Icon 
 }) => {
-    return (
-        <div className={`bg-black/50 border border-pm-gold/20 rounded-xl p-6 hover:shadow-lg hover:shadow-pm-gold/10 transition-all duration-300 ${className}`}>
-            <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold text-pm-off-white">{title}</h3>
-                <div className={`p-2 rounded-full ${getStatusColor(status)}`}>
-                    {icon || <CheckCircleIcon className="w-5 h-5" />}
-                </div>
-            </div>
-            {description ? (
-                <p className="text-sm text-pm-off-white/60">{description}</p>
-            ) : (
-                <p className={`text-sm font-medium px-3 py-1 rounded-full inline-block ${getStatusColor(status)}`}>
-                    {getStatusText(status)}
-                </p>
-            )}
-        </div>
-    );
+  const getStatusColor = () => {
+    switch (status) {
+      case 'online':
+        return 'text-green-400 border-green-400/30 bg-green-400/10';
+      case 'offline':
+        return 'text-gray-400 border-gray-400/30 bg-gray-400/10';
+      case 'warning':
+        return 'text-yellow-400 border-yellow-400/30 bg-yellow-400/10';
+      case 'error':
+        return 'text-red-400 border-red-400/30 bg-red-400/10';
+      default:
+        return 'text-pm-gold border-pm-gold/30 bg-pm-gold/10';
+    }
+  };
+
+  return (
+    <div className={`p-6 rounded-xl border ${getStatusColor()}`}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold">{title}</h3>
+        {Icon && <Icon className="w-6 h-6" />}
+      </div>
+      <div className="text-3xl font-bold mb-2">{value}</div>
+      {description && (
+        <p className="text-sm opacity-80">{description}</p>
+      )}
+    </div>
+  );
 };
 
 export default StatusCard;
