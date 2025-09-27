@@ -1,5 +1,7 @@
+'use client';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname, useParams } from 'next/navigation';
 import { useData } from '../../contexts/DataContext';
 import { useAuth } from '../../hooks/useAuth';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -9,30 +11,25 @@ import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
 const mobileTransition = "transition-all duration-300 ease-in-out";
 
-const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
+const NavLinkItem: React.FC<{ href: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ href, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
+  const pathname = usePathname();
+  const isActive = (href === '/' && pathname === href) || (href !== '/' && pathname.startsWith(href));
   const mobileClasses = isMobile ? `${mobileTransition} ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}` : '';
 
   return (
-    <NavLink
-      to={to}
+    <Link
+      href={href}
       onClick={onClick}
-      end={to === '/'}
-      className={({ isActive }) =>
-        `relative py-2 text-pm-off-white uppercase text-sm tracking-widest group hover:text-pm-gold focus-style-self ${mobileClasses} ${isActive ? "text-pm-gold" : ""}`
-      }
+      className={`relative py-2 text-pm-off-white uppercase text-sm tracking-widest group hover:text-pm-gold focus-style-self ${mobileClasses} ${isActive ? "text-pm-gold" : ""}`}
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
-      {({ isActive }) => (
-        <>
-          {label}
-          <span
-            className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${
-              isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100'
-            }`}
-          />
-        </>
-      )}
-    </NavLink>
+      {label}
+      <span
+        className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${
+          isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100'
+        }`}
+      />
+    </Link>
   );
 };
 
@@ -41,7 +38,7 @@ const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: NavLinkType[]; is
     {navLinks.map((link, index) => (
       <NavLinkItem
         key={link.path}
-        to={link.path}
+        href={link.path}
         label={link.label}
         onClick={onLinkClick}
         isMobile={isMobile}
@@ -57,7 +54,7 @@ const LoginButton: React.FC<{ className?: string, isMobile?: boolean; isOpen?: b
 
   return (
     <Link
-      to="/login"
+      href="/login"
       className={`flex items-center gap-1 py-1 px-2 text-pm-gold border border-pm-gold uppercase text-xs tracking-wide hover:bg-pm-gold hover:text-pm-dark focus-style-self rounded-full ${className} ${mobileClasses}`}
       aria-label="Connexion"
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
@@ -99,7 +96,7 @@ const SocialLinksComponent: React.FC<{ socialLinks: SocialLinks | undefined; cla
 };
 
 export const Breadcrumb: React.FC = () => {
-  const location = useLocation();
+  const pathname = usePathname();
   const params = useParams();
   const { data } = useData();
 
@@ -113,7 +110,7 @@ export const Breadcrumb: React.FC = () => {
       '/classroom-debutant': 'Classroom Débutant'
     };
 
-    const pathnames = location.pathname.split('/').filter(Boolean);
+    const pathnames = pathname.split('/').filter(Boolean);
     let currentPath = '';
     let result: { label: string; path: string }[] = [];
 
@@ -133,13 +130,13 @@ export const Breadcrumb: React.FC = () => {
       }
     });
     return result;
-  }, [location.pathname, params, data]);
+  }, [pathname, params, data]);
 
   useEffect(() => {
     const id = 'breadcrumb-schema-script';
     let el = document.getElementById(id) as HTMLScriptElement | null;
 
-    if (crumbs.length > 1) {
+    if (typeof window !== 'undefined' && crumbs.length > 1) {
       const schema = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -164,7 +161,7 @@ export const Breadcrumb: React.FC = () => {
     return () => { const e = document.getElementById(id); if (e) e.remove(); };
   }, [crumbs]);
 
-  if (crumbs.length <= 1 || location.pathname.startsWith('/login') || location.pathname.startsWith('/admin')) return null;
+  if (crumbs.length <= 1 || pathname.startsWith('/login') || pathname.startsWith('/admin')) return null;
 
   return (
     <div className="bg-black border-b border-pm-gold/20 print-hide">
@@ -179,7 +176,7 @@ export const Breadcrumb: React.FC = () => {
                   {last ? (
                     <span className="font-bold text-pm-gold truncate" aria-current="page">{crumb.label}</span>
                   ) : (
-                    <Link to={crumb.path} className="hover:text-pm-gold">{crumb.label}</Link>
+                    <Link href={crumb.path} className="hover:text-pm-gold">{crumb.label}</Link>
                   )}
                 </li>
               );
@@ -195,7 +192,7 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { data } = useData();
-  const location = useLocation();
+  const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -208,7 +205,7 @@ const Header: React.FC = () => {
   }, []);
 
   // Close mobile on route change
-  useEffect(() => { if (isOpen) setIsOpen(false); }, [location.pathname]);
+  useEffect(() => { if (isOpen) setIsOpen(false); }, [pathname]);
 
   // Lock scroll + trap focus
   useEffect(() => {
@@ -262,14 +259,14 @@ const Header: React.FC = () => {
       <header className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 print-hide ${isScrolled ? 'bg-black/80 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'}`}>
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center">
           {siteConfig?.logo && (
-            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+            <Link href="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
               <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto hover:scale-105 transition" />
             </Link>
           )}
           <nav className="hidden lg:flex items-center gap-8">
             <NavLinks navLinks={processedNavLinks} />
             <div className="flex items-center gap-4 pl-6 border-l border-pm-gold/20">
-              <Link to="/casting-formulaire" className="px-5 py-2 bg-pm-gold text-pm-dark font-bold uppercase text-xs tracking-widest rounded-full hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20 transition">Postuler</Link>
+              <Link href="/casting-formulaire" className="px-5 py-2 bg-pm-gold text-pm-dark font-bold uppercase text-xs tracking-widest rounded-full hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20 transition">Postuler</Link>
               {!isAuthenticated && <LoginButton />}
               <SocialLinksComponent socialLinks={socialLinks} />
               {isAuthenticated && <LogoutButton onClick={handleLogout} />}
@@ -289,7 +286,7 @@ const Header: React.FC = () => {
           <nav className="flex flex-col p-8 gap-6">
             <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile isOpen={isOpen} />
             <div className={`text-center ${mobileTransition} ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`} style={{ transitionDelay: `${isOpen ? applyDelay : 0}ms` }}>
-              <Link to="/casting-formulaire" onClick={() => setIsOpen(false)} className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white transition">Postuler</Link>
+              <Link href="/casting-formulaire" onClick={() => setIsOpen(false)} className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white transition">Postuler</Link>
             </div>
             {!isAuthenticated && <LoginButton isMobile isOpen={isOpen} delay={applyDelay + 50} />}
             {isAuthenticated && <LogoutButton onClick={handleLogout} isMobile isOpen={isOpen} delay={logoutDelay} />}

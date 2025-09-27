@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -40,7 +40,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
   const { data, isInitialized, saveData } = useData();
   const { login } = useAuth();
 
@@ -66,7 +66,7 @@ const Login: React.FC = () => {
       
       if (success) {
         updateUserActivity('Administrateur', 'admin');
-        navigate('/admin');
+        router.push('/admin');
       } else {
         setError('Erreur lors de la connexion');
       }
@@ -97,7 +97,7 @@ const Login: React.FC = () => {
           await saveData({ ...data, models: updatedModels });
           updateUserActivity(loggedInModel.name, 'student');
           
-          navigate('/profil');
+          router.push('/profil');
         } else {
           setError('Erreur lors de la connexion');
         }
@@ -129,7 +129,7 @@ const Login: React.FC = () => {
           await saveData({ ...data, beginnerStudents: updatedBeginners });
           updateUserActivity(loggedInBeginner.name, 'beginner');
           
-          navigate('/profil');
+          router.push('/profil');
         } else {
           setError('Erreur lors de la connexion');
         }
@@ -147,7 +147,7 @@ const Login: React.FC = () => {
         sessionStorage.setItem('userId', loggedInJury.id);
         sessionStorage.setItem('userName', loggedInJury.name);
         updateUserActivity(loggedInJury.name, 'jury');
-        navigate('/jury/casting');
+        router.push('/jury/casting');
         return;
     }
     
@@ -162,7 +162,7 @@ const Login: React.FC = () => {
         sessionStorage.setItem('userId', loggedInStaff.id);
         sessionStorage.setItem('userName', loggedInStaff.name);
         updateUserActivity(loggedInStaff.name, 'registration');
-        navigate('/enregistrement/casting');
+        router.push('/enregistrement/casting');
         return;
     }
 
