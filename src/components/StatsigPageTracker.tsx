@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useStatsig } from '../hooks/useStatsig';
 
 interface StatsigPageTrackerProps {
@@ -7,20 +7,23 @@ interface StatsigPageTrackerProps {
 }
 
 const StatsigPageTracker: React.FC<StatsigPageTrackerProps> = ({ children }) => {
-    const location = useLocation();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { logPageView, isReady } = useStatsig();
 
     useEffect(() => {
         if (isReady) {
-            // Logger la page view avec des métadonnées
-            logPageView(location.pathname, {
-                pathname: location.pathname,
-                search: location.search,
-                hash: location.hash,
+            const search = searchParams.toString();
+            const hash = window.location.hash;
+
+            logPageView(pathname, {
+                pathname: pathname,
+                search: search ? `?${search}` : '',
+                hash: hash,
                 timestamp: new Date().toISOString()
             });
         }
-    }, [location, logPageView, isReady]);
+    }, [pathname, searchParams, logPageView, isReady]);
 
     return <>{children}</>;
 };

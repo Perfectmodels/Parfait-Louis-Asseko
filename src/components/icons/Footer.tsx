@@ -1,5 +1,6 @@
+'use client';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useData } from '../../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
 import { MapPinIcon, PhoneIcon, EnvelopeIcon, HeartIcon, SparklesIcon, UsersIcon, StarIcon, ShoppingBagIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
@@ -27,8 +28,8 @@ const Footer: React.FC = () => {
             alert("Veuillez entrer une adresse email valide.");
             return;
         }
-        // Ici : envoyer l'email vers Firebase ou API
-        console.log("Email soumis :", email);
+        // Here: send email to Firebase or API
+        console.log("Email submitted:", email);
         setEmail('');
         alert("Merci pour votre abonnement !");
     };
@@ -80,12 +81,11 @@ const Footer: React.FC = () => {
                     {/* Column 1: Brand & Social */}
                     <div className="space-y-6 hover:translate-y-1 transition-transform duration-300">
                         {siteConfig?.logo && (
-                            <Link to="/" className="block group">
+                            <Link href="/" className="block group">
                                 <img 
                                     src={siteConfig.logo} 
                                     alt="Perfect Models Management Logo" 
                                     className="h-16 w-auto transition-transform duration-300 group-hover:scale-105"
-                                    loading="lazy"
                                 />
                             </Link>
                         )}
@@ -128,7 +128,7 @@ const Footer: React.FC = () => {
                         <ul className="space-y-3">
                             {allFooterLinks.map(link => (
                                 <li key={link.path}>
-                                    <Link to={link.path} className="group flex items-center gap-2 text-sm text-pm-off-white/80 hover:text-pm-gold transition-all duration-300 hover:translate-x-1">
+                                    <Link href={link.path} className="group flex items-center gap-2 text-sm text-pm-off-white/80 hover:text-pm-gold transition-all duration-300 hover:translate-x-1">
                                         <span className="w-1 h-1 bg-pm-gold rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                         {link.footerLabel || link.label}
                                     </Link>
@@ -146,7 +146,7 @@ const Footer: React.FC = () => {
                         <ul className="space-y-3">
                            {keyServices.map(service => (
                                <li key={service.label}>
-                                    <Link to={service.link} className="group flex items-center gap-3 text-sm text-pm-off-white/80 hover:text-pm-gold transition-all duration-300 hover:translate-x-1">
+                                    <Link href={service.link} className="group flex items-center gap-3 text-sm text-pm-off-white/80 hover:text-pm-gold transition-all duration-300 hover:translate-x-1">
                                         {service.icon}
                                        {service.label}
                                    </Link>
@@ -197,9 +197,9 @@ const Footer: React.FC = () => {
                             <span>Tous droits réservés</span>
                         </div>
                         <div className="flex items-center gap-6 text-sm">
-                            <Link to="/terms-of-use" className="text-pm-off-white/60 hover:text-pm-gold transition-colors hover:underline">Conditions d'Utilisation</Link>
+                            <Link href="/terms-of-use" className="text-pm-off-white/60 hover:text-pm-gold transition-colors hover:underline">Conditions d'Utilisation</Link>
                             <span className="text-pm-gold/40">|</span>
-                            <Link to="/privacy-policy" className="text-pm-off-white/60 hover:text-pm-gold transition-colors hover:underline">Politique de Confidentialité</Link>
+                            <Link href="/privacy-policy" className="text-pm-off-white/60 hover:text-pm-gold transition-colors hover:underline">Politique de Confidentialité</Link>
                         </div>
                         <div className="flex items-center gap-1 text-pm-gold/60 text-sm">
                             <span>Fait par</span>

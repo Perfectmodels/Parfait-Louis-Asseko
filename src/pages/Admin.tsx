@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Outlet } from 'react-router-dom';
 import AdminLayout from '../components/AdminLayout';
 import AdminCard from '../components/admin/AdminCard';
 import { StatCard } from '../components/admin/AdminStats';
@@ -71,10 +70,6 @@ const Admin: React.FC = () => {
                 
             {/* Contenu des onglets */}
             <div className="min-h-screen">
-                {/* Outlet pour les sous-routes */}
-                <Outlet />
-                
-                {/* Dashboard par défaut */}
                 <section className="animate-fade-in">
                     <h2 className="text-2xl font-playfair text-pm-gold mb-6">Vue d'ensemble</h2>
                     

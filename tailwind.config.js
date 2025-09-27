@@ -1,8 +1,11 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}", // Ajout pour Next.js App Router
+    "./index.html", // Conservé pour la compatibilité avec Vite
+    "./src/**/*.{js,ts,jsx,tsx}", // Conservé pour la compatibilité avec Vite
   ],
   theme: {
     extend: {
@@ -12,8 +15,10 @@ export default {
         'pm-off-white': '#f0f0f0',
       },
       fontFamily: {
-        'playfair': ['"Playfair Display"', 'serif'],
-        'montserrat': ['"Montserrat"', 'sans-serif'],
+        sans: ['var(--font-montserrat)', 'sans-serif'],
+        serif: ['var(--font-playfair)', 'serif'],
+        'playfair': ['var(--font-playfair)', 'serif'],
+        'montserrat': ['var(--font-montserrat)', 'sans-serif'],
       },
       animation: {
           'marquee': 'marquee 60s linear infinite',

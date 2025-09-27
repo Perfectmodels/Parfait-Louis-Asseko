@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Service } from '../types';
 import { 
     AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
@@ -33,7 +33,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
             </div>
             <div className="mt-auto pt-6">
                 <Link 
-                    to={`/services/${service.slug}`}
+                    href={`/services/${service.slug}`}
                     className={`inline-block px-8 py-3 font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 shadow-md ${
                         service.isComingSoon 
                         ? 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600' 

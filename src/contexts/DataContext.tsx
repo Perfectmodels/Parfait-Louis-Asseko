@@ -1,4 +1,4 @@
-
+'use client';
 import React, { createContext, useContext } from 'react';
 import { useDataStore, AppData } from '../hooks/useDataStore';
 
@@ -10,8 +10,8 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | null>(null);
 
-export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const store = useDataStore();
+export const DataProvider: React.FC<{ children: React.ReactNode; initialData: AppData | null }> = ({ children, initialData }) => {
+  const store = useDataStore(initialData);
   return <DataContext.Provider value={store}>{children}</DataContext.Provider>;
 };
 

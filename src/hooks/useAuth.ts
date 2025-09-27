@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { sessionService } from '../services/sessionService';
 
 export interface AuthUser {
@@ -12,7 +12,7 @@ export interface AuthUser {
 export const useAuth = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Fonction pour vérifier l'authentification
   const checkAuth = useCallback(() => {
@@ -96,17 +96,17 @@ export const useAuth = () => {
       // Nettoyer la session
       sessionService.clearSession();
       setUser(null);
-      navigate('/login');
+      router.push('/login');
       
       console.log('✅ Déconnexion réussie');
       return true;
     } catch (error) {
       console.error('❌ Erreur lors de la déconnexion:', error);
       setUser(null);
-      navigate('/login');
+      router.push('/login');
       return false;
     }
-  }, [navigate]);
+  }, [router]);
 
   // Vérifier l'authentification au chargement
   useEffect(() => {

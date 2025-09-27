@@ -93,9 +93,9 @@ export interface AppData {
     photoshootBriefs: any[];
 }
 
-export const useDataStore = () => {
-    const [data, setData] = useState<AppData | null>(null);
-    const [isInitialized, setIsInitialized] = useState(false);
+export const useDataStore = (initialData: AppData | null = null) => {
+    const [data, setData] = useState<AppData | null>(initialData);
+    const [isInitialized, setIsInitialized] = useState(!!initialData);
 
     const handleError = (context: string, error: any) => console.error(`${context} error:`, error);
 
@@ -173,6 +173,8 @@ export const useDataStore = () => {
     }, []);
 
     useEffect(() => {
+        if (isInitialized) return;
+
         // Timeout de sécurité pour éviter que les pages restent bloquées
         const timeoutId = setTimeout(() => {
             if (!isInitialized) {

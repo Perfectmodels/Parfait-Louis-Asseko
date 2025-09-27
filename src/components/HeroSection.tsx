@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRightIcon, PlayIcon, StarIcon } from '@heroicons/react/24/outline';
 import CountdownTimer from './CountdownTimer';
@@ -82,7 +82,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ nextEvent }) => {
                                  <CountdownTimer targetDate={nextEvent.date} />
                              </div>
                              <Link 
-                                 to="/fashion-day-application" 
+                                 href="/fashion-day-application" 
                                  className="mt-4 inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform"
                              >
                                  Participer à l'Édition 2
@@ -96,7 +96,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ nextEvent }) => {
                              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                          >
                              <Link
-                                 to="/mannequins"
+                                 href="/mannequins"
                                  className="group inline-flex items-center gap-3 bg-pm-gold text-pm-dark px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:scale-105 transition-all duration-300 shadow-lg shadow-pm-gold/20"
                              >
                                  Découvrir nos mannequins
@@ -104,7 +104,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ nextEvent }) => {
                              </Link>
                              
                              <Link
-                                 to="/services"
+                                 href="/services"
                                  className="group inline-flex items-center gap-3 border-2 border-pm-gold text-pm-gold px-8 py-4 rounded-full font-bold text-lg hover:bg-pm-gold hover:text-pm-dark transition-all duration-300"
                              >
                                  <PlayIcon className="w-5 h-5" />
