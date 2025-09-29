@@ -4,7 +4,6 @@ import { AIAssistantProps } from '../types';
 import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 import { GoogleGenAI, Type } from '@google/genai';
-import { GEMINI_CONFIG } from '../config/geminiConfig';
 
 const getSuggestions = (fieldName: string): string[] => {
     const lowerFieldName = fieldName.toLowerCase();
@@ -88,10 +87,14 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
         };
 
         try {
-            const ai = new GoogleGenAI({ apiKey: GEMINI_CONFIG.apiKey });
+            if (!process.env.API_KEY) {
+                throw new Error("La clé API n'est pas configurée.");
+            }
+            
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             let response;
-            const model = GEMINI_CONFIG.model;
+            const model = 'gemini-2.5-flash';
 
             if (jsonSchema) {
                 const typedSchema = convertSchema(jsonSchema);
