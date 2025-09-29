@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
@@ -7,26 +7,15 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const userRole = sessionStorage.getItem('classroom_role');
+  const hasAccess = sessionStorage.getItem('classroom_access') === 'granted';
+  const location = useLocation();
 
-  useEffect(() => {
-    const userRole = sessionStorage.getItem('classroom_role');
-    const hasAccess = sessionStorage.getItem('classroom_access') === 'granted';
-
-    if (hasAccess && userRole === role) {
-      setIsAuthorized(true);
-    } else {
-      router.replace(`/login?from=${pathname}`);
-    }
-  }, [role, router, pathname]);
-
-  if (!isAuthorized) {
-    return null; // Or a loading spinner
+  if (hasAccess && userRole === role) {
+    return children;
   }
-
-  return children;
+  
+  return <Navigate to="/login" state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;
