@@ -103,15 +103,40 @@ const ModelDetail: React.FC = () => {
   };
 
   const seoDescription = `Explorez le portfolio de ${model.name}, mannequin ${model.gender} de ${model.height} chez Perfect Models Management. Découvrez ses photos, mensurations (${model.measurements.chest}-${model.measurements.waist}-${model.measurements.hips}), et son parcours unique dans la mode.`;
+  const modelFullName = model.name.split(' ');
+  const firstName = modelFullName[0];
+  const lastName = modelFullName.slice(1).join(' ');
+  const modelCategories = model.categories?.join(', ') || '';
+  
+  // Formatage des données pour le SEO
+  const modelTitle = `${model.name} | Portfolio Mannequin ${model.gender} | Perfect Models`;
+  const modelKeywords = [
+    model.name,
+    `mannequin ${model.gender} gabon`,
+    'agence de mannequins libreville',
+    'modèle photo gabon',
+    'casting mannequin gabon',
+    'book mannequin professionnel',
+    modelCategories
+  ].filter(Boolean).join(', ');
 
   return (
     <>
       <SEO
-        title={`${model.name} | Portfolio`}
+        title={modelTitle}
         description={seoDescription}
-        keywords={`${model.name}, mannequin ${model.gender}, modèle photo gabon, agence pmm, booker ${model.name}, mensurations mannequin`}
+        keywords={modelKeywords}
         image={model.imageUrl}
+        type="profile"
+        locale="fr_FR"
+        siteName="Perfect Models Management"
+        twitterCard="summary_large_image"
+        twitterSite="@PerfectModelsGA"
+        twitterCreator="@PerfectModelsGA"
         schema={modelSchema}
+        author={model.name}
+        publishedTime={model.joinedDate || new Date().toISOString().split('T')[0]}
+        // Utilisation d'une date par défaut si joinedDate n'existe pas
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6">

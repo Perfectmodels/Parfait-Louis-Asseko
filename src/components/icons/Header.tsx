@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
@@ -101,73 +100,74 @@ export const Breadcrumb: React.FC = () => {
     const params = useParams();
     const { data } = useData();
 
-    const breadcrumbNameMap: { [key: string]: string } = {
-        '/agence': 'Agence',
-        '/mannequins': 'Nos Mannequins',
-        '/fashion-day': 'PFD',
-        '/magazine': 'Magazine',
-        '/contact': 'Contact',
-        '/services': 'Services',
-        '/casting': 'Casting',
-        '/casting-formulaire': 'Postuler au Casting',
-        '/fashion-day-application': 'Candidature PFD',
-    };
-    
-    const pathnames = location.pathname.split('/').filter(Boolean);
-    
-    if (pathnames.length === 0 || location.pathname.startsWith('/login') || location.pathname.startsWith('/admin')) {
-        return null;
-    }
+    const crumbs = useMemo(() => {
+        const breadcrumbNameMap: { [key: string]: string } = {
+            '/agence': 'Agence', '/mannequins': 'Nos Mannequins', '/fashion-day': 'PFD',
+            '/magazine': 'Magazine', '/contact': 'Contact', '/services': 'Services',
+            '/casting': 'Casting', '/casting-formulaire': 'Postuler au Casting',
+            '/fashion-day-application': 'Candidature PFD', '/profil': 'Mon Profil',
+            '/formations': 'Classroom', '/formations/forum': 'Forum',
+            '/classroom-debutant': 'Classroom Débutant'
+        };
 
-    let crumbs = [{ label: 'Accueil', path: '/' }];
-
-    // Specific route structures
-    if (location.pathname.startsWith('/mannequins/')) {
-        crumbs.push({ label: 'Nos Mannequins', path: '/mannequins' });
-        const model = data?.models.find(m => m.id === params.id);
-        if (model) crumbs.push({ label: model.name, path: location.pathname });
-    } else if (location.pathname.startsWith('/magazine/')) {
-        crumbs.push({ label: 'Magazine', path: '/magazine' });
-        const article = data?.articles.find(a => a.slug === params.slug);
-        if (article) crumbs.push({ label: article.title, path: location.pathname });
-    } else if (location.pathname.startsWith('/formations/forum/')) {
-        crumbs.push({ label: 'Classroom', path: '/formations' });
-        crumbs.push({ label: 'Forum', path: '/formations/forum' });
-        const thread = data?.forumThreads.find(t => t.id === params.threadId);
-        if (thread) crumbs.push({ label: thread.title, path: location.pathname });
-    } else if (location.pathname.startsWith('/formations/') && params.moduleSlug && params.chapterSlug) {
-        crumbs.push({ label: 'Classroom', path: '/formations' });
-        const module = data?.courseData.find(m => m.slug === params.moduleSlug);
-        if (module) {
-            const chapter = module.chapters.find(c => c.slug === params.chapterSlug);
-            const firstChapterSlug = module.chapters[0]?.slug;
-            crumbs.push({ label: module.title, path: `/formations/${module.slug}/${firstChapterSlug}` });
-            if (chapter) crumbs.push({ label: chapter.title, path: location.pathname });
-        }
-    } else if (location.pathname.startsWith('/classroom-debutant/') && params.moduleSlug && params.chapterSlug) {
-        crumbs.push({ label: 'Classroom Débutant', path: '/classroom-debutant' });
-        const module = data?.beginnerCourseData.find(m => m.slug === params.moduleSlug);
-        if (module) {
-            const chapter = module.chapters.find(c => c.slug === params.chapterSlug);
-            const firstChapterSlug = module.chapters[0]?.slug;
-            crumbs.push({ label: module.title, path: `/classroom-debutant/${module.slug}/${firstChapterSlug}` });
-            if (chapter) crumbs.push({ label: chapter.title, path: location.pathname });
-        }
-    } else if (location.pathname === '/profil') {
-        crumbs.push({ label: 'Classroom', path: '/formations' });
-        crumbs.push({ label: 'Mon Profil', path: '/profil' });
-    } else {
-        // Generic handling for simple, non-nested routes
+        const pathnames = location.pathname.split('/').filter(Boolean);
+        let currentCrumbs = [{ label: 'Accueil', path: '/' }];
         let currentPath = '';
+
         pathnames.forEach(segment => {
             currentPath += `/${segment}`;
             if (breadcrumbNameMap[currentPath]) {
-                crumbs.push({ label: breadcrumbNameMap[currentPath], path: currentPath });
+                currentCrumbs.push({ label: breadcrumbNameMap[currentPath], path: currentPath });
+            } else if (params.id && currentPath.startsWith('/mannequins/')) {
+                const model = data?.models.find(m => m.id === params.id);
+                if (model) currentCrumbs.push({ label: model.name, path: currentPath });
+            } else if (params.slug && currentPath.startsWith('/magazine/')) {
+                const article = data?.articles.find(a => a.slug === params.slug);
+                if (article) currentCrumbs.push({ label: article.title, path: currentPath });
+            } else if (params.threadId && currentPath.startsWith('/formations/forum/')) {
+                const thread = data?.forumThreads.find(t => t.id === params.threadId);
+                if (thread) currentCrumbs.push({ label: thread.title, path: currentPath });
             }
         });
-    }
+        return currentCrumbs;
+    }, [location.pathname, params, data]);
 
-    if (crumbs.length <= 1) return null;
+    useEffect(() => {
+        const schemaElementId = 'breadcrumb-schema-script';
+        let schemaElement = document.getElementById(schemaElementId) as HTMLScriptElement | null;
+
+        if (crumbs.length > 1) {
+            const breadcrumbSchema = {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": crumbs.map((crumb, index) => ({
+                    "@type": "ListItem",
+                    "position": index + 1,
+                    "name": crumb.label,
+                    "item": `${window.location.origin}/#${crumb.path}`
+                }))
+            };
+            
+            if (!schemaElement) {
+                schemaElement = document.createElement('script');
+                schemaElement.id = schemaElementId;
+                schemaElement.type = 'application/ld+json';
+                document.head.appendChild(schemaElement);
+            }
+            schemaElement.innerHTML = JSON.stringify(breadcrumbSchema);
+        } else if (schemaElement) {
+            schemaElement.remove();
+        }
+
+        return () => {
+            const el = document.getElementById(schemaElementId);
+            if (el) el.remove();
+        };
+    }, [crumbs]);
+    
+    if (crumbs.length <= 1 || location.pathname.startsWith('/login') || location.pathname.startsWith('/admin')) {
+        return null;
+    }
 
     return (
         <div className="bg-black border-b border-pm-gold/20 print-hide">
