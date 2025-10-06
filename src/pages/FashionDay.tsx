@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { FashionDayEvent } from '../types';
+import { FashionDayEvent, Artist } from '../types';
 
 const FashionDay: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -125,26 +125,17 @@ const FashionDay: React.FC = () => {
               </div>
             )}
 
-            {/* Featured Artists and Models */}
-            {selectedEdition.artists && selectedEdition.featuredModels && (
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12 pt-8 border-t border-pm-gold/10">
-                  <div>
-                      <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><MicrophoneIcon className="w-6 h-6" aria-hidden="true"/> Artistes & Performances</h3>
-                      <ul className="list-disc list-inside text-pm-off-white/80 space-y-2">
-                          {/* FIX: Correctly render artist name and description. An Artist object cannot be rendered directly as a ReactNode. */}
-                          {selectedEdition.artists.map((artist, index) => <li key={index}>{artist.name} - <span className="text-xs text-pm-off-white/70">{artist.description}</span></li>)}
-                      </ul>
-                  </div>
-                  <div>
-                      <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><UserGroupIcon className="w-6 h-6" aria-hidden="true"/> Mannequins Vedettes</h3>
-                      <p className="text-pm-off-white/80">
-                          {selectedEdition.featuredModels.join(', ')} et toute la Perfect Models Squad.
-                      </p>
-                  </div>
+            {/* Featured Models */}
+            {selectedEdition.featuredModels && (
+               <div className="my-12 pt-8 border-t border-pm-gold/10">
+                    <h3 className="flex items-center justify-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><UserGroupIcon className="w-6 h-6" aria-hidden="true"/> Mannequins Vedettes</h3>
+                    <p className="text-pm-off-white/80 text-center">
+                        {selectedEdition.featuredModels.join(', ')} et toute la Perfect Models Squad.
+                    </p>
                </div> 
             )}
 
-            {/* Stylists Gallery */}
+            {/* Stylists */}
             {selectedEdition.stylists && (
               <div>
                 <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Stylistes Participants</h3>
@@ -156,7 +147,7 @@ const FashionDay: React.FC = () => {
                         <p className="text-sm text-pm-off-white/70">{stylist.description}</p>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                          {stylist.images.map((img, idx) => (
+                          {(stylist.images || []).map((img, idx) => (
                               <button key={idx} onClick={() => setSelectedImage(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${stylist.name}`} className="aspect-square block bg-black group overflow-hidden border border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300">
                                   <img src={img} alt={`${stylist.name} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
                               </button>
@@ -164,6 +155,39 @@ const FashionDay: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Artists */}
+            {selectedEdition.artists && (
+              <div>
+                <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Performances Artistiques</h3>
+                <div className="space-y-12">
+                  {selectedEdition.artists.map((artist: Artist | string, index: number) => {
+                    const isArtistObject = typeof artist === 'object' && artist !== null;
+                    const artistName = isArtistObject ? (artist as Artist).name : artist as string;
+                    const artistDescription = isArtistObject ? (artist as Artist).description : null;
+                    const artistImages = (isArtistObject && Array.isArray((artist as Artist).images)) ? (artist as Artist).images : [];
+
+                    return (
+                      <div key={`${artistName}-${index}`} className="bg-pm-dark p-6 border border-pm-gold/10 rounded-lg">
+                        <div className="text-center mb-4">
+                          <h4 className="text-2xl font-bold font-playfair text-pm-gold">{artistName}</h4>
+                          {artistDescription && <p className="text-sm text-pm-off-white/70">{artistDescription}</p>}
+                        </div>
+                        {artistImages.length > 0 && (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                              {artistImages.map((img, idx) => (
+                                  <button key={idx} onClick={() => setSelectedImage(img)} aria-label={`Agrandir l'image de la performance ${idx + 1} de ${artistName}`} className="aspect-square block bg-black group overflow-hidden border border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300">
+                                      <img src={img} alt={`${artistName} - performance ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+                                  </button>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -230,6 +254,5 @@ const InfoPill: React.FC<InfoPillProps> = ({ icon: Icon, title, content }) => (
         </div>
     </div>
 );
-
 
 export default FashionDay;

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link, useParams } from 'react-router-dom';
@@ -121,6 +119,31 @@ const ArticleDetail: React.FC = () => {
     return <NotFound />;
   }
   
+  const articleSchema = {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": article.title,
+      "image": [
+        article.imageUrl,
+        ...article.content.filter(c => c.type === 'image').map(c => (c as { src: string }).src)
+      ],
+      "datePublished": new Date(article.date).toISOString(),
+      "author": [{
+          "@type": "Organization",
+          "name": article.author,
+          "url": window.location.origin
+      }],
+      "publisher": {
+          "@type": "Organization",
+          "name": "Perfect Models Management",
+          "logo": {
+              "@type": "ImageObject",
+              "url": data?.siteConfig.logo
+          }
+      },
+      "description": article.excerpt
+  };
+
   const renderContent = (content: ArticleContent) => {
     switch (content.type) {
       case 'heading':
@@ -160,6 +183,7 @@ const ArticleDetail: React.FC = () => {
         description={article.excerpt}
         keywords={article.tags?.join(', ')}
         image={article.imageUrl}
+        schema={articleSchema}
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6 max-w-4xl">
@@ -195,6 +219,7 @@ const ArticleDetail: React.FC = () => {
                     <button 
                         onClick={() => handleReaction('like')} 
                         disabled={!!userReaction} 
+                        aria-pressed={userReaction === 'like'}
                         className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${userReaction === 'like' ? 'bg-pm-gold text-pm-dark border-pm-gold' : 'border-pm-off-white/50 hover:bg-pm-dark'}`}
                     >
                         <HandThumbUpIcon className="w-5 h-5" /> J'aime ({article.reactions?.likes || 0})
@@ -202,6 +227,7 @@ const ArticleDetail: React.FC = () => {
                     <button 
                         onClick={() => handleReaction('dislike')} 
                         disabled={!!userReaction} 
+                        aria-pressed={userReaction === 'dislike'}
                         className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${userReaction === 'dislike' ? 'bg-pm-gold text-pm-dark border-pm-gold' : 'border-pm-off-white/50 hover:bg-pm-dark'}`}
                     >
                         <HandThumbDownIcon className="w-5 h-5" /> Je n'aime pas ({article.reactions?.dislikes || 0})
@@ -236,21 +262,29 @@ const ArticleDetail: React.FC = () => {
             <div className="bg-black p-6 border border-pm-gold/10 rounded-lg mb-8">
                 <form onSubmit={handleCommentSubmit} className="space-y-4">
                   <h3 className="font-bold text-lg mb-2">Laisser un commentaire</h3>
-                  <input
-                    type="text"
-                    placeholder="Votre nom (optionnel)"
-                    value={commentAuthor}
-                    onChange={(e) => setCommentAuthor(e.target.value)}
-                    className="admin-input"
-                  />
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    rows={4}
-                    className="admin-input admin-textarea"
-                    placeholder="Votre message..."
-                    required
-                  />
+                  <div>
+                    <label htmlFor="commentAuthor" className="sr-only">Votre nom</label>
+                    <input
+                      id="commentAuthor"
+                      type="text"
+                      placeholder="Votre nom (optionnel)"
+                      value={commentAuthor}
+                      onChange={(e) => setCommentAuthor(e.target.value)}
+                      className="admin-input"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="newComment" className="sr-only">Votre message</label>
+                    <textarea
+                      id="newComment"
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      rows={4}
+                      className="admin-input admin-textarea"
+                      placeholder="Votre message..."
+                      required
+                    />
+                  </div>
                   <div className="text-right">
                     <button type="submit" disabled={isSubmitting} className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white disabled:opacity-50">
                       {isSubmitting ? 'Publication...' : 'Publier'}
@@ -263,7 +297,7 @@ const ArticleDetail: React.FC = () => {
               {comments.length > 0 ? (
                 comments.map(comment => (
                   <div key={comment.id} className="flex items-start gap-4">
-                    <UserCircleIcon className="w-10 h-10 text-pm-gold/30 flex-shrink-0" />
+                    <UserCircleIcon className="w-10 h-10 text-pm-gold/30 flex-shrink-0" aria-hidden="true" />
                     <div className="flex-grow bg-black p-4 border border-pm-off-white/10 rounded-lg">
                       <div className="flex justify-between items-center text-sm mb-2">
                         <p className="font-bold text-pm-off-white">{comment.authorName}</p>

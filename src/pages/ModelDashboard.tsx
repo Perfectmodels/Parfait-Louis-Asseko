@@ -1,27 +1,26 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
-// FIX: Updated react-router-dom imports for v6 compatibility. Replaced `useHistory` with `useNavigate`.
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
-// FIX: Corrected import path for type definition.
-import { Model } from '../types';
+import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { Model, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
 
-type ActiveTab = 'profile' | 'results';
+type ActiveTab = 'profile' | 'results' | 'briefs';
 
 const ModelDashboard: React.FC = () => {
     const { data, saveData } = useData();
-    // FIX: Use useNavigate for react-router-dom v6 compatibility.
     const navigate = useNavigate();
     const userId = sessionStorage.getItem('userId');
     const [editableModel, setEditableModel] = useState<Model | null>(null);
     const [activeTab, setActiveTab] = useState<ActiveTab>('profile');
+    const [expandedBriefId, setExpandedBriefId] = useState<string | null>(null);
 
     const originalModel = data?.models.find(m => m.id === userId);
     const courseModulesWithQuizzes = data?.courseData?.filter(m => m.quiz && m.quiz.length > 0) || [];
+
+    const myBriefs = data?.photoshootBriefs.filter(b => b.modelId === userId).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
+    const newBriefsCount = myBriefs.filter(b => b.status === 'Nouveau').length;
 
     useEffect(() => {
         if (originalModel) {
@@ -49,8 +48,27 @@ const ModelDashboard: React.FC = () => {
 
     const handleLogout = () => {
         sessionStorage.clear();
-        // FIX: Use navigate for navigation in react-router-dom v6.
         navigate('/login');
+    };
+
+    const handleMarkAsRead = async (briefId: string) => {
+        if (!data) return;
+        const updatedBriefs = data.photoshootBriefs.map(b => 
+            b.id === briefId ? { ...b, status: 'Lu' as const } : b
+        );
+        await saveData({ ...data, photoshootBriefs: updatedBriefs });
+    };
+
+    const handleToggleBrief = async (briefId: string) => {
+        const newExpandedId = expandedBriefId === briefId ? null : briefId;
+        setExpandedBriefId(newExpandedId);
+
+        if (newExpandedId) {
+            const brief = myBriefs.find(b => b.id === briefId);
+            if (brief && brief.status === 'Nouveau') {
+                await handleMarkAsRead(briefId);
+            }
+        }
     };
 
     if (!editableModel) {
@@ -82,7 +100,6 @@ const ModelDashboard: React.FC = () => {
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    {/* Sidebar / Quick Links */}
                     <aside className="lg:col-span-1 space-y-4">
                          <Link to="/formations" className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
                              <BookOpenIcon className="w-8 h-8 text-pm-gold mb-3" />
@@ -96,12 +113,12 @@ const ModelDashboard: React.FC = () => {
                         </Link>
                     </aside>
                     
-                    {/* Main Content with Tabs */}
                     <main className="lg:col-span-3">
                         <div className="border-b border-pm-gold/20 mb-6">
                             <nav className="flex space-x-4" aria-label="Tabs">
                                 <TabButton name="Mon Profil" icon={UserIcon} isActive={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
                                 <TabButton name="Mes Résultats" icon={PresentationChartLineIcon} isActive={activeTab === 'results'} onClick={() => setActiveTab('results')} />
+                                <TabButton name="Briefings" icon={EnvelopeIcon} isActive={activeTab === 'briefs'} onClick={() => setActiveTab('briefs')} notificationCount={newBriefsCount} />
                             </nav>
                         </div>
                         
@@ -139,6 +156,18 @@ const ModelDashboard: React.FC = () => {
                                     )}
                                 </div>
                             )}
+                            {activeTab === 'briefs' && (
+                                <div className="bg-black p-6 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30 space-y-4">
+                                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">Briefings de Séances Photo</h2>
+                                    {myBriefs.length > 0 ? (
+                                        myBriefs.map(brief => (
+                                            <BriefItem key={brief.id} brief={brief} expandedBriefId={expandedBriefId} onToggle={handleToggleBrief} />
+                                        ))
+                                    ) : (
+                                        <p className="text-center text-pm-off-white/70 py-8">Votre boîte de réception est vide.</p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </main>
                 </div>
@@ -147,10 +176,10 @@ const ModelDashboard: React.FC = () => {
     );
 };
 
-const TabButton: React.FC<{name: string, icon: React.ElementType, isActive: boolean, onClick: () => void}> = ({ name, icon: Icon, isActive, onClick }) => (
+const TabButton: React.FC<{name: string, icon: React.ElementType, isActive: boolean, onClick: () => void, notificationCount?: number}> = ({ name, icon: Icon, isActive, onClick, notificationCount = 0 }) => (
     <button
         onClick={onClick}
-        className={`flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-t-lg transition-colors border-b-2 ${
+        className={`relative flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-t-lg transition-colors border-b-2 ${
             isActive 
             ? 'border-pm-gold text-pm-gold' 
             : 'border-transparent text-pm-off-white/70 hover:text-pm-gold'
@@ -158,7 +187,54 @@ const TabButton: React.FC<{name: string, icon: React.ElementType, isActive: bool
     >
         <Icon className="w-5 h-5" />
         {name}
+        {notificationCount > 0 && (
+            <span className="absolute top-1 -right-1 flex h-4 w-4">
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-xs items-center justify-center">{notificationCount}</span>
+            </span>
+        )}
     </button>
 );
+
+const BriefItem: React.FC<{ brief: PhotoshootBrief, expandedBriefId: string | null, onToggle: (id: string) => void }> = ({ brief, expandedBriefId, onToggle }) => {
+    const isExpanded = expandedBriefId === brief.id;
+    return (
+        <div className="bg-pm-dark/50 border border-pm-off-white/10 rounded-lg overflow-hidden">
+            <button onClick={() => onToggle(brief.id)} className="w-full p-4 text-left flex justify-between items-center hover:bg-pm-dark">
+                <div className="flex items-center gap-3">
+                    {brief.status === 'Nouveau' && <span className="w-2.5 h-2.5 bg-pm-gold rounded-full flex-shrink-0 animate-pulse"></span>}
+                    {brief.status === 'Lu' && <CheckCircleIcon className="w-4 h-4 text-green-500 flex-shrink-0" />}
+                    <span className={`font-bold ${brief.status === 'Nouveau' ? 'text-pm-gold' : 'text-pm-off-white'}`}>{brief.theme}</span>
+                </div>
+                <span className="text-xs text-pm-off-white/60">{new Date(brief.dateTime).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+            </button>
+            {isExpanded && (
+                <div className="p-4 border-t border-pm-gold/20 bg-black animate-fade-in space-y-4">
+                    <div className="flex items-center gap-4 p-3 bg-pm-dark rounded-md">
+                        <CalendarDaysIcon className="w-6 h-6 text-pm-gold flex-shrink-0"/>
+                        <div>
+                            <p className="text-xs text-pm-off-white/70">Date & Heure</p>
+                            <p className="font-semibold">{new Date(brief.dateTime).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' })}</p>
+                        </div>
+                    </div>
+                     <div className="flex items-center gap-4 p-3 bg-pm-dark rounded-md">
+                        <MapPinIcon className="w-6 h-6 text-pm-gold flex-shrink-0"/>
+                        <div>
+                            <p className="text-xs text-pm-off-white/70">Lieu</p>
+                            <p className="font-semibold">{brief.location}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-pm-gold mb-1">Style Vestimentaire</h4>
+                        <p className="text-sm text-pm-off-white/80 whitespace-pre-wrap">{brief.clothingStyle}</p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-pm-gold mb-1">Accessoires</h4>
+                        <p className="text-sm text-pm-off-white/80 whitespace-pre-wrap">{brief.accessories}</p>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default ModelDashboard;
