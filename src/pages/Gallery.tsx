@@ -28,12 +28,12 @@ const Gallery: React.FC = () => {
             id: '1',
             title: 'Mannequins Professionnels',
             description: 'Portfolio de nos mannequins les plus talentueux',
-            coverImage: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+            coverImage: 'https://via.placeholder.com/400x600/1a1a1a/D4AF37?text=Model+Portfolio',
             images: [
-                'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
-                'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
-                'https://i.ibb.co/8XqYzKj/model1.jpg',
-                'https://i.ibb.co/9yZzKj/model2.jpg'
+                'https://via.placeholder.com/400x600/1a1a1a/D4AF37?text=Model+1',
+                'https://via.placeholder.com/400x600/1a1a1a/D4AF37?text=Model+2',
+                'https://via.placeholder.com/400x600/1a1a1a/D4AF37?text=Model+3',
+                'https://via.placeholder.com/400x600/1a1a1a/D4AF37?text=Model+4'
             ],
             category: 'mannequins',
             isPublic: true,
@@ -44,12 +44,12 @@ const Gallery: React.FC = () => {
             id: '2',
             title: 'Perfect Fashion Day 2024',
             description: 'Édition 2024 de notre événement phare',
-            coverImage: 'https://i.ibb.co/8XqYzKj/fashion-day-2024.jpg',
+            coverImage: 'https://via.placeholder.com/500x300/1a1a1a/D4AF37?text=Fashion+Day+2024',
             images: [
-                'https://i.ibb.co/8XqYzKj/fashion-day-2024.jpg',
-                'https://i.ibb.co/9yZzKj/fashion-day-1.jpg',
-                'https://i.ibb.co/8XqYzKj/fashion-day-2.jpg',
-                'https://i.ibb.co/9yZzKj/fashion-day-3.jpg'
+                'https://via.placeholder.com/500x300/1a1a1a/D4AF37?text=Fashion+Day+1',
+                'https://via.placeholder.com/500x300/1a1a1a/D4AF37?text=Fashion+Day+2',
+                'https://via.placeholder.com/500x300/1a1a1a/D4AF37?text=Fashion+Day+3',
+                'https://via.placeholder.com/500x300/1a1a1a/D4AF37?text=Fashion+Day+4'
             ],
             category: 'fashion-day',
             isPublic: true,
@@ -60,11 +60,11 @@ const Gallery: React.FC = () => {
             id: '3',
             title: 'Sessions Casting',
             description: 'Moments forts des sessions de casting',
-            coverImage: 'https://i.ibb.co/9yZzKj/casting-1.jpg',
+            coverImage: 'https://via.placeholder.com/400x300/1a1a1a/D4AF37?text=Casting+Session',
             images: [
-                'https://i.ibb.co/9yZzKj/casting-1.jpg',
-                'https://i.ibb.co/8XqYzKj/casting-2.jpg',
-                'https://i.ibb.co/9yZzKj/casting-3.jpg'
+                'https://via.placeholder.com/400x300/1a1a1a/D4AF37?text=Casting+1',
+                'https://via.placeholder.com/400x300/1a1a1a/D4AF37?text=Casting+2',
+                'https://via.placeholder.com/400x300/1a1a1a/D4AF37?text=Casting+3'
             ],
             category: 'casting',
             isPublic: true,

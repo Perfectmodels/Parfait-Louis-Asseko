@@ -1,30 +1,35 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-import { EmailTemplate, EmailCampaign, EmailRecipient, EmailStats } from '../types';
-import AdminLayout from '../components/AdminLayout';
+import { EmailTemplate, EmailCampaign, EmailStats } from '../types';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminTable from '../components/admin/AdminTable';
 import AdminModal from '../components/admin/AdminModal';
-import AdminCard from '../components/admin/AdminCard';
-import AdminStats from '../components/admin/AdminStats';
+import EmailComposeModal from '../components/admin/EmailComposeModal';
+import EmailInboxModal from '../components/admin/EmailInboxModal';
+import EmailTrackingModal from '../components/admin/EmailTrackingModal';
 import EmailCampaignForm from '../components/admin/EmailCampaignForm';
 import EmailTemplateForm from '../components/admin/EmailTemplateForm';
 import emailService from '../services/emailService';
 import { isBrevoConfigured } from '../config/brevoConfig';
 import { 
     EnvelopeIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon, 
-    PlayIcon, PauseIcon, ClockIcon, ChartBarIcon, 
-    MagnifyingGlassIcon, FunnelIcon, PaperAirplaneIcon,
-    DocumentTextIcon, UsersIcon, CalendarIcon, ExclamationTriangleIcon
+    ChartBarIcon, FunnelIcon, PaperAirplaneIcon,
+    DocumentTextIcon, UsersIcon, ExclamationTriangleIcon,
+    InboxIcon
 } from '@heroicons/react/24/outline';
 
 const AdminEmails: React.FC = () => {
     const { data, saveData } = useData();
-    const [activeTab, setActiveTab] = useState<'campaigns' | 'templates' | 'stats'>('campaigns');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState<'campaigns' | 'templates' | 'stats' | 'compose' | 'inbox' | 'tracking'>('campaigns');
+    const [searchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingCampaign, setEditingCampaign] = useState<EmailCampaign | null>(null);
     const [editingTemplate, setEditingTemplate] = useState<EmailTemplate | null>(null);
+    const [showComposeModal, setShowComposeModal] = useState(false);
+    const [showInboxModal, setShowInboxModal] = useState(false);
+    const [showTrackingModal, setShowTrackingModal] = useState(false);
+    const [sentEmails, setSentEmails] = useState<any[]>([]);
+    const [receivedEmails, setReceivedEmails] = useState<any[]>([]);
 
     // Données locales
     const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -52,7 +57,65 @@ const AdminEmails: React.FC = () => {
         if (data?.emailStats) {
             setEmailStats(data.emailStats);
         }
+        // Initialize with empty arrays if not present in data
+        setSentEmails(data?.sentEmails || []);
+        setReceivedEmails(data?.receivedEmails || []);
     }, [data]);
+
+    // Fonctions de gestion des emails
+    const handleSendEmail = async (emailData: any) => {
+        try {
+            // Simuler l'envoi d'email
+            const sentEmail = {
+                ...emailData,
+                id: `email_${Date.now()}`,
+                status: 'sent',
+                sentAt: new Date().toISOString()
+            };
+            
+            const updatedSentEmails = [...sentEmails, sentEmail];
+            setSentEmails(updatedSentEmails);
+            
+            if (data) {
+                await saveData({ 
+                    ...data, 
+                    sentEmails: updatedSentEmails,
+                    receivedEmails: receivedEmails
+                });
+            }
+            
+            console.log('Email envoyé:', sentEmail);
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi:', error);
+        }
+    };
+
+    const handleReplyEmail = (_: any) => {
+        // Ouvrir le modal de composition avec l'email original comme référence
+        setShowComposeModal(true);
+        // Ici, vous pourriez pré-remplir le formulaire avec les informations de réponse
+    };
+
+    const handleForwardEmail = (_: any) => {
+        // Ouvrir le modal de composition avec l'email original comme référence
+        setShowComposeModal(true);
+        // Ici, vous pourriez pré-remplir le formulaire avec les informations de transfert
+    };
+
+    const handleDeleteEmail = (emailId: string) => {
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer cet email ?')) {
+            const updatedEmails = sentEmails.filter(email => email.id !== emailId);
+            setSentEmails(updatedEmails);
+            
+            if (data) {
+                saveData({ 
+                    ...data, 
+                    sentEmails: updatedEmails,
+                    receivedEmails: receivedEmails
+                });
+            }
+        }
+    };
 
     // Filtrage des campagnes
     const filteredCampaigns = useMemo(() => {
@@ -77,7 +140,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'name',
             label: 'Nom de la campagne',
-            render: (value: any, campaign: EmailCampaign) => (
+            render: (_: any, campaign: EmailCampaign) => (
                 <div>
                     <div className="font-semibold text-pm-off-white">{campaign.name}</div>
                     <div className="text-sm text-pm-off-white/60">{campaign.subject}</div>
@@ -87,7 +150,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'recipients',
             label: 'Destinataires',
-            render: (value: any, campaign: EmailCampaign) => (
+            render: (_: any, campaign: EmailCampaign) => (
                 <div className="flex items-center gap-2">
                     <UsersIcon className="w-4 h-4 text-pm-gold" />
                     <span className="text-sm">{campaign.recipients.length}</span>
@@ -97,7 +160,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'status',
             label: 'Statut',
-            render: (value: any, campaign: EmailCampaign) => {
+            render: (_: any, campaign: EmailCampaign) => {
                 const statusColors = {
                     draft: 'bg-gray-500/20 text-gray-300 border-gray-500/30',
                     scheduled: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
@@ -116,7 +179,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'createdAt',
             label: 'Créé le',
-            render: (value: any, campaign: EmailCampaign) => (
+            render: (_: any, campaign: EmailCampaign) => (
                 <div className="text-sm text-pm-off-white/70">
                     {new Date(campaign.createdAt).toLocaleDateString('fr-FR')}
                 </div>
@@ -125,7 +188,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'stats',
             label: 'Performance',
-            render: (value: any, campaign: EmailCampaign) => (
+            render: (_: any, campaign: EmailCampaign) => (
                 <div className="text-sm">
                     {campaign.openRate && (
                         <div className="text-green-400">
@@ -143,7 +206,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'actions',
             label: 'Actions',
-            render: (value: any, campaign: EmailCampaign) => (
+            render: (_: any, campaign: EmailCampaign) => (
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setEditingCampaign(campaign)}
@@ -177,7 +240,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'name',
             label: 'Nom du template',
-            render: (value: any, template: EmailTemplate) => (
+            render: (_: any, template: EmailTemplate) => (
                 <div>
                     <div className="font-semibold text-pm-off-white">{template.name}</div>
                     <div className="text-sm text-pm-off-white/60">{template.subject}</div>
@@ -187,7 +250,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'sender',
             label: 'Expéditeur',
-            render: (value: any, template: EmailTemplate) => (
+            render: (_: any, template: EmailTemplate) => (
                 <div className="text-sm text-pm-off-white/70">
                     {template.sender.name} &lt;{template.sender.email}&gt;
                 </div>
@@ -196,7 +259,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'createdAt',
             label: 'Créé le',
-            render: (value: any, template: EmailTemplate) => (
+            render: (_: any, template: EmailTemplate) => (
                 <div className="text-sm text-pm-off-white/70">
                     {new Date(template.createdAt).toLocaleDateString('fr-FR')}
                 </div>
@@ -205,7 +268,7 @@ const AdminEmails: React.FC = () => {
         {
             key: 'actions',
             label: 'Actions',
-            render: (value: any, template: EmailTemplate) => (
+            render: (_: any, template: EmailTemplate) => (
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => setEditingTemplate(template)}
@@ -242,7 +305,6 @@ const AdminEmails: React.FC = () => {
             status: 'draft',
             createdAt: new Date().toISOString()
         });
-        setIsCreateModalOpen(true);
     };
 
     const handleCreateTemplate = () => {
@@ -259,7 +321,6 @@ const AdminEmails: React.FC = () => {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
-        setIsCreateModalOpen(true);
     };
 
     const handleSaveCampaign = async (campaign: EmailCampaign) => {
@@ -269,9 +330,13 @@ const AdminEmails: React.FC = () => {
             ? campaigns.map(c => c.id === campaign.id ? campaign : c)
             : [...campaigns, { ...campaign, id: Date.now().toString() }];
         
-        await saveData({ ...data, emailCampaigns: updatedCampaigns });
+        await saveData({ 
+            ...data, 
+            emailCampaigns: updatedCampaigns,
+            sentEmails: sentEmails,
+            receivedEmails: receivedEmails
+        });
         setEditingCampaign(null);
-        setIsCreateModalOpen(false);
     };
 
     const handleSaveTemplate = async (template: EmailTemplate) => {
@@ -281,9 +346,13 @@ const AdminEmails: React.FC = () => {
             ? templates.map(t => t.id === template.id ? template : t)
             : [...templates, { ...template, id: Date.now().toString() }];
         
-        await saveData({ ...data, emailTemplates: updatedTemplates });
+        await saveData({ 
+            ...data, 
+            emailTemplates: updatedTemplates,
+            sentEmails: sentEmails,
+            receivedEmails: receivedEmails
+        });
         setEditingTemplate(null);
-        setIsCreateModalOpen(false);
     };
 
     const handleSendCampaign = async (campaignId: string) => {
@@ -312,7 +381,12 @@ const AdminEmails: React.FC = () => {
             );
             
             if (data) {
-                await saveData({ ...data, emailCampaigns: updatedCampaigns });
+                await saveData({ 
+                    ...data, 
+                    emailCampaigns: updatedCampaigns,
+                    sentEmails: sentEmails,
+                    receivedEmails: receivedEmails
+                });
             }
 
             alert('Campagne envoyée avec succès !');
@@ -326,7 +400,12 @@ const AdminEmails: React.FC = () => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer cette campagne ?')) {
             const updatedCampaigns = campaigns.filter(c => c.id !== campaignId);
             if (data) {
-                await saveData({ ...data, emailCampaigns: updatedCampaigns });
+                await saveData({ 
+                    ...data, 
+                    emailCampaigns: updatedCampaigns,
+                    sentEmails: sentEmails,
+                    receivedEmails: receivedEmails
+                });
             }
         }
     };
@@ -335,21 +414,18 @@ const AdminEmails: React.FC = () => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer ce template ?')) {
             const updatedTemplates = templates.filter(t => t.id !== templateId);
             if (data) {
-                await saveData({ ...data, emailTemplates: updatedTemplates });
+                await saveData({ 
+                    ...data, 
+                    emailTemplates: updatedTemplates,
+                    sentEmails: sentEmails,
+                    receivedEmails: receivedEmails
+                });
             }
         }
     };
 
     return (
-        <AdminLayout 
-            title="Gestion des Emails" 
-            description="Créez et gérez vos campagnes email et templates"
-            breadcrumbs={[
-                { label: "Emails" }
-            ]}
-            showSearch={true}
-            onSearch={setSearchQuery}
-        >
+        <AdminPageWrapper>
             {/* Alerte de configuration */}
             {!isBrevoConfigured() && (
                 <div className="mb-8 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6">
@@ -366,30 +442,42 @@ const AdminEmails: React.FC = () => {
             )}
             {/* Statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <AdminStats
-                    title="Emails Envoyés"
-                    value={emailStats.totalSent}
-                    icon={PaperAirplaneIcon}
-                    color="blue"
-                />
-                <AdminStats
-                    title="Taux d'Ouverture"
-                    value={`${emailStats.openRate.toFixed(1)}%`}
-                    icon={EyeIcon}
-                    color="green"
-                />
-                <AdminStats
-                    title="Taux de Clic"
-                    value={`${emailStats.clickRate.toFixed(1)}%`}
-                    icon={ChartBarIcon}
-                    color="purple"
-                />
-                <AdminStats
-                    title="Templates"
-                    value={templates.length}
-                    icon={DocumentTextIcon}
-                    color="orange"
-                />
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-pm-off-white/70 text-sm">Emails Envoyés</p>
+                            <p className="text-2xl font-bold text-pm-gold">{emailStats.totalSent}</p>
+                        </div>
+                        <PaperAirplaneIcon className="w-8 h-8 text-blue-400" />
+                    </div>
+                </div>
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-pm-off-white/70 text-sm">Taux d'Ouverture</p>
+                            <p className="text-2xl font-bold text-green-400">{emailStats.openRate.toFixed(1)}%</p>
+                        </div>
+                        <EyeIcon className="w-8 h-8 text-green-400" />
+                    </div>
+                </div>
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-pm-off-white/70 text-sm">Taux de Clic</p>
+                            <p className="text-2xl font-bold text-purple-400">{emailStats.clickRate.toFixed(1)}%</p>
+                        </div>
+                        <ChartBarIcon className="w-8 h-8 text-purple-400" />
+                    </div>
+                </div>
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-pm-off-white/70 text-sm">Templates</p>
+                            <p className="text-2xl font-bold text-orange-400">{templates.length}</p>
+                        </div>
+                        <DocumentTextIcon className="w-8 h-8 text-orange-400" />
+                    </div>
+                </div>
             </div>
 
             {/* Navigation par onglets */}
@@ -398,6 +486,9 @@ const AdminEmails: React.FC = () => {
                     {[
                         { id: 'campaigns', label: 'Campagnes', icon: EnvelopeIcon },
                         { id: 'templates', label: 'Templates', icon: DocumentTextIcon },
+                        { id: 'compose', label: 'Nouvel Email', icon: PaperAirplaneIcon },
+                        { id: 'inbox', label: 'Boîte de Réception', icon: InboxIcon },
+                        { id: 'tracking', label: 'Suivi', icon: ChartBarIcon },
                         { id: 'stats', label: 'Statistiques', icon: ChartBarIcon }
                     ].map(tab => (
                         <button
@@ -482,6 +573,63 @@ const AdminEmails: React.FC = () => {
                 </div>
             )}
 
+            {activeTab === 'compose' && (
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-playfair text-pm-gold">Composer un Email</h3>
+                        <button
+                            onClick={() => setShowComposeModal(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pm-gold to-yellow-400 text-pm-dark font-semibold rounded-lg hover:from-yellow-400 hover:to-pm-gold transition-all duration-300"
+                        >
+                            <PaperAirplaneIcon className="w-5 h-5" />
+                            Nouvel Email
+                        </button>
+                    </div>
+                    <div className="text-center py-12">
+                        <PaperAirplaneIcon className="w-16 h-16 text-pm-gold/50 mx-auto mb-4" />
+                        <p className="text-pm-off-white/70 mb-6">Cliquez sur "Nouvel Email" pour commencer à composer un email</p>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'inbox' && (
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-playfair text-pm-gold">Boîte de Réception</h3>
+                        <button
+                            onClick={() => setShowInboxModal(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pm-gold to-yellow-400 text-pm-dark font-semibold rounded-lg hover:from-yellow-400 hover:to-pm-gold transition-all duration-300"
+                        >
+                            <InboxIcon className="w-5 h-5" />
+                            Ouvrir la Boîte
+                        </button>
+                    </div>
+                    <div className="text-center py-12">
+                        <InboxIcon className="w-16 h-16 text-pm-gold/50 mx-auto mb-4" />
+                        <p className="text-pm-off-white/70 mb-6">Cliquez sur "Ouvrir la Boîte" pour voir vos emails reçus</p>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'tracking' && (
+                <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-playfair text-pm-gold">Suivi des Emails</h3>
+                        <button
+                            onClick={() => setShowTrackingModal(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pm-gold to-yellow-400 text-pm-dark font-semibold rounded-lg hover:from-yellow-400 hover:to-pm-gold transition-all duration-300"
+                        >
+                            <ChartBarIcon className="w-5 h-5" />
+                            Voir le Suivi
+                        </button>
+                    </div>
+                    <div className="text-center py-12">
+                        <ChartBarIcon className="w-16 h-16 text-pm-gold/50 mx-auto mb-4" />
+                        <p className="text-pm-off-white/70 mb-6">Cliquez sur "Voir le Suivi" pour consulter les statistiques détaillées</p>
+                    </div>
+                </div>
+            )}
+
             {activeTab === 'stats' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
@@ -556,7 +704,36 @@ const AdminEmails: React.FC = () => {
                     />
                 </AdminModal>
             )}
-        </AdminLayout>
+
+            {/* Email Modals */}
+            {showComposeModal && (
+                <EmailComposeModal
+                    isOpen={showComposeModal}
+                    onClose={() => setShowComposeModal(false)}
+                    onSend={handleSendEmail}
+                />
+            )}
+
+            {showInboxModal && (
+                <EmailInboxModal
+                    isOpen={showInboxModal}
+                    onClose={() => setShowInboxModal(false)}
+                    emails={receivedEmails}
+                    onReply={handleReplyEmail}
+                    onForward={handleForwardEmail}
+                    onDelete={handleDeleteEmail}
+                />
+            )}
+
+            {showTrackingModal && (
+                <EmailTrackingModal
+                    isOpen={showTrackingModal}
+                    onClose={() => setShowTrackingModal(false)}
+                    emails={sentEmails}
+                    stats={emailStats}
+                />
+            )}
+        </AdminPageWrapper>
     );
 };
 

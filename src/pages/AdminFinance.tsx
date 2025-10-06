@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminCard from '../components/admin/AdminCard';
 import { StatCard } from '../components/admin/AdminStats';
+import FinancialTransactionModal from '../components/admin/FinancialTransactionModal';
 import { 
     CurrencyDollarIcon, CalendarIcon, ExclamationTriangleIcon,
     ChartBarIcon, DocumentTextIcon, ClockIcon
@@ -9,8 +10,10 @@ import {
 import { useData } from '../contexts/DataContext';
 
 const AdminFinance: React.FC = () => {
-    const { data } = useData();
+    const { data, saveData } = useData();
     const [activeSection, setActiveSection] = useState<'payments' | 'bookings' | 'absences' | 'reports'>('payments');
+    const [showTransactionModal, setShowTransactionModal] = useState(false);
+    const [editingTransaction, setEditingTransaction] = useState<any>(null);
 
     // ---- Statistiques financières ----
     const totalRevenue = useMemo(() => 
@@ -33,6 +36,38 @@ const AdminFinance: React.FC = () => {
         [data]
     );
 
+    // Fonctions de gestion des transactions
+    const handleSaveTransaction = (transactionData: any) => {
+        if (!data) return;
+        
+        const updatedTransactions = editingTransaction
+            ? (data.accountingTransactions || []).map((t: any) => 
+                t.id === editingTransaction.id ? transactionData : t
+              )
+            : [...(data.accountingTransactions || []), transactionData];
+        
+        saveData({ ...data, accountingTransactions: updatedTransactions });
+        setShowTransactionModal(false);
+        setEditingTransaction(null);
+    };
+
+    // Fonctions de gestion des transactions (pour utilisation future)
+    const handleEditTransaction = (transaction: any) => {
+        setEditingTransaction(transaction);
+        setShowTransactionModal(true);
+    };
+
+    const handleDeleteTransaction = (transactionId: string) => {
+        if (!data) return;
+        
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?')) {
+            const updatedTransactions = (data.accountingTransactions || []).filter(
+                (t: any) => t.id !== transactionId
+            );
+            saveData({ ...data, accountingTransactions: updatedTransactions });
+        }
+    };
+
     const sections = [
         { id: 'payments', label: 'Paiements', icon: CurrencyDollarIcon, count: pendingPayments },
         { id: 'bookings', label: 'Réservations', icon: CalendarIcon, count: newBookingRequests },
@@ -41,14 +76,7 @@ const AdminFinance: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
-            title="Gestion Financière" 
-            description="Suivre les paiements, réservations et rapports financiers"
-            breadcrumbs={[
-                { label: 'Admin', href: '/admin' },
-                { label: 'Finance', href: '/admin/finance' }
-            ]}
-        >
+        <AdminPageWrapper>
             {/* Statistiques financières */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <StatCard
@@ -114,28 +142,37 @@ const AdminFinance: React.FC = () => {
                     icon={CurrencyDollarIcon} 
                     description="Enregistrer un nouveau paiement de mannequin."
                     color="green"
-                    onClick={() => {/* TODO: Ouvrir modal paiement */}}
+                    onClick={() => setShowTransactionModal(true)}
                 />
                 <AdminCard 
                     title="Nouvelle Réservation" 
                     icon={CalendarIcon} 
                     description="Créer une réservation de shooting."
                     color="blue"
-                    onClick={() => {/* TODO: Ouvrir modal réservation */}}
+                    onClick={() => {
+                        console.log('Ouverture du formulaire de réservation');
+                        alert('Fonctionnalité de réservation - En développement');
+                    }}
                 />
                 <AdminCard 
                     title="Enregistrer Absence" 
                     icon={ExclamationTriangleIcon} 
                     description="Enregistrer une absence de mannequin."
                     color="red"
-                    onClick={() => {/* TODO: Ouvrir modal absence */}}
+                    onClick={() => {
+                        console.log('Ouverture du formulaire d\'absence');
+                        alert('Fonctionnalité d\'absence - En développement');
+                    }}
                 />
                 <AdminCard 
                     title="Générer Rapport" 
                     icon={DocumentTextIcon} 
                     description="Créer un rapport financier mensuel."
                     color="purple"
-                    onClick={() => {/* TODO: Ouvrir modal rapport */}}
+                    onClick={() => {
+                        console.log('Génération du rapport financier');
+                        alert('Fonctionnalité de rapport - En développement');
+                    }}
                 />
             </div>
 
@@ -306,7 +343,19 @@ const AdminFinance: React.FC = () => {
                     </div>
                 </div>
             )}
-        </AdminLayout>
+
+            {/* Modal Transaction Financière */}
+            <FinancialTransactionModal
+                isOpen={showTransactionModal}
+                onClose={() => {
+                    setShowTransactionModal(false);
+                    setEditingTransaction(null);
+                }}
+                onSave={handleSaveTransaction}
+                transaction={editingTransaction}
+                isEdit={!!editingTransaction}
+            />
+        </AdminPageWrapper>
     );
 };
 

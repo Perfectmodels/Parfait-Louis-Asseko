@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminSidebarLayout from '../components/AdminSidebarLayout';
 import { 
     UserIcon, 
     PencilIcon, 
@@ -86,7 +86,7 @@ const AdminProfile: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
+        <AdminSidebarLayout 
             title="Mon Profil" 
             description="Gérez vos informations personnelles et paramètres"
             breadcrumbs={[
@@ -339,7 +339,7 @@ const AdminProfile: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </AdminLayout>
+        </AdminSidebarLayout>
     );
 };
 

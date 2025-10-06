@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminTable from '../components/admin/AdminTable';
 import ImageUpload from '../components/admin/ImageUpload';
 import { 
@@ -8,7 +8,7 @@ import {
     MagnifyingGlassIcon, FunnelIcon, CloudArrowUpIcon,
     DocumentIcon, CalendarIcon, FolderIcon
 } from '@heroicons/react/24/outline';
-import imageUploadService, { ImageUploadResult } from '../services/imageUploadService';
+import imageUploadService, { UploadResult } from '../services/imageUploadService';
 import { isImgBBConfigured } from '../config/imgbbConfig';
 
 interface MediaItem {
@@ -233,15 +233,7 @@ const AdminMedia: React.FC = () => {
     const stats = imageUploadService.getUsageStats();
 
     return (
-        <AdminLayout 
-            title="Gestion des Médias" 
-            description="Gérez vos images et fichiers multimédias"
-            breadcrumbs={[
-                { label: "Médias" }
-            ]}
-            showSearch={true}
-            onSearch={setSearchQuery}
-        >
+        <AdminPageWrapper>
             {/* Statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div className="bg-gradient-to-br from-pm-gold/10 to-pm-gold/5 border border-pm-gold/30 rounded-xl p-6">
@@ -369,7 +361,7 @@ const AdminMedia: React.FC = () => {
                     </p>
                 </div>
             )}
-        </AdminLayout>
+        </AdminPageWrapper>
     );
 };
 

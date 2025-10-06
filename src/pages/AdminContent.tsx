@@ -1,7 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminCard from '../components/admin/AdminCard';
 import { StatCard } from '../components/admin/AdminStats';
+import ArticleModal from '../components/admin/ArticleModal';
+import NewsModal from '../components/admin/NewsModal';
+import PageModal from '../components/admin/PageModal';
+import ModuleModal from '../components/admin/ModuleModal';
 import { 
     NewspaperIcon, PresentationChartLineIcon, DocumentTextIcon, BookOpenIcon,
     CameraIcon
@@ -9,14 +13,69 @@ import {
 import { useData } from '../contexts/DataContext';
 
 const AdminContent: React.FC = () => {
-    const { data } = useData();
+    const { data, saveData } = useData();
     const [activeSection, setActiveSection] = useState<'articles' | 'pages' | 'media' | 'classroom'>('articles');
+    const [showArticleModal, setShowArticleModal] = useState(false);
+    const [showNewsModal, setShowNewsModal] = useState(false);
+    const [showPageModal, setShowPageModal] = useState(false);
+    const [showModuleModal, setShowModuleModal] = useState(false);
 
     // ---- Statistiques ----
     const totalArticles = (data as any)?.articles?.length || 0;
     const totalPages = (data as any)?.pageContents?.length || 0;
     const totalMedia = data?.siteImages ? Object.keys(data.siteImages).length : 0;
     const totalClassroomModules = (data as any)?.classroomModules?.length || 0;
+
+    // Fonction de modification des pages
+    const handleEditPage = (page: any) => {
+        const newTitle = prompt('Nouveau titre de la page:', page.title);
+        if (newTitle && newTitle !== page.title) {
+            if (!data) return;
+            
+            const updatedPages = (data.pageContents || []).map((p: any) => 
+                p.id === page.id ? { ...p, title: newTitle, updatedAt: new Date().toISOString() } : p
+            );
+            saveData({ ...data, pageContents: updatedPages });
+        }
+    };
+
+    const handlePreviewPage = (page: any) => {
+        // Ouvrir la page dans un nouvel onglet
+        window.open(`/page/${page.slug || page.id}`, '_blank');
+    };
+
+    // Fonctions de gestion des modals
+    const handleSaveArticle = (articleData: any) => {
+        if (!data) return;
+        
+        const updatedArticles = [...(data.articles || []), articleData];
+        saveData({ ...data, articles: updatedArticles });
+        setShowArticleModal(false);
+    };
+
+    const handleSaveNews = (newsData: any) => {
+        if (!data) return;
+        
+        const updatedNews = [...(data.newsItems || []), newsData];
+        saveData({ ...data, newsItems: updatedNews });
+        setShowNewsModal(false);
+    };
+
+    const handleSavePage = (pageData: any) => {
+        if (!data) return;
+        
+        const updatedPages = [...(data.pageContents || []), pageData];
+        saveData({ ...data, pageContents: updatedPages });
+        setShowPageModal(false);
+    };
+
+    const handleSaveModule = (moduleData: any) => {
+        if (!data) return;
+        
+        const updatedModules = [...(data.trainingModules || []), moduleData];
+        saveData({ ...data, trainingModules: updatedModules });
+        setShowModuleModal(false);
+    };
 
     // ---- Filtrage des articles ----
     const publishedArticles = useMemo(() => 
@@ -37,14 +96,7 @@ const AdminContent: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
-            title="Gestion du Contenu" 
-            description="Créer et gérer le contenu du site web et de la formation"
-            breadcrumbs={[
-                { label: 'Admin', href: '/admin' },
-                { label: 'Contenu', href: '/admin/content' }
-            ]}
-        >
+        <AdminPageWrapper>
             {/* Statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <StatCard
@@ -108,28 +160,28 @@ const AdminContent: React.FC = () => {
                     icon={NewspaperIcon} 
                     description="Créer un nouvel article pour le magazine."
                     color="blue"
-                    onClick={() => {/* TODO: Ouvrir modal création article */}}
+                    onClick={() => setShowArticleModal(true)}
                 />
                 <AdminCard 
                     title="Actualité" 
                     icon={PresentationChartLineIcon} 
                     description="Publier une actualité sur la page d'accueil."
                     color="green"
-                    onClick={() => {/* TODO: Ouvrir modal actualité */}}
+                    onClick={() => setShowNewsModal(true)}
                 />
                 <AdminCard 
                     title="Page du Site" 
                     icon={DocumentTextIcon} 
                     description="Créer ou modifier une page du site."
                     color="purple"
-                    onClick={() => {/* TODO: Ouvrir modal page */}}
+                    onClick={() => setShowPageModal(true)}
                 />
                 <AdminCard 
                     title="Module Formation" 
                     icon={BookOpenIcon} 
                     description="Ajouter un module de formation."
                     color="orange"
-                    onClick={() => {/* TODO: Ouvrir modal module */}}
+                    onClick={() => setShowModuleModal(true)}
                 />
             </div>
 
@@ -216,10 +268,16 @@ const AdminContent: React.FC = () => {
                                     <h4 className="text-pm-gold font-medium mb-2">{page.title}</h4>
                                     <p className="text-pm-off-white/70 text-sm mb-3">{page.description}</p>
                                     <div className="flex gap-2">
-                                        <button className="flex-1 px-3 py-1 bg-pm-gold/20 text-pm-gold text-xs rounded hover:bg-pm-gold/30">
+                                        <button 
+                                            className="flex-1 px-3 py-1 bg-pm-gold/20 text-pm-gold text-xs rounded hover:bg-pm-gold/30"
+                                            onClick={() => handleEditPage(page)}
+                                        >
                                             Modifier
                                         </button>
-                                        <button className="flex-1 px-3 py-1 bg-blue-500/20 text-blue-400 text-xs rounded hover:bg-blue-500/30">
+                                        <button 
+                                            className="flex-1 px-3 py-1 bg-blue-500/20 text-blue-400 text-xs rounded hover:bg-blue-500/30"
+                                            onClick={() => handlePreviewPage(page)}
+                                        >
                                             Prévisualiser
                                         </button>
                                     </div>
@@ -263,7 +321,32 @@ const AdminContent: React.FC = () => {
                     </div>
                 </div>
             )}
-        </AdminLayout>
+
+            {/* Modals */}
+            <ArticleModal
+                isOpen={showArticleModal}
+                onClose={() => setShowArticleModal(false)}
+                onSave={handleSaveArticle}
+            />
+
+            <NewsModal
+                isOpen={showNewsModal}
+                onClose={() => setShowNewsModal(false)}
+                onSave={handleSaveNews}
+            />
+
+            <PageModal
+                isOpen={showPageModal}
+                onClose={() => setShowPageModal(false)}
+                onSave={handleSavePage}
+            />
+
+            <ModuleModal
+                isOpen={showModuleModal}
+                onClose={() => setShowModuleModal(false)}
+                onSave={handleSaveModule}
+            />
+        </AdminPageWrapper>
     );
 };
 

@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminCard from '../components/admin/AdminCard';
 import { StatCard } from '../components/admin/AdminStats';
+import AnalyticsChart from '../components/admin/AnalyticsChart';
+import AnalyticsReport from '../components/admin/AnalyticsReport';
 import StatsigDebug from '../components/admin/StatsigDebug';
 import { 
     UsersIcon, DocumentTextIcon, CameraIcon, CogIcon, Cog6ToothIcon,
@@ -20,6 +22,49 @@ const AdminAnalytics: React.FC = () => {
     const totalMedia = useMemo(() => data?.siteImages ? Object.keys(data.siteImages).length : 0, [data]);
     const totalArticles = useMemo(() => (data as any)?.articles?.length || 0, [data]);
 
+    // Données d'analytics simulées
+    const userActivityData = useMemo(() => [
+        { label: 'Lun', value: 45, color: 'bg-pm-gold' },
+        { label: 'Mar', value: 52, color: 'bg-blue-500' },
+        { label: 'Mer', value: 38, color: 'bg-green-500' },
+        { label: 'Jeu', value: 61, color: 'bg-purple-500' },
+        { label: 'Ven', value: 48, color: 'bg-orange-500' },
+        { label: 'Sam', value: 35, color: 'bg-red-500' },
+        { label: 'Dim', value: 28, color: 'bg-teal-500' }
+    ], []);
+
+    const contentPerformanceData = useMemo(() => [
+        { label: 'Articles', value: totalArticles, color: 'bg-pm-gold' },
+        { label: 'Pages', value: totalPages, color: 'bg-blue-500' },
+        { label: 'Médias', value: totalMedia, color: 'bg-green-500' },
+        { label: 'Formations', value: 0, color: 'bg-purple-500' }
+    ], [totalArticles, totalPages, totalMedia]);
+
+    const userEngagementData = useMemo(() => [
+        { label: 'Visiteurs uniques', value: 1250 },
+        { label: 'Pages vues', value: 3420 },
+        { label: 'Temps moyen', value: '3m 45s' },
+        { label: 'Taux de rebond', value: '32%' }
+    ], []);
+
+    const recentActivity = useMemo(() => [
+        { id: 1, type: 'Nouveau mannequin', user: 'Marie Dubois', time: '2h', status: 'Actif' },
+        { id: 2, type: 'Candidature casting', user: 'Sophie Martin', time: '4h', status: 'En attente' },
+        { id: 3, type: 'Article publié', user: 'Admin', time: '6h', status: 'Publié' },
+        { id: 4, type: 'Message contact', user: 'Jean Dupont', time: '8h', status: 'Nouveau' },
+        { id: 5, type: 'Promotion étudiant', user: 'Lisa Johnson', time: '12h', status: 'Pro' }
+    ], []);
+
+    const handleExportData = (format: 'csv' | 'pdf' | 'excel') => {
+        console.log(`Export des données en format ${format.toUpperCase()}`);
+        alert(`Export des données en format ${format.toUpperCase()} - Fonctionnalité en développement`);
+    };
+
+    const handleViewDetails = (item: any) => {
+        console.log('Détails de l\'activité:', item);
+        alert(`Détails de l'activité: ${item.type} - ${item.user}`);
+    };
+
     const sections = [
         { id: 'overview', label: 'Vue d\'ensemble', icon: ChartBarIcon },
         { id: 'users', label: 'Utilisateurs', icon: UsersIcon },
@@ -28,14 +73,7 @@ const AdminAnalytics: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
-            title="Analytics & Monitoring" 
-            description="Surveiller les performances et la santé du système"
-            breadcrumbs={[
-                { label: 'Admin', href: '/admin' },
-                { label: 'Analytics', href: '/admin/analytics' }
-            ]}
-        >
+        <AdminPageWrapper>
             {/* Statistiques système */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <StatCard
@@ -119,15 +157,14 @@ const AdminAnalytics: React.FC = () => {
                 <div className="space-y-6">
                     {/* Graphiques de performance */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
-                            <h3 className="text-xl font-playfair text-pm-gold mb-4">Activité des Utilisateurs</h3>
-                            <div className="text-center py-12">
-                                <ChartBarIcon className="w-16 h-16 text-pm-gold/50 mx-auto mb-4" />
-                                <p className="text-pm-off-white/70 text-lg">
-                                    Graphiques d'activité à implémenter
-                                </p>
-                            </div>
-                        </div>
+                        <AnalyticsChart
+                            title="Activité des Utilisateurs (7 derniers jours)"
+                            data={userActivityData}
+                            type="line"
+                            showTrend={true}
+                            trendValue={12}
+                            trendLabel="vs semaine dernière"
+                        />
                         
                         <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
                             <h3 className="text-xl font-playfair text-pm-gold mb-4">Performance du Site</h3>
@@ -144,9 +181,45 @@ const AdminAnalytics: React.FC = () => {
                                     <span className="text-pm-off-white/70">Erreurs 500</span>
                                     <span className="text-red-400 font-semibold">0</span>
                                 </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-pm-off-white/70">Visiteurs uniques</span>
+                                    <span className="text-pm-gold font-semibold">1,250</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    {/* Graphiques de contenu */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <AnalyticsChart
+                            title="Performance du Contenu"
+                            data={contentPerformanceData}
+                            type="pie"
+                        />
+                        
+                        <AnalyticsChart
+                            title="Engagement des Utilisateurs"
+                            data={userEngagementData.map(item => ({ 
+                                label: item.label, 
+                                value: typeof item.value === 'string' ? 0 : item.value 
+                            }))}
+                            type="bar"
+                        />
+                    </div>
+
+                    {/* Rapport d'activité récente */}
+                    <AnalyticsReport
+                        title="Activité Récente"
+                        data={recentActivity}
+                        columns={[
+                            { key: 'type', label: 'Type d\'activité' },
+                            { key: 'user', label: 'Utilisateur' },
+                            { key: 'time', label: 'Il y a' },
+                            { key: 'status', label: 'Statut', type: 'status' }
+                        ]}
+                        onExport={handleExportData}
+                        onViewDetails={handleViewDetails}
+                    />
 
                     {/* Debug Statsig */}
                     <div className="bg-black/50 border border-pm-gold/20 rounded-xl p-6">
@@ -332,7 +405,7 @@ const AdminAnalytics: React.FC = () => {
                     </div>
                 </div>
             )}
-        </AdminLayout>
+        </AdminPageWrapper>
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import WhatsAppMessaging from '../components/WhatsAppMessaging';
 
 const AdminMessaging: React.FC = () => {
@@ -22,27 +22,19 @@ const AdminMessaging: React.FC = () => {
         }
     }, []);
 
-    if (!currentUser) {
-        return (
-            <AdminLayout 
-                title="Messagerie Interne" 
-                description="Gestion des conversations avec les mannequins et étudiants"
-                breadcrumbs={[{ label: 'Messagerie' }]}
-            >
-                <div className="text-center py-12">
-                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">Accès non autorisé</h2>
-                    <p className="text-pm-off-white/70">Veuillez vous connecter en tant qu'administrateur.</p>
-                </div>
-            </AdminLayout>
-        );
-    }
+        if (!currentUser) {
+            return (
+                <AdminPageWrapper>
+                    <div className="text-center py-12">
+                        <h2 className="text-2xl font-playfair text-pm-gold mb-4">Accès non autorisé</h2>
+                        <p className="text-pm-off-white/70">Veuillez vous connecter en tant qu'administrateur.</p>
+                    </div>
+                </AdminPageWrapper>
+            );
+        }
 
     return (
-        <AdminLayout 
-            title="Messagerie Interne" 
-            description="Gestion des conversations avec les mannequins et étudiants"
-            breadcrumbs={[{ label: 'Messagerie' }]}
-        >
+        <AdminPageWrapper>
             <div className="h-[calc(100vh-200px)]">
                 <WhatsAppMessaging
                     currentUserId={currentUser.id}
@@ -51,7 +43,7 @@ const AdminMessaging: React.FC = () => {
                     isAdmin={true}
                 />
             </div>
-        </AdminLayout>
+        </AdminPageWrapper>
     );
 };
 

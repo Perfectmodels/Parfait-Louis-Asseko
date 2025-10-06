@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminTable from '../components/admin/AdminTable';
 import AdminModal from '../components/admin/AdminModal';
 import AdminStats from '../components/admin/AdminStats';
@@ -215,15 +215,7 @@ const AdminAccounting: React.FC = () => {
     };
 
     return (
-        <AdminLayout 
-            title="Comptabilité" 
-            description="Gérez les revenus et dépenses de l'agence"
-            breadcrumbs={[
-                { label: "Comptabilité" }
-            ]}
-            showSearch={true}
-            onSearch={setSearchQuery}
-        >
+        <AdminPageWrapper>
             {/* Statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <AdminStats
@@ -342,7 +334,7 @@ const AdminAccounting: React.FC = () => {
                     />
                 </AdminModal>
             )}
-        </AdminLayout>
+        </AdminPageWrapper>
     );
 };
 

@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminCard from '../components/admin/AdminCard';
 import { StatCard } from '../components/admin/AdminStats';
+import AddModelModal from '../components/admin/AddModelModal';
+import PromoteStudentModal from '../components/admin/PromoteStudentModal';
 import { 
     UsersIcon, UserGroupIcon, PaintBrushIcon, ClipboardDocumentListIcon,
     SparklesIcon
@@ -9,9 +11,11 @@ import {
 import { useData } from '../contexts/DataContext';
 
 const AdminModels: React.FC = () => {
-    const { data } = useData();
+    const { data, saveData } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'all' | 'pro' | 'beginner'>('all');
+    const [showAddModelModal, setShowAddModelModal] = useState(false);
+    const [showPromoteModal, setShowPromoteModal] = useState(false);
 
     // ---- Comptage notifications ----
     const newCastingApps = useMemo(() => (data as any)?.castingApplications?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
@@ -41,15 +45,63 @@ const AdminModels: React.FC = () => {
         return models;
     }, [data, searchTerm, filterStatus]);
 
+    // Fonctions de gestion des modaux
+    const handleAddModel = (modelData: any) => {
+        if (!data) return;
+        
+        const updatedModels = [...(data.models || []), modelData];
+        saveData({ ...data, models: updatedModels });
+        setShowAddModelModal(false);
+    };
+
+    const handlePromoteStudent = (studentId: string, promotionData: any) => {
+        if (!data) return;
+        
+        // Trouver l'étudiant à promouvoir
+        const studentIndex = (data.beginnerStudents || []).findIndex((s: any) => s.id === studentId);
+        if (studentIndex === -1) return;
+        
+        const student = data.beginnerStudents[studentIndex];
+        
+        // Créer le nouveau mannequin pro
+        const newModel = {
+            ...student,
+            id: Date.now().toString(),
+            status: 'Pro',
+            level: promotionData.newLevel,
+            contractType: promotionData.contractType,
+            startDate: promotionData.startDate,
+            salary: promotionData.salary,
+            promotionNotes: promotionData.notes,
+            promotedAt: promotionData.promotedAt
+        };
+        
+        // Ajouter au modèle pro et retirer des étudiants
+        const updatedModels = [...(data.models || []), newModel];
+        const updatedStudents = (data.beginnerStudents || []).filter((s: any) => s.id !== studentId);
+        
+        saveData({ 
+            ...data, 
+            models: updatedModels,
+            beginnerStudents: updatedStudents
+        });
+        setShowPromoteModal(false);
+    };
+
+    // Préparer les données des étudiants pour la promotion
+    const studentsForPromotion = useMemo(() => {
+        return (data?.beginnerStudents || []).map((student: any) => ({
+            id: student.id,
+            name: student.name,
+            email: student.email,
+            level: student.level || 'beginner',
+            progress: student.progress || 0,
+            joinDate: student.createdAt || student.joinDate
+        }));
+    }, [data]);
+
     return (
-        <AdminLayout 
-            title="Gestion des Talents" 
-            description="Gérer les mannequins professionnels et les étudiants débutants"
-            breadcrumbs={[
-                { label: 'Admin', href: '/admin' },
-                { label: 'Talents', href: '/admin/talents' }
-            ]}
-        >
+        <AdminPageWrapper>
             {/* Statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <StatCard
@@ -90,21 +142,21 @@ const AdminModels: React.FC = () => {
                     icon={UsersIcon} 
                     description="Créer un nouveau profil de mannequin professionnel."
                     color="gold"
-                    onClick={() => {/* TODO: Ouvrir modal d'ajout */}}
+                    onClick={() => setShowAddModelModal(true)}
                 />
                 <AdminCard 
                     title="Promouvoir Débutant" 
                     icon={UserGroupIcon} 
                     description="Promouvoir un étudiant débutant vers le statut pro."
                     color="blue"
-                    onClick={() => {/* TODO: Ouvrir modal de promotion */}}
+                    onClick={() => setShowPromoteModal(true)}
                 />
                 <AdminCard 
                     title="Direction Artistique" 
                     icon={PaintBrushIcon} 
                     description="Assigner des thèmes de séance photo."
                     color="purple"
-                    onClick={() => {/* TODO: Ouvrir modal direction artistique */}}
+                    href="/admin/artistic-direction"
                 />
                 <AdminCard 
                     title="Candidatures Casting" 
@@ -112,7 +164,7 @@ const AdminModels: React.FC = () => {
                     description="Traiter les candidatures pour les castings."
                     notificationCount={newCastingApps}
                     color="green"
-                    onClick={() => {/* TODO: Ouvrir modal candidatures */}}
+                    href="/admin/casting-applications"
                 />
             </div>
 
@@ -193,7 +245,21 @@ const AdminModels: React.FC = () => {
                     </div>
                 )}
             </div>
-        </AdminLayout>
+
+            {/* Modaux */}
+            <AddModelModal
+                isOpen={showAddModelModal}
+                onClose={() => setShowAddModelModal(false)}
+                onSave={handleAddModel}
+            />
+
+            <PromoteStudentModal
+                isOpen={showPromoteModal}
+                onClose={() => setShowPromoteModal(false)}
+                onPromote={handlePromoteStudent}
+                students={studentsForPromotion}
+            />
+        </AdminPageWrapper>
     );
 };
 

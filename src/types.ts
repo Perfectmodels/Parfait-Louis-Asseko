@@ -453,11 +453,19 @@ export interface PaymentSubmission {
     amount: number;
     type: 'cotisation' | 'inscription';
     method: 'Virement' | 'Espèces' | 'Mobile Money' | 'Autre';
+    paymentMethod?: 'full' | 'installments' | 'advance' | 'bank_transfer' | 'mobile_money' | 'cash';
     proofImageUrl?: string;
     notes?: string;
     status: 'En attente' | 'Approuvé' | 'Rejeté';
     processedBy?: string;
     processedAt?: string;
+    // Nouvelles propriétés pour les paiements avancés
+    installmentCount?: number;
+    advanceMonths?: number;
+    totalAmount?: number;
+    remainingAmount?: number;
+    nextPaymentDate?: string;
+    createdAt?: string;
 }
 
 export interface AccountingTransaction {
@@ -637,6 +645,7 @@ export interface AppData {
     // Gestion des médias
     albums: Album[];
     teamMembers: TeamMember[];
+    mediaItems: any[];
     
     // Rapports et notifications
     financialReports: FinancialReport[];
@@ -654,6 +663,8 @@ export interface AppData {
     emailTemplates: EmailTemplate[];
     emailCampaigns: EmailCampaign[];
     emailStats: EmailStats;
+    sentEmails: any[];
+    receivedEmails: any[];
     
     // Gestion des absences et sessions
     absenceRequests: AbsenceRequest[];
@@ -663,6 +674,7 @@ export interface AppData {
     // Données de cours
     courseData: any[];
     beginnerCourseData: any[];
+    trainingModules: any[];
     
     // Clés API
     apiKeys: any;

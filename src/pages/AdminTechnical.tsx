@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import StatusCard from '../components/admin/StatusCard';
-import StatCard from '../components/admin/StatCard';
+import { StatCard } from '../components/admin/AdminStats';
 import LoadingSkeleton from '../components/admin/LoadingSkeleton';
 import { 
     ServerIcon, 
@@ -23,10 +23,10 @@ import { getStatusColor, getStatusIcon, getStatusText } from '../utils/status';
 const AdminTechnical: React.FC = () => {
     const { data } = useData();
     const [systemStatus] = useState({
-        database: 'connected',
-        api: 'operational',
-        storage: 'healthy',
-        performance: 'good'
+        database: 'online' as const,
+        api: 'online' as const,
+        storage: 'online' as const,
+        performance: 'online' as const
     });
 
     const [systemStats, setSystemStats] = useState({
@@ -72,10 +72,10 @@ const AdminTechnical: React.FC = () => {
     ];
 
     const securityChecks = [
-        { name: 'HTTPS', status: 'enabled', description: 'Connexion sécurisée activée' },
-        { name: 'Firewall', status: 'active', description: 'Protection réseau active' },
-        { name: 'Backup', status: 'enabled', description: 'Sauvegarde automatique' },
-        { name: 'Updates', status: 'current', description: 'Système à jour' }
+        { name: 'HTTPS', status: 'online' as const, description: 'Connexion sécurisée activée' },
+        { name: 'Firewall', status: 'online' as const, description: 'Protection réseau active' },
+        { name: 'Backup', status: 'online' as const, description: 'Sauvegarde automatique' },
+        { name: 'Updates', status: 'online' as const, description: 'Système à jour' }
     ];
 
     const maintenanceActions = [
@@ -100,13 +100,7 @@ const AdminTechnical: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
-            title="Section Technique" 
-            description="Informations techniques et maintenance du système"
-            breadcrumbs={[
-                { label: "Technique" }
-            ]}
-        >
+        <AdminPageWrapper>
             <div className="space-y-8">
                 {/* Statut du Système */}
                 <section>
@@ -128,6 +122,7 @@ const AdminTechnical: React.FC = () => {
                                            key === 'storage' ? 'Stockage' :
                                            key === 'performance' ? 'Performance' : key}
                                     status={status}
+                                    value={status === 'online' ? 'Actif' : 'Inactif'}
                                 />
                             ))
                         )}
@@ -150,38 +145,38 @@ const AdminTechnical: React.FC = () => {
                                 <StatCard
                                     title="Utilisateurs"
                                     value={systemStats.totalUsers}
-                                    subtitle="Total des utilisateurs"
-                                    icon={<UserIcon className="w-6 h-6" />}
+                                    icon={UserIcon}
+                                    color="blue"
                                 />
                                 <StatCard
                                     title="Pages"
                                     value={systemStats.totalPages}
-                                    subtitle="Pages du site"
-                                    icon={<DocumentIcon className="w-6 h-6" />}
+                                    icon={DocumentIcon}
+                                    color="green"
                                 />
                                 <StatCard
                                     title="Images"
                                     value={systemStats.totalImages}
-                                    subtitle="Images stockées"
-                                    icon={<PhotoIcon className="w-6 h-6" />}
+                                    icon={PhotoIcon}
+                                    color="purple"
                                 />
                                 <StatCard
                                     title="Stockage"
                                     value={systemStats.storageUsed}
-                                    subtitle="Espace utilisé"
-                                    icon={<DatabaseIcon className="w-6 h-6" />}
+                                    icon={DatabaseIcon}
+                                    color="orange"
                                 />
                                 <StatCard
                                     title="Uptime"
                                     value={systemStats.uptime}
-                                    subtitle="Disponibilité"
-                                    icon={<ServerIcon className="w-6 h-6" />}
+                                    icon={ServerIcon}
+                                    color="teal"
                                 />
                                 <StatCard
                                     title="Sauvegarde"
                                     value={systemStats.lastBackup}
-                                    subtitle="Dernière sauvegarde"
-                                    icon={<ArrowDownTrayIcon className="w-6 h-6" />}
+                                    icon={ArrowDownTrayIcon}
+                                    color="indigo"
                                 />
                             </>
                         )}
@@ -277,6 +272,7 @@ const AdminTechnical: React.FC = () => {
                                 key={index}
                                 title={check.name}
                                 status={check.status}
+                                value={check.status === 'online' ? 'Actif' : 'Inactif'}
                                 description={check.description}
                             />
                         ))}
@@ -310,7 +306,7 @@ const AdminTechnical: React.FC = () => {
                     </div>
                 </section>
             </div>
-        </AdminLayout>
+        </AdminPageWrapper>
     );
 };
 

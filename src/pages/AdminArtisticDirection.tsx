@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminSidebarLayout from '../components/AdminSidebarLayout';
 import AdminTable from '../components/admin/AdminTable';
 import { 
     PaintBrushIcon,
@@ -167,7 +167,7 @@ const AdminArtisticDirection: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
+        <AdminSidebarLayout 
             title="Direction Artistique" 
             description="Gérer les séances photo et thèmes artistiques"
             breadcrumbs={[
@@ -239,7 +239,7 @@ const AdminArtisticDirection: React.FC = () => {
                     onSearchChange={setSearchTerm}
                 />
                             </div>
-        </AdminLayout>
+        </AdminSidebarLayout>
     );
 };
 
