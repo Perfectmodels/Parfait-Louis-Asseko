@@ -290,7 +290,7 @@ const Home: React.FC = () => {
       <div 
         className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
         style={{
-          backgroundImage: `url('https://i.ibb.co/K2wS0Pz/hero-bg.jpg')`,
+          backgroundImage: `url('https://via.placeholder.com/1920x1080/1a1a1a/D4AF37?text=Perfect+Models+Management')`,
           backgroundAttachment: 'fixed',
           backgroundSize: 'cover',
           backgroundPosition: 'center center'

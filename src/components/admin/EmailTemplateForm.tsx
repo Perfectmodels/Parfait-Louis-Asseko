@@ -1,146 +1,129 @@
 import React, { useState } from 'react';
-import AIAssistant from '../AIAssistant';
-import AIAssistantIcon from '../AIAssistantIcon';
+import { EmailTemplate } from '../../types';
+import { XMarkIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 interface EmailTemplateFormProps {
-  template?: any;
-  onSave: (template: any) => void;
+  template: EmailTemplate;
+  onSave: (template: EmailTemplate) => void;
   onCancel: () => void;
 }
 
-const EmailTemplateForm: React.FC<EmailTemplateFormProps> = ({ 
-  template, 
-  onSave, 
-  onCancel 
+const EmailTemplateForm: React.FC<EmailTemplateFormProps> = ({
+  template,
+  onSave,
+  onCancel
 }) => {
-  const [formData, setFormData] = useState({
-    name: template?.name || '',
-    subject: template?.subject || '',
-    content: template?.content || '',
-    type: template?.type || 'welcome',
-  });
-  const [assistantState, setAssistantState] = useState<{isOpen: boolean; fieldName: string; initialPrompt: string}>({
-    isOpen: false,
-    fieldName: '',
-    initialPrompt: ''
-  });
+  const [formData, setFormData] = useState<EmailTemplate>(template);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
   };
 
-  const openAssistant = (fieldName: string, initialPrompt: string) => {
-    setAssistantState({ isOpen: true, fieldName, initialPrompt });
-  };
-
-  const handleInsertContent = (content: string) => {
-    const field = assistantState.fieldName.toLowerCase();
-    if (field.includes('nom')) {
-      setFormData(p => ({ ...p, name: content }));
-    } else if (field.includes('sujet')) {
-      setFormData(p => ({ ...p, subject: content }));
-    } else if (field.includes('contenu')) {
-      setFormData(p => ({ ...p, content: content }));
-    }
-    setAssistantState({ isOpen: false, fieldName: '', initialPrompt: '' });
+  const handleChange = (field: keyof EmailTemplate, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium text-pm-gold">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-pm-off-white mb-2">
             Nom du template
           </label>
-          <AIAssistantIcon 
-            onClick={() => openAssistant('Nom du template', `Génère un nom descriptif pour un template email de type "${formData.type}"`)}
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            className="w-full px-4 py-2 bg-pm-off-white/5 border border-pm-gold/30 rounded-lg text-pm-off-white focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold"
+            required
           />
         </div>
-        <input
-          type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-4 py-3 bg-black/30 border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none"
-          required
-        />
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium text-pm-gold mb-2">
-          Type
-        </label>
-        <select
-          value={formData.type}
-          onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-          className="w-full px-4 py-3 bg-black/30 border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none"
-        >
-          <option value="welcome">Bienvenue</option>
-          <option value="newsletter">Newsletter</option>
-          <option value="notification">Notification</option>
-          <option value="reminder">Rappel</option>
-        </select>
-      </div>
-
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium text-pm-gold">
+        <div>
+          <label className="block text-sm font-medium text-pm-off-white mb-2">
             Sujet
           </label>
-          <AIAssistantIcon 
-            onClick={() => openAssistant('Sujet', `Génère un sujet d'email pour un template de type "${formData.type}" intitulé "${formData.name}"`)}
+          <input
+            type="text"
+            value={formData.subject}
+            onChange={(e) => handleChange('subject', e.target.value)}
+            className="w-full px-4 py-2 bg-pm-off-white/5 border border-pm-gold/30 rounded-lg text-pm-off-white focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold"
+            required
           />
         </div>
-        <input
-          type="text"
-          value={formData.subject}
-          onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-          className="w-full px-4 py-3 bg-black/30 border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none"
-          required
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-pm-off-white mb-2">
+            Nom de l'expéditeur
+          </label>
+          <input
+            type="text"
+            value={formData.sender.name}
+            onChange={(e) => handleChange('sender', { ...formData.sender, name: e.target.value })}
+            className="w-full px-4 py-2 bg-pm-off-white/5 border border-pm-gold/30 rounded-lg text-pm-off-white focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-pm-off-white mb-2">
+            Email de l'expéditeur
+          </label>
+          <input
+            type="email"
+            value={formData.sender.email}
+            onChange={(e) => handleChange('sender', { ...formData.sender, email: e.target.value })}
+            className="w-full px-4 py-2 bg-pm-off-white/5 border border-pm-gold/30 rounded-lg text-pm-off-white focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold"
+            required
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-pm-off-white mb-2">
+          Contenu HTML
+        </label>
+        <textarea
+          value={formData.htmlContent}
+          onChange={(e) => handleChange('htmlContent', e.target.value)}
+          rows={10}
+          className="w-full px-4 py-2 bg-pm-off-white/5 border border-pm-gold/30 rounded-lg text-pm-off-white focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold"
+          placeholder="Contenu HTML du template..."
         />
       </div>
 
       <div>
-        <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium text-pm-gold">
-            Contenu
-          </label>
-          <AIAssistantIcon 
-            onClick={() => openAssistant('Contenu', `Rédige le contenu d'un template email de type "${formData.type}" intitulé "${formData.name}" avec le sujet "${formData.subject}". Inclus des variables personnalisables comme {{nom}} et {{email}}.`)}
-          />
-        </div>
+        <label className="block text-sm font-medium text-pm-off-white mb-2">
+          Contenu texte
+        </label>
         <textarea
-          value={formData.content}
-          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-          rows={8}
-          className="w-full px-4 py-3 bg-black/30 border border-pm-gold/30 rounded-lg text-pm-off-white focus:border-pm-gold focus:outline-none resize-none"
-          required
+          value={formData.textContent}
+          onChange={(e) => handleChange('textContent', e.target.value)}
+          rows={6}
+          className="w-full px-4 py-2 bg-pm-off-white/5 border border-pm-gold/30 rounded-lg text-pm-off-white focus:outline-none focus:ring-2 focus:ring-pm-gold/50 focus:border-pm-gold"
+          placeholder="Version texte du template..."
         />
       </div>
 
-      <div className="flex gap-4">
-        <button
-          type="submit"
-          className="px-6 py-3 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-white transition-colors"
-        >
-          Sauvegarder
-        </button>
+      <div className="flex items-center justify-end gap-4 pt-6 border-t border-pm-gold/20">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-3 border border-pm-gold text-pm-gold rounded-lg hover:bg-pm-gold hover:text-pm-dark transition-colors"
+          className="px-6 py-2 text-pm-off-white/70 hover:text-pm-off-white border border-pm-gold/30 hover:border-pm-gold rounded-lg transition-colors"
         >
           Annuler
         </button>
+        <button
+          type="submit"
+          className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-pm-gold to-yellow-400 text-pm-dark font-semibold rounded-lg hover:from-yellow-400 hover:to-pm-gold transition-all duration-300"
+        >
+          <DocumentTextIcon className="w-5 h-5" />
+          Enregistrer
+        </button>
       </div>
-
-      <AIAssistant 
-        isOpen={assistantState.isOpen}
-        onClose={() => setAssistantState(p => ({...p, isOpen: false}))}
-        onInsertContent={handleInsertContent}
-        fieldName={assistantState.fieldName}
-        initialPrompt={assistantState.initialPrompt}
-      />
     </form>
   );
 };

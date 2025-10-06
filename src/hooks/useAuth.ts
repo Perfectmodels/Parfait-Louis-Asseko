@@ -113,7 +113,7 @@ export const useAuth = () => {
     setIsLoading(true);
     checkAuth();
     setIsLoading(false);
-  }, [checkAuth]);
+  }, []); // Supprimer checkAuth des dépendances
 
   // Écouter les changements de sessionStorage
   useEffect(() => {
@@ -123,7 +123,7 @@ export const useAuth = () => {
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [checkAuth]);
+  }, []); // Supprimer checkAuth des dépendances
 
   return {
     user,

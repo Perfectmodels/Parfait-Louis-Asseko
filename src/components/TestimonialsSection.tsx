@@ -24,7 +24,7 @@ const TestimonialsSection: React.FC = () => {
             company: 'Perfect Models Management',
             content: 'PMM est bien plus qu\'une agence, c\'est une famille qui nous pousse à donner le meilleur de nous-mêmes. La formation et l\'encadrement sont exceptionnels. Grâce à eux, j\'ai pu devenir Miss Gabon 2022 et Top Model Afrique Centrale 2023.',
             rating: 5,
-            image: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg'
+            image: 'https://via.placeholder.com/80x80/1a1a1a/D4AF37?text=Noemi'
         },
         {
             id: '2',
@@ -42,7 +42,7 @@ const TestimonialsSection: React.FC = () => {
             company: 'Perfect Models Management',
             content: 'En tant qu\'homme, je pensais que le mannequinat n\'était pas pour moi. Perfect Models Management m\'a prouvé le contraire. Leur professionnalisme et leur vision inclusive m\'ont permis de m\'épanouir dans ce métier et de devenir Mannequin Homme de l\'Année aux PFD Awards 2025.',
             rating: 5,
-            image: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg'
+            image: 'https://via.placeholder.com/80x80/1a1a1a/D4AF37?text=Donatien'
         },
         // Témoignages des partenaires (utilisant uniquement les vrais noms trouvés)
         {

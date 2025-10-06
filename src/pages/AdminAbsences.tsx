@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminSidebarLayout from '../components/AdminSidebarLayout';
 import AdminTable from '../components/admin/AdminTable';
 import AdminModal from '../components/admin/AdminModal';
 import { 
@@ -247,7 +247,7 @@ const AdminAbsences: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
+        <AdminSidebarLayout 
             title="Gestion des Absences" 
             description="Gérer les demandes d'absence des mannequins"
             breadcrumbs={[
@@ -387,7 +387,7 @@ const AdminAbsences: React.FC = () => {
                     )}
                 </AdminModal>
         </div>
-        </AdminLayout>
+        </AdminSidebarLayout>
     );
 };
 

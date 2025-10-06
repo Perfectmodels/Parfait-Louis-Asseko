@@ -1,25 +1,32 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminTable from '../components/admin/AdminTable';
 import AdminModal from '../components/admin/AdminModal';
-import AdminStats from '../components/admin/AdminStats';
+import { StatCard } from '../components/admin/AdminStats';
+import AdvancedPaymentModal from '../components/admin/AdvancedPaymentModal';
+import PaymentScheduleModal from '../components/admin/PaymentScheduleModal';
 import { 
     CurrencyDollarIcon, 
     CheckCircleIcon, 
     XCircleIcon, 
     ClockIcon,
     EyeIcon,
-    FunnelIcon
+    FunnelIcon,
+    PlusIcon,
+    CalendarIcon
 } from '@heroicons/react/24/outline';
 import { PaymentSubmission } from '../types';
 
 const AdminPayments: React.FC = () => {
     const { data, saveData } = useData();
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [typeFilter, setTypeFilter] = useState<string>('all');
     const [selectedPayment, setSelectedPayment] = useState<PaymentSubmission | null>(null);
+    const [showAdvancedPaymentModal, setShowAdvancedPaymentModal] = useState(false);
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
+    const [selectedModel, setSelectedModel] = useState<{id: string, name: string} | null>(null);
 
     const payments = useMemo(() => {
         return [...(data?.paymentSubmissions || [])].sort((a, b) => 
@@ -119,6 +126,39 @@ const AdminPayments: React.FC = () => {
             )
         },
         {
+            key: 'paymentMethod',
+            label: 'Méthode',
+            render: (_: any, payment: PaymentSubmission) => {
+                const methodLabels = {
+                    'full': 'Complet',
+                    'installments': 'Tranches',
+                    'advance': 'Anticipé',
+                    'bank_transfer': 'Virement',
+                    'mobile_money': 'Mobile Money',
+                    'cash': 'Espèces'
+                };
+                return (
+                    <span className="text-pm-off-white/70 text-sm">
+                        {payment.paymentMethod ? methodLabels[payment.paymentMethod as keyof typeof methodLabels] : payment.method}
+                    </span>
+                );
+            }
+        },
+        {
+            key: 'nextPayment',
+            label: 'Prochaine Échéance',
+            render: (_: any, payment: PaymentSubmission) => {
+                if (payment.nextPaymentDate) {
+                    return (
+                        <div className="text-sm text-pm-off-white/70">
+                            {new Date(payment.nextPaymentDate).toLocaleDateString('fr-FR')}
+                        </div>
+                    );
+                }
+                return <span className="text-pm-off-white/50 text-sm">-</span>;
+            }
+        },
+        {
             key: 'actions',
             label: 'Actions',
             render: (_: any, payment: PaymentSubmission) => (
@@ -129,6 +169,16 @@ const AdminPayments: React.FC = () => {
                         title="Voir les détails"
                     >
                         <EyeIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={() => {
+                            setSelectedModel({id: payment.modelId, name: payment.modelName});
+                            setShowScheduleModal(true);
+                        }}
+                        className="p-2 text-blue-400/70 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all duration-200"
+                        title="Voir le planning"
+                    >
+                        <CalendarIcon className="w-4 h-4" />
                     </button>
                     {payment.status === 'En attente' && (
                         <>
@@ -188,41 +238,70 @@ const AdminPayments: React.FC = () => {
     };
 
     return (
-        <AdminLayout 
-            title="Gestion des Paiements" 
-            description="Gérez les soumissions de paiements des mannequins"
-            breadcrumbs={[
-                { label: "Paiements" }
-            ]}
-            showSearch={true}
-            onSearch={setSearchQuery}
-        >
+        <AdminPageWrapper>
             {/* Statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <AdminStats
+                <StatCard
                     title="Total Soumissions"
                     value={stats.total}
                     icon={CurrencyDollarIcon}
                     color="gold"
                 />
-                <AdminStats
+                <StatCard
                     title="En Attente"
                     value={stats.pending}
                     icon={ClockIcon}
-                    color="yellow"
+                    color="orange"
                 />
-                <AdminStats
+                <StatCard
                     title="Approuvés"
                     value={stats.approved}
                     icon={CheckCircleIcon}
                     color="green"
                 />
-                <AdminStats
+                <StatCard
                     title="Montant Total"
                     value={`${stats.totalAmount.toLocaleString()} FCFA`}
                     icon={CurrencyDollarIcon}
                     color="blue"
                 />
+            </div>
+
+            {/* Actions rapides */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <button
+                    onClick={() => {
+                        const modelName = prompt('Nom du mannequin:');
+                        if (modelName) {
+                            setSelectedModel({id: `model_${Date.now()}`, name: modelName});
+                            setShowAdvancedPaymentModal(true);
+                        }
+                    }}
+                    className="flex items-center gap-3 p-4 bg-pm-gold/10 border border-pm-gold/30 rounded-lg hover:bg-pm-gold/20 transition-colors"
+                >
+                    <PlusIcon className="w-6 h-6 text-pm-gold" />
+                    <div className="text-left">
+                        <div className="font-semibold text-pm-gold">Nouveau Paiement</div>
+                        <div className="text-sm text-pm-off-white/70">Par tranches ou anticipé</div>
+                    </div>
+                </button>
+                
+                <button
+                    onClick={() => {
+                        const modelName = prompt('Nom du mannequin pour voir le planning:');
+                        if (modelName) {
+                            setSelectedModel({id: `model_${Date.now()}`, name: modelName});
+                            setShowScheduleModal(true);
+                        }
+                    }}
+                    className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg hover:bg-blue-500/20 transition-colors"
+                >
+                    <CalendarIcon className="w-6 h-6 text-blue-400" />
+                    <div className="text-left">
+                        <div className="font-semibold text-blue-400">Planning</div>
+                        <div className="text-sm text-pm-off-white/70">Voir les échéances</div>
+                    </div>
+                </button>
             </div>
 
             {/* Filtres */}
@@ -349,7 +428,42 @@ const AdminPayments: React.FC = () => {
                     </div>
                 </AdminModal>
             )}
-        </AdminLayout>
+
+            {/* Modal Paiement Avancé */}
+            {selectedModel && (
+                <AdvancedPaymentModal
+                    isOpen={showAdvancedPaymentModal}
+                    onClose={() => {
+                        setShowAdvancedPaymentModal(false);
+                        setSelectedModel(null);
+                    }}
+                    onSave={(paymentData) => {
+                        if (!data) return;
+                        const updatedPayments = [...(data.paymentSubmissions || []), paymentData];
+                        saveData({ ...data, paymentSubmissions: updatedPayments });
+                        setShowAdvancedPaymentModal(false);
+                        setSelectedModel(null);
+                    }}
+                    modelId={selectedModel.id}
+                    modelName={selectedModel.name}
+                    paymentType="inscription"
+                />
+            )}
+
+            {/* Modal Planning des Paiements */}
+            {selectedModel && (
+                <PaymentScheduleModal
+                    isOpen={showScheduleModal}
+                    onClose={() => {
+                        setShowScheduleModal(false);
+                        setSelectedModel(null);
+                    }}
+                    modelId={selectedModel.id}
+                    modelName={selectedModel.name}
+                    paymentHistory={payments.filter(p => p.modelId === selectedModel.id)}
+                />
+            )}
+        </AdminPageWrapper>
     );
 };
 

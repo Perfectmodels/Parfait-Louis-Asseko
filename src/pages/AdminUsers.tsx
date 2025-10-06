@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminTable from '../components/admin/AdminTable';
 import AdminModal from '../components/admin/AdminModal';
 import { 
@@ -276,15 +276,7 @@ const AdminUsers: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
-            title="Gestion des Utilisateurs" 
-            description="Créez et gérez les utilisateurs du site"
-            breadcrumbs={[
-                { label: "Utilisateurs" }
-            ]}
-            showSearch={true}
-            onSearch={setSearchQuery}
-        >
+        <AdminPageWrapper>
             <div className="space-y-6">
                 {/* Actions et Filtres */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -444,7 +436,7 @@ const AdminUsers: React.FC = () => {
                     </div>
                 </AdminModal>
             </div>
-        </AdminLayout>
+        </AdminPageWrapper>
     );
 };
 

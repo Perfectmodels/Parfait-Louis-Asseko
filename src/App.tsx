@@ -36,6 +36,7 @@ const Gallery = lazy(() => import('./pages/Gallery'));
 
 // Admin Pages
 const Admin = lazy(() => import('./pages/Admin'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
 const AdminContent = lazy(() => import('./pages/AdminContent'));
 const AdminCommunication = lazy(() => import('./pages/AdminCommunication'));
@@ -182,6 +183,8 @@ const AppContent: React.FC = () => {
 
             {/* Admin Routes Group */}
             <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>}>
+              {/* Dashboard par défaut */}
+              <Route index element={<AdminDashboard />} />
               {/* Nouvelles routes principales */}
               <Route path="models" element={<AdminModels />} />
               <Route path="content" element={<AdminContent />} />
@@ -213,7 +216,6 @@ const AppContent: React.FC = () => {
               <Route path="media" element={<AdminMedia />} />
               <Route path="accounting" element={<AdminAccounting />} />
               <Route path="messaging" element={<AdminMessaging />} />
-              <Route path="content" element={<AdminContent />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="technical" element={<AdminTechnical />} />
               <Route path="profile" element={<AdminProfile />} />

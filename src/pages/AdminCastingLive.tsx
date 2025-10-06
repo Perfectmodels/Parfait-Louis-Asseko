@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import AdminLayout from '../components/AdminLayout';
+import AdminSidebarLayout from '../components/AdminSidebarLayout';
 import AdminTable from '../components/admin/AdminTable';
 import AdminModal from '../components/admin/AdminModal';
 import { 
@@ -218,7 +218,7 @@ const AdminCastingLive: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
+        <AdminSidebarLayout 
             title="Casting en Direct" 
             description="Gérer les sessions de casting en direct"
             breadcrumbs={[
@@ -343,7 +343,7 @@ const AdminCastingLive: React.FC = () => {
                     )}
                 </AdminModal>
             </div>
-        </AdminLayout>
+        </AdminSidebarLayout>
     );
 };
 

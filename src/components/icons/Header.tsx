@@ -18,18 +18,16 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
       onClick={onClick}
       end={to === '/'}
       className={({ isActive }) =>
-        `relative py-2 text-pm-off-white uppercase text-sm tracking-widest group hover:text-pm-gold focus-style-self ${mobileClasses} ${isActive ? "text-pm-gold" : ""}`
+        `relative py-3 px-4 text-pm-off-white uppercase text-sm tracking-widest group hover:text-pm-gold hover:bg-pm-gold/10 focus-style-self rounded-lg transition-all duration-200 ${mobileClasses} ${isActive ? "text-pm-gold bg-pm-gold/20" : ""}`
       }
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
       {({ isActive }) => (
         <>
-          {label}
-          <span
-            className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${
-              isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100'
-            }`}
-          />
+          <span className="relative z-10">{label}</span>
+          {isActive && (
+            <div className="absolute inset-0 bg-pm-gold/20 rounded-lg" />
+          )}
         </>
       )}
     </NavLink>
@@ -58,11 +56,11 @@ const LoginButton: React.FC<{ className?: string, isMobile?: boolean; isOpen?: b
   return (
     <Link
       to="/login"
-      className={`flex items-center gap-1 py-1 px-2 text-pm-gold border border-pm-gold uppercase text-xs tracking-wide hover:bg-pm-gold hover:text-pm-dark focus-style-self rounded-full ${className} ${mobileClasses}`}
+      className={`flex items-center justify-center gap-2 py-3 px-4 text-pm-gold border border-pm-gold uppercase text-sm tracking-wide hover:bg-pm-gold hover:text-pm-dark focus-style-self rounded-lg transition-all duration-200 ${className} ${mobileClasses}`}
       aria-label="Connexion"
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
-      <ArrowRightOnRectangleIcon className="w-4 h-4" />
+      <ArrowRightOnRectangleIcon className="w-5 h-5" />
       <span>Connexion</span>
     </Link>
   );
@@ -74,7 +72,7 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 py-2 text-pm-off-white uppercase text-sm tracking-widest hover:text-pm-gold focus-style-self ${className} ${mobileClasses}`}
+      className={`flex items-center justify-center gap-2 py-3 px-4 text-pm-off-white uppercase text-sm tracking-widest hover:text-pm-gold hover:bg-pm-gold/10 focus-style-self rounded-lg transition-all duration-200 ${className} ${mobileClasses}`}
       aria-label="Déconnexion"
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
@@ -266,33 +264,52 @@ const Header: React.FC = () => {
               <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto hover:scale-105 transition" />
             </Link>
           )}
-          <nav className="hidden lg:flex items-center gap-8">
-            <NavLinks navLinks={processedNavLinks} />
-            <div className="flex items-center gap-4 pl-6 border-l border-pm-gold/20">
-              <Link to="/casting-formulaire" className="px-5 py-2 bg-pm-gold text-pm-dark font-bold uppercase text-xs tracking-widest rounded-full hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20 transition">Postuler</Link>
-              {!isAuthenticated && <LoginButton />}
-              <SocialLinksComponent socialLinks={socialLinks} />
-              {isAuthenticated && <LogoutButton onClick={handleLogout} />}
-            </div>
-          </nav>
-          <div className="lg:hidden flex items-center">
-            <button ref={hamburgerButtonRef} onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">
+          {/* Menu hamburger pour tous les écrans */}
+          <div className="flex items-center">
+            <button 
+              ref={hamburgerButtonRef} 
+              onClick={() => setIsOpen(!isOpen)} 
+              className="text-pm-off-white z-50 p-2 -mr-2" 
+              aria-label="Ouvrir le menu" 
+              aria-expanded={isOpen} 
+              aria-controls="mobile-menu-panel"
+            >
               <AnimatedHamburgerIcon isOpen={isOpen} />
             </button>
           </div>
         </div>
       </header>
-      <div className={`lg:hidden fixed inset-0 z-30 transition-opacity duration-500 ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`} onClick={() => setIsOpen(false)} />
-      <div id="mobile-menu-panel" ref={mobileMenuRef} className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 z-40 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`} role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
-        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24"><span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span></div>
+      <div className={`fixed inset-0 z-30 transition-opacity duration-500 ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`} onClick={() => setIsOpen(false)} />
+      <div id="mobile-menu-panel" ref={mobileMenuRef} className={`fixed top-0 right-0 w-80 sm:w-96 h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 z-40 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`} role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
+        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-20">
+          <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
+          <button 
+            onClick={() => setIsOpen(false)} 
+            className="text-pm-off-white/70 hover:text-pm-gold p-2 -mr-2"
+            aria-label="Fermer le menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
         <div className="flex-grow overflow-y-auto">
-          <nav className="flex flex-col p-8 gap-6">
+          <nav className="flex flex-col p-6 gap-2">
             <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile isOpen={isOpen} />
-            <div className={`text-center ${mobileTransition} ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`} style={{ transitionDelay: `${isOpen ? applyDelay : 0}ms` }}>
-              <Link to="/casting-formulaire" onClick={() => setIsOpen(false)} className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white transition">Postuler</Link>
+            
+            {/* Séparateur */}
+            <div className={`my-4 border-t border-pm-gold/20 ${mobileTransition} ${isOpen ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: `${isOpen ? applyDelay + 100 : 0}ms` }} />
+            
+            {/* Actions */}
+            <div className="space-y-3">
+              <div className={`text-center ${mobileTransition} ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`} style={{ transitionDelay: `${isOpen ? applyDelay + 150 : 0}ms` }}>
+                <Link to="/casting-formulaire" onClick={() => setIsOpen(false)} className="inline-block w-full px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition text-center">
+                  Postuler au Casting
+                </Link>
+              </div>
+              {!isAuthenticated && <LoginButton isMobile isOpen={isOpen} delay={applyDelay + 200} />}
+              {isAuthenticated && <LogoutButton onClick={handleLogout} isMobile isOpen={isOpen} delay={logoutDelay} />}
             </div>
-            {!isAuthenticated && <LoginButton isMobile isOpen={isOpen} delay={applyDelay + 50} />}
-            {isAuthenticated && <LogoutButton onClick={handleLogout} isMobile isOpen={isOpen} delay={logoutDelay} />}
           </nav>
         </div>
         <div className="p-8 border-t border-pm-gold/20"><SocialLinksComponent socialLinks={socialLinks} className="justify-center" isMobile isOpen={isOpen} delay={socialDelay} /></div>

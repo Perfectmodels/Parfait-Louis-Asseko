@@ -1,7 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import AdminLayout from '../components/AdminLayout';
+import AdminPageWrapper from '../components/AdminPageWrapper';
 import AdminCard from '../components/admin/AdminCard';
 import { StatCard } from '../components/admin/AdminStats';
+import EmailTemplateModal from '../components/admin/EmailTemplateModal';
+import CampaignModal from '../components/admin/CampaignModal';
+import NotificationModal from '../components/admin/NotificationModal';
 import { 
     ChatBubbleLeftRightIcon, EnvelopeIcon, KeyIcon, CalendarIcon,
     ExclamationTriangleIcon
@@ -9,14 +12,42 @@ import {
 import { useData } from '../contexts/DataContext';
 
 const AdminCommunication: React.FC = () => {
-    const { data } = useData();
+    const { data, saveData } = useData();
     const [activeSection, setActiveSection] = useState<'messages' | 'emails' | 'recovery' | 'comments'>('messages');
+    const [showEmailTemplateModal, setShowEmailTemplateModal] = useState(false);
+    const [showCampaignModal, setShowCampaignModal] = useState(false);
+    const [showNotificationModal, setShowNotificationModal] = useState(false);
 
     // ---- Comptage notifications ----
     const newMessages = useMemo(() => (data as any)?.contactMessages?.filter((m: any) => m.status === 'Nouveau').length || 0, [data]);
     const newRecoveryRequests = useMemo(() => (data as any)?.recoveryRequests?.filter((r: any) => r.status === 'Nouveau').length || 0, [data]);
     const newBookingRequests = useMemo(() => (data as any)?.bookingRequests?.filter((b: any) => b.status === 'Nouveau').length || 0, [data]);
     const totalComments = useMemo(() => (data as any)?.comments?.length || 0, [data]);
+
+    // Fonction de gestion des templates email
+    const handleSaveEmailTemplate = (templateData: any) => {
+        if (!data) return;
+        
+        const updatedTemplates = [...(data.emailTemplates || []), templateData];
+        saveData({ ...data, emailTemplates: updatedTemplates });
+        setShowEmailTemplateModal(false);
+    };
+
+    const handleSaveCampaign = (campaignData: any) => {
+        if (!data) return;
+        
+        const updatedCampaigns = [...(data.emailCampaigns || []), campaignData];
+        saveData({ ...data, emailCampaigns: updatedCampaigns });
+        setShowCampaignModal(false);
+    };
+
+    const handleSaveNotification = (notificationData: any) => {
+        if (!data) return;
+        
+        const updatedNotifications = [...(data.notifications || []), notificationData];
+        saveData({ ...data, notifications: updatedNotifications });
+        setShowNotificationModal(false);
+    };
 
     const sections = [
         { id: 'messages', label: 'Messages Contact', icon: ChatBubbleLeftRightIcon, count: newMessages },
@@ -26,14 +57,7 @@ const AdminCommunication: React.FC = () => {
     ];
 
     return (
-        <AdminLayout 
-            title="Communication & Messagerie" 
-            description="Gérer les communications avec les utilisateurs et les campagnes"
-            breadcrumbs={[
-                { label: 'Admin', href: '/admin' },
-                { label: 'Communication', href: '/admin/communication' }
-            ]}
-        >
+        <AdminPageWrapper>
             {/* Statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <StatCard
@@ -94,28 +118,28 @@ const AdminCommunication: React.FC = () => {
                     icon={EnvelopeIcon} 
                     description="Créer une nouvelle campagne email marketing."
                     color="blue"
-                    onClick={() => {/* TODO: Ouvrir modal campagne */}}
+                    onClick={() => setShowCampaignModal(true)}
                 />
                 <AdminCard 
                     title="Template Email" 
                     icon={EnvelopeIcon} 
                     description="Créer ou modifier un template d'email."
                     color="purple"
-                    onClick={() => {/* TODO: Ouvrir modal template */}}
+                    onClick={() => setShowEmailTemplateModal(true)}
                 />
                 <AdminCard 
                     title="Messagerie Interne" 
                     icon={ChatBubbleLeftRightIcon} 
                     description="Envoyer un message aux mannequins."
                     color="green"
-                    onClick={() => {/* TODO: Ouvrir modal messagerie */}}
+                    href="/admin/messaging"
                 />
                 <AdminCard 
                     title="Notification Push" 
                     icon={ExclamationTriangleIcon} 
                     description="Envoyer une notification à tous les utilisateurs."
                     color="orange"
-                    onClick={() => {/* TODO: Ouvrir modal notification */}}
+                    onClick={() => setShowNotificationModal(true)}
                 />
             </div>
 
@@ -284,7 +308,26 @@ const AdminCommunication: React.FC = () => {
                     )}
                 </div>
             )}
-        </AdminLayout>
+
+            {/* Modals */}
+            <EmailTemplateModal
+                isOpen={showEmailTemplateModal}
+                onClose={() => setShowEmailTemplateModal(false)}
+                onSave={handleSaveEmailTemplate}
+            />
+
+            <CampaignModal
+                isOpen={showCampaignModal}
+                onClose={() => setShowCampaignModal(false)}
+                onSave={handleSaveCampaign}
+            />
+
+            <NotificationModal
+                isOpen={showNotificationModal}
+                onClose={() => setShowNotificationModal(false)}
+                onSave={handleSaveNotification}
+            />
+        </AdminPageWrapper>
     );
 };
 

@@ -1,7 +1,7 @@
 {
   "name": "perfect-models-management",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.7.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -35,11 +35,13 @@
     "framer-motion": "^12.23.12",
     "fs": "^0.0.1-security",
     "html2canvas": "^1.4.1",
+    "lodash.debounce": "^4.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
