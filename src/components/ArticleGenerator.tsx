@@ -3,7 +3,6 @@ import { GoogleGenAI, Type } from '@google/genai';
 import { Article } from '../types';
 import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
-import { GEMINI_CONFIG } from '../config/geminiConfig';
 
 interface ArticleGeneratorProps {
     isOpen: boolean;
@@ -96,10 +95,14 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
         };
 
         try {
-            const ai = new GoogleGenAI({ apiKey: GEMINI_CONFIG.apiKey });
+            if (!process.env.API_KEY) {
+                throw new Error("La clé API Gemini n'est pas configurée.");
+            }
+            
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             const response = await ai.models.generateContent({
-                model: GEMINI_CONFIG.model,
+                model: 'gemini-2.5-flash',
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",
@@ -120,7 +123,9 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
 
     }, [formData, onArticleGenerated]);
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
