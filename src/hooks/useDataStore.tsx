@@ -79,6 +79,9 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    paymentSubmissions: any[];
+    absenceRequests: any[];
+    artisticProjects: any[];
 }
 
 export const useDataStore = () => {
@@ -120,6 +123,9 @@ export const useDataStore = () => {
         beginnerCourseData: initialBeginnerCourseData,
         beginnerStudents: initialBeginnerStudents,
         faqData: initialFaqData,
+        paymentSubmissions: [],
+        absenceRequests: [],
+        artisticProjects: [],
     }), []);
     
     useEffect(() => {
