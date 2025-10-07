@@ -1,289 +1,309 @@
-import React, { useState } from 'react';
-import SEO from '../components/SEO';
+import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { ChartBarIcon, UserGroupIcon, AcademicCapIcon, TrophyIcon } from '@heroicons/react/24/outline';
+import SEO from '../components/SEO';
+import { Link } from 'react-router-dom';
+import { ChevronLeftIcon, SignalIcon, CheckCircleIcon, XCircleIcon, AcademicCapIcon, ClockIcon, TrophyIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 const AdminClassroomProgress: React.FC = () => {
   const { data } = useData();
-  const [selectedModel, setSelectedModel] = useState<string>('all');
-  const [selectedChapter, setSelectedChapter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  // Update time every 10 seconds to refresh "connected" status
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const models = data?.models || [];
   const beginnerStudents = data?.beginnerStudents || [];
+  const courseData = data?.courseData || [];
 
-  // Calculer les statistiques de progression
-  const getProgressStats = () => {
-    const allUsers = [...models, ...beginnerStudents] as any[];
-    const totalUsers = allUsers.length;
-    
-    let completedChapters = 0;
-    let totalChapters = 0;
-    let averageScore = 0;
-    let totalScores = 0;
-    let scoreCount = 0;
-
-    allUsers.forEach(user => {
-      if (user.quizScores) {
-        Object.values(user.quizScores).forEach((score: any) => {
-          totalChapters++;
-          if (score.score > 0) {
-            completedChapters++;
-            totalScores += score.score;
-            scoreCount++;
-          }
-        });
-      }
-    });
-
-    averageScore = scoreCount > 0 ? Math.round(totalScores / scoreCount) : 0;
-    const completionRate = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
-
-    return {
-      totalUsers,
-      completedChapters,
-      totalChapters,
-      averageScore,
-      completionRate
-    };
+  // Helper: Check if user is connected (active in last 5 minutes)
+  const isConnected = (lastActivity?: string) => {
+    if (!lastActivity) return false;
+    const fiveMinutesAgo = currentTime - 5 * 60 * 1000;
+    return new Date(lastActivity).getTime() > fiveMinutesAgo;
   };
 
-  const stats = getProgressStats();
+  // Combine all users (models + beginners)
+  const allUsers = [
+    ...models.map(m => ({ ...m, type: 'pro' as const })),
+    ...beginnerStudents.map(b => ({ ...b, type: 'beginner' as const }))
+  ];
 
-  // Filtrer les utilisateurs selon les critères
-  const getFilteredUsers = () => {
-    let filteredUsers = [...models, ...beginnerStudents] as any[];
+  // Filter and calculate data for each user
+  const usersWithProgress = allUsers.map(user => {
+    const quizScores = user.quizScores || {};
+    const quizEntries = Object.entries(quizScores);
     
-    if (selectedModel !== 'all') {
-      filteredUsers = filteredUsers.filter(user => 
-        selectedModel === 'models' ? models.includes(user) : beginnerStudents.includes(user)
-      );
-    }
-    
-    return filteredUsers;
-  };
-
-  const filteredUsers = getFilteredUsers();
-
-  // Obtenir les chapitres disponibles
-  const getAvailableChapters = () => {
-    const chapters = new Set<string>();
-    filteredUsers.forEach(user => {
-      if (user.quizScores) {
-        Object.keys(user.quizScores).forEach(chapterSlug => {
-          chapters.add(chapterSlug);
-        });
-      }
-    });
-    return Array.from(chapters);
-  };
-
-  const availableChapters = getAvailableChapters();
-
-  // Obtenir les données de progression pour un utilisateur
-  const getUserProgress = (user: any) => {
-    if (!user.quizScores) return { completed: 0, total: 0, averageScore: 0 };
-    
-    const scores = Object.values(user.quizScores) as any[];
-    const completed = scores.filter(score => score.score > 0).length;
-    const total = scores.length;
-    const averageScore = completed > 0 ? Math.round(scores.reduce((sum, score) => sum + score.score, 0) / completed) : 0;
-    
-    return { completed, total, averageScore };
-  };
-
-  // Obtenir les données de progression pour un chapitre
-  const getChapterProgress = (chapterSlug: string) => {
-    const chapterUsers = filteredUsers.filter(user => 
-      user.quizScores && user.quizScores[chapterSlug]
-    );
-    
-    const totalAttempts = chapterUsers.length;
-    const completedAttempts = chapterUsers.filter(user => 
-      user.quizScores[chapterSlug].score > 0
+    const totalQuizzes = quizEntries.length;
+    const passedQuizzes = quizEntries.filter(([_, quiz]) => 
+      (quiz.score / quiz.total) >= 0.5
     ).length;
     
-    const averageScore = completedAttempts > 0 ? Math.round(
-      chapterUsers.reduce((sum, user) => sum + user.quizScores[chapterSlug].score, 0) / completedAttempts
-    ) : 0;
+    const averageScore = totalQuizzes > 0
+      ? (quizEntries.reduce((sum, [_, quiz]) => 
+          sum + (quiz.score / quiz.total) * 100, 0) / totalQuizzes)
+      : 0;
+
+    const connected = isConnected(user.lastActivity);
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: (user as any).email || '',
+      type: user.type,
+      quizScores,
+      totalQuizzes,
+      passedQuizzes,
+      averageScore: Math.round(averageScore),
+      lastActivity: user.lastActivity,
+      lastLogin: user.lastLogin,
+      connected
+    };
+  });
+
+  // Apply filters
+  const filteredUsers = usersWithProgress.filter(user => {
+    const matchesSearch = searchTerm === '' || 
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    return { totalAttempts, completedAttempts, averageScore };
+    const matchesFilter = 
+      activeFilter === 'all' ||
+      (activeFilter === 'connected' && user.connected) ||
+      (activeFilter === 'pro' && user.type === 'pro') ||
+      (activeFilter === 'beginner' && user.type === 'beginner');
+
+    return matchesSearch && matchesFilter;
+  });
+
+  // Calculate stats
+  const stats = {
+    totalUsers: allUsers.length,
+    connectedUsers: usersWithProgress.filter(u => u.connected).length,
+    totalQuizzes: usersWithProgress.reduce((sum, u) => sum + u.totalQuizzes, 0),
+    avgScore: usersWithProgress.length > 0
+      ? Math.round(usersWithProgress.reduce((sum, u) => sum + u.averageScore, 0) / usersWithProgress.length)
+      : 0
   };
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO title="Progression Classroom" noIndex />
-      <div className="container mx-auto px-6 lg:px-8">
-        <header className="admin-page-header">
+      <SEO title="Admin - Suivi Classroom" noIndex />
+      <div className="container mx-auto px-6">
+        <div className="admin-page-header">
           <div>
-            <h1 className="admin-page-title">Progression Classroom</h1>
-            <p className="admin-page-subtitle">Suivre la progression des mannequins et étudiants dans la formation.</p>
+            <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+              <ChevronLeftIcon className="w-5 h-5" />
+              Retour au Tableau de Bord
+            </Link>
+            <h1 className="admin-page-title">Suivi Formation & Classroom</h1>
+            <p className="admin-page-subtitle">
+              Suivez en temps réel les mannequins connectés et leurs résultats de quiz
+            </p>
           </div>
-        </header>
+        </div>
 
-        {/* Statistiques générales */}
-        <div className="admin-section-wrapper mb-8">
-          <h2 className="admin-section-title">Statistiques Générales</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="card-base p-6 text-center">
-              <UserGroupIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-pm-gold mb-2">{stats.totalUsers}</h3>
-              <p className="text-pm-off-white/70">Utilisateurs Total</p>
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+          <div className="bg-pm-dark/30 border border-pm-gold/20 rounded-lg p-6">
+            <div className="flex items-center gap-3">
+              <UserGroupIcon className="w-10 h-10 text-pm-gold" />
+              <div>
+                <p className="text-3xl font-bold text-pm-gold">{stats.totalUsers}</p>
+                <p className="text-pm-off-white/70 text-sm">Total Mannequins</p>
+              </div>
             </div>
-            
-            <div className="card-base p-6 text-center">
-              <ChartBarIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-pm-gold mb-2">{stats.completionRate}%</h3>
-              <p className="text-pm-off-white/70">Taux de Completion</p>
+          </div>
+
+          <div className="bg-pm-dark/30 border border-green-500/20 rounded-lg p-6">
+            <div className="flex items-center gap-3">
+              <SignalIcon className="w-10 h-10 text-green-400 animate-pulse" />
+              <div>
+                <p className="text-3xl font-bold text-green-400">{stats.connectedUsers}</p>
+                <p className="text-pm-off-white/70 text-sm">Connectés Maintenant</p>
+              </div>
             </div>
-            
-            <div className="card-base p-6 text-center">
-              <AcademicCapIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-pm-gold mb-2">{stats.completedChapters}</h3>
-              <p className="text-pm-off-white/70">Chapitres Complétés</p>
+          </div>
+
+          <div className="bg-pm-dark/30 border border-pm-gold/20 rounded-lg p-6">
+            <div className="flex items-center gap-3">
+              <AcademicCapIcon className="w-10 h-10 text-pm-gold" />
+              <div>
+                <p className="text-3xl font-bold text-pm-gold">{stats.totalQuizzes}</p>
+                <p className="text-pm-off-white/70 text-sm">Quiz Complétés</p>
+              </div>
             </div>
-            
-            <div className="card-base p-6 text-center">
-              <TrophyIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-pm-gold mb-2">{stats.averageScore}%</h3>
-              <p className="text-pm-off-white/70">Score Moyen</p>
+          </div>
+
+          <div className="bg-pm-dark/30 border border-pm-gold/20 rounded-lg p-6">
+            <div className="flex items-center gap-3">
+              <TrophyIcon className="w-10 h-10 text-pm-gold" />
+              <div>
+                <p className="text-3xl font-bold text-pm-gold">{stats.avgScore}%</p>
+                <p className="text-pm-off-white/70 text-sm">Score Moyen</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Filtres */}
-        <div className="admin-section-wrapper mb-8">
-          <h2 className="admin-section-title">Filtres</h2>
-          <div className="flex flex-wrap gap-4">
-            <div>
-              <label className="admin-label">Type d'utilisateur</label>
-              <select
-                value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                className="admin-input"
+        {/* Filters */}
+        <div className="mt-8 flex flex-wrap gap-4 items-center">
+          <input
+            type="text"
+            placeholder="🔍 Rechercher un mannequin..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 min-w-[250px] px-4 py-2 bg-pm-dark/50 border border-pm-gold/30 rounded-lg text-pm-off-white placeholder-pm-off-white/50 focus:outline-none focus:border-pm-gold"
+          />
+          
+          <div className="flex gap-2">
+            {[
+              { id: 'all', label: 'Tous', count: allUsers.length },
+              { id: 'connected', label: '🟢 Connectés', count: stats.connectedUsers },
+              { id: 'pro', label: 'Pro', count: models.length },
+              { id: 'beginner', label: 'Débutants', count: beginnerStudents.length }
+            ].map(filter => (
+              <button
+                key={filter.id}
+                onClick={() => setActiveFilter(filter.id)}
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                  activeFilter === filter.id
+                    ? 'bg-pm-gold text-pm-dark'
+                    : 'bg-pm-dark/50 text-pm-off-white/70 border border-pm-gold/20 hover:border-pm-gold/50'
+                }`}
               >
-                <option value="all">Tous</option>
-                <option value="models">Mannequins</option>
-                <option value="students">Étudiants Débutants</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="admin-label">Chapitre</label>
-              <select
-                value={selectedChapter}
-                onChange={(e) => setSelectedChapter(e.target.value)}
-                className="admin-input"
-              >
-                <option value="all">Tous les chapitres</option>
-                {availableChapters.map(chapterSlug => (
-                  <option key={chapterSlug} value={chapterSlug}>
-                    {chapterSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </option>
-                ))}
-              </select>
-            </div>
+                {filter.label} ({filter.count})
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Progression par utilisateur */}
-        <div className="admin-section-wrapper mb-8">
-          <h2 className="admin-section-title">Progression par Utilisateur</h2>
-          <div className="space-y-4">
-            {filteredUsers.map((user, index) => {
-              const progress = getUserProgress(user);
-              const progressPercentage = progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0;
-              
-              return (
-                <div key={user.id || index} className="card-base p-6">
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-pm-gold mb-2">
-                        {user.name} {user.username && `(${user.username})`}
-                      </h3>
-                      <p className="text-pm-off-white/70 mb-2">
-                        {user.type === 'model' ? 'Mannequin' : 'Étudiant Débutant'}
-                        {user.email && ` • ${user.email}`}
-                      </p>
-                      
-                      <div className="flex items-center gap-4 text-sm text-pm-off-white/70">
-                        <span>Chapitres complétés: {progress.completed}/{progress.total}</span>
-                        <span>Score moyen: {progress.averageScore}%</span>
-                      </div>
-                      
-                      <div className="mt-3">
-                        <div className="flex justify-between text-sm text-pm-off-white/70 mb-1">
-                          <span>Progression</span>
-                          <span>{progressPercentage}%</span>
-                        </div>
-                        <div className="w-full bg-pm-off-white/10 rounded-full h-2">
-                          <div 
-                            className="bg-pm-gold h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${progressPercentage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
+        {/* User List */}
+        <div className="mt-8 space-y-4">
+          {filteredUsers.map(user => (
+            <div key={user.id} className="bg-pm-dark/30 border border-pm-gold/20 rounded-lg p-6 hover:border-pm-gold/40 transition-colors">
+              <div className="flex items-start justify-between gap-4">
+                {/* User Info */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <h3 className="text-xl font-semibold text-pm-off-white">{user.name}</h3>
+                    {user.connected && (
+                      <span className="flex items-center gap-1 px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full border border-green-500/30">
+                        <SignalIcon className="w-3 h-3 animate-pulse" />
+                        En ligne
+                      </span>
+                    )}
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      user.type === 'pro' 
+                        ? 'bg-pm-gold/20 text-pm-gold border border-pm-gold/30' 
+                        : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                    }`}>
+                      {user.type === 'pro' ? 'Pro' : 'Débutant'}
+                    </span>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Progression par chapitre */}
-        <div className="admin-section-wrapper">
-          <h2 className="admin-section-title">Progression par Chapitre</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {availableChapters.map(chapterSlug => {
-              const chapterProgress = getChapterProgress(chapterSlug);
-              const completionRate = chapterProgress.totalAttempts > 0 
-                ? Math.round((chapterProgress.completedAttempts / chapterProgress.totalAttempts) * 100) 
-                : 0;
-              
-              return (
-                <div key={chapterSlug} className="card-base p-6">
-                  <h3 className="text-lg font-bold text-pm-gold mb-4">
-                    {chapterSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </h3>
+                  {user.email && <p className="text-pm-off-white/60 text-sm mb-4">{user.email}</p>}
+
+                  {/* Quiz Scores Grid */}
+                  {user.totalQuizzes > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {Object.entries(user.quizScores).map(([chapterSlug, quiz]) => {
+                        const percentage = Math.round((quiz.score / quiz.total) * 100);
+                        const passed = percentage >= 50;
+                        
+                        return (
+                          <div key={chapterSlug} className="bg-pm-dark/50 border border-pm-gold/10 rounded p-3">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <p className="text-xs text-pm-off-white/70 line-clamp-2 flex-1">
+                                {chapterSlug.replace(/-/g, ' ')}
+                              </p>
+                              {passed ? (
+                                <CheckCircleIcon className="w-5 h-5 text-green-400 flex-shrink-0" />
+                              ) : (
+                                <XCircleIcon className="w-5 h-5 text-red-400 flex-shrink-0" />
+                              )}
+                            </div>
+                            <div className="flex items-end justify-between">
+                              <span className={`text-2xl font-bold ${passed ? 'text-green-400' : 'text-red-400'}`}>
+                                {percentage}%
+                              </span>
+                              <span className="text-xs text-pm-off-white/50">
+                                {quiz.score}/{quiz.total}
+                              </span>
+                            </div>
+                            {quiz.timesLeft !== undefined && quiz.timesLeft < 3 && (
+                              <p className="text-xs text-orange-400 mt-1">
+                                {quiz.timesLeft} essai(s) restant(s)
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-pm-off-white/50 text-sm">
+                      Aucun quiz complété
+                    </div>
+                  )}
+                </div>
+
+                {/* Stats Summary */}
+                <div className="flex flex-col gap-3 min-w-[150px]">
+                  <div className="bg-pm-dark/50 rounded-lg p-3 text-center">
+                    <p className="text-xs text-pm-off-white/60 mb-1">Score Moyen</p>
+                    <p className={`text-2xl font-bold ${
+                      user.averageScore >= 75 ? 'text-green-400' :
+                      user.averageScore >= 50 ? 'text-pm-gold' : 'text-red-400'
+                    }`}>
+                      {user.averageScore}%
+                    </p>
+                  </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-pm-off-white/70">Tentatives</span>
-                      <span className="text-pm-off-white">{chapterProgress.totalAttempts}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-pm-off-white/70">Complétées</span>
-                      <span className="text-pm-off-white">{chapterProgress.completedAttempts}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-pm-off-white/70">Score moyen</span>
-                      <span className="text-pm-off-white">{chapterProgress.averageScore}%</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-pm-off-white/70">Taux de completion</span>
-                      <span className="text-pm-gold font-bold">{completionRate}%</span>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <div className="flex justify-between text-sm text-pm-off-white/70 mb-1">
-                        <span>Progression</span>
-                        <span>{completionRate}%</span>
-                      </div>
-                      <div className="w-full bg-pm-off-white/10 rounded-full h-2">
-                        <div 
-                          className="bg-pm-gold h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${completionRate}%` }}
-                        ></div>
-                      </div>
-                    </div>
+                  <div className="bg-pm-dark/50 rounded-lg p-3 text-center">
+                    <p className="text-xs text-pm-off-white/60 mb-1">Quiz Réussis</p>
+                    <p className="text-lg font-bold text-pm-gold">
+                      {user.passedQuizzes}/{user.totalQuizzes}
+                    </p>
                   </div>
+
+                  {user.lastActivity && (
+                    <div className="bg-pm-dark/50 rounded-lg p-3">
+                      <p className="text-xs text-pm-off-white/60 mb-1 flex items-center gap-1">
+                        <ClockIcon className="w-3 h-3" />
+                        Dernière activité
+                      </p>
+                      <p className="text-xs text-pm-off-white">
+                        {new Date(user.lastActivity).toLocaleDateString('fr-FR', { 
+                          day: '2-digit', 
+                          month: 'short' 
+                        })}
+                      </p>
+                      <p className="text-xs text-pm-off-white/70">
+                        {new Date(user.lastActivity).toLocaleTimeString('fr-FR', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            </div>
+          ))}
+
+          {filteredUsers.length === 0 && (
+            <div className="text-center py-16 text-pm-off-white/60">
+              <UserGroupIcon className="w-16 h-16 mx-auto mb-4 text-pm-gold/30" />
+              <p className="text-lg">Aucun mannequin trouvé</p>
+              <p className="text-sm mt-2">Essayez de modifier vos filtres de recherche</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -291,3 +311,4 @@ const AdminClassroomProgress: React.FC = () => {
 };
 
 export default AdminClassroomProgress;
+

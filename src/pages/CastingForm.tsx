@@ -1,161 +1,198 @@
-
-
 import React, { useState } from 'react';
-import SEO from '../components/SEO';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication } from '../types';
-import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const CastingForm: React.FC = () => {
-    const { data, saveData } = useData();
-    const [formData, setFormData] = useState({
-        firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
-        gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
-        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
+  const navigate = useNavigate();
+  const { saveData, data } = useData();
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    age: '',
+    height: '',
+    city: '',
+    experience: '',
+    message: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const application = {
+        id: Date.now().toString(),
+        ...formData,
+        status: 'Nouveau',
+        submittedAt: new Date().toISOString()
+      };
+
+      const existingApplications = data?.castingApplications || [];
+      saveData({ ...data, castingApplications: [...existingApplications, application] });
+
+      alert('Votre candidature a été soumise avec succès!');
+      navigate('/casting');
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      alert('Une erreur est survenue. Veuillez réessayer.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
     });
-    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-    const [statusMessage, setStatusMessage] = useState('');
+  };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  return (
+    <>
+      <SEO 
+        title="Formulaire de Casting"
+        description="Postulez pour rejoindre notre agence de mannequins"
+      />
+      <div className="min-h-screen py-20 px-4 bg-gray-50">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <h1 className="text-3xl font-playfair text-pm-gold mb-6">Formulaire de Casting</h1>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Prénom *</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Nom *</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                    required
+                  />
+                </div>
+              </div>
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setStatus('loading');
+              <div>
+                <label className="block text-sm font-medium mb-2">Email *</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                  required
+                />
+              </div>
 
-        if (!data) {
-            setStatus('error');
-            setStatusMessage('Erreur: Impossible de charger les données de l\'application.');
-            return;
-        }
+              <div>
+                <label className="block text-sm font-medium mb-2">Téléphone *</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                  required
+                />
+              </div>
 
-        const newApplication: CastingApplication = {
-            ...formData,
-            id: `casting-${Date.now()}`,
-            submissionDate: new Date().toISOString(),
-            status: 'Nouveau',
-        };
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Âge *</label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={formData.age}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Taille (cm) *</label>
+                  <input
+                    type="number"
+                    name="height"
+                    value={formData.height}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Ville *</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                    required
+                  />
+                </div>
+              </div>
 
-        try {
-            const updatedApplications = [...(data.castingApplications || []), newApplication];
-            await saveData({ ...data, castingApplications: updatedApplications });
+              <div>
+                <label className="block text-sm font-medium mb-2">Expérience</label>
+                <textarea
+                  name="experience"
+                  value={formData.experience}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                  rows={3}
+                />
+              </div>
 
-            setStatus('success');
-            setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');
-            setFormData({ // Reset form
-                firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
-                gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
-                eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
-            });
+              <div>
+                <label className="block text-sm font-medium mb-2">Message</label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-pm-gold"
+                  rows={4}
+                />
+              </div>
 
-        } catch (error) {
-            setStatus('error');
-            setStatusMessage("Une erreur est survenue lors de l'envoi de votre candidature.");
-            console.error(error);
-        }
-    };
-    
-    return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Formulaire de Casting" description="Postulez en ligne pour rejoindre Perfect Models Management. Remplissez notre formulaire pour soumettre votre candidature." noIndex />
-            <div className="container mx-auto px-6 max-w-4xl">
-                <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Postuler au Casting</h1>
-                <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
-                    Remplissez ce formulaire avec attention. C'est votre première étape pour peut-être nous rejoindre.
-                </p>
-                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-8 rounded-lg shadow-lg">
-                    <Section title="Informations Personnelles">
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Prénom" name="firstName" value={formData.firstName} onChange={handleChange} required />
-                            <FormInput label="Nom" name="lastName" value={formData.lastName} onChange={handleChange} required />
-                        </div>
-                         <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Date de Naissance" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} required />
-                            <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange} required>
-                                <option value="Femme">Femme</option>
-                                <option value="Homme">Homme</option>
-                            </FormSelect>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-6">
-                           <FormInput label="Nationalité" name="nationality" value={formData.nationality} onChange={handleChange} required />
-                           <FormInput label="Ville de résidence" name="city" value={formData.city} onChange={handleChange} required />
-                        </div>
-                         <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-                            <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
-                        </div>
-                    </Section>
-
-                    <Section title="Mensurations & Physique">
-                        <div className="grid md:grid-cols-3 gap-6">
-                            <FormInput label="Taille (cm)" name="height" type="number" value={formData.height} onChange={handleChange} required />
-                            <FormInput label="Poids (kg)" name="weight" type="number" value={formData.weight} onChange={handleChange} required />
-                             <FormInput label="Pointure (EU)" name="shoeSize" type="number" value={formData.shoeSize} onChange={handleChange} required />
-                        </div>
-                         <div className="grid md:grid-cols-3 gap-6">
-                            <FormInput label="Poitrine (cm)" name="chest" type="number" value={formData.chest} onChange={handleChange} />
-                            <FormInput label="Taille (vêtement, cm)" name="waist" type="number" value={formData.waist} onChange={handleChange} />
-                            <FormInput label="Hanches (cm)" name="hips" type="number" value={formData.hips} onChange={handleChange} />
-                        </div>
-                         <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Couleur des yeux" name="eyeColor" value={formData.eyeColor} onChange={handleChange} />
-                            <FormInput label="Couleur des cheveux" name="hairColor" value={formData.hairColor} onChange={handleChange} />
-                        </div>
-                    </Section>
-                    
-                     <Section title="Expérience & Portfolio">
-                        <FormSelect label="Niveau d'expérience" name="experience" value={formData.experience} onChange={handleChange} required>
-                            <option value="none">Aucune expérience</option>
-                            <option value="beginner">Débutant(e) (shootings amateurs)</option>
-                            <option value="intermediate">Intermédiaire (agence locale, défilés)</option>
-                            <option value="professional">Professionnel(le)</option>
-                        </FormSelect>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Profil Instagram" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="@pseudo" />
-                            <FormInput label="Lien vers portfolio (optionnel)" name="portfolioLink" value={formData.portfolioLink} onChange={handleChange} />
-                        </div>
-                        <p className="text-sm text-pm-off-white/60 bg-pm-dark/50 p-3 rounded-md border border-pm-off-white/10">
-                            Note : Pour simplifier cette première étape, nous ne demandons pas de photos immédiatement. Si votre profil est présélectionné, nous vous contacterons par email pour vous demander de nous envoyer vos polas (photos naturelles).
-                        </p>
-                    </Section>
-
-                    <div className="pt-6">
-                        <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
-                            {status === 'loading' ? 'Envoi...' : 'Soumettre ma candidature'}
-                        </button>
-                    </div>
-
-                    {statusMessage && (
-                        <p className={`text-center text-sm p-4 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                            {statusMessage}
-                            {status === 'success' && <Link to="/" className="underline ml-2">Retour à l'accueil</Link>}
-                        </p>
-                    )}
-                </form>
-            </div>
+              <div className="flex gap-4">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 bg-pm-gold text-white py-3 rounded hover:bg-pm-gold/90 disabled:opacity-50"
+                >
+                  {submitting ? 'Envoi en cours...' : 'Soumettre ma candidature'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/casting')}
+                  className="px-6 py-3 border rounded hover:bg-gray-50"
+                >
+                  Annuler
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-    );
+      </div>
+    </>
+  );
 };
 
-// Reusable components
-const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
-    <div className="space-y-6 pt-6 border-t border-pm-gold/10 first:pt-0 first:border-none">
-        <h2 className="text-xl font-playfair text-pm-gold">{title}</h2>
-        <div className="space-y-6">{children}</div>
-    </div>
-);
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <input {...props} id={props.name} className="admin-input" />
-    </div>
-);
-const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <select {...props} id={props.name} className="admin-input">{props.children}</select>
-    </div>
-);
-
 export default CastingForm;
+

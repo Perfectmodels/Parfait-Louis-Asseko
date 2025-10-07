@@ -1,320 +1,149 @@
 import React, { useState } from 'react';
-import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { PlusIcon, PencilIcon, TrashIcon, KeyIcon, UserIcon, LockClosedIcon, LockOpenIcon } from '@heroicons/react/24/outline';
+import SEO from '../components/SEO';
+import { Link } from 'react-router-dom';
+import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon, ArrowDownTrayIcon, KeyIcon } from '@heroicons/react/24/outline';
 
 const AdminModelAccess: React.FC = () => {
-  const { data, saveData } = useData();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingModel, setEditingModel] = useState<any | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    email: '',
-    phone: '',
-    password: '',
-    isActive: true,
-    role: 'model' as 'model' | 'admin' | 'beginner',
-    lastLogin: '',
-    createdAt: ''
-  });
+  const { data } = useData();
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const models = (data?.models as any[]) || [];
+  const models = data?.models || [];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const newModel: any = {
-      id: editingModel?.id || Date.now().toString(),
-      name: formData.name,
-      username: formData.username,
-      email: formData.email,
-      phone: formData.phone,
-      password: formData.password,
-      isActive: formData.isActive,
-      role: formData.role,
-      lastLogin: editingModel?.lastLogin || null,
-      createdAt: editingModel?.createdAt || new Date().toISOString()
-    };
-
-    let updatedModels;
-    if (editingModel) {
-      updatedModels = models.map(model => 
-        model.id === editingModel.id ? newModel : model
-      );
-    } else {
-      updatedModels = [...models, newModel];
-    }
-
-    saveData({ ...data!, models: updatedModels });
-    setIsModalOpen(false);
-    setEditingModel(null);
-    setFormData({
-      name: '',
-      username: '',
-      email: '',
-      phone: '',
-      password: '',
-      isActive: true,
-      role: 'model',
-      lastLogin: '',
-      createdAt: ''
-    });
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleEdit = (model: any) => {
-    setEditingModel(model);
-    setFormData({
-      name: model.name,
-      username: model.username,
-      email: model.email,
-      phone: model.phone,
-      password: model.password,
-      isActive: model.isActive,
-      role: model.role,
-      lastLogin: model.lastLogin || '',
-      createdAt: model.createdAt || ''
-    });
-    setIsModalOpen(true);
-  };
+  const downloadCSV = () => {
+    const csvContent = [
+      ['Nom', 'Username', 'Mot de passe', 'Email', 'Téléphone'].join(','),
+      ...models.map(model => [
+        `"${model.name}"`,
+        `"${model.username || model.email}"`,
+        `"${model.password || '********'}"`,
+        `"${model.email}"`,
+        `"${model.phone || ''}"`
+      ].join(','))
+    ].join('\n');
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce mannequin ?')) {
-      const updatedModels = models.filter(model => model.id !== id);
-      saveData({ ...data!, models: updatedModels });
-    }
-  };
-
-  const handleToggleActive = (id: string) => {
-    const updatedModels = models.map(model =>
-      model.id === id ? { ...model, isActive: !model.isActive } : model
-    );
-    saveData({ ...data!, models: updatedModels });
-  };
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'Jamais';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'modeles-acces.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO title="Admin - Accès des Mannequins" noIndex />
-      <div className="container mx-auto px-6 lg:px-8">
-        <header className="admin-page-header">
+      <SEO title="Admin - Accès Mannequins Pro" noIndex />
+      <div className="container mx-auto px-6">
+        <div className="admin-page-header">
           <div>
-            <h1 className="admin-page-title">Accès des Mannequins</h1>
-            <p className="admin-page-subtitle">Gérez les comptes et accès des mannequins.</p>
+            <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+              <ChevronLeftIcon className="w-5 h-5" />
+              Retour au Tableau de Bord
+            </Link>
+            <h1 className="admin-page-title">Accès Mannequins Professionnels</h1>
+            <p className="admin-page-subtitle">
+              Consulter et gérer les identifiants de connexion des mannequins professionnels.
+            </p>
           </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
+          <button 
+            onClick={downloadCSV} 
+            className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark transition-colors"
           >
-            <PlusIcon className="w-5 h-5" />
-            Nouveau mannequin
+            <ArrowDownTrayIcon className="w-5 h-5"/> Télécharger CSV
           </button>
-        </header>
+        </div>
 
-        <div className="admin-section-wrapper">
-          <h2 className="admin-section-title">Comptes des Mannequins</h2>
-          
-          {models.length === 0 ? (
-            <div className="text-center py-12">
-              <UserIcon className="w-16 h-16 text-pm-off-white/30 mx-auto mb-4" />
-              <p className="text-pm-off-white/60 text-lg">Aucun mannequin enregistré</p>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="mt-4 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
-              >
-                Créer le premier mannequin
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {models.map(model => (
-                <div key={model.id} className="card-base p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-pm-gold/20 rounded-full flex items-center justify-center">
-                      <UserIcon className="w-6 h-6 text-pm-gold" />
+        <div className="admin-section-wrapper !p-0 mt-8 overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-pm-dark/50 sticky top-0">
+              <tr className="border-b border-pm-gold/20">
+                <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 font-semibold">Nom</th>
+                <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 font-semibold">Username</th>
+                <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 font-semibold">Mot de passe</th>
+                <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 font-semibold">Email</th>
+                <th className="p-4 uppercase text-xs tracking-wider text-pm-off-white/70 font-semibold">Téléphone</th>
+              </tr>
+            </thead>
+            <tbody>
+              {models.map((model) => (
+                <tr key={model.id} className="border-b border-pm-dark hover:bg-pm-dark/30 transition-colors">
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <KeyIcon className="w-4 h-4 text-pm-gold/60" />
+                      <span className="font-semibold text-pm-off-white">{model.name}</span>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-pm-gold">{model.name}</h3>
-                      <p className="text-sm text-pm-off-white/70">@{model.username}</p>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <code className="font-mono text-sm text-pm-gold/90 bg-pm-dark/50 px-3 py-1 rounded border border-pm-gold/20">
+                        {model.username || model.email}
+                      </code>
+                      <button
+                        onClick={() => copyToClipboard(model.username || model.email, `${model.id}-username`)}
+                        className="text-pm-off-white/60 hover:text-pm-gold transition-colors p-1"
+                        title="Copier le username"
+                      >
+                        {copiedId === `${model.id}-username` ? (
+                          <CheckIcon className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <ClipboardDocumentIcon className="w-4 h-4" />
+                        )}
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleToggleActive(model.id)}
-                      className={`p-2 rounded-lg transition-colors ${
-                        model.isActive 
-                          ? 'bg-green-600/20 text-green-400 hover:bg-green-600/30' 
-                          : 'bg-red-600/20 text-red-400 hover:bg-red-600/30'
-                      }`}
-                      title={model.isActive ? 'Désactiver' : 'Activer'}
-                    >
-                      {model.isActive ? <LockOpenIcon className="w-5 h-5" /> : <LockClosedIcon className="w-5 h-5" />}
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm text-pm-off-white/70 mb-4">
-                    <p><strong>Email:</strong> {model.email}</p>
-                    <p><strong>Téléphone:</strong> {model.phone}</p>
-                    <p><strong>Rôle:</strong> <span className="capitalize">{model.role}</span></p>
-                    <p><strong>Dernière connexion:</strong> {formatDate(model.lastLogin)}</p>
-                    <p><strong>Créé le:</strong> {formatDate(model.createdAt)}</p>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(model)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-pm-gold/20 text-pm-gold border border-pm-gold/30 rounded hover:bg-pm-gold/30 transition-colors"
-                    >
-                      <PencilIcon className="w-4 h-4" />
-                      Modifier
-                    </button>
-                    <button
-                      onClick={() => handleDelete(model.id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded hover:bg-red-600/30 transition-colors"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                      Supprimer
-                    </button>
-                  </div>
-                </div>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <code className="font-mono text-sm text-pm-gold/90 bg-pm-dark/50 px-3 py-1 rounded border border-pm-gold/20">
+                        {model.password || '********'}
+                      </code>
+                      <button
+                        onClick={() => copyToClipboard(model.password || '', `${model.id}-password`)}
+                        className="text-pm-off-white/60 hover:text-pm-gold transition-colors p-1 disabled:opacity-30 disabled:cursor-not-allowed"
+                        disabled={!model.password}
+                        title="Copier le mot de passe"
+                      >
+                        {copiedId === `${model.id}-password` ? (
+                          <CheckIcon className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <ClipboardDocumentIcon className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <span className="text-pm-off-white/80 text-sm">{model.email}</span>
+                  </td>
+                  <td className="p-4">
+                    <span className="text-pm-off-white/80 text-sm">{model.phone || '—'}</span>
+                  </td>
+                </tr>
               ))}
+            </tbody>
+          </table>
+          
+          {models.length === 0 && (
+            <div className="text-center py-16 text-pm-off-white/60">
+              <KeyIcon className="w-12 h-12 mx-auto mb-4 text-pm-gold/30" />
+              <p className="text-lg">Aucun mannequin professionnel enregistré</p>
             </div>
           )}
         </div>
 
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-pm-dark border border-pm-gold/20 rounded-lg p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-              <h3 className="text-2xl font-playfair text-pm-gold mb-6">
-                {editingModel ? 'Modifier le mannequin' : 'Nouveau mannequin'}
-              </h3>
-              
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="admin-label">Nom complet</label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="admin-input"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="admin-label">Nom d'utilisateur</label>
-                    <input
-                      type="text"
-                      value={formData.username}
-                      onChange={(e) => setFormData({...formData, username: e.target.value})}
-                      className="admin-input"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="admin-label">Email</label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="admin-input"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="admin-label">Téléphone</label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="admin-input"
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="admin-label">Mot de passe</label>
-                    <input
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
-                      className="admin-input"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="admin-label">Rôle</label>
-                    <select
-                      value={formData.role}
-                      onChange={(e) => setFormData({...formData, role: e.target.value as any})}
-                      className="admin-input"
-                    >
-                      <option value="model">Mannequin</option>
-                      <option value="admin">Administrateur</option>
-                      <option value="beginner">Débutant</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="isActive"
-                    checked={formData.isActive}
-                    onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
-                    className="w-4 h-4 text-pm-gold bg-black border-pm-gold/30 rounded focus:ring-pm-gold focus:ring-2"
-                  />
-                  <label htmlFor="isActive" className="text-sm text-pm-off-white/80">
-                    Compte actif
-                  </label>
-                </div>
-                
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="submit"
-                    className="flex-1 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
-                  >
-                    {editingModel ? 'Modifier' : 'Créer'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setEditingModel(null);
-                      setFormData({
-                        name: '',
-                        username: '',
-                        email: '',
-                        phone: '',
-                        password: '',
-                        isActive: true,
-                        role: 'model',
-                        lastLogin: '',
-                        createdAt: ''
-                      });
-                    }}
-                    className="flex-1 px-6 py-3 border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-pm-gold/10 transition-colors"
-                  >
-                    Annuler
-                  </button>
-                </div>
-              </form>
+        {models.length > 0 && (
+          <div className="mt-6 p-4 bg-pm-dark/30 border border-pm-gold/20 rounded-lg">
+            <div className="flex items-start gap-3">
+              <KeyIcon className="w-5 h-5 text-pm-gold mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-pm-off-white/70">
+                <p className="font-semibold text-pm-gold mb-1">Note importante :</p>
+                <p>Ces identifiants permettent aux mannequins professionnels d'accéder à leur espace personnel. Gardez ces informations confidentielles et sécurisées.</p>
+              </div>
             </div>
           </div>
         )}
@@ -324,3 +153,4 @@ const AdminModelAccess: React.FC = () => {
 };
 
 export default AdminModelAccess;
+

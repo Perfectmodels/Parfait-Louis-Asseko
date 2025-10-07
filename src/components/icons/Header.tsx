@@ -4,8 +4,8 @@ import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
-// FIX: The NavLink type should be imported from the centralized types.ts file, not from useDataStore.
-import { NavLink as NavLinkType, SocialLinks } from '../../types';
+// FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
+import { NavLink as NavLinkType, SocialLinks } from '../../../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
   const mobileAnimationClasses = isMobile
@@ -111,7 +111,7 @@ export const Breadcrumb: React.FC = () => {
         };
 
         const pathnames = location.pathname.split('/').filter(Boolean);
-        let currentCrumbs = [{ label: 'Accueil', path: '/' }];
+        let currentCrumbs: { label: string; path: string }[] = [];
         let currentPath = '';
 
         pathnames.forEach(segment => {
@@ -292,6 +292,11 @@ const Header: React.FC = () => {
     }).filter((link): link is NavLinkType => link !== null);
   }, [navLinksFromData, userRole]);
 
+  const applyButtonDelay = 150 + processedNavLinks.length * 50;
+  const logoutButtonDelay = 150 + (processedNavLinks.length + 1) * 50;
+  const socialLinksDelay = 150 + (isLoggedIn ? processedNavLinks.length + 2 : processedNavLinks.length + 1) * 50;
+
+
   return (
     <>
       <header 
@@ -308,12 +313,14 @@ const Header: React.FC = () => {
           
           <nav className="hidden lg:flex items-center gap-8">
             <NavLinks navLinks={processedNavLinks} />
-            {(isLoggedIn || socialLinks) && (
+            
               <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
+                <Link to="/casting-formulaire" className="px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                    Postuler
+                </Link>
                   <SocialLinksComponent socialLinks={socialLinks} />
                   {isLoggedIn && <LogoutButton onClick={handleLogout} />}
               </div>
-            )}
           </nav>
 
           <div className="lg:hidden flex items-center">
@@ -347,7 +354,19 @@ const Header: React.FC = () => {
         <div className="flex-grow overflow-y-auto">
             <nav className="flex flex-col p-8 gap-6">
               <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen}/>
-              {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={150 + processedNavLinks.length * 50} />}
+              <div 
+                className={`text-center transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+                style={{ transitionDelay: `${isOpen ? applyButtonDelay : 0}ms` }}
+              >
+                  <Link
+                      to="/casting-formulaire"
+                      onClick={() => setIsOpen(false)}
+                      className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"
+                  >
+                      Postuler
+                  </Link>
+              </div>
+              {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
             </nav>
         </div>
         <div className="p-8 border-t border-pm-gold/20 flex-shrink-0">
@@ -356,7 +375,7 @@ const Header: React.FC = () => {
                 className="justify-center"
                 isMobile={true}
                 isOpen={isOpen}
-                delay={150 + (isLoggedIn ? processedNavLinks.length + 1 : processedNavLinks.length) * 50}
+                delay={socialLinksDelay}
              />
         </div>
       </div>

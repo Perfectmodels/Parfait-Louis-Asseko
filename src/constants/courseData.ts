@@ -8,11 +8,145 @@ export const courseData: Module[] = [
       { 
         slug: "histoire-et-evolution-du-mannequinat",
         title: "Histoire et évolution du mannequinat", 
-        content: `Le métier de mannequin, tel que nous le concevons aujourd'hui, est une invention relativement moderne, intimement liée à l'émergence de la haute couture. Avant le milieu du XIXe siècle, les créateurs de mode utilisaient des poupées pour présenter leurs nouvelles créations à leurs clientes. C'est le couturier anglais Charles Frederick Worth, installé à Paris, qui fut le premier, dans les années 1850, à faire porter ses robes par de vraies femmes, en l'occurrence sa propre épouse, Marie Vernet Worth. Elle est ainsi considérée comme la première mannequin de l'histoire.
-Au début du XXe siècle, le métier se professionnalise avec l'ouverture des premières agences, comme celle de John Robert Powers aux États-Unis. Cependant, les mannequins restent anonymes, de simples "porte-manteaux" vivants.
-L'âge d'or des magazines de mode, après la Seconde Guerre mondiale, commence à mettre en lumière certains visages, comme Lisa Fonssagrives ou Dovima. Mais c'est dans les années 1960, avec la révolution culturelle, que des personnalités comme Twiggy ou Jean Shrimpton deviennent des icônes, incarnant l'esprit de leur époque.
-Les années 1990 marquent l'apogée du phénomène des "Supermodels". Cindy Crawford, Naomi Campbell, Linda Evangelista, Christy Turlington et Claudia Schiffer ne sont plus de simples modèles ; elles sont des célébrités mondiales, des marques à part entière, qui transcendent l'industrie de la mode.
-Enfin, l'ère digitale a bouleversé le paysage. Les réseaux sociaux, et notamment Instagram, ont créé une nouvelle génération de mannequins-influenceurs (Gigi Hadid, Kendall Jenner), où le "personal branding" et le nombre de followers deviennent des atouts majeurs. Aujourd'hui, l'industrie tend vers plus de diversité et d'inclusivité, remettant en question les standards de beauté longtemps hégémoniques et ouvrant la porte à une plus grande variété de profils, de corps et d'identités.` 
+        content: `## 🧠 Histoire et Évolution du Mannequinat
+
+### 1. Les Origines du Mannequinat
+
+Avant le XIXᵉ siècle, les créateurs de mode ne faisaient pas porter leurs vêtements par des personnes, mais les présentaient sur des **poupées articulées** appelées *fashion dolls*. Ces miniatures permettaient d'envoyer les modèles dans différentes villes d'Europe pour promouvoir les créations d'une maison.
+
+### 2. L'Invention du Mannequin Vivant
+
+C'est dans les années **1850** que le couturier **Charles Frederick Worth**, considéré comme le **père de la haute couture**, révolutionne cette pratique. Installé à **Paris**, il décide de présenter ses créations sur de **vraies femmes** pour mieux mettre en valeur le tombé et le mouvement des tissus.
+Sa femme, **Marie Vernet Worth**, devient la première à défiler pour lui. Elle est donc souvent considérée comme **la première mannequin de l'histoire**.
+
+### 3. La Professionnalisation au Début du XXᵉ Siècle
+
+Vers **1920–1930**, le mannequinat devient un véritable **métier**. L'américain **John Robert Powers** fonde l'une des **premières agences de mannequins** à New York, formant et représentant des femmes pour les défilés, catalogues et publicités.
+Dans les années suivantes, des agences comme **Ford Models** (Eileen et Jerry Ford, 1946) institutionnalisent le métier et définissent les premiers standards professionnels.
+
+### 4. L'Âge d'Or des Magazines de Mode
+
+Après la **Seconde Guerre mondiale**, les magazines comme **Vogue**, **Harper's Bazaar** ou **Elle** popularisent les visages des mannequins à travers la **photographie de mode**.
+Des icônes comme **Lisa Fonssagrives**, **Dovima**, **Suzy Parker** ou **Jean Shrimpton** deviennent mondialement connues.
+Le mannequin cesse alors d'être un simple « porte-manteau » pour devenir une **muse artistique** et un **vecteur de rêve**.
+
+### 5. Les Années 1960 : La Révolution de l'Image
+
+Les **Swinging Sixties** marquent une rupture : les mannequins reflètent désormais les **valeurs de la jeunesse** et de la **liberté**.
+Des figures comme **Twiggy**, avec sa silhouette androgyne et son style londonien, incarnent cette nouvelle ère.
+Le mannequinat devient une **culture populaire**, liée à la musique, la photographie et la publicité.
+
+### 6. Les Années 1980–1990 : L'Ère des Supermodels
+
+C'est à la fin des années 1980 que naît le phénomène des **supermodels**, des mannequins mondialement célèbres dont les noms dépassent les podiums.
+Les plus emblématiques — **Naomi Campbell**, **Cindy Crawford**, **Linda Evangelista**, **Christy Turlington**, **Claudia Schiffer** et **Tatjana Patitz** — forment le groupe surnommé les **"Big Six"**.
+Ces mannequins deviennent des **icônes mondiales**, apparaissent dans les clips musicaux, les campagnes publicitaires et les plateaux TV.
+Elles imposent une nouvelle forme de **starification du mannequinat**.
+
+### 7. Les Années 2000–2010 : L'Évolution Numérique
+
+Avec l'avènement d'Internet et des réseaux sociaux, le mannequinat s'adapte.
+Les agences utilisent désormais les plateformes en ligne pour **découvrir et promouvoir** leurs talents.
+De nouveaux profils émergent : des mannequins atypiques, plus diversifiés, qui brisent les standards physiques de l'époque.
+
+### 8. L'Ère Digitale et les Mannequins-Influenceurs
+
+Depuis les années 2010, le mannequinat est profondément transformé par **Instagram**, **TikTok** et les réseaux sociaux.
+Les mannequins deviennent aussi des **influenceurs**. Des figures comme **Gigi Hadid**, **Bella Hadid**, **Kendall Jenner** ou **Winnie Harlow** construisent des carrières grâce à leur **image personnelle et leur communauté en ligne**.
+Le **personal branding** devient un levier essentiel du succès.
+
+### 9. Le Mannequinat Contemporain
+
+Aujourd'hui, l'industrie met l'accent sur :
+* la **diversité ethnique et corporelle**,
+* la **représentation des genres**,
+* l'**inclusivité** et l'**authenticité**.
+
+Les podiums accueillent désormais des mannequins de toutes origines, tailles, âges et identités.
+Le mannequinat moderne ne se résume plus à la beauté physique : il incarne désormais **une expression de soi et un engagement social**.
+
+---
+
+## 📚 Résumé de la leçon
+
+Le mannequinat a évolué :
+* Des **poupées d'exposition** aux **modèles vivants**,
+* Des **défilés privés** à la **culture mondiale**,
+* De la **haute couture** à la **diversité numérique**.
+
+Chaque époque a façonné une nouvelle vision de la beauté, du rôle du mannequin et de son pouvoir d'influence.`,
+        quiz: [
+          {
+            question: "Comment appelait-on les poupées articulées utilisées avant le XIXᵉ siècle pour présenter les créations de mode ?",
+            options: ["Fashion dolls", "Model dolls", "Dress dolls", "Couture dolls"],
+            correctAnswer: "Fashion dolls"
+          },
+          {
+            question: "Qui est considéré comme le père de la haute couture ?",
+            options: ["Christian Dior", "Charles Frederick Worth", "Coco Chanel", "Yves Saint Laurent"],
+            correctAnswer: "Charles Frederick Worth"
+          },
+          {
+            question: "Dans quelle ville Charles Frederick Worth était-il installé ?",
+            options: ["Londres", "Paris", "New York", "Milan"],
+            correctAnswer: "Paris"
+          },
+          {
+            question: "Qui est considérée comme la première mannequin de l'histoire ?",
+            options: ["Lisa Fonssagrives", "Marie Vernet Worth", "Twiggy", "Dovima"],
+            correctAnswer: "Marie Vernet Worth"
+          },
+          {
+            question: "Vers quelle période le mannequinat devient-il un véritable métier professionnalisé ?",
+            options: ["1850–1860", "1920–1930", "1960–1970", "1990–2000"],
+            correctAnswer: "1920–1930"
+          },
+          {
+            question: "Qui a fondé l'une des premières agences de mannequins à New York ?",
+            options: ["Charles Worth", "John Robert Powers", "Jerry Ford", "Gerald Marie"],
+            correctAnswer: "John Robert Powers"
+          },
+          {
+            question: "Quelle agence, fondée en 1946, a institutionnalisé les standards professionnels du mannequinat ?",
+            options: ["Elite Model Management", "IMG Models", "Ford Models", "Next Management"],
+            correctAnswer: "Ford Models"
+          },
+          {
+            question: "Quel magazine a contribué à populariser les visages des mannequins après la Seconde Guerre mondiale ?",
+            options: ["Vogue", "Cosmopolitan", "Marie Claire", "Glamour"],
+            correctAnswer: "Vogue"
+          },
+          {
+            question: "Quelle mannequin des années 1960 incarnait les 'Swinging Sixties' avec sa silhouette androgyne ?",
+            options: ["Jean Shrimpton", "Twiggy", "Dovima", "Suzy Parker"],
+            correctAnswer: "Twiggy"
+          },
+          {
+            question: "Combien de mannequins forment le groupe des 'Big Six' des supermodels des années 1980-1990 ?",
+            options: ["Quatre", "Cinq", "Six", "Sept"],
+            correctAnswer: "Six"
+          },
+          {
+            question: "Laquelle de ces mannequins fait partie du groupe 'Big Six' ?",
+            options: ["Gigi Hadid", "Kendall Jenner", "Tatjana Patitz", "Bella Hadid"],
+            correctAnswer: "Tatjana Patitz"
+          },
+          {
+            question: "Quels réseaux sociaux ont profondément transformé le mannequinat depuis les années 2010 ?",
+            options: ["Facebook et Twitter", "Instagram et TikTok", "LinkedIn et Pinterest", "Snapchat et Tumblr"],
+            correctAnswer: "Instagram et TikTok"
+          },
+          {
+            question: "Quel élément est devenu un levier essentiel du succès pour les mannequins à l'ère digitale ?",
+            options: ["La taille", "Le personal branding", "L'âge", "La nationalité"],
+            correctAnswer: "Le personal branding"
+          },
+          {
+            question: "Quelle valeur majeure caractérise le mannequinat contemporain ?",
+            options: ["L'exclusivité", "La standardisation", "L'inclusivité et la diversité", "La minceur extrême"],
+            correctAnswer: "L'inclusivité et la diversité"
+          }
+        ]
       },
       { 
         slug: "les-differents-types-de-mannequinat",
@@ -25,7 +159,64 @@ Enfin, l'ère digitale a bouleversé le paysage. Les réseaux sociaux, et notamm
 3.  **Mannequin Cabine (Fitting)** : Ce mannequin travaille en coulisses directement avec les créateurs et leurs équipes techniques. Son rôle est d'essayer les prototypes des collections. Il doit avoir des mensurations qui correspondent parfaitement au standard de la marque pour permettre un ajustement parfait des vêtements. C'est un travail technique et peu visible, mais essentiel.
 4.  **Mannequin de Détail (Parts Model)** : Ces mannequins sont spécialisés dans une partie de leur corps : mains (bijoux, vernis), pieds (chaussures), jambes (collants), etc. La perfection de la partie du corps en question est le critère principal.
 5.  **Mannequin Grande Taille (Plus-size)** : Ce secteur est en pleine expansion et promeut la diversité corporelle. Ces mannequins travaillent dans tous les domaines (défilé, commercial, éditorial) et répondent à une demande croissante pour une représentation plus réaliste de la société.
-6.  **Mannequin Beauté (Beauty)** : Spécialisé dans les campagnes pour les cosmétiques, le maquillage, les soins de la peau et les produits capillaires. Un visage symétrique, une peau parfaite et des traits expressifs sont des atouts majeurs.` 
+6.  **Mannequin Beauté (Beauty)** : Spécialisé dans les campagnes pour les cosmétiques, le maquillage, les soins de la peau et les produits capillaires. Un visage symétrique, une peau parfaite et des traits expressifs sont des atouts majeurs.`,
+        quiz: [
+          {
+            question: "Quelle est l'exigence de taille typique pour les mannequins de défilé femmes ?",
+            options: ["1m65-1m70", "1m75-1m81", "1m85-1m90", "Aucune exigence"],
+            correctAnswer: "1m75-1m81"
+          },
+          {
+            question: "Quelle est la principale différence entre la démarche Haute Couture et Prêt-à-porter ?",
+            options: ["La hauteur des talons", "Le style des vêtements", "La vitesse (lente/théâtrale vs rapide/énergique)", "Le nombre de mannequins"],
+            correctAnswer: "La vitesse (lente/théâtrale vs rapide/énergique)"
+          },
+          {
+            question: "Quel type de mannequinat vise à raconter une histoire de façon artistique dans les magazines ?",
+            options: ["Commercial", "Éditorial", "Cabine", "Beauté"],
+            correctAnswer: "Éditorial"
+          },
+          {
+            question: "Pour quel type de magazines travaille principalement le mannequin éditorial ?",
+            options: ["Catalogues de vente", "Vogue et Harper's Bazaar", "Sites e-commerce", "Publicités TV"],
+            correctAnswer: "Vogue et Harper's Bazaar"
+          },
+          {
+            question: "Quel est le rôle principal du mannequin cabine (fitting) ?",
+            options: ["Défiler sur les podiums", "Essayer les prototypes des collections", "Poser pour des publicités", "Faire du mannequinat de détail"],
+            correctAnswer: "Essayer les prototypes des collections"
+          },
+          {
+            question: "Qu'est-ce qu'un mannequin de détail (Parts Model) ?",
+            options: ["Un mannequin qui travaille dans les magasins", "Un mannequin spécialisé dans une partie du corps", "Un mannequin pour les petits formats", "Un mannequin débutant"],
+            correctAnswer: "Un mannequin spécialisé dans une partie du corps"
+          },
+          {
+            question: "Quelles parties du corps peuvent être spécialisées pour un mannequin de détail ?",
+            options: ["Uniquement les mains", "Mains, pieds, jambes", "Uniquement le visage", "Tout le corps"],
+            correctAnswer: "Mains, pieds, jambes"
+          },
+          {
+            question: "Quel secteur du mannequinat est en pleine expansion et promeut la diversité corporelle ?",
+            options: ["Mannequin cabine", "Mannequin grande taille (Plus-size)", "Mannequin de détail", "Mannequin beauté"],
+            correctAnswer: "Mannequin grande taille (Plus-size)"
+          },
+          {
+            question: "Pour quel type de produits le mannequin beauté se spécialise-t-il ?",
+            options: ["Vêtements de sport", "Cosmétiques et soins de la peau", "Bijoux", "Chaussures"],
+            correctAnswer: "Cosmétiques et soins de la peau"
+          },
+          {
+            question: "Quel est l'objectif principal du mannequinat commercial ?",
+            options: ["Créer une atmosphère artistique", "Vendre un produit", "Essayer des prototypes", "Défiler en haute couture"],
+            correctAnswer: "Vendre un produit"
+          },
+          {
+            question: "Quelle est l'apparence typique recherchée pour le mannequinat commercial ?",
+            options: ["Edgy et avant-gardiste", "Accessible, saine et positive", "Très grande taille uniquement", "Traits dramatiques"],
+            correctAnswer: "Accessible, saine et positive"
+          }
+        ]
       },
       { 
         slug: "comprendre-les-agences-et-le-role-de-lagent",
@@ -43,7 +234,69 @@ L'agent est le contact principal du mannequin au sein de l'agence. Ses missions 
 *   **Gestion du planning** : Il organise l'emploi du temps très chargé du mannequin entre les castings, les fittings, les shootings et les défilés.
 *   **Facturation et paiement** : L'agence s'occupe de facturer le client et de verser sa paie au mannequin, après avoir prélevé sa commission (généralement 20% pour l'agence de placement et 10% supplémentaires pour l'agence mère).
 
-Une bonne relation de confiance et de communication entre le mannequin et son agent est la pierre angulaire d'une carrière réussie.` 
+Une bonne relation de confiance et de communication entre le mannequin et son agent est la pierre angulaire d'une carrière réussie.`,
+        quiz: [
+          {
+            question: "Quel rôle joue une agence de mannequins dans la carrière d'un mannequin ?",
+            options: ["Uniquement la facturation", "Manager, conseiller et intermédiaire", "Uniquement la formation", "Uniquement les castings"],
+            correctAnswer: "Manager, conseiller et intermédiaire"
+          },
+          {
+            question: "Qu'est-ce qu'une agence mère (Mother Agency) ?",
+            options: ["L'agence qui gère uniquement les paiements", "La première agence qui découvre et développe le mannequin", "Une agence située dans le pays d'origine du mannequin", "Une agence réservée aux femmes"],
+            correctAnswer: "La première agence qui découvre et développe le mannequin"
+          },
+          {
+            question: "Quel est le rôle principal de l'agence mère ?",
+            options: ["Uniquement placer le mannequin à l'international", "Développer le talent: formation, book, définition de l'image", "Organiser les défilés", "Créer les vêtements"],
+            correctAnswer: "Développer le talent: formation, book, définition de l'image"
+          },
+          {
+            question: "Qu'est-ce qu'une agence de placement (Placement Agency) ?",
+            options: ["L'agence qui découvre les mannequins", "L'agence partenaire dans les capitales de la mode", "L'agence qui vend des vêtements", "L'agence de relations publiques"],
+            correctAnswer: "L'agence partenaire dans les capitales de la mode"
+          },
+          {
+            question: "Dans quelles villes l'agence mère place-t-elle généralement les mannequins ?",
+            options: ["Uniquement à Paris", "Dans les petites villes", "Paris, Milan, New York, etc.", "Uniquement en Amérique"],
+            correctAnswer: "Paris, Milan, New York, etc."
+          },
+          {
+            question: "Comment appelle-t-on aussi l'agent dans le milieu du mannequinat ?",
+            options: ["Manager", "Booker", "Director", "Producer"],
+            correctAnswer: "Booker"
+          },
+          {
+            question: "Quelle est l'une des tâches les plus importantes de l'agent ?",
+            options: ["Maquiller les mannequins", "Négocier les contrats et les droits d'image", "Créer les vêtements", "Photographier les mannequins"],
+            correctAnswer: "Négocier les contrats et les droits d'image"
+          },
+          {
+            question: "Quelle est la commission typique de l'agence de placement ?",
+            options: ["10%", "20%", "30%", "50%"],
+            correctAnswer: "20%"
+          },
+          {
+            question: "Quelle commission supplémentaire l'agence mère perçoit-elle généralement ?",
+            options: ["5%", "10%", "15%", "20%"],
+            correctAnswer: "10%"
+          },
+          {
+            question: "Qu'organise l'agent pour le mannequin avec les clients potentiels ?",
+            options: ["Des vacances", "Des go-sees et castings", "Des cours de danse", "Des achats"],
+            correctAnswer: "Des go-sees et castings"
+          },
+          {
+            question: "Qu'est-ce qui est essentiel pour une carrière réussie selon ce chapitre ?",
+            options: ["Avoir beaucoup d'agences", "Une bonne relation de confiance avec son agent", "Changer souvent d'agence", "Ne jamais parler à son agent"],
+            correctAnswer: "Une bonne relation de confiance avec son agent"
+          },
+          {
+            question: "Qui s'occupe de la facturation des clients et du paiement du mannequin ?",
+            options: ["Le mannequin lui-même", "L'agence", "Le client directement", "Un avocat"],
+            correctAnswer: "L'agence"
+          }
+        ]
       },
       { 
         slug: "limportance-de-limage-et-du-personal-branding",
@@ -61,7 +314,64 @@ Votre personal branding doit être visible partout :
 **Professionnalisme et réputation :**
 Votre marque personnelle inclut aussi votre réputation. Être ponctuel, poli, facile à vivre et travailleur fait partie intégrante de votre image. Dans une petite industrie comme la mode, une mauvaise réputation peut se propager très vite et freiner une carrière.
 
-En résumé, le personal branding, c'est le fait de ne plus être un simple visage, mais de devenir une marque. C'est ce qui transforme un mannequin en icône.` 
+En résumé, le personal branding, c'est le fait de ne plus être un simple visage, mais de devenir une marque. C'est ce qui transforme un mannequin en icône.`,
+        quiz: [
+          {
+            question: "Pourquoi le personal branding est-il essentiel aujourd'hui ?",
+            options: ["Avoir un physique standard suffit", "Des milliers de mannequins sont en compétition", "Les agences n'existent plus", "La mode n'est plus importante"],
+            correctAnswer: "Des milliers de mannequins sont en compétition"
+          },
+          {
+            question: "Qu'est-ce que le personal branding ?",
+            options: ["Un type de vêtement", "Ce qui vous rend unique, mémorable et désirable", "Une agence de mannequins", "Un magazine de mode"],
+            correctAnswer: "Ce qui vous rend unique, mémorable et désirable"
+          },
+          {
+            question: "Le personal branding est la somme de quoi ?",
+            options: ["Uniquement l'apparence physique", "Apparence, personnalité, valeurs et communication", "Uniquement les photos", "Uniquement les réseaux sociaux"],
+            correctAnswer: "Apparence, personnalité, valeurs et communication"
+          },
+          {
+            question: "Quelle question doit-on se poser pour définir sa marque ?",
+            options: ["Combien vais-je gagner ?", "Quelle est ma singularité ?", "Où habitent mes concurrents ?", "Quel est mon poids ?"],
+            correctAnswer: "Quelle est ma singularité ?"
+          },
+          {
+            question: "Si vous visez la haute couture, que doit contenir votre book ?",
+            options: ["Des photos commerciales souriantes", "Des images éditoriales fortes", "Des selfies Instagram", "Des photos de vacances"],
+            correctAnswer: "Des images éditoriales fortes"
+          },
+          {
+            question: "Comment appelle-t-on le style vestimentaire pour les castings ?",
+            options: ["Casual style", "Off-duty style", "Business style", "Street style"],
+            correctAnswer: "Off-duty style"
+          },
+          {
+            question: "Quel réseau social est décrit comme votre vitrine principale ?",
+            options: ["Facebook", "Instagram", "Twitter", "LinkedIn"],
+            correctAnswer: "Instagram"
+          },
+          {
+            question: "Que doit mélanger votre feed Instagram ?",
+            options: ["Photos de travail et aperçus personnels", "Uniquement des publicités", "Uniquement des selfies", "Uniquement des photos de nourriture"],
+            correctAnswer: "Photos de travail et aperçus personnels"
+          },
+          {
+            question: "Qu'est-ce qui fait aussi partie de votre marque personnelle ?",
+            options: ["Uniquement vos photos", "Votre réputation et votre professionnalisme", "Uniquement votre taille", "Uniquement votre agence"],
+            correctAnswer: "Votre réputation et votre professionnalisme"
+          },
+          {
+            question: "Pourquoi une mauvaise réputation est-elle dangereuse dans la mode ?",
+            options: ["L'industrie est très grande", "L'industrie est petite et l'information se propage vite", "Personne ne se parle", "Les réseaux sociaux n'existent pas"],
+            correctAnswer: "L'industrie est petite et l'information se propage vite"
+          },
+          {
+            question: "Qu'est-ce que le personal branding transforme ?",
+            options: ["Un mannequin en photographe", "Un mannequin en designer", "Un simple visage en une marque/icône", "Un mannequin en agent"],
+            correctAnswer: "Un simple visage en une marque/icône"
+          }
+        ]
       },
       { 
         slug: "les-mensurations-et-standards-de-lindustrie",
@@ -85,7 +395,69 @@ Il est essentiel de connaître ses mensurations exactes et de les mettre à jour
 *   **Mannequins défilé hommes** : Taille entre 1m83 et 1m90. Poitrine entre 94 et 102 cm (37-40"), taille entre 76 et 81 cm (30-32").
 
 Il est important de noter que ces standards sont des guides et non des règles absolues. Le plus important est la proportionnalité du corps. De plus, les marchés commerciaux et éditoriaux sont beaucoup plus flexibles.
-Enfin, la santé doit toujours primer. Maintenir ses mensurations doit se faire par une alimentation saine et une activité physique régulière, jamais par des régimes extrêmes et dangereux.` 
+Enfin, la santé doit toujours primer. Maintenir ses mensurations doit se faire par une alimentation saine et une activité physique régulière, jamais par des régimes extrêmes et dangereux.`,
+        quiz: [
+          {
+            question: "Pourquoi les mensurations sont-elles importantes en haute couture ?",
+            options: ["Pour la publicité", "Les vêtements sont créés dans une taille unique (sample size)", "Pour les magazines", "Pour les réseaux sociaux"],
+            correctAnswer: "Les vêtements sont créés dans une taille unique (sample size)"
+          },
+          {
+            question: "Quel outil doit-on utiliser pour prendre ses mensurations ?",
+            options: ["Un mètre rigide", "Un mètre-ruban souple", "Une règle", "Un laser"],
+            correctAnswer: "Un mètre-ruban souple"
+          },
+          {
+            question: "Où mesure-t-on la poitrine chez les femmes ?",
+            options: ["Sous les aisselles", "Au point le plus fort de la poitrine", "Au niveau du nombril", "Au niveau du cou"],
+            correctAnswer: "Au point le plus fort de la poitrine"
+          },
+          {
+            question: "Où mesure-t-on la taille chez les femmes ?",
+            options: ["Au niveau des hanches", "Au creux de la taille (partie la plus fine)", "Au niveau du nombril", "Sous la poitrine"],
+            correctAnswer: "Au creux de la taille (partie la plus fine)"
+          },
+          {
+            question: "Où mesure-t-on la poitrine chez les hommes ?",
+            options: ["Au point le plus fort", "Sous les aisselles, au point le plus large", "Au niveau du nombril", "Au niveau des épaules"],
+            correctAnswer: "Sous les aisselles, au point le plus large"
+          },
+          {
+            question: "Quelle est la plage de taille pour les mannequins défilé femmes ?",
+            options: ["1m65-1m70", "1m75-1m81", "1m85-1m90", "1m60-1m75"],
+            correctAnswer: "1m75-1m81"
+          },
+          {
+            question: "Quel est le tour de taille standard pour les mannequins défilé femmes ?",
+            options: ["50 cm", "61 cm (24\")", "70 cm", "80 cm"],
+            correctAnswer: "61 cm (24\")"
+          },
+          {
+            question: "Quelle est la plage de taille pour les mannequins défilé hommes ?",
+            options: ["1m75-1m80", "1m80-1m85", "1m83-1m90", "1m90-2m00"],
+            correctAnswer: "1m83-1m90"
+          },
+          {
+            question: "Les standards de mensurations sont-ils des règles absolues ?",
+            options: ["Oui, toujours", "Non, ce sont des guides", "Oui, mais seulement pour les femmes", "Oui, mais seulement pour les hommes"],
+            correctAnswer: "Non, ce sont des guides"
+          },
+          {
+            question: "Qu'est-ce qui est le plus important selon le chapitre ?",
+            options: ["La taille exacte", "La proportionnalité du corps", "Le poids", "L'âge"],
+            correctAnswer: "La proportionnalité du corps"
+          },
+          {
+            question: "Comment doit-on maintenir ses mensurations ?",
+            options: ["Par des régimes extrêmes", "Par alimentation saine et activité physique régulière", "En ne mangeant rien", "En prenant des médicaments"],
+            correctAnswer: "Par alimentation saine et activité physique régulière"
+          },
+          {
+            question: "Qu'est-ce qui doit toujours primer ?",
+            options: ["L'apparence", "La santé", "Le poids", "La taille"],
+            correctAnswer: "La santé"
+          }
+        ]
       },
       { 
         slug: "le-vocabulaire-de-la-mode",
@@ -102,7 +474,69 @@ Enfin, la santé doit toujours primer. Maintenir ses mensurations doit se faire 
 *   **Runway / Catwalk** : Le podium sur lequel les mannequins défilent.
 *   **Backstage / Coulisses** : La zone située derrière le podium où se déroulent les préparatifs (maquillage, coiffure, habillage).
 *   **Pola / Digitals** : Des photos très simples et naturelles (sans maquillage, sans retouches) prises sur un fond neutre. Elles permettent aux clients de voir le mannequin tel qu'il est réellement.
-*   **Booker / Agent** : La personne au sein de l'agence qui gère votre carrière, négocie vos contrats et vous envoie en casting.` 
+*   **Booker / Agent** : La personne au sein de l'agence qui gère votre carrière, négocie vos contrats et vous envoie en casting.`,
+        quiz: [
+          {
+            question: "Qu'est-ce qu'un Book ou Portfolio ?",
+            options: ["Un magazine", "Votre album de photos professionnelles", "Un contrat", "Une agence"],
+            correctAnswer: "Votre album de photos professionnelles"
+          },
+          {
+            question: "Qu'est-ce qu'un Composite (Comp Card) ?",
+            options: ["Un livre", "Votre carte de visite avec photos et infos", "Un type de vêtement", "Un rendez-vous"],
+            correctAnswer: "Votre carte de visite avec photos et infos"
+          },
+          {
+            question: "Qu'est-ce qu'un Casting ?",
+            options: ["Un défilé", "Un rendez-vous/audition pour un travail spécifique", "Une photo", "Un magazine"],
+            correctAnswer: "Un rendez-vous/audition pour un travail spécifique"
+          },
+          {
+            question: "Qu'est-ce qu'un Go-See ?",
+            options: ["Un type de défilé", "Un rendez-vous informel avec clients potentiels", "Un shooting photo", "Un contrat"],
+            correctAnswer: "Un rendez-vous informel avec clients potentiels"
+          },
+          {
+            question: "Que signifie un Call-back ?",
+            options: ["Annulation d'un contrat", "Une deuxième audition", "Un appel téléphonique", "Un refus"],
+            correctAnswer: "Une deuxième audition"
+          },
+          {
+            question: "Qu'est-ce qu'un Fitting / Essayage ?",
+            options: ["Un défilé", "Séance d'essayage des vêtements avant un événement", "Un shooting photo", "Un casting"],
+            correctAnswer: "Séance d'essayage des vêtements avant un événement"
+          },
+          {
+            question: "Qu'est-ce qu'un Lookbook ?",
+            options: ["Un magazine de mode", "Ensemble de photos présentant une collection", "Un carnet de notes", "Un portefolio personnel"],
+            correctAnswer: "Ensemble de photos présentant une collection"
+          },
+          {
+            question: "Qu'est-ce qu'un Éditorial (Edito) ?",
+            options: ["Une publicité commerciale", "Série de photos artistiques dans un magazine", "Un catalogue de vente", "Un défilé"],
+            correctAnswer: "Série de photos artistiques dans un magazine"
+          },
+          {
+            question: "Qu'est-ce que le Runway ou Catwalk ?",
+            options: ["Une salle de maquillage", "Le podium pour défiler", "Un studio photo", "Un bureau d'agence"],
+            correctAnswer: "Le podium pour défiler"
+          },
+          {
+            question: "Que signifie Backstage / Coulisses ?",
+            options: ["Le public", "Zone derrière le podium où se font les préparatifs", "Le podium", "La salle de conférence"],
+            correctAnswer: "Zone derrière le podium où se font les préparatifs"
+          },
+          {
+            question: "Que sont les Pola / Digitals ?",
+            options: ["Photos retouchées artistiques", "Photos simples et naturelles sans maquillage", "Photos de mode professionnelles", "Photos de famille"],
+            correctAnswer: "Photos simples et naturelles sans maquillage"
+          },
+          {
+            question: "Qu'est-ce qu'un Booker ?",
+            options: ["Un photographe", "La personne qui gère votre carrière dans l'agence", "Un directeur artistique", "Un maquilleur"],
+            correctAnswer: "La personne qui gère votre carrière dans l'agence"
+          }
+        ]
       },
       { 
         slug: "hygiene-de-vie-et-nutrition-du-mannequin",
@@ -123,7 +557,69 @@ L'exercice est crucial non seulement pour maintenir des mensurations stables, ma
 
 **Soins de la peau et sommeil :**
 *   **Routine de soin** : Nettoyez, hydratez et protégez votre peau du soleil tous les jours. Le démaquillage complet et minutieux après chaque shooting est non négociable.
-*   **Sommeil** : Visez 7 à 9 heures de sommeil par nuit. C'est pendant le sommeil que la peau se régénère et que le corps récupère. Le manque de sommeil est visible immédiatement sur le visage.` 
+*   **Sommeil** : Visez 7 à 9 heures de sommeil par nuit. C'est pendant le sommeil que la peau se régénère et que le corps récupère. Le manque de sommeil est visible immédiatement sur le visage.`,
+        quiz: [
+          {
+            question: "Quel est le principal instrument de travail d'un mannequin ?",
+            options: ["Le book", "Le corps", "Les réseaux sociaux", "L'agence"],
+            correctAnswer: "Le corps"
+          },
+          {
+            question: "Quel est l'objectif d'une bonne nutrition pour un mannequin ?",
+            options: ["Perdre du poids rapidement", "Avoir une peau éclatante, des cheveux forts et de l'énergie", "Manger le moins possible", "Suivre des régimes extrêmes"],
+            correctAnswer: "Avoir une peau éclatante, des cheveux forts et de l'énergie"
+          },
+          {
+            question: "Quels types d'aliments privilégier pour une alimentation équilibrée ?",
+            options: ["Aliments transformés et sucrés", "Fruits, légumes, protéines maigres et bonnes graisses", "Fast-food", "Uniquement des suppléments"],
+            correctAnswer: "Fruits, légumes, protéines maigres et bonnes graisses"
+          },
+          {
+            question: "Quelle quantité d'eau minimum faut-il boire par jour ?",
+            options: ["0,5 litre", "1 litre", "1,5 à 2 litres", "3 litres"],
+            correctAnswer: "1,5 à 2 litres"
+          },
+          {
+            question: "Quel repas ne faut-il jamais sauter, surtout un jour de shooting ?",
+            options: ["Le dîner", "Le goûter", "Le petit-déjeuner", "Le déjeuner"],
+            correctAnswer: "Le petit-déjeuner"
+          },
+          {
+            question: "Combien de séances d'exercice physique faut-il viser par semaine ?",
+            options: ["1 séance", "2 séances", "3 à 5 séances", "7 séances"],
+            correctAnswer: "3 à 5 séances"
+          },
+          {
+            question: "Quels types d'exercices sont recommandés pour la posture ?",
+            options: ["Uniquement la course", "Yoga et Pilates", "Uniquement la musculation", "Uniquement la natation"],
+            correctAnswer: "Yoga et Pilates"
+          },
+          {
+            question: "Qu'est-ce qui est plus important : la régularité ou l'intensité de l'exercice ?",
+            options: ["L'intensité", "La régularité", "Ni l'un ni l'autre", "Les deux également"],
+            correctAnswer: "La régularité"
+          },
+          {
+            question: "Que faut-il faire après chaque shooting concernant la peau ?",
+            options: ["Rien de spécial", "Démaquillage complet et minutieux (non négociable)", "Attendre le lendemain", "Juste rincer à l'eau"],
+            correctAnswer: "Démaquillage complet et minutieux (non négociable)"
+          },
+          {
+            question: "Combien d'heures de sommeil faut-il viser par nuit ?",
+            options: ["4 à 5 heures", "5 à 6 heures", "7 à 9 heures", "10 à 12 heures"],
+            correctAnswer: "7 à 9 heures"
+          },
+          {
+            question: "Que se passe-t-il pendant le sommeil ?",
+            options: ["Rien d'important", "La peau se régénère et le corps récupère", "On perd des calories uniquement", "On prend du poids"],
+            correctAnswer: "La peau se régénère et le corps récupère"
+          },
+          {
+            question: "Où le manque de sommeil est-il visible immédiatement ?",
+            options: ["Sur les mains", "Sur le visage", "Sur les pieds", "Sur le dos"],
+            correctAnswer: "Sur le visage"
+          }
+        ]
       },
       { 
         slug: "ethique-et-professionnalisme-dans-le-metier",
@@ -144,7 +640,69 @@ Venez toujours préparé. Pour un casting, cela signifie avoir son book et ses c
 **La Fiabilité :**
 Si vous êtes booké pour un travail, vous devez honorer votre engagement. Les annulations de dernière minute sans raison valable (maladie grave) peuvent gravement nuire à votre réputation et à celle de votre agence.
 
-En somme, le mannequin professionnel est celui que les clients aiment booker à nouveau non seulement pour son physique, mais aussi pour sa fiabilité, son attitude et sa capacité à rendre la journée de travail agréable et productive pour tous.` 
+En somme, le mannequin professionnel est celui que les clients aiment booker à nouveau non seulement pour son physique, mais aussi pour sa fiabilité, son attitude et sa capacité à rendre la journée de travail agréable et productive pour tous.`,
+        quiz: [
+          {
+            question: "Qu'est-ce qui est primordial dans l'industrie de la mode ?",
+            options: ["L'âge", "La réputation", "La nationalité", "La couleur des cheveux"],
+            correctAnswer: "La réputation"
+          },
+          {
+            question: "Quelle est la règle d'or du professionnalisme ?",
+            options: ["Être photogénique", "La ponctualité", "Avoir beaucoup de followers", "Connaître tout le monde"],
+            correctAnswer: "La ponctualité"
+          },
+          {
+            question: "Combien de minutes en avance est-il idéal d'arriver ?",
+            options: ["5 minutes", "10-15 minutes", "30 minutes", "1 heure"],
+            correctAnswer: "10-15 minutes"
+          },
+          {
+            question: "Qu'est-ce que le 'casting uniform' ?",
+            options: ["Un uniforme de marque", "Une tenue simple et près du corps", "Un costume formel", "Des vêtements de sport"],
+            correctAnswer: "Une tenue simple et près du corps"
+          },
+          {
+            question: "Comment doit-on arriver à un shooting ?",
+            options: ["Maquillé et coiffé", "Avec une peau propre, des ongles soignés et les sous-vêtements adéquats", "En tenue de soirée", "Comme on veut"],
+            correctAnswer: "Avec une peau propre, des ongles soignés et les sous-vêtements adéquats"
+          },
+          {
+            question: "Quelle attitude doit-on avoir sur le lieu de travail ?",
+            options: ["Indifférente", "Positive et énergique", "Critique", "Silencieuse"],
+            correctAnswer: "Positive et énergique"
+          },
+          {
+            question: "Comment doit-on traiter l'assistant stagiaire ?",
+            options: ["L'ignorer", "Avec politesse et respect comme tout le monde", "Lui donner des ordres", "Le critiquer"],
+            correctAnswer: "Avec politesse et respect comme tout le monde"
+          },
+          {
+            question: "Comment doit-on réagir aux directives du photographe ?",
+            options: ["Les ignorer", "Écouter attentivement et être flexible", "Les critiquer", "Imposer ses propres idées"],
+            correctAnswer: "Écouter attentivement et être flexible"
+          },
+          {
+            question: "Que faut-il éviter de faire sur un plateau ?",
+            options: ["Écouter", "Se plaindre du froid, de la faim, etc.", "Sourire", "Être flexible"],
+            correctAnswer: "Se plaindre du froid, de la faim, etc."
+          },
+          {
+            question: "Que doit-on faire si on a un réel problème sur le plateau ?",
+            options: ["Se plaindre à haute voix", "En faire part avec calme et professionnalisme à son agent", "Ne rien dire", "Partir immédiatement"],
+            correctAnswer: "En faire part avec calme et professionnalisme à son agent"
+          },
+          {
+            question: "Qu'est-ce qui peut gravement nuire à votre réputation ?",
+            options: ["Être à l'heure", "Les annulations de dernière minute sans raison valable", "Être professionnel", "Écouter les directives"],
+            correctAnswer: "Les annulations de dernière minute sans raison valable"
+          },
+          {
+            question: "Pour quoi les clients aiment-ils rebooker un mannequin professionnel ?",
+            options: ["Uniquement son physique", "Son physique, sa fiabilité, son attitude et sa capacité à rendre la journée agréable", "Sa popularité sur Instagram", "Son agence"],
+            correctAnswer: "Son physique, sa fiabilité, son attitude et sa capacité à rendre la journée agréable"
+          }
+        ]
       }
     ],
     quiz: [
@@ -170,7 +728,60 @@ En somme, le mannequin professionnel est celui que les clients aiment booker à 
     title: "Module 2: Techniques de Podium (Catwalk)",
     chapters: [
         { slug: "maitrise-de-la-demarche-et-de-la-posture", title: "Maîtrise de la démarche et de la posture", content: `La démarche sur le podium, ou "catwalk", est la signature d'un mannequin. C'est une compétence qui demande de la pratique et de la technique. La base de tout est une posture impeccable. Tenez-vous droit, comme si un fil invisible tirait le sommet de votre crâne vers le ciel. Les épaules doivent être basses et tirées vers l'arrière, la poitrine ouverte. Engagez vos abdominaux pour gainer votre torse. Cette posture allonge la silhouette et donne une impression de confiance.
-La marche elle-même doit être puissante et déterminée. Le mouvement part des hanches, pas des genoux. Balancez vos hanches naturellement. Posez un pied exactement devant l'autre, comme si vous marchiez sur une ligne droite. Le contact avec le sol se fait d'abord avec la plante du pied ou le talon, selon la chaussure et le style de démarche. Les bras doivent se balancer naturellement en opposition aux jambes, sans être ni trop rigides, ni trop relâchés. Le regard est fixe, droit devant, vers un point situé au-dessus de la tête du public.` },
+La marche elle-même doit être puissante et déterminée. Le mouvement part des hanches, pas des genoux. Balancez vos hanches naturellement. Posez un pied exactement devant l'autre, comme si vous marchiez sur une ligne droite. Le contact avec le sol se fait d'abord avec la plante du pied ou le talon, selon la chaussure et le style de démarche. Les bras doivent se balancer naturellement en opposition aux jambes, sans être ni trop rigides, ni trop relâchés. Le regard est fixe, droit devant, vers un point situé au-dessus de la tête du public.`,
+            quiz: [
+              {
+                question: "Quelle est la base essentielle de toute démarche sur le podium ?",
+                options: ["Le sourire", "Une posture impeccable", "Les accessoires", "La vitesse"],
+                correctAnswer: "Une posture impeccable"
+              },
+              {
+                question: "Comment décrire la posture idéale d'un mannequin ?",
+                options: ["Épaules hautes et tendues", "Tenez-vous droit comme si un fil tirait le sommet de votre crâne vers le ciel", "Dos courbé", "Corps relâché"],
+                correctAnswer: "Tenez-vous droit comme si un fil tirait le sommet de votre crâne vers le ciel"
+              },
+              {
+                question: "D'où doit partir le mouvement de la marche ?",
+                options: ["Des genoux", "Des hanches", "Des épaules", "Des pieds"],
+                correctAnswer: "Des hanches"
+              },
+              {
+                question: "Comment doit-on poser les pieds en marchant sur le podium ?",
+                options: ["De manière écartée", "Un pied exactement devant l'autre, comme sur une ligne droite", "En zigzag", "N'importe comment"],
+                correctAnswer: "Un pied exactement devant l'autre, comme sur une ligne droite"
+              },
+              {
+                question: "Comment les bras doivent-ils se balancer ?",
+                options: ["Rigides et immobiles", "Naturellement en opposition aux jambes", "Très exagérés", "Collés au corps"],
+                correctAnswer: "Naturellement en opposition aux jambes"
+              },
+              {
+                question: "Où doit être fixé le regard ?",
+                options: ["Sur ses pieds", "Sur le public", "Droit devant, vers un point au-dessus de la tête du public", "Au sol"],
+                correctAnswer: "Droit devant, vers un point au-dessus de la tête du public"
+              },
+              {
+                question: "Que faut-il engager pour gainer le torse ?",
+                options: ["Les épaules", "Les abdominaux", "Les bras", "Le cou"],
+                correctAnswer: "Les abdominaux"
+              },
+              {
+                question: "Comment doivent être les épaules ?",
+                options: ["Hautes et tendues", "Basses et tirées vers l'arrière", "En avant", "Asymétriques"],
+                correctAnswer: "Basses et tirées vers l'arrière"
+              },
+              {
+                question: "Qu'est-ce que la démarche sur le podium représente ?",
+                options: ["Un simple déplacement", "La signature d'un mannequin", "Un exercice physique", "Une danse"],
+                correctAnswer: "La signature d'un mannequin"
+              },
+              {
+                question: "Quelle impression doit donner la posture impeccable ?",
+                options: ["De timidité", "De confiance", "D'hésitation", "De fatigue"],
+                correctAnswer: "De confiance"
+              }
+            ]
+        },
         { slug: "les-differents-types-de-defiles", title: "Les différents types de défilés (Haute Couture, Prêt-à-porter)", content: `Un mannequin professionnel doit savoir adapter sa démarche au vêtement qu'il porte et à l'esprit de la collection. Il n'existe pas une seule "bonne" démarche.
 **Défilé Haute Couture** : La démarche est souvent plus lente, plus forte, et plus théâtrale. Chaque passage est une performance. Le mannequin incarne un personnage, une vision artistique. L'expression du visage est intense, presque dramatique. Le rythme est majestueux, chaque pas est posé avec une intention précise.
 **Défilé Prêt-à-porter (Ready-to-Wear)** : La démarche est généralement plus rapide, plus naturelle et plus énergique. Elle doit refléter une femme ou un homme moderne, actif. L'attitude est plus décontractée, tout en restant extrêmement professionnelle. Le but est de montrer comment les vêtements bougent et peuvent être portés dans la vie de tous les jours.

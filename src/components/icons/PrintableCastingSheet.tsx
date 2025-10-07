@@ -1,148 +1,116 @@
-
-
 import React, { useEffect } from 'react';
-import { CastingApplication, JuryMember, JuryScore } from '../../types';
-import { useData } from '../../contexts/DataContext';
+import { CastingApplication } from '../../types';
 
 interface PrintableCastingSheetProps {
-    app: CastingApplication;
-    juryMembers: JuryMember[];
-    onDonePrinting: () => void;
+  app: CastingApplication;
+  juryMembers: any[];
+  onDonePrinting: () => void;
 }
 
 const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, juryMembers, onDonePrinting }) => {
-    const { data } = useData();
+  useEffect(() => {
+    // Auto-print when component mounts
+    window.print();
+  }, []);
 
-    useEffect(() => {
-        const handleAfterPrint = () => {
-            onDonePrinting();
-            window.removeEventListener('afterprint', handleAfterPrint);
-        };
-        window.addEventListener('afterprint', handleAfterPrint);
-        
-        const timer = setTimeout(() => {
-            window.print();
-        }, 500);
+  return (
+    <div className="p-8 bg-white print:p-0">
+      <div className="max-w-4xl mx-auto">
+        <button
+          onClick={onDonePrinting}
+          className="mb-4 px-4 py-2 bg-pm-gold text-white rounded hover:bg-pm-gold/90 print:hidden"
+        >
+          Fermer
+        </button>
 
-        return () => {
-            clearTimeout(timer);
-            window.removeEventListener('afterprint', handleAfterPrint);
-        };
-    }, [onDonePrinting]);
-    
-    const calculateAge = (birthDate: string): string => {
-        if (!birthDate) return 'N/A';
-        const age = new Date().getFullYear() - new Date(birthDate).getFullYear();
-        return `${age} ans`;
-    };
-    
-    const juryScores: [string, JuryScore][] = app.scores ? Object.entries(app.scores) : [];
-    const overallScores = juryScores.map(([, score]) => score.overall);
-    const averageScore = overallScores.length > 0 ? (overallScores.reduce((a, b) => a + b, 0) / overallScores.length) : 0;
-    const decision = averageScore >= 5 ? 'Présélectionné' : 'Recalé';
+        <div className="border-2 border-gray-300 p-6">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold mb-2">Fiche de Casting</h1>
+            <p className="text-gray-600">Perfect Models Management</p>
+          </div>
 
-    return (
-        <div className="printable-content printable-sheet p-8 bg-white text-black font-montserrat">
-            <header className="flex justify-between items-center border-b-2 border-black pb-4">
-                <div>
-                    <h1 className="text-4xl font-bold font-playfair">Fiche Candidat</h1>
-                    <p className="text-lg">Casting Perfect Models Management</p>
+          <div className="grid grid-cols-2 gap-6 mb-6">
+            <div>
+              <h2 className="font-bold text-lg mb-3 border-b pb-1">Informations Personnelles</h2>
+              <div className="space-y-2">
+                <p><span className="font-semibold">Nom:</span> {app.lastName}</p>
+                <p><span className="font-semibold">Prénom:</span> {app.firstName}</p>
+                <p><span className="font-semibold">Email:</span> {app.email}</p>
+                <p><span className="font-semibold">Téléphone:</span> {app.phone}</p>
+                <p><span className="font-semibold">Date de naissance:</span> {app.birthDate}</p>
+                <p><span className="font-semibold">Ville:</span> {app.city}</p>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="font-bold text-lg mb-3 border-b pb-1">Mesures</h2>
+              <div className="space-y-2">
+                <p><span className="font-semibold">Taille:</span> {app.height} cm</p>
+                <p><span className="font-semibold">Poids:</span> {app.weight} kg</p>
+                <p><span className="font-semibold">Tour de poitrine:</span> {app.bust} cm</p>
+                <p><span className="font-semibold">Tour de taille:</span> {app.waist} cm</p>
+                <p><span className="font-semibold">Tour de hanches:</span> {app.hips} cm</p>
+                <p><span className="font-semibold">Pointure:</span> {app.shoeSize}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h2 className="font-bold text-lg mb-3 border-b pb-1">Expérience</h2>
+            <p className="whitespace-pre-wrap">{app.experience || 'Aucune expérience mentionnée'}</p>
+          </div>
+
+          {app.motivation && (
+            <div className="mb-6">
+              <h2 className="font-bold text-lg mb-3 border-b pb-1">Motivation</h2>
+              <p className="whitespace-pre-wrap">{app.motivation}</p>
+            </div>
+          )}
+
+          <div className="mb-6">
+            <h2 className="font-bold text-lg mb-3 border-b pb-1">Évaluation du Jury</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {juryMembers.map((member) => (
+                <div key={member.id} className="border p-3">
+                  <p className="font-semibold mb-2">{member.name}</p>
+                  <div className="space-y-1">
+                    <p className="text-sm">Note: ___/10</p>
+                    <p className="text-sm">Commentaire:</p>
+                    <div className="border-b border-gray-300 mt-1"></div>
+                    <div className="border-b border-gray-300 mt-2"></div>
+                  </div>
                 </div>
-                {data?.siteConfig?.logo && <img src={data.siteConfig.logo} alt="Logo" className="h-20 w-auto" />}
-            </header>
+              ))}
+            </div>
+          </div>
 
-            <section className="mt-6 grid grid-cols-3 gap-6">
-                <div className="col-span-2">
-                    <h2 className="text-5xl font-playfair font-bold text-pm-gold">{app.firstName} {app.lastName}</h2>
-                    <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-lg">
-                        <div><strong>Âge:</strong> {calculateAge(app.birthDate)}</div>
-                        <div><strong>Genre:</strong> {app.gender}</div>
-                        <div><strong>Taille:</strong> {app.height} cm</div>
-                        <div><strong>Poids:</strong> {app.weight} kg</div>
-                        <div><strong>Téléphone:</strong> {app.phone}</div>
-                        <div><strong>Email:</strong> {app.email}</div>
-                    </div>
-                </div>
-                <div className="col-span-1 text-center bg-black p-4 flex flex-col justify-center items-center">
-                    <p className="text-sm uppercase tracking-widest text-white">Numéro de Passage</p>
-                    <p className="text-8xl font-playfair font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</p>
-                </div>
-            </section>
-            
-            <section className="mt-6">
-                 <h3 className="text-2xl font-playfair border-b border-black pb-1 mb-2">Mensurations</h3>
-                 <div className="flex space-x-8 text-md">
-                    <span><strong>Poitrine:</strong> {app.chest || 'N/A'} cm</span>
-                    <span><strong>Taille:</strong> {app.waist || 'N/A'} cm</span>
-                    <span><strong>Hanches:</strong> {app.hips || 'N/A'} cm</span>
-                    <span><strong>Pointure:</strong> {app.shoeSize || 'N/A'} EU</span>
-                 </div>
-            </section>
+          <div className="mb-6">
+            <h2 className="font-bold text-lg mb-3 border-b pb-1">Décision Finale</h2>
+            <div className="flex gap-4 items-center">
+              <label className="flex items-center gap-2">
+                <input type="checkbox" className="w-4 h-4" />
+                <span>Accepté</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" className="w-4 h-4" />
+                <span>Refusé</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" className="w-4 h-4" />
+                <span>Présélectionné</span>
+              </label>
+            </div>
+          </div>
 
-            <section className="mt-6">
-                <h3 className="text-2xl font-playfair border-b border-black pb-1 mb-2">Évaluation du Jury</h3>
-                {juryScores.length > 0 ? (
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-200 border-b-2 border-black">
-                                <th className="p-2 font-bold">Jury</th>
-                                <th className="p-2 font-bold text-center">Physique</th>
-                                <th className="p-2 font-bold text-center">Présence</th>
-                                <th className="p-2 font-bold text-center">Photogénie</th>
-                                <th className="p-2 font-bold text-center">Potentiel</th>
-                                <th className="p-2 font-bold text-center text-pm-gold bg-black">Note Globale</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {juryScores.map(([juryId, score]) => {
-                                const jury = juryMembers.find(j => j.id === juryId);
-                                return (
-                                    <tr key={juryId} className="border-b">
-                                        <td className="p-2 font-semibold">{jury?.name || juryId}</td>
-                                        <td className="p-2 text-center">{score.physique.toFixed(1)}</td>
-                                        <td className="p-2 text-center">{score.presence.toFixed(1)}</td>
-                                        <td className="p-2 text-center">{score.photogenie.toFixed(1)}</td>
-                                        <td className="p-2 text-center">{score.potentiel.toFixed(1)}</td>
-                                        <td className="p-2 text-center font-bold text-pm-gold bg-black">{score.overall.toFixed(1)}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p>Aucune note enregistrée.</p>
-                )}
-            </section>
-            
-            {juryScores.some(([, score]) => score.notes) && (
-                <section className="mt-6">
-                     <h3 className="text-2xl font-playfair border-b border-black pb-1 mb-2">Remarques des Jurys</h3>
-                     <div className="space-y-2">
-                        {juryScores.filter(([, score]) => score.notes).map(([juryId, score]) => {
-                             const jury = juryMembers.find(j => j.id === juryId);
-                             return (
-                                <div key={juryId}>
-                                    <strong>{jury?.name || juryId}:</strong>
-                                    <span className="italic"> "{score.notes}"</span>
-                                </div>
-                             )
-                        })}
-                     </div>
-                </section>
-            )}
-
-            <section className="mt-8 pt-4 border-t-2 border-black flex justify-between items-center">
-                 <div>
-                    <h3 className="text-xl font-playfair">Moyenne Générale</h3>
-                    <p className="text-6xl font-playfair font-bold text-pm-gold">{averageScore.toFixed(2)} <span className="text-3xl text-black">/ 10</span></p>
-                 </div>
-                 <div>
-                    <h3 className="text-xl font-playfair">Décision Provisoire</h3>
-                    <p className={`text-4xl font-playfair font-bold ${decision === 'Présélectionné' ? 'text-green-600' : 'text-red-600'}`}>{decision}</p>
-                 </div>
-            </section>
+          <div className="mt-8 pt-4 border-t">
+            <p className="text-sm text-gray-600">Date d'impression: {new Date().toLocaleDateString('fr-FR')}</p>
+            <p className="text-sm text-gray-600">Référence: {app.id}</p>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default PrintableCastingSheet;
+

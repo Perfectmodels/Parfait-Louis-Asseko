@@ -1,376 +1,188 @@
 import React, { useState } from 'react';
-import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { PlusIcon, PencilIcon, TrashIcon, StarIcon } from '@heroicons/react/24/outline';
-
-// ArtisticProject type removed - using any[]
+import AdminLayout from '../components/admin/AdminLayout';
+import AdminPageHeader from '../components/admin/AdminPageHeader';
+import AdminSection from '../components/admin/AdminSection';
+import AdminCard from '../components/admin/AdminCard';
 
 const AdminArtisticDirection: React.FC = () => {
   const { data, saveData } = useData();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<any | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    imageUrl: '',
-    status: 'En cours' as 'En cours' | 'Terminé' | 'Annulé',
-    startDate: '',
-    endDate: '',
-    models: '',
-    photographer: '',
-    stylist: '',
-    location: ''
+    image: '',
+    date: '',
+    category: ''
   });
 
-  const artisticProjects = (data?.artisticProjects as any[]) || [];
+  const projects = data?.artisticProjects || [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const newProject: any = {
-      id: editingProject?.id || Date.now().toString(),
-      title: formData.title,
-      description: formData.description,
-      imageUrl: formData.imageUrl,
-      status: formData.status,
-      startDate: formData.startDate,
-      endDate: formData.endDate || undefined,
-      models: formData.models.split(',').map(m => m.trim()).filter(m => m),
-      photographer: formData.photographer || undefined,
-      stylist: formData.stylist || undefined,
-      location: formData.location || undefined
-    };
-
-    let updatedProjects;
-    if (editingProject) {
-      updatedProjects = artisticProjects.map((project: any) => 
-        project.id === editingProject.id ? newProject : project
+    if (!data) return;
+    if (editingId) {
+      const updated = projects.map(p => 
+        p.id === editingId ? { ...formData, id: editingId } : p
       );
+      saveData({ ...data, artisticProjects: updated });
     } else {
-      updatedProjects = [...artisticProjects, newProject];
+      const newProject = {
+        ...formData,
+        id: Date.now().toString()
+      };
+      saveData({ ...data, artisticProjects: [...projects, newProject] });
     }
-
-    saveData({ ...data!, artisticProjects: updatedProjects });
-    setIsModalOpen(false);
-    setEditingProject(null);
-    setFormData({
-      title: '',
-      description: '',
-      imageUrl: '',
-      status: 'En cours',
-      startDate: '',
-      endDate: '',
-      models: '',
-      photographer: '',
-      stylist: '',
-      location: ''
-    });
+    resetForm();
   };
 
   const handleEdit = (project: any) => {
-    setEditingProject(project);
-    setFormData({
-      title: project.title,
-      description: project.description,
-      imageUrl: project.imageUrl,
-      status: project.status,
-      startDate: project.startDate,
-      endDate: project.endDate || '',
-      models: project.models.join(', '),
-      photographer: project.photographer || '',
-      stylist: project.stylist || '',
-      location: project.location || ''
-    });
-    setIsModalOpen(true);
+    setFormData(project);
+    setEditingId(project.id);
+    setShowAddForm(true);
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
-      const updatedProjects = artisticProjects.filter((project: any) => project.id !== id);
-      saveData({ ...data!, artisticProjects: updatedProjects });
+    if (!data) return;
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
+      const updated = projects.filter(p => p.id !== id);
+      saveData({ ...data, artisticProjects: updated });
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'En cours': return 'bg-blue-600/20 text-blue-400 border-blue-600/30';
-      case 'Terminé': return 'bg-green-600/20 text-green-400 border-green-600/30';
-      case 'Annulé': return 'bg-red-600/20 text-red-400 border-red-600/30';
-      default: return 'bg-gray-600/20 text-gray-400 border-gray-600/30';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  const resetForm = () => {
+    setFormData({ title: '', description: '', image: '', date: '', category: '' });
+    setEditingId(null);
+    setShowAddForm(false);
   };
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO title="Direction Artistique" noIndex />
-      <div className="container mx-auto px-6 lg:px-8">
-        <header className="admin-page-header">
-          <div>
-            <h1 className="admin-page-title">Direction Artistique</h1>
-            <p className="admin-page-subtitle">Gérer les projets artistiques et les shootings.</p>
-          </div>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
-          >
-            <PlusIcon className="w-5 h-5" />
-            Nouveau projet
-          </button>
-        </header>
+    <AdminLayout>
+      <AdminPageHeader 
+        title="Direction Artistique" 
+        subtitle="Gérer les projets de direction artistique"
+      />
 
-        <div className="admin-section-wrapper">
-          <h2 className="admin-section-title">Projets Artistiques</h2>
-          
-          {artisticProjects.length === 0 ? (
-            <div className="text-center py-12">
-              <StarIcon className="w-16 h-16 text-pm-off-white/30 mx-auto mb-4" />
-              <p className="text-pm-off-white/60 text-lg">Aucun projet artistique pour le moment</p>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="mt-4 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
-              >
-                Créer le premier projet
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {artisticProjects.map((project: any) => (
-                <div key={project.id} className="card-base p-6">
-                  <div className="aspect-video mb-4 bg-pm-off-white/10 rounded-lg overflow-hidden">
-                    {project.imageUrl ? (
-                      <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-pm-off-white/40">
-                        Pas d'image
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mb-3">
-                    <h3 className="text-lg font-bold text-pm-gold line-clamp-1">{project.title}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(project.status)}`}>
-                      {project.status}
-                    </span>
-                  </div>
-                  
-                  <p className="text-pm-off-white/70 text-sm mb-3 line-clamp-2">{project.description}</p>
-                  
-                  <div className="space-y-1 text-xs text-pm-off-white/50 mb-4">
-                    <p><strong>Début:</strong> {formatDate(project.startDate)}</p>
-                    {project.endDate && <p><strong>Fin:</strong> {formatDate(project.endDate)}</p>}
-                    {project.location && <p><strong>Lieu:</strong> {project.location}</p>}
-                    {project.photographer && <p><strong>Photographe:</strong> {project.photographer}</p>}
-                    {project.stylist && <p><strong>Styliste:</strong> {project.stylist}</p>}
-                  </div>
-                  
-                  {project.models.length > 0 && (
-                    <div className="mb-4">
-                      <p className="text-xs text-pm-off-white/50 mb-1"><strong>Mannequins:</strong></p>
-                      <div className="flex flex-wrap gap-1">
-                        {project.models.slice(0, 3).map((model: any, index: any) => (
-                          <span key={index} className="px-2 py-1 bg-pm-gold/20 text-pm-gold text-xs rounded">
-                            {model}
-                          </span>
-                        ))}
-                        {project.models.length > 3 && (
-                          <span className="px-2 py-1 bg-pm-off-white/20 text-pm-off-white/50 text-xs rounded">
-                            +{project.models.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(project)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-pm-gold/20 text-pm-gold border border-pm-gold/30 rounded hover:bg-pm-gold/30 transition-colors"
-                    >
-                      <PencilIcon className="w-4 h-4" />
-                      Modifier
-                    </button>
-                    <button
-                      onClick={() => handleDelete(project.id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded hover:bg-red-600/30 transition-colors"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                      Supprimer
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      <AdminSection 
+        title="Projets" 
+        action={
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="px-4 py-2 bg-pm-gold text-white rounded hover:bg-pm-gold/90"
+          >
+            {showAddForm ? 'Annuler' : 'Ajouter un projet'}
+          </button>
+        }
+      >
+        {showAddForm && (
+          <AdminCard className="mb-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Titre</label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                  rows={4}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">URL de l'image</label>
+                <input
+                  type="url"
+                  value={formData.image}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Date</label>
+                <input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Catégorie</label>
+                <input
+                  type="text"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-pm-gold text-white rounded hover:bg-pm-gold/90"
+                >
+                  {editingId ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-6 py-2 border rounded hover:bg-gray-50"
+                >
+                  Annuler
+                </button>
+              </div>
+            </form>
+          </AdminCard>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project) => (
+            <AdminCard key={project.id}>
+              <img src={project.image} alt={project.title} className="w-full h-48 object-cover rounded mb-4" />
+              <h3 className="font-semibold text-lg mb-2">{project.title}</h3>
+              <p className="text-sm text-gray-600 mb-2">{project.description}</p>
+              <p className="text-sm text-gray-500 mb-2">
+                {new Date(project.date).toLocaleDateString('fr-FR')} • {project.category}
+              </p>
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => handleEdit(project)}
+                  className="flex-1 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Modifier
+                </button>
+                <button
+                  onClick={() => handleDelete(project.id)}
+                  className="flex-1 px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Supprimer
+                </button>
+              </div>
+            </AdminCard>
+          ))}
         </div>
 
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-pm-dark border border-pm-gold/20 rounded-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <h3 className="text-2xl font-playfair text-pm-gold mb-6">
-                {editingProject ? 'Modifier le projet' : 'Nouveau projet artistique'}
-              </h3>
-              
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="admin-label">Titre du projet</label>
-                    <input
-                      type="text"
-                      value={formData.title}
-                      onChange={(e) => setFormData({...formData, title: e.target.value})}
-                      className="admin-input"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="admin-label">Statut</label>
-                    <select
-                      value={formData.status}
-                      onChange={(e) => setFormData({...formData, status: e.target.value as any})}
-                      className="admin-input"
-                    >
-                      <option value="En cours">En cours</option>
-                      <option value="Terminé">Terminé</option>
-                      <option value="Annulé">Annulé</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="admin-label">Description</label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="admin-textarea"
-                    rows={4}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className="admin-label">URL de l'image</label>
-                  <input
-                    type="url"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                    className="admin-input"
-                    placeholder="https://exemple.com/image.jpg"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="admin-label">Date de début</label>
-                    <input
-                      type="date"
-                      value={formData.startDate}
-                      onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                      className="admin-input"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="admin-label">Date de fin (optionnel)</label>
-                    <input
-                      type="date"
-                      value={formData.endDate}
-                      onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                      className="admin-input"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="admin-label">Mannequins (séparés par des virgules)</label>
-                  <input
-                    type="text"
-                    value={formData.models}
-                    onChange={(e) => setFormData({...formData, models: e.target.value})}
-                    className="admin-input"
-                    placeholder="Mannequin 1, Mannequin 2, Mannequin 3"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="admin-label">Photographe</label>
-                    <input
-                      type="text"
-                      value={formData.photographer}
-                      onChange={(e) => setFormData({...formData, photographer: e.target.value})}
-                      className="admin-input"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="admin-label">Styliste</label>
-                    <input
-                      type="text"
-                      value={formData.stylist}
-                      onChange={(e) => setFormData({...formData, stylist: e.target.value})}
-                      className="admin-input"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="admin-label">Lieu</label>
-                    <input
-                      type="text"
-                      value={formData.location}
-                      onChange={(e) => setFormData({...formData, location: e.target.value})}
-                      className="admin-input"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="submit"
-                    className="flex-1 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
-                  >
-                    {editingProject ? 'Modifier' : 'Créer'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setEditingProject(null);
-                      setFormData({
-                        title: '',
-                        description: '',
-                        imageUrl: '',
-                        status: 'En cours',
-                        startDate: '',
-                        endDate: '',
-                        models: '',
-                        photographer: '',
-                        stylist: '',
-                        location: ''
-                      });
-                    }}
-                    className="flex-1 px-6 py-3 border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-pm-gold/10 transition-colors"
-                  >
-                    Annuler
-                  </button>
-                </div>
-              </form>
-            </div>
+        {projects.length === 0 && !showAddForm && (
+          <div className="text-center py-8 text-gray-500">
+            Aucun projet artistique. Ajoutez-en un pour commencer.
           </div>
         )}
-      </div>
-    </div>
+      </AdminSection>
+    </AdminLayout>
   );
 };
 
 export default AdminArtisticDirection;
+

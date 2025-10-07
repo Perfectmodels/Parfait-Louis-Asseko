@@ -5,7 +5,8 @@ import {
     UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
-    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon
+    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
+    ChartBarIcon, BoltIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
@@ -70,10 +71,12 @@ const Admin: React.FC = () => {
                 <div className="animate-fade-in">
                     {activeTab === 'talents' && (
                         <TabContent title="Gestion des Talents et du Recrutement">
+                            <DashboardCard title="Tableau de Bord" icon={ChartBarIcon} link="/admin/dashboard" description="Vue d'ensemble des statistiques et métriques de l'agence."/>
                             <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
                             <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
                             <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>
                             <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Consulter et traiter les candidatures pour les castings." notificationCount={newCastingApps} />
+                            <DashboardCard title="Mode Casting Live" icon={BoltIcon} link="/admin/casting-live" description="Traiter les candidatures en temps réel lors d'un casting."/>
                             <DashboardCard title="Résultats & Validation Casting" icon={ClipboardDocumentCheckIcon} link="/admin/casting-results" description="Valider les candidats et créer leurs profils de débutant." />
                              <DashboardCard title="Accès Mannequins Pro" icon={KeyIcon} link="/admin/model-access" description="Consulter les identifiants des mannequins confirmés." />
                         </TabContent>
@@ -91,7 +94,11 @@ const Admin: React.FC = () => {
                     )}
                      {activeTab === 'accounting' && (
                          <TabContent title="Comptabilité, Opérations et Suivi">
-                             <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
+                             <DashboardCard title="Vue Financière" icon={ChartBarIcon} link="/admin/finance" description="Tableau de bord financier complet avec statistiques et indicateurs." />
+                             <DashboardCard title="Paiements" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
+                             <DashboardCard title="Factures" icon={ClipboardDocumentCheckIcon} link="/admin/invoices" description="Créer et gérer les factures clients." />
+                             <DashboardCard title="Dépenses" icon={BriefcaseIcon} link="/admin/expenses" description="Enregistrer et catégoriser toutes les dépenses de l'agence." />
+                             <DashboardCard title="Rapports Financiers" icon={PresentationChartLineIcon} link="/admin/financial-reports" description="Générer des rapports financiers détaillés par période." />
                              <DashboardCard title="Suivi des Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences des mannequins." />
                              <DashboardCard title="Demandes de Booking" icon={BriefcaseIcon} link="/admin/bookings" description="Consulter et gérer les demandes de booking des clients." notificationCount={newBookingRequests} />
                             <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions pour l'événement Perfect Fashion Day." notificationCount={newFashionDayApps} />
