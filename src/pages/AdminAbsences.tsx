@@ -1,175 +1,210 @@
-import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
-import { Absence } from '../types';
+import React, { useState } from 'react';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { useData } from '../contexts/DataContext';
+import { CheckIcon, XMarkIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+
+// AbsenceRequest type removed - using any[]
 
 const AdminAbsences: React.FC = () => {
-    const { data, saveData } = useData();
-    const [isFormVisible, setIsFormVisible] = useState(false);
-    const [newAbsence, setNewAbsence] = useState({
-        modelId: '',
-        date: new Date().toISOString().split('T')[0],
-        reason: 'Non justifié' as Absence['reason'],
-        isExcused: false,
-        notes: ''
+  const { data, saveData } = useData();
+  const [filter, setFilter] = useState<'all' | 'En attente' | 'Approuvé' | 'Rejeté'>('all');
+
+  const absenceRequests = (data?.absenceRequests as any[]) || [];
+  
+  const filteredAbsences = absenceRequests.filter(absence => 
+    filter === 'all' || absence.status === filter
+  );
+
+  const handleStatusChange = (id: string, newStatus: 'En attente' | 'Approuvé' | 'Rejeté') => {
+    const updatedAbsences = absenceRequests.map((absence: any) =>
+      absence.id === id ? { ...absence, status: newStatus } : absence
+    );
+    saveData({ ...data!, absenceRequests: updatedAbsences });
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette demande d\'absence ?')) {
+      const updatedAbsences = absenceRequests.filter((absence: any) => absence.id !== id);
+      saveData({ ...data!, absenceRequests: updatedAbsences });
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'En attente': return 'bg-yellow-600/20 text-yellow-400 border-yellow-600/30';
+      case 'Approuvé': return 'bg-green-600/20 text-green-400 border-green-600/30';
+      case 'Rejeté': return 'bg-red-600/20 text-red-400 border-red-600/30';
+      default: return 'bg-gray-600/20 text-gray-400 border-gray-600/30';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
+  };
 
-    const absences = useMemo(() => {
-        return [...(data?.absences || [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    }, [data?.absences]);
+  return (
+    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+      <SEO title="Demandes d'Absence" noIndex />
+      <div className="container mx-auto px-6 lg:px-8">
+        <header className="admin-page-header">
+          <div>
+            <h1 className="admin-page-title">Demandes d'Absence</h1>
+            <p className="admin-page-subtitle">Gérer les demandes d'absence des mannequins.</p>
+          </div>
+        </header>
 
-    const models = useMemo(() => {
-        return [...(data?.models || [])].sort((a, b) => a.name.localeCompare(b.name));
-    }, [data?.models]);
+        <div className="admin-section-wrapper">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <h2 className="admin-section-title">Demandes</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFilter('all')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filter === 'all' 
+                    ? 'bg-pm-gold text-pm-dark' 
+                    : 'bg-pm-off-white/10 text-pm-off-white/70 hover:bg-pm-off-white/20'
+                }`}
+              >
+                Toutes ({absenceRequests.length})
+              </button>
+              <button
+                onClick={() => setFilter('En attente')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filter === 'En attente' 
+                    ? 'bg-pm-gold text-pm-dark' 
+                    : 'bg-pm-off-white/10 text-pm-off-white/70 hover:bg-pm-off-white/20'
+                }`}
+              >
+                En attente ({absenceRequests.filter((a: any) => a.status === 'En attente').length})
+              </button>
+              <button
+                onClick={() => setFilter('Approuvé')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filter === 'Approuvé' 
+                    ? 'bg-pm-gold text-pm-dark' 
+                    : 'bg-pm-off-white/10 text-pm-off-white/70 hover:bg-pm-off-white/20'
+                }`}
+              >
+                Approuvées ({absenceRequests.filter((a: any) => a.status === 'Approuvé').length})
+              </button>
+              <button
+                onClick={() => setFilter('Rejeté')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filter === 'Rejeté' 
+                    ? 'bg-pm-gold text-pm-dark' 
+                    : 'bg-pm-off-white/10 text-pm-off-white/70 hover:bg-pm-off-white/20'
+                }`}
+              >
+                Rejetées ({absenceRequests.filter((a: any) => a.status === 'Rejeté').length})
+              </button>
+            </div>
+          </div>
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-        if (type === 'checkbox') {
-            const { checked } = e.target as HTMLInputElement;
-            setNewAbsence(prev => ({ ...prev, [name]: checked }));
-        } else {
-            setNewAbsence(prev => ({ ...prev, [name]: value }));
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!data || !newAbsence.modelId || !newAbsence.date) {
-            alert("Veuillez sélectionner un mannequin et une date.");
-            return;
-        }
-
-        const model = models.find(m => m.id === newAbsence.modelId);
-        if (!model) {
-            alert("Mannequin non trouvé.");
-            return;
-        }
-
-        const absenceData: Absence = {
-            ...newAbsence,
-            id: `absence-${Date.now()}`,
-            modelName: model.name,
-        };
-
-        const updatedAbsences = [...(data.absences || []), absenceData];
-        try {
-            await saveData({ ...data, absences: updatedAbsences });
-            setNewAbsence({ modelId: '', date: new Date().toISOString().split('T')[0], reason: 'Non justifié', isExcused: false, notes: '' });
-            setIsFormVisible(false);
-        } catch (error) {
-            console.error("Erreur lors de l'ajout de l'absence:", error);
-            alert("Impossible d'ajouter l'absence.");
-        }
-    };
-
-    const handleDelete = async (absenceId: string) => {
-        if (window.confirm("Supprimer cette absence ?")) {
-            if (!data) return;
-            const updatedAbsences = absences.filter(a => a.id !== absenceId);
-            await saveData({ ...data, absences: updatedAbsences });
-        }
-    };
-
-    return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Admin - Suivi des Absences" noIndex />
-            <div className="container mx-auto px-6">
-                <div className="admin-page-header">
-                    <div>
-                        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                            <ChevronLeftIcon className="w-5 h-5" />
-                            Retour au Dashboard
-                        </Link>
-                        <h1 className="admin-page-title">Suivi des Absences</h1>
-                        <p className="admin-page-subtitle">Enregistrez et consultez les absences des mannequins.</p>
-                    </div>
-                    <button onClick={() => setIsFormVisible(!isFormVisible)} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
-                        <PlusIcon className="w-5 h-5"/> {isFormVisible ? 'Fermer le formulaire' : 'Enregistrer une Absence'}
-                    </button>
-                </div>
-
-                {isFormVisible && (
-                    <form onSubmit={handleSubmit} className="admin-section-wrapper mb-8 space-y-4 animate-fade-in">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="admin-label">Mannequin</label>
-                                <select name="modelId" value={newAbsence.modelId} onChange={handleChange} className="admin-input" required>
-                                    <option value="">Sélectionner un mannequin</option>
-                                    {models.map(model => <option key={model.id} value={model.id}>{model.name}</option>)}
-                                </select>
-                            </div>
-                             <div>
-                                <label className="admin-label">Date de l'absence</label>
-                                <input type="date" name="date" value={newAbsence.date} onChange={handleChange} className="admin-input" required />
-                            </div>
-                        </div>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div>
-                                <label className="admin-label">Motif</label>
-                                <select name="reason" value={newAbsence.reason} onChange={handleChange} className="admin-input">
-                                    <option>Non justifié</option>
-                                    <option>Maladie</option>
-                                    <option>Personnel</option>
-                                    <option>Autre</option>
-                                </select>
-                            </div>
-                            <div className="flex items-end pb-2">
-                                <div className="flex items-center gap-2">
-                                    <input type="checkbox" id="isExcused" name="isExcused" checked={newAbsence.isExcused} onChange={handleChange} className="h-5 w-5 rounded bg-pm-dark border-pm-gold text-pm-gold focus:ring-pm-gold"/>
-                                    <label htmlFor="isExcused" className="admin-label !mb-0">Absence justifiée</label>
-                                </div>
-                            </div>
+          {filteredAbsences.length === 0 ? (
+            <div className="text-center py-12">
+              <ExclamationTriangleIcon className="w-16 h-16 text-pm-off-white/30 mx-auto mb-4" />
+              <p className="text-pm-off-white/60 text-lg">
+                {filter === 'all' 
+                  ? 'Aucune demande d\'absence' 
+                  : `Aucune demande ${filter.toLowerCase()}`
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredAbsences.map((absence: any) => (
+                <div key={absence.id} className="card-base p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <h3 className="text-lg font-bold text-pm-gold">{absence.modelName}</h3>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(absence.status)}`}>
+                          {absence.status}
+                        </span>
+                        {absence.isJustified && (
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-600/20 text-blue-400 border border-blue-600/30">
+                            Justifiée
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <p className="text-sm text-pm-off-white/70 mb-1"><strong>Email:</strong> {absence.modelEmail}</p>
+                          <p className="text-sm text-pm-off-white/70 mb-1"><strong>Date d'absence:</strong> {formatDate(absence.absenceDate)}</p>
                         </div>
                         <div>
-                            <label className="admin-label">Notes (optionnel)</label>
-                            <textarea name="notes" value={newAbsence.notes} onChange={handleChange} rows={3} className="admin-textarea" />
+                          <p className="text-sm text-pm-off-white/70 mb-1"><strong>Date de soumission:</strong> {formatDate(absence.submissionDate)}</p>
+                          <p className="text-sm text-pm-off-white/70 mb-1"><strong>Raison:</strong> {absence.reason}</p>
                         </div>
-                        <div className="text-right">
-                            <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
-                                Enregistrer
-                            </button>
-                        </div>
-                    </form>
-                )}
-
-                <div className="admin-section-wrapper overflow-x-auto">
-                    <table className="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Mannequin</th>
-                                <th>Motif</th>
-                                <th>Justifiée</th>
-                                <th>Notes</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {absences.map(absence => (
-                                <tr key={absence.id}>
-                                    <td className="whitespace-nowrap">{new Date(absence.date).toLocaleDateString('fr-FR')}</td>
-                                    <td>{absence.modelName}</td>
-                                    <td>{absence.reason}</td>
-                                    <td>
-                                        <span className={`px-2 py-0.5 text-xs rounded-full ${absence.isExcused ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                                            {absence.isExcused ? 'Oui' : 'Non'}
-                                        </span>
-                                    </td>
-                                    <td className="text-sm max-w-sm truncate">{absence.notes}</td>
-                                    <td>
-                                        <button onClick={() => handleDelete(absence.id)} className="text-red-500/70 hover:text-red-500 p-1"><TrashIcon className="w-5 h-5"/></button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    {absences.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune absence enregistrée.</p>}
+                      </div>
+                      
+                      <div className="mb-4">
+                        <p className="text-sm text-pm-off-white/70 mb-1"><strong>Description:</strong></p>
+                        <p className="text-pm-off-white/80 bg-pm-off-white/5 p-3 rounded-lg whitespace-pre-wrap">{absence.description}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2">
+                      {absence.status === 'En attente' && (
+                        <>
+                          <button
+                            onClick={() => handleStatusChange(absence.id, 'Approuvé')}
+                            className="flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
+                          >
+                            <CheckIcon className="w-4 h-4" />
+                            Approuver
+                          </button>
+                          <button
+                            onClick={() => handleStatusChange(absence.id, 'Rejeté')}
+                            className="flex items-center gap-2 px-4 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors"
+                          >
+                            <XMarkIcon className="w-4 h-4" />
+                            Rejeter
+                          </button>
+                        </>
+                      )}
+                      {absence.status === 'Approuvé' && (
+                        <button
+                          onClick={() => handleStatusChange(absence.id, 'Rejeté')}
+                          className="flex items-center gap-2 px-4 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors"
+                        >
+                          <XMarkIcon className="w-4 h-4" />
+                          Rejeter
+                        </button>
+                      )}
+                      {absence.status === 'Rejeté' && (
+                        <button
+                          onClick={() => handleStatusChange(absence.id, 'Approuvé')}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
+                        >
+                          <CheckIcon className="w-4 h-4" />
+                          Approuver
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDelete(absence.id)}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors"
+                      >
+                        <XMarkIcon className="w-4 h-4" />
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              ))}
             </div>
+          )}
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default AdminAbsences;

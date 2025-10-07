@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { siteConfig } from '../constants/data';
+import { siteConfig, socialLinks } from '../constants/data';
 
 interface SEOProps {
   title?: string;
@@ -8,7 +8,7 @@ interface SEOProps {
   image?: string;
   noIndex?: boolean;
   schema?: object;
-  type?: 'website' | 'article' | 'profile' | 'book' | 'music.song' | 'music.album' | 'music.playlist' | 'music.radio_station' | 'video.movie' | 'video.episode' | 'video.tv_show' | 'video.other';
+  type?: 'website' | 'article' | 'profile' | 'book' | 'music.song' | 'music.album' | 'music.playlist' | 'music.radio_station' | 'video.movie' | 'video.episode' | 'video.tv_show' | 'video.other' | 'event';
   locale?: string;
   siteName?: string;
   twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
@@ -19,6 +19,7 @@ interface SEOProps {
   section?: string;
   tag?: string | string[];
   author?: string;
+  canonicalUrl?: string;
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -38,7 +39,8 @@ const SEO: React.FC<SEOProps> = ({
   modifiedTime,
   section,
   tag,
-  author
+  author,
+  canonicalUrl
 }) => {
   useEffect(() => {
     const defaultTitle = 'Perfect Models Management';
@@ -49,12 +51,12 @@ const SEO: React.FC<SEOProps> = ({
 
     // Gestion du titre de la page
     const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
+
     document.title = pageTitle;
 
     // Fonction utilitaire pour gérer les balises meta
-    const setMeta = (name: string, content: string, isProperty: boolean = false) => {
+    const setMeta = (name: string, content: string | undefined, isProperty: boolean = false) => {
       if (!content) return;
-
       const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
       let element = document.head.querySelector(selector) as HTMLMetaElement;
 
@@ -71,12 +73,28 @@ const SEO: React.FC<SEOProps> = ({
     };
 
     // Balises meta de base
+    const setLink = (rel: string, href: string) => {
+      if (!href) return;
+      let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', rel);
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', href);
+    };
+
+    // Balises standard
     setMeta('description', description || defaultDescription);
     setMeta('keywords', keywords || defaultKeywords);
     setMeta('author', author || siteName);
     setMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
 
     // Balises Open Graph (Facebook, LinkedIn, etc.)
+    // Canonical
+    setLink('canonical', canonicalUrl || siteUrl);
+
+    // Open Graph
     setMeta('og:title', pageTitle, true);
     setMeta('og:description', description || defaultDescription, true);
     setMeta('og:image', image || defaultImage, true);
@@ -118,45 +136,39 @@ const SEO: React.FC<SEOProps> = ({
     const schemaElementId = 'seo-schema-script';
     let schemaElement = document.getElementById(schemaElementId) as HTMLScriptElement | null;
 
-    if (schema) {
+    const defaultSchema = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": siteName,
+      "url": window.location.origin,
+      "logo": siteConfig.logo,
+      "sameAs": [
+        socialLinks.facebook,
+        socialLinks.instagram,
+        socialLinks.youtube
+      ].filter(Boolean)
+    };
+
+    const finalSchema = schema || defaultSchema;
+
+    if (finalSchema) {
       if (!schemaElement) {
         schemaElement = document.createElement('script');
         schemaElement.id = schemaElementId;
         schemaElement.type = 'application/ld+json';
         document.head.appendChild(schemaElement);
       }
-      schemaElement.innerHTML = JSON.stringify(schema);
+      schemaElement.innerHTML = JSON.stringify(finalSchema);
     } else {
-      if (schemaElement) {
-        schemaElement.remove();
-      }
+      if (schemaElement) schemaElement.remove();
     }
 
-    // Cleanup function to remove schema on component unmount
+    // Cleanup
     return () => {
       const el = document.getElementById(schemaElementId);
       if (el) el.remove();
     };
-
-  }, [
-    title, 
-    description, 
-    keywords, 
-    image, 
-    noIndex, 
-    schema, 
-    type, 
-    locale, 
-    siteName, 
-    twitterCard, 
-    twitterSite, 
-    twitterCreator, 
-    publishedTime, 
-    modifiedTime, 
-    section, 
-    tag, 
-    author
-  ]);
+  }, [title, description, keywords, image, noIndex, schema, type, locale, siteName, twitterCard, twitterSite, twitterCreator, publishedTime, modifiedTime, section, tag, author, canonicalUrl]);
 
   return null;
 };

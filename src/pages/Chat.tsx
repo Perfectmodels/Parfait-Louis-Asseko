@@ -20,10 +20,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     const initChat = async () => {
       try {
-        if (!process.env.API_KEY) {
-          throw new Error("API key is not configured.");
-        }
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
         const chatSession = ai.chats.create({
           model: 'gemini-2.5-flash',
           config: {

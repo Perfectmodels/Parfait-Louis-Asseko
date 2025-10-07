@@ -9,6 +9,15 @@
     <!-- Meta tags will be managed by the SEO component in React -->
     <meta name="description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services."/>
     
+    <!-- Fallback Open Graph tags for social sharing -->
+    <meta property="og:title" content="Perfect Models Management" />
+    <meta property="og:description" content="L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine." />
+    <meta property="og:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
+    <meta property="og:url" content="https://www.perfectmodels.ga/" />
+    <meta property="og:site_name" content="Perfect Models Management" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
 
@@ -59,17 +68,15 @@
 
       @layer base {
         html {
-          @apply text-[17px]; /* Increased base font size for better readability */
+          font-smooth: always;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          background-color: #111111;
         }
         body {
-          font-family: 'Montserrat', sans-serif;
-          @apply bg-pm-dark text-pm-off-white;
+            @apply bg-pm-dark text-pm-off-white;
         }
-        .font-playfair {
-          font-family: 'Playfair Display', serif;
-        }
-      }
-
+      
       /* Global focus styles for accessibility */
       :focus-visible {
         @apply outline-2 outline-pm-gold outline-offset-2 rounded-sm;
@@ -83,6 +90,7 @@
         @apply absolute w-[1px] h-[1px] p-0 m-[-1px] overflow-hidden whitespace-nowrap border-0;
         clip: rect(0, 0, 0, 0);
       }
+    }
 
       @layer components {
         /* ===================== GENERAL LAYOUT ===================== */
@@ -204,7 +212,7 @@
     "react": "https://aistudiocdn.com/react@^19.1.1",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
     "react/": "https://aistudiocdn.com/react@^19.1.1/",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.8.2",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^6.23.1",
     "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/",
     "firebase/": "https://aistudiocdn.com/firebase@^12.2.1/",
     "vite": "https://aistudiocdn.com/vite@^7.1.4",
@@ -213,7 +221,8 @@
     "contexts/": "https://aistudiocdn.com/contexts@^0.0.0/",
     "components/": "https://aistudiocdn.com/components@^0.1.0/",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0",
-    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.12"
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.12",
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1"
   }
 }
 </script>

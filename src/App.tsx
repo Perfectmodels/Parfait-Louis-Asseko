@@ -1,4 +1,3 @@
-
 import React, { useEffect, lazy, Suspense } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
@@ -15,6 +14,7 @@ const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Services = lazy(() => import('./pages/Services'));
+const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
@@ -26,6 +26,7 @@ const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
 const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
+const Chat = lazy(() => import('./pages/Chat'));
 
 // Admin Pages
 const Admin = lazy(() => import('./pages/Admin'));
@@ -46,6 +47,10 @@ const AdminComments = lazy(() => import('./pages/AdminComments'));
 const AdminBookings = lazy(() => import('./pages/AdminBookings'));
 const AdminMessages = lazy(() => import('./pages/AdminMessages'));
 const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
+const AdminPayments = lazy(() => import('./pages/AdminPayments'));
+const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
+const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+
 
 // Role-specific pages
 const JuryCasting = lazy(() => import('./pages/JuryCasting'));
@@ -121,12 +126,14 @@ const AppContent: React.FC = () => {
                         <Route path="/magazine/:slug" element={<ArticleDetail />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/services" element={<Services />} />
+                        <Route path="/services/:slug" element={<ServiceDetail />} />
                         <Route path="/casting" element={<Casting />} />
                         <Route path="/casting-formulaire" element={<CastingForm />} />
                         <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                         <Route path="/terms-of-use" element={<TermsOfUse />} />
+                        <Route path="/chat" element={<Chat />} />
 
                         {/* Protected Routes */}
                         <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -159,6 +166,9 @@ const AppContent: React.FC = () => {
                         <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                         <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
                         <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
+                        <Route path="/admin/payments" element={<ProtectedRoute role="admin"><AdminPayments /></ProtectedRoute>} />
+                        <Route path="/admin/absences" element={<ProtectedRoute role="admin"><AdminAbsences /></ProtectedRoute>} />
+                        <Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
 
                         <Route path="*" element={<NotFound />} />
                     </Routes>

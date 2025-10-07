@@ -7,6 +7,35 @@ import { useData } from '../contexts/DataContext';
 // FIX: Corrected import path for types.
 import { RecoveryRequest } from '../types';
 
+// Interface for storing active user data in localStorage
+interface ActiveUser {
+  name: string;
+  role: string;
+  loginTime: number;
+}
+
+const updateUserActivity = (name: string, role: string) => {
+    const now = Date.now();
+    const fifteenMinutes = 15 * 60 * 1000;
+    
+    // Read current activity
+    const currentActivityJSON = localStorage.getItem('pmm_active_users');
+    let activeUsers: ActiveUser[] = currentActivityJSON ? JSON.parse(currentActivityJSON) : [];
+    
+    // Remove old entry for the same user
+    activeUsers = activeUsers.filter(user => user.name !== name);
+    
+    // Add new entry for the current user
+    activeUsers.push({ name, role, loginTime: now });
+    
+    // Filter out users who have been inactive for more than 15 minutes
+    activeUsers = activeUsers.filter(user => (now - user.loginTime) < fifteenMinutes);
+    
+    // Save back to localStorage
+    localStorage.setItem('pmm_active_users', JSON.stringify(activeUsers));
+};
+
+
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -16,85 +45,92 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
+    if (!isInitialized || !data) {
+        setError('Le service est en cours de démarrage. Veuillez patienter...');
+        return;
+    }
+
+    const timestamp = new Date().toISOString();
+    const normalizedUsername = username.toLowerCase();
+
     // Admin Login
-    if (username.toLowerCase() === 'admin' && password === 'admin2025') {
+    if (normalizedUsername === 'admin' && password === 'admin2025') {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
-      // FIX: Use navigate for navigation in react-router-dom v6.
+      updateUserActivity('Administrateur', 'admin');
       navigate('/admin');
       return;
     }
 
     // Model Login
-    if (data?.models) {
-        const loggedInModel = data.models.find(m => 
-            m.username.toLowerCase() === username.toLowerCase() || 
-            m.name.toLowerCase() === username.toLowerCase()
-        );
+    const loggedInModel = data.models.find(m => 
+        m.username.toLowerCase() === normalizedUsername || 
+        m.name.toLowerCase() === normalizedUsername
+    );
+    if (loggedInModel && loggedInModel.password === password) {
+        sessionStorage.setItem('classroom_access', 'granted');
+        sessionStorage.setItem('classroom_role', 'student');
+        sessionStorage.setItem('userId', loggedInModel.id);
         
-        if (loggedInModel && loggedInModel.password === password) {
-            sessionStorage.setItem('classroom_access', 'granted');
-            sessionStorage.setItem('classroom_role', 'student');
-            sessionStorage.setItem('userId', loggedInModel.id);
-            // FIX: Use navigate for navigation in react-router-dom v6.
-            navigate('/profil');
-            return;
-        }
+        const updatedModels = data.models.map(m => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
+        await saveData({ ...data, models: updatedModels });
+        updateUserActivity(loggedInModel.name, 'student');
+        
+        navigate('/profil');
+        return;
     }
     
     // Beginner Student Login
-    if (data?.beginnerStudents) {
-        const loggedInBeginner = data.beginnerStudents.find(bs => 
-            bs.matricule.toLowerCase() === username.toLowerCase()
-        );
-        if (loggedInBeginner && loggedInBeginner.password === password) {
-            sessionStorage.setItem('classroom_access', 'granted');
-            sessionStorage.setItem('classroom_role', 'beginner');
-            sessionStorage.setItem('userId', loggedInBeginner.id);
-            sessionStorage.setItem('userName', loggedInBeginner.name);
-            navigate('/classroom-debutant');
-            return;
-        }
+    const loggedInBeginner = data.beginnerStudents.find(bs => 
+        bs.matricule.toLowerCase() === normalizedUsername ||
+        bs.name.toLowerCase() === normalizedUsername
+    );
+    if (loggedInBeginner && loggedInBeginner.password === password) {
+        sessionStorage.setItem('classroom_access', 'granted');
+        sessionStorage.setItem('classroom_role', 'beginner');
+        sessionStorage.setItem('userId', loggedInBeginner.id);
+        sessionStorage.setItem('userName', loggedInBeginner.name);
+        
+        const updatedBeginners = data.beginnerStudents.map(bs => bs.id === loggedInBeginner.id ? { ...bs, lastLogin: timestamp } : bs);
+        await saveData({ ...data, beginnerStudents: updatedBeginners });
+        updateUserActivity(loggedInBeginner.name, 'beginner');
+
+        navigate('/classroom-debutant');
+        return;
     }
 
     // Jury Login
-    if (data?.juryMembers) {
-        const loggedInJury = data.juryMembers.find(j => 
-            j.username.toLowerCase() === username.toLowerCase() ||
-            j.name.toLowerCase() === username.toLowerCase()
-        );
-        
-        if (loggedInJury && loggedInJury.password === password) {
-            sessionStorage.setItem('classroom_access', 'granted');
-            sessionStorage.setItem('classroom_role', 'jury');
-            sessionStorage.setItem('userId', loggedInJury.id);
-            sessionStorage.setItem('userName', loggedInJury.name); // Store name for display
-            // FIX: Use navigate for navigation in react-router-dom v6.
-            navigate('/jury/casting');
-            return;
-        }
+    const loggedInJury = data.juryMembers.find(j => 
+        j.username.toLowerCase() === normalizedUsername ||
+        j.name.toLowerCase() === normalizedUsername
+    );
+    if (loggedInJury && loggedInJury.password === password) {
+        sessionStorage.setItem('classroom_access', 'granted');
+        sessionStorage.setItem('classroom_role', 'jury');
+        sessionStorage.setItem('userId', loggedInJury.id);
+        sessionStorage.setItem('userName', loggedInJury.name);
+        updateUserActivity(loggedInJury.name, 'jury');
+        navigate('/jury/casting');
+        return;
     }
     
     // Registration Staff Login
-    if (data?.registrationStaff) {
-        const loggedInStaff = data.registrationStaff.find(s => 
-            s.username.toLowerCase() === username.toLowerCase() ||
-            s.name.toLowerCase() === username.toLowerCase()
-        );
-        
-        if (loggedInStaff && loggedInStaff.password === password) {
-            sessionStorage.setItem('classroom_access', 'granted');
-            sessionStorage.setItem('classroom_role', 'registration');
-            sessionStorage.setItem('userId', loggedInStaff.id);
-            sessionStorage.setItem('userName', loggedInStaff.name);
-            // FIX: Use navigate for navigation in react-router-dom v6.
-            navigate('/enregistrement/casting');
-            return;
-        }
+    const loggedInStaff = data.registrationStaff.find(s => 
+        s.username.toLowerCase() === normalizedUsername ||
+        s.name.toLowerCase() === normalizedUsername
+    );
+    if (loggedInStaff && loggedInStaff.password === password) {
+        sessionStorage.setItem('classroom_access', 'granted');
+        sessionStorage.setItem('classroom_role', 'registration');
+        sessionStorage.setItem('userId', loggedInStaff.id);
+        sessionStorage.setItem('userName', loggedInStaff.name);
+        updateUserActivity(loggedInStaff.name, 'registration');
+        navigate('/enregistrement/casting');
+        return;
     }
 
     setError('Identifiant ou mot de passe incorrect.');

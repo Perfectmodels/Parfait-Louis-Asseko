@@ -1,195 +1,353 @@
-
-
-
-import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
-import { AppData } from '../hooks/useDataStore';
-import { FashionDayEvent, Stylist, Partner, Artist } from '../types';
+import React, { useState } from 'react';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
-
-type EditableData = Pick<AppData, 'fashionDayEvents'>;
+import { useData } from '../contexts/DataContext';
+import { PlusIcon, PencilIcon, TrashIcon, CalendarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 const AdminFashionDayEvents: React.FC = () => {
-    const { data, saveData, isInitialized } = useData();
-    const [localData, setLocalData] = useState<EditableData | null>(null);
+  const { data, saveData } = useData();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<any | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+    imageUrl: '',
+    price: '',
+    maxParticipants: '',
+    isActive: true
+  });
 
-    useEffect(() => {
-        if (isInitialized && data) {
-            setLocalData(JSON.parse(JSON.stringify({ fashionDayEvents: data.fashionDayEvents })));
-        }
-    }, [isInitialized, data]);
+  const fashionDayEvents = (data?.fashionDayEvents as any[]) || [];
 
-    const handleSave = () => {
-        if (!data || !localData) return;
-        const newData: AppData = { ...data, ...localData };
-        saveData(newData);
-        alert("Événements Fashion Day enregistrés avec succès.");
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const newEvent: any = {
+      id: editingEvent?.id || Date.now().toString(),
+      name: formData.name,
+      description: formData.description,
+      date: formData.date,
+      time: formData.time,
+      location: formData.location,
+      imageUrl: formData.imageUrl,
+      price: formData.price ? parseFloat(formData.price) : 0,
+      maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : 0,
+      isActive: formData.isActive,
+      participants: editingEvent?.participants || [],
+      createdAt: editingEvent?.createdAt || new Date().toISOString()
     };
 
-    if (!localData) {
-        return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement...</div>;
+    let updatedEvents;
+    if (editingEvent) {
+      updatedEvents = fashionDayEvents.map(event => 
+        event.id === editingEvent.id ? newEvent : event
+      );
+    } else {
+      updatedEvents = [...fashionDayEvents, newEvent];
     }
 
-    return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Admin - Gérer les Événements PFD" noIndex />
-            <div className="container mx-auto px-6">
-                 <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
-                    <div>
-                        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                            <ChevronLeftIcon className="w-5 h-5" />
-                            Retour au Tableau de Bord
-                        </Link>
-                        <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Événements Perfect Fashion Day</h1>
-                    </div>
-                    <button onClick={handleSave} className="px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/30">
-                        Sauvegarder les Changements
-                    </button>
-                </div>
+    saveData({ ...data!, fashionDayEvents: updatedEvents });
+    setIsModalOpen(false);
+    setEditingEvent(null);
+    setFormData({
+      name: '',
+      description: '',
+      date: '',
+      time: '',
+      location: '',
+      imageUrl: '',
+      price: '',
+      maxParticipants: '',
+      isActive: true
+    });
+  };
 
-                <div className="space-y-8">
-                    <SectionWrapper title="Éditions du Perfect Fashion Day">
-                        <ArrayEditor 
-                            items={localData.fashionDayEvents}
-                            setItems={newItems => setLocalData(p => ({...p!, fashionDayEvents: newItems}))}
-                            renderItem={(item: FashionDayEvent, onChange) => (
-                                <div className="space-y-4">
-                                    <FormInput label="Édition (Numéro)" type="number" value={item.edition} onChange={e => onChange('edition', parseInt(e.target.value, 10))} />
-                                    <FormInput label="Date" value={item.date} onChange={e => onChange('date', e.target.value)} />
-                                    <FormInput label="Thème" value={item.theme} onChange={e => onChange('theme', e.target.value)} />
-                                    <FormTextArea label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} />
-                                    <FormInput label="Lieu" value={item.location || ''} onChange={e => onChange('location', e.target.value)} />
-                                    <FormInput label="MC" value={item.mc || ''} onChange={e => onChange('mc', e.target.value)} />
-                                    <FormInput label="Promoteur" value={item.promoter || ''} onChange={e => onChange('promoter', e.target.value)} />
+  const handleEdit = (event: any) => {
+    setEditingEvent(event);
+    setFormData({
+      name: event.name,
+      description: event.description,
+      date: event.date,
+      time: event.time,
+      location: event.location,
+      imageUrl: event.imageUrl,
+      price: event.price?.toString() || '',
+      maxParticipants: event.maxParticipants?.toString() || '',
+      isActive: event.isActive
+    });
+    setIsModalOpen(true);
+  };
 
-                                    <SubArrayEditor
-                                        title="Stylistes"
-                                        items={item.stylists || []}
-                                        setItems={newStylists => onChange('stylists', newStylists)}
-                                        getNewItem={() => ({ name: 'Nouveau Styliste', description: '', images: [] })}
-                                        getItemTitle={stylist => stylist.name}
-                                        renderItem={(stylist: Stylist, onStylistChange) => (
-                                            <>
-                                                <FormInput label="Nom du Styliste" value={stylist.name} onChange={e => onStylistChange('name', e.target.value)} />
-                                                <FormTextArea label="Description" value={stylist.description} onChange={e => onStylistChange('description', e.target.value)} />
-                                                {/* FIX: Add filter(Boolean) to prevent empty strings from being saved as image URLs. */}
-                                                <FormTextArea label="Images (URLs, une par ligne)" value={(stylist.images || []).join('\n')} onChange={e => onStylistChange('images', e.target.value.split('\n').filter(Boolean))} />
-                                            </>
-                                        )}
-                                    />
-                                    
-                                     <FormTextArea label="Mannequins Vedettes (séparés par des virgules)" value={(item.featuredModels || []).join(', ')} onChange={e => onChange('featuredModels', e.target.value.split(',').map((s: string) => s.trim()))} />
-                                     
-                                     {/* FIX: Replaced FormTextArea with SubArrayEditor for artists to handle complex object data correctly and prevent data corruption. */}
-                                     <SubArrayEditor
-                                        title="Artistes"
-                                        items={item.artists || []}
-                                        setItems={newArtists => onChange('artists', newArtists)}
-                                        getNewItem={() => ({ name: 'Nouvel Artiste', description: '', images: [] })}
-                                        getItemTitle={artist => artist.name}
-                                        renderItem={(artist: Artist, onArtistChange) => (
-                                            <>
-                                                <FormInput label="Nom de l'Artiste" value={artist.name} onChange={e => onArtistChange('name', e.target.value)} />
-                                                <FormTextArea label="Description" value={artist.description} onChange={e => onArtistChange('description', e.target.value)} />
-                                                <FormTextArea label="Images (URLs, une par ligne)" value={(artist.images || []).join('\n')} onChange={e => onArtistChange('images', e.target.value.split('\n').filter(Boolean))} />
-                                            </>
-                                        )}
-                                    />
-                                </div>
-                            )}
-                            getNewItem={() => ({ edition: (localData.fashionDayEvents.length + 1), date: '', theme: 'Nouveau Thème', description: '', stylists: [], featuredModels: [], artists: [], partners: [] })}
-                            getItemTitle={item => `Édition ${item.edition}: "${item.theme}"`}
-                        />
-                    </SectionWrapper>
-                </div>
+  const handleDelete = (id: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
+      const updatedEvents = fashionDayEvents.filter(event => event.id !== id);
+      saveData({ ...data!, fashionDayEvents: updatedEvents });
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  return (
+    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+      <SEO title="Admin - Événements Fashion Day" noIndex />
+      <div className="container mx-auto px-6 lg:px-8">
+        <header className="admin-page-header">
+          <div>
+            <h1 className="admin-page-title">Événements Fashion Day</h1>
+            <p className="admin-page-subtitle">Gérez les événements et défilés de mode.</p>
+          </div>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Nouvel événement
+          </button>
+        </header>
+
+        <div className="admin-section-wrapper">
+          <h2 className="admin-section-title">Événements</h2>
+          
+          {fashionDayEvents.length === 0 ? (
+            <div className="text-center py-12">
+              <CalendarIcon className="w-16 h-16 text-pm-off-white/30 mx-auto mb-4" />
+              <p className="text-pm-off-white/60 text-lg">Aucun événement Fashion Day pour le moment</p>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="mt-4 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
+              >
+                Créer le premier événement
+              </button>
             </div>
-        </div>
-    );
-};
-
-
-const SectionWrapper: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
-    <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30">
-        <h2 className="text-2xl font-playfair text-pm-gold mb-6 border-b border-pm-gold/20 pb-3">{title}</h2>
-        <div className="space-y-4">{children}</div>
-    </div>
-);
-
-const FormInput: React.FC<{label: string, value: any, onChange: any, type?: string}> = ({label, value, onChange, type = "text"}) => (
-    <div>
-        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <input type={type} value={value} onChange={onChange} className="admin-input" />
-    </div>
-);
-
-const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
-    <div>
-        <label className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
-        <textarea value={value} onChange={onChange} rows={4} className="admin-input admin-textarea" />
-    </div>
-);
-
-
-const ArrayEditor: React.FC<{
-    items: any[];
-    setItems: (items: any[]) => void;
-    renderItem: (item: any, onChange: (key: string, value: any) => void, index: number) => React.ReactNode;
-    getNewItem: () => any;
-    getItemTitle: (item: any) => string;
-}> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
-    const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-    const handleItemChange = (index: number, key: string, value: any) => {
-        const newItems = [...items];
-        newItems[index] = { ...newItems[index], [key]: value };
-        setItems(newItems);
-    };
-
-    const handleAddItem = () => {
-        setItems([...items, getNewItem()]);
-        setOpenIndex(items.length);
-    };
-
-    const handleDeleteItem = (index: number) => {
-        if (window.confirm(`Supprimer "${getItemTitle(items[index])}" ?`)) {
-            setItems(items.filter((_, i) => i !== index));
-        }
-    };
-    
-    return (
-        <div className="space-y-3">
-            {items.map((item, index) => (
-                <div key={index} className="bg-pm-dark/50 border border-pm-off-white/10 rounded-md overflow-hidden">
-                    <button onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full p-3 text-left font-bold flex justify-between items-center hover:bg-pm-gold/5">
-                        <span className="truncate pr-4">{getItemTitle(item)}</span>
-                        <ChevronDownIcon className={`w-5 h-5 transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`} />
-                    </button>
-                    {openIndex === index && (
-                        <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
-                            {renderItem(item, (key, value) => handleItemChange(index, key, value), index)}
-                            <div className="text-right pt-2">
-                                <button onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
-                            </div>
-                        </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {fashionDayEvents.map(event => (
+                <div key={event.id} className="card-base p-6">
+                  <div className="aspect-video mb-4 bg-pm-off-white/10 rounded-lg overflow-hidden">
+                    {event.imageUrl ? (
+                      <img src={event.imageUrl} alt={event.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-pm-off-white/40">
+                        Pas d'image
+                      </div>
                     )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mb-3">
+                    <h3 className="text-lg font-bold text-pm-gold line-clamp-1">{event.name}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      event.isActive 
+                        ? 'bg-green-600/20 text-green-400 border border-green-600/30' 
+                        : 'bg-red-600/20 text-red-400 border border-red-600/30'
+                    }`}>
+                      {event.isActive ? 'Actif' : 'Inactif'}
+                    </span>
+                  </div>
+                  
+                  <p className="text-pm-off-white/70 text-sm mb-3 line-clamp-2">{event.description}</p>
+                  
+                  <div className="space-y-1 text-xs text-pm-off-white/50 mb-4">
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="w-4 h-4" />
+                      <span>{formatDate(event.date)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <ClockIcon className="w-4 h-4" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPinIcon className="w-4 h-4" />
+                      <span className="line-clamp-1">{event.location}</span>
+                    </div>
+                    {event.price > 0 && (
+                      <p><strong>Prix:</strong> {event.price.toLocaleString('fr-FR')} FCFA</p>
+                    )}
+                    {event.maxParticipants > 0 && (
+                      <p><strong>Participants max:</strong> {event.maxParticipants}</p>
+                    )}
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(event)}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-pm-gold/20 text-pm-gold border border-pm-gold/30 rounded hover:bg-pm-gold/30 transition-colors"
+                    >
+                      <PencilIcon className="w-4 h-4" />
+                      Modifier
+                    </button>
+                    <button
+                      onClick={() => handleDelete(event.id)}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded hover:bg-red-600/30 transition-colors"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                      Supprimer
+                    </button>
+                  </div>
                 </div>
-            ))}
-            <button onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
-                <PlusIcon className="w-4 h-4"/> Ajouter une Édition
-            </button>
+              ))}
+            </div>
+          )}
         </div>
-    );
-};
 
-const SubArrayEditor: React.FC<{ title: string } & Omit<React.ComponentProps<typeof ArrayEditor>, 'items' | 'setItems'> & { items: any[], setItems: (items: any[]) => void }> = ({ title, ...props }) => (
-    <div className="p-3 bg-black/50 border border-pm-off-white/10 rounded-md">
-        <h4 className="text-md font-bold text-pm-gold/80 mb-3">{title}</h4>
-        <ArrayEditor {...props} />
+        {/* Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-pm-dark border border-pm-gold/20 rounded-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <h3 className="text-2xl font-playfair text-pm-gold mb-6">
+                {editingEvent ? 'Modifier l\'événement' : 'Nouvel événement Fashion Day'}
+              </h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="admin-label">Nom de l'événement</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="admin-input"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="admin-label">Description</label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    className="admin-textarea"
+                    rows={4}
+                    required
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="admin-label">Date</label>
+                    <input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({...formData, date: e.target.value})}
+                      className="admin-input"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="admin-label">Heure</label>
+                    <input
+                      type="time"
+                      value={formData.time}
+                      onChange={(e) => setFormData({...formData, time: e.target.value})}
+                      className="admin-input"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="admin-label">Lieu</label>
+                  <input
+                    type="text"
+                    value={formData.location}
+                    onChange={(e) => setFormData({...formData, location: e.target.value})}
+                    className="admin-input"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="admin-label">URL de l'image</label>
+                  <input
+                    type="url"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
+                    className="admin-input"
+                    placeholder="https://exemple.com/image.jpg"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="admin-label">Prix (FCFA)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({...formData, price: e.target.value})}
+                      className="admin-input"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="admin-label">Participants maximum</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.maxParticipants}
+                      onChange={(e) => setFormData({...formData, maxParticipants: e.target.value})}
+                      className="admin-input"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={formData.isActive}
+                    onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
+                    className="w-4 h-4 text-pm-gold bg-black border-pm-gold/30 rounded focus:ring-pm-gold focus:ring-2"
+                  />
+                  <label htmlFor="isActive" className="text-sm text-pm-off-white/80">
+                    Événement actif
+                  </label>
+                </div>
+                
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
+                  >
+                    {editingEvent ? 'Modifier' : 'Créer'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setEditingEvent(null);
+                      setFormData({
+                        name: '',
+                        description: '',
+                        date: '',
+                        time: '',
+                        location: '',
+                        imageUrl: '',
+                        price: '',
+                        maxParticipants: '',
+                        isActive: true
+                      });
+                    }}
+                    className="flex-1 px-6 py-3 border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-pm-gold/10 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-);
-
+  );
+};
 
 export default AdminFashionDayEvents;

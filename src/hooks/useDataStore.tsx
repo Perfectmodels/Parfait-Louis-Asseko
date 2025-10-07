@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief } from '../types';
+// FIX: Add BeginnerStudent to the type imports.
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -18,9 +19,6 @@ import {
     recoveryRequests as initialRecoveryRequests,
     bookingRequests as initialBookingRequests,
     contactMessages as initialContactMessages,
-    // absences as initialAbsences, // Not exported from data.ts
-    // monthlyPayments as initialMonthlyPayments, // Not exported from data.ts
-    // photoshootBriefs as initialPhotoshootBriefs, // Not exported from data.ts
     newsItems as initialNewsItems, 
     navLinks as initialNavLinks, 
     fashionDayEvents as initialFashionDayEvents, 
@@ -35,18 +33,10 @@ import {
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
-    beginnerCourseData as initialBeginnerCourseData,
-    // faqData as initialFaqData // Not exported from data.ts
+    beginnerCourseData as initialBeginnerCourseData
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
-
-export interface NavLink {
-    path: string;
-    label: string;
-    inFooter: boolean;
-    footerLabel?: string;
-}
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -82,10 +72,6 @@ export interface AppData {
     registrationStaff: RegistrationStaff[];
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
-    faqData: FAQCategory[];
-    absences: Absence[];
-    monthlyPayments: MonthlyPayment[];
-    photoshootBriefs: PhotoshootBrief[];
 }
 
 export const useDataStore = () => {
@@ -106,9 +92,6 @@ export const useDataStore = () => {
         recoveryRequests: initialRecoveryRequests,
         bookingRequests: initialBookingRequests,
         contactMessages: initialContactMessages,
-        absences: [], // initialAbsences not available
-        monthlyPayments: [], // initialMonthlyPayments not available
-        photoshootBriefs: [], // initialPhotoshootBriefs not available
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,
@@ -126,7 +109,6 @@ export const useDataStore = () => {
         registrationStaff: initialRegistrationStaff,
         beginnerCourseData: initialBeginnerCourseData,
         beginnerStudents: initialBeginnerStudents,
-        faqData: [], // initialFaqData not available
     }), []);
     
     useEffect(() => {
