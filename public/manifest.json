@@ -89,5 +89,45 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Messagerie",
+      "short_name": "Messages",
+      "description": "Accéder à la messagerie interne",
+      "url": "/messaging",
+      "icons": [
+        {
+          "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Profil",
+      "short_name": "Profil",
+      "description": "Voir mon profil",
+      "url": "/profil",
+      "icons": [
+        {
+          "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Casting",
+      "short_name": "Casting",
+      "description": "Postuler à un casting",
+      "url": "/casting",
+      "icons": [
+        {
+          "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

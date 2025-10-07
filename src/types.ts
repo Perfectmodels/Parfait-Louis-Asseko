@@ -1,4 +1,3 @@
-import React from 'react';
 
 export interface Model {
   id: string;
@@ -14,9 +13,8 @@ export interface Model {
   imageUrl: string;
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
-  isPublic?: boolean; // True if the model profile is visible on the public site
+  isPublic?: boolean; 
   level?: 'Pro' | 'Débutant';
-  // New portfolio fields
   measurements: {
     chest: string;
     waist: string;
@@ -26,16 +24,33 @@ export interface Model {
   categories: string[];
   experience: string;
   journey: string;
-  quizScores: { [quizId: string]: number };
+  quizScores: { 
+    [chapterSlug: string]: {
+      score: number;
+      total: number;
+      timesLeft: number;
+      timestamp: string;
+    } 
+  };
+  lastLogin?: string;
+  lastActivity?: string;
 }
 
-// FIX: Add BeginnerStudent interface to be used by the beginner classroom and admin pages.
 export interface BeginnerStudent {
-  id: string; // Corresponds to the CastingApplication ID
+  id: string; 
   name: string;
   matricule: string;
   password: string;
-  quizScores: { [moduleSlug: string]: number }; // Score out of 20
+  quizScores: { 
+    [chapterSlug: string]: {
+      score: number;
+      total: number;
+      timesLeft: number;
+      timestamp: string;
+    }
+  };
+  lastLogin?: string;
+  lastActivity?: string;
 }
 
 export interface Stylist {
@@ -64,7 +79,6 @@ export interface FashionDayEvent {
   description: string;
 }
 
-// FIX: Add missing SocialLinks interface
 export interface SocialLinks {
   facebook: string;
   instagram: string;
@@ -72,6 +86,7 @@ export interface SocialLinks {
 }
 
 export interface Service {
+  slug: string;
   icon: string;
   title: string;
   category: 'Services Mannequinat' | 'Services Mode et Stylisme' | 'Services Événementiels';
@@ -95,7 +110,6 @@ export interface ModelDistinction {
     titles: string[];
 }
 
-// Types for Magazine Feature
 export type ArticleContent = 
   | { type: 'heading'; level: 2 | 3; text: string }
   | { type: 'paragraph'; text: string }
@@ -121,7 +135,6 @@ export interface Article {
 }
 
 
-// Types for Classroom feature
 export interface QuizQuestion {
   question: string;
   options: string[];
@@ -157,7 +170,6 @@ export interface NewsItem {
   link?: string;
 }
 
-// Types for Site Settings
 export interface ContactInfo {
   email: string;
   phone: string;
@@ -181,6 +193,11 @@ export interface Partner {
 export interface ApiKeys {
   resendApiKey: string;
   formspreeEndpoint: string;
+  firebaseDynamicLinks?: {
+    webApiKey?: string;
+    domainUriPrefix: string;
+  };
+  imgbbApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -213,7 +230,6 @@ export interface CastingApplication {
   submissionDate: string;
   status: CastingApplicationStatus;
   
-  // From form
   firstName: string;
   lastName: string;
   birthDate: string;
@@ -234,7 +250,6 @@ export interface CastingApplication {
   instagram: string;
   portfolioLink: string;
 
-  // Photo URLs from storage
   photoPortraitUrl?: string | null;
   photoFullBodyUrl?: string | null;
   photoProfileUrl?: string | null;
@@ -281,7 +296,7 @@ export interface ForumReply {
 export interface ArticleComment {
   id: string;
   articleSlug: string;
-  authorName: string; // "Anonyme" or model name
+  authorName: string; 
   createdAt: string;
   content: string;
 }
@@ -317,7 +332,6 @@ export interface ContactMessage {
   message: string;
 }
 
-// FIX: Add AIAssistantProps interface to be used by the AI assistant components.
 export interface AIAssistantProps {
     isOpen: boolean;
     onClose: () => void;
@@ -325,4 +339,56 @@ export interface AIAssistantProps {
     fieldName: string;
     initialPrompt: string;
     jsonSchema?: any;
+}
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+export interface FAQCategory {
+  category: string;
+  items: FAQItem[];
+}
+
+export interface Absence {
+  id: string;
+  modelId: string;
+  modelName: string;
+  date: string; // YYYY-MM-DD
+  reason: 'Maladie' | 'Personnel' | 'Non justifié' | 'Autre';
+  notes?: string;
+  isExcused: boolean;
+}
+
+export interface MonthlyPayment {
+  id: string; // e.g., 'modelId-YYYY-MM'
+  modelId: string;
+  modelName: string;
+  month: string; // 'YYYY-MM'
+  amount: number;
+  paymentDate: string; // YYYY-MM-DD
+  method: 'Virement' | 'Espèces' | 'Autre';
+  status: 'Payé' | 'En attente' | 'En retard';
+  notes?: string;
+}
+
+export interface PhotoshootBrief {
+  id: string;
+  modelId: string;
+  modelName: string;
+  theme: string;
+  clothingStyle: string;
+  accessories: string;
+  location: string;
+  dateTime: string; // ISO string format for date and time
+  createdAt: string; // ISO string format
+  status: 'Nouveau' | 'Lu' | 'Archivé';
+}
+
+export interface NavLink {
+    path: string;
+    label: string;
+    inFooter: boolean;
+    footerLabel?: string;
 }

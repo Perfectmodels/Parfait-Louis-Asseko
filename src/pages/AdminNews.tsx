@@ -1,181 +1,324 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
-import { NewsItem } from '../types';
+import React, { useState } from 'react';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
+import { useData } from '../contexts/DataContext';
+import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+
+// NewsItem type removed - using any[]
 
 const AdminNews: React.FC = () => {
   const { data, saveData } = useData();
-  const [localNews, setLocalNews] = useState<NewsItem[]>([]);
-  const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<any | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    excerpt: '',
+    content: '',
+    imageUrl: '',
+    author: '',
+    tags: '',
+    isPublished: false
+  });
 
-  useEffect(() => {
-    if (data?.newsItems) {
-      setLocalNews([...data.newsItems]);
-    }
-  }, [data?.newsItems]);
+  const newsItems = (data?.newsItems as any[]) || [];
 
-  const handleFormSave = async (itemToSave: NewsItem) => {
-    if (!data) return;
-    let updatedNews;
-    if (isCreating) {
-        const newItem = { ...itemToSave, id: itemToSave.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') + '-' + Date.now() };
-        updatedNews = [newItem, ...localNews];
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const newItem: any = {
+      id: editingItem?.id || Date.now().toString(),
+      title: formData.title,
+      excerpt: formData.excerpt,
+      content: formData.content,
+      imageUrl: formData.imageUrl,
+      author: formData.author,
+      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      isPublished: formData.isPublished,
+      date: editingItem?.date || new Date().toISOString(),
+      views: editingItem?.views || 0,
+      likes: editingItem?.likes || 0
+    };
+
+    let updatedItems;
+    if (editingItem) {
+      updatedItems = newsItems.map(item => 
+        item.id === editingItem.id ? newItem : item
+      );
     } else {
-        updatedNews = localNews.map(a => a.id === itemToSave.id ? itemToSave : a);
+      updatedItems = [...newsItems, newItem];
     }
-    
-    await saveData({ ...data, newsItems: updatedNews });
-    alert("Actualité enregistrée avec succès.");
 
+    saveData({ ...data!, newsItems: updatedItems });
+    setIsModalOpen(false);
     setEditingItem(null);
-    setIsCreating(false);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette actualité ?")) {
-      if (!data) return;
-      const updatedNews = localNews.filter(a => a.id !== id);
-      await saveData({ ...data, newsItems: updatedNews });
-      alert("Actualité supprimée avec succès.");
-    }
-  };
-
-  const handleMove = async (index: number, direction: 'up' | 'down') => {
-    if (!data) return;
-    const newItems = [...localNews];
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= newItems.length) return;
-
-    [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
-    
-    await saveData({ ...data, newsItems: newItems });
-  };
-  
-  const handleStartCreate = () => {
-    setIsCreating(true);
-    setEditingItem({
-      id: '',
+    setFormData({
       title: '',
-      date: new Date().toISOString().split('T')[0],
-      imageUrl: '',
       excerpt: '',
-      link: ''
+      content: '',
+      imageUrl: '',
+      author: '',
+      tags: '',
+      isPublished: false
     });
   };
 
-  if (editingItem) {
-    return <NewsForm item={editingItem} onSave={handleFormSave} onCancel={() => {setEditingItem(null); setIsCreating(false);}} isCreating={isCreating}/>
-  }
+  const handleEdit = (item: any) => {
+    setEditingItem(item);
+    setFormData({
+      title: item.title,
+      excerpt: item.excerpt,
+      content: item.content,
+      imageUrl: item.imageUrl,
+      author: item.author,
+      tags: item.tags.join(', '),
+      isPublished: item.isPublished
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+      const updatedItems = newsItems.filter(item => item.id !== id);
+      saveData({ ...data!, newsItems: updatedItems });
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO title="Admin - Gérer les Actualités" noIndex />
-      <div className="container mx-auto px-6">
-        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-            <div>
-                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                    <ChevronLeftIcon className="w-5 h-5" />
-                    Retour au Dashboard
-                </Link>
-                <h1 className="text-4xl font-playfair text-pm-gold">Gérer les Actualités</h1>
+      <SEO title="Admin - Actualités" noIndex />
+      <div className="container mx-auto px-6 lg:px-8">
+        <header className="admin-page-header">
+          <div>
+            <h1 className="admin-page-title">Gestion des Actualités</h1>
+            <p className="admin-page-subtitle">Créez et gérez les articles d'actualité.</p>
+          </div>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Nouvel article
+          </button>
+        </header>
+
+        <div className="admin-section-wrapper">
+          <h2 className="admin-section-title">Articles d'Actualité</h2>
+          
+          {newsItems.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-pm-off-white/60 text-lg">Aucun article d'actualité pour le moment</p>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="mt-4 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
+              >
+                Créer le premier article
+              </button>
             </div>
-             <div className="flex items-center gap-4">
-                <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                    <PlusIcon className="w-5 h-5"/> Ajouter une Actualité
-                </button>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {newsItems.map(item => (
+                <div key={item.id} className="card-base p-6">
+                  <div className="aspect-video mb-4 bg-pm-off-white/10 rounded-lg overflow-hidden">
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-pm-off-white/40">
+                        Pas d'image
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mb-3">
+                    <h3 className="text-lg font-bold text-pm-gold line-clamp-1">{item.title}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      item.isPublished 
+                        ? 'bg-green-600/20 text-green-400 border border-green-600/30' 
+                        : 'bg-yellow-600/20 text-yellow-400 border border-yellow-600/30'
+                    }`}>
+                      {item.isPublished ? 'Publié' : 'Brouillon'}
+                    </span>
+                  </div>
+                  
+                  <p className="text-pm-off-white/70 text-sm mb-3 line-clamp-2">{item.excerpt}</p>
+                  
+                  <div className="space-y-1 text-xs text-pm-off-white/50 mb-4">
+                    <p><strong>Auteur:</strong> {item.author}</p>
+                    <p><strong>Date:</strong> {formatDate(item.date)}</p>
+                    <p><strong>Vues:</strong> {item.views || 0}</p>
+                    <p><strong>Likes:</strong> {item.likes || 0}</p>
+                  </div>
+                  
+                  {item.tags && item.tags.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-xs text-pm-off-white/50 mb-1"><strong>Tags:</strong></p>
+                      <div className="flex flex-wrap gap-1">
+                        {item.tags.slice(0, 3).map((tag: any, index: any) => (
+                          <span key={index} className="px-2 py-1 bg-pm-gold/20 text-pm-gold text-xs rounded">
+                            {tag}
+                          </span>
+                        ))}
+                        {item.tags.length > 3 && (
+                          <span className="px-2 py-1 bg-pm-off-white/20 text-pm-off-white/50 text-xs rounded">
+                            +{item.tags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-pm-gold/20 text-pm-gold border border-pm-gold/30 rounded hover:bg-pm-gold/30 transition-colors"
+                    >
+                      <PencilIcon className="w-4 h-4" />
+                      Modifier
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600/20 text-red-400 border border-red-600/30 rounded hover:bg-red-600/30 transition-colors"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
+          )}
         </div>
 
-        <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
-          {localNews.map((item, index) => (
-            <div key={item.id} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
-              <div className="flex items-center gap-4">
-                <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded"/>
-                <div>
-                  <h2 className="font-bold">{item.title}</h2>
-                  <p className="text-sm text-pm-off-white/70">{item.date}</p>
+        {/* Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-pm-dark border border-pm-gold/20 rounded-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <h3 className="text-2xl font-playfair text-pm-gold mb-6">
+                {editingItem ? 'Modifier l\'article' : 'Nouvel article d\'actualité'}
+              </h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="admin-label">Titre de l'article</label>
+                    <input
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) => setFormData({...formData, title: e.target.value})}
+                      className="admin-input"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="admin-label">Auteur</label>
+                    <input
+                      type="text"
+                      value={formData.author}
+                      onChange={(e) => setFormData({...formData, author: e.target.value})}
+                      className="admin-input"
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="disabled:opacity-30" title="Monter"><ArrowUpIcon className="w-5 h-5"/></button>
-                <button onClick={() => handleMove(index, 'down')} disabled={index === localNews.length - 1} className="disabled:opacity-30" title="Descendre"><ArrowDownIcon className="w-5 h-5"/></button>
-                <button onClick={() => { setEditingItem(item); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5"/></button>
-                <button onClick={() => handleDelete(item.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
-              </div>
+                
+                <div>
+                  <label className="admin-label">Extrait</label>
+                  <textarea
+                    value={formData.excerpt}
+                    onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
+                    className="admin-textarea"
+                    rows={3}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="admin-label">Contenu</label>
+                  <textarea
+                    value={formData.content}
+                    onChange={(e) => setFormData({...formData, content: e.target.value})}
+                    className="admin-textarea"
+                    rows={8}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="admin-label">URL de l'image</label>
+                  <input
+                    type="url"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
+                    className="admin-input"
+                    placeholder="https://exemple.com/image.jpg"
+                  />
+                </div>
+                
+                <div>
+                  <label className="admin-label">Tags (séparés par des virgules)</label>
+                  <input
+                    type="text"
+                    value={formData.tags}
+                    onChange={(e) => setFormData({...formData, tags: e.target.value})}
+                    className="admin-input"
+                    placeholder="mode, défilé, mannequin"
+                  />
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="isPublished"
+                    checked={formData.isPublished}
+                    onChange={(e) => setFormData({...formData, isPublished: e.target.checked})}
+                    className="w-4 h-4 text-pm-gold bg-black border-pm-gold/30 rounded focus:ring-pm-gold focus:ring-2"
+                  />
+                  <label htmlFor="isPublished" className="text-sm text-pm-off-white/80">
+                    Publier immédiatement
+                  </label>
+                </div>
+                
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white transition-colors"
+                  >
+                    {editingItem ? 'Modifier' : 'Créer'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setEditingItem(null);
+                      setFormData({
+                        title: '',
+                        excerpt: '',
+                        content: '',
+                        imageUrl: '',
+                        author: '',
+                        tags: '',
+                        isPublished: false
+                      });
+                    }}
+                    className="flex-1 px-6 py-3 border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-pm-gold/10 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
-const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onCancel: () => void, isCreating: boolean }> = ({ item, onSave, onCancel, isCreating }) => {
-    const [formData, setFormData] = useState(item);
-
-    useEffect(() => {
-        setFormData(item);
-    }, [item]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-    
-    const handleImageChange = (value: string) => {
-        setFormData(prev => ({ ...prev, imageUrl: value }));
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSave(formData);
-    };
-
-    return (
-        <>
-            <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-                <div className="container mx-auto px-6 max-w-3xl">
-                    <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvelle Actualité' : "Modifier l'Actualité"}</h1>
-                    <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
-                        <FormInput 
-                            label="Titre" name="title" value={formData.title} onChange={handleChange} 
-                        />
-                        <ImageInput label="Image" value={formData.imageUrl} onChange={handleImageChange} />
-                        <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
-                        <FormTextArea 
-                            label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
-                        />
-                        <FormInput label="Lien (optionnel)" name="link" value={formData.link || ''} onChange={handleChange} />
-                        <div className="flex justify-end gap-4 pt-4">
-                            <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
-                            <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </>
-    );
-};
-
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string}> = ({label, name, value, onChange, type="text"}) => (
-    <div>
-        <div className="flex justify-between items-center mb-1">
-            <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-        </div>
-        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" />
-    </div>
-);
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any}> = ({label, name, value, onChange}) => (
-    <div>
-        <div className="flex justify-between items-center mb-1">
-            <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
-        </div>
-        <textarea id={name} name={name} value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
-    </div>
-);
 
 export default AdminNews;
