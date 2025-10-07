@@ -223,7 +223,7 @@ const ModelDetail: React.FC = () => {
     "gender": model.gender === 'Homme' ? 'https://schema.org/Male' : 'https://schema.org/Female',
     "height": {
         "@type": "QuantitativeValue",
-        "value": model.height.replace('m', '.').replace(/[^0-9.]/g, ''),
+        "value": typeof model.height === 'string' ? model.height.replace('m', '.').replace(/[^0-9.]/g, '') : model.height,
         "unitCode": "MTR"
     },
     "worksFor": {
@@ -235,7 +235,9 @@ const ModelDetail: React.FC = () => {
     "description": `Portfolio de ${model.name}, mannequin chez Perfect Models Management.`
   };
 
-  const seoDescription = `Explorez le portfolio de ${model.name}, mannequin ${model.gender} de ${model.height} chez Perfect Models Management. Découvrez ses photos, mensurations (${model.measurements.chest}-${model.measurements.waist}-${model.measurements.hips}), et son parcours unique dans la mode.`;
+  const heightDisplay = typeof model.height === 'string' ? model.height : model.height ? `${model.height}cm` : '';
+  const measurementsDisplay = model.measurements ? `${model.measurements.chest}-${model.measurements.waist}-${model.measurements.hips}` : '';
+  const seoDescription = `Explorez le portfolio de ${model.name}, mannequin ${model.gender}${heightDisplay ? ` de ${heightDisplay}` : ''} chez Perfect Models Management. ${measurementsDisplay ? `Découvrez ses photos, mensurations (${measurementsDisplay}), et son parcours unique dans la mode.` : 'Découvrez ses photos et son parcours unique dans la mode.'}`;
   const modelFullName = model.name.split(' ');
   const firstName = modelFullName[0];
   const lastName = modelFullName.slice(1).join(' ');
@@ -296,7 +298,7 @@ const ModelDetail: React.FC = () => {
               <div>
                 <div role="tabpanel" id="tab-panel-details" aria-labelledby="tab-details" hidden={activeTab !== 'details'}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-lg animate-fade-in">
-                      <InfoItem label="Taille" value={model.height} />
+                      <InfoItem label="Taille" value={heightDisplay || model.height} />
                       <InfoItem label="Genre" value={model.gender} />
                       {model.age && <InfoItem label="Âge" value={`${model.age} ans`} />}
                       {model.location && <InfoItem label="Lieu" value={model.location} />}

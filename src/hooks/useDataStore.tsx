@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-// FIX: Add BeginnerStudent to the type imports.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent } from '../types';
+// FIX: Added NavLink to the import from types.ts to use the centralized definition.
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -19,6 +19,9 @@ import {
     recoveryRequests as initialRecoveryRequests,
     bookingRequests as initialBookingRequests,
     contactMessages as initialContactMessages,
+    absences as initialAbsences,
+    monthlyPayments as initialMonthlyPayments,
+    photoshootBriefs as initialPhotoshootBriefs,
     newsItems as initialNewsItems, 
     navLinks as initialNavLinks, 
     fashionDayEvents as initialFashionDayEvents, 
@@ -33,10 +36,12 @@ import {
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
-    beginnerCourseData as initialBeginnerCourseData
+    faqData as initialFaqData
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
+// FIX: Import beginnerCourseData directly to resolve module path error.
+import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -72,6 +77,10 @@ export interface AppData {
     registrationStaff: RegistrationStaff[];
     beginnerCourseData: Module[];
     beginnerStudents: BeginnerStudent[];
+    faqData: FAQCategory[];
+    absences: Absence[];
+    monthlyPayments: MonthlyPayment[];
+    photoshootBriefs: PhotoshootBrief[];
 }
 
 export const useDataStore = () => {
@@ -92,6 +101,9 @@ export const useDataStore = () => {
         recoveryRequests: initialRecoveryRequests,
         bookingRequests: initialBookingRequests,
         contactMessages: initialContactMessages,
+        absences: initialAbsences,
+        monthlyPayments: initialMonthlyPayments,
+        photoshootBriefs: initialPhotoshootBriefs,
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,
@@ -109,6 +121,7 @@ export const useDataStore = () => {
         registrationStaff: initialRegistrationStaff,
         beginnerCourseData: initialBeginnerCourseData,
         beginnerStudents: initialBeginnerStudents,
+        faqData: initialFaqData,
     }), []);
     
     useEffect(() => {

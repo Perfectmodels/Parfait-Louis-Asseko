@@ -1,124 +1,125 @@
 import React, { useState } from 'react';
-import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { CheckIcon, XMarkIcon, ClockIcon } from '@heroicons/react/24/outline';
+import AdminLayout from '../components/admin/AdminLayout';
+import AdminPageHeader from '../components/admin/AdminPageHeader';
+import AdminSection from '../components/admin/AdminSection';
+import AdminCard from '../components/admin/AdminCard';
+import AdminFilterBar from '../components/admin/AdminFilterBar';
 
 const AdminRecovery: React.FC = () => {
   const { data, saveData } = useData();
-  const [filter, setFilter] = useState<'all' | 'Nouveau' | 'Traité'>('all');
+  const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const recoveryRequests = data?.recoveryRequests || [];
-  
-  const filteredRequests = recoveryRequests.filter(request => 
-    filter === 'all' || request.status === filter
-  );
+  const requests = data?.recoveryRequests || [];
 
-  const handleStatusChange = (id: string, newStatus: 'Nouveau' | 'Traité') => {
-    const updatedRequests = recoveryRequests.map(request =>
-      request.id === id ? { ...request, status: newStatus } : request
+  const filteredRequests = requests.filter(request => {
+    const matchesFilter = filter === 'all' || request.status === filter;
+    const matchesSearch = searchTerm === '' || 
+      request.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.accountType.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const handleStatusChange = (id: string, newStatus: string) => {
+    if (!data) return;
+    const updated = requests.map(r => 
+      r.id === id ? { ...r, status: newStatus } : r
     );
-    saveData({ ...data!, recoveryRequests: updatedRequests });
+    saveData({ ...data, recoveryRequests: updated });
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
-      const updatedRequests = recoveryRequests.filter(request => request.id !== id);
-      saveData({ ...data!, recoveryRequests: updatedRequests });
+    if (!data) return;
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
+      const updated = requests.filter(r => r.id !== id);
+      saveData({ ...data, recoveryRequests: updated });
     }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Nouveau': return 'bg-red-600/20 text-red-400 border-red-600/30';
-      case 'Traité': return 'bg-green-600/20 text-green-400 border-green-600/30';
-      default: return 'bg-gray-600/20 text-gray-400 border-gray-600/30';
-    }
-  };
-
-  const formatDate = (timestamp: string) => {
-    return new Date(timestamp).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO title="Admin - Demandes de Récupération" noIndex />
-      <div className="container mx-auto px-6">
-        <h1 className="text-4xl font-playfair text-pm-gold">Demandes de Récupération</h1>
-        <p className="text-pm-off-white/70 mt-2 mb-8">
-          Gérez les demandes de coordonnées oubliées soumises par les mannequins.
-        </p>
+    <AdminLayout>
+      <AdminPageHeader 
+        title="Récupération de Compte" 
+        subtitle="Gérer les demandes de récupération de compte"
+      />
 
-        <div className="flex items-center gap-4 mb-6">
-          {(['all', 'Nouveau', 'Traité'] as const).map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-full text-sm font-bold border transition-colors ${
-                filter === f
-                  ? 'bg-pm-gold text-pm-dark border-pm-gold'
-                  : 'border-pm-off-white/50 text-pm-off-white hover:bg-pm-gold/20'
-              }`}
-            >
-              {f === 'all' ? 'Toutes' : f}
-            </button>
-          ))}
-        </div>
+      <AdminFilterBar
+        filters={[
+          { label: 'Toutes', value: 'all' },
+          { label: 'Nouvelles', value: 'new' },
+          { label: 'Traitées', value: 'processed' }
+        ]}
+        activeFilter={filter}
+        onFilterChange={setFilter}
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Rechercher par email..."
+      />
 
-        {filteredRequests.length === 0 ? (
-          <div className="text-center py-16">
-            <ClockIcon className="w-16 h-16 text-pm-off-white/30 mx-auto mb-4" />
-            <p className="text-pm-off-white/60 text-lg">Aucune demande de récupération trouvée</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {filteredRequests.map(request => (
-              <div key={request.id} className="bg-black p-6 border border-pm-gold/20 rounded-lg">
-                <div className="flex justify-between items-start mb-4">
+      <AdminSection title={`${filteredRequests.length} demande(s)`}>
+        <div className="space-y-4">
+          {filteredRequests.map((request) => (
+            <AdminCard key={request.id}>
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl font-bold text-pm-gold">{request.modelName}</h3>
-                    <p className="text-sm text-pm-off-white/70">{request.phone}</p>
-                    <p className="text-xs text-pm-off-white/50 mt-1">
-                      Demandé le {formatDate(request.timestamp)}
-                    </p>
+                    <h3 className="font-semibold text-lg">{request.email}</h3>
+                    <p className="text-sm text-gray-600">Type: {request.accountType}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(request.status)}`}>
-                      {request.status}
-                    </span>
-                    <button
-                      onClick={() => handleDelete(request.id)}
-                      className="p-2 text-red-400 hover:bg-red-400/20 rounded-lg transition-colors"
-                      title="Supprimer"
-                    >
-                      <XMarkIcon className="w-5 h-5" />
-                    </button>
-                  </div>
+                  <span className={`px-3 py-1 rounded-full text-sm ${
+                    request.status === 'processed' ? 'bg-green-100 text-green-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {request.status === 'processed' ? 'Traitée' : 'Nouvelle'}
+                  </span>
                 </div>
 
-                {request.status === 'Nouveau' && (
-                  <div className="flex gap-2 pt-4 border-t border-pm-gold/20">
-                    <button
-                      onClick={() => handleStatusChange(request.id, 'Traité')}
-                      className="flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
-                    >
-                      <CheckIcon className="w-4 h-4" />
-                      Marquer comme traité
-                    </button>
+                <div>
+                  <p className="text-sm text-gray-500">Demandé le</p>
+                  <p className="font-medium">
+                    {new Date(request.requestedAt).toLocaleDateString('fr-FR')} à{' '}
+                    {new Date(request.requestedAt).toLocaleTimeString('fr-FR')}
+                  </p>
+                </div>
+
+                {request.message && (
+                  <div>
+                    <p className="text-sm text-gray-500">Message</p>
+                    <p className="text-gray-700">{request.message}</p>
                   </div>
                 )}
+
+                <div className="flex gap-2 pt-2">
+                  <select
+                    value={request.status}
+                    onChange={(e) => handleStatusChange(request.id, e.target.value)}
+                    className="px-3 py-2 border rounded"
+                  >
+                    <option value="new">Nouvelle</option>
+                    <option value="processed">Traitée</option>
+                  </select>
+                  <button
+                    onClick={() => handleDelete(request.id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Supprimer
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+            </AdminCard>
+          ))}
+
+          {filteredRequests.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              Aucune demande de récupération trouvée
+            </div>
+          )}
+        </div>
+      </AdminSection>
+    </AdminLayout>
   );
 };
 
 export default AdminRecovery;
+

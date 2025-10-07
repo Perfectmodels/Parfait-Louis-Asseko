@@ -35,7 +35,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
         setFormData(prev => ({
             ...prev,
             measurements: {
-                ...prev.measurements,
+                ...(prev.measurements || { chest: '', waist: '', hips: '', shoeSize: '' }),
                 [name]: value,
             }
         }));
@@ -126,10 +126,10 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     <ImageInput label="Photo Principale" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementChange} />
-                        <FormInput label="Taille (cm)" name="waist" value={formData.measurements.waist} onChange={handleMeasurementChange} />
-                        <FormInput label="Hanches (cm)" name="hips" value={formData.measurements.hips} onChange={handleMeasurementChange} />
-                        <FormInput label="Pointure (EU)" name="shoeSize" value={formData.measurements.shoeSize} onChange={handleMeasurementChange} />
+                        <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements?.chest || ''} onChange={handleMeasurementChange} />
+                        <FormInput label="Taille (cm)" name="waist" value={formData.measurements?.waist || ''} onChange={handleMeasurementChange} />
+                        <FormInput label="Hanches (cm)" name="hips" value={formData.measurements?.hips || ''} onChange={handleMeasurementChange} />
+                        <FormInput label="Pointure (EU)" name="shoeSize" value={formData.measurements?.shoeSize || ''} onChange={handleMeasurementChange} />
                     </div>
                 </Section>
 

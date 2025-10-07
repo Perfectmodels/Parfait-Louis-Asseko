@@ -145,13 +145,14 @@ export interface Chapter {
   slug: string;
   title: string;
   content: string;
+  quiz?: QuizQuestion[]; // Quiz spécifique au chapitre (10+ questions)
 }
 
 export interface Module {
   slug: string;
   title: string;
   chapters: Chapter[];
-  quiz: QuizQuestion[];
+  quiz: QuizQuestion[]; // Quiz de synthèse du module (pour rétrocompatibilité)
 }
 
 export interface Testimonial {

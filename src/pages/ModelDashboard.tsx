@@ -3,7 +3,7 @@ import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import { Model, PhotoshootBrief } from '../types';
+import { Model, PhotoshootBrief } from '../../types';
 import ModelForm from '../components/ModelForm';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
@@ -24,7 +24,17 @@ const ModelDashboard: React.FC = () => {
 
     useEffect(() => {
         if (originalModel) {
-            setEditableModel(JSON.parse(JSON.stringify(originalModel)));
+            const modelCopy = JSON.parse(JSON.stringify(originalModel));
+            // Ensure measurements object exists for compatibility
+            if (!modelCopy.measurements) {
+                modelCopy.measurements = {
+                    chest: '',
+                    waist: '',
+                    hips: '',
+                    shoeSize: ''
+                };
+            }
+            setEditableModel(modelCopy);
         }
     }, [originalModel]);
     

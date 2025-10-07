@@ -1,108 +1,133 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { BookingRequest } from '../types';
-import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-
-type StatusFilter = 'Toutes' | 'Nouveau' | 'Confirmé' | 'Annulé';
+import AdminLayout from '../components/admin/AdminLayout';
+import AdminPageHeader from '../components/admin/AdminPageHeader';
+import AdminSection from '../components/admin/AdminSection';
+import AdminCard from '../components/admin/AdminCard';
+import AdminFilterBar from '../components/admin/AdminFilterBar';
 
 const AdminBookings: React.FC = () => {
-    const { data, saveData } = useData();
-    const [filter, setFilter] = useState<StatusFilter>('Toutes');
+  const { data, saveData } = useData();
+  const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
-    const requests = useMemo(() => {
-        return [...(data?.bookingRequests || [])].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime());
-    }, [data?.bookingRequests]);
+  const bookings = data?.bookingRequests || [];
 
-    const filteredRequests = useMemo(() => {
-        if (filter === 'Toutes') return requests;
-        return requests.filter(req => req.status === filter);
-    }, [filter, requests]);
+  const filteredBookings = bookings.filter(booking => {
+    const matchesFilter = filter === 'all' || booking.status === filter;
+    const matchesSearch = searchTerm === '' || 
+      booking.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.email.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
-    const handleUpdateStatus = async (requestId: string, status: BookingRequest['status']) => {
-        if (!data) return;
-        const updatedRequests = requests.map(req => req.id === requestId ? { ...req, status } : req);
-        await saveData({ ...data, bookingRequests: updatedRequests });
-    };
-
-    const handleDelete = async (requestId: string) => {
-        if (!data || !window.confirm("Supprimer cette demande de booking ?")) return;
-        const updatedRequests = requests.filter(req => req.id !== requestId);
-        await saveData({ ...data, bookingRequests: updatedRequests });
-    };
-    
-    const getStatusColor = (status: BookingRequest['status']) => {
-        switch (status) {
-            case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
-            case 'Confirmé': return 'bg-green-500/20 text-green-300 border-green-500';
-            case 'Annulé': return 'bg-red-500/20 text-red-300 border-red-500';
-            default: return 'bg-gray-500/20 text-gray-300';
-        }
-    };
-
-    return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Admin - Demandes de Booking" noIndex />
-            <div className="container mx-auto px-6">
-                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                    <ChevronLeftIcon className="w-5 h-5" />
-                    Retour au Dashboard
-                </Link>
-                <h1 className="text-4xl font-playfair text-pm-gold">Demandes de Booking</h1>
-                <p className="text-pm-off-white/70 mt-2 mb-8">Gérez les demandes de réservation des clients.</p>
-
-                <div className="flex items-center gap-4 mb-8 flex-wrap">
-                    {(['Toutes', 'Nouveau', 'Confirmé', 'Annulé'] as const).map(f => (
-                        <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all ${filter === f ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
-                            {f}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="space-y-4">
-                    {filteredRequests.map(req => (
-                        <div key={req.id} className="bg-black p-4 border border-pm-gold/10 rounded-lg">
-                            <div className="flex justify-between items-start flex-wrap gap-4">
-                                <div>
-                                    <span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(req.status)}`}>{req.status}</span>
-                                    <h2 className="text-xl font-bold text-pm-gold mt-2">{req.requestedModels}</h2>
-                                    <p className="text-sm text-pm-off-white/80">de <span className="font-semibold">{req.clientName}</span> ({req.clientEmail})</p>
-                                    {req.clientCompany && <p className="text-xs text-pm-off-white/60">Société: {req.clientCompany}</p>}
-                                </div>
-                                <div className="text-right flex-shrink-0">
-                                    <p className="text-sm">Du {req.startDate || 'N/A'} au {req.endDate || 'N/A'}</p>
-                                    <p className="text-xs text-pm-off-white/60">Soumis le {new Date(req.submissionDate).toLocaleDateString()}</p>
-                                </div>
-                            </div>
-                            <p className="mt-4 pt-3 border-t border-pm-gold/10 text-sm text-pm-off-white/90 whitespace-pre-wrap bg-pm-dark/50 p-3 rounded-md">
-                                {req.message}
-                            </p>
-                            <div className="mt-4 flex justify-end items-center gap-2">
-                                {req.status === 'Nouveau' && (
-                                    <button onClick={() => handleUpdateStatus(req.id, 'Confirmé')} className="px-3 py-1 text-xs font-bold uppercase tracking-wider border border-green-500 text-green-300 rounded-full hover:bg-green-500/20">
-                                        Confirmer
-                                    </button>
-                                )}
-                                {req.status !== 'Annulé' && (
-                                     <button onClick={() => handleUpdateStatus(req.id, 'Annulé')} className="px-3 py-1 text-xs font-bold uppercase tracking-wider border border-red-500 text-red-300 rounded-full hover:bg-red-500/20">
-                                        Annuler
-                                    </button>
-                                )}
-                                <button onClick={() => handleDelete(req.id)} className="text-red-500/70 hover:text-red-500 p-1"><TrashIcon className="w-5 h-5"/></button>
-                            </div>
-                        </div>
-                    ))}
-                     {filteredRequests.length === 0 && (
-                        <div className="text-center p-16 bg-black rounded-lg border border-pm-gold/10">
-                            <CheckCircleIcon className="w-16 h-16 mx-auto text-pm-off-white/30 mb-4"/>
-                            <p className="text-pm-off-white/70">Aucune demande de booking dans cette catégorie.</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
+  const handleStatusChange = (id: string, newStatus: string) => {
+    if (!data) return;
+    const updated = bookings.map(b => 
+      b.id === id ? { ...b, status: newStatus } : b
     );
+    saveData({ ...data, bookingRequests: updated });
+  };
+
+  const handleDelete = (id: string) => {
+    if (!data) return;
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')) {
+      const updated = bookings.filter(b => b.id !== id);
+      saveData({ ...data, bookingRequests: updated });
+    }
+  };
+
+  return (
+    <AdminLayout>
+      <AdminPageHeader 
+        title="Réservations" 
+        subtitle="Gérer les demandes de réservation"
+      />
+
+      <AdminFilterBar
+        filters={[
+          { label: 'Toutes', value: 'all' },
+          { label: 'Nouvelles', value: 'new' },
+          { label: 'Confirmées', value: 'confirmed' },
+          { label: 'Annulées', value: 'cancelled' }
+        ]}
+        activeFilter={filter}
+        onFilterChange={setFilter}
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Rechercher par nom ou email..."
+      />
+
+      <AdminSection title={`${filteredBookings.length} réservation(s)`}>
+        <div className="space-y-4">
+          {filteredBookings.map((booking) => (
+            <AdminCard key={booking.id}>
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold text-lg">{booking.name}</h3>
+                    <p className="text-sm text-gray-600">{booking.email}</p>
+                    <p className="text-sm text-gray-600">{booking.phone}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-sm ${
+                    booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                    booking.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {booking.status === 'confirmed' ? 'Confirmée' :
+                     booking.status === 'cancelled' ? 'Annulée' : 'Nouvelle'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Service</p>
+                    <p className="font-medium">{booking.service}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Date souhaitée</p>
+                    <p className="font-medium">{new Date(booking.preferredDate).toLocaleDateString('fr-FR')}</p>
+                  </div>
+                </div>
+
+                {booking.message && (
+                  <div>
+                    <p className="text-sm text-gray-500">Message</p>
+                    <p className="text-gray-700">{booking.message}</p>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-2">
+                  <select
+                    value={booking.status}
+                    onChange={(e) => handleStatusChange(booking.id, e.target.value)}
+                    className="px-3 py-2 border rounded"
+                  >
+                    <option value="new">Nouvelle</option>
+                    <option value="confirmed">Confirmée</option>
+                    <option value="cancelled">Annulée</option>
+                  </select>
+                  <button
+                    onClick={() => handleDelete(booking.id)}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            </AdminCard>
+          ))}
+
+          {filteredBookings.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              Aucune réservation trouvée
+            </div>
+          )}
+        </div>
+      </AdminSection>
+    </AdminLayout>
+  );
 };
 
 export default AdminBookings;
+

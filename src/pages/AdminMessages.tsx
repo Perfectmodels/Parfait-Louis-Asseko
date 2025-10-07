@@ -1,32 +1,41 @@
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { EnvelopeIcon, CheckIcon, ArchiveBoxIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
-
-// ContactMessage type removed - using any[]
+import { EnvelopeIcon, CheckIcon, ArchiveBoxIcon, TrashIcon } from '@heroicons/react/24/outline';
+import AdminLayout from '../components/admin/AdminLayout';
+import AdminPageHeader from '../components/admin/AdminPageHeader';
+import AdminSection from '../components/admin/AdminSection';
+import AdminCard from '../components/admin/AdminCard';
 
 const AdminMessages: React.FC = () => {
   const { data, saveData } = useData();
   const [filter, setFilter] = useState<'all' | 'Nouveau' | 'Lu' | 'Archivé'>('all');
 
-  const contactMessages = data?.contactMessages || [];
-  
-  const filteredMessages = contactMessages.filter(message => 
+  if (!data) {
+    return (
+      <AdminLayout>
+        <SEO title="Admin - Messages de Contact" noIndex />
+      </AdminLayout>
+    );
+  }
+
+  const contactMessages = data.contactMessages || [];
+
+  const filteredMessages = contactMessages.filter((message: any) =>
     filter === 'all' || message.status === filter
   );
 
-  const handleStatusChange = (id: string, newStatus: 'Nouveau' | 'Lu' | 'Archivé') => {
-    const updatedMessages = contactMessages.map(message =>
+  const handleStatusChange = async (id: string, newStatus: 'Nouveau' | 'Lu' | 'Archivé') => {
+    const updatedMessages = contactMessages.map((message: any) =>
       message.id === id ? { ...message, status: newStatus } : message
     );
-    saveData({ ...data!, contactMessages: updatedMessages });
+    await saveData({ ...data, contactMessages: updatedMessages });
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
-      const updatedMessages = contactMessages.filter(message => message.id !== id);
-      saveData({ ...data!, contactMessages: updatedMessages });
-    }
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Supprimer ce message ?')) return;
+    const updatedMessages = contactMessages.filter((message: any) => message.id !== id);
+    await saveData({ ...data, contactMessages: updatedMessages });
   };
 
   const getStatusColor = (status: string) => {
@@ -38,30 +47,20 @@ const AdminMessages: React.FC = () => {
     }
   };
 
-  const formatDate = (timestamp: string) => {
-    return new Date(timestamp).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  const formatDate = (timestamp: string) => new Date(timestamp).toLocaleDateString('fr-FR', {
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
 
   return (
-    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+    <AdminLayout>
       <SEO title="Admin - Messages de Contact" noIndex />
-      <div className="container mx-auto px-6 lg:px-8">
-        <header className="admin-page-header">
-          <div>
-            <h1 className="admin-page-title">Messages de Contact</h1>
-            <p className="admin-page-subtitle">Gérez les messages reçus via le formulaire de contact.</p>
-          </div>
-        </header>
+      <AdminPageHeader
+        title="Messages de Contact"
+        subtitle="Gérez les messages reçus via le formulaire de contact."
+      />
 
-        <div className="admin-section-wrapper">
-          <h2 className="admin-section-title">Messages</h2>
-          
+      <AdminSection title="Messages">
+        <AdminCard className="p-6">
           <div className="flex items-center gap-4 mb-6">
             {(['all', 'Nouveau', 'Lu', 'Archivé'] as const).map(f => (
               <button
@@ -85,53 +84,33 @@ const AdminMessages: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              {filteredMessages.map(message => (
+              {filteredMessages.map((message: any) => (
                 <div key={message.id} className="card-base p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-xl font-bold text-pm-gold">{message.subject}</h3>
-                      <p className="text-sm text-pm-off-white/70">
-                        de <strong>{message.name}</strong> ({message.email})
-                      </p>
-                      <p className="text-xs text-pm-off-white/50 mt-1">
-                        Reçu le {formatDate(message.submissionDate)}
-                      </p>
+                      <p className="text-sm text-pm-off-white/70">de <strong>{message.name}</strong> ({message.email})</p>
+                      <p className="text-xs text-pm-off-white/50 mt-1">Reçu le {formatDate(message.submissionDate)}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
-                        {message.status}
-                      </span>
-                      <button
-                        onClick={() => handleDelete(message.id)}
-                        className="p-2 text-red-400 hover:bg-red-400/20 rounded-lg transition-colors"
-                        title="Supprimer"
-                      >
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>{message.status}</span>
+                      <button onClick={() => handleDelete(message.id)} className="p-2 text-red-400 hover:bg-red-400/20 rounded-lg transition-colors" title="Supprimer">
                         <TrashIcon className="w-5 h-5" />
                       </button>
                     </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <p className="text-pm-off-white/80 whitespace-pre-wrap bg-pm-off-white/5 p-4 rounded-lg">
-                      {message.message}
-                    </p>
-                  </div>
-
-                  {message.status === 'Nouveau' && (
+                      </div>
+                      
+                      <div className="mb-4">
+                    <p className="text-pm-off-white/80 whitespace-pre-wrap bg-pm-off-white/5 p-4 rounded-lg">{message.message}</p>
+                    </div>
+                    
+                      {message.status === 'Nouveau' && (
                     <div className="flex gap-2 pt-4 border-t border-pm-gold/20">
-                      <button
-                        onClick={() => handleStatusChange(message.id, 'Lu')}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors"
-                      >
-                        <CheckIcon className="w-4 h-4" />
-                        Marquer comme lu
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(message.id, 'Archivé')}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-600/20 text-gray-400 border border-gray-600/30 rounded-lg hover:bg-gray-600/30 transition-colors"
-                      >
-                        <ArchiveBoxIcon className="w-4 h-4" />
-                        Archiver
+                      <button onClick={() => handleStatusChange(message.id, 'Lu')} className="flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-400 border border-green-600/30 rounded-lg hover:bg-green-600/30 transition-colors">
+                        <CheckIcon className="w-4 h-4" /> Marquer comme lu
+                        </button>
+                      <button onClick={() => handleStatusChange(message.id, 'Archivé')} className="flex items-center gap-2 px-4 py-2 bg-gray-600/20 text-gray-400 border border-gray-600/30 rounded-lg hover:bg-gray-600/30 transition-colors">
+                        <ArchiveBoxIcon className="w-4 h-4" /> Archiver
                       </button>
                     </div>
                   )}
@@ -139,10 +118,12 @@ const AdminMessages: React.FC = () => {
               ))}
             </div>
           )}
-        </div>
-      </div>
-    </div>
+        </AdminCard>
+      </AdminSection>
+    </AdminLayout>
   );
 };
 
 export default AdminMessages;
+
+
