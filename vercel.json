@@ -9,5 +9,11 @@
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
       ]
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "ROLLUP_SKIP_NODE_NATIVE": "1",
+      "CI": "true"
+    }
+  }
 }
