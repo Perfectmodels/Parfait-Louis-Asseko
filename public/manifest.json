@@ -12,20 +12,6 @@
   "lang": "fr-FR",
   "dir": "ltr",
   "prefer_related_applications": false,
-  "screenshots": [
-    {
-      "src": "/screenshots/homepage-mobile.jpg",
-      "sizes": "360x640",
-      "type": "image/jpeg",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/screenshots/homepage-desktop.jpg",
-      "sizes": "1920x1080",
-      "type": "image/jpeg",
-      "form_factor": "wide"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Nos Mannequins",

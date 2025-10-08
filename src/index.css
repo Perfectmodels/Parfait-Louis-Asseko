@@ -64,14 +64,17 @@
 
   /* ===================== CARD AMÉLIORÉES ===================== */
   .card-base {
-    @apply bg-gradient-to-br from-black via-pm-dark to-black border border-pm-gold/30 transition-all duration-500 rounded-2xl shadow-xl shadow-black/50 relative overflow-hidden group;
+    @apply bg-gradient-to-br from-black via-pm-dark to-black border border-pm-gold/30 transition-all duration-500 rounded-2xl shadow-xl shadow-black/50 relative overflow-hidden;
   }
   .card-base::before {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-pm-gold/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none;
+    @apply absolute inset-0 bg-gradient-to-br from-pm-gold/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 pointer-events-none;
   }
   .card-base:hover {
     @apply border-pm-gold shadow-2xl shadow-pm-gold/30 -translate-y-3 scale-[1.02];
+  }
+  .card-base:hover::before {
+    @apply opacity-100;
   }
 
   /* ===================== ADMIN PANEL ===================== */
