@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, SignalIcon, CheckCircleIcon, XCircleIcon, AcademicCapIcon, ClockIcon, TrophyIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 const AdminClassroomProgress: React.FC = () => {
-  const { data } = useData();
+    const { data } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [currentTime, setCurrentTime] = useState(Date.now());
@@ -107,8 +107,8 @@ const AdminClassroomProgress: React.FC = () => {
               Suivez en temps réel les mannequins connectés et leurs résultats de quiz
             </p>
           </div>
-        </div>
-
+            </div>
+            
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
           <div className="bg-pm-dark/30 border border-pm-gold/20 rounded-lg p-6">
@@ -119,32 +119,32 @@ const AdminClassroomProgress: React.FC = () => {
                 <p className="text-pm-off-white/70 text-sm">Total Mannequins</p>
               </div>
             </div>
-          </div>
-
+            </div>
+            
           <div className="bg-pm-dark/30 border border-green-500/20 rounded-lg p-6">
             <div className="flex items-center gap-3">
               <SignalIcon className="w-10 h-10 text-green-400 animate-pulse" />
               <div>
                 <p className="text-3xl font-bold text-green-400">{stats.connectedUsers}</p>
                 <p className="text-pm-off-white/70 text-sm">Connectés Maintenant</p>
-              </div>
             </div>
           </div>
+        </div>
 
           <div className="bg-pm-dark/30 border border-pm-gold/20 rounded-lg p-6">
             <div className="flex items-center gap-3">
               <AcademicCapIcon className="w-10 h-10 text-pm-gold" />
-              <div>
+            <div>
                 <p className="text-3xl font-bold text-pm-gold">{stats.totalQuizzes}</p>
                 <p className="text-pm-off-white/70 text-sm">Quiz Complétés</p>
               </div>
             </div>
-          </div>
-
+            </div>
+            
           <div className="bg-pm-dark/30 border border-pm-gold/20 rounded-lg p-6">
             <div className="flex items-center gap-3">
               <TrophyIcon className="w-10 h-10 text-pm-gold" />
-              <div>
+            <div>
                 <p className="text-3xl font-bold text-pm-gold">{stats.avgScore}%</p>
                 <p className="text-pm-off-white/70 text-sm">Score Moyen</p>
               </div>
@@ -190,7 +190,7 @@ const AdminClassroomProgress: React.FC = () => {
             <div key={user.id} className="bg-pm-dark/30 border border-pm-gold/20 rounded-lg p-6 hover:border-pm-gold/40 transition-colors">
               <div className="flex items-start justify-between gap-4">
                 {/* User Info */}
-                <div className="flex-1">
+                    <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
                     <h3 className="text-xl font-semibold text-pm-off-white">{user.name}</h3>
                     {user.connected && (
@@ -206,8 +206,8 @@ const AdminClassroomProgress: React.FC = () => {
                     }`}>
                       {user.type === 'pro' ? 'Pro' : 'Débutant'}
                     </span>
-                  </div>
-
+                      </div>
+                      
                   {user.email && <p className="text-pm-off-white/60 text-sm mb-4">{user.email}</p>}
 
                   {/* Quiz Scores Grid */}
@@ -228,7 +228,7 @@ const AdminClassroomProgress: React.FC = () => {
                               ) : (
                                 <XCircleIcon className="w-5 h-5 text-red-400 flex-shrink-0" />
                               )}
-                            </div>
+                        </div>
                             <div className="flex items-end justify-between">
                               <span className={`text-2xl font-bold ${passed ? 'text-green-400' : 'text-red-400'}`}>
                                 {percentage}%
@@ -236,23 +236,23 @@ const AdminClassroomProgress: React.FC = () => {
                               <span className="text-xs text-pm-off-white/50">
                                 {quiz.score}/{quiz.total}
                               </span>
-                            </div>
+                        </div>
                             {quiz.timesLeft !== undefined && quiz.timesLeft < 3 && (
                               <p className="text-xs text-orange-400 mt-1">
                                 {quiz.timesLeft} essai(s) restant(s)
                               </p>
                             )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                </div>
+              );
+            })}
+          </div>
                   ) : (
                     <div className="text-center py-4 text-pm-off-white/50 text-sm">
                       Aucun quiz complété
-                    </div>
+        </div>
                   )}
-                </div>
-
+                    </div>
+                    
                 {/* Stats Summary */}
                 <div className="flex flex-col gap-3 min-w-[150px]">
                   <div className="bg-pm-dark/50 rounded-lg p-3 text-center">
@@ -263,15 +263,15 @@ const AdminClassroomProgress: React.FC = () => {
                     }`}>
                       {user.averageScore}%
                     </p>
-                  </div>
-                  
+                    </div>
+                    
                   <div className="bg-pm-dark/50 rounded-lg p-3 text-center">
                     <p className="text-xs text-pm-off-white/60 mb-1">Quiz Réussis</p>
                     <p className="text-lg font-bold text-pm-gold">
                       {user.passedQuizzes}/{user.totalQuizzes}
                     </p>
-                  </div>
-
+                    </div>
+                    
                   {user.lastActivity && (
                     <div className="bg-pm-dark/50 rounded-lg p-3">
                       <p className="text-xs text-pm-off-white/60 mb-1 flex items-center gap-1">
@@ -292,9 +292,9 @@ const AdminClassroomProgress: React.FC = () => {
                       </p>
                     </div>
                   )}
-                </div>
-              </div>
-            </div>
+                      </div>
+                    </div>
+                  </div>
           ))}
 
           {filteredUsers.length === 0 && (
@@ -302,7 +302,7 @@ const AdminClassroomProgress: React.FC = () => {
               <UserGroupIcon className="w-16 h-16 mx-auto mb-4 text-pm-gold/30" />
               <p className="text-lg">Aucun mannequin trouvé</p>
               <p className="text-sm mt-2">Essayez de modifier vos filtres de recherche</p>
-            </div>
+                </div>
           )}
         </div>
       </div>

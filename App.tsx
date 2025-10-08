@@ -197,7 +197,8 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
+    // Only register service worker in production
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').then(registration => {
           console.log('SW registered: ', registration);
@@ -205,12 +206,25 @@ const App: React.FC = () => {
           console.log('SW registration failed: ', registrationError);
         });
       });
+    } else if ('serviceWorker' in navigator && import.meta.env.DEV) {
+      // Unregister service worker in development
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => {
+          registration.unregister();
+          console.log('SW unregistered for development');
+        });
+      });
     }
   }, []);
 
   return (
     <DataProvider>
-      <ReactRouterDOM.HashRouter>
+      <ReactRouterDOM.HashRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+      >
         <ScrollToTop />
         <AppContent />
       </ReactRouterDOM.HashRouter>
