@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
-import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
+import { MapPinIcon, PhoneIcon, EnvelopeIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 const Footer: React.FC = () => {
     const { data } = useData();
@@ -53,11 +53,6 @@ const Footer: React.FC = () => {
                                     </Link>
                                 </li>
                             ))}
-                             <li>
-                                <Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
-                                    Accès Panel
-                                </Link>
-                            </li>
                         </ul>
                     </div>
                     
@@ -97,7 +92,30 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="mt-16 pt-8 border-t border-pm-off-white/10 text-center text-sm">
+                {/* Bouton Accès Panel Admin - Bien Visible */}
+                <div className="mt-12 pt-8 border-t border-pm-gold/30">
+                    <div className="flex flex-col items-center justify-center space-y-4">
+                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider">Espace Professionnel</h3>
+                        <Link 
+                            to="/login" 
+                            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-pm-gold via-yellow-500 to-pm-gold bg-size-200 bg-pos-0 hover:bg-pos-100 text-black font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-pm-gold/50 transform"
+                        >
+                            <ShieldCheckIcon className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+                            <span>Accès Panel Admin</span>
+                            <svg 
+                                className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </Link>
+                        <p className="text-xs text-pm-off-white/60">Réservé aux administrateurs, mannequins et jury</p>
+                    </div>
+                </div>
+
+                <div className="mt-12 pt-8 border-t border-pm-off-white/10 text-center text-sm">
                     <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
                      <div className="mt-2 space-x-4">
                         <Link to="/terms-of-use" className="hover:text-pm-gold transition-colors">Conditions d'Utilisation</Link>

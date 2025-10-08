@@ -4,357 +4,470 @@ import AdminLayout from '../components/admin/AdminLayout';
 import AdminPageHeader from '../components/admin/AdminPageHeader';
 import AdminSection from '../components/admin/AdminSection';
 import AdminCard from '../components/admin/AdminCard';
-import AdminFilterBar from '../components/admin/AdminFilterBar';
-import { DocumentTextIcon, PlusIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  clientName: string;
-  clientEmail: string;
-  amount: number;
-  date: string;
-  dueDate: string;
-  status: 'Impayée' | 'Payée' | 'En retard' | 'Annulée';
-  items: Array<{
+    id: string;
+    invoiceNumber: string;
+    clientName: string;
+    clientEmail?: string;
+    clientPhone?: string;
+    date: string;
+    dueDate: string;
+    status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+    items: InvoiceItem[];
+    subtotal: number;
+    tax: number;
+    total: number;
+    notes?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface InvoiceItem {
     description: string;
     quantity: number;
     unitPrice: number;
     total: number;
-  }>;
-  notes?: string;
 }
 
 const AdminInvoices: React.FC = () => {
-  const { data, saveData } = useData();
-  const [filter, setFilter] = useState<'all' | 'Impayée' | 'Payée' | 'En retard' | 'Annulée'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<Invoice>>({
-    clientName: '',
-    clientEmail: '',
-    amount: 0,
-    date: new Date().toISOString().split('T')[0],
-    dueDate: '',
-    status: 'Impayée',
-    items: [],
-    notes: ''
-  });
+    const { data, saveData } = useData();
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+    const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  const invoices: Invoice[] = data?.invoices || [];
+    const invoices: Invoice[] = data?.invoices || [];
 
-  const filteredInvoices = invoices.filter(invoice => {
-    const matchesFilter = filter === 'all' || invoice.status === filter;
-    const matchesSearch = searchTerm === '' || 
-      invoice.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+    const filteredInvoices = filterStatus === 'all' 
+        ? invoices 
+        : invoices.filter(inv => inv.status === filterStatus);
 
-  const generateInvoiceNumber = () => {
-    const year = new Date().getFullYear();
-    const count = invoices.length + 1;
-    return `INV-${year}-${String(count).padStart(4, '0')}`;
-  };
+    const handleAdd = () => {
+        const newInvoice: Invoice = {
+            id: `invoice-${Date.now()}`,
+            invoiceNumber: `INV-${Date.now()}`,
+            clientName: '',
+            clientEmail: '',
+            clientPhone: '',
+            date: new Date().toISOString().split('T')[0],
+            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            status: 'draft',
+            items: [{
+                description: '',
+                quantity: 1,
+                unitPrice: 0,
+                total: 0
+            }],
+            subtotal: 0,
+            tax: 0,
+            total: 0,
+            notes: '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        setEditingInvoice(newInvoice);
+        setIsEditing(true);
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!data) return;
+    const handleEdit = (invoice: Invoice) => {
+        setEditingInvoice({ ...invoice });
+        setIsEditing(true);
+    };
 
-    if (editingId) {
-      const updated = invoices.map(inv => 
-        inv.id === editingId ? { ...formData, id: editingId } as Invoice : inv
-      );
-      saveData({ ...data, invoices: updated });
-    } else {
-      const newInvoice: Invoice = {
-        ...formData,
-        id: Date.now().toString(),
-        invoiceNumber: generateInvoiceNumber()
-      } as Invoice;
-      saveData({ ...data, invoices: [...invoices, newInvoice] });
-    }
-    resetForm();
-  };
+    const handleSave = async () => {
+        if (!editingInvoice || !data) return;
 
-  const handleStatusChange = (id: string, newStatus: Invoice['status']) => {
-    if (!data) return;
-    const updated = invoices.map(inv => 
-      inv.id === id ? { ...inv, status: newStatus } : inv
-    );
-    saveData({ ...data, invoices: updated });
-  };
+        const existingIndex = invoices.findIndex(inv => inv.id === editingInvoice.id);
+        let updatedInvoices;
 
-  const handleDelete = (id: string) => {
-    if (!data) return;
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette facture ?')) {
-      const updated = invoices.filter(inv => inv.id !== id);
-      saveData({ ...data, invoices: updated });
-    }
-  };
-
-  const handleEdit = (invoice: Invoice) => {
-    setFormData(invoice);
-    setEditingId(invoice.id);
-    setShowAddForm(true);
-  };
-
-  const resetForm = () => {
-    setFormData({
-      clientName: '',
-      clientEmail: '',
-      amount: 0,
-      date: new Date().toISOString().split('T')[0],
-      dueDate: '',
-      status: 'Impayée',
-      items: [],
-      notes: ''
-    });
-    setEditingId(null);
-    setShowAddForm(false);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'XAF'
-    }).format(amount);
-  };
-
-  const totalAmount = filteredInvoices.reduce((sum, inv) => sum + inv.amount, 0);
-  const unpaidAmount = filteredInvoices.filter(inv => inv.status === 'Impayée').reduce((sum, inv) => sum + inv.amount, 0);
-
-  return (
-    <AdminLayout>
-      <AdminPageHeader 
-        title="Factures" 
-        subtitle="Créer et gérer les factures clients"
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <AdminCard>
-          <p className="text-sm text-gray-600">Total Factures</p>
-          <p className="text-2xl font-bold text-pm-gold">{formatCurrency(totalAmount)}</p>
-        </AdminCard>
-        <AdminCard>
-          <p className="text-sm text-gray-600">Impayées</p>
-          <p className="text-2xl font-bold text-red-600">{formatCurrency(unpaidAmount)}</p>
-        </AdminCard>
-        <AdminCard>
-          <p className="text-sm text-gray-600">Nombre de Factures</p>
-          <p className="text-2xl font-bold text-blue-600">{filteredInvoices.length}</p>
-        </AdminCard>
-      </div>
-
-      <AdminFilterBar
-        filters={[
-          { label: 'Toutes', value: 'all' },
-          { label: 'Impayées', value: 'Impayée' },
-          { label: 'Payées', value: 'Payée' },
-          { label: 'En retard', value: 'En retard' },
-          { label: 'Annulées', value: 'Annulée' }
-        ]}
-        activeFilter={filter}
-        onFilterChange={(value) => setFilter(value as typeof filter)}
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-        searchPlaceholder="Rechercher une facture..."
-      />
-
-      <AdminSection 
-        title={`${filteredInvoices.length} facture(s)`}
-        action={
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-white rounded hover:bg-pm-gold/90"
-          >
-            <PlusIcon className="w-5 h-5" />
-            {showAddForm ? 'Annuler' : 'Nouvelle Facture'}
-          </button>
+        if (existingIndex >= 0) {
+            updatedInvoices = [...invoices];
+            updatedInvoices[existingIndex] = { ...editingInvoice, updatedAt: new Date().toISOString() };
+        } else {
+            updatedInvoices = [...invoices, editingInvoice];
         }
-      >
-        {showAddForm && (
-          <AdminCard className="mb-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Nom du Client *</label>
-                  <input
-                    type="text"
-                    value={formData.clientName}
-                    onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
-                    className="w-full px-3 py-2 border rounded"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Email du Client</label>
-                  <input
-                    type="email"
-                    value={formData.clientEmail}
-                    onChange={(e) => setFormData({ ...formData, clientEmail: e.target.value })}
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Montant (XAF) *</label>
-                  <input
-                    type="number"
-                    value={formData.amount}
-                    onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border rounded"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Date d'émission *</label>
-                  <input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-3 py-2 border rounded"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Date d'échéance *</label>
-                  <input
-                    type="date"
-                    value={formData.dueDate}
-                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                    className="w-full px-3 py-2 border rounded"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Statut</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as Invoice['status'] })}
-                    className="w-full px-3 py-2 border rounded"
-                  >
-                    <option value="Impayée">Impayée</option>
-                    <option value="Payée">Payée</option>
-                    <option value="En retard">En retard</option>
-                    <option value="Annulée">Annulée</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-3 py-2 border rounded"
-                  rows={3}
+
+        await saveData({ ...data, invoices: updatedInvoices });
+        setIsEditing(false);
+        setEditingInvoice(null);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!data || !confirm('Êtes-vous sûr de vouloir supprimer cette facture ?')) return;
+        
+        const updatedInvoices = invoices.filter(inv => inv.id !== id);
+        await saveData({ ...data, invoices: updatedInvoices });
+    };
+
+    const calculateTotals = (items: InvoiceItem[]) => {
+        const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+        const tax = subtotal * 0.18; // TVA 18%
+        const total = subtotal + tax;
+        return { subtotal, tax, total };
+    };
+
+    const handleItemChange = (index: number, field: keyof InvoiceItem, value: any) => {
+        if (!editingInvoice) return;
+
+        const updatedItems = [...editingInvoice.items];
+        updatedItems[index] = { ...updatedItems[index], [field]: value };
+
+        // Recalculer le total de la ligne
+        if (field === 'quantity' || field === 'unitPrice') {
+            updatedItems[index].total = updatedItems[index].quantity * updatedItems[index].unitPrice;
+        }
+
+        const { subtotal, tax, total } = calculateTotals(updatedItems);
+
+        setEditingInvoice({
+            ...editingInvoice,
+            items: updatedItems,
+            subtotal,
+            tax,
+            total
+        });
+    };
+
+    const addItem = () => {
+        if (!editingInvoice) return;
+        setEditingInvoice({
+            ...editingInvoice,
+            items: [...editingInvoice.items, {
+                description: '',
+                quantity: 1,
+                unitPrice: 0,
+                total: 0
+            }]
+        });
+    };
+
+    const removeItem = (index: number) => {
+        if (!editingInvoice || editingInvoice.items.length <= 1) return;
+        const updatedItems = editingInvoice.items.filter((_, i) => i !== index);
+        const { subtotal, tax, total } = calculateTotals(updatedItems);
+        setEditingInvoice({
+            ...editingInvoice,
+            items: updatedItems,
+            subtotal,
+            tax,
+            total
+        });
+    };
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('fr-FR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount) + ' FCFA';
+    };
+
+    const statusLabels: Record<Invoice['status'], string> = {
+        draft: 'Brouillon',
+        sent: 'Envoyée',
+        paid: 'Payée',
+        overdue: 'En retard',
+        cancelled: 'Annulée'
+    };
+
+    const statusColors: Record<Invoice['status'], string> = {
+        draft: 'bg-gray-600/20 text-gray-400',
+        sent: 'bg-blue-600/20 text-blue-400',
+        paid: 'bg-green-600/20 text-green-400',
+        overdue: 'bg-red-600/20 text-red-400',
+        cancelled: 'bg-gray-600/20 text-gray-400'
+    };
+
+    if (isEditing && editingInvoice) {
+        return (
+            <AdminLayout>
+                <AdminPageHeader 
+                    title={editingInvoice.id.startsWith('invoice-') && invoices.findIndex(i => i.id === editingInvoice.id) === -1 ? "Nouvelle Facture" : "Modifier Facture"}
+                    subtitle="Créer ou modifier une facture client"
                 />
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-pm-gold text-white rounded hover:bg-pm-gold/90"
-                >
-                  {editingId ? 'Mettre à jour' : 'Créer la Facture'}
-                </button>
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="px-6 py-2 border rounded hover:bg-gray-50"
-                >
-                  Annuler
-                </button>
-              </div>
-            </form>
-          </AdminCard>
-        )}
 
-        <div className="space-y-4">
-          {filteredInvoices.map((invoice) => (
-            <AdminCard key={invoice.id}>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <DocumentTextIcon className="w-6 h-6 text-pm-gold" />
-                    <div>
-                      <h3 className="font-semibold text-lg">{invoice.invoiceNumber}</h3>
-                      <p className="text-sm text-gray-600">{invoice.clientName}</p>
+                <AdminSection title="Informations Client">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Nom du Client *</label>
+                            <input
+                                type="text"
+                                value={editingInvoice.clientName}
+                                onChange={e => setEditingInvoice({ ...editingInvoice, clientName: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Numéro de Facture</label>
+                            <input
+                                type="text"
+                                value={editingInvoice.invoiceNumber}
+                                onChange={e => setEditingInvoice({ ...editingInvoice, invoiceNumber: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Email</label>
+                            <input
+                                type="email"
+                                value={editingInvoice.clientEmail || ''}
+                                onChange={e => setEditingInvoice({ ...editingInvoice, clientEmail: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Téléphone</label>
+                            <input
+                                type="tel"
+                                value={editingInvoice.clientPhone || ''}
+                                onChange={e => setEditingInvoice({ ...editingInvoice, clientPhone: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Date de Facture</label>
+                            <input
+                                type="date"
+                                value={editingInvoice.date}
+                                onChange={e => setEditingInvoice({ ...editingInvoice, date: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Date d'Échéance</label>
+                            <input
+                                type="date"
+                                value={editingInvoice.dueDate}
+                                onChange={e => setEditingInvoice({ ...editingInvoice, dueDate: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Statut</label>
+                            <select
+                                value={editingInvoice.status}
+                                onChange={e => setEditingInvoice({ ...editingInvoice, status: e.target.value as Invoice['status'] })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            >
+                                <option value="draft">Brouillon</option>
+                                <option value="sent">Envoyée</option>
+                                <option value="paid">Payée</option>
+                                <option value="overdue">En retard</option>
+                                <option value="cancelled">Annulée</option>
+                            </select>
+                        </div>
                     </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4 mt-4">
-                    <div>
-                      <p className="text-xs text-gray-500">Montant</p>
-                      <p className="font-semibold text-pm-gold">{formatCurrency(invoice.amount)}</p>
+                </AdminSection>
+
+                <AdminSection title="Articles / Services" className="mt-6">
+                    <div className="space-y-4">
+                        {editingInvoice.items.map((item, index) => (
+                            <div key={index} className="grid grid-cols-12 gap-4 items-start p-4 bg-pm-dark/30 rounded-lg">
+                                <div className="col-span-12 md:col-span-5">
+                                    <input
+                                        type="text"
+                                        placeholder="Description"
+                                        value={item.description}
+                                        onChange={e => handleItemChange(index, 'description', e.target.value)}
+                                        className="w-full bg-pm-dark border border-pm-gold/20 rounded px-3 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                    />
+                                </div>
+                                <div className="col-span-4 md:col-span-2">
+                                    <input
+                                        type="number"
+                                        placeholder="Qté"
+                                        min="1"
+                                        value={item.quantity}
+                                        onChange={e => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
+                                        className="w-full bg-pm-dark border border-pm-gold/20 rounded px-3 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                    />
+                                </div>
+                                <div className="col-span-4 md:col-span-2">
+                                    <input
+                                        type="number"
+                                        placeholder="Prix unitaire"
+                                        min="0"
+                                        value={item.unitPrice}
+                                        onChange={e => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+                                        className="w-full bg-pm-dark border border-pm-gold/20 rounded px-3 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                    />
+                                </div>
+                                <div className="col-span-3 md:col-span-2 flex items-center">
+                                    <span className="text-pm-gold font-bold">{formatCurrency(item.total)}</span>
+                                </div>
+                                <div className="col-span-1 flex items-center justify-end">
+                                    <button
+                                        onClick={() => removeItem(index)}
+                                        disabled={editingInvoice.items.length <= 1}
+                                        className="text-red-400 hover:text-red-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <TrashIcon className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                        <button
+                            onClick={addItem}
+                            className="flex items-center gap-2 px-4 py-2 bg-pm-gold/10 border border-pm-gold/30 text-pm-gold rounded-lg hover:bg-pm-gold/20 transition-colors"
+                        >
+                            <PlusIcon className="w-5 h-5" />
+                            Ajouter un article
+                        </button>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Date d'émission</p>
-                      <p className="font-medium">{new Date(invoice.date).toLocaleDateString('fr-FR')}</p>
+
+                    <div className="mt-6 flex justify-end">
+                        <div className="w-full md:w-1/2 space-y-2">
+                            <div className="flex justify-between text-pm-off-white">
+                                <span>Sous-total:</span>
+                                <span className="font-semibold">{formatCurrency(editingInvoice.subtotal)}</span>
+                            </div>
+                            <div className="flex justify-between text-pm-off-white">
+                                <span>TVA (18%):</span>
+                                <span className="font-semibold">{formatCurrency(editingInvoice.tax)}</span>
+                            </div>
+                            <div className="flex justify-between text-pm-gold text-xl font-bold border-t border-pm-gold/20 pt-2">
+                                <span>Total:</span>
+                                <span>{formatCurrency(editingInvoice.total)}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Date d'échéance</p>
-                      <p className="font-medium">{new Date(invoice.dueDate).toLocaleDateString('fr-FR')}</p>
-                    </div>
-                  </div>
+                </AdminSection>
 
-                  {invoice.notes && (
-                    <p className="text-sm text-gray-600 mt-2">{invoice.notes}</p>
-                  )}
-                </div>
+                <AdminSection title="Notes" className="mt-6">
+                    <textarea
+                        value={editingInvoice.notes || ''}
+                        onChange={e => setEditingInvoice({ ...editingInvoice, notes: e.target.value })}
+                        rows={4}
+                        placeholder="Notes supplémentaires (conditions de paiement, remerciements, etc.)"
+                        className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-3 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                    />
+                </AdminSection>
 
-                <div className="flex flex-col gap-2 ml-4">
-                  <span className={`px-3 py-1 rounded-full text-sm text-center ${
-                    invoice.status === 'Payée' ? 'bg-green-100 text-green-800' :
-                    invoice.status === 'En retard' ? 'bg-red-100 text-red-800' :
-                    invoice.status === 'Annulée' ? 'bg-gray-100 text-gray-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {invoice.status}
-                  </span>
-
-                  <select
-                    value={invoice.status}
-                    onChange={(e) => handleStatusChange(invoice.id, e.target.value as Invoice['status'])}
-                    className="px-2 py-1 border rounded text-sm"
-                  >
-                    <option value="Impayée">Impayée</option>
-                    <option value="Payée">Payée</option>
-                    <option value="En retard">En retard</option>
-                    <option value="Annulée">Annulée</option>
-                  </select>
-
-                  <div className="flex gap-1">
+                <div className="flex gap-4 mt-6">
                     <button
-                      onClick={() => handleEdit(invoice)}
-                      className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      title="Modifier"
+                        onClick={handleSave}
+                        disabled={!editingInvoice.clientName}
+                        className="px-6 py-3 bg-pm-gold text-black font-semibold rounded-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <EyeIcon className="w-4 h-4" />
+                        Enregistrer
                     </button>
                     <button
-                      onClick={() => handleDelete(invoice.id)}
-                      className="p-2 bg-red-600 text-white rounded hover:bg-red-700"
-                      title="Supprimer"
+                        onClick={() => {
+                            setIsEditing(false);
+                            setEditingInvoice(null);
+                        }}
+                        className="px-6 py-3 bg-black border border-pm-gold/20 text-pm-off-white rounded-lg hover:border-pm-gold/50 transition-colors"
                     >
-                      <TrashIcon className="w-4 h-4" />
+                        Annuler
                     </button>
-                  </div>
                 </div>
-              </div>
-            </AdminCard>
-          ))}
+            </AdminLayout>
+        );
+    }
 
-          {filteredInvoices.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              <DocumentTextIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p>Aucune facture trouvée</p>
+    return (
+        <AdminLayout>
+            <AdminPageHeader 
+                title="Factures Clients"
+                subtitle="Créer et gérer les factures pour les clients de l'agence"
+                action={
+                    <button
+                        onClick={handleAdd}
+                        className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-black font-semibold rounded-lg hover:bg-white transition-colors"
+                    >
+                        <PlusIcon className="w-5 h-5" />
+                        Nouvelle Facture
+                    </button>
+                }
+            />
+
+            <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
+                {['all', 'draft', 'sent', 'paid', 'overdue', 'cancelled'].map(status => (
+                    <button
+                        key={status}
+                        onClick={() => setFilterStatus(status)}
+                        className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+                            filterStatus === status
+                                ? 'bg-pm-gold text-black'
+                                : 'bg-black border border-pm-gold/20 text-pm-off-white hover:border-pm-gold/50'
+                        }`}
+                    >
+                        {status === 'all' ? 'Toutes' : statusLabels[status as Invoice['status']]}
+                    </button>
+                ))}
             </div>
-          )}
-        </div>
-      </AdminSection>
-    </AdminLayout>
-  );
+
+            <div className="grid grid-cols-1 gap-6">
+                {filteredInvoices.length === 0 ? (
+                    <AdminCard>
+                        <div className="text-center py-12">
+                            <DocumentTextIcon className="w-16 h-16 text-pm-gold/30 mx-auto mb-4" />
+                            <p className="text-pm-off-white/60">Aucune facture trouvée</p>
+                        </div>
+                    </AdminCard>
+                ) : (
+                    filteredInvoices.map(invoice => (
+                        <AdminCard key={invoice.id}>
+                            <div className="flex flex-col md:flex-row justify-between gap-4">
+                                <div className="flex-1">
+                                    <div className="flex items-start gap-4 mb-3">
+                                        <DocumentTextIcon className="w-8 h-8 text-pm-gold flex-shrink-0 mt-1" />
+                                        <div className="flex-1">
+                                            <h3 className="text-lg font-bold text-pm-off-white mb-1">
+                                                {invoice.invoiceNumber}
+                                            </h3>
+                                            <p className="text-pm-off-white/80">{invoice.clientName}</p>
+                                            {invoice.clientEmail && (
+                                                <p className="text-sm text-pm-off-white/60">{invoice.clientEmail}</p>
+                                            )}
+                                        </div>
+                                        <span className={`px-3 py-1 rounded text-xs font-bold ${statusColors[invoice.status]}`}>
+                                            {statusLabels[invoice.status]}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                        <div>
+                                            <span className="text-pm-off-white/60">Date:</span>
+                                            <p className="text-pm-off-white">{new Date(invoice.date).toLocaleDateString('fr-FR')}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-pm-off-white/60">Échéance:</span>
+                                            <p className="text-pm-off-white">{new Date(invoice.dueDate).toLocaleDateString('fr-FR')}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-pm-off-white/60">Articles:</span>
+                                            <p className="text-pm-off-white">{invoice.items.length}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-pm-off-white/60">Total:</span>
+                                            <p className="text-pm-gold font-bold">{formatCurrency(invoice.total)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex md:flex-col gap-2">
+                                    <button
+                                        onClick={() => handleEdit(invoice)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-pm-gold/10 border border-pm-gold/30 text-pm-gold rounded-lg hover:bg-pm-gold/20 transition-colors"
+                                    >
+                                        <PencilIcon className="w-4 h-4" />
+                                        Modifier
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(invoice.id)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-red-600/10 border border-red-600/30 text-red-400 rounded-lg hover:bg-red-600/20 transition-colors"
+                                    >
+                                        <TrashIcon className="w-4 h-4" />
+                                        Supprimer
+                                    </button>
+                                </div>
+                            </div>
+                        </AdminCard>
+                    ))
+                )}
+            </div>
+        </AdminLayout>
+    );
 };
 
 export default AdminInvoices;
-

@@ -81,6 +81,10 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    // Données comptables
+    accountingTransactions?: any[];
+    accountingCategories?: any[];
+    invoices?: any[];
 }
 
 export const useDataStore = () => {
@@ -98,6 +102,10 @@ export const useDataStore = () => {
         forumThreads: initialForumThreads,
         forumReplies: initialForumReplies,
         articleComments: initialArticleComments,
+        // Initialiser les données comptables vides
+        accountingTransactions: [],
+        accountingCategories: [],
+        invoices: [],
         recoveryRequests: initialRecoveryRequests,
         bookingRequests: initialBookingRequests,
         contactMessages: initialContactMessages,

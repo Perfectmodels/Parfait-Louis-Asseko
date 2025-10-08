@@ -39,13 +39,13 @@ export const siteImages: SiteImages = {
 };
 
 export const apiKeys: ApiKeys = {
-    resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
+    resendApiKey: '', // À configurer dans les paramètres admin
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
     firebaseDynamicLinks: {
-        webApiKey: "AIzaSyB_jjJEXU7yvJv49aiPCJqEZgiyfJEJzrg",
+        webApiKey: '', // À configurer dans Firebase Console
         domainUriPrefix: 'https://perfectmodels.page.link'
     },
-    imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
+    imgbbApiKey: '', // À configurer dans les paramètres admin
 };
 
 export const juryMembers: JuryMember[] = [

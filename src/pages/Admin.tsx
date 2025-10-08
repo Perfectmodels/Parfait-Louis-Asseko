@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
-type AdminTab = 'talents' | 'content' | 'accounting';
+type AdminTab = 'talents' | 'content' | 'operations' | 'finance';
 
 const Admin: React.FC = () => {
     const navigate = useNavigate();
@@ -31,7 +31,8 @@ const Admin: React.FC = () => {
     const tabs: { id: AdminTab; label: string; icon: React.ElementType }[] = [
         { id: 'talents', label: 'Talents', icon: UsersIcon },
         { id: 'content', label: 'Contenu', icon: NewspaperIcon },
-        { id: 'accounting', label: 'Comptabilité & Suivi', icon: BriefcaseIcon },
+        { id: 'operations', label: 'Opérations', icon: BriefcaseIcon },
+        { id: 'finance', label: 'Comptabilité', icon: CurrencyDollarIcon },
     ];
 
     return (
@@ -92,19 +93,23 @@ const Admin: React.FC = () => {
                             <DashboardCard title="Paramètres du Site" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, les images et les clés API." />
                          </TabContent>
                     )}
-                     {activeTab === 'accounting' && (
-                         <TabContent title="Comptabilité, Opérations et Suivi">
-                             <DashboardCard title="Vue Financière" icon={ChartBarIcon} link="/admin/finance" description="Tableau de bord financier complet avec statistiques et indicateurs." />
-                             <DashboardCard title="Paiements" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
-                             <DashboardCard title="Factures" icon={ClipboardDocumentCheckIcon} link="/admin/invoices" description="Créer et gérer les factures clients." />
-                             <DashboardCard title="Dépenses" icon={BriefcaseIcon} link="/admin/expenses" description="Enregistrer et catégoriser toutes les dépenses de l'agence." />
-                             <DashboardCard title="Rapports Financiers" icon={PresentationChartLineIcon} link="/admin/financial-reports" description="Générer des rapports financiers détaillés par période." />
+                     {activeTab === 'operations' && (
+                         <TabContent title="Opérations et Suivi Quotidien">
                              <DashboardCard title="Suivi des Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences des mannequins." />
                              <DashboardCard title="Demandes de Booking" icon={BriefcaseIcon} link="/admin/bookings" description="Consulter et gérer les demandes de booking des clients." notificationCount={newBookingRequests} />
-                            <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions pour l'événement Perfect Fashion Day." notificationCount={newFashionDayApps} />
-                             <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins confirmés aux quiz." />
+                             <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions pour l'événement Perfect Fashion Day." notificationCount={newFashionDayApps} />
+                             <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins aux quiz et leurs scores." />
                              <DashboardCard title="Messages de Contact" icon={EnvelopeIcon} link="/admin/messages" description="Lire et gérer les messages reçus via le formulaire de contact." notificationCount={newMessages} />
                              <DashboardCard title="Demandes de Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Traiter les demandes de coordonnées oubliées." notificationCount={newRecoveryRequests} />
+                         </TabContent>
+                    )}
+                     {activeTab === 'finance' && (
+                         <TabContent title="Gestion Financière et Comptabilité">
+                             <DashboardCard title="Vue Financière" icon={ChartBarIcon} link="/admin/finance" description="Tableau de bord financier complet avec statistiques et indicateurs clés." />
+                             <DashboardCard title="Paiements Mannequins" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
+                             <DashboardCard title="Factures Clients" icon={ClipboardDocumentCheckIcon} link="/admin/invoices" description="Créer et gérer les factures pour les clients de l'agence." />
+                             <DashboardCard title="Dépenses" icon={BriefcaseIcon} link="/admin/expenses" description="Enregistrer et catégoriser toutes les dépenses de l'agence." />
+                             <DashboardCard title="Rapports Financiers" icon={PresentationChartLineIcon} link="/admin/financial-reports" description="Générer des rapports financiers détaillés par période." />
                          </TabContent>
                     )}
                 </div>

@@ -7,7 +7,7 @@ import AdminCard from '../components/admin/AdminCard';
 import AdminFilterBar from '../components/admin/AdminFilterBar';
 
 const AdminBookings: React.FC = () => {
-  const { data, saveData } = useData();
+    const { data, saveData } = useData();
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -22,7 +22,7 @@ const AdminBookings: React.FC = () => {
   });
 
   const handleStatusChange = (id: string, newStatus: string) => {
-    if (!data) return;
+        if (!data) return;
     const updated = bookings.map(b => 
       b.id === id ? { ...b, status: newStatus } : b
     );
@@ -34,10 +34,10 @@ const AdminBookings: React.FC = () => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')) {
       const updated = bookings.filter(b => b.id !== id);
       saveData({ ...data, bookingRequests: updated });
-    }
-  };
+        }
+    };
 
-  return (
+    return (
     <AdminLayout>
       <AdminPageHeader 
         title="Réservations" 
@@ -59,16 +59,16 @@ const AdminBookings: React.FC = () => {
       />
 
       <AdminSection title={`${filteredBookings.length} réservation(s)`}>
-        <div className="space-y-4">
+                <div className="space-y-4">
           {filteredBookings.map((booking) => (
             <AdminCard key={booking.id}>
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
-                  <div>
+                                <div>
                     <h3 className="font-semibold text-lg">{booking.name}</h3>
                     <p className="text-sm text-gray-600">{booking.email}</p>
                     <p className="text-sm text-gray-600">{booking.phone}</p>
-                  </div>
+                                </div>
                   <span className={`px-3 py-1 rounded-full text-sm ${
                     booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                     booking.status === 'cancelled' ? 'bg-red-100 text-red-800' :
@@ -76,25 +76,25 @@ const AdminBookings: React.FC = () => {
                   }`}>
                     {booking.status === 'confirmed' ? 'Confirmée' :
                      booking.status === 'cancelled' ? 'Annulée' : 'Nouvelle'}
-                  </span>
-                </div>
-
+                        </span>
+                      </div>
+                      
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                        <div>
                     <p className="text-sm text-gray-500">Service</p>
                     <p className="font-medium">{booking.service}</p>
-                  </div>
-                  <div>
+                        </div>
+                        <div>
                     <p className="text-sm text-gray-500">Date souhaitée</p>
                     <p className="font-medium">{new Date(booking.preferredDate).toLocaleDateString('fr-FR')}</p>
-                  </div>
-                </div>
-
+                        </div>
+                      </div>
+                      
                 {booking.message && (
-                  <div>
+                      <div>
                     <p className="text-sm text-gray-500">Message</p>
                     <p className="text-gray-700">{booking.message}</p>
-                  </div>
+                      </div>
                 )}
 
                 <div className="flex gap-2 pt-2">
@@ -107,16 +107,16 @@ const AdminBookings: React.FC = () => {
                     <option value="confirmed">Confirmée</option>
                     <option value="cancelled">Annulée</option>
                   </select>
-                  <button
-                    onClick={() => handleDelete(booking.id)}
+                      <button
+                        onClick={() => handleDelete(booking.id)}
                     className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                  >
-                    Supprimer
-                  </button>
-                </div>
-              </div>
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
             </AdminCard>
-          ))}
+              ))}
 
           {filteredBookings.length === 0 && (
             <div className="text-center py-8 text-gray-500">

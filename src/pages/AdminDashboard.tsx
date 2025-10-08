@@ -1,200 +1,324 @@
 import React, { useMemo } from 'react';
-import AdminCard from '../components/admin/AdminCard';
-import { StatCard } from '../components/admin/AdminStats';
-import AdminPageWrapper from '../components/AdminPageWrapper';
-import { 
-    UsersIcon, NewspaperIcon, CalendarDaysIcon, ClipboardDocumentListIcon,
-    ExclamationTriangleIcon,
-    ChatBubbleLeftRightIcon, CurrencyDollarIcon, CalendarIcon,
-    ChartBarIcon, KeyIcon
-} from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
+import { Link } from 'react-router-dom';
+import AdminLayout from '../components/admin/AdminLayout';
+import AdminPageHeader from '../components/admin/AdminPageHeader';
+import AdminSection from '../components/admin/AdminSection';
+import { 
+    UsersIcon, 
+    ClipboardDocumentListIcon,
+    NewspaperIcon,
+    CalendarDaysIcon,
+    CurrencyDollarIcon,
+    SparklesIcon,
+    EnvelopeIcon,
+    ExclamationTriangleIcon,
+    ChartBarIcon,
+    ArrowTrendingUpIcon,
+    ArrowTrendingDownIcon,
+    AcademicCapIcon
+} from '@heroicons/react/24/outline';
 
 const AdminDashboard: React.FC = () => {
     const { data } = useData();
 
-    // ---- Comptage notifications ----
-    const newCastingApps = useMemo(() => (data as any)?.castingApplications?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
-    const newFashionDayApps = useMemo(() => (data as any)?.fashionDayApplications?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
-    const newRecoveryRequests = useMemo(() => (data as any)?.recoveryRequests?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
-    const newBookingRequests = useMemo(() => (data as any)?.bookingRequests?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
-    const newMessages = useMemo(() => (data as any)?.contactMessages?.filter((a: any) => a.status === 'Nouveau').length || 0, [data]);
+    const stats = useMemo(() => {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // ---- Statistiques ----
-    const totalModels = (data as any)?.models?.length || 0;
-    const totalArticles = (data as any)?.articles?.length || 0;
-    const totalCastingApps = (data as any)?.castingApplications?.length || 0;
-    const totalRevenue = (data as any)?.monthlyPayments?.reduce((sum: any, payment: any) => sum + payment.amount, 0) || 0;
+        // Talents
+        const totalModels = data?.models?.length || 0;
+        const totalBeginners = data?.beginnerStudents?.length || 0;
+        const newCastingApps = data?.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
+
+        // Finances
+        const transactions = data?.accountingTransactions || [];
+        const monthlyTransactions = transactions.filter(t => new Date(t.date) >= startOfMonth);
+        const monthlyRevenue = monthlyTransactions
+            .filter(t => t.category === 'revenue')
+            .reduce((sum, t) => sum + t.amount, 0);
+        const monthlyExpense = monthlyTransactions
+            .filter(t => t.category === 'expense')
+            .reduce((sum, t) => sum + t.amount, 0);
+        const monthlyBalance = monthlyRevenue - monthlyExpense;
+
+        // Opérations
+        const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
+        const newBookings = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
+        const newRecoveries = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
+        const newFashionDayApps = data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
+
+        // Contenu
+        const totalArticles = data?.articles?.length || 0;
+        const totalNews = data?.newsItems?.length || 0;
+        const pendingComments = data?.articleComments?.filter(c => c.status === 'pending').length || 0;
+
+        // Classroom
+        const totalModules = data?.courseData?.length || 0;
+        const totalChapters = data?.courseData?.reduce((sum, module) => sum + (module.chapters?.length || 0), 0) || 0;
+
+        return {
+            totalModels,
+            totalBeginners,
+            newCastingApps,
+            monthlyRevenue,
+            monthlyExpense,
+            monthlyBalance,
+            newMessages,
+            newBookings,
+            newRecoveries,
+            newFashionDayApps,
+            totalArticles,
+            totalNews,
+            pendingComments,
+            totalModules,
+            totalChapters,
+            totalNotifications: newCastingApps + newMessages + newBookings + newRecoveries + newFashionDayApps + pendingComments
+        };
+    }, [data]);
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('fr-FR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount) + ' FCFA';
+    };
 
     return (
-        <AdminPageWrapper>
-            <section className="animate-fade-in">
-                <h2 className="text-2xl font-playfair text-pm-gold mb-6">Vue d'ensemble</h2>
-            
-            {/* Statistiques principales */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                    title="Mannequins Actifs"
-                    value={totalModels}
-                    icon={UsersIcon}
-                    color="gold"
-                    change={{
-                        value: 12,
-                        type: 'increase',
-                        label: 'ce mois'
-                    }}
-                />
-                <StatCard
-                    title="Articles Publiés"
-                    value={totalArticles}
-                    icon={NewspaperIcon}
-                    color="blue"
-                    change={{
-                        value: 5,
-                        type: 'increase',
-                        label: 'cette semaine'
-                    }}
-                />
-                <StatCard
-                    title="Candidatures Casting"
-                    value={totalCastingApps}
-                    icon={ClipboardDocumentListIcon}
-                    color="green"
-                    change={{
-                        value: 8,
-                        type: 'increase',
-                        label: 'cette semaine'
-                    }}
-                />
-                <StatCard
-                    title="Revenus Totaux"
-                    value={`${totalRevenue.toLocaleString()} FCFA`}
-                    icon={CurrencyDollarIcon}
-                    color="purple"
-                    change={{
-                        value: 15,
-                        type: 'increase',
-                        label: 'ce mois'
-                    }}
-                />
-            </div>
+        <AdminLayout>
+            <AdminPageHeader 
+                title="Tableau de Bord"
+                subtitle="Vue d'ensemble des statistiques et métriques de l'agence Perfect Models Management"
+            />
 
-            {/* Actions requises */}
-            {(newCastingApps > 0 || newFashionDayApps > 0 || newRecoveryRequests > 0 || newBookingRequests > 0) && (
-                <div className="mb-8">
-                    <h2 className="text-xl font-playfair text-pm-gold mb-4 flex items-center gap-2">
-                        <ExclamationTriangleIcon className="w-6 h-6" />
-                        Actions Requises
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        {newCastingApps > 0 && (
-                            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
-                                <div className="flex items-center gap-3">
-                                    <ClipboardDocumentListIcon className="w-6 h-6 text-red-400" />
-                                    <div>
-                                        <p className="text-red-400 font-semibold">{newCastingApps}</p>
-                                        <p className="text-sm text-red-300">Nouvelles candidatures</p>
+            {/* Alertes / Notifications */}
+            {stats.totalNotifications > 0 && (
+                <div className="mb-8 p-6 bg-yellow-600/10 border border-yellow-600/30 rounded-lg">
+                    <div className="flex items-center gap-3 mb-3">
+                        <ExclamationTriangleIcon className="w-6 h-6 text-yellow-400" />
+                        <h3 className="text-lg font-bold text-yellow-400">
+                            {stats.totalNotifications} Notification{stats.totalNotifications > 1 ? 's' : ''} en attente
+                        </h3>
                                     </div>
-                                </div>
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        {stats.newCastingApps > 0 && (
+                            <Link to="/admin/casting-applications" className="flex items-center gap-2 text-pm-off-white hover:text-pm-gold transition-colors">
+                                <ClipboardDocumentListIcon className="w-4 h-4" />
+                                {stats.newCastingApps} Candidature{stats.newCastingApps > 1 ? 's' : ''} Casting
+                            </Link>
                         )}
-                        {newFashionDayApps > 0 && (
-                            <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4">
-                                <div className="flex items-center gap-3">
-                                    <CalendarDaysIcon className="w-6 h-6 text-orange-400" />
-                                    <div>
-                                        <p className="text-orange-400 font-semibold">{newFashionDayApps}</p>
-                                        <p className="text-sm text-orange-300">Candidatures PFD</p>
-                                    </div>
-                                </div>
-                            </div>
+                        {stats.newMessages > 0 && (
+                            <Link to="/admin/messages" className="flex items-center gap-2 text-pm-off-white hover:text-pm-gold transition-colors">
+                                <EnvelopeIcon className="w-4 h-4" />
+                                {stats.newMessages} Message{stats.newMessages > 1 ? 's' : ''}
+                            </Link>
                         )}
-                        {newRecoveryRequests > 0 && (
-                            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
-                                <div className="flex items-center gap-3">
-                                    <KeyIcon className="w-6 h-6 text-yellow-400" />
-                                    <div>
-                                        <p className="text-yellow-400 font-semibold">{newRecoveryRequests}</p>
-                                        <p className="text-sm text-yellow-300">Demandes récupération</p>
-                                    </div>
-                                </div>
-                            </div>
+                        {stats.newBookings > 0 && (
+                            <Link to="/admin/bookings" className="flex items-center gap-2 text-pm-off-white hover:text-pm-gold transition-colors">
+                                <CalendarDaysIcon className="w-4 h-4" />
+                                {stats.newBookings} Booking{stats.newBookings > 1 ? 's' : ''}
+                            </Link>
                         )}
-                        {newBookingRequests > 0 && (
-                            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-                                <div className="flex items-center gap-3">
-                                    <CalendarIcon className="w-6 h-6 text-blue-400" />
-                                    <div>
-                                        <p className="text-blue-400 font-semibold">{newBookingRequests}</p>
-                                        <p className="text-sm text-blue-300">Demandes booking</p>
-                                    </div>
-                                </div>
-                            </div>
+                        {stats.newRecoveries > 0 && (
+                            <Link to="/admin/recovery-requests" className="flex items-center gap-2 text-pm-off-white hover:text-pm-gold transition-colors">
+                                <ExclamationTriangleIcon className="w-4 h-4" />
+                                {stats.newRecoveries} Récupération{stats.newRecoveries > 1 ? 's' : ''}
+                            </Link>
                         )}
-                        {newMessages > 0 && (
-                            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
-                                <div className="flex items-center gap-3">
-                                    <ChatBubbleLeftRightIcon className="w-6 h-6 text-green-400" />
-                                    <div>
-                                        <p className="text-green-400 font-semibold">{newMessages}</p>
-                                        <p className="text-sm text-green-300">Messages contact</p>
-                                    </div>
-                                </div>
-                            </div>
+                        {stats.newFashionDayApps > 0 && (
+                            <Link to="/admin/fashion-day-applications" className="flex items-center gap-2 text-pm-off-white hover:text-pm-gold transition-colors">
+                                <SparklesIcon className="w-4 h-4" />
+                                {stats.newFashionDayApps} Candidature{stats.newFashionDayApps > 1 ? 's' : ''} PFD
+                            </Link>
+                        )}
+                        {stats.pendingComments > 0 && (
+                            <Link to="/admin/comments" className="flex items-center gap-2 text-pm-off-white hover:text-pm-gold transition-colors">
+                                <NewspaperIcon className="w-4 h-4" />
+                                {stats.pendingComments} Commentaire{stats.pendingComments > 1 ? 's' : ''}
+                            </Link>
                         )}
                     </div>
                 </div>
             )}
 
-            {/* Actions rapides */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <AdminCard 
-                    title="Gestion des Talents" 
+            {/* Statistiques Finances */}
+            <AdminSection title="Situation Financière (Ce Mois)" className="mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <StatCard
+                        icon={ArrowTrendingUpIcon}
+                        title="Revenus"
+                        value={formatCurrency(stats.monthlyRevenue)}
+                        color="green"
+                        link="/admin/finance"
+                    />
+                    <StatCard
+                        icon={ArrowTrendingDownIcon}
+                        title="Dépenses"
+                        value={formatCurrency(stats.monthlyExpense)}
+                        color="red"
+                        link="/admin/expenses"
+                    />
+                    <StatCard
+                        icon={CurrencyDollarIcon}
+                        title="Balance"
+                        value={formatCurrency(stats.monthlyBalance)}
+                        color={stats.monthlyBalance >= 0 ? 'green' : 'red'}
+                        link="/admin/financial-reports"
+                    />
+                    <StatCard
+                        icon={ChartBarIcon}
+                        title="Taux de Rentabilité"
+                        value={stats.monthlyRevenue > 0 ? `${((stats.monthlyBalance / stats.monthlyRevenue) * 100).toFixed(1)}%` : '0%'}
+                        color="blue"
+                        link="/admin/finance"
+                    />
+                </div>
+            </AdminSection>
+
+            {/* Statistiques Talents */}
+            <AdminSection title="Gestion des Talents" className="mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <StatCard
+                        icon={UsersIcon}
+                        title="Mannequins Pro"
+                        value={stats.totalModels.toString()}
+                        color="gold"
+                        link="/admin/models"
+                    />
+                    <StatCard
                     icon={UsersIcon} 
-                    href="/admin/models" 
-                    description="Gérer les mannequins professionnels et les étudiants."
+                        title="Étudiants Débutants"
+                        value={stats.totalBeginners.toString()}
+                        color="purple"
+                        link="/admin/beginner-students-access"
+                    />
+                    <StatCard
+                        icon={ClipboardDocumentListIcon}
+                        title="Candidatures Casting"
+                        value={stats.newCastingApps.toString()}
+                        color="blue"
+                        notification={stats.newCastingApps > 0}
+                        link="/admin/casting-applications"
+                    />
+                    <StatCard
+                        icon={SparklesIcon}
+                        title="Total Mannequins"
+                        value={(stats.totalModels + stats.totalBeginners).toString()}
                     color="gold"
                 />
-                <AdminCard 
-                    title="Gestion du Contenu" 
+                </div>
+            </AdminSection>
+
+            {/* Statistiques Contenu */}
+            <AdminSection title="Gestion du Contenu" className="mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <StatCard
                     icon={NewspaperIcon} 
-                    href="/admin/content" 
-                    description="Créer et gérer le contenu du site et de la formation."
+                        title="Articles Magazine"
+                        value={stats.totalArticles.toString()}
                     color="blue"
-                />
-                <AdminCard 
-                    title="Communication" 
-                    icon={ChatBubbleLeftRightIcon} 
-                    href="/admin/communication" 
-                    description="Gérer les messages et campagnes de communication."
+                        link="/admin/magazine"
+                    />
+                    <StatCard
+                        icon={NewspaperIcon}
+                        title="Actualités"
+                        value={stats.totalNews.toString()}
                     color="green"
-                />
-                <AdminCard 
-                    title="Gestion Financière" 
-                    icon={CurrencyDollarIcon} 
-                    href="/admin/finance" 
-                    description="Suivre les paiements et rapports financiers."
+                        link="/admin/news"
+                    />
+                    <StatCard
+                        icon={AcademicCapIcon}
+                        title="Modules Classroom"
+                        value={`${stats.totalModules} (${stats.totalChapters} chapitres)`}
                     color="purple"
-                />
-                <AdminCard 
-                    title="Analytics" 
-                    icon={ChartBarIcon} 
-                    href="/admin/analytics" 
-                    description="Surveiller les performances du système."
-                    color="indigo"
-                />
-                <AdminCard 
-                    title="Candidatures Casting" 
-                    icon={ClipboardDocumentListIcon} 
-                    href="/admin/casting-applications" 
-                    description="Traiter les candidatures pour les castings."
-                    notificationCount={newCastingApps}
-                    color="orange"
+                        link="/admin/classroom"
+                    />
+                    <StatCard
+                        icon={NewspaperIcon}
+                        title="Commentaires Pending"
+                        value={stats.pendingComments.toString()}
+                        color="yellow"
+                        notification={stats.pendingComments > 0}
+                        link="/admin/comments"
+                    />
+                </div>
+            </AdminSection>
+
+            {/* Statistiques Opérations */}
+            <AdminSection title="Opérations Quotidiennes">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <StatCard
+                        icon={EnvelopeIcon}
+                        title="Messages"
+                        value={stats.newMessages.toString()}
+                        color="blue"
+                        notification={stats.newMessages > 0}
+                        link="/admin/messages"
+                    />
+                    <StatCard
+                        icon={CalendarDaysIcon}
+                        title="Bookings"
+                        value={stats.newBookings.toString()}
+                        color="green"
+                        notification={stats.newBookings > 0}
+                        link="/admin/bookings"
+                    />
+                    <StatCard
+                        icon={SparklesIcon}
+                        title="Candidatures PFD"
+                        value={stats.newFashionDayApps.toString()}
+                        color="purple"
+                        notification={stats.newFashionDayApps > 0}
+                        link="/admin/fashion-day-applications"
+                    />
+                    <StatCard
+                        icon={ExclamationTriangleIcon}
+                        title="Récupérations"
+                        value={stats.newRecoveries.toString()}
+                        color="red"
+                        notification={stats.newRecoveries > 0}
+                        link="/admin/recovery-requests"
                 />
             </div>
-            </section>
-        </AdminPageWrapper>
+            </AdminSection>
+        </AdminLayout>
     );
+};
+
+interface StatCardProps {
+    icon: React.ElementType;
+    title: string;
+    value: string;
+    color: 'green' | 'red' | 'blue' | 'gold' | 'purple' | 'yellow';
+    notification?: boolean;
+    link?: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ icon: Icon, title, value, color, notification, link }) => {
+    const colorClasses = {
+        green: 'text-green-400 bg-green-600/10 border-green-600/30',
+        red: 'text-red-400 bg-red-600/10 border-red-600/30',
+        blue: 'text-blue-400 bg-blue-600/10 border-blue-600/30',
+        gold: 'text-pm-gold bg-pm-gold/10 border-pm-gold/30',
+        purple: 'text-purple-400 bg-purple-600/10 border-purple-600/30',
+        yellow: 'text-yellow-400 bg-yellow-600/10 border-yellow-600/30'
+    };
+
+    const content = (
+        <div className={`relative bg-black border ${colorClasses[color].split(' ')[2]} rounded-lg p-6 ${link ? 'hover:scale-105 transition-transform cursor-pointer' : ''}`}>
+            {notification && (
+                <span className="absolute top-3 right-3 w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
+            )}
+            <div className="flex items-center justify-between mb-4">
+                <Icon className={`w-8 h-8 ${colorClasses[color].split(' ')[0]}`} />
+            </div>
+            <p className="text-sm text-pm-off-white/60 mb-1">{title}</p>
+            <p className={`text-2xl font-bold ${colorClasses[color].split(' ')[0]}`}>{value}</p>
+        </div>
+    );
+
+    return link ? <Link to={link}>{content}</Link> : content;
 };
 
 export default AdminDashboard;
