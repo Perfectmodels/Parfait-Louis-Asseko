@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useData } from '../contexts/DataContext';
 import AdminLayout from '../components/admin/AdminLayout';
 import AdminPageHeader from '../components/admin/AdminPageHeader';
@@ -15,73 +15,266 @@ import {
     TrashIcon
 } from '@heroicons/react/24/outline';
 
-interface MonthlyPayment {
-    id: string;
-    modelId: string;
-    modelName: string;
-    month: string; // Format: YYYY-MM
-    amount: number;
-    method: string; // "Espèces", "Mobile Money", "Virement bancaire"
-    paymentDate: string; // Format: YYYY-MM-DD
-    status: string; // "Payé", "Partiel", "Impayé"
-    notes?: string;
-}
+import { MonthlyPayment } from '../../types';
 
 const AdminPayments: React.FC = () => {
     const { data, saveData } = useData();
     const [isAdding, setIsAdding] = useState(false);
     const [editingPayment, setEditingPayment] = useState<MonthlyPayment | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState<'all' | 'ajour' | 'paye' | 'partiel' | 'impaye'>('all');
+    const [filterStatus, setFilterStatus] = useState<'all' | 'ajour' | 'paye' | 'en_attente' | 'en_retard'>('all');
+    const [sortOrder, setSortOrder] = useState<'name' | 'status' | 'last_payment'>('name');
     
     // Form state
     const [selectedModel, setSelectedModel] = useState<string>('');
+    const [amountChoice, setAmountChoice] = useState<'1500' | '15000' | '16500' | 'custom'>('1500');
     const [paymentAmount, setPaymentAmount] = useState<string>('1500');
-    const [paymentMethod, setPaymentMethod] = useState<string>('Espèces');
-    const [paymentStatus, setPaymentStatus] = useState<string>('Payé');
+    const [paymentMethod, setPaymentMethod] = useState<'Espèces' | 'Virement' | 'Autre'>('Espèces');
+    const [paymentStatus, setPaymentStatus] = useState<'Payé' | 'En attente' | 'En retard'>('Payé');
     const [paymentDate, setPaymentDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [paymentMonth, setPaymentMonth] = useState<string>(new Date().toISOString().slice(0, 7));
     const [paymentNotes, setPaymentNotes] = useState('');
 
     const models = data?.models || [];
     const monthlyPayments: MonthlyPayment[] = (data as any)?.monthlyPayments || [];
+    const importInputRef = useRef<HTMLInputElement>(null);
 
-    // Vérifier si un mannequin est "À jour" pour le mois en cours
-    const isModelUpToDate = (modelId: string) => {
-        const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-        const currentPayment = monthlyPayments.find(p => 
-            p.modelId === modelId && 
-            p.month === currentMonth &&
-            p.status === 'Payé'
-        );
-        return !!currentPayment;
+    // Helpers for import/reconciliation
+    const normalize = (s: string) => (s || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+    const toMonth = (dateStr?: string) => {
+        if (!dateStr) return new Date().toISOString().slice(0, 7);
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? String(dateStr).slice(0, 7) : d.toISOString().slice(0, 7);
+    };
+    const toYmd = (dateStr?: string) => {
+        if (!dateStr) return new Date().toISOString().slice(0, 10);
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? String(dateStr).slice(0, 10) : d.toISOString().slice(0, 10);
+    };
+    const mapMethod = (m: string): 'Espèces' | 'Virement' | 'Autre' => {
+        const mm = (m || '').toLowerCase();
+        if (mm.includes('cash') || mm.includes('esp')) return 'Espèces';
+        if (mm.includes('bank') || mm.includes('virement')) return 'Virement';
+        return 'Autre';
+    };
+    const nameToModel = useMemo(() => {
+        const map = new Map<string, { id: string; name: string }>();
+        models.forEach(m => map.set(normalize(m.name), { id: m.id, name: m.name }));
+        return map;
+    }, [models]);
+
+    const handleImportFile = async (file: File) => {
+        if (!data) return;
+        try {
+            const text = await file.text();
+            const json = JSON.parse(text);
+            let imported: MonthlyPayment[] = [];
+
+            // Case 1: already an array of MonthlyPayment-like objects
+            if (Array.isArray(json)) {
+                imported = json.map((p: any, idx: number) => ({
+                    id: p.id || `payment-${Date.now()}-${idx}`,
+                    modelId: p.modelId,
+                    modelName: p.modelName,
+                    month: p.month || toMonth(p.paymentDate),
+                    amount: Number(p.amount || 0),
+                    method: mapMethod(p.method || p.paymentMethod || 'Autre'),
+                    paymentDate: toYmd(p.paymentDate),
+                    status: (p.status as any) || 'Payé',
+                    notes: p.notes || ''
+                } as MonthlyPayment));
+            } else {
+                // Case 2: full export with accountingTransactions
+                const txs: any[] = json.accountingTransactions || json.data?.accountingTransactions || [];
+                imported = txs
+                    .filter(t => {
+                        const cat = String(t.category || '').toLowerCase();
+                        return cat.includes('revenue') || cat.includes('cotisation') || cat.includes('inscription');
+                    })
+                    .map((t, idx) => {
+                        const keyName = t.relatedModelName || t.modelName || '';
+                        const match = nameToModel.get(normalize(keyName));
+                        if (!match) return null;
+                        return {
+                            id: `payment-${Date.now()}-${idx}`,
+                            modelId: match.id,
+                            modelName: match.name,
+                            month: toMonth(t.date || t.createdAt),
+                            amount: Number(t.amount || 0),
+                            method: mapMethod(t.paymentMethod),
+                            paymentDate: toYmd(t.date || t.createdAt),
+                            status: 'Payé' as const,
+                            notes: t.description || t.notes || ''
+                        } as MonthlyPayment;
+                    })
+                    .filter(Boolean) as MonthlyPayment[];
+            }
+
+            // Intra-import dedup (same model, same amount, same day OR same month)
+            const seenDay = new Set<string>();
+            const seenMonth = new Set<string>();
+            const uniqueImported: MonthlyPayment[] = [];
+            for (const p of imported) {
+                const dayKey = `${p.modelId}|${toYmd(p.paymentDate)}|${Number(p.amount || 0)}`;
+                const monthKey = `${p.modelId}|${p.month}|${Number(p.amount || 0)}`;
+                if (seenDay.has(dayKey) || seenMonth.has(monthKey)) continue;
+                seenDay.add(dayKey);
+                seenMonth.add(monthKey);
+                uniqueImported.push(p);
+            }
+
+            // Against existing payments
+            const existingDayKeys = new Set(
+                monthlyPayments.map(p => `${p.modelId}|${toYmd(p.paymentDate)}|${Number(p.amount || 0)}`)
+            );
+            const existingMonthKeys = new Set(
+                monthlyPayments.map(p => `${p.modelId}|${p.month}|${Number(p.amount || 0)}`)
+            );
+
+            const additions = uniqueImported.filter(p => {
+                const dayKey = `${p.modelId}|${toYmd(p.paymentDate)}|${Number(p.amount || 0)}`;
+                const monthKey = `${p.modelId}|${p.month}|${Number(p.amount || 0)}`;
+                return p.modelId && !existingDayKeys.has(dayKey) && !existingMonthKeys.has(monthKey);
+            });
+            if (additions.length === 0) {
+                alert('Aucun nouveau paiement à ajouter (tout est déjà présent).');
+                return;
+            }
+            await saveData({ ...data, monthlyPayments: [...monthlyPayments, ...additions] });
+            alert(`${additions.length} paiements ajoutés avec succès.`);
+        } catch (e) {
+            console.error(e);
+            alert("Échec de l'import JSON");
+        }
+    };
+
+    const handleMergeDuplicates = async () => {
+        if (!data) return;
+        // Build groups with duplicates by normalized name
+        const groups = modelGroups.filter(g => g.ids.length > 1);
+        if (groups.length === 0) {
+            alert('Aucun doublon de nom trouvé.');
+            return;
+        }
+
+        // Choose primaryId per group: modelId with most payments, fallback first
+        const paymentCountByModel = new Map<string, number>();
+        monthlyPayments.forEach(p => {
+            paymentCountByModel.set(p.modelId, (paymentCountByModel.get(p.modelId) || 0) + 1);
+        });
+
+        const idToPrimary = new Map<string, string>();
+        for (const g of groups) {
+            let primary = g.ids[0];
+            let best = paymentCountByModel.get(primary) || 0;
+            for (const id of g.ids) {
+                const c = paymentCountByModel.get(id) || 0;
+                if (c > best) { best = c; primary = id; }
+            }
+            for (const id of g.ids) idToPrimary.set(id, primary);
+        }
+
+        // Reassign payments to primary and deduplicate
+        let reassigned = 0;
+        const reassignedPayments = monthlyPayments.map(p => {
+            const primary = idToPrimary.get(p.modelId);
+            if (primary && primary !== p.modelId) {
+                reassigned += 1;
+                return {
+                    ...p,
+                    modelId: primary,
+                    modelName: models.find(m => m.id === primary)?.name || p.modelName
+                } as MonthlyPayment;
+            }
+            return p;
+        });
+
+        // Dedup: same model + same amount on same day OR same month
+        const seenDay = new Set<string>();
+        const seenMonth = new Set<string>();
+        const dedupedPayments: MonthlyPayment[] = [];
+        let removed = 0;
+        for (const p of reassignedPayments.sort((a,b) => new Date(a.paymentDate).getTime() - new Date(b.paymentDate).getTime())) {
+            const dayKey = `${p.modelId}|${toYmd(p.paymentDate)}|${Number(p.amount || 0)}`;
+            const monthKey = `${p.modelId}|${p.month}|${Number(p.amount || 0)}`;
+            if (seenDay.has(dayKey) || seenMonth.has(monthKey)) { removed += 1; continue; }
+            seenDay.add(dayKey);
+            seenMonth.add(monthKey);
+            dedupedPayments.push(p);
+        }
+
+        // Update accountingTransactions references as well
+        const updatedTransactions = (data.accountingTransactions || []).map((t: any) => {
+            const id = t.relatedModelId;
+            const primary = id ? idToPrimary.get(id) : undefined;
+            if (primary && primary !== id) {
+                return {
+                    ...t,
+                    relatedModelId: primary,
+                    relatedModelName: models.find(m => m.id === primary)?.name || t.relatedModelName
+                };
+            }
+            return t;
+        });
+
+        await saveData({
+            ...data,
+            monthlyPayments: dedupedPayments,
+            accountingTransactions: updatedTransactions
+        });
+
+        alert(`Fusion terminée: ${groups.length} groupe(s), ${reassigned} paiement(s) réassigné(s), ${removed} doublon(s) supprimé(s).`);
+    };
+
+    // Group models by normalized name to avoid duplicates in UI
+    const modelGroups = useMemo(() => {
+        const groups = new Map<string, { name: string; ids: string[]; primaryId: string }>();
+        for (const m of models) {
+            const key = normalize(m.name);
+            const g = groups.get(key);
+            if (!g) {
+                groups.set(key, { name: m.name, ids: [m.id], primaryId: m.id });
+            } else {
+                g.ids.push(m.id);
+            }
+        }
+        return Array.from(groups.values()).sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
+    }, [models]);
+
+    // Vérifier si un groupe de mannequins (mêmes noms) est à jour pour le mois
+    const isGroupUpToDate = (ids: string[]) => {
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        return monthlyPayments.some(p => ids.includes(p.modelId) && p.month === currentMonth && p.status === 'Payé');
     };
 
     // Statistiques par mannequin
     const modelPaymentStats = useMemo(() => {
-        return models.map(model => {
-            const payments = monthlyPayments.filter(p => p.modelId === model.id);
-            const totalPaid = payments
-                .filter(p => p.status === 'Payé')
-                .reduce((sum, p) => sum + (p.amount || 0), 0);
-            const partialPayments = payments.filter(p => p.status === 'Partiel').length;
-            const unpaidPayments = payments.filter(p => p.status === 'Impayé').length;
-            const isUpToDate = isModelUpToDate(model.id);
-            
+        return modelGroups.map(group => {
+            const payments = monthlyPayments
+                .filter(p => group.ids.includes(p.modelId))
+                .sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime());
+            const totalPaid = payments.filter(p => p.status === 'Payé').reduce((sum, p) => sum + (p.amount || 0), 0);
+            const partialPayments = payments.filter(p => p.status === 'En attente').length;
+            const unpaidPayments = payments.filter(p => p.status === 'En retard').length;
+            const isUpToDate = isGroupUpToDate(group.ids);
             return {
-                modelId: model.id,
-                modelName: model.name,
+                modelId: group.primaryId,
+                modelName: group.name,
                 totalPaid,
                 partialPayments,
                 unpaidPayments,
                 isUpToDate,
                 paymentsCount: payments.length,
-                lastPayment: payments.length > 0 
-                    ? payments.sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime())[0]
-                    : null
-            };
+                lastPayment: payments[0] || null,
+                groupIds: group.ids
+            } as any;
         });
-    }, [models, monthlyPayments]);
+    }, [modelGroups, monthlyPayments]);
 
     // Filtrage
     const filteredStats = modelPaymentStats.filter(stat => {
@@ -90,11 +283,32 @@ const AdminPayments: React.FC = () => {
             filterStatus === 'all' ? true :
             filterStatus === 'ajour' ? stat.isUpToDate :
             filterStatus === 'paye' ? stat.unpaidPayments === 0 && stat.partialPayments === 0 :
-            filterStatus === 'partiel' ? stat.partialPayments > 0 :
-            filterStatus === 'impaye' ? stat.unpaidPayments > 0 : true;
+            filterStatus === 'en_attente' ? stat.partialPayments > 0 :
+            filterStatus === 'en_retard' ? stat.unpaidPayments > 0 : true;
         
         return matchesSearch && matchesStatus;
     });
+
+    const sortedStats = useMemo(() => {
+        const arr = [...filteredStats];
+        if (sortOrder === 'name') {
+            arr.sort((a, b) => a.modelName.localeCompare(b.modelName, 'fr', { sensitivity: 'base' }));
+        } else if (sortOrder === 'status') {
+            // À jour d'abord, puis en retard; puis alpha
+            arr.sort((a, b) => {
+                if (a.isUpToDate !== b.isUpToDate) return a.isUpToDate ? -1 : 1;
+                return a.modelName.localeCompare(b.modelName, 'fr', { sensitivity: 'base' });
+            });
+        } else if (sortOrder === 'last_payment') {
+            arr.sort((a, b) => {
+                const ta = a.lastPayment ? new Date(a.lastPayment.paymentDate).getTime() : 0;
+                const tb = b.lastPayment ? new Date(b.lastPayment.paymentDate).getTime() : 0;
+                if (tb !== ta) return tb - ta; // plus récent d'abord
+                return a.modelName.localeCompare(b.modelName, 'fr', { sensitivity: 'base' });
+            });
+        }
+        return arr;
+    }, [filteredStats, sortOrder]);
 
     const handleAddPayment = async () => {
         if (!selectedModel || !data || !paymentAmount) return;
@@ -102,7 +316,8 @@ const AdminPayments: React.FC = () => {
         const model = models.find(m => m.id === selectedModel);
         if (!model) return;
 
-        const amount = parseFloat(paymentAmount);
+        const amount = amountChoice === 'custom' ? parseFloat(paymentAmount) : parseFloat(amountChoice);
+        if (!Number.isFinite(amount) || amount <= 0) return;
         
         const newPayment: MonthlyPayment = {
             id: `payment-${Date.now()}`,
@@ -136,8 +351,8 @@ const AdminPayments: React.FC = () => {
             amount: amount,
             currency: 'FCFA',
             paymentMethod: paymentMethod === 'Espèces' ? 'cash' : 
-                          paymentMethod === 'Mobile Money' ? 'mobile_money' : 
-                          'bank_transfer',
+                          paymentMethod === 'Virement' ? 'bank_transfer' : 
+                          'other',
             reference: `${subcategory.toUpperCase().replace(/\s/g, '-')}-${model.name.replace(/\s/g, ' ')}-2025`,
             notes: paymentNotes || `Paiement ${paymentStatus.toLowerCase()} pour ${model.name} (Migration)`,
             createdBy: 'admin',
@@ -195,7 +410,13 @@ const AdminPayments: React.FC = () => {
     const startEdit = (payment: MonthlyPayment) => {
         setEditingPayment(payment);
         setSelectedModel(payment.modelId);
-        setPaymentAmount(payment.amount.toString());
+        if (payment.amount === 1500 || payment.amount === 15000 || payment.amount === 16500) {
+            setAmountChoice(String(payment.amount) as '1500' | '15000' | '16500');
+            setPaymentAmount(String(payment.amount));
+        } else {
+            setAmountChoice('custom');
+            setPaymentAmount(String(payment.amount));
+        }
         setPaymentMethod(payment.method);
         setPaymentDate(payment.paymentDate);
         setPaymentMonth(payment.month);
@@ -206,6 +427,7 @@ const AdminPayments: React.FC = () => {
 
     const resetForm = () => {
         setSelectedModel('');
+        setAmountChoice('1500');
         setPaymentAmount('1500');
         setPaymentMethod('Espèces');
         setPaymentStatus('Payé');
@@ -243,11 +465,16 @@ const AdminPayments: React.FC = () => {
                                 required
                             >
                                 <option value="">Sélectionner un mannequin</option>
-                                {models.map(model => (
-                                    <option key={model.id} value={model.id}>
-                                        {model.name} {isModelUpToDate(model.id) ? '✓ À jour' : ''}
+                                {/* Deduplicated by name */}
+                                {modelGroups.map(g => (
+                                    <option key={g.primaryId} value={g.primaryId}>
+                                        {g.name} {isGroupUpToDate(g.ids) ? '✓ À jour' : ''}
                                     </option>
                                 ))}
+                                {/* Ensure edit mode shows current modelId if not primary */}
+                                {editingPayment && !modelGroups.some(g => g.primaryId === editingPayment.modelId) && (
+                                    <option value={editingPayment.modelId}>{editingPayment.modelName}</option>
+                                )}
                             </select>
                         </div>
 
@@ -257,8 +484,16 @@ const AdminPayments: React.FC = () => {
                                     Montant (FCFA) *
                                 </label>
                                 <select
-                                    value={paymentAmount}
-                                    onChange={e => setPaymentAmount(e.target.value)}
+                                    value={amountChoice}
+                                    onChange={e => {
+                                        const v = e.target.value as '1500' | '15000' | '16500' | 'custom';
+                                        setAmountChoice(v);
+                                        if (v === 'custom') {
+                                            setPaymentAmount('');
+                                        } else {
+                                            setPaymentAmount(v);
+                                        }
+                                    }}
                                     className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-3 text-pm-off-white focus:border-pm-gold focus:outline-none"
                                 >
                                     <option value="1500">1 500 FCFA (Cotisation)</option>
@@ -268,7 +503,7 @@ const AdminPayments: React.FC = () => {
                                 </select>
                             </div>
 
-                            {paymentAmount === 'custom' && (
+                            {amountChoice === 'custom' && (
                                 <div>
                                     <label className="block text-sm font-semibold text-pm-off-white mb-2">
                                         Montant personnalisé *
@@ -276,6 +511,7 @@ const AdminPayments: React.FC = () => {
                                     <input
                                         type="number"
                                         min="0"
+                                        value={paymentAmount}
                                         onChange={e => setPaymentAmount(e.target.value)}
                                         placeholder="Entrer le montant"
                                         className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-3 text-pm-off-white focus:border-pm-gold focus:outline-none"
@@ -289,12 +525,12 @@ const AdminPayments: React.FC = () => {
                                 </label>
                                 <select
                                     value={paymentMethod}
-                                    onChange={e => setPaymentMethod(e.target.value)}
+                                    onChange={e => setPaymentMethod(e.target.value as 'Espèces' | 'Virement' | 'Autre')}
                                     className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-3 text-pm-off-white focus:border-pm-gold focus:outline-none"
                                 >
                                     <option value="Espèces">Espèces</option>
-                                    <option value="Mobile Money">Mobile Money</option>
-                                    <option value="Virement bancaire">Virement bancaire</option>
+                                    <option value="Virement">Virement</option>
+                                    <option value="Autre">Autre</option>
                                 </select>
                             </div>
                         </div>
@@ -330,12 +566,12 @@ const AdminPayments: React.FC = () => {
                                 </label>
                                 <select
                                     value={paymentStatus}
-                                    onChange={e => setPaymentStatus(e.target.value)}
+                                    onChange={e => setPaymentStatus(e.target.value as 'Payé' | 'En attente' | 'En retard')}
                                     className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-3 text-pm-off-white focus:border-pm-gold focus:outline-none"
                                 >
                                     <option value="Payé">Payé</option>
-                                    <option value="Partiel">Partiel</option>
-                                    <option value="Impayé">Impayé</option>
+                                    <option value="En attente">En attente</option>
+                                    <option value="En retard">En retard</option>
                                 </select>
                             </div>
                         </div>
@@ -354,7 +590,7 @@ const AdminPayments: React.FC = () => {
                         </div>
 
                         {/* Résumé */}
-                        {selectedModel && paymentAmount !== 'custom' && (
+                        {selectedModel && ((amountChoice !== 'custom') || (amountChoice === 'custom' && paymentAmount)) && (
                             <div className="bg-pm-gold/10 border border-pm-gold/30 rounded-lg p-4">
                                 <h4 className="text-pm-gold font-bold mb-3">Résumé du Paiement</h4>
                                 <div className="space-y-2 text-sm">
@@ -367,7 +603,7 @@ const AdminPayments: React.FC = () => {
                                     <div className="flex justify-between">
                                         <span className="text-pm-off-white/70">Montant:</span>
                                         <span className="text-pm-gold font-bold">
-                                            {formatCurrency(parseFloat(paymentAmount))}
+                                            {formatCurrency(amountChoice === 'custom' ? parseFloat(paymentAmount || '0') : parseFloat(amountChoice))}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -378,7 +614,7 @@ const AdminPayments: React.FC = () => {
                                         <span className="text-pm-off-white/70">Statut:</span>
                                         <span className={`font-semibold ${
                                             paymentStatus === 'Payé' ? 'text-green-400' :
-                                            paymentStatus === 'Partiel' ? 'text-yellow-400' :
+                                            paymentStatus === 'En attente' ? 'text-yellow-400' :
                                             'text-red-400'
                                         }`}>
                                             {paymentStatus}
@@ -393,7 +629,7 @@ const AdminPayments: React.FC = () => {
                 <div className="flex gap-4 mt-6">
                     <button
                         onClick={editingPayment ? handleEditPayment : handleAddPayment}
-                        disabled={!selectedModel || !paymentAmount || paymentAmount === 'custom'}
+                        disabled={!selectedModel || (amountChoice === 'custom' ? !paymentAmount : !amountChoice)}
                         className="px-6 py-3 bg-pm-gold text-black font-semibold rounded-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {editingPayment ? 'Modifier' : 'Enregistrer'}
@@ -418,16 +654,44 @@ const AdminPayments: React.FC = () => {
             <AdminPageHeader 
                 title="Paiements Mannequins"
                 subtitle="Gestion des cotisations mensuelles (1 500 FCFA) et inscriptions (15 000 FCFA)"
-                action={
-                    <button
-                        onClick={() => setIsAdding(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-black font-semibold rounded-lg hover:bg-white transition-colors"
-                    >
-                        <PlusIcon className="w-5 h-5" />
-                        Enregistrer un Paiement
-                    </button>
-                }
             />
+            <div className="mb-6 flex items-center gap-3">
+                <button
+                    onClick={() => setIsAdding(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-black font-semibold rounded-lg hover:bg-white transition-colors"
+                >
+                    <PlusIcon className="w-5 h-5" />
+                    Enregistrer un Paiement
+                </button>
+                <input
+                    id="import-mp"
+                    type="file"
+                    accept="application/json"
+                    className="hidden"
+                    ref={importInputRef}
+                    onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleImportFile(f);
+                        e.currentTarget.value = '';
+                    }}
+                />
+                <button
+                    type="button"
+                    onClick={() => importInputRef.current?.click()}
+                    className="px-4 py-2 bg-black border border-pm-gold/30 text-pm-off-white rounded-lg hover:border-pm-gold/60"
+                    title="Importer des paiements depuis un fichier JSON exporté"
+                >
+                    Importer JSON
+                </button>
+                <button
+                    type="button"
+                    onClick={handleMergeDuplicates}
+                    className="px-4 py-2 bg-black border border-pm-gold/30 text-pm-off-white rounded-lg hover:border-pm-gold/60"
+                    title="Fusionner les doublons (même nom) et réassigner les paiements"
+                >
+                    Fusionner doublons
+                </button>
+            </div>
 
             {/* Statistiques globales */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -490,7 +754,7 @@ const AdminPayments: React.FC = () => {
                     />
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-2">
-                    {(['all', 'ajour', 'paye', 'partiel', 'impaye'] as const).map(status => (
+                    {(['all', 'ajour', 'paye', 'en_attente', 'en_retard'] as const).map(status => (
                         <button
                             key={status}
                             onClick={() => setFilterStatus(status)}
@@ -503,19 +767,31 @@ const AdminPayments: React.FC = () => {
                             {status === 'all' ? 'Tous' : 
                              status === 'ajour' ? 'À jour' :
                              status === 'paye' ? 'Tout payé' :
-                             status === 'partiel' ? 'Paiement partiel' :
-                             'Impayé'}
+                             status === 'en_attente' ? 'En attente' :
+                             'En retard'}
                         </button>
                     ))}
+                </div>
+                <div>
+                    <label className="block text-xs text-pm-off-white/60 mb-1">Tri</label>
+                    <select
+                        value={sortOrder}
+                        onChange={e => setSortOrder(e.target.value as any)}
+                        className="bg-pm-dark border border-pm-gold/20 rounded px-3 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                    >
+                        <option value="name">Nom (A → Z)</option>
+                        <option value="status">Statut (À jour → En retard)</option>
+                        <option value="last_payment">Dernier paiement (récent → ancien)</option>
+                    </select>
                 </div>
             </div>
 
             {/* Liste des mannequins avec statut */}
-            <AdminSection title={`Mannequins (${filteredStats.length})`}>
-                <div className="space-y-4">
-                    {filteredStats.map(stat => {
+            <AdminSection title={`Mannequins (${sortedStats.length})`}>
+                        <div className="space-y-4">
+                    {sortedStats.map(stat => {
                         const modelPayments = monthlyPayments
-                            .filter(p => p.modelId === stat.modelId)
+                            .filter(p => (stat as any).groupIds ? (stat as any).groupIds.includes(p.modelId) : p.modelId === stat.modelId)
                             .sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime());
 
                         return (
@@ -533,9 +809,16 @@ const AdminPayments: React.FC = () => {
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-lg font-bold text-pm-off-white mb-1">
+                                            <button
+                                                onClick={() => {
+                                                    setIsAdding(true);
+                                                    setSelectedModel(stat.modelId);
+                                                }}
+                                                className="text-left text-lg font-bold text-pm-off-white mb-1 hover:text-pm-gold"
+                                                title="Créer un paiement pour ce mannequin"
+                                            >
                                                 {stat.modelName}
-                                            </h3>
+                                            </button>
                                             <div className="flex flex-wrap gap-2 mb-2">
                                                 <span className={`px-2 py-1 rounded text-xs font-bold ${
                                                     stat.isUpToDate 
@@ -579,7 +862,7 @@ const AdminPayments: React.FC = () => {
                                                                 </span>
                                                                 <span className={`px-2 py-0.5 rounded text-xs font-bold ${
                                                                     payment.status === 'Payé' ? 'bg-green-600/20 text-green-400' :
-                                                                    payment.status === 'Partiel' ? 'bg-yellow-600/20 text-yellow-400' :
+                                                                    payment.status === 'En attente' ? 'bg-yellow-600/20 text-yellow-400' :
                                                                     'bg-red-600/20 text-red-400'
                                                                 }`}>
                                                                     {payment.status}

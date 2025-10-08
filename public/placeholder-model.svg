@@ -1,0 +1,51 @@
+<svg width="400" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond dégradé élégant -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#D4AF37;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8860B;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fond -->
+  <rect width="400" height="600" fill="url(#bgGradient)"/>
+  
+  <!-- Bordure dorée -->
+  <rect x="10" y="10" width="380" height="580" fill="none" stroke="url(#goldGradient)" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Icône mannequin stylisée -->
+  <g transform="translate(200, 250)">
+    <!-- Tête -->
+    <circle cx="0" cy="-40" r="35" fill="none" stroke="url(#goldGradient)" stroke-width="3" opacity="0.6"/>
+    
+    <!-- Corps -->
+    <line x1="0" y1="-5" x2="0" y2="80" stroke="url(#goldGradient)" stroke-width="3" opacity="0.6"/>
+    
+    <!-- Bras -->
+    <line x1="0" y1="20" x2="-40" y2="50" stroke="url(#goldGradient)" stroke-width="3" opacity="0.6"/>
+    <line x1="0" y1="20" x2="40" y2="50" stroke="url(#goldGradient)" stroke-width="3" opacity="0.6"/>
+    
+    <!-- Jambes -->
+    <line x1="0" y1="80" x2="-25" y2="130" stroke="url(#goldGradient)" stroke-width="3" opacity="0.6"/>
+    <line x1="0" y1="80" x2="25" y2="130" stroke="url(#goldGradient)" stroke-width="3" opacity="0.6"/>
+  </g>
+  
+  <!-- Texte -->
+  <text x="200" y="450" font-family="Georgia, serif" font-size="24" fill="url(#goldGradient)" text-anchor="middle" opacity="0.8">
+    Perfect Models
+  </text>
+  <text x="200" y="480" font-family="Georgia, serif" font-size="16" fill="#D4AF37" text-anchor="middle" opacity="0.6">
+    Management
+  </text>
+  
+  <!-- Sous-titre -->
+  <text x="200" y="520" font-family="Arial, sans-serif" font-size="12" fill="#888888" text-anchor="middle">
+    Photo à venir
+  </text>
+</svg>
+

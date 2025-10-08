@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { db } from '../firebase';
+import { db } from '../../firebaseConfig';
 import { ref, set } from 'firebase/database';
+import { storage } from '../lib/firebase';
+import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { 
     PlusIcon, 
     PencilIcon, 
@@ -9,11 +11,32 @@ import {
     PhotoIcon,
     EyeIcon
 } from '@heroicons/react/24/outline';
-import { GalleryAlbum, GalleryPhoto } from '../types';
 import { Link } from 'react-router-dom';
 
+// Local types (avoid missing central type definitions)
+interface GalleryPhoto {
+    id: string;
+    url: string;
+    caption?: string;
+    photographer?: string;
+    date?: string;
+}
+
+interface GalleryAlbum {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    coverImage: string;
+    photos: GalleryPhoto[];
+    date: string; // YYYY-MM-DD
+    location: string;
+    isPublic: boolean;
+    createdAt: string; // ISO
+}
+
 const AdminGallery: React.FC = () => {
-    const { data, reloadData } = useData();
+    const { data, updateData } = useData();
     const albums = data?.galleryAlbums || [];
     
     const [showModal, setShowModal] = useState(false);
@@ -34,6 +57,134 @@ const AdminGallery: React.FC = () => {
         caption: '',
         photographer: ''
     });
+
+    const [coverUploading, setCoverUploading] = useState(false);
+    const [coverProgress, setCoverProgress] = useState<number | null>(null);
+    const [photoUploading, setPhotoUploading] = useState(false);
+    const [photoProgress, setPhotoProgress] = useState<number | null>(null);
+    const [bulkUploading, setBulkUploading] = useState(false);
+    const [bulkProgress, setBulkProgress] = useState<number | null>(null);
+
+    const handleUploadCover = async (file: File) => {
+        try {
+            setCoverUploading(true);
+            setCoverProgress(0);
+            // Preview immédiat
+            const localPreview = URL.createObjectURL(file);
+            setFormData(prev => ({ ...prev, coverImage: localPreview }));
+            const path = `gallery/covers/${Date.now()}-${file.name}`;
+            const sref = storageRef(storage, path);
+            const task = uploadBytesResumable(sref, file);
+            await new Promise<string>((resolve, reject) => {
+                task.on('state_changed', (snap) => {
+                    const p = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+                    setCoverProgress(p);
+                }, reject, async () => {
+                    try {
+                        const url = await getDownloadURL(task.snapshot.ref);
+                        setFormData(prev => ({ ...prev, coverImage: url }));
+                        resolve(url);
+                    } catch (e) { reject(e as any); }
+                });
+            });
+        } catch (e) {
+            alert("Échec de l'upload de la couverture");
+            console.error(e);
+        } finally {
+            setCoverUploading(false);
+            setCoverProgress(null);
+        }
+    };
+
+    const handleUploadPhoto = async (file: File) => {
+        try {
+            setPhotoUploading(true);
+            setPhotoProgress(0);
+            // Preview immédiat
+            const localPreview = URL.createObjectURL(file);
+            setNewPhoto(prev => ({ ...prev, url: localPreview }));
+            const path = `gallery/photos/${Date.now()}-${file.name}`;
+            const sref = storageRef(storage, path);
+            const task = uploadBytesResumable(sref, file);
+            await new Promise<string>((resolve, reject) => {
+                task.on('state_changed', (snap) => {
+                    const p = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+                    setPhotoProgress(p);
+                }, reject, async () => {
+                    try {
+                        const url = await getDownloadURL(task.snapshot.ref);
+                        setNewPhoto(prev => ({ ...prev, url }));
+                        resolve(url);
+                    } catch (e) { reject(e as any); }
+                });
+            });
+        } catch (e) {
+            alert("Échec de l'upload de la photo");
+            console.error(e);
+        } finally {
+            setPhotoUploading(false);
+            setPhotoProgress(null);
+        }
+    };
+
+    const handleUploadPhotos = async (files: FileList) => {
+        if (!files || files.length === 0) return;
+        const fileArray = Array.from(files).slice(0, 10);
+        setBulkUploading(true);
+        setBulkProgress(0);
+
+        let completed = 0;
+        const total = fileArray.length;
+
+        await Promise.all(
+            fileArray.map(async (file) => {
+                try {
+                    const localPreview = URL.createObjectURL(file);
+                    // Optionnel: affichage immédiat dans la grille pendant l'upload
+                    setFormData(prev => ({
+                        ...prev,
+                        photos: [
+                            ...(prev.photos || []),
+                            { id: `temp-${Date.now()}-${Math.random()}`, url: localPreview } as GalleryPhoto
+                        ]
+                    }));
+
+                    const path = `gallery/photos/${Date.now()}-${file.name}`;
+                    const sref = storageRef(storage, path);
+                    const task = uploadBytesResumable(sref, file);
+
+                    await new Promise<void>((resolve, reject) => {
+                        task.on('state_changed', undefined, reject, async () => {
+                            try {
+                                const url = await getDownloadURL(task.snapshot.ref);
+                                const photo: GalleryPhoto = {
+                                    id: Date.now().toString() + '-' + Math.random().toString(36).slice(2),
+                                    url,
+                                    caption: '',
+                                    photographer: '',
+                                    date: new Date().toISOString()
+                                };
+                                setFormData(prev => ({
+                                    ...prev,
+                                    photos: [
+                                        ...(prev.photos || []).filter(p => !String(p.id).startsWith('temp-')),
+                                        photo
+                                    ]
+                                }));
+                                resolve();
+                            } catch (e) { reject(e as any); }
+                        });
+                    });
+                } finally {
+                    completed += 1;
+                    setBulkProgress(Math.round((completed / total) * 100));
+                }
+            })
+        );
+
+        setBulkUploading(false);
+        setBulkProgress(null);
+    };
 
     const handleOpenModal = (album?: GalleryAlbum) => {
         if (album) {
@@ -99,7 +250,7 @@ const AdminGallery: React.FC = () => {
                 : [...albums, albumData];
 
             await set(ref(db, 'galleryAlbums'), updatedAlbums);
-            await reloadData();
+            updateData({ galleryAlbums: updatedAlbums as any });
             setShowModal(false);
             alert('Album enregistré avec succès !');
         } catch (error) {
@@ -113,7 +264,7 @@ const AdminGallery: React.FC = () => {
             try {
                 const updatedAlbums = albums.filter((a: GalleryAlbum) => a.id !== albumId);
                 await set(ref(db, 'galleryAlbums'), updatedAlbums);
-                await reloadData();
+                updateData({ galleryAlbums: updatedAlbums as any });
                 alert('Album supprimé avec succès !');
             } catch (error) {
                 console.error('Erreur lors de la suppression:', error);
@@ -154,7 +305,7 @@ const AdminGallery: React.FC = () => {
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute top-2 right-2 px-3 py-1 bg-black/80 rounded-full text-xs text-pm-gold">
-                                    {album.photos.length} photos
+                                    {(album.photos?.length || 0)} photos
                                 </div>
                                 {!album.isPublic && (
                                     <div className="absolute top-2 left-2 px-3 py-1 bg-red-500/80 rounded-full text-xs text-white">
@@ -296,14 +447,34 @@ const AdminGallery: React.FC = () => {
                             </div>
 
                             <div>
-                                <label className="admin-label">Image de couverture (URL)</label>
-                                <input
-                                    type="url"
-                                    value={formData.coverImage}
-                                    onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                                    className="admin-input"
-                                    placeholder="https://..."
-                                />
+                                <label className="admin-label">Image de couverture</label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <input
+                                        type="url"
+                                        value={formData.coverImage}
+                                        onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                                        className="admin-input"
+                                        placeholder="Coller une URL (https://...)"
+                                    />
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            id="cover-file"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const f = e.target.files?.[0];
+                                                if (f) handleUploadCover(f);
+                                            }}
+                                            className="hidden"
+                                        />
+                                        <label htmlFor="cover-file" className="px-4 py-2 bg-pm-gold text-black font-semibold rounded cursor-pointer hover:bg-pm-gold/90">
+                                            Importer un fichier
+                                        </label>
+                                        {coverUploading && (
+                                            <span className="text-sm text-pm-off-white/70">Upload...</span>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-3">
@@ -325,13 +496,42 @@ const AdminGallery: React.FC = () => {
                                 
                                 {/* Add Photo Form */}
                                 <div className="bg-black/50 p-4 rounded-lg mb-4 space-y-3">
-                                    <input
-                                        type="url"
-                                        value={newPhoto.url}
-                                        onChange={(e) => setNewPhoto({ ...newPhoto, url: e.target.value })}
-                                        className="admin-input"
-                                        placeholder="URL de la photo"
-                                    />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <input
+                                            type="url"
+                                            value={newPhoto.url}
+                                            onChange={(e) => setNewPhoto({ ...newPhoto, url: e.target.value })}
+                                            className="admin-input"
+                                            placeholder="URL de la photo (https://...)"
+                                        />
+                                        <div className="flex items-center gap-3">
+                                            <input
+                                                id="photo-file"
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                onChange={(e) => {
+                                                    const files = e.target.files;
+                                                    if (files && files.length > 1) {
+                                                        handleUploadPhotos(files);
+                                                    } else {
+                                                        const f = files?.[0];
+                                                        if (f) handleUploadPhoto(f);
+                                                    }
+                                                }}
+                                                className="hidden"
+                                            />
+                                            <label htmlFor="photo-file" className="px-4 py-2 bg-pm-gold text-black font-semibold rounded cursor-pointer hover:bg-pm-gold/90">
+                                                Importer un fichier
+                                            </label>
+                                            {bulkUploading && (
+                                                <span className="text-sm text-pm-off-white/70">Upload lot: {bulkProgress ?? 0}%</span>
+                                            )}
+                                            {!bulkUploading && photoUploading && (
+                                                <span className="text-sm text-pm-off-white/70">Upload: {photoProgress ?? 0}%</span>
+                                            )}
+                                        </div>
+                                    </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <input
                                             type="text"

@@ -16,8 +16,10 @@ const AdminFinance: React.FC = () => {
     const { data } = useData();
     const [selectedPeriod, setSelectedPeriod] = useState<'day' | 'week' | 'month' | 'year'>('month');
 
-    // Calculs financiers basés sur accountingTransactions
+    // Calculs financiers basés sur accountingTransactions et monthlyPayments
     const transactions = data?.accountingTransactions || [];
+    const monthlyPayments = (data as any)?.monthlyPayments || [];
+    const invoices = data?.invoices || [];
     
     const stats = useMemo(() => {
         const now = new Date();
@@ -44,14 +46,24 @@ const AdminFinance: React.FC = () => {
 
         const periodTransactions = transactions.filter(filterByPeriod);
 
-        // Revenus
-        const revenues = periodTransactions
-            .filter(t => t.category === 'revenue')
+        // Revenus depuis transactions
+        const revenuesFromTransactions = periodTransactions
+            .filter(t => t.type === 'recette' || t.category === 'revenue')
             .reduce((sum, t) => sum + (t.amount || 0), 0);
+        
+        // Revenus depuis paiements mannequins
+        const revenuesFromPayments = monthlyPayments
+            .filter((p: any) => {
+                const pDate = new Date(p.paymentDate);
+                return filterByPeriod({ date: p.paymentDate }) && p.status === 'Payé';
+            })
+            .reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+
+        const revenues = revenuesFromTransactions + revenuesFromPayments;
 
         // Dépenses
         const expenses = periodTransactions
-            .filter(t => t.category === 'expense')
+            .filter(t => t.type === 'dépense' || t.category === 'expense')
             .reduce((sum, t) => sum + (t.amount || 0), 0);
 
         // Balance

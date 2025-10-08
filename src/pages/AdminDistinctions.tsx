@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { db } from '../firebase';
+import { db } from '../../firebaseConfig';
 import { ref, set } from 'firebase/database';
 import { 
     TrophyIcon, 
@@ -10,18 +10,558 @@ import {
     StarIcon,
     SparklesIcon
 } from '@heroicons/react/24/outline';
-import { Model, ModelDistinction } from '../types';
-import ImageInput from '../components/ImageInput';
+import { Model, ModelDistinction } from '../../types';
+// ImageInput non utilisé ici
 
 const AdminDistinctions: React.FC = () => {
-    const { data, reloadData } = useData();
+    const { data, updateData } = useData();
     const models = data?.models || [];
     const [selectedModelId, setSelectedModelId] = useState<string>('');
     const [selectedModel, setSelectedModel] = useState<Model | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [editingDistinction, setEditingDistinction] = useState<ModelDistinction | null>(null);
     const [formData, setFormData] = useState<Partial<ModelDistinction>>({
-        title: '',
+        [{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2353",
+            "severity": 8,
+            "message": "Object literal may only specify known properties, and 'title' does not exist in type 'Partial<ModelDistinction> | (() => Partial<ModelDistinction>)'.",
+            "source": "ts",
+            "startLineNumber": 24,
+            "startColumn": 9,
+            "endLineNumber": 24,
+            "endColumn": 14,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2353",
+            "severity": 8,
+            "message": "Object literal may only specify known properties, and 'title' does not exist in type 'SetStateAction<Partial<ModelDistinction>>'.",
+            "source": "ts",
+            "startLineNumber": 56,
+            "startColumn": 17,
+            "endLineNumber": 56,
+            "endColumn": 22,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'Partial<ModelDistinction>'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 67,
+            "startColumn": 41,
+            "endLineNumber": 67,
+            "endColumn": 46,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'year' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 67,
+            "startColumn": 60,
+            "endLineNumber": 67,
+            "endColumn": 64,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2561",
+            "severity": 8,
+            "message": "Object literal may only specify known properties, but 'title' does not exist in type 'ModelDistinction'. Did you mean to write 'titles'?",
+            "source": "ts",
+            "startLineNumber": 74,
+            "startColumn": 17,
+            "endLineNumber": 74,
+            "endColumn": 22,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'Partial<ModelDistinction>'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 74,
+            "startColumn": 33,
+            "endLineNumber": 74,
+            "endColumn": 38,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'year' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 75,
+            "startColumn": 32,
+            "endLineNumber": 75,
+            "endColumn": 36,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'category' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 76,
+            "startColumn": 36,
+            "endLineNumber": 76,
+            "endColumn": 44,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'description' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 77,
+            "startColumn": 39,
+            "endLineNumber": 77,
+            "endColumn": 50,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'icon' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 78,
+            "startColumn": 32,
+            "endLineNumber": 78,
+            "endColumn": 36,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'ModelDistinction'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 84,
+            "startColumn": 23,
+            "endLineNumber": 84,
+            "endColumn": 28,
+            "relatedInformation": [
+                {
+                    "startLineNumber": 111,
+                    "startColumn": 5,
+                    "endLineNumber": 111,
+                    "endColumn": 11,
+                    "message": "'titles' is declared here.",
+                    "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/types.ts"
+                }
+            ],
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'ModelDistinction'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 84,
+            "startColumn": 52,
+            "endLineNumber": 84,
+            "endColumn": 57,
+            "relatedInformation": [
+                {
+                    "startLineNumber": 111,
+                    "startColumn": 5,
+                    "endLineNumber": 111,
+                    "endColumn": 11,
+                    "message": "'titles' is declared here.",
+                    "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/types.ts"
+                }
+            ],
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'year' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 84,
+            "startColumn": 63,
+            "endLineNumber": 84,
+            "endColumn": 67,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'year' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 84,
+            "startColumn": 91,
+            "endLineNumber": 84,
+            "endColumn": 95,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'ModelDistinction'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 112,
+            "startColumn": 87,
+            "endLineNumber": 112,
+            "endColumn": 92,
+            "relatedInformation": [
+                {
+                    "startLineNumber": 111,
+                    "startColumn": 5,
+                    "endLineNumber": 111,
+                    "endColumn": 11,
+                    "message": "'titles' is declared here.",
+                    "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/types.ts"
+                }
+            ],
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'ModelDistinction'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 115,
+            "startColumn": 30,
+            "endLineNumber": 115,
+            "endColumn": 35,
+            "relatedInformation": [
+                {
+                    "startLineNumber": 111,
+                    "startColumn": 5,
+                    "endLineNumber": 111,
+                    "endColumn": 11,
+                    "message": "'titles' is declared here.",
+                    "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/types.ts"
+                }
+            ],
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'ModelDistinction'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 115,
+            "startColumn": 52,
+            "endLineNumber": 115,
+            "endColumn": 57,
+            "relatedInformation": [
+                {
+                    "startLineNumber": 111,
+                    "startColumn": 5,
+                    "endLineNumber": 111,
+                    "endColumn": 11,
+                    "message": "'titles' is declared here.",
+                    "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/types.ts"
+                }
+            ],
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'year' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 115,
+            "startColumn": 63,
+            "endLineNumber": 115,
+            "endColumn": 67,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'year' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 115,
+            "startColumn": 84,
+            "endLineNumber": 115,
+            "endColumn": 88,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'isPro' does not exist on type 'Model'.",
+            "source": "ts",
+            "startLineNumber": 172,
+            "startColumn": 53,
+            "endLineNumber": 172,
+            "endColumn": 58,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'category' does not exist on type 'Model'.",
+            "source": "ts",
+            "startLineNumber": 189,
+            "startColumn": 97,
+            "endLineNumber": 189,
+            "endColumn": 105,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'icon' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 216,
+            "startColumn": 58,
+            "endLineNumber": 216,
+            "endColumn": 62,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'icon' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 222,
+            "startColumn": 93,
+            "endLineNumber": 222,
+            "endColumn": 97,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'category' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 223,
+            "startColumn": 152,
+            "endLineNumber": 223,
+            "endColumn": 160,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'category' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 224,
+            "startColumn": 86,
+            "endLineNumber": 224,
+            "endColumn": 94,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'category' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 224,
+            "startColumn": 110,
+            "endLineNumber": 224,
+            "endColumn": 118,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'year' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 227,
+            "startColumn": 111,
+            "endLineNumber": 227,
+            "endColumn": 115,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'ModelDistinction'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 231,
+            "startColumn": 62,
+            "endLineNumber": 231,
+            "endColumn": 67,
+            "relatedInformation": [
+                {
+                    "startLineNumber": 111,
+                    "startColumn": 5,
+                    "endLineNumber": 111,
+                    "endColumn": 11,
+                    "message": "'titles' is declared here.",
+                    "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/types.ts"
+                }
+            ],
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'description' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 234,
+            "startColumn": 58,
+            "endLineNumber": 234,
+            "endColumn": 69,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'description' does not exist on type 'ModelDistinction'.",
+            "source": "ts",
+            "startLineNumber": 236,
+            "startColumn": 66,
+            "endLineNumber": 236,
+            "endColumn": 77,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2551",
+            "severity": 8,
+            "message": "Property 'title' does not exist on type 'Partial<ModelDistinction>'. Did you mean 'titles'?",
+            "source": "ts",
+            "startLineNumber": 304,
+            "startColumn": 53,
+            "endLineNumber": 304,
+            "endColumn": 58,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2353",
+            "severity": 8,
+            "message": "Object literal may only specify known properties, and 'title' does not exist in type 'SetStateAction<Partial<ModelDistinction>>'.",
+            "source": "ts",
+            "startLineNumber": 305,
+            "startColumn": 81,
+            "endLineNumber": 305,
+            "endColumn": 86,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'year' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 316,
+            "startColumn": 57,
+            "endLineNumber": 316,
+            "endColumn": 61,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2353",
+            "severity": 8,
+            "message": "Object literal may only specify known properties, and 'year' does not exist in type 'SetStateAction<Partial<ModelDistinction>>'.",
+            "source": "ts",
+            "startLineNumber": 317,
+            "startColumn": 85,
+            "endLineNumber": 317,
+            "endColumn": 89,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'category' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 327,
+            "startColumn": 57,
+            "endLineNumber": 327,
+            "endColumn": 65,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2353",
+            "severity": 8,
+            "message": "Object literal may only specify known properties, and 'category' does not exist in type 'SetStateAction<Partial<ModelDistinction>>'.",
+            "source": "ts",
+            "startLineNumber": 328,
+            "startColumn": 85,
+            "endLineNumber": 328,
+            "endColumn": 93,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2353",
+            "severity": 8,
+            "message": "Object literal may only specify known properties, and 'icon' does not exist in type 'SetStateAction<Partial<ModelDistinction>>'.",
+            "source": "ts",
+            "startLineNumber": 347,
+            "startColumn": 87,
+            "endLineNumber": 347,
+            "endColumn": 91,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'icon' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 349,
+            "startColumn": 58,
+            "endLineNumber": 349,
+            "endColumn": 62,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2339",
+            "severity": 8,
+            "message": "Property 'description' does not exist on type 'Partial<ModelDistinction>'.",
+            "source": "ts",
+            "startLineNumber": 363,
+            "startColumn": 53,
+            "endLineNumber": 363,
+            "endColumn": 64,
+            "modelVersionId": 2
+        },{
+            "resource": "/c:/Users/Goumintiseur/OneDrive/Parfait-Louis-Asseko/src/pages/AdminDistinctions.tsx",
+            "owner": "typescript",
+            "code": "2353",
+            "severity": 8,
+            "message": "Object literal may only specify known properties, and 'description' does not exist in type 'SetStateAction<Partial<ModelDistinction>>'.",
+            "source": "ts",
+            "startLineNumber": 364,
+            "startColumn": 81,
+            "endLineNumber": 364,
+            "endColumn": 92,
+            "modelVersionId": 2
+        }]: '',
         year: new Date().getFullYear(),
         category: 'national',
         description: '',
@@ -97,7 +637,7 @@ const AdminDistinctions: React.FC = () => {
             );
 
             await set(ref(db, 'models'), updatedModels);
-            await reloadData();
+            updateData({ models: updatedModels as any });
             setShowModal(false);
             alert('Distinction enregistrée avec succès !');
         } catch (error) {
@@ -125,7 +665,7 @@ const AdminDistinctions: React.FC = () => {
                 );
 
                 await set(ref(db, 'models'), updatedModels);
-                await reloadData();
+                updateData({ models: updatedModels as any });
                 alert('Distinction supprimée avec succès !');
             } catch (error) {
                 console.error('Erreur lors de la suppression:', error);
