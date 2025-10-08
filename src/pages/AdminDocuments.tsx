@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { db } from '../firebase';
+import { db } from '../firebaseConfig';
 import { ref, set } from 'firebase/database';
 import { 
     DocumentIcon, 
