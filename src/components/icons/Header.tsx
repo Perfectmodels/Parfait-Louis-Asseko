@@ -329,9 +329,9 @@ const Header: React.FC = () => {
                 isOpen ? '-rotate-45 -translate-y-2 w-6' : 'w-5 group-hover:w-7'
               }`}></span>
             </div>
+              </div>
+              </button>
           </div>
-        </button>
-      </div>
       
       {/* Overlay */}
       <div 
