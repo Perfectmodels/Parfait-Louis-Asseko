@@ -43,8 +43,9 @@ const SEO: React.FC<SEOProps> = ({
 }) => {
   useEffect(() => {
     const defaultTitle = 'Perfect Models Management';
-    const defaultDescription = "L'agence de mannequins de référence à Libreville, Gabon.";
-    const defaultKeywords = 'mannequin, agence, Gabon, Libreville, mode, casting';
+    const defaultDescription = "L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, événements mode et formations professionnelles.";
+    const defaultKeywords = 'mannequin, agence, Gabon, Libreville, mode, casting, Perfect Models Management, PMM, fashion, défilé, formation mannequin';
+    const defaultOgImage = `${window.location.origin}/logopmm.jpg`;
     const siteUrl = window.location.href;
 
     const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
@@ -78,9 +79,13 @@ const SEO: React.FC<SEOProps> = ({
     setMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
     setLink('canonical', canonicalUrl || siteUrl);
 
+    // Open Graph tags
     setMeta('og:title', pageTitle, true);
     setMeta('og:description', description || defaultDescription, true);
-    if (image) setMeta('og:image', image, true);
+    setMeta('og:image', image || defaultOgImage, true);
+    setMeta('og:image:width', '1200', true);
+    setMeta('og:image:height', '630', true);
+    setMeta('og:image:alt', pageTitle, true);
     setMeta('og:url', siteUrl, true);
     setMeta('og:site_name', siteName, true);
     setMeta('og:type', type, true);
@@ -97,12 +102,14 @@ const SEO: React.FC<SEOProps> = ({
       if (author) setMeta('article:author', author, true);
     }
 
+    // Twitter Card tags
     setMeta('twitter:card', twitterCard);
     setMeta('twitter:site', twitterSite);
     setMeta('twitter:creator', twitterCreator);
     setMeta('twitter:title', pageTitle);
     setMeta('twitter:description', description || defaultDescription);
-    if (image) setMeta('twitter:image', image);
+    setMeta('twitter:image', image || defaultOgImage);
+    setMeta('twitter:image:alt', pageTitle);
 
     const schemaElementId = 'seo-schema-script';
     let schemaElement = document.getElementById(schemaElementId) as HTMLScriptElement | null;

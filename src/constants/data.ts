@@ -2,7 +2,8 @@ import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, Con
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+  logo: '/logopmm.jpg',
+  ogImage: '/logopmm.jpg', // Image par défaut pour les aperçus sociaux
 };
 
 export const navLinks: NavLink[] = [
