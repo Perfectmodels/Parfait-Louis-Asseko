@@ -393,3 +393,39 @@ export interface NavLink {
     inFooter: boolean;
     footerLabel?: string;
 }
+
+export interface GalleryPhoto {
+    id: string;
+    url: string;
+    caption?: string;
+    photographer?: string;
+    date?: string;
+}
+
+export interface GalleryAlbum {
+    id: string;
+    title: string;
+    description: string;
+    category: 'défilé' | 'shooting' | 'événement' | 'casting' | 'backstage' | 'autre';
+    coverImage: string;
+    photos: GalleryPhoto[];
+    date: string;
+    location?: string;
+    isPublic: boolean;
+    createdAt: string;
+}
+
+export interface Document {
+    id: string;
+    title: string;
+    description: string;
+    category: 'contrat' | 'facture' | 'planning' | 'formation' | 'règlement' | 'autre';
+    fileUrl: string;
+    fileName: string;
+    fileSize?: number;
+    fileType?: string;
+    uploadedBy: string;
+    uploadedAt: string;
+    isPublic: boolean;
+    accessibleTo?: ('admin' | 'model' | 'jury' | 'beginner')[];
+}

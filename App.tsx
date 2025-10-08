@@ -54,7 +54,13 @@ const AdminBeginnerStudents = lazy(() => import('./src/pages/AdminBeginnerStuden
 const AdminPayments = lazy(() => import('./src/pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./src/pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./src/pages/AdminArtisticDirection'));
+const AdminGallery = lazy(() => import('./src/pages/AdminGallery'));
+const AdminDocuments = lazy(() => import('./src/pages/AdminDocuments'));
+const AdminDistinctions = lazy(() => import('./src/pages/AdminDistinctions'));
 
+// Public Gallery Pages
+const Gallery = lazy(() => import('./src/pages/Gallery'));
+const GalleryAlbumDetail = lazy(() => import('./src/pages/GalleryAlbumDetail'));
 
 // Role-specific pages
 const JuryCasting = lazy(() => import('./src/pages/JuryCasting'));
@@ -131,6 +137,8 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/contact" element={<Contact />} />
                         <ReactRouterDOM.Route path="/services" element={<Services />} />
                         <ReactRouterDOM.Route path="/services/:slug" element={<ServiceDetail />} />
+                        <ReactRouterDOM.Route path="/gallery" element={<Gallery />} />
+                        <ReactRouterDOM.Route path="/gallery/:id" element={<GalleryAlbumDetail />} />
                         <ReactRouterDOM.Route path="/casting" element={<Casting />} />
                         <ReactRouterDOM.Route path="/casting-formulaire" element={<CastingForm />} />
                         <ReactRouterDOM.Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
@@ -174,6 +182,9 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/payments" element={<ProtectedRoute role="admin"><AdminPayments /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/absences" element={<ProtectedRoute role="admin"><AdminAbsences /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/documents" element={<ProtectedRoute role="admin"><AdminDocuments /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/distinctions" element={<ProtectedRoute role="admin"><AdminDistinctions /></ProtectedRoute>} />
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                     </ReactRouterDOM.Routes>

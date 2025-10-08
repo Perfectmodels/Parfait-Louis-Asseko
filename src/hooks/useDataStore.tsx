@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, GalleryAlbum, Document } from '../../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -36,7 +36,8 @@ import {
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
-    faqData as initialFaqData
+    faqData as initialFaqData,
+    galleryAlbums as initialGalleryAlbums
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -81,6 +82,8 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    galleryAlbums: GalleryAlbum[];
+    documents: Document[];
     // Données comptables
     accountingTransactions?: any[];
     accountingCategories?: any[];
@@ -130,6 +133,8 @@ export const useDataStore = () => {
         beginnerCourseData: initialBeginnerCourseData,
         beginnerStudents: initialBeginnerStudents,
         faqData: initialFaqData,
+        galleryAlbums: initialGalleryAlbums,
+        documents: [],
     }), []);
     
     useEffect(() => {
