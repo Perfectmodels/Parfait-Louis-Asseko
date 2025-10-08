@@ -23,7 +23,8 @@
     "lucide-react": "^0.545.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.1"
+    "react-router-dom": "^6.23.1",
+    "xxxx": "^3.0.4"
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.9",
@@ -34,6 +35,6 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "vite": "^7.1.9"
   }
 }
