@@ -1,4 +1,4 @@
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, GalleryAlbum } from '../types';
 import { beginnerCourseData } from './beginnerCourseData';
 
 export const siteConfig = {
@@ -10,6 +10,7 @@ export const navLinks: NavLink[] = [
   { path: '/', label: 'Accueil', inFooter: true },
   { path: '/agence', label: 'Agence', inFooter: true },
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
+  { path: '/gallery', label: 'Galerie', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
@@ -180,6 +181,30 @@ export const contactMessages: ContactMessage[] = [];
 export const absences: Absence[] = [];
 export const monthlyPayments: MonthlyPayment[] = [];
 export const photoshootBriefs: PhotoshootBrief[] = [];
+
+export const galleryAlbums: GalleryAlbum[] = [
+    {
+        id: 'album-demo-1',
+        title: 'Défilé Perfect Fashion Day 2024',
+        description: 'Un événement exceptionnel célébrant la mode africaine avec nos mannequins professionnels et créateurs locaux',
+        category: 'défilé',
+        coverImage: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+        photos: [
+            {
+                id: 'photo-1',
+                url: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+                caption: 'Ouverture du défilé',
+                photographer: 'Tito Style',
+                date: '2024-06-15'
+            }
+        ],
+        date: '2024-06-15',
+        location: 'Libreville, Gabon',
+        isPublic: true,
+        createdAt: new Date().toISOString()
+    }
+];
+
 export const beginnerStudents: BeginnerStudent[] = [
     {
         id: 'casting-1720000000001',

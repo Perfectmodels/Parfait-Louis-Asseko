@@ -74,6 +74,7 @@ const Admin: React.FC = () => {
                         <TabContent title="Gestion des Talents et du Recrutement">
                             <DashboardCard title="Tableau de Bord" icon={ChartBarIcon} link="/admin/dashboard" description="Vue d'ensemble des statistiques et métriques de l'agence."/>
                             <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
+                            <DashboardCard title="Distinctions des Mannequins" icon={SparklesIcon} link="/admin/distinctions" description="Ajouter et gérer les prix et distinctions des mannequins." />
                             <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
                             <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>
                             <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Consulter et traiter les candidatures pour les castings." notificationCount={newCastingApps} />
@@ -85,6 +86,8 @@ const Admin: React.FC = () => {
                     {activeTab === 'content' && (
                          <TabContent title="Gestion du Contenu et de la Formation">
                             <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine Focus Model 241." />
+                            <DashboardCard title="Gérer la Galerie" icon={PhotoIcon} link="/admin/gallery" description="Créer et gérer les albums photo de défilés, shootings et événements." />
+                            <DashboardCard title="Gérer les Documents" icon={DocumentTextIcon} link="/admin/documents" description="Télécharger et gérer les documents de l'agence (contrats, factures, etc.)." />
                             <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier et gérer les actualités de la page d'accueil." />
                             <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services, la chronologie et les réalisations." />
                             <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
