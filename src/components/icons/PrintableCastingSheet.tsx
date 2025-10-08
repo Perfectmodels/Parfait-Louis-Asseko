@@ -2,18 +2,18 @@ import React, { useEffect } from 'react';
 import { CastingApplication } from '../../types';
 
 interface PrintableCastingSheetProps {
-  app: CastingApplication;
+    app: CastingApplication;
   juryMembers: any[];
-  onDonePrinting: () => void;
+    onDonePrinting: () => void;
 }
 
 const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, juryMembers, onDonePrinting }) => {
-  useEffect(() => {
+    useEffect(() => {
     // Auto-print when component mounts
-    window.print();
+            window.print();
   }, []);
 
-  return (
+    return (
     <div className="p-8 bg-white print:p-0">
       <div className="max-w-4xl mx-auto">
         <button
@@ -30,7 +30,7 @@ const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, jury
           </div>
 
           <div className="grid grid-cols-2 gap-6 mb-6">
-            <div>
+                <div>
               <h2 className="font-bold text-lg mb-3 border-b pb-1">Informations Personnelles</h2>
               <div className="space-y-2">
                 <p><span className="font-semibold">Nom:</span> {app.lastName}</p>
@@ -40,7 +40,7 @@ const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, jury
                 <p><span className="font-semibold">Date de naissance:</span> {app.birthDate}</p>
                 <p><span className="font-semibold">Ville:</span> {app.city}</p>
               </div>
-            </div>
+                </div>
 
             <div>
               <h2 className="font-bold text-lg mb-3 border-b pb-1">Mesures</h2>
@@ -51,14 +51,14 @@ const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, jury
                 <p><span className="font-semibold">Tour de taille:</span> {app.waist} cm</p>
                 <p><span className="font-semibold">Tour de hanches:</span> {app.hips} cm</p>
                 <p><span className="font-semibold">Pointure:</span> {app.shoeSize}</p>
-              </div>
-            </div>
-          </div>
+                    </div>
+                </div>
+                </div>
 
           <div className="mb-6">
             <h2 className="font-bold text-lg mb-3 border-b pb-1">Expérience</h2>
             <p className="whitespace-pre-wrap">{app.experience || 'Aucune expérience mentionnée'}</p>
-          </div>
+                 </div>
 
           {app.motivation && (
             <div className="mb-6">
@@ -99,17 +99,17 @@ const PrintableCastingSheet: React.FC<PrintableCastingSheetProps> = ({ app, jury
                 <input type="checkbox" className="w-4 h-4" />
                 <span>Présélectionné</span>
               </label>
-            </div>
-          </div>
+                                </div>
+                     </div>
 
           <div className="mt-8 pt-4 border-t">
             <p className="text-sm text-gray-600">Date d'impression: {new Date().toLocaleDateString('fr-FR')}</p>
             <p className="text-sm text-gray-600">Référence: {app.id}</p>
           </div>
+                 </div>
+                 </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default PrintableCastingSheet;

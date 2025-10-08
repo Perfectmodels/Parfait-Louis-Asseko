@@ -22,19 +22,19 @@ const AdminSettings: React.FC = () => {
     analyticsId: ''
   });
 
-  useEffect(() => {
+    useEffect(() => {
     if (data?.settings) {
       setSettings(data.settings);
-    }
+        }
   }, [data?.settings]);
-
-  const handleSave = () => {
+    
+    const handleSave = () => {
     if (!data) return;
     saveData({ ...data, settings });
     alert('Paramètres sauvegardés avec succès !');
   };
 
-  return (
+    return (
     <AdminLayout>
       <AdminPageHeader 
         title="Paramètres" 
@@ -44,7 +44,7 @@ const AdminSettings: React.FC = () => {
       <div className="space-y-6">
         <AdminSection title="Informations Générales">
           <AdminCard>
-            <div className="space-y-4">
+                        <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Nom du site</label>
                 <input
@@ -53,7 +53,7 @@ const AdminSettings: React.FC = () => {
                   onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
                 />
-              </div>
+                        </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Description</label>
                 <textarea
@@ -62,14 +62,14 @@ const AdminSettings: React.FC = () => {
                   className="w-full px-3 py-2 border rounded"
                   rows={3}
                 />
-              </div>
-            </div>
+                        </div>
+                    </div>
           </AdminCard>
         </AdminSection>
-
+                    
         <AdminSection title="Contact">
           <AdminCard>
-            <div className="space-y-4">
+                        <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Email</label>
                 <input
@@ -78,7 +78,7 @@ const AdminSettings: React.FC = () => {
                   onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
                 />
-              </div>
+                        </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Téléphone</label>
                 <input
@@ -87,7 +87,7 @@ const AdminSettings: React.FC = () => {
                   onChange={(e) => setSettings({ ...settings, contactPhone: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
                 />
-              </div>
+                    </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Adresse</label>
                 <textarea
@@ -95,15 +95,15 @@ const AdminSettings: React.FC = () => {
                   onChange={(e) => setSettings({ ...settings, address: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
                   rows={2}
-                />
-              </div>
-            </div>
+                            />
+                        </div>
+                    </div>
           </AdminCard>
         </AdminSection>
-
+                    
         <AdminSection title="Réseaux Sociaux">
           <AdminCard>
-            <div className="space-y-4">
+                        <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Facebook</label>
                 <input
@@ -122,8 +122,8 @@ const AdminSettings: React.FC = () => {
                   onChange={(e) => setSettings({ ...settings, instagram: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
                   placeholder="https://instagram.com/..."
-                />
-              </div>
+                            />
+                        </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Twitter</label>
                 <input
@@ -133,7 +133,7 @@ const AdminSettings: React.FC = () => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="https://twitter.com/..."
                 />
-              </div>
+                    </div>
               <div>
                 <label className="block text-sm font-medium mb-1">LinkedIn</label>
                 <input
@@ -143,7 +143,7 @@ const AdminSettings: React.FC = () => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="https://linkedin.com/..."
                 />
-              </div>
+                </div>
               <div>
                 <label className="block text-sm font-medium mb-1">YouTube</label>
                 <input
@@ -153,15 +153,15 @@ const AdminSettings: React.FC = () => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="https://youtube.com/..."
                 />
-              </div>
             </div>
+        </div>
           </AdminCard>
         </AdminSection>
 
         <AdminSection title="API & Analytics">
           <AdminCard>
             <div className="space-y-4">
-              <div>
+    <div>
                 <label className="block text-sm font-medium mb-1">Clé API</label>
                 <input
                   type="password"
@@ -169,8 +169,8 @@ const AdminSettings: React.FC = () => {
                   onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
                 />
-              </div>
-              <div>
+    </div>
+    <div>
                 <label className="block text-sm font-medium mb-1">Google Analytics ID</label>
                 <input
                   type="text"
@@ -179,8 +179,8 @@ const AdminSettings: React.FC = () => {
                   className="w-full px-3 py-2 border rounded"
                   placeholder="G-XXXXXXXXXX"
                 />
-              </div>
-            </div>
+        </div>
+    </div>
           </AdminCard>
         </AdminSection>
 
@@ -190,11 +190,11 @@ const AdminSettings: React.FC = () => {
             className="px-6 py-3 bg-pm-gold text-white rounded hover:bg-pm-gold/90"
           >
             Enregistrer les paramètres
-          </button>
-        </div>
-      </div>
+                    </button>
+                            </div>
+                        </div>
     </AdminLayout>
-  );
+    );
 };
 
 export default AdminSettings;

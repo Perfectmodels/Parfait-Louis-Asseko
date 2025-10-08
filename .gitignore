@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Firebase sensitive data
+firebase-backup.json
+firebase-sync-report.txt
+pmmdb-89a3f-default-rtdb-export.json
+src/constants/firebaseData.ts
+src/constants/importedData.ts

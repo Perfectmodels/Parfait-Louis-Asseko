@@ -27,11 +27,9 @@ const FashionDayApplicationForm = lazy(() => import('./src/pages/FashionDayAppli
 const Login = lazy(() => import('./src/pages/Login'));
 const Activity = lazy(() => import('./src/pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./src/pages/ChapterDetail'));
-const ModelDashboard = lazy(() => import('./src/pages/ModelDashboard')); // Profil
+const UnifiedModelDashboard = lazy(() => import('./src/pages/UnifiedModelDashboard')); // Dashboard unifié pour Pro et Débutants
 const ClassroomForum = lazy(() => import('./src/pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./src/pages/ForumThread'));
-const BeginnerClassroom = lazy(() => import('./src/pages/BeginnerClassroom'));
-const BeginnerChapterDetail = lazy(() => import('./src/pages/BeginnerChapterDetail'));
 const Chat = lazy(() => import('./src/pages/Chat'));
 
 // Admin Pages
@@ -146,10 +144,11 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
                         
-                        <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />
+                        {/* Dashboard unifié pour mannequins Pro et étudiants Débutants */}
+                        <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><UnifiedModelDashboard /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/dashboard" element={<ProtectedRoute role="student"><UnifiedModelDashboard /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><UnifiedModelDashboard /></ProtectedRoute>} />
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />

@@ -7,7 +7,7 @@ import AdminCard from '../components/admin/AdminCard';
 import AdminFilterBar from '../components/admin/AdminFilterBar';
 
 const AdminAbsences: React.FC = () => {
-  const { data, saveData } = useData();
+    const { data, saveData } = useData();
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -30,14 +30,14 @@ const AdminAbsences: React.FC = () => {
   };
 
   const handleDelete = (id: string) => {
-    if (!data) return;
+            if (!data) return;
     if (confirm('Êtes-vous sûr de vouloir supprimer cette demande d\'absence ?')) {
       const updated = absences.filter(a => a.id !== id);
       saveData({ ...data, absenceRequests: updated });
-    }
-  };
+        }
+    };
 
-  return (
+    return (
     <AdminLayout>
       <AdminPageHeader 
         title="Demandes d'Absence" 
@@ -64,10 +64,10 @@ const AdminAbsences: React.FC = () => {
             <AdminCard key={absence.id}>
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
-                  <div>
+          <div>
                     <h3 className="font-semibold text-lg">{absence.modelName}</h3>
                     <p className="text-sm text-gray-600">{absence.email}</p>
-                  </div>
+          </div>
                   <span className={`px-3 py-1 rounded-full text-sm ${
                     absence.status === 'approved' ? 'bg-green-100 text-green-800' :
                     absence.status === 'rejected' ? 'bg-red-100 text-red-800' :
@@ -75,25 +75,25 @@ const AdminAbsences: React.FC = () => {
                   }`}>
                     {absence.status === 'approved' ? 'Approuvé' :
                      absence.status === 'rejected' ? 'Refusé' : 'En attente'}
-                  </span>
-                </div>
-
+                          </span>
+                      </div>
+                      
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
+                        <div>
                     <p className="text-sm text-gray-500">Date d'absence</p>
                     <p className="font-medium">{new Date(absence.absenceDate).toLocaleDateString('fr-FR')}</p>
-                  </div>
-                  <div>
+                        </div>
+                        <div>
                     <p className="text-sm text-gray-500">Soumis le</p>
                     <p className="font-medium">{new Date(absence.submittedAt).toLocaleDateString('fr-FR')}</p>
-                  </div>
-                </div>
-
+                        </div>
+                      </div>
+                      
                 <div>
                   <p className="text-sm text-gray-500">Raison</p>
                   <p className="font-medium">{absence.reason}</p>
-                </div>
-
+                    </div>
+                    
                 {absence.description && (
                   <div>
                     <p className="text-sm text-gray-500">Description</p>
@@ -111,16 +111,16 @@ const AdminAbsences: React.FC = () => {
                     <option value="approved">Approuvé</option>
                     <option value="rejected">Refusé</option>
                   </select>
-                  <button
-                    onClick={() => handleDelete(absence.id)}
+                      <button
+                        onClick={() => handleDelete(absence.id)}
                     className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                  >
-                    Supprimer
-                  </button>
-                </div>
-              </div>
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
             </AdminCard>
-          ))}
+              ))}
 
           {filteredAbsences.length === 0 && (
             <div className="text-center py-8 text-gray-500">

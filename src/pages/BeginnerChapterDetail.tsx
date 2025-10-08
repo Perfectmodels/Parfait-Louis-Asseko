@@ -4,7 +4,6 @@ import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
-import ChapterQuiz from '../components/ChapterQuiz';
 
 const BeginnerChapterDetail: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -64,15 +63,7 @@ const BeginnerChapterDetail: React.FC = () => {
           </article>
         </div>
         
-        {/* Display chapter quiz if available */}
-        {chapter.quiz && chapter.quiz.length > 0 && (
-          <ChapterQuiz 
-            quiz={chapter.quiz} 
-            chapterSlug={chapter.slug} 
-            moduleSlug={module.slug}
-            userType="beginner"
-          />
-        )}
+        {/* Note: Quiz uniquement dans Classroom Pro, pas dans Beginner */}
 
       </div>
     </div>

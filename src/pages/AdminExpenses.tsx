@@ -4,353 +4,382 @@ import AdminLayout from '../components/admin/AdminLayout';
 import AdminPageHeader from '../components/admin/AdminPageHeader';
 import AdminSection from '../components/admin/AdminSection';
 import AdminCard from '../components/admin/AdminCard';
-import AdminFilterBar from '../components/admin/AdminFilterBar';
-import { ShoppingCartIcon, PlusIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, ReceiptPercentIcon } from '@heroicons/react/24/outline';
 
-interface Expense {
-  id: string;
-  category: string;
-  description: string;
-  amount: number;
-  date: string;
-  paymentMethod: 'Espèces' | 'Carte' | 'Virement' | 'Mobile Money';
-  status: 'Payée' | 'En attente' | 'Remboursée';
-  receipt?: string;
-  notes?: string;
+interface AccountingTransaction {
+    id: string;
+    date: string;
+    category: 'revenue' | 'expense';
+    subcategory: string;
+    description: string;
+    amount: number;
+    currency: string;
+    paymentMethod: string;
+    reference?: string;
+    notes?: string;
+    createdBy: string;
+    createdAt: string;
+    relatedModelId?: string;
+    relatedModelName?: string;
 }
 
-const EXPENSE_CATEGORIES = [
-  'Loyer et Charges',
-  'Salaires',
-  'Transport',
-  'Matériel',
-  'Marketing',
-  'Formation',
-  'Événements',
-  'Maintenance',
-  'Fournitures',
-  'Services Professionnels',
-  'Assurances',
-  'Taxes',
-  'Autres'
-];
-
 const AdminExpenses: React.FC = () => {
-  const { data, saveData } = useData();
-  const [filter, setFilter] = useState<'all' | string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<Expense>>({
-    category: '',
-    description: '',
-    amount: 0,
-    date: new Date().toISOString().split('T')[0],
-    paymentMethod: 'Espèces',
-    status: 'Payée',
-    notes: ''
-  });
+    const { data, saveData } = useData();
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingExpense, setEditingExpense] = useState<AccountingTransaction | null>(null);
+    const [filterSubcategory, setFilterSubcategory] = useState<string>('all');
 
-  const expenses: Expense[] = data?.expenses || [];
+    const allTransactions: AccountingTransaction[] = data?.accountingTransactions || [];
+    const expenses = allTransactions.filter(t => t.category === 'expense');
+    
+    // Récupérer les catégories et sous-catégories
+    const categories = data?.accountingCategories || [];
+    const expenseCategories = categories.filter(c => c.type === 'expense');
+    const subcategories = expenseCategories.flatMap(c => c.subcategories || []);
+    const uniqueSubcategories = Array.from(new Set(subcategories));
 
-  const filteredExpenses = expenses.filter(expense => {
-    const matchesFilter = filter === 'all' || expense.category === filter;
-    const matchesSearch = searchTerm === '' || 
-      expense.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      expense.category.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+    const filteredExpenses = filterSubcategory === 'all' 
+        ? expenses 
+        : expenses.filter(exp => exp.subcategory === filterSubcategory);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!data) return;
+    const handleAdd = () => {
+        const newExpense: AccountingTransaction = {
+            id: `trans-${Date.now()}`,
+            date: new Date().toISOString().split('T')[0],
+            category: 'expense',
+            subcategory: uniqueSubcategories[0] || 'Divers',
+            description: '',
+            amount: 0,
+            currency: 'FCFA',
+            paymentMethod: 'cash',
+            reference: '',
+            notes: '',
+            createdBy: 'admin',
+            createdAt: new Date().toISOString()
+        };
+        setEditingExpense(newExpense);
+        setIsEditing(true);
+    };
 
-    if (editingId) {
-      const updated = expenses.map(exp => 
-        exp.id === editingId ? { ...formData, id: editingId } as Expense : exp
-      );
-      saveData({ ...data, expenses: updated });
-    } else {
-      const newExpense: Expense = {
-        ...formData,
-        id: Date.now().toString()
-      } as Expense;
-      saveData({ ...data, expenses: [...expenses, newExpense] });
-    }
-    resetForm();
-  };
+    const handleEdit = (expense: AccountingTransaction) => {
+        setEditingExpense({ ...expense });
+        setIsEditing(true);
+    };
 
-  const handleDelete = (id: string) => {
-    if (!data) return;
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette dépense ?')) {
-      const updated = expenses.filter(exp => exp.id !== id);
-      saveData({ ...data, expenses: updated });
-    }
-  };
+    const handleSave = async () => {
+        if (!editingExpense || !data) return;
 
-  const handleEdit = (expense: Expense) => {
-    setFormData(expense);
-    setEditingId(expense.id);
-    setShowAddForm(true);
-  };
+        const existingIndex = allTransactions.findIndex(t => t.id === editingExpense.id);
+        let updatedTransactions;
 
-  const resetForm = () => {
-    setFormData({
-      category: '',
-      description: '',
-      amount: 0,
-      date: new Date().toISOString().split('T')[0],
-      paymentMethod: 'Espèces',
-      status: 'Payée',
-      notes: ''
-    });
-    setEditingId(null);
-    setShowAddForm(false);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'XAF'
-    }).format(amount);
-  };
-
-  // Statistiques par catégorie
-  const expensesByCategory = EXPENSE_CATEGORIES.map(category => {
-    const categoryExpenses = expenses.filter(exp => exp.category === category);
-    const total = categoryExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-    return { category, total, count: categoryExpenses.length };
-  }).filter(item => item.count > 0);
-
-  const totalAmount = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-  return (
-    <AdminLayout>
-      <AdminPageHeader 
-        title="Dépenses" 
-        subtitle="Enregistrer et suivre toutes les dépenses de l'agence"
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <AdminCard>
-          <p className="text-sm text-gray-600">Total Dépenses</p>
-          <p className="text-2xl font-bold text-red-600">{formatCurrency(totalAmount)}</p>
-        </AdminCard>
-        <AdminCard>
-          <p className="text-sm text-gray-600">Nombre de Dépenses</p>
-          <p className="text-2xl font-bold text-blue-600">{filteredExpenses.length}</p>
-        </AdminCard>
-        <AdminCard>
-          <p className="text-sm text-gray-600">Catégories Actives</p>
-          <p className="text-2xl font-bold text-pm-gold">{expensesByCategory.length}</p>
-        </AdminCard>
-      </div>
-
-      <AdminFilterBar
-        filters={[
-          { label: 'Toutes', value: 'all' },
-          ...EXPENSE_CATEGORIES.map(cat => ({ label: cat, value: cat }))
-        ]}
-        activeFilter={filter}
-        onFilterChange={setFilter}
-        searchValue={searchTerm}
-        onSearchChange={setSearchTerm}
-        searchPlaceholder="Rechercher une dépense..."
-      />
-
-      <AdminSection 
-        title={`${filteredExpenses.length} dépense(s)`}
-        action={
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-white rounded hover:bg-pm-gold/90"
-          >
-            <PlusIcon className="w-5 h-5" />
-            {showAddForm ? 'Annuler' : 'Nouvelle Dépense'}
-          </button>
+        if (existingIndex >= 0) {
+            updatedTransactions = [...allTransactions];
+            updatedTransactions[existingIndex] = editingExpense;
+        } else {
+            updatedTransactions = [...allTransactions, editingExpense];
         }
-      >
-        {showAddForm && (
-          <AdminCard className="mb-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Catégorie *</label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 border rounded"
-                    required
-                  >
-                    <option value="">Sélectionner...</option>
-                    {EXPENSE_CATEGORIES.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Montant (XAF) *</label>
-                  <input
-                    type="number"
-                    value={formData.amount}
-                    onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
-                    className="w-full px-3 py-2 border rounded"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Date *</label>
-                  <input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-3 py-2 border rounded"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Méthode de Paiement *</label>
-                  <select
-                    value={formData.paymentMethod}
-                    onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as Expense['paymentMethod'] })}
-                    className="w-full px-3 py-2 border rounded"
-                    required
-                  >
-                    <option value="Espèces">Espèces</option>
-                    <option value="Carte">Carte</option>
-                    <option value="Virement">Virement</option>
-                    <option value="Mobile Money">Mobile Money</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Description *</label>
-                <input
-                  type="text"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border rounded"
-                  required
-                  placeholder="Ex: Achat de matériel photo"
+
+        await saveData({ ...data, accountingTransactions: updatedTransactions });
+        setIsEditing(false);
+        setEditingExpense(null);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!data || !confirm('Êtes-vous sûr de vouloir supprimer cette dépense ?')) return;
+        
+        const updatedTransactions = allTransactions.filter(t => t.id !== id);
+        await saveData({ ...data, accountingTransactions: updatedTransactions });
+    };
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('fr-FR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount) + ' FCFA';
+    };
+
+    const paymentMethodLabels: Record<string, string> = {
+        cash: 'Espèces',
+        bank_transfer: 'Virement bancaire',
+        mobile_money: 'Mobile Money',
+        check: 'Chèque',
+        card: 'Carte bancaire'
+    };
+
+    if (isEditing && editingExpense) {
+        return (
+            <AdminLayout>
+                <AdminPageHeader 
+                    title={expenses.findIndex(e => e.id === editingExpense.id) === -1 ? "Nouvelle Dépense" : "Modifier Dépense"}
+                    subtitle="Enregistrer une dépense de l'agence"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-3 py-2 border rounded"
-                  rows={3}
-                />
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-pm-gold text-white rounded hover:bg-pm-gold/90"
-                >
-                  {editingId ? 'Mettre à jour' : 'Enregistrer'}
-                </button>
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="px-6 py-2 border rounded hover:bg-gray-50"
-                >
-                  Annuler
-                </button>
-              </div>
-            </form>
-          </AdminCard>
-        )}
 
-        <div className="space-y-4">
-          {filteredExpenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((expense) => (
-            <AdminCard key={expense.id}>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <ShoppingCartIcon className="w-6 h-6 text-red-600" />
-                    <div>
-                      <h3 className="font-semibold text-lg">{expense.description}</h3>
-                      <p className="text-sm text-gray-600">{expense.category}</p>
+                <AdminSection title="Informations de la Dépense">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Date *</label>
+                            <input
+                                type="date"
+                                value={editingExpense.date}
+                                onChange={e => setEditingExpense({ ...editingExpense, date: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Catégorie *</label>
+                            <select
+                                value={editingExpense.subcategory}
+                                onChange={e => setEditingExpense({ ...editingExpense, subcategory: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                required
+                            >
+                                {uniqueSubcategories.map(sub => (
+                                    <option key={sub} value={sub}>{sub}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Description *</label>
+                            <input
+                                type="text"
+                                value={editingExpense.description}
+                                onChange={e => setEditingExpense({ ...editingExpense, description: e.target.value })}
+                                placeholder="Ex: Loyer bureau - Janvier 2025"
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Montant (FCFA) *</label>
+                            <input
+                                type="number"
+                                min="0"
+                                value={editingExpense.amount}
+                                onChange={e => setEditingExpense({ ...editingExpense, amount: parseFloat(e.target.value) || 0 })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Méthode de Paiement *</label>
+                            <select
+                                value={editingExpense.paymentMethod}
+                                onChange={e => setEditingExpense({ ...editingExpense, paymentMethod: e.target.value })}
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                                required
+                            >
+                                <option value="cash">Espèces</option>
+                                <option value="bank_transfer">Virement bancaire</option>
+                                <option value="mobile_money">Mobile Money</option>
+                                <option value="check">Chèque</option>
+                                <option value="card">Carte bancaire</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Référence</label>
+                            <input
+                                type="text"
+                                value={editingExpense.reference || ''}
+                                onChange={e => setEditingExpense({ ...editingExpense, reference: e.target.value })}
+                                placeholder="Ex: REF-2025-001"
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-semibold text-pm-off-white mb-2">Notes</label>
+                            <textarea
+                                value={editingExpense.notes || ''}
+                                onChange={e => setEditingExpense({ ...editingExpense, notes: e.target.value })}
+                                rows={3}
+                                placeholder="Informations supplémentaires..."
+                                className="w-full bg-pm-dark border border-pm-gold/20 rounded px-4 py-2 text-pm-off-white focus:border-pm-gold focus:outline-none"
+                            />
+                        </div>
                     </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4 mt-4">
-                    <div>
-                      <p className="text-xs text-gray-500">Montant</p>
-                      <p className="font-semibold text-red-600">{formatCurrency(expense.amount)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Date</p>
-                      <p className="font-medium">{new Date(expense.date).toLocaleDateString('fr-FR')}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Paiement</p>
-                      <p className="font-medium">{expense.paymentMethod}</p>
-                    </div>
-                  </div>
+                </AdminSection>
 
-                  {expense.notes && (
-                    <p className="text-sm text-gray-600 mt-2 italic">{expense.notes}</p>
-                  )}
+                <div className="flex gap-4 mt-6">
+                    <button
+                        onClick={handleSave}
+                        disabled={!editingExpense.description || editingExpense.amount <= 0}
+                        className="px-6 py-3 bg-pm-gold text-black font-semibold rounded-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Enregistrer
+                    </button>
+                    <button
+                        onClick={() => {
+                            setIsEditing(false);
+                            setEditingExpense(null);
+                        }}
+                        className="px-6 py-3 bg-black border border-pm-gold/20 text-pm-off-white rounded-lg hover:border-pm-gold/50 transition-colors"
+                    >
+                        Annuler
+                    </button>
                 </div>
+            </AdminLayout>
+        );
+    }
 
-                <div className="flex gap-2 ml-4">
-                  <button
-                    onClick={() => handleEdit(expense)}
-                    className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    title="Modifier"
-                  >
-                    <PencilIcon className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(expense.id)}
-                    className="p-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    title="Supprimer"
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </AdminCard>
-          ))}
+    return (
+        <AdminLayout>
+            <AdminPageHeader 
+                title="Dépenses"
+                subtitle="Enregistrer et catégoriser toutes les dépenses de l'agence"
+                action={
+                    <button
+                        onClick={handleAdd}
+                        className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-black font-semibold rounded-lg hover:bg-white transition-colors"
+                    >
+                        <PlusIcon className="w-5 h-5" />
+                        Nouvelle Dépense
+                    </button>
+                }
+            />
 
-          {filteredExpenses.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              <ShoppingCartIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p>Aucune dépense enregistrée</p>
+            {/* Statistiques */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <AdminCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-pm-off-white/60 mb-1">Total Dépenses (Mois)</p>
+                            <p className="text-2xl font-bold text-red-400">
+                                {formatCurrency(
+                                    expenses
+                                        .filter(e => {
+                                            const expenseDate = new Date(e.date);
+                                            const now = new Date();
+                                            return expenseDate.getMonth() === now.getMonth() && 
+                                                   expenseDate.getFullYear() === now.getFullYear();
+                                        })
+                                        .reduce((sum, e) => sum + e.amount, 0)
+                                )}
+                            </p>
+                        </div>
+                        <ReceiptPercentIcon className="w-12 h-12 text-red-400/30" />
+                    </div>
+                </AdminCard>
+                <AdminCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-pm-off-white/60 mb-1">Nombre de Dépenses</p>
+                            <p className="text-2xl font-bold text-pm-gold">{expenses.length}</p>
+                        </div>
+                        <ReceiptPercentIcon className="w-12 h-12 text-pm-gold/30" />
+                    </div>
+                </AdminCard>
+                <AdminCard>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-pm-off-white/60 mb-1">Dépense Moyenne</p>
+                            <p className="text-2xl font-bold text-pm-off-white">
+                                {formatCurrency(expenses.length > 0 ? expenses.reduce((sum, e) => sum + e.amount, 0) / expenses.length : 0)}
+                            </p>
+                        </div>
+                        <ReceiptPercentIcon className="w-12 h-12 text-pm-off-white/30" />
+                    </div>
+                </AdminCard>
             </div>
-          )}
-        </div>
-      </AdminSection>
 
-      {/* Résumé par catégorie */}
-      {expensesByCategory.length > 0 && (
-        <AdminSection title="Dépenses par Catégorie">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {expensesByCategory.sort((a, b) => b.total - a.total).map(item => (
-              <AdminCard key={item.category}>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-gray-600">{item.category}</p>
-                    <p className="text-lg font-bold text-red-600">{formatCurrency(item.total)}</p>
-                    <p className="text-xs text-gray-500">{item.count} dépense(s)</p>
-                  </div>
-                  <button
-                    onClick={() => setFilter(item.category)}
-                    className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
-                  >
-                    Voir
-                  </button>
-                </div>
-              </AdminCard>
-            ))}
-          </div>
-        </AdminSection>
-      )}
-    </AdminLayout>
-  );
+            {/* Filtres */}
+            <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
+                <button
+                    onClick={() => setFilterSubcategory('all')}
+                    className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+                        filterSubcategory === 'all'
+                            ? 'bg-pm-gold text-black'
+                            : 'bg-black border border-pm-gold/20 text-pm-off-white hover:border-pm-gold/50'
+                    }`}
+                >
+                    Toutes
+                </button>
+                {uniqueSubcategories.map(sub => (
+                    <button
+                        key={sub}
+                        onClick={() => setFilterSubcategory(sub)}
+                        className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+                            filterSubcategory === sub
+                                ? 'bg-pm-gold text-black'
+                                : 'bg-black border border-pm-gold/20 text-pm-off-white hover:border-pm-gold/50'
+                        }`}
+                    >
+                        {sub}
+                    </button>
+                ))}
+            </div>
+
+            {/* Liste des dépenses */}
+            <AdminSection title={`Dépenses (${filteredExpenses.length})`}>
+                {filteredExpenses.length === 0 ? (
+                    <div className="text-center py-12">
+                        <ReceiptPercentIcon className="w-16 h-16 text-pm-gold/30 mx-auto mb-4" />
+                        <p className="text-pm-off-white/60">Aucune dépense enregistrée</p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="border-b border-pm-gold/20">
+                                    <th className="text-left py-3 px-4 text-pm-gold font-semibold">Date</th>
+                                    <th className="text-left py-3 px-4 text-pm-gold font-semibold">Description</th>
+                                    <th className="text-left py-3 px-4 text-pm-gold font-semibold">Catégorie</th>
+                                    <th className="text-left py-3 px-4 text-pm-gold font-semibold">Paiement</th>
+                                    <th className="text-right py-3 px-4 text-pm-gold font-semibold">Montant</th>
+                                    <th className="text-right py-3 px-4 text-pm-gold font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredExpenses
+                                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                                    .map(expense => (
+                                    <tr key={expense.id} className="border-b border-pm-gold/10 hover:bg-pm-gold/5">
+                                        <td className="py-3 px-4 text-pm-off-white/80">
+                                            {new Date(expense.date).toLocaleDateString('fr-FR')}
+                                        </td>
+                                        <td className="py-3 px-4 text-pm-off-white">
+                                            {expense.description}
+                                            {expense.notes && (
+                                                <span className="block text-xs text-pm-off-white/60 mt-1">{expense.notes}</span>
+                                            )}
+                                        </td>
+                                        <td className="py-3 px-4">
+                                            <span className="px-2 py-1 rounded text-xs font-bold bg-purple-600/20 text-purple-400">
+                                                {expense.subcategory}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 text-pm-off-white/80 text-sm">
+                                            {paymentMethodLabels[expense.paymentMethod] || expense.paymentMethod}
+                                        </td>
+                                        <td className="py-3 px-4 text-right font-bold text-red-400">
+                                            {formatCurrency(expense.amount)}
+                                        </td>
+                                        <td className="py-3 px-4 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => handleEdit(expense)}
+                                                    className="p-2 text-pm-gold hover:bg-pm-gold/10 rounded transition-colors"
+                                                    title="Modifier"
+                                                >
+                                                    <PencilIcon className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(expense.id)}
+                                                    className="p-2 text-red-400 hover:bg-red-600/10 rounded transition-colors"
+                                                    title="Supprimer"
+                                                >
+                                                    <TrashIcon className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </AdminSection>
+        </AdminLayout>
+    );
 };
 
 export default AdminExpenses;
-

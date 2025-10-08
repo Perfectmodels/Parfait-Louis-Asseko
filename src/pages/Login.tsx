@@ -72,6 +72,7 @@ const Login: React.FC = () => {
         sessionStorage.setItem('classroom_access', 'granted');
         sessionStorage.setItem('classroom_role', 'student');
         sessionStorage.setItem('userId', loggedInModel.id);
+        sessionStorage.setItem('userType', 'pro'); // Type utilisateur pour dashboard unifié
         
         const updatedModels = data.models.map(m => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
         await saveData({ ...data, models: updatedModels });
@@ -91,12 +92,13 @@ const Login: React.FC = () => {
         sessionStorage.setItem('classroom_role', 'beginner');
         sessionStorage.setItem('userId', loggedInBeginner.id);
         sessionStorage.setItem('userName', loggedInBeginner.name);
+        sessionStorage.setItem('userType', 'beginner'); // Type utilisateur pour dashboard unifié
         
         const updatedBeginners = data.beginnerStudents.map(bs => bs.id === loggedInBeginner.id ? { ...bs, lastLogin: timestamp } : bs);
         await saveData({ ...data, beginnerStudents: updatedBeginners });
         updateUserActivity(loggedInBeginner.name, 'beginner');
 
-        navigate('/classroom-debutant');
+        navigate('/profil'); // Maintenant tout le monde va au même dashboard unifié
         return;
     }
 
