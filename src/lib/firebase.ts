@@ -2,7 +2,7 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,3 +20,12 @@ if (!getApps().length) {
 export const firestore = getFirestore();
 export const storage = getStorage();
 export const auth = getAuth();
+
+// Ensure we have an authenticated user for Storage/DB rules (anonymous in dev/CSR)
+try {
+  if (!auth.currentUser) {
+    signInAnonymously(auth).catch(() => {
+      // swallow error to avoid breaking CSR; storage may still allow public writes in dev
+    });
+  }
+} catch {}

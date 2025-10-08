@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
-    UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
+    BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
-    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
-    ChartBarIcon, BoltIcon
+    ClipboardDocumentCheckIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
+    ChartBarIcon, BoltIcon, BellIcon, DocumentTextIcon, PhotoIcon, ShieldCheckIcon, TrophyIcon,
+    DocumentDuplicateIcon, UserCircleIcon, ChartPieIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
-type AdminTab = 'talents' | 'content' | 'operations' | 'finance';
+type AdminTab = 'comptabilite' | 'formations' | 'communications' | 'direction_artistique' | 'marketing' | 'technique';
 
 const Admin: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useData();
-    const [activeTab, setActiveTab] = useState<AdminTab>('talents');
+    const [activeTab, setActiveTab] = useState<AdminTab>('comptabilite');
 
     const handleLogout = () => {
         sessionStorage.clear();
@@ -23,16 +24,17 @@ const Admin: React.FC = () => {
     };
     
     const newCastingApps = data?.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newFashionDayApps = data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
     const newRecoveryRequests = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
     const newBookingRequests = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
     const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
 
     const tabs: { id: AdminTab; label: string; icon: React.ElementType }[] = [
-        { id: 'talents', label: 'Talents', icon: UsersIcon },
-        { id: 'content', label: 'Contenu', icon: NewspaperIcon },
-        { id: 'operations', label: 'Opérations', icon: BriefcaseIcon },
-        { id: 'finance', label: 'Comptabilité', icon: CurrencyDollarIcon },
+        { id: 'comptabilite', label: 'Comptabilité', icon: CurrencyDollarIcon },
+        { id: 'formations', label: 'Formations', icon: AcademicCapIcon },
+        { id: 'communications', label: 'Communications', icon: EnvelopeIcon },
+        { id: 'direction_artistique', label: 'Direction artistique', icon: PaintBrushIcon },
+        { id: 'marketing', label: 'Marketing', icon: PresentationChartLineIcon },
+        { id: 'technique', label: 'Technique', icon: Cog6ToothIcon },
     ];
 
     return (
@@ -70,50 +72,100 @@ const Admin: React.FC = () => {
                 </div>
                 
                 <div className="animate-fade-in">
-                    {activeTab === 'talents' && (
-                        <TabContent title="Gestion des Talents et du Recrutement">
-                            <DashboardCard title="Tableau de Bord" icon={ChartBarIcon} link="/admin/dashboard" description="Vue d'ensemble des statistiques et métriques de l'agence."/>
-                            <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
-                            <DashboardCard title="Distinctions des Mannequins" icon={SparklesIcon} link="/admin/distinctions" description="Ajouter et gérer les prix et distinctions des mannequins." />
-                            <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
-                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>
-                            <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Consulter et traiter les candidatures pour les castings." notificationCount={newCastingApps} />
-                            <DashboardCard title="Mode Casting Live" icon={BoltIcon} link="/admin/casting-live" description="Traiter les candidatures en temps réel lors d'un casting."/>
-                            <DashboardCard title="Résultats & Validation Casting" icon={ClipboardDocumentCheckIcon} link="/admin/casting-results" description="Valider les candidats et créer leurs profils de débutant." />
-                             <DashboardCard title="Accès Mannequins Pro" icon={KeyIcon} link="/admin/model-access" description="Consulter les identifiants des mannequins confirmés." />
+                    {activeTab === 'comptabilite' && (
+                        <TabContent title="Pôle Comptabilité">
+                            <DashboardCard title="Tableau financier" icon={ChartBarIcon} link="/admin/finance" description="Statistiques et indicateurs clés." />
+                            <DashboardCard 
+                                title="💰 Paiements Mannequins" 
+                                icon={CurrencyDollarIcon} 
+                                link="/admin/model-payments" 
+                                description="Enregistrer inscriptions, cotisations mensuelles et paiements anticipés."
+                            />
+                            <DashboardCard title="Cotisations" icon={CurrencyDollarIcon} link="/admin/payments" description="Vue d'ensemble des paiements mensuels et mannequins à jour." />
+                            <DashboardCard title="Factures clients" icon={ClipboardDocumentCheckIcon} link="/admin/invoices" description="Créer et gérer les factures clients." />
+                            <DashboardCard title="Dépenses" icon={BriefcaseIcon} link="/admin/expenses" description="Enregistrer et catégoriser les dépenses de l'agence." />
+                            <DashboardCard title="Rapports financiers" icon={PresentationChartLineIcon} link="/admin/financial-reports" description="Rapports par période." />
+                            <DashboardCard 
+                                title="Analytics" 
+                                icon={ChartPieIcon} 
+                                link="/admin/analytics" 
+                                description="KPIs et statistiques."
+                            />
                         </TabContent>
                     )}
-                    {activeTab === 'content' && (
-                         <TabContent title="Gestion du Contenu et de la Formation">
-                            <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine Focus Model 241." />
-                            <DashboardCard title="Gérer la Galerie" icon={PhotoIcon} link="/admin/gallery" description="Créer et gérer les albums photo de défilés, shootings et événements." />
-                            <DashboardCard title="Gérer les Documents" icon={DocumentTextIcon} link="/admin/documents" description="Télécharger et gérer les documents de l'agence (contrats, factures, etc.)." />
-                            <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier et gérer les actualités de la page d'accueil." />
-                            <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services, la chronologie et les réalisations." />
+                    {activeTab === 'formations' && (
+                        <TabContent title="Pôle Formations">
+                            <DashboardCard title="Classroom Pro" icon={BookOpenIcon} link="/admin/classroom" description="Modules et chapitres de formation." />
+                            <DashboardCard title="Suivi Classroom" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Progression et scores aux quiz." />
+                            <DashboardCard 
+                                title="🏆 Certifications" 
+                                icon={TrophyIcon} 
+                                link="/admin/certifications" 
+                                description="Gérer les certifications et évaluations des mannequins."
+                            />
+                        </TabContent>
+                    )}
+                    {activeTab === 'communications' && (
+                        <TabContent title="Pôle Communications">
+                            <DashboardCard title="Messages contact" icon={EnvelopeIcon} link="/admin/messages" description="Gérer les messages reçus." notificationCount={newMessages} />
+                            <DashboardCard title="Commentaires" icon={ChatBubbleLeftRightIcon} link="/admin/comments" description="Modérer les commentaires du magazine." />
+                            <DashboardCard 
+                                title="📧 Newsletter" 
+                                icon={EnvelopeIcon} 
+                                link="/admin/newsletter" 
+                                description="Créer et envoyer des newsletters (import contacts, pièces jointes)."
+                            />
+                            <DashboardCard 
+                                title="🔔 Notifications Push" 
+                                icon={BellIcon} 
+                                link="/admin/notifications" 
+                                description="Envoyer des notifications instantanées aux utilisateurs."
+                            />
+                            <DashboardCard 
+                                title="Calendrier" 
+                                icon={CalendarIcon} 
+                                link="/admin/calendar" 
+                                description="Coordonner les événements, castings, shoots et absences."
+                            />
+                        </TabContent>
+                    )}
+                    {activeTab === 'direction_artistique' && (
+                        <TabContent title="Pôle Direction artistique">
+                            <DashboardCard title="Direction artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Thèmes et briefs de séances photo."/>
+                            <DashboardCard title="Galerie" icon={PhotoIcon} link="/admin/gallery" description="Albums de défilés, shootings et événements." />
+                            <DashboardCard title="Contenu agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Services, chronologie et réalisations." />
+                            <DashboardCard title="Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Articles du magazine Focus Model 241." />
+                            <DashboardCard title="Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Actus de la page d'accueil." />
                             <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
-                             <DashboardCard title="Modérer les Commentaires" icon={ChatBubbleLeftRightIcon} link="/admin/comments" description="Gérer les commentaires laissés sur les articles du magazine." />
-                             <DashboardCard title="Gérer le Classroom Pro" icon={BookOpenIcon} link="/admin/classroom" description="Modifier les modules et chapitres de la formation avancée." />
-                            <DashboardCard title="Paramètres du Site" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, les images et les clés API." />
-                         </TabContent>
+                            <DashboardCard title="Distinctions des Mannequins" icon={SparklesIcon} link="/admin/distinctions" description="Ajouter et gérer les prix et distinctions des mannequins." />
+                        </TabContent>
                     )}
-                     {activeTab === 'operations' && (
-                         <TabContent title="Opérations et Suivi Quotidien">
-                             <DashboardCard title="Suivi des Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences des mannequins." />
-                             <DashboardCard title="Demandes de Booking" icon={BriefcaseIcon} link="/admin/bookings" description="Consulter et gérer les demandes de booking des clients." notificationCount={newBookingRequests} />
-                             <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions pour l'événement Perfect Fashion Day." notificationCount={newFashionDayApps} />
-                             <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins aux quiz et leurs scores." />
-                             <DashboardCard title="Messages de Contact" icon={EnvelopeIcon} link="/admin/messages" description="Lire et gérer les messages reçus via le formulaire de contact." notificationCount={newMessages} />
-                             <DashboardCard title="Demandes de Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Traiter les demandes de coordonnées oubliées." notificationCount={newRecoveryRequests} />
-                         </TabContent>
+
+                    {activeTab === 'marketing' && (
+                        <TabContent title="Pôle Marketing">
+                            <DashboardCard title="Bookings" icon={BriefcaseIcon} link="/admin/bookings" description="Gérer les demandes de booking clients." notificationCount={newBookingRequests} />
+                            <DashboardCard 
+                                title="CRM clients" 
+                                icon={UserCircleIcon} 
+                                link="/admin/crm" 
+                                description="Relations clients, historique et projets."
+                            />
+                            <DashboardCard title="Candidatures casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Traiter les candidatures de castings." notificationCount={newCastingApps} />
+                            <DashboardCard title="Casting live" icon={BoltIcon} link="/admin/casting-live" description="Candidatures en temps réel."/>
+                            <DashboardCard title="Validation casting" icon={ClipboardDocumentCheckIcon} link="/admin/casting-results" description="Valider les candidats et créer leurs profils." />
+                            <DashboardCard title="Contrats" icon={DocumentDuplicateIcon} link="/admin/contracts" description="Contrats et templates." />
+                        </TabContent>
                     )}
-                     {activeTab === 'finance' && (
-                         <TabContent title="Gestion Financière et Comptabilité">
-                             <DashboardCard title="Vue Financière" icon={ChartBarIcon} link="/admin/finance" description="Tableau de bord financier complet avec statistiques et indicateurs clés." />
-                             <DashboardCard title="Paiements Mannequins" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
-                             <DashboardCard title="Factures Clients" icon={ClipboardDocumentCheckIcon} link="/admin/invoices" description="Créer et gérer les factures pour les clients de l'agence." />
-                             <DashboardCard title="Dépenses" icon={BriefcaseIcon} link="/admin/expenses" description="Enregistrer et catégoriser toutes les dépenses de l'agence." />
-                             <DashboardCard title="Rapports Financiers" icon={PresentationChartLineIcon} link="/admin/financial-reports" description="Générer des rapports financiers détaillés par période." />
-                         </TabContent>
+
+                    {activeTab === 'technique' && (
+                        <TabContent title="Pôle Technique">
+                            <DashboardCard title="Paramètres" icon={Cog6ToothIcon} link="/admin/settings" description="Contacts, images et clés API." />
+                            <DashboardCard title="Audit & logs" icon={ShieldCheckIcon} link="/admin/audit" description="Traçabilité des actions et connexions." />
+                            <DashboardCard title="Accès mannequins" icon={KeyIcon} link="/admin/model-access" description="Identifiants des mannequins confirmés." />
+                            <DashboardCard title="Documents" icon={DocumentTextIcon} link="/admin/documents" description="Documents (contrats, factures, etc.)." />
+                            <DashboardCard title="Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Coordonnées oubliées." notificationCount={newRecoveryRequests} />
+                            <DashboardCard title="Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences." />
+                        </TabContent>
                     )}
                 </div>
             </div>

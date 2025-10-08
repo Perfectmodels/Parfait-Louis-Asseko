@@ -50,13 +50,30 @@ const AdminSettings = lazy(() => import('./src/pages/AdminSettings'));
 const AdminComments = lazy(() => import('./src/pages/AdminComments'));
 const AdminBookings = lazy(() => import('./src/pages/AdminBookings'));
 const AdminMessages = lazy(() => import('./src/pages/AdminMessages'));
-const AdminBeginnerStudents = lazy(() => import('./src/pages/AdminBeginnerStudents'));
+// const AdminBeginnerStudents = lazy(() => import('./src/pages/AdminBeginnerStudents')); // REMOVED: Section débutants supprimée
 const AdminPayments = lazy(() => import('./src/pages/AdminPayments'));
+const AdminModelPayments = lazy(() => import('./src/pages/AdminModelPayments'));
+const AdminFinance = lazy(() => import('./src/pages/AdminFinance'));
+const AdminInvoices = lazy(() => import('./src/pages/AdminInvoices'));
+const AdminExpenses = lazy(() => import('./src/pages/AdminExpenses'));
+const AdminFinancialReports = lazy(() => import('./src/pages/AdminFinancialReports'));
 const AdminAbsences = lazy(() => import('./src/pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./src/pages/AdminArtisticDirection'));
 const AdminGallery = lazy(() => import('./src/pages/AdminGallery'));
 const AdminDocuments = lazy(() => import('./src/pages/AdminDocuments'));
 const AdminDistinctions = lazy(() => import('./src/pages/AdminDistinctions'));
+
+// New Advanced Admin Pages
+const AdminAnalytics = lazy(() => import('./src/pages/AdminAnalytics'));
+const AdminCalendar = lazy(() => import('./src/pages/AdminCalendar'));
+const AdminCRM = lazy(() => import('./src/pages/AdminCRM'));
+const AdminContracts = lazy(() => import('./src/pages/AdminContracts'));
+const AdminNotifications = lazy(() => import('./src/pages/AdminNotifications'));
+const AdminNewsletter = lazy(() => import('./src/pages/AdminNewsletter'));
+const AdminCertifications = lazy(() => import('./src/pages/AdminCertifications'));
+const AdminAudit = lazy(() => import('./src/pages/AdminAudit'));
+const AdminPortfolio = lazy(() => import('./src/pages/AdminPortfolio'));
+const AdminMatching = lazy(() => import('./src/pages/AdminMatching'));
 
 // Public Gallery Pages
 const Gallery = lazy(() => import('./src/pages/Gallery'));
@@ -93,6 +110,20 @@ const AppContent: React.FC = () => {
 
     // Notification logic for browser tab title
     useEffect(() => {
+    // Track admin navigation history (within session)
+    if (location.pathname.startsWith('/admin')) {
+      try {
+        const raw = sessionStorage.getItem('adminNavHistory');
+        const historyArr = raw ? (JSON.parse(raw) as string[]) : [];
+        if (historyArr[historyArr.length - 1] !== location.pathname) {
+          historyArr.push(location.pathname);
+          // Cap history to last 50 routes
+          const capped = historyArr.slice(-50);
+          sessionStorage.setItem('adminNavHistory', JSON.stringify(capped));
+        }
+      } catch {}
+    }
+
         const originalTitle = "Perfect Models Management";
         if (data && location.pathname.startsWith('/admin')) {
             const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
@@ -156,7 +187,8 @@ const AppContent: React.FC = () => {
                         {/* Dashboard unifié pour mannequins Pro et étudiants Débutants */}
                         <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><UnifiedModelDashboard /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/dashboard" element={<ProtectedRoute role="student"><UnifiedModelDashboard /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><UnifiedModelDashboard /></ProtectedRoute>} />
+                        {/* <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><UnifiedModelDashboard /></ProtectedRoute>} /> */}
+                        {/* Route débutants supprimée - tous sont maintenant Pro */}
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
@@ -174,17 +206,35 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} />
+                        {/* <ReactRouterDOM.Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} /> */}
+                        {/* Page admin débutants supprimée */}
                         <ReactRouterDOM.Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/payments" element={<ProtectedRoute role="admin"><AdminPayments /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/model-payments" element={<ProtectedRoute role="admin"><AdminModelPayments /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/finance" element={<ProtectedRoute role="admin"><AdminFinance /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/invoices" element={<ProtectedRoute role="admin"><AdminInvoices /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/expenses" element={<ProtectedRoute role="admin"><AdminExpenses /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/financial-reports" element={<ProtectedRoute role="admin"><AdminFinancialReports /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/absences" element={<ProtectedRoute role="admin"><AdminAbsences /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/documents" element={<ProtectedRoute role="admin"><AdminDocuments /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/distinctions" element={<ProtectedRoute role="admin"><AdminDistinctions /></ProtectedRoute>} />
+                        
+                        {/* New Advanced Admin Routes */}
+                        <ReactRouterDOM.Route path="/admin/analytics" element={<ProtectedRoute role="admin"><AdminAnalytics /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/calendar" element={<ProtectedRoute role="admin"><AdminCalendar /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/crm" element={<ProtectedRoute role="admin"><AdminCRM /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/contracts" element={<ProtectedRoute role="admin"><AdminContracts /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/notifications" element={<ProtectedRoute role="admin"><AdminNotifications /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/newsletter" element={<ProtectedRoute role="admin"><AdminNewsletter /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/certifications" element={<ProtectedRoute role="admin"><AdminCertifications /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/audit" element={<ProtectedRoute role="admin"><AdminAudit /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/portfolio" element={<ProtectedRoute role="admin"><AdminPortfolio /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/admin/matching" element={<ProtectedRoute role="admin"><AdminMatching /></ProtectedRoute>} />
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                     </ReactRouterDOM.Routes>
@@ -198,7 +248,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // Only register service worker in production
-    if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    if ('serviceWorker' in navigator && (import.meta as any).env?.PROD) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').then(registration => {
           console.log('SW registered: ', registration);
@@ -206,7 +256,7 @@ const App: React.FC = () => {
           console.log('SW registration failed: ', registrationError);
         });
       });
-    } else if ('serviceWorker' in navigator && import.meta.env.DEV) {
+    } else if ('serviceWorker' in navigator && (import.meta as any).env?.DEV) {
       // Unregister service worker in development
       navigator.serviceWorker.getRegistrations().then(registrations => {
         registrations.forEach(registration => {

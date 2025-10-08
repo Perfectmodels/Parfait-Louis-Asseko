@@ -1,5 +1,6 @@
 import React from 'react';
 import Header, { Breadcrumb } from './Header';
+import AdminToolbar from '../AdminToolbar';
 import Footer from '../Footer';
 import Marquee from './Marquee';
 
@@ -13,6 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Marquee />
       <Header />
       <main className="flex-grow pt-24 lg:pt-28">
+        <AdminToolbar />
         <Breadcrumb />
         {children}
       </main>

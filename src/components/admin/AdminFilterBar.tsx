@@ -8,6 +8,11 @@ interface AdminFilterBarProps<T extends string> {
 }
 
 const AdminFilterBar = <T extends string,>({ options, value, onChange, labels }: AdminFilterBarProps<T>) => {
+  // Guard contre les options undefined
+  if (!options || !Array.isArray(options)) {
+    return null;
+  }
+
   return (
     <div className="flex items-center gap-4 mb-6 flex-wrap">
       {options.map((opt) => (
