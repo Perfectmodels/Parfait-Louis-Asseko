@@ -1,18 +1,34 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Service } from '../types';
 import { 
-    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
+    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, 
     MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
     PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon, HeartIcon,
-    UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon
+    UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon, ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
 
 const iconMap: { [key: string]: React.ElementType } = {
-  AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
-  MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
-  PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon,
-  UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon
+  "UsersIcon": UsersIcon,
+  "UserGroupIcon": UserGroupIcon,
+  "AcademicCapIcon": AcademicCapIcon,
+  "VideoCameraIcon": VideoCameraIcon,
+  "PhotoIcon": PhotoIcon,
+  "IdentificationIcon": IdentificationIcon,
+  "ScissorsIcon": ScissorsIcon,
+  "BriefcaseIcon": BriefcaseIcon,
+  "PaintBrushIcon": PaintBrushIcon,
+  "PresentationChartLineIcon": PresentationChartLineIcon,
+  "SparklesIcon": SparklesIcon,
+  "CameraIcon": CameraIcon,
+  "StarIcon": StarIcon,
+  "MegaphoneIcon": MegaphoneIcon,
+  "MicrophoneIcon": MicrophoneIcon,
+  "ChatBubbleLeftRightIcon": ChatBubbleLeftRightIcon,
+  "BuildingStorefrontIcon": BuildingStorefrontIcon,
+  "ClipboardDocumentListIcon": ClipboardDocumentListIcon,
+  "CalendarDaysIcon": CalendarDaysIcon,
 };
 
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {

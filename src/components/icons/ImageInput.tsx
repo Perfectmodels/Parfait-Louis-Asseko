@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 

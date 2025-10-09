@@ -2,88 +2,22 @@
   "name": "Perfect Models Management",
   "short_name": "PMM",
   "description": "L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine.",
-  "start_url": "/?source=pwa",
-  "scope": "/",
+  "start_url": ".",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#111111",
   "theme_color": "#D4AF37",
-  "categories": ["fashion", "models", "lifestyle"],
-  "lang": "fr-FR",
-  "dir": "ltr",
-  "prefer_related_applications": false,
-  "shortcuts": [
-    {
-      "name": "Nos Mannequins",
-      "short_name": "Mannequins",
-      "description": "Découvrez nos talents",
-      "url": "/mannequins"
-    },
-    {
-      "name": "Événements à Venir",
-      "short_name": "Événements",
-      "description": "Découvrez nos prochains événements",
-      "url": "/evenements"
-    },
-    {
-      "name": "Contactez-nous",
-      "short_name": "Contact",
-      "description": "Prenez contact avec notre agence",
-      "url": "/contact"
-    }
-  ],
   "icons": [
     {
-      "src": "/logopmm.jpg",
+      "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "any"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/logopmm.jpg",
+      "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "maskable"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ],
-  "shortcuts": [
-    {
-      "name": "Messagerie",
-      "short_name": "Messages",
-      "description": "Accéder à la messagerie interne",
-      "url": "/messaging",
-      "icons": [
-        {
-          "src": "/logopmm.jpg",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Profil",
-      "short_name": "Profil",
-      "description": "Voir mon profil",
-      "url": "/profil",
-      "icons": [
-        {
-          "src": "/logopmm.jpg",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Casting",
-      "short_name": "Casting",
-      "description": "Postuler à un casting",
-      "url": "/casting",
-      "icons": [
-        {
-          "src": "/logopmm.jpg",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  ]
 }

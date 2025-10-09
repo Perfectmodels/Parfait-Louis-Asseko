@@ -13,7 +13,6 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "node"],
 
     /* Linting */
     "strict": true,
@@ -27,6 +26,6 @@
       "@/*": ["*"]
     }
   },
-  "include": ["src", "api", "App.tsx"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

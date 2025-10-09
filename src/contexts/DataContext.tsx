@@ -5,7 +5,6 @@ import { useDataStore, AppData } from '../hooks/useDataStore';
 interface DataContextType {
   data: AppData | null;
   saveData: (newData: AppData) => void;
-  updateData: (partialData: Partial<AppData>) => void;
   isInitialized: boolean;
 }
 

@@ -36,18 +36,8 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event: serve from cache, fall back to network, and cache new requests
 self.addEventListener('fetch', (event) => {
-  // Skip service worker in development mode (localhost)
-  if (event.request.url.includes('localhost') || event.request.url.includes('127.0.0.1')) {
-    return;
-  }
-
   // Only process GET requests and web protocols. This will ignore chrome-extension:// requests.
   if (event.request.method !== 'GET' || (!event.request.url.startsWith('http:') && !event.request.url.startsWith('https:'))) {
-    return;
-  }
-  
-  // Skip HMR and Vite dev requests
-  if (event.request.url.includes('?t=') || event.request.url.includes('.tsx') || event.request.url.includes('@vite') || event.request.url.includes('node_modules')) {
     return;
   }
   
@@ -61,7 +51,7 @@ self.addEventListener('fetch', (event) => {
      return;
   }
 
-  // Cache-first for all other requests (production only)
+  // Cache-first for all other requests
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((response) => {
@@ -71,9 +61,6 @@ self.addEventListener('fetch', (event) => {
             cache.put(event.request, networkResponse.clone());
           }
           return networkResponse;
-        }).catch((error) => {
-          console.warn('Fetch failed for:', event.request.url, error);
-          return response;
         });
         
         return response || fetchPromise;

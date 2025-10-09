@@ -1,11 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../../firebaseConfig';
+import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-// FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, 
-    CalendarEvent, Client, Project, Contract, ContractTemplate, Notification, Newsletter, EmailTemplate,
-    Certification, ModelCertification, ModelEvaluation, PortfolioImage, PortfolioCategory, CompCard,
-    AuditLog, LoginLog } from '../../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -38,13 +34,11 @@ import {
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
-    // beginnerStudents as initialBeginnerStudents, // REMOVED
-    faqData as initialFaqData,
-    galleryAlbums as initialGalleryAlbums
+    beginnerStudents as initialBeginnerStudents,
+    faqData as initialFaqData
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
-// FIX: Import beginnerCourseData directly to resolve module path error.
 import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
 
 export interface AppData {
@@ -80,34 +74,11 @@ export interface AppData {
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
     beginnerCourseData: Module[];
-    // beginnerStudents: BeginnerStudent[]; // REMOVED - tous sont maintenant Pro
+    beginnerStudents: BeginnerStudent[];
     faqData: FAQCategory[];
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
-    galleryAlbums: any[];
-    documents: any[];
-    // Données comptables
-    accountingTransactions: any[];
-    accountingCategories: any[];
-    invoices: any[];
-    // Nouvelles données avancées
-    calendarEvents?: CalendarEvent[];
-    clients?: Client[];
-    projects?: Project[];
-    contracts?: Contract[];
-    contractTemplates?: ContractTemplate[];
-    notifications?: Notification[];
-    newsletters?: Newsletter[];
-    emailTemplates?: EmailTemplate[];
-    certifications?: Certification[];
-    modelCertifications?: ModelCertification[];
-    modelEvaluations?: ModelEvaluation[];
-    portfolioImages?: PortfolioImage[];
-    portfolioCategories?: PortfolioCategory[];
-    compCards?: CompCard[];
-    auditLogs?: AuditLog[];
-    loginLogs?: LoginLog[];
 }
 
 export const useDataStore = () => {
@@ -125,10 +96,6 @@ export const useDataStore = () => {
         forumThreads: initialForumThreads,
         forumReplies: initialForumReplies,
         articleComments: initialArticleComments,
-        // Initialiser les données comptables vides
-        accountingTransactions: [],
-        accountingCategories: [],
-        invoices: [],
         recoveryRequests: initialRecoveryRequests,
         bookingRequests: initialBookingRequests,
         contactMessages: initialContactMessages,
@@ -151,13 +118,8 @@ export const useDataStore = () => {
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
         beginnerCourseData: initialBeginnerCourseData,
-        // beginnerStudents: initialBeginnerStudents, // REMOVED
+        beginnerStudents: initialBeginnerStudents,
         faqData: initialFaqData,
-        galleryAlbums: initialGalleryAlbums,
-        documents: [],
-        accountingTransactions: [],
-        accountingCategories: [],
-        invoices: [],
     }), []);
     
     useEffect(() => {
@@ -180,13 +142,6 @@ export const useDataStore = () => {
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
-                    // Données financières
-                    accountingTransactions: dbData.accountingTransactions || initialData.accountingTransactions || [],
-                    accountingCategories: dbData.accountingCategories || initialData.accountingCategories || [],
-                    invoices: dbData.invoices || initialData.invoices || [],
-                    monthlyPayments: dbData.monthlyPayments || initialData.monthlyPayments || [],
-                    galleryAlbums: dbData.galleryAlbums || initialData.galleryAlbums || [],
-                    documents: dbData.documents || initialData.documents || [],
                 };
                 
                 // Always use navLinks from code to ensure route integrity
@@ -225,11 +180,5 @@ export const useDataStore = () => {
         }
     }, []);
 
-    const updateData = useCallback(async (partialData: Partial<AppData>) => {
-        if (!data) return;
-        const newData = { ...data, ...partialData };
-        await saveData(newData);
-    }, [data, saveData]);
-
-    return { data, saveData, updateData, isInitialized };
+    return { data, saveData, isInitialized };
 };
