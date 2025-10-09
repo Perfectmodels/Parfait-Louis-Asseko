@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, JuryMember, BeginnerStudent } from '../types';
+import { CastingApplication, CastingApplicationStatus, Model, JuryMember } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
@@ -41,45 +41,81 @@ const AdminCastingResults: React.FC = () => {
         await saveData({ ...data, castingApplications: updatedApps });
     };
     
-    const handleValidateAndCreateBeginner = async (app: CastingApplication) => {
+    const handleValidateAndCreateModel = async (app: CastingApplication) => {
         if (!data) return;
 
         if (app.status === 'Accepté') {
             alert("Ce candidat a déjà été accepté et un profil a été créé.");
             return;
         }
-        
-        const studentExists = data.beginnerStudents.some(s => s.id === app.id);
-        if (studentExists) {
-            alert("Ce candidat a déjà été validé et un profil débutant a été créé.");
-            await handleUpdateStatus(app.id, 'Accepté');
+
+        const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
+        if (modelExists) {
+            alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
+            await handleUpdateStatus(app.id, 'Accepté'); // Mark as accepted anyway if name clash
             return;
         }
 
         const currentYear = new Date().getFullYear();
         const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
 
-        const existingMatricules = data.beginnerStudents.map(s => parseInt(s.matricule.split('-')[2], 10) || 0);
-        const nextNumber = existingMatricules.length > 0 ? Math.max(...existingMatricules) + 1 : 1;
-        const matricule = `DEB-${currentYear}-${String(nextNumber).padStart(3, '0')}`;
+        const initial = app.firstName.charAt(0).toUpperCase();
+        const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
+        const existingNumbers = modelsWithSameInitial.map(m => {
+            const numPart = m.username.replace(`Man-PMM${initial}`, '');
+            return parseInt(numPart, 10) || 0;
+        });
+        const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+        const username = `Man-PMM${initial}${String(nextNumber).padStart(2, '0')}`;
         const password = `${sanitizeForPassword(app.firstName)}${currentYear}`;
+        const id = `${app.lastName.toLowerCase()}-${app.firstName.toLowerCase()}`.replace(/[^a-z0-9-]/g, '') + `-${app.id.slice(-4)}`;
 
-        const newBeginnerStudent: BeginnerStudent = {
-            id: app.id,
+        let experienceText = "Expérience à renseigner par l'administrateur.";
+        switch (app.experience) {
+            case 'none': experienceText = "Débutant(e) sans expérience préalable, prêt(e) à apprendre les bases du métier."; break;
+            case 'beginner': experienceText = "A déjà participé à quelques shootings photo en amateur ou pour de petites marques."; break;
+            case 'intermediate': experienceText = "A une expérience préalable en agence et a participé à des défilés ou des campagnes locales."; break;
+            case 'professional': experienceText = "Carrière de mannequin professionnel(le) établie avec un portfolio solide."; break;
+        }
+        
+        const age = app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : undefined;
+
+        const newModel: Model = {
+            id: id,
             name: `${app.firstName} ${app.lastName}`,
-            matricule: matricule,
+            username: username,
             password: password,
+            level: 'Débutant',
+            email: app.email,
+            phone: app.phone,
+            age: age,
+            height: `${app.height}cm`,
+            gender: app.gender,
+            location: app.city,
+            imageUrl: `https://i.ibb.co/fVBxPNTP/T-shirt.png`, // Placeholder image
+            isPublic: false, // Default to private
+            distinctions: [],
+            measurements: {
+                chest: `${app.chest || '0'}cm`,
+                waist: `${app.waist || '0'}cm`,
+                hips: `${app.hips || '0'}cm`,
+                shoeSize: `${app.shoeSize || '0'}`,
+            },
+            categories: ['Défilé', 'Commercial'],
+            experience: experienceText,
+            journey: "Parcours à renseigner par l'administrateur.",
             quizScores: {}
         };
-        
-        const updatedBeginnerStudents = [...data.beginnerStudents, newBeginnerStudent];
+
+        const updatedModels = [...data.models, newModel];
+        // FIX: Explicitly type `updatedApps` to prevent TypeScript from widening the `status` property to a generic `string`.
         const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
 
         try {
-            await saveData({ ...data, beginnerStudents: updatedBeginnerStudents, castingApplications: updatedApps });
-            alert(`Le profil débutant pour ${newBeginnerStudent.name} a été créé avec succès (Matricule: ${matricule}). La candidature a été marquée comme "Accepté".`);
+            await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+            alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`);
         } catch (error) {
-            console.error("Erreur lors de la création du profil débutant:", error);
+            console.error("Erreur lors de la création du mannequin:", error);
             alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
@@ -121,7 +157,7 @@ const AdminCastingResults: React.FC = () => {
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold">Résultats & Validation Casting</h1>
                 <p className="text-pm-off-white/70 mt-2 mb-8">
-                    Consultez les moyennes des candidats et validez leur entrée dans l'agence en tant que débutants.
+                    Consultez les moyennes des candidats et validez leur entrée dans l'agence.
                 </p>
 
                 <div className="flex items-center gap-4 mb-8 flex-wrap">
@@ -173,7 +209,7 @@ const AdminCastingResults: React.FC = () => {
                                                 {app.status === 'Présélectionné' && (
                                                     <>
                                                         <button 
-                                                            onClick={() => handleValidateAndCreateBeginner(app)} 
+                                                            onClick={() => handleValidateAndCreateModel(app)} 
                                                             className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed" 
                                                             title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
                                                             disabled={!app.isFullyScored}

@@ -1,3 +1,4 @@
+import React from 'react';
 
 export interface Model {
   id: string;
@@ -145,14 +146,13 @@ export interface Chapter {
   slug: string;
   title: string;
   content: string;
-  quiz?: QuizQuestion[]; // Quiz spécifique au chapitre (10+ questions)
 }
 
 export interface Module {
   slug: string;
   title: string;
   chapters: Chapter[];
-  quiz: QuizQuestion[]; // Quiz de synthèse du module (pour rétrocompatibilité)
+  quiz: QuizQuestion[];
 }
 
 export interface Testimonial {
@@ -392,40 +392,4 @@ export interface NavLink {
     label: string;
     inFooter: boolean;
     footerLabel?: string;
-}
-
-export interface GalleryPhoto {
-    id: string;
-    url: string;
-    caption?: string;
-    photographer?: string;
-    date?: string;
-}
-
-export interface GalleryAlbum {
-    id: string;
-    title: string;
-    description: string;
-    category: 'défilé' | 'shooting' | 'événement' | 'casting' | 'backstage' | 'autre';
-    coverImage: string;
-    photos: GalleryPhoto[];
-    date: string;
-    location?: string;
-    isPublic: boolean;
-    createdAt: string;
-}
-
-export interface Document {
-    id: string;
-    title: string;
-    description: string;
-    category: 'contrat' | 'facture' | 'planning' | 'formation' | 'règlement' | 'autre';
-    fileUrl: string;
-    fileName: string;
-    fileSize?: number;
-    fileType?: string;
-    uploadedBy: string;
-    uploadedAt: string;
-    isPublic: boolean;
-    accessibleTo?: ('admin' | 'model' | 'jury' | 'beginner')[];
 }

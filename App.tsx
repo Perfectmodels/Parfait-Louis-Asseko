@@ -5,88 +5,68 @@
 
 
 import React, { useEffect, lazy, Suspense } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import * as ReactRouterDOM from 'react-router-dom';
-import { DataProvider, useData } from './src/contexts/DataContext';
-import Layout from './src/components/icons/Layout';
-import ProtectedRoute from './src/components/ProtectedRoute';
+import { DataProvider, useData } from './contexts/DataContext';
+import Layout from './components/icons/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy-loaded Pages
-const Home = lazy(() => import('./src/pages/Home'));
-const Agency = lazy(() => import('./src/pages/Agency'));
-const Models = lazy(() => import('./src/pages/Models'));
-const ModelDetail = lazy(() => import('./src/pages/ModelDetail'));
-const FashionDay = lazy(() => import('./src/pages/FashionDay'));
-const Magazine = lazy(() => import('./src/pages/Magazine'));
-const ArticleDetail = lazy(() => import('./src/pages/ArticleDetail'));
-const Contact = lazy(() => import('./src/pages/Contact'));
-const Services = lazy(() => import('./src/pages/Services'));
-const ServiceDetail = lazy(() => import('./src/pages/ServiceDetail'));
-const Casting = lazy(() => import('./src/pages/Casting'));
-const CastingForm = lazy(() => import('./src/pages/CastingForm'));
-const FashionDayApplicationForm = lazy(() => import('./src/pages/FashionDayApplicationForm'));
-const Login = lazy(() => import('./src/pages/Login'));
-const Activity = lazy(() => import('./src/pages/Activity')); // Renamed Formations
-const ChapterDetail = lazy(() => import('./src/pages/ChapterDetail'));
-const UnifiedModelDashboard = lazy(() => import('./src/pages/UnifiedModelDashboard')); // Dashboard unifié pour Pro et Débutants
-const ClassroomForum = lazy(() => import('./src/pages/ClassroomForum'));
-const ForumThread = lazy(() => import('./src/pages/ForumThread'));
-const Chat = lazy(() => import('./src/pages/Chat'));
+const Home = lazy(() => import('./pages/Home'));
+const Agency = lazy(() => import('./pages/Agency'));
+const Models = lazy(() => import('./pages/Models'));
+const ModelDetail = lazy(() => import('./pages/ModelDetail'));
+const FashionDay = lazy(() => import('./pages/FashionDay'));
+const Magazine = lazy(() => import('./pages/Magazine'));
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Services = lazy(() => import('./pages/Services'));
+const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
+const Casting = lazy(() => import('./pages/Casting'));
+const CastingForm = lazy(() => import('./pages/CastingForm'));
+const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
+const Login = lazy(() => import('./pages/Login'));
+const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
+const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
+const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
+const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
+const ForumThread = lazy(() => import('./pages/ForumThread'));
+const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
+const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
+const Chat = lazy(() => import('./pages/Chat'));
 
 // Admin Pages
-const Admin = lazy(() => import('./src/pages/Admin'));
-const AdminAgency = lazy(() => import('./src/pages/AdminAgency'));
-const AdminCasting = lazy(() => import('./src/pages/AdminCasting'));
-const AdminCastingResults = lazy(() => import('./src/pages/AdminCastingResults'));
-const AdminClassroom = lazy(() => import('./src/pages/AdminClassroom'));
-const AdminClassroomProgress = lazy(() => import('./src/pages/AdminClassroomProgress'));
-const AdminFashionDay = lazy(() => import('./src/pages/AdminFashionDay'));
-const AdminFashionDayEvents = lazy(() => import('./src/pages/AdminFashionDayEvents'));
-const AdminMagazine = lazy(() => import('./src/pages/AdminMagazine'));
-const AdminModelAccess = lazy(() => import('./src/pages/AdminModelAccess'));
-const AdminModels = lazy(() => import('./src/pages/AdminModels'));
-const AdminNews = lazy(() => import('./src/pages/AdminNews'));
-const AdminRecovery = lazy(() => import('./src/pages/AdminRecovery'));
-const AdminSettings = lazy(() => import('./src/pages/AdminSettings'));
-const AdminComments = lazy(() => import('./src/pages/AdminComments'));
-const AdminBookings = lazy(() => import('./src/pages/AdminBookings'));
-const AdminMessages = lazy(() => import('./src/pages/AdminMessages'));
-// const AdminBeginnerStudents = lazy(() => import('./src/pages/AdminBeginnerStudents')); // REMOVED: Section débutants supprimée
-const AdminPayments = lazy(() => import('./src/pages/AdminPayments'));
-const AdminModelPayments = lazy(() => import('./src/pages/AdminModelPayments'));
-const AdminFinance = lazy(() => import('./src/pages/AdminFinance'));
-const AdminInvoices = lazy(() => import('./src/pages/AdminInvoices'));
-const AdminExpenses = lazy(() => import('./src/pages/AdminExpenses'));
-const AdminFinancialReports = lazy(() => import('./src/pages/AdminFinancialReports'));
-const AdminAbsences = lazy(() => import('./src/pages/AdminAbsences'));
-const AdminArtisticDirection = lazy(() => import('./src/pages/AdminArtisticDirection'));
-const AdminGallery = lazy(() => import('./src/pages/AdminGallery'));
-const AdminDocuments = lazy(() => import('./src/pages/AdminDocuments'));
-const AdminDistinctions = lazy(() => import('./src/pages/AdminDistinctions'));
+const Admin = lazy(() => import('./pages/Admin'));
+const AdminAgency = lazy(() => import('./pages/AdminAgency'));
+const AdminCasting = lazy(() => import('./pages/AdminCasting'));
+const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
+const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
+const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
+const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
+const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
+const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
+const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
+const AdminModels = lazy(() => import('./pages/AdminModels'));
+const AdminNews = lazy(() => import('./pages/AdminNews'));
+const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
+const AdminSettings = lazy(() => import('./pages/AdminSettings'));
+const AdminComments = lazy(() => import('./pages/AdminComments'));
+const AdminBookings = lazy(() => import('./pages/AdminBookings'));
+const AdminMessages = lazy(() => import('./pages/AdminMessages'));
+const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
+const AdminPayments = lazy(() => import('./pages/AdminPayments'));
+const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
+const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 
-// New Advanced Admin Pages
-const AdminAnalytics = lazy(() => import('./src/pages/AdminAnalytics'));
-const AdminCalendar = lazy(() => import('./src/pages/AdminCalendar'));
-const AdminCRM = lazy(() => import('./src/pages/AdminCRM'));
-const AdminContracts = lazy(() => import('./src/pages/AdminContracts'));
-const AdminNotifications = lazy(() => import('./src/pages/AdminNotifications'));
-const AdminNewsletter = lazy(() => import('./src/pages/AdminNewsletter'));
-const AdminCertifications = lazy(() => import('./src/pages/AdminCertifications'));
-const AdminAudit = lazy(() => import('./src/pages/AdminAudit'));
-const AdminPortfolio = lazy(() => import('./src/pages/AdminPortfolio'));
-const AdminMatching = lazy(() => import('./src/pages/AdminMatching'));
-
-// Public Gallery Pages
-const Gallery = lazy(() => import('./src/pages/Gallery'));
-const GalleryAlbumDetail = lazy(() => import('./src/pages/GalleryAlbumDetail'));
 
 // Role-specific pages
-const JuryCasting = lazy(() => import('./src/pages/JuryCasting'));
-const RegistrationCasting = lazy(() => import('./src/pages/RegistrationCasting'));
+const JuryCasting = lazy(() => import('./pages/JuryCasting'));
+const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
 
 // Static Pages
-const PrivacyPolicy = lazy(() => import('./src/pages/PrivacyPolicy'));
-const TermsOfUse = lazy(() => import('./src/pages/TermsOfUse'));
-const NotFound = lazy(() => import('./src/pages/NotFound'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 
 const ScrollToTop: React.FC = () => {
@@ -110,20 +90,6 @@ const AppContent: React.FC = () => {
 
     // Notification logic for browser tab title
     useEffect(() => {
-    // Track admin navigation history (within session)
-    if (location.pathname.startsWith('/admin')) {
-      try {
-        const raw = sessionStorage.getItem('adminNavHistory');
-        const historyArr = raw ? (JSON.parse(raw) as string[]) : [];
-        if (historyArr[historyArr.length - 1] !== location.pathname) {
-          historyArr.push(location.pathname);
-          // Cap history to last 50 routes
-          const capped = historyArr.slice(-50);
-          sessionStorage.setItem('adminNavHistory', JSON.stringify(capped));
-        }
-      } catch {}
-    }
-
         const originalTitle = "Perfect Models Management";
         if (data && location.pathname.startsWith('/admin')) {
             const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
@@ -168,8 +134,6 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/contact" element={<Contact />} />
                         <ReactRouterDOM.Route path="/services" element={<Services />} />
                         <ReactRouterDOM.Route path="/services/:slug" element={<ServiceDetail />} />
-                        <ReactRouterDOM.Route path="/gallery" element={<Gallery />} />
-                        <ReactRouterDOM.Route path="/gallery/:id" element={<GalleryAlbumDetail />} />
                         <ReactRouterDOM.Route path="/casting" element={<Casting />} />
                         <ReactRouterDOM.Route path="/casting-formulaire" element={<CastingForm />} />
                         <ReactRouterDOM.Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
@@ -183,12 +147,10 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
                         
-                        {/* Dashboard unifié pour mannequins Pro et étudiants Débutants */}
-                        <ReactRouterDOM.Route path="/profil" element={<ProtectedRoute role="student"><UnifiedModelDashboard /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/dashboard" element={<ProtectedRoute role="student"><UnifiedModelDashboard /></ProtectedRoute>} />
-                        {/* <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><UnifiedModelDashboard /></ProtectedRoute>} /> */}
-                        {/* Route débutants supprimée - tous sont maintenant Pro */}
+                        <ReactRouterDOM.Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
+                        <ReactRouterDOM.Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />
                         
                         <ReactRouterDOM.Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
@@ -206,35 +168,14 @@ const AppContent: React.FC = () => {
                         <ReactRouterDOM.Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
-                        {/* <ReactRouterDOM.Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} /> */}
-                        {/* Page admin débutants supprimée */}
+                        <ReactRouterDOM.Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/payments" element={<ProtectedRoute role="admin"><AdminPayments /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/model-payments" element={<ProtectedRoute role="admin"><AdminModelPayments /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/finance" element={<ProtectedRoute role="admin"><AdminFinance /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/invoices" element={<ProtectedRoute role="admin"><AdminInvoices /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/expenses" element={<ProtectedRoute role="admin"><AdminExpenses /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/financial-reports" element={<ProtectedRoute role="admin"><AdminFinancialReports /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/absences" element={<ProtectedRoute role="admin"><AdminAbsences /></ProtectedRoute>} />
                         <ReactRouterDOM.Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/documents" element={<ProtectedRoute role="admin"><AdminDocuments /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/distinctions" element={<ProtectedRoute role="admin"><AdminDistinctions /></ProtectedRoute>} />
-                        
-                        {/* New Advanced Admin Routes */}
-                        <ReactRouterDOM.Route path="/admin/analytics" element={<ProtectedRoute role="admin"><AdminAnalytics /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/calendar" element={<ProtectedRoute role="admin"><AdminCalendar /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/crm" element={<ProtectedRoute role="admin"><AdminCRM /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/contracts" element={<ProtectedRoute role="admin"><AdminContracts /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/notifications" element={<ProtectedRoute role="admin"><AdminNotifications /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/newsletter" element={<ProtectedRoute role="admin"><AdminNewsletter /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/certifications" element={<ProtectedRoute role="admin"><AdminCertifications /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/audit" element={<ProtectedRoute role="admin"><AdminAudit /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/portfolio" element={<ProtectedRoute role="admin"><AdminPortfolio /></ProtectedRoute>} />
-                        <ReactRouterDOM.Route path="/admin/matching" element={<ProtectedRoute role="admin"><AdminMatching /></ProtectedRoute>} />
 
                         <ReactRouterDOM.Route path="*" element={<NotFound />} />
                     </ReactRouterDOM.Routes>
@@ -247,8 +188,7 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
 
   useEffect(() => {
-    // Only register service worker in production
-    if ('serviceWorker' in navigator && (import.meta as any).env?.PROD) {
+    if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').then(registration => {
           console.log('SW registered: ', registration);
@@ -256,25 +196,12 @@ const App: React.FC = () => {
           console.log('SW registration failed: ', registrationError);
         });
       });
-    } else if ('serviceWorker' in navigator && (import.meta as any).env?.DEV) {
-      // Unregister service worker in development
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(registration => {
-          registration.unregister();
-          console.log('SW unregistered for development');
-        });
-      });
     }
   }, []);
 
   return (
     <DataProvider>
-      <ReactRouterDOM.HashRouter
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true
-        }}
-      >
+      <ReactRouterDOM.HashRouter>
         <ScrollToTop />
         <AppContent />
       </ReactRouterDOM.HashRouter>

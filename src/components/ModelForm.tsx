@@ -35,7 +35,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
         setFormData(prev => ({
             ...prev,
             measurements: {
-                ...(prev.measurements || { chest: '', waist: '', hips: '', shoeSize: '' }),
+                ...prev.measurements,
                 [name]: value,
             }
         }));
@@ -93,11 +93,15 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
                 
                 {isAdmin && (
-                    <Section title="Accès & Visibilité (Admin)">
+                    <Section title="Accès, Niveau & Visibilité (Admin)">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormInput label="Identifiant (Matricule)" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
                             <FormInput label="Mot de passe" name="password" value={formData.password} onChange={handleChange} />
                         </div>
+                        <FormSelect label="Niveau" name="level" value={formData.level || 'Débutant'} onChange={handleChange}>
+                            <option value="Débutant">Débutant</option>
+                            <option value="Pro">Pro</option>
+                        </FormSelect>
                         <div className="flex items-center gap-3 pt-2">
                             <input 
                                 type="checkbox"
@@ -126,10 +130,10 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     <ImageInput label="Photo Principale" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements?.chest || ''} onChange={handleMeasurementChange} />
-                        <FormInput label="Taille (cm)" name="waist" value={formData.measurements?.waist || ''} onChange={handleMeasurementChange} />
-                        <FormInput label="Hanches (cm)" name="hips" value={formData.measurements?.hips || ''} onChange={handleMeasurementChange} />
-                        <FormInput label="Pointure (EU)" name="shoeSize" value={formData.measurements?.shoeSize || ''} onChange={handleMeasurementChange} />
+                        <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementChange} />
+                        <FormInput label="Taille (cm)" name="waist" value={formData.measurements.waist} onChange={handleMeasurementChange} />
+                        <FormInput label="Hanches (cm)" name="hips" value={formData.measurements.hips} onChange={handleMeasurementChange} />
+                        <FormInput label="Pointure (EU)" name="shoeSize" value={formData.measurements.shoeSize} onChange={handleMeasurementChange} />
                     </div>
                 </Section>
 

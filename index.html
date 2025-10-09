@@ -2,36 +2,21 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/jpeg" href="/logopmm.jpg" />
-    <link rel="apple-touch-icon" href="/logopmm.jpg" />
+    <link rel="icon" type="image/png" href="/assets/t-shirt.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfect Models Management</title>
     
-    <!-- Meta tags de base -->
-    <meta name="description" content="Perfect Models Management - L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, événements mode et formations professionnelles."/>
-    <meta name="keywords" content="mannequin, agence, Gabon, Libreville, mode, casting, Perfect Models Management, PMM, fashion, défilé, formation" />
-    <meta name="author" content="Perfect Models Management" />
+    <!-- Meta tags will be managed by the SEO component in React -->
+    <meta name="description" content="The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services."/>
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:title" content="Perfect Models Management | Agence de mannequins" />
+    <!-- Fallback Open Graph tags for social sharing -->
+    <meta property="og:title" content="Perfect Models Management" />
     <meta property="og:description" content="L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine." />
-    <meta property="og:image" content="/logopmm.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Perfect Models Management Logo" />
+    <meta property="og:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
     <meta property="og:url" content="https://www.perfectmodels.ga/" />
     <meta property="og:site_name" content="Perfect Models Management" />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="fr_FR" />
-    
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@PerfectModelsGA" />
-    <meta name="twitter:creator" content="@PerfectModelsGA" />
-    <meta name="twitter:title" content="Perfect Models Management | Agence de mannequins" />
-    <meta name="twitter:description" content="L'agence de mannequins de référence à Libreville, Gabon." />
-    <meta name="twitter:image" content="/logopmm.jpg" />
-    <meta name="twitter:image:alt" content="Perfect Models Management Logo" />
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -40,6 +25,186 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'pm-dark': '#111111',
+            'pm-gold': '#D4AF37',
+            'pm-off-white': '#f0f0f0',
+            'black': '#000000',
+          },
+          fontFamily: {
+            'playfair': ['"Playfair Display"', 'serif'],
+            'montserrat': ['"Montserrat"', 'sans-serif'],
+          },
+          animation: {
+              'marquee': 'marquee 60s linear infinite',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'fade-in': 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+              marquee: {
+                  '0%': { transform: 'translateX(0%)' },
+                  '100%': { transform: 'translateX(-50%)' },
+              },
+              fadeIn: {
+                  '0%': { opacity: 0 },
+                  '100%': { opacity: 1 },
+              },
+          }
+        }
+      }
+    }
+    </script>
+    <style type="text/tailwindcss">
+      @tailwind base;
+      @tailwind components;
+      @tailwind utilities;
+
+      @layer base {
+        html {
+          font-smooth: always;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          background-color: #111111;
+        }
+        body {
+            @apply bg-pm-dark text-pm-off-white;
+        }
+      
+      /* Global focus styles for accessibility */
+      :focus-visible {
+        @apply outline-2 outline-pm-gold outline-offset-2 rounded-sm;
+      }
+      /* Utility class to remove outline for elements that have their own focus styles */
+      .focus-style-self:focus-visible {
+        @apply outline-none;
+      }
+      /* Screen-reader only class */
+      .sr-only {
+        @apply absolute w-[1px] h-[1px] p-0 m-[-1px] overflow-hidden whitespace-nowrap border-0;
+        clip: rect(0, 0, 0, 0);
+      }
+    }
+
+      @layer components {
+        /* ===================== GENERAL LAYOUT ===================== */
+        .page-container {
+          @apply container mx-auto px-6 py-16 lg:py-24 space-y-20 lg:space-y-28;
+        }
+
+        /* ===================== TITRES ===================== */
+        .page-title {
+          @apply text-5xl md:text-6xl font-playfair text-pm-gold text-center font-extrabold mb-6;
+        }
+        .page-subtitle {
+          @apply text-center text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/80 mt-2 mb-12;
+        }
+        .section-title {
+          @apply text-4xl md:text-5xl font-playfair font-extrabold text-center text-pm-gold mb-10 relative pb-4;
+          text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
+        }
+        .section-title::after {
+          content: '';
+          @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-pm-gold;
+        }
+        .section-subtitle {
+          @apply text-center text-base md:text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-8 leading-relaxed;
+        }
+        .content-section {
+          @apply bg-black border border-pm-gold/20 p-8 sm:p-10 lg:p-14 rounded-lg;
+        }
+
+        /* ===================== CARD BASE STYLE ===================== */
+        .card-base {
+          @apply bg-black border border-pm-gold/20 transition-all duration-300 rounded-lg;
+        }
+        .card-base:hover {
+          @apply border-pm-gold shadow-2xl shadow-pm-gold/20 -translate-y-2;
+        }
+
+        /* ===================== ADMIN PANEL ===================== */
+        .admin-page-header {
+          @apply flex flex-col sm:flex-row justify-between items-start gap-4 mb-12;
+        }
+        .admin-page-title {
+          @apply text-4xl font-playfair text-pm-gold;
+        }
+        .admin-page-subtitle {
+          @apply text-pm-off-white/80 mt-1;
+        }
+        .admin-section-wrapper {
+          @apply bg-black border border-pm-gold/20 p-6 lg:p-8 rounded-lg shadow-lg shadow-black/30;
+        }
+        .admin-section-title {
+          @apply text-2xl font-playfair text-pm-gold mb-6 border-b border-pm-gold/20 pb-3;
+        }
+
+        /* ===================== INPUTS & TEXTAREAS ===================== */
+        .admin-input,
+        .admin-textarea {
+          @apply w-full bg-pm-off-white/5 border border-pm-off-white/40 rounded-lg p-3 text-pm-off-white 
+                 placeholder:text-pm-off-white/50 
+                 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-offset-1 focus:ring-offset-black focus:ring-pm-gold/50 
+                 transition-all duration-200 disabled:opacity-50 disabled:bg-pm-dark/50 disabled:border-pm-off-white/10;
+        }
+        .admin-textarea {
+          @apply resize-y;
+        }
+        .admin-label {
+          @apply block text-xs font-bold text-pm-gold/90 uppercase tracking-wider mb-2;
+        }
+
+        /* ===================== BUTTONS ===================== */
+        .action-btn {
+          @apply p-2 rounded-md font-bold border border-pm-gold text-pm-off-white 
+                 hover:bg-pm-gold/20 transition-colors duration-200;
+        }
+
+        /* ===================== TABLES ===================== */
+        .admin-table {
+          @apply w-full border border-pm-gold/20 text-pm-off-white;
+        }
+        .admin-table th,
+        .admin-table td {
+          @apply border border-pm-gold/20 p-3 text-left;
+        }
+        .admin-table th {
+          @apply bg-black/50 font-playfair text-pm-gold;
+        }
+        .admin-table tr:hover {
+          @apply bg-pm-gold/10;
+        }
+      }
+
+      /* ===================== PRINT STYLES ===================== */
+      @media print {
+        .print-hide {
+          display: none !important;
+        }
+        .printable-content {
+          display: block !important;
+          position: absolute !important;
+          left: 0 !important;
+          top: 0 !important;
+          width: 100% !important;
+        }
+        .printable-sheet {
+          box-shadow: none !important;
+          border: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        body {
+            background-color: white !important;
+        }
+      }
+    </style>
 
 <script type="importmap">
 {
