@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router
 import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
 // FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
