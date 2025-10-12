@@ -86,8 +86,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
             return newSchema;
         };
 
-        try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+        try{
+            if (!import.meta.env.VITE_API_KEY) {
+                throw new Error("La clé API n'est pas configurée.");
+            }
+            
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
             
             let response;
             const model = 'gemini-2.5-flash';
