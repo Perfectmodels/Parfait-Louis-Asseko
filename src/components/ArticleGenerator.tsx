@@ -95,11 +95,11 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
         };
 
         try {
-            if (!process.env.API_KEY) {
+            if (!import.meta.env.VITE_API_KEY) {
                 throw new Error("La clé API Gemini n'est pas configurée.");
             }
             
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
             
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
