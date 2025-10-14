@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
-type AdminTab = 'talents' | 'content' | 'accounting';
+type AdminTab = 'overview' | 'talents' | 'content' | 'accounting';
 
 interface ActiveUser {
     name: string;
@@ -43,7 +43,7 @@ const getRoleColor = (role: string) => {
 const Admin: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useData();
-    const [activeTab, setActiveTab] = useState<AdminTab>('talents');
+    const [activeTab, setActiveTab] = useState<AdminTab>('overview');
     const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
 
     useEffect(() => {
@@ -72,8 +72,11 @@ const Admin: React.FC = () => {
     const newRecoveryRequests = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
     const newBookingRequests = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
     const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
+    const totalModels = data?.models?.length || 0;
+    const totalBeginnerStudents = data?.beginnerStudents?.length || 0;
 
     const tabs: { id: AdminTab; label: string; icon: React.ElementType }[] = [
+        { id: 'overview', label: 'Aperçu', icon: HomeIcon },
         { id: 'talents', label: 'Talents', icon: UsersIcon },
         { id: 'content', label: 'Contenu', icon: NewspaperIcon },
         { id: 'accounting', label: 'Comptabilité & Suivi', icon: BriefcaseIcon },
@@ -133,6 +136,79 @@ const Admin: React.FC = () => {
                 </div>
                 
                 <div className="animate-fade-in">
+                    {activeTab === 'overview' && (
+                        <section className="space-y-8">
+                            {/* KPIs */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                                <KpiCard icon={ClipboardDocumentListIcon} label="Casting (Nouveaux)" value={newCastingApps} accent="text-pm-gold" />
+                                <KpiCard icon={SparklesIcon} label="PFD (Nouveaux)" value={newFashionDayApps} accent="text-pm-gold" />
+                                <KpiCard icon={EnvelopeIcon} label="Messages (Nouveaux)" value={newMessages} />
+                                <KpiCard icon={BriefcaseIcon} label="Bookings (Nouveaux)" value={newBookingRequests} />
+                                <KpiCard icon={UsersIcon} label="Mannequins Pro" value={totalModels} />
+                                <KpiCard icon={AcademicCapIcon} label="Débutants" value={totalBeginnerStudents} />
+                            </div>
+
+                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                                {/* Quick actions */}
+                                <div className="xl:col-span-2">
+                                    <h3 className="text-lg font-bold text-pm-off-white/80 mb-4">Raccourcis</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <Stagger>
+                                            <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Traiter les nouvelles candidatures." notificationCount={newCastingApps} />
+                                            <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions au PFD." notificationCount={newFashionDayApps} />
+                                            <DashboardCard title="Demandes de Booking" icon={BriefcaseIcon} link="/admin/bookings" description="Gérer les demandes clients." notificationCount={newBookingRequests} />
+                                            <DashboardCard title="Messages" icon={EnvelopeIcon} link="/admin/messages" description="Lire les nouveaux messages." notificationCount={newMessages} />
+                                            <DashboardCard title="Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Gérer les profils confirmés." />
+                                            <DashboardCard title="Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Promouvoir les étudiants." />
+                                        </Stagger>
+                                    </div>
+                                </div>
+
+                                {/* Recents */}
+                                <div className="xl:col-span-1">
+                                    <h3 className="text-lg font-bold text-pm-off-white/80 mb-4">Dernières activités</h3>
+                                    <div className="space-y-4">
+                                        <RecentList
+                                            title="Casting"
+                                            items={(data?.castingApplications || []).slice().sort((a,b)=> new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()).slice(0,5).map(a=>({
+                                                id: a.id,
+                                                primary: `${a.firstName} ${a.lastName}`,
+                                                secondary: a.city,
+                                                date: a.submissionDate,
+                                                status: a.status
+                                            }))}
+                                            icon={ClipboardDocumentListIcon}
+                                            linkBase="/admin/casting-applications"
+                                        />
+                                        <RecentList
+                                            title="Messages"
+                                            items={(data?.contactMessages || []).slice().sort((a,b)=> new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()).slice(0,5).map(m=>({
+                                                id: m.id,
+                                                primary: m.name,
+                                                secondary: m.subject,
+                                                date: m.submissionDate,
+                                                status: m.status
+                                            }))}
+                                            icon={EnvelopeIcon}
+                                            linkBase="/admin/messages"
+                                        />
+                                        <RecentList
+                                            title="Bookings"
+                                            items={(data?.bookingRequests || []).slice().sort((a,b)=> new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()).slice(0,5).map(b=>({
+                                                id: b.id,
+                                                primary: b.clientName,
+                                                secondary: b.requestedModels,
+                                                date: b.submissionDate,
+                                                status: b.status
+                                            }))}
+                                            icon={BriefcaseIcon}
+                                            linkBase="/admin/bookings"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    )}
                     {activeTab === 'talents' && (
                         <TabContent title="Gestion des Talents et du Recrutement">
                             <Stagger>
@@ -219,3 +295,75 @@ const Stagger: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 export default Admin;
+
+// ===== Local Components
+
+const KpiCard: React.FC<{ icon: React.ElementType; label: string; value: number | string; accent?: string; }> = ({ icon: Icon, label, value, accent }) => {
+    return (
+        <div className="reveal reveal-up bg-black/60 border border-pm-gold/20 rounded-lg p-4 flex items-center gap-4 hover-lift">
+            <div className={`w-10 h-10 rounded-md bg-pm-gold/10 flex items-center justify-center ${accent ? accent : 'text-pm-gold'}`}>
+                <Icon className="w-6 h-6" />
+            </div>
+            <div>
+                <div className="text-sm text-pm-off-white/70">{label}</div>
+                <div className="text-2xl font-bold text-pm-off-white">{value}</div>
+            </div>
+        </div>
+    );
+};
+
+type RecentItem = { id: string; primary: string; secondary?: string; date: string; status?: string };
+
+const RecentList: React.FC<{ title: string; items: RecentItem[]; icon: React.ElementType; linkBase: string; }> = ({ title, items, icon: Icon, linkBase }) => {
+    const formatDate = (value: string): string => {
+        const d = new Date(value);
+        if (isNaN(d.getTime())) return value;
+        return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    };
+
+    const getStatusClasses = (status?: string): string => {
+        if (!status) return 'bg-pm-off-white/10 text-pm-off-white/70';
+        const map: Record<string, string> = {
+            'Nouveau': 'bg-green-500/20 text-green-300',
+            'Présélectionné': 'bg-blue-500/20 text-blue-300',
+            'Accepté': 'bg-pm-gold/20 text-pm-gold',
+            'Refusé': 'bg-red-500/20 text-red-300',
+            'Confirmé': 'bg-pm-gold/20 text-pm-gold',
+            'Annulé': 'bg-red-500/20 text-red-300',
+            'Lu': 'bg-blue-500/20 text-blue-300',
+            'Archivé': 'bg-gray-500/20 text-gray-300',
+            'En attente': 'bg-yellow-500/20 text-yellow-300',
+        };
+        return map[status] || 'bg-pm-off-white/10 text-pm-off-white/70';
+    };
+
+    return (
+        <div className="bg-black border border-pm-gold/20 rounded-lg p-4 reveal reveal-up">
+            <div className="flex items-center gap-2 mb-3">
+                <Icon className="w-5 h-5 text-pm-gold" />
+                <h4 className="font-semibold text-pm-off-white/80">{title}</h4>
+            </div>
+            {items.length === 0 ? (
+                <p className="text-sm text-pm-off-white/60">Aucun élément récent.</p>
+            ) : (
+                <ul className="divide-y divide-pm-gold/10">
+                    {items.map(item => (
+                        <li key={item.id} className="py-2 flex items-center justify-between">
+                            <div className="min-w-0">
+                                <div className="text-sm font-medium text-pm-off-white truncate">{item.primary}</div>
+                                {item.secondary && <div className="text-xs text-pm-off-white/60 truncate">{item.secondary}</div>}
+                            </div>
+                            <div className="flex items-center gap-3 flex-shrink-0">
+                                {item.status && <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusClasses(item.status)}`}>{item.status}</span>}
+                                <span className="text-xs text-pm-off-white/50 w-14 text-right">{formatDate(item.date)}</span>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            )}
+            <div className="mt-3 text-right">
+                <Link to={linkBase} className="text-xs text-pm-gold hover:underline">Tout voir</Link>
+            </div>
+        </div>
+    );
+};
