@@ -84,6 +84,7 @@ const LoadingFallback: React.FC = () => (
 const AppContent: React.FC = () => {
     const location = useLocation();
     const { data } = useData();
+    const [authTick, setAuthTick] = React.useState(0);
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -116,10 +117,17 @@ const AppContent: React.FC = () => {
     }, [location.pathname, data]);
 
 
+    // Listen for custom auth changes to force remount of routes
+    useEffect(() => {
+        const handler = () => setAuthTick((t) => t + 1);
+        window.addEventListener('pmm-auth-changed', handler);
+        return () => window.removeEventListener('pmm-auth-changed', handler);
+    }, []);
+
     return (
       <>
         <Suspense fallback={<LoadingFallback />}>
-          <Routes>
+          <Routes key={`auth-${authTick}`}> 
             {/* Public + non-admin protected routes under site Layout */}
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
