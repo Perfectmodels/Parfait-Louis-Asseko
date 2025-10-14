@@ -28,6 +28,7 @@ const ServiceDetail: React.FC = () => {
                 description={service.description}
                 keywords={`service ${service.title}, ${service.category}, perfect models management, gabon`}
                 image={data?.siteImages.about}
+                type="website"
             />
             <div className="page-container">
                 <Link to="/services" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline">

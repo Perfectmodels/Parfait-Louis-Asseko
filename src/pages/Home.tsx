@@ -273,6 +273,7 @@ const Home: React.FC = () => {
         keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
         image={siteImages.hero}
         schema={organizationSchema}
+        type="website"
       />
 
       {/* 1. Hero Section with Integrated Event */}
