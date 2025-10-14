@@ -83,6 +83,23 @@ export interface AppData {
     photoshootBriefs: PhotoshootBrief[];
 }
 
+const deepCleanUndefined = (value: any): any => {
+  if (Array.isArray(value)) {
+    return value.map((v) => deepCleanUndefined(v));
+  }
+  if (value && typeof value === 'object') {
+    const result: any = {};
+    Object.keys(value).forEach((k) => {
+      const cleaned = deepCleanUndefined((value as any)[k]);
+      if (cleaned !== undefined) {
+        result[k] = cleaned;
+      }
+    });
+    return result;
+  }
+  return value === undefined ? null : value;
+};
+
 export const useDataStore = () => {
     const [data, setData] = useState<AppData | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
@@ -172,10 +189,11 @@ export const useDataStore = () => {
 
     const saveData = useCallback(async (newData: AppData) => {
         try {
-            await set(ref(db, '/'), newData);
+            const sanitized = deepCleanUndefined(newData);
+            await set(ref(db, '/'), sanitized);
             // The local state will be updated by the 'on' listener,
             // but we can set it here for immediate UI feedback if desired.
-            setData(newData);
+            setData(sanitized);
         } catch (error) {
             console.error("Error saving data to Firebase:", error);
             throw error; // Re-throw to be caught by the caller

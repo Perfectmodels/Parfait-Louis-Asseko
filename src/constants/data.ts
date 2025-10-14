@@ -2,7 +2,7 @@
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+  logo: '/icons/icon-192.png',
 };
 
 export const navLinks: NavLink[] = [
@@ -30,12 +30,12 @@ export const contactInfo: ContactInfo = {
 };
 
 export const siteImages: SiteImages = {
-    hero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-    about: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
-    fashionDayBg: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
-    agencyHistory: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
-    classroomBg: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
-    castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+    hero: '/fallbacks/hero.jpg',
+    about: '/fallbacks/about.jpg',
+    fashionDayBg: '/fallbacks/fashion-day.jpg',
+    agencyHistory: '/fallbacks/agency-history.jpg',
+    classroomBg: '/fallbacks/classroom.jpg',
+    castingBg: '/fallbacks/casting.jpg',
 };
 
 export const apiKeys: ApiKeys = {

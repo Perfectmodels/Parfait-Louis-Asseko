@@ -59,6 +59,7 @@ const Login: React.FC = () => {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
       updateUserActivity('Administrateur', 'admin');
+      try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
       navigate('/admin');
       return;
     }
@@ -76,6 +77,7 @@ const Login: React.FC = () => {
         const updatedModels = data.models.map(m => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
         await saveData({ ...data, models: updatedModels });
         updateUserActivity(loggedInModel.name, 'student');
+        try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
         
         navigate('/profil');
         return;
@@ -95,6 +97,7 @@ const Login: React.FC = () => {
         const updatedBeginners = data.beginnerStudents.map(bs => bs.id === loggedInBeginner.id ? { ...bs, lastLogin: timestamp } : bs);
         await saveData({ ...data, beginnerStudents: updatedBeginners });
         updateUserActivity(loggedInBeginner.name, 'beginner');
+        try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
 
         navigate('/classroom-debutant');
         return;
@@ -111,6 +114,7 @@ const Login: React.FC = () => {
         sessionStorage.setItem('userId', loggedInJury.id);
         sessionStorage.setItem('userName', loggedInJury.name);
         updateUserActivity(loggedInJury.name, 'jury');
+        try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
         navigate('/jury/casting');
         return;
     }
@@ -126,6 +130,7 @@ const Login: React.FC = () => {
         sessionStorage.setItem('userId', loggedInStaff.id);
         sessionStorage.setItem('userName', loggedInStaff.name);
         updateUserActivity(loggedInStaff.name, 'registration');
+        try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
         navigate('/enregistrement/casting');
         return;
     }
