@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { Article } from '../types';
@@ -8,16 +8,22 @@ import Pagination from '../components/Pagination';
 const Magazine: React.FC = () => {
   const { data, isInitialized } = useData();
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [category, setCategory] = useState<string>('Toutes');
   const ARTICLES_PER_PAGE = 9;
 
   const articles = data?.articles || [];
+  const categories = useMemo(() => ['Toutes', ...Array.from(new Set(articles.map(a => a.category)))], [articles]);
 
   let featuredArticle = articles.find(a => a.isFeatured);
   if (!featuredArticle && articles.length > 0) {
     featuredArticle = articles[0]; // Fallback to the first article if none is featured
   }
   
-  const otherArticles = articles.filter(a => a.slug !== featuredArticle?.slug);
+  const otherArticles = articles
+    .filter(a => a.slug !== featuredArticle?.slug)
+    .filter(a => category === 'Toutes' || a.category === category)
+    .filter(a => a.title.toLowerCase().includes(searchTerm.toLowerCase()) || a.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const totalPages = Math.ceil(otherArticles.length / ARTICLES_PER_PAGE);
   const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
@@ -69,6 +75,19 @@ const Magazine: React.FC = () => {
             </Link>
           </section>
         )}
+
+        {/* Controls */}
+        <section className="mb-6 -mt-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <label htmlFor="search-article" className="sr-only">Rechercher un article</label>
+              <input id="search-article" type="text" placeholder="Rechercher..." value={searchTerm} onChange={(e)=>{setSearchTerm(e.target.value); setCurrentPage(1);}} className="w-full md:w-72 bg-black border border-pm-gold/40 rounded-full px-4 py-2 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/30" />
+              <select value={category} onChange={(e)=>{setCategory(e.target.value); setCurrentPage(1);}} className="bg-black border border-pm-gold/40 rounded-full px-4 py-2 focus:outline-none focus:border-pm-gold">
+                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+          </div>
+        </section>
 
         {/* Other Articles Grid */}
         <section>
