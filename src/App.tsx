@@ -71,16 +71,16 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
-const LoadingFallback: React.FC = () => (
-    <div className="w-full py-40 flex items-center justify-center">
-        <p className="text-pm-gold text-2xl font-playfair animate-pulse">Chargement...</p>
-    </div>
+const LoadingFallback: React.FC<{fullscreen?: boolean}> = ({ fullscreen = false }) => (
+  <div className={`w-full ${fullscreen ? 'min-h-[60vh]' : 'py-40'} flex items-center justify-center`}>
+    <p className="text-pm-gold text-2xl font-playfair animate-pulse">Chargement...</p>
+  </div>
 );
 
 
 const AppContent: React.FC = () => {
     const location = useLocation();
-    const { data } = useData();
+    const { data, isInitialized } = useData();
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -112,6 +112,10 @@ const AppContent: React.FC = () => {
         };
     }, [location.pathname, data]);
 
+
+    if (!isInitialized || !data) {
+      return <LoadingFallback fullscreen />;
+    }
 
     return (
         <>
