@@ -1,4 +1,5 @@
 import React from 'react';
+import Reveal from './Reveal';
 import { Link } from 'react-router-dom';
 import { Service } from '../types';
 import { 
@@ -18,7 +19,8 @@ const iconMap: { [key: string]: React.ElementType } = {
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
     const Icon = iconMap[service.icon] || HeartIcon;
     return (
-        <div className="relative card-base p-8 flex flex-col h-full text-left">
+        <Reveal className="hover-lift" direction="up">
+        <div className="relative card-base p-8 flex flex-col h-full text-left hover-glow">
             {service.isComingSoon && (
                 <span className="absolute top-4 right-4 bg-pm-dark text-pm-gold text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-pm-gold/50">
                     Bientôt disponible
@@ -46,6 +48,7 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
                 </Link>
             </div>
         </div>
+        </Reveal>
     );
 };
 
