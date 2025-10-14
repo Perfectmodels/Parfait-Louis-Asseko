@@ -59,7 +59,12 @@ const SEO: React.FC<SEOProps> = ({
       "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
     const defaultKeywords =
       'mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting';
-    const defaultImage = siteConfig.logo;
+    const defaultImage = '/og/default.png';
+    const toAbsolute = (src?: string) => {
+      if (!src) return undefined;
+      if (/^https?:\/\//i.test(src)) return src;
+      try { return new URL(src, window.location.origin).toString(); } catch { return src; }
+    };
     const siteUrl = window.location.href;
     const siteName = 'Perfect Models Management';
 
@@ -75,7 +80,7 @@ const SEO: React.FC<SEOProps> = ({
     // Open Graph
     setMeta('og:title', pageTitle, true);
     setMeta('og:description', description || defaultDescription, true);
-    setMeta('og:image', image || defaultImage, true);
+    setMeta('og:image', toAbsolute(image || defaultImage), true);
     setMeta('og:url', siteUrl, true);
     setMeta('og:site_name', siteName, true);
     setMeta('og:type', type, true);
@@ -87,7 +92,7 @@ const SEO: React.FC<SEOProps> = ({
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', pageTitle);
     setMeta('twitter:description', description || defaultDescription);
-    setMeta('twitter:image', image || defaultImage);
+    setMeta('twitter:image', toAbsolute(image || defaultImage) || '');
 
     // JSON-LD Schema
     const schemaElementId = 'seo-schema-script';

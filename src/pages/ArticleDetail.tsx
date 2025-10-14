@@ -346,7 +346,7 @@ const ArticleDetail: React.FC = () => {
 
   return (
     <>
-      <SEO title={article.title} description={article.excerpt} keywords={article.tags?.join(', ')} image={article.imageUrl} schema={articleSchema} />
+      <SEO title={article.title} description={article.excerpt} keywords={article.tags?.join(', ')} image={article.imageUrl} schema={articleSchema} type="article" />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="fixed top-0 left-0 right-0 h-1 bg-pm-gold/20 z-30"><div ref={progressRef} className="h-full bg-pm-gold transition-[width] duration-150 ease-linear w-0" /></div>
         <div className="container mx-auto px-6 max-w-4xl">
