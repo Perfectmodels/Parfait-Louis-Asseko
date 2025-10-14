@@ -46,6 +46,11 @@
               'marquee': 'marquee 60s linear infinite',
               'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'fade-in': 'fadeIn 0.5s ease-in-out',
+              'fade-up': 'fadeUp 600ms ease-out forwards',
+              'fade-down': 'fadeDown 600ms ease-out forwards',
+              'fade-left': 'fadeLeft 600ms ease-out forwards',
+              'fade-right': 'fadeRight 600ms ease-out forwards',
+              'scale-in': 'scaleIn 500ms ease-out forwards',
           },
           keyframes: {
               marquee: {
@@ -55,6 +60,26 @@
               fadeIn: {
                   '0%': { opacity: 0 },
                   '100%': { opacity: 1 },
+              },
+              fadeUp: {
+                '0%': { opacity: 0, transform: 'translateY(16px)' },
+                '100%': { opacity: 1, transform: 'translateY(0)' },
+              },
+              fadeDown: {
+                '0%': { opacity: 0, transform: 'translateY(-16px)' },
+                '100%': { opacity: 1, transform: 'translateY(0)' },
+              },
+              fadeLeft: {
+                '0%': { opacity: 0, transform: 'translateX(16px)' },
+                '100%': { opacity: 1, transform: 'translateX(0)' },
+              },
+              fadeRight: {
+                '0%': { opacity: 0, transform: 'translateX(-16px)' },
+                '100%': { opacity: 1, transform: 'translateX(0)' },
+              },
+              scaleIn: {
+                '0%': { opacity: 0, transform: 'scale(0.95)' },
+                '100%': { opacity: 1, transform: 'scale(1)' },
               },
           }
         }
@@ -127,6 +152,32 @@
         .card-base:hover {
           @apply border-pm-gold shadow-2xl shadow-pm-gold/20 -translate-y-2;
         }
+
+        /* ===================== HOVER/ANIMATION UTILITIES ===================== */
+        .hover-lift {
+          @apply transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-pm-gold/10;
+        }
+        .hover-glow {
+          @apply transition-colors duration-300 ease-out hover:border-pm-gold/60 hover:shadow-pm-gold/20;
+        }
+        .hover-underline { @apply relative; }
+        .hover-underline::after {
+          content: '';
+          @apply absolute left-0 -bottom-0.5 w-0 h-0.5 bg-pm-gold transition-all duration-300;
+        }
+        .hover-underline:hover::after, .hover-underline:focus-visible::after { @apply w-full; }
+
+        .reveal { @apply opacity-0; }
+        .reveal-up { transform: translateY(16px); }
+        .reveal-down { transform: translateY(-16px); }
+        .reveal-left { transform: translateX(16px); }
+        .reveal-right { transform: translateX(-16px); }
+        .reveal-scale { transform: scale(0.95); }
+        .reveal.show.reveal-up { animation: fadeUp 600ms ease-out forwards; }
+        .reveal.show.reveal-down { animation: fadeDown 600ms ease-out forwards; }
+        .reveal.show.reveal-left { animation: fadeLeft 600ms ease-out forwards; }
+        .reveal.show.reveal-right { animation: fadeRight 600ms ease-out forwards; }
+        .reveal.show.reveal-scale { animation: scaleIn 500ms ease-out forwards; }
 
         /* ===================== ADMIN PANEL ===================== */
         .admin-page-header {
