@@ -15,6 +15,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     return children;
   }
   
+  // Emit a global event so listeners (like router) can re-evaluate on auth changes
+  try {
+    const event = new Event('pmm-auth-changed');
+    window.dispatchEvent(event);
+  } catch {}
   return <Navigate to="/login" state={{ from: location }} replace />;
 };
 
