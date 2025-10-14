@@ -19,6 +19,11 @@ export default {
           'marquee': 'marquee 60s linear infinite',
           'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           'fade-in': 'fadeIn 0.5s ease-in-out',
+          'fade-up': 'fadeUp 600ms ease-out forwards',
+          'fade-down': 'fadeDown 600ms ease-out forwards',
+          'fade-left': 'fadeLeft 600ms ease-out forwards',
+          'fade-right': 'fadeRight 600ms ease-out forwards',
+          'scale-in': 'scaleIn 500ms ease-out forwards',
       },
       keyframes: {
           marquee: {
@@ -28,6 +33,26 @@ export default {
           fadeIn: {
               '0%': { opacity: 0 },
               '100%': { opacity: 1 },
+          },
+          fadeUp: {
+              '0%': { opacity: 0, transform: 'translateY(16px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' },
+          },
+          fadeDown: {
+              '0%': { opacity: 0, transform: 'translateY(-16px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' },
+          },
+          fadeLeft: {
+              '0%': { opacity: 0, transform: 'translateX(16px)' },
+              '100%': { opacity: 1, transform: 'translateX(0)' },
+          },
+          fadeRight: {
+              '0%': { opacity: 0, transform: 'translateX(-16px)' },
+              '100%': { opacity: 1, transform: 'translateX(0)' },
+          },
+          scaleIn: {
+              '0%': { opacity: 0, transform: 'scale(0.95)' },
+              '100%': { opacity: 1, transform: 'scale(1)' },
           },
       }
     }

@@ -165,7 +165,7 @@ const AppContent: React.FC = () => {
               <Route path="*" element={<NotFound />} />
             </Route>
 
-            {/* Admin routes under dedicated AdminLayout */
+            {/* Admin routes under dedicated AdminLayout */}
             <Route
               path="/admin"
               element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}

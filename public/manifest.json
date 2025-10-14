@@ -8,13 +8,13 @@
   "theme_color": "#D4AF37",
   "icons": [
     {
-      "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
