@@ -4,6 +4,7 @@ import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIc
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayEvent, Artist } from '../types';
+import AutoCarousel from '../components/AutoCarousel';
 
 interface AccordionItemProps {
     title: string;
@@ -35,13 +36,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ title, description, image
             >
                 <div className="overflow-hidden">
                     <div className="p-4 border-t border-pm-gold/20">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                            {(images || []).map((img, idx) => (
-                                <button key={idx} onClick={() => onImageClick(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${title}`} className="aspect-square block bg-black group overflow-hidden border-2 border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300 rounded-md">
-                                    <img src={img} alt={`${title} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
-                                </button>
-                            ))}
-                        </div>
+                        <AutoCarousel images={images || []} onImageClick={onImageClick} />
                     </div>
                 </div>
             </div>
