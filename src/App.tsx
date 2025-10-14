@@ -28,8 +28,11 @@ const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
 const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
 const Chat = lazy(() => import('./pages/Chat'));
 
-// Admin Pages
-const Admin = lazy(() => import('./pages/Admin'));
+// Admin Components and Pages
+const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout'));
+const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
+
+// Legacy Admin Pages (to be migrated)
 const AdminAgency = lazy(() => import('./pages/AdminAgency'));
 const AdminCasting = lazy(() => import('./pages/AdminCasting'));
 const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
@@ -148,27 +151,30 @@ const AppContent: React.FC = () => {
                         <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                         <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
                         
-                        <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
-                        <Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
-                        <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
-                        <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
-                        <Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
-                        <Route path="/admin/agency" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />
-                        <Route path="/admin/casting-applications" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
-                        <Route path="/admin/casting-results" element={<ProtectedRoute role="admin"><AdminCastingResults /></ProtectedRoute>} />
-                        <Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
-                        <Route path="/admin/fashion-day-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
-                        <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
-                        <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
-                        <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
-                        <Route path="/admin/beginner-students-access" element={<ProtectedRoute role="admin"><AdminBeginnerStudents /></ProtectedRoute>} />
-                        <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
-                        <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
-                        <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
-                        <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
-                        <Route path="/admin/payments" element={<ProtectedRoute role="admin"><AdminPayments /></ProtectedRoute>} />
-                        <Route path="/admin/absences" element={<ProtectedRoute role="admin"><AdminAbsences /></ProtectedRoute>} />
-                        <Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
+                        {/* Admin Routes with new layout */}
+                        <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
+                            <Route index element={<AdminDashboard />} />
+                            <Route path="models" element={<AdminModels />} />
+                            <Route path="magazine" element={<AdminMagazine />} />
+                            <Route path="classroom" element={<AdminClassroom />} />
+                            <Route path="settings" element={<AdminSettings />} />
+                            <Route path="agency" element={<AdminAgency />} />
+                            <Route path="casting-applications" element={<AdminCasting />} />
+                            <Route path="casting-results" element={<AdminCastingResults />} />
+                            <Route path="fashion-day-applications" element={<AdminFashionDay />} />
+                            <Route path="fashion-day-events" element={<AdminFashionDayEvents />} />
+                            <Route path="news" element={<AdminNews />} />
+                            <Route path="classroom-progress" element={<AdminClassroomProgress />} />
+                            <Route path="model-access" element={<AdminModelAccess />} />
+                            <Route path="beginner-students-access" element={<AdminBeginnerStudents />} />
+                            <Route path="recovery-requests" element={<AdminRecovery />} />
+                            <Route path="comments" element={<AdminComments />} />
+                            <Route path="messages" element={<AdminMessages />} />
+                            <Route path="bookings" element={<AdminBookings />} />
+                            <Route path="payments" element={<AdminPayments />} />
+                            <Route path="absences" element={<AdminAbsences />} />
+                            <Route path="artistic-direction" element={<AdminArtisticDirection />} />
+                        </Route>
 
                         <Route path="*" element={<NotFound />} />
                     </Routes>
