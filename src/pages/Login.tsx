@@ -42,6 +42,16 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
+  const normalizeUsername = (value: string) => value.toLowerCase().trim();
+  const normalizeNameKey = (value: string) =>
+    value
+      .toLowerCase()
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '') // remove spaces
+      .replace(/[^a-z0-9]/g, '');
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -52,7 +62,8 @@ const Login: React.FC = () => {
     }
 
     const timestamp = new Date().toISOString();
-    const normalizedUsername = username.toLowerCase();
+    const normalizedUsername = normalizeUsername(username);
+    const normalizedNameKey = normalizeNameKey(username);
 
     // Admin Login
     if (normalizedUsername === 'admin' && password === 'admin2025') {
@@ -64,11 +75,12 @@ const Login: React.FC = () => {
       return;
     }
 
-    // Model Login
-    const loggedInModel = data.models.find(m => 
-        m.username.toLowerCase() === normalizedUsername || 
-        m.name.toLowerCase() === normalizedUsername
-    );
+    // Model Login (accept matricule, username, or full name; accent/space-insensitive for names)
+    const loggedInModel = data.models.find(m => {
+        const modelUsername = m.username ? normalizeUsername(m.username) : '';
+        const modelNameKey = m.name ? normalizeNameKey(m.name) : '';
+        return modelUsername === normalizedUsername || modelNameKey === normalizedNameKey;
+    });
     if (loggedInModel && loggedInModel.password === password) {
         sessionStorage.setItem('classroom_access', 'granted');
         sessionStorage.setItem('classroom_role', 'student');

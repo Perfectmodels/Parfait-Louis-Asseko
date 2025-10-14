@@ -23,10 +23,14 @@ const ModelDashboard: React.FC = () => {
     const newBriefsCount = myBriefs.filter(b => b.status === 'Nouveau').length;
 
     useEffect(() => {
+        if (!userId) {
+            navigate('/login', { replace: true });
+            return;
+        }
         if (originalModel) {
             setEditableModel(JSON.parse(JSON.stringify(originalModel)));
         }
-    }, [originalModel]);
+    }, [originalModel, userId, navigate]);
     
     const handleSave = async (updatedModel: Model) => {
         if (!data || !editableModel) return;
