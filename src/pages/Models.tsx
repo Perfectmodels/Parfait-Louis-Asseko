@@ -1,24 +1,32 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import ModelCard from '../components/ModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
+type SortKey = 'alphabetical' | 'recent';
 
 const Models: React.FC = () => {
   const { data, isInitialized } = useData();
   const [filter, setFilter] = useState<GenderFilter>('Tous');
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<SortKey>('alphabetical');
 
   const models = data?.models || [];
   
   const publicModels = useMemo(() => models.filter(model => model.isPublic === true), [models]);
 
   const filteredModels = useMemo(() => {
-    return publicModels
+    let result = publicModels
       .filter(model => filter === 'Tous' || model.gender === filter)
       .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [filter, searchTerm, publicModels]);
+    if (sortBy === 'alphabetical') {
+      result = [...result].sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'recent') {
+      result = [...result].sort((a, b) => (b.lastLogin ? new Date(b.lastLogin).getTime() : 0) - (a.lastLogin ? new Date(a.lastLogin).getTime() : 0));
+    }
+    return result;
+  }, [filter, searchTerm, publicModels, sortBy]);
   
   const seoDescription = useMemo(() => {
       const modelNames = publicModels.slice(0, 3).map(m => m.name).join(', ');
@@ -53,23 +61,34 @@ const Models: React.FC = () => {
           Découvrez les visages qui définissent l'avenir de la mode. Des talents uniques, prêts à donner vie à vos créations.
         </p>
 
-        {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 lg:mb-14">
-          <div className="flex items-center gap-4">
-            <FilterButton gender="Tous" />
-            <FilterButton gender="Femme" />
-            <FilterButton gender="Homme" />
-          </div>
-          <div className="w-full md:w-auto">
-            <label htmlFor="search-model" className="sr-only">Rechercher un mannequin</label>
-            <input
-              id="search-model"
-              type="text"
-              placeholder="Rechercher un mannequin..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-64 bg-black border border-pm-gold/50 rounded-full px-4 py-2 text-pm-off-white focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/50 transition-all"
-            />
+        {/* Filters and Search (sticky) */}
+        <div className="sticky top-20 z-10 bg-pm-dark/80 backdrop-blur border-y border-pm-gold/10 py-4 mb-10 lg:mb-14">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <FilterButton gender="Tous" />
+              <FilterButton gender="Femme" />
+              <FilterButton gender="Homme" />
+            </div>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <label htmlFor="search-model" className="sr-only">Rechercher un mannequin</label>
+              <input
+                id="search-model"
+                type="text"
+                placeholder="Rechercher un mannequin..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full md:w-64 bg-black border border-pm-gold/50 rounded-full px-4 py-2 text-pm-off-white focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/50 transition-all"
+              />
+              <select
+                aria-label="Trier par"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortKey)}
+                className="bg-black border border-pm-gold/50 text-sm rounded-full px-4 py-2 focus:outline-none focus:border-pm-gold"
+              >
+                <option value="alphabetical">A → Z</option>
+                <option value="recent">Récents</option>
+              </select>
+            </div>
           </div>
         </div>
 
