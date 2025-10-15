@@ -1,5 +1,5 @@
 // FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/NdrpzGpm/blob.jpg',
@@ -47,6 +47,29 @@ export const apiKeys: ApiKeys = {
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
 };
+
+export const adminUsers: AdminUser[] = [
+  {
+    id: 'admin-super-1',
+    name: 'Administrateur',
+    username: 'admin',
+    password: 'admin2025',
+    email: 'admin@perfectmodels.ga',
+    phone: '+241 077 00 00 00',
+    avatarUrl: '',
+    role: 'SuperAdmin',
+    permissions: {
+      canEditContent: true,
+      canPublishContent: true,
+      canManageModels: true,
+      canManagePayments: true,
+      canModerateComments: true,
+      canManageAdmins: true,
+    },
+    deputies: [],
+    active: true,
+  }
+];
 
 export const juryMembers: JuryMember[] = [
     { id: 'jury1', name: 'Martelly', username: 'jury1', password: 'password2025' },
