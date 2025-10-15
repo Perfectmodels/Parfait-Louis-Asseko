@@ -25,13 +25,28 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Validation basique pour limiter les lenteurs et erreurs
+        const MAX_SIZE_MB = 5;
+        if (!file.type.startsWith('image/')) {
+            alert('Veuillez sélectionner un fichier image.');
+            return;
+        }
+        if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+            alert(`Image trop lourde (> ${MAX_SIZE_MB} Mo). Réduisez la taille avant l'envoi.`);
+            return;
+        }
+
         try {
             setIsUploading(true);
             setProgress(0);
             const timestamp = Date.now();
             const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
-            const storagePath = `uploads/${timestamp}-${safeName}`;
-            const task = storage.ref().child(storagePath).put(file, { contentType: file.type });
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const storagePath = `images/${year}/${month}/${timestamp}-${safeName}`;
+            const metadata = { contentType: file.type, cacheControl: 'public, max-age=31536000, immutable' } as const;
+            const task = storage.ref().child(storagePath).put(file, metadata);
 
             task.on('state_changed', (snapshot) => {
                 const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
