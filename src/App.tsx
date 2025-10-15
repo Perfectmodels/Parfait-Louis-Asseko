@@ -14,6 +14,8 @@ const FashionDay = lazy(() => import('./pages/FashionDay'));
 const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Gallery = lazy(() => import('./pages/Gallery'));
+const Gallery = lazy(() => import('./pages/Gallery'));
 const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
@@ -134,6 +136,8 @@ const AppContent: React.FC = () => {
                         <Route path="/magazine/:slug" element={<ArticleDetail />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/services" element={<Services />} />
+                        <Route path="/galerie" element={<Gallery />} />
+                        <Route path="/galerie" element={<Gallery />} />
                         <Route path="/services/:slug" element={<ServiceDetail />} />
                         <Route path="/casting" element={<Casting />} />
                         <Route path="/casting-formulaire" element={<CastingForm />} />
