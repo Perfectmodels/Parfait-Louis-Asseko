@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { ContactMessage, InternalMessage, InternalParticipant, InternalAttachment } from '../types';
 import AIAssistant from '../components/AIAssistant';
+import Modal from '../components/Modal';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
@@ -245,13 +246,8 @@ const AdminMessages: React.FC = () => {
         </div>
 
         {composeOpen && (
-          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true">
-            <div className="bg-pm-dark border border-pm-gold/20 rounded-lg shadow-2xl w-full max-w-2xl">
-              <div className="p-4 border-b border-pm-gold/20 flex items-center justify-between">
-                <h3 className="text-xl font-playfair text-pm-gold">Nouveau message</h3>
-                <button onClick={() => setComposeOpen(false)} className="text-pm-off-white/70 hover:text-white">Fermer</button>
-              </div>
-              <div className="p-6 space-y-4">
+          <Modal isOpen={composeOpen} onClose={() => setComposeOpen(false)} title="Nouveau message" maxWidthClass="max-w-2xl">
+            <div className="space-y-4">
                 <div>
                   <label className="admin-label">À (noms ou IDs, séparés par des virgules)</label>
                   <input className="admin-input" value={compose.to} onChange={e => setCompose(c => ({...c, to: e.target.value}))} placeholder="ex: Administrateur, Noemi Kim" />
@@ -303,7 +299,6 @@ const AdminMessages: React.FC = () => {
                     {isSendingEmail ? 'Envoi…' : 'Envoyer par e-mail'}
                   </button>
                 </div>
-              </div>
             </div>
             {showAI && (
               <AIAssistant
@@ -314,7 +309,7 @@ const AdminMessages: React.FC = () => {
                 initialPrompt="Transforme ce texte en email HTML élégant pour une demande de partenariat/sponsoring, ton professionnel et chaleureux."
               />
             )}
-          </div>
+          </Modal>
         )}
         </>
     );

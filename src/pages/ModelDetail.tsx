@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // FIX: Changed import to use namespace import for react-router-dom to resolve typing issues with hooks like useParams.
 import * as ReactRouterDOM from 'react-router-dom';
 import NotFound from './NotFound';
-import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon, PrinterIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import BookingForm from '../components/BookingForm';
@@ -209,6 +209,44 @@ const ModelDetail: React.FC = () => {
     setIsGeneratingLink(false);
   };
 
+  const handlePrintPortfolio = () => {
+    if (!data?.siteConfig || !data?.contactInfo || !model) return;
+    const cover = model.imageUrl;
+    const imgs = (model.portfolioImages || []).map((i) => `<div style=\"width:24%;margin:0.5%;aspect-ratio:3/4;overflow:hidden;border:1px solid #eee\"><img src=\"${i}\" style=\"width:100%;height:100%;object-fit:cover\"/></div>`).join('');
+    const html = `<!DOCTYPE html><html><head><meta charset=\"UTF-8\"/><style>
+      body{font-family:Helvetica,Arial,sans-serif;color:#333}
+      .sheet{padding:32px}
+      .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #eee;padding-bottom:12px}
+      .header h1{font-size:28px;margin:0}
+      .grid{display:flex;flex-wrap:wrap;margin-top:12px}
+      .info{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .label{font-size:12px;text-transform:uppercase;color:#666}
+    </style></head><body><div class=\"sheet\">
+      <header class=\"header\"><div><h1>${model.name}</h1><div style=\"font-size:12px;color:#666\">Mannequin • Perfect Models Management</div></div>${data.siteConfig.logo ? `<img src=\"${data.siteConfig.logo}\" style=\"height:60px\"/>` : ''}</header>
+      <div style=\"display:flex;gap:16px;margin-top:16px\">
+        <div style=\"width:30%;aspect-ratio:3/4;border:2px solid #f0f0f0\"><img src=\"${cover}\" style=\"width:100%;height:100%;object-fit:cover\"/></div>
+        <div style=\"flex:1\">
+          <div class=\"info\">
+            <div><div class=\"label\">Taille</div><div>${model.height}</div></div>
+            <div><div class=\"label\">Genre</div><div>${model.gender}</div></div>
+            <div><div class=\"label\">Poitrine</div><div>${model.measurements?.chest || ''}</div></div>
+            <div><div class=\"label\">Taille</div><div>${model.measurements?.waist || ''}</div></div>
+            <div><div class=\"label\">Hanches</div><div>${model.measurements?.hips || ''}</div></div>
+            <div><div class=\"label\">Pointure</div><div>${model.measurements?.shoeSize || ''}</div></div>
+          </div>
+          <div style=\"margin-top:12px;font-size:12px;color:#666\">${data.contactInfo.email || ''} • ${data.contactInfo.phone || ''} • ${data.contactInfo.address || ''}</div>
+        </div>
+      </div>
+      ${(model.portfolioImages && model.portfolioImages.length>0) ? `<h2 style=\"margin-top:20px;font-size:18px\">Portfolio</h2><div class=\"grid\">${imgs}</div>` : ''}
+    </div></body></html>`;
+    const w = window.open('', '_blank');
+    if (!w) { alert('Autorisez les pop-ups.'); return; }
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(()=>{ w.print(); w.close(); }, 250);
+  };
+
   if (!isInitialized) {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
@@ -326,6 +364,9 @@ const ModelDetail: React.FC = () => {
                   )}
                    <button onClick={handleShare} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-3 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
                       <ShareIcon className="w-5 h-5" /> Partager
+                  </button>
+                  <button onClick={handlePrintPortfolio} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-3 bg-black border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold/10">
+                      <PrinterIcon className="w-5 h-5" /> Télécharger le Portfolio
                   </button>
                </div>
             </div>
