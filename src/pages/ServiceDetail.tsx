@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -8,6 +8,8 @@ import { CheckCircleIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
 const ServiceDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const { data, isInitialized } = useData();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const service = useMemo(() => {
         return data?.agencyServices.find(s => s.slug === slug);
@@ -44,18 +46,18 @@ const ServiceDetail: React.FC = () => {
                                 {service.description}
                             </p>
                             
-                            <Link 
-                                to={service.buttonLink}
+                            <button
+                                onClick={() => navigate(`/contact?service=${encodeURIComponent(service.title)}`)}
+                                disabled={service.isComingSoon}
                                 className={`inline-block px-10 py-4 font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 shadow-lg ${
-                                    service.isComingSoon 
-                                    ? 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600' 
-                                    : 'bg-pm-gold text-pm-dark hover:bg-white hover:scale-105 shadow-pm-gold/20'
+                                  service.isComingSoon 
+                                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600' 
+                                  : 'bg-pm-gold text-pm-dark hover:bg-white hover:scale-105 shadow-pm-gold/20'
                                 }`}
                                 aria-disabled={service.isComingSoon}
-                                onClick={e => { if (service.isComingSoon) e.preventDefault(); }}
-                            >
-                                {service.buttonText}
-                            </Link>
+                              >
+                                Commander ce service
+                              </button>
                         </div>
                         <div className="lg:col-span-2">
                              {service.details && (
