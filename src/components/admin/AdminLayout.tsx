@@ -72,7 +72,7 @@ const AdminLayout: React.FC = () => {
       items: [
         { label: 'Accueil', to: '/admin', icon: HomeIcon },
         { label: 'Mon Profil', to: '/admin/profile', icon: KeyIcon },
-        { label: 'Clés API', to: '/admin/api-keys', icon: Cog6ToothIcon },
+        ...(can('canManageAdmins') ? [{ label: 'Clés API', to: '/admin/api-keys', icon: Cog6ToothIcon } as NavItem] : []),
       ],
     },
     {
