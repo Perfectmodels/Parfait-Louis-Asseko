@@ -12,6 +12,7 @@
   ],
   "functions": {
     "api/ddownload-upload.js": { "memory": 256, "maxDuration": 30 },
-    "api/ddownload-upload-server.js": { "memory": 128, "maxDuration": 15 }
+    "api/ddownload-upload-server.js": { "memory": 128, "maxDuration": 15 },
+    "api/storacha-upload.js": { "memory": 256, "maxDuration": 30 }
   }
 }
