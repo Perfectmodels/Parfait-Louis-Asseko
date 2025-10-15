@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, InternalMessage, GalleryItem } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, InternalMessage, GalleryItem } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -77,7 +77,6 @@ export interface AppData {
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
     beginnerCourseData: Module[];
-    beginnerStudents: BeginnerStudent[];
     faqData: FAQCategory[];
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
@@ -142,7 +141,6 @@ export const useDataStore = () => {
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
         beginnerCourseData: initialBeginnerCourseData,
-        beginnerStudents: initialBeginnerStudents,
         faqData: initialFaqData,
     }), []);
     

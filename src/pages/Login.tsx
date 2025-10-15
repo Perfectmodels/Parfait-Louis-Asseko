@@ -130,24 +130,7 @@ const Login: React.FC = () => {
         return;
     }
     
-    // Beginner Student Login
-    const loggedInBeginner = data.beginnerStudents.find(bs => 
-        bs.matricule.toLowerCase() === normalizedUsername ||
-        bs.name.toLowerCase() === normalizedUsername
-    );
-    if (loggedInBeginner && loggedInBeginner.password === password) {
-        sessionStorage.setItem('classroom_access', 'granted');
-        sessionStorage.setItem('classroom_role', 'beginner');
-        sessionStorage.setItem('userId', loggedInBeginner.id);
-        sessionStorage.setItem('userName', loggedInBeginner.name);
-        
-        const updatedBeginners = data.beginnerStudents.map(bs => bs.id === loggedInBeginner.id ? { ...bs, lastLogin: timestamp } : bs);
-        await saveData({ ...data, beginnerStudents: updatedBeginners });
-        updateUserActivity(loggedInBeginner.name, 'beginner');
-
-        navigate('/classroom-debutant');
-        return;
-    }
+    // Débutants retirés: plus d'accès séparé
 
     // Jury Login
     const loggedInJury = data.juryMembers.find(j => 

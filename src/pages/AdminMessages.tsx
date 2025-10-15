@@ -44,7 +44,6 @@ const AdminMessages: React.FC = () => {
     const allParticipants: InternalParticipant[] = [
         ...(data?.adminUsers || []).filter(Boolean).map((a) => ({ kind: 'admin', id: a.id || '', name: a.name || 'Admin', email: a.email })),
         ...(data?.models || []).filter(Boolean).map((m) => ({ kind: 'model', id: m.id || '', name: m.name || 'Mannequin', email: m.email })),
-        // Débutants retirés du panel: ne plus inclure comme participants
         ...(data?.juryMembers || []).filter(Boolean).map((j) => ({ kind: 'jury', id: j.id || '', name: j.name || 'Jury' })),
         ...(data?.registrationStaff || []).filter(Boolean).map((r) => ({ kind: 'registration', id: r.id || '', name: r.name || 'Enregistrement' })),
     ].filter((p) => p && p.id && p.name);
@@ -168,7 +167,7 @@ const AdminMessages: React.FC = () => {
                 <div className="flex items-end justify-between gap-4 mb-8">
                   <div>
                     <h1 className="text-4xl font-playfair text-pm-gold">Messagerie & Contact</h1>
-                    <p className="text-pm-off-white/70 mt-2">Gérez les messages reçus et envoyez des messages internes.</p>
+            <p className="text-pm-off-white/70 mt-2">Gérez les messages reçus et envoyez des messages internes.</p>
                   </div>
                   <button onClick={() => setComposeOpen(true)} className="px-4 py-2 bg-pm-gold text-pm-dark rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white">Nouveau Message</button>
                 </div>
