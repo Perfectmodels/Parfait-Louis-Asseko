@@ -39,6 +39,20 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
         try {
             setIsUploading(true);
             setProgress(0);
+            // Prefer ddownload if server route is configured, else fallback to Firebase Storage
+            const form = new FormData();
+            form.append('file', file);
+            const proxyResp = await fetch('/api/ddownload-upload', { method: 'POST', body: form });
+            if (proxyResp.ok) {
+                const json = await proxyResp.json();
+                // Extract link from ddownload response shape; fallback to raw
+                const url = json?.result?.url || json?.result || json?.raw || '';
+                if (url) {
+                    onChange(url);
+                    return;
+                }
+            }
+            // Fallback: Firebase Storage
             const timestamp = Date.now();
             const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
             const d = new Date();
@@ -47,15 +61,9 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
             const storagePath = `images/${year}/${month}/${timestamp}-${safeName}`;
             const metadata = { contentType: file.type, cacheControl: 'public, max-age=31536000, immutable' } as const;
             const task = storage.ref().child(storagePath).put(file, metadata);
-
-            task.on('state_changed', (snapshot) => {
-                const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                setProgress(pct);
-            });
-
+            task.on('state_changed', (s) => setProgress(Math.round((s.bytesTransferred / s.totalBytes) * 100)));
             await task;
-            const downloadUrl = await storage.ref().child(storagePath).getDownloadURL();
-            onChange(downloadUrl);
+            onChange(await storage.ref().child(storagePath).getDownloadURL());
         } catch (err) {
             console.error('Upload failed', err);
             alert("Échec du téléversement. Vérifiez vos permissions Firebase Storage.");
