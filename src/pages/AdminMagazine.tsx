@@ -174,12 +174,17 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        // Accept either JSON array or plain text; if plain text, wrap as paragraphs
+        let parsedContent: any = [];
         try {
-            const parsedContent = JSON.parse(contentJson);
-            onSave({ ...formData, content: parsedContent });
-        } catch (error) {
-            alert("Le format JSON du contenu est invalide.");
+            parsedContent = JSON.parse(contentJson);
+        } catch {
+            parsedContent = String(contentJson)
+              .split(/\n\n+/)
+              .map((p: string) => ({ type: 'paragraph', text: p.trim() }))
+              .filter((b: any) => b.text);
         }
+        onSave({ ...formData, content: parsedContent });
     };
     
     const handleArticleGenerated = (generatedData: Partial<Article>) => {
@@ -259,12 +264,11 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
                     <div className="space-y-6">
                          <h2 className="admin-section-title">Contenu & Métadonnées</h2>
                         <FormTextArea 
-                            label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true}
-                            onAIAssist={() => openAssistant('Contenu (JSON)', `Rédige le contenu d'un article de mode sur "${formData.title}". Structure-le en paragraphes, titres, et une citation. Fournis le résultat au format JSON en respectant le schéma.`, contentJsonSchema)}
+                            label="Contenu (collez du texte ou JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true}
+                            onAIAssist={() => openAssistant('Contenu', `Rédige le contenu d'un article de mode sur "${formData.title}". Structure-le en paragraphes, titres (level 2-3), une citation et des images si besoin. Donne du texte brut (je gèrerai la mise en forme).`)}
                         />
                         <div className="text-xs text-pm-off-white/50">
-                            <p>Format: tableau d'objets. Types: 'paragraph', 'heading' (avec level: 2 ou 3), 'quote' (avec author?), 'image' (avec src, alt, caption?).</p>
-                            <p>{'Ex: [{"type": "paragraph", "text": "Bonjour."}]'}</p>
+                            <p>Astuce: collez du texte simple; il sera converti en paragraphes automatiquement. Le JSON reste supporté.</p>
                         </div>
                          <FormInput label="Tags (séparés par des virgules)" name="tags" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : ''} onChange={(e) => setFormData(p => ({...p, tags: e.target.value.split(',').map(tag => tag.trim())}))} />
                     </div>

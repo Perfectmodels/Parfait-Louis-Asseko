@@ -139,7 +139,16 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(formData);
+        // Auto-fill missing fields and normalize
+        const normalized: NewsItem = {
+          ...formData,
+          title: formData.title.trim() || 'Nouvelle actualité',
+          date: formData.date || new Date().toISOString().split('T')[0],
+          excerpt: formData.excerpt || '',
+          imageUrl: formData.imageUrl || '/assets/placeholder-model.png',
+          link: formData.link || '',
+        };
+        onSave(normalized);
     };
 
     const openAssistant = (fieldName: string, initialPrompt: string) => {
