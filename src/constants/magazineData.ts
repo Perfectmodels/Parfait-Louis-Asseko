@@ -6,7 +6,7 @@ export const articles: Article[] = [
     title: "Noemi Kim : Portrait d'une Reine des Podiums",
     category: 'Portrait',
     excerpt: "De Miss Gabon à Top Model Afrique Centrale, Noemi Kim collectionne les titres et s'impose comme une figure incontournable de la mode. Retour sur le parcours d'une mannequin dont l'ambition n'a d'égale que son élégance.",
-    imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+    imageUrl: '/fallbacks/hero.jpg',
     author: 'Focus Model 241',
     date: '2024-08-12',
     isFeatured: true,
@@ -14,7 +14,7 @@ export const articles: Article[] = [
       { type: 'paragraph', text: "Noemi Kim n'est pas seulement un mannequin, elle est une collectionneuse de couronnes. Son parcours fulgurant, marqué par des titres prestigieux, dessine le portrait d'une jeune femme déterminée à porter haut les couleurs de la mode gabonaise. De l'écharpe de Miss à la reconnaissance continentale, son histoire est celle d'une ambition réalisée avec grâce et professionnalisme." },
       { type: 'heading', level: 2, text: "Une Ambassadrice de Beauté Nationale" },
       { type: 'paragraph', text: "En 2022, le Gabon découvre son nouveau visage : Noemi Kim est couronnée Miss Gabon. Plus qu'un concours de beauté, ce titre la propulse au rang d'ambassadrice de l'élégance et de la culture de son pays. Cette expérience a forgé son caractère et sa présence scénique, lui apprenant à maîtriser la pression des projecteurs et à incarner des valeurs fortes." },
-      { type: 'image', src: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg', alt: 'Noemi Kim lors d\'un shooting', caption: 'Une prestance royale, héritage de son titre de Miss Gabon.' },
+      { type: 'image', src: '/fallbacks/hero.jpg', alt: 'Noemi Kim lors d\'un shooting', caption: 'Une prestance royale, héritage de son titre de Miss Gabon.' },
       { type: 'heading', level: 2, text: "La Conquête du Continent" },
       { type: 'paragraph', text: "Loin de se reposer sur ses lauriers nationaux, Noemi Kim a relevé le défi continental en 2023. Sa participation au concours Top Model Afrique Centrale a été une démonstration de son talent et de sa polyvalence. Elle y a remporté le titre, confirmant son statut de mannequin de premier plan non seulement au Gabon, mais dans toute la sous-région. Ce succès international témoigne de la qualité de sa formation au sein de Perfect Models Management et de sa capacité à répondre aux standards les plus exigeants." },
       { type: 'quote', text: "Chaque titre est une étape, pas une destination. Le plus important est de continuer à apprendre et à grandir.", author: "Noemi Kim" },
@@ -27,7 +27,7 @@ export const articles: Article[] = [
     title: "Yann Aubin : La Force Tranquille de l'Élégance Masculine",
     category: 'Portrait',
     excerpt: "Récompensé Mannequin Homme de l'Année aux PFD Awards, Yann Aubin incarne une nouvelle masculinité, entre puissance athlétique et raffinement. Découvrez l'homme qui redéfinit les codes du podium au Gabon.",
-    imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+    imageUrl: '/fallbacks/hero.jpg',
     author: 'Focus Model 241',
     date: '2024-09-02',
     content: [
@@ -35,7 +35,7 @@ export const articles: Article[] = [
       { type: 'heading', level: 2, text: "Du Stade au Podium" },
       { type: 'paragraph', text: "La transition de Yann du sport au mannequinat n'est pas un hasard. Il y a apporté la même discipline, la même rigueur et la même présence physique. Sur le podium, sa démarche est puissante, presque féline. Il ne porte pas le vêtement, il l'habite. C'est cette force tranquille qui lui a également valu le Prix de l'Élégance Masculine à la Libreville Fashion Week, faisant de lui le mannequin incontournable des collections pour homme." },
       { type: 'quote', text: "La discipline du sport m'a tout appris : le respect du corps, la concentration, le dépassement de soi. Le podium est juste une autre arène.", author: "Yann Aubin" },
-      { type: 'image', src: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg', alt: 'Yann Aubin en shooting', caption: 'Une présence qui captive l\'objectif.' },
+      { type: 'image', src: '/fallbacks/hero.jpg', alt: 'Yann Aubin en shooting', caption: 'Une présence qui captive l\'objectif.' },
       { type: 'paragraph', text: "Yann Aubin n'est pas qu'un physique, c'est une attitude. Il représente une masculinité moderne, sûre d'elle et raffinée. Un modèle à suivre, au sens propre comme au figuré." }
     ],
     tags: ['Yann Aubin', 'Mannequin Homme', 'PFD Awards', 'Mode Masculine', 'Portrait']
@@ -63,7 +63,7 @@ export const articles: Article[] = [
     title: 'Retour sur le Perfect Fashion Day',
     category: 'Événement',
     excerpt: 'Les moments forts, les coulisses et les plus belles créations de l\'événement qui a marqué les esprits.',
-    imageUrl: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+    imageUrl: '/fallbacks/hero.jpg',
     author: 'La Rédaction',
     date: '2025-02-10',
     content: [
@@ -79,7 +79,7 @@ export const articles: Article[] = [
     title: 'L\'audace du sur-mesure masculin',
     category: 'Tendance',
     excerpt: 'Analyse du style affirmé des créateurs comme Farel MD et Miguel Fashion Style, stars de notre dernier défilé.',
-    imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+    imageUrl: '/fallbacks/hero.jpg',
     author: 'Focus Model 241',
     date: '2025-03-28',
     content: [
@@ -95,7 +95,7 @@ export const articles: Article[] = [
     title: 'Devenir mannequin : Les clés du succès',
     category: 'Conseils',
     excerpt: 'Nos coachs partagent leurs secrets pour réussir un casting, construire son book et développer sa carrière.',
-    imageUrl: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+    imageUrl: '/fallbacks/hero.jpg',
     author: 'L\'équipe PMM',
     date: '2025-05-05',
     content: [

@@ -180,9 +180,25 @@ const ArticleDetail: React.FC = () => {
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [isDownloading, setIsDownloading] = useState<'pdf' | 'image' | null>(null);
   const articleRef = useRef<HTMLElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
 
   const article = data?.articles.find(a => a.slug === slug);
+  // Reading progress bar
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = articleRef.current;
+      const bar = progressRef.current;
+      if (!el || !bar) return;
+      const total = el.scrollHeight - window.innerHeight;
+      const scrolled = Math.min(Math.max(window.scrollY - (el.offsetTop - 80), 0), total);
+      const pct = total > 0 ? (scrolled / total) * 100 : 0;
+      bar.style.width = `${pct}%`;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   useEffect(() => {
     if (!slug || !data || !article) return;
@@ -330,8 +346,9 @@ const ArticleDetail: React.FC = () => {
 
   return (
     <>
-      <SEO title={article.title} description={article.excerpt} keywords={article.tags?.join(', ')} image={article.imageUrl} schema={articleSchema} />
+      <SEO title={article.title} description={article.excerpt} keywords={article.tags?.join(', ')} image={article.imageUrl} schema={articleSchema} type="article" />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <div className="fixed top-0 left-0 right-0 h-1 bg-pm-gold/20 z-30"><div ref={progressRef} className="h-full bg-pm-gold transition-[width] duration-150 ease-linear w-0" /></div>
         <div className="container mx-auto px-6 max-w-4xl">
           <Link to="/magazine" className="inline-flex items-center gap-2 text-pm-gold mb-8 hover:underline"><ChevronLeftIcon className="w-5 h-5" />Retour au Magazine</Link>
           <article ref={articleRef} className="bg-black p-4 sm:p-8 border border-pm-gold/20">
@@ -363,6 +380,11 @@ const ArticleDetail: React.FC = () => {
               </footer>
             )}
           </article>
+          {/* Prev/Next navigation */}
+          <nav className="mt-8 flex justify-between text-sm">
+            <Link to="/magazine" className="text-pm-off-white/70 hover:text-pm-gold">← Tous les articles</Link>
+            <button onClick={handleShare} className="text-pm-off-white/70 hover:text-pm-gold inline-flex items-center gap-2"><ShareIcon className="w-4 h-4"/>Partager</button>
+          </nav>
           <section className="mt-12 pt-8 border-t border-pm-gold/20">
             <h2 className="text-3xl font-playfair text-pm-gold mb-6">Espace de Discussion ({comments.length})</h2>
             <div className="bg-black p-6 border border-pm-gold/10 rounded-lg mb-8">
