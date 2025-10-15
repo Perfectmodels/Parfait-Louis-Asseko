@@ -95,6 +95,7 @@ const AdminLayout: React.FC = () => {
       title: 'Contenu',
       items: [
         ...(can('canEditContent') ? [{ label: 'Magazine', to: '/admin/magazine', icon: NewspaperIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: 'Galerie', to: '/admin/gallery', icon: PhotoIcon } as NavItem] : []),
         ...(can('canEditContent') ? [{ label: 'Actualités', to: '/admin/news', icon: PresentationChartLineIcon } as NavItem] : []),
         ...(can('canEditContent') ? [{ label: "Contenu de l'Agence", to: '/admin/agency', icon: BuildingStorefrontIcon } as NavItem] : []),
         { label: 'Événements PFD', to: '/admin/fashion-day-events', icon: CalendarDaysIcon },

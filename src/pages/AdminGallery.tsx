@@ -1,0 +1,134 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import SEO from '../components/SEO';
+import { useData } from '../contexts/DataContext';
+import { GalleryItem } from '../types';
+import { Link } from 'react-router-dom';
+import { ChevronLeftIcon, PlusIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import ImageInput from '../components/icons/ImageInput';
+
+const AdminGallery: React.FC = () => {
+  const { data, saveData } = useData();
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [editing, setEditing] = useState<GalleryItem | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+
+  useEffect(() => {
+    const list = (data?.gallery || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+    setItems(list);
+  }, [data?.gallery]);
+
+  const handleStartCreate = () => {
+    setIsCreating(true);
+    setEditing({ id: '', url: '', title: '', category: '', createdAt: new Date().toISOString(), order: (items[items.length - 1]?.order || 0) + 1 });
+  };
+
+  const handleSave = async (item: GalleryItem) => {
+    if (!data) return;
+    let updated: GalleryItem[];
+    if (isCreating) {
+      const id = item.id || `gallery-${Date.now()}`;
+      updated = [ ...items, { ...item, id } ];
+    } else {
+      updated = items.map((g) => g.id === item.id ? item : g);
+    }
+    await saveData({ ...data, gallery: updated });
+    setEditing(null);
+    setIsCreating(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!data) return;
+    if (!confirm('Supprimer cet élément de la galerie ?')) return;
+    await saveData({ ...data, gallery: items.filter((g) => g.id !== id) });
+  };
+
+  const move = async (index: number, dir: 'up' | 'down') => {
+    if (!data) return;
+    const copy = items.slice();
+    const target = dir === 'up' ? index - 1 : index + 1;
+    if (target < 0 || target >= copy.length) return;
+    [copy[index], copy[target]] = [copy[target], copy[index]];
+    const reordered = copy.map((g, i) => ({ ...g, order: i + 1 }));
+    await saveData({ ...data, gallery: reordered });
+  };
+
+  if (editing) {
+    return (
+      <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <div className="container mx-auto px-6 max-w-3xl">
+          <div className="admin-page-header !mb-8">
+            <div>
+              <h1 className="admin-page-title">{isCreating ? 'Ajouter une image' : "Modifier l'image"}</h1>
+              <p className="admin-page-subtitle">Gérez les visuels affichés dans la galerie publique.</p>
+            </div>
+          </div>
+          <form onSubmit={(e) => { e.preventDefault(); handleSave(editing); }} className="admin-section-wrapper space-y-6">
+            <div>
+              <label className="admin-label">Image</label>
+              <ImageInput label="URL" value={editing.url} onChange={(v) => setEditing({ ...editing, url: v })} />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="admin-label">Titre (optionnel)</label>
+                <input className="admin-input" value={editing.title || ''} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+              </div>
+              <div>
+                <label className="admin-label">Catégorie (optionnel)</label>
+                <input className="admin-input" value={editing.category || ''} onChange={(e) => setEditing({ ...editing, category: e.target.value })} />
+              </div>
+              <div>
+                <label className="admin-label">Ordre</label>
+                <input type="number" className="admin-input" value={editing.order || 1} onChange={(e) => setEditing({ ...editing, order: parseInt(e.target.value || '1', 10) })} />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 pt-4 border-t border-pm-gold/20">
+              <button type="button" onClick={() => { setEditing(null); setIsCreating(false); }} className="px-4 py-2 border border-pm-off-white/30 rounded-full text-xs">Annuler</button>
+              <button type="submit" className="px-5 py-2 bg-pm-gold text-pm-dark rounded-full text-xs font-bold uppercase tracking-widest">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+      <SEO title="Admin - Galerie" noIndex />
+      <div className="container mx-auto px-6">
+        <div className="admin-page-header">
+          <div>
+            <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline"><ChevronLeftIcon className="w-5 h-5"/>Retour</Link>
+            <h1 className="admin-page-title">Gestion de la Galerie</h1>
+            <p className="admin-page-subtitle">Ajoutez, réordonnez ou supprimez des visuels.</p>
+          </div>
+          <button onClick={handleStartCreate} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
+            <PlusIcon className="w-5 h-5"/> Ajouter Image
+          </button>
+        </div>
+
+        <div className="admin-section-wrapper !p-4 space-y-3">
+          {items.map((g, idx) => (
+            <div key={g.id} className="flex items-center justify-between p-3 bg-pm-dark/50 rounded hover:bg-pm-dark">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <img src={g.url} alt={g.title || 'image'} className="w-20 h-14 object-cover rounded" />
+                <div className="truncate">
+                  <p className="font-bold truncate">{g.title || 'Sans titre'}</p>
+                  <p className="text-xs text-pm-off-white/60">{g.category || 'Général'} • Ordre: {g.order || idx + 1}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => move(idx, 'up')} disabled={idx === 0} className="action-btn disabled:opacity-30" title="Monter"><ArrowUpIcon className="w-5 h-5"/></button>
+                <button onClick={() => move(idx, 'down')} disabled={idx === items.length - 1} className="action-btn disabled:opacity-30" title="Descendre"><ArrowDownIcon className="w-5 h-5"/></button>
+                <button onClick={() => { setEditing(g); setIsCreating(false); }} className="action-btn" title="Modifier">Éditer</button>
+                <button onClick={() => handleDelete(g.id)} className="action-btn !border-red-500/50 hover:!bg-red-500/20" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
+              </div>
+            </div>
+          ))}
+          {items.length === 0 && <p className="text-center text-pm-off-white/60">Aucun élément pour le moment.</p>}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminGallery;

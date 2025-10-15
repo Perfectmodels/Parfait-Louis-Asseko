@@ -363,6 +363,16 @@ export interface InternalMessage {
   readBy?: string[]; // user ids who read
 }
 
+// ================== GALLERY ==================
+export interface GalleryItem {
+  id: string;
+  url: string;
+  title?: string;
+  category?: string;
+  createdAt: string;
+  order?: number;
+}
+
 export interface AIAssistantProps {
     isOpen: boolean;
     onClose: () => void;
