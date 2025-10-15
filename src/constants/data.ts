@@ -11,6 +11,7 @@ export const navLinks: NavLink[] = [
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
+  { path: '/galerie', label: 'Galerie', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
