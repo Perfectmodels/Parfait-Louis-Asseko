@@ -44,7 +44,7 @@ const AdminMessages: React.FC = () => {
     const allParticipants: InternalParticipant[] = [
         ...(data?.adminUsers || []).filter(Boolean).map((a) => ({ kind: 'admin', id: a.id || '', name: a.name || 'Admin', email: a.email })),
         ...(data?.models || []).filter(Boolean).map((m) => ({ kind: 'model', id: m.id || '', name: m.name || 'Mannequin', email: m.email })),
-        ...(data?.beginnerStudents || []).filter(Boolean).map((b) => ({ kind: 'beginner', id: b.id || '', name: b.name || 'Débutant' })),
+        // Débutants retirés du panel: ne plus inclure comme participants
         ...(data?.juryMembers || []).filter(Boolean).map((j) => ({ kind: 'jury', id: j.id || '', name: j.name || 'Jury' })),
         ...(data?.registrationStaff || []).filter(Boolean).map((r) => ({ kind: 'registration', id: r.id || '', name: r.name || 'Enregistrement' })),
     ].filter((p) => p && p.id && p.name);

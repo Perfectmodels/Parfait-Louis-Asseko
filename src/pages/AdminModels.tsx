@@ -3,7 +3,7 @@ import { useData } from '../contexts/DataContext';
 import { Model, ContactInfo } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import ModelForm from '../components/ModelForm'; 
 
 const generateModelSheetHtml = (model: Model, siteConfig: any, contactInfo: ContactInfo): string => {
@@ -209,6 +209,36 @@ const AdminModels: React.FC = () => {
         }
     };
 
+    const handleMigrateFromCasting = async () => {
+        if (!data) return;
+        const apps = data.castingApplications || [];
+        if (apps.length === 0) { alert('Aucune candidature casting disponible.'); return; }
+        const normalize = (s: string) => (s || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/\s+/g,' ').trim();
+        const appFullName = (a: any) => normalize(`${a.firstName || ''} ${a.lastName || ''}`);
+        const updated = localModels.map(model => {
+            const modelName = normalize(model.name);
+            const match = apps.find(a => appFullName(a) === modelName || (model.email && a.email && normalize(model.email) === normalize(a.email)) || (model.phone && a.phone && normalize(model.phone) === normalize(a.phone)));
+            if (!match) return model;
+            return {
+                ...model,
+                email: match.email || model.email,
+                phone: match.phone || model.phone,
+                height: match.height || model.height,
+                gender: match.gender || model.gender,
+                measurements: {
+                    chest: match.chest || '',
+                    waist: match.waist || '',
+                    hips: match.hips || '',
+                    shoeSize: match.shoeSize || ''
+                },
+                imageUrl: (model.imageUrl && model.imageUrl.length > 0) ? model.imageUrl : (match.photoPortraitUrl || model.imageUrl),
+                portfolioImages: (model.portfolioImages && model.portfolioImages.length > 0) ? model.portfolioImages : [match.photoPortraitUrl, match.photoFullBodyUrl, match.photoProfileUrl].filter(Boolean) as string[],
+            } as Model;
+        });
+        await saveData({ ...data, models: updated });
+        alert('Migration terminée: données des candidatures copiées vers les profils pro.');
+    };
+
     if (editingModel) {
         return (
             <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -242,9 +272,14 @@ const AdminModels: React.FC = () => {
                         <h1 className="admin-page-title">Gérer les Mannequins</h1>
                         <p className="admin-page-subtitle">Ajoutez, modifiez ou supprimez les profils des mannequins.</p>
                     </div>
-                    <button onClick={handleStartCreate} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
-                        <PlusIcon className="w-5 h-5"/> Ajouter un Mannequin
-                    </button>
+                    <div className="flex gap-2">
+                        <button onClick={handleMigrateFromCasting} className="action-btn !flex !items-center !gap-2 !px-4 !py-2 !bg-black !border !border-pm-gold !text-pm-gold hover:!bg-pm-gold/10">
+                            <ArrowDownTrayIcon className="w-5 h-5"/> Migrer depuis Casting
+                        </button>
+                        <button onClick={handleStartCreate} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
+                            <PlusIcon className="w-5 h-5"/> Ajouter un Mannequin
+                        </button>
+                    </div>
                 </div>
 
                 <div className="admin-section-wrapper overflow-x-auto">

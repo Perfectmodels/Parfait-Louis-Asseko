@@ -80,7 +80,6 @@ const AdminLayout: React.FC = () => {
       title: 'Talents',
       items: [
         ...(can('canManageModels') ? [{ label: 'Mannequins Pro', to: '/admin/models', icon: UsersIcon } as NavItem] : []),
-        ...(can('canManageModels') ? [{ label: 'Débutants', to: '/admin/beginner-students-access', icon: UserGroupIcon } as NavItem] : []),
         ...(can('canEditContent') ? [{ label: 'Direction Artistique', to: '/admin/artistic-direction', icon: PaintBrushIcon } as NavItem] : []),
         {
           label: 'Candidatures Casting',

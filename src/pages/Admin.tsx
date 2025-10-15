@@ -5,7 +5,7 @@ import {
     UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
-    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
+    ClipboardDocumentCheckIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
     SignalIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
@@ -73,7 +73,6 @@ const Admin: React.FC = () => {
     // Derived stats
     const modelsCount = data?.models?.length || 0;
     const publicModelsCount = data?.models?.filter(m => m.isPublic)?.length || 0;
-    const beginnersCount = data?.beginnerStudents?.length || 0;
     const castingPreselected = data?.castingApplications?.filter(app => app.status === 'Présélectionné')?.length || 0;
     const castingAccepted = data?.castingApplications?.filter(app => app.status === 'Accepté')?.length || 0;
 
@@ -127,7 +126,6 @@ const Admin: React.FC = () => {
                 <div className="animate-fade-in space-y-10">
                   <StatsSection title="Talents">
                     <Stat icon={UsersIcon} label="Mannequins" value={modelsCount} sub={`${publicModelsCount} publics`} />
-                    <Stat icon={UserGroupIcon} label="Débutants" value={beginnersCount} />
                     <Stat icon={ClipboardDocumentListIcon} label="Candidatures (Nouv.)" value={newCastingApps} sub={`Préselection: ${castingPreselected} • Acceptés: ${castingAccepted}`} />
                   </StatsSection>
                   <StatsSection title="Contenu & Formation">

@@ -26,8 +26,6 @@ const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
-const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
-const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
 const Chat = lazy(() => import('./pages/Chat'));
 
 // Admin Pages
@@ -48,7 +46,6 @@ const AdminSettings = lazy(() => import('./pages/AdminSettings'));
 const AdminComments = lazy(() => import('./pages/AdminComments'));
 const AdminBookings = lazy(() => import('./pages/AdminBookings'));
 const AdminMessages = lazy(() => import('./pages/AdminMessages'));
-const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
@@ -154,8 +151,7 @@ const AppContent: React.FC = () => {
                         <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
                         <Route path="/panel" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
 
-                        <Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
-                        <Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />
+                        {/* Classroom Débutant retiré */}
 
                         <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                         <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
@@ -178,7 +174,7 @@ const AppContent: React.FC = () => {
                         <Route path="news" element={<AdminNews />} />
                         <Route path="classroom-progress" element={<AdminClassroomProgress />} />
                         <Route path="model-access" element={<AdminModelAccess />} />
-                        <Route path="beginner-students-access" element={<AdminBeginnerStudents />} />
+                        {/* Débutants retiré du panel admin */}
                         <Route path="recovery-requests" element={<AdminRecovery />} />
                         <Route path="comments" element={<AdminComments />} />
                         <Route path="messages" element={<AdminMessages />} />

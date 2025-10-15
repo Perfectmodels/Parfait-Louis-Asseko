@@ -107,7 +107,7 @@ export const Breadcrumb: React.FC = () => {
             '/casting': 'Casting', '/casting-formulaire': 'Postuler au Casting',
             '/fashion-day-application': 'Candidature PFD', '/profil': 'Mon Profil',
             '/formations': 'Classroom', '/formations/forum': 'Forum',
-            '/classroom-debutant': 'Classroom Débutant'
+            // '/classroom-debutant': 'Classroom Débutant' // retiré du panel
         };
 
         const pathnames = location.pathname.split('/').filter(Boolean);
