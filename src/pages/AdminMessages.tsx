@@ -15,6 +15,7 @@ const AdminMessages: React.FC = () => {
     const [composeOpen, setComposeOpen] = useState(false);
     const [compose, setCompose] = useState<{to: string; subject: string; body: string; attachments: InternalAttachment[]; template: string}>({ to: '', subject: '', body: '', attachments: [], template: 'plain' });
     const [showAI, setShowAI] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
 
     const messages = useMemo(() => {
         return [...(data?.contactMessages || [])].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime());
@@ -72,6 +73,40 @@ const AdminMessages: React.FC = () => {
         setCompose({ to: '', subject: '', body: '', attachments: [], template: 'plain' });
         setComposeOpen(false);
         alert('Message envoyé.');
+    };
+
+    const handleSendEmail = async () => {
+      try {
+        setIsSendingEmail(true);
+        const tokens = compose.to.split(',').map(s => s.trim()).filter(Boolean);
+        const toEmails: string[] = [];
+        for (const t of tokens) {
+          if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(t)) {
+            toEmails.push(t);
+            continue;
+          }
+          const p = resolveParticipant(t);
+          if (p?.email) toEmails.push(p.email);
+        }
+        const unique = Array.from(new Set(toEmails));
+        if (unique.length === 0) { alert("Aucune adresse e-mail valide trouvée pour les destinataires."); return; }
+        const html = renderEmailTemplate(compose.template, compose.subject, compose.body);
+        const resp = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: unique, subject: compose.subject || '(Sans objet)', html, attachments: compose.attachments || [] }),
+        });
+        if (!resp.ok) {
+          const t = await resp.text();
+          throw new Error(t);
+        }
+        alert('E-mail envoyé avec succès.');
+      } catch (e: any) {
+        console.error('send-email failed', e);
+        alert("Échec de l'envoi de l'e-mail.");
+      } finally {
+        setIsSendingEmail(false);
+      }
     };
 
     const renderEmailTemplate = (tpl: string, subject: string, body: string): string => {
@@ -262,8 +297,11 @@ const AdminMessages: React.FC = () => {
                   <label className="admin-label">Prévisualisation</label>
                   <div className="p-4 bg-black border border-pm-gold/20 rounded min-h-[120px]" dangerouslySetInnerHTML={{ __html: renderEmailTemplate(compose.template, compose.subject, compose.body) }} />
                 </div>
-                <div className="text-right">
-                  <button onClick={handleSendInternal} className="px-6 py-2 bg-pm-gold text-pm-dark rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white">Envoyer</button>
+                <div className="flex flex-wrap gap-3 justify-end">
+                  <button onClick={handleSendInternal} className="px-6 py-2 bg-pm-gold text-pm-dark rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white">Envoyer (interne)</button>
+                  <button onClick={handleSendEmail} disabled={isSendingEmail} className="px-6 py-2 border border-pm-gold text-pm-gold rounded-full font-bold uppercase tracking-widest text-sm hover:bg-pm-gold/10 disabled:opacity-50">
+                    {isSendingEmail ? 'Envoi…' : 'Envoyer par e-mail'}
+                  </button>
                 </div>
               </div>
             </div>
