@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, JuryMember, BeginnerStudent, JuryScore } from '../types';
+import { CastingApplication, CastingApplicationStatus, JuryMember, JuryScore } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
@@ -135,47 +135,12 @@ const AdminCastingResults: React.FC = () => {
         await saveData({ ...data, castingApplications: updatedApps });
     };
     
-    const handleValidateAndCreateBeginner = async (app: CastingApplication) => {
+    // Validation: n'affecte plus la création de profils débutants; simplement met à jour le statut
+    const handleValidate = async (app: CastingApplication) => {
         if (!data) return;
-
-        if (app.status === 'Accepté') {
-            alert("Ce candidat a déjà été accepté et un profil a été créé.");
-            return;
-        }
-        
-        const studentExists = data.beginnerStudents.some(s => s.id === app.id);
-        if (studentExists) {
-            alert("Ce candidat a déjà été validé et un profil débutant a été créé.");
-            await handleUpdateStatus(app.id, 'Accepté');
-            return;
-        }
-
-        const currentYear = new Date().getFullYear();
-        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
-
-        const existingMatricules = data.beginnerStudents.map(s => parseInt(s.matricule.split('-')[2], 10) || 0);
-        const nextNumber = existingMatricules.length > 0 ? Math.max(...existingMatricules) + 1 : 1;
-        const matricule = `DEB-${currentYear}-${String(nextNumber).padStart(3, '0')}`;
-        const password = `${sanitizeForPassword(app.firstName)}${currentYear}`;
-
-        const newBeginnerStudent: BeginnerStudent = {
-            id: app.id,
-            name: `${app.firstName} ${app.lastName}`,
-            matricule: matricule,
-            password: password,
-            quizScores: {}
-        };
-        
-        const updatedBeginnerStudents = [...data.beginnerStudents, newBeginnerStudent];
-        const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
-
-        try {
-            await saveData({ ...data, beginnerStudents: updatedBeginnerStudents, castingApplications: updatedApps });
-            alert(`Le profil débutant pour ${newBeginnerStudent.name} a été créé avec succès (Matricule: ${matricule}). La candidature a été marquée comme "Accepté".`);
-        } catch (error) {
-            console.error("Erreur lors de la création du profil débutant:", error);
-            alert("Une erreur est survenue lors de la sauvegarde.");
-        }
+        if (app.status === 'Accepté') return;
+        await handleUpdateStatus(app.id, 'Accepté');
+        alert('Candidat marqué comme Accepté.');
     };
 
     const handlePrint = (app: CastingApplication) => {
@@ -280,9 +245,9 @@ const AdminCastingResults: React.FC = () => {
                                                 {app.status === 'Présélectionné' && (
                                                     <>
                                                         <button 
-                                                            onClick={() => handleValidateAndCreateBeginner(app)} 
+                                                            onClick={() => handleValidate(app)} 
                                                             className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                                            title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
+                                                            title={app.isFullyScored ? "Accepter" : "En attente de toutes les notes"}
                                                             disabled={!app.isFullyScored}
                                                         >
                                                             <CheckBadgeIcon className="w-5 h-5"/>

@@ -277,7 +277,9 @@ const ArticleDetail: React.FC = () => {
     if (shortUrl) return;
     setIsGeneratingLink(true);
     const longUrl = window.location.href;
-    const generatedUrl = await generateShortLink({ link: longUrl, title: article.title, description: article.excerpt, imageUrl: article.imageUrl }, data?.apiKeys);
+    // If platforms fail to scrape our SPA, fallback to our share endpoint which embeds OG tags
+    const shareUrl = `${window.location.origin}/api/share?title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.excerpt)}&image=${encodeURIComponent(article.imageUrl)}&url=${encodeURIComponent(longUrl)}&type=article`;
+    const generatedUrl = await generateShortLink({ link: shareUrl, title: article.title, description: article.excerpt, imageUrl: article.imageUrl }, data?.apiKeys);
     setShortUrl(generatedUrl);
     setIsGeneratingLink(false);
   };

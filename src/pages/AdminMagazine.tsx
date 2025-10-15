@@ -112,7 +112,7 @@ const AdminMagazine: React.FC = () => {
 
           <div className="admin-section-wrapper !p-4 space-y-4">
             {localArticles.map((article, index) => {
-              const articleUrl = `${window.location.origin}/#/magazine/${article.slug}`;
+              const articleUrl = `${window.location.origin}/magazine/${article.slug}`;
               const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`;
               
               return (
@@ -174,13 +174,51 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        // Accept either JSON array or plain text; if plain text, wrap as paragraphs
+        let parsedContent: any = [];
         try {
-            const parsedContent = JSON.parse(contentJson);
-            onSave({ ...formData, content: parsedContent });
-        } catch (error) {
-            alert("Le format JSON du contenu est invalide.");
+            parsedContent = JSON.parse(contentJson);
+        } catch {
+            parsedContent = String(contentJson)
+              .split(/\n\n+/)
+              .map((p: string) => ({ type: 'paragraph', text: p.trim() }))
+              .filter((b: any) => b.text);
         }
+        onSave({ ...formData, content: parsedContent });
     };
+
+  const handleCreateArticleFromAlbum = (albumId: string) => {
+    const album = (data?.galleryAlbums || []).find(a => a.id === albumId);
+    if (!album) { alert('Album introuvable'); return; }
+    const content = [
+      { type: 'heading', level: 2, text: album.title },
+      ...(album.description ? [{ type: 'paragraph', text: album.description }] : []),
+      ...album.images.slice(0, 12).map(src => ({ type: 'image', src, alt: album.title }))
+    ];
+    onSave({
+      slug: `${album.title.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}`,
+      title: album.title,
+      category: album.category || 'Galerie',
+      excerpt: album.description || '',
+      imageUrl: album.coverUrl || album.images[0] || '',
+      author: 'PMM',
+      date: new Date().toISOString().split('T')[0],
+      content,
+      tags: ['galerie', 'album']
+    });
+  };
+
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      const albumId = e?.detail?.albumId;
+      if (albumId) handleCreateArticleFromAlbum(albumId);
+    };
+    window.addEventListener('pmm:create-article-from-album', handler);
+    return () => window.removeEventListener('pmm:create-article-from-album', handler);
+  }, []);
+
+  // Quick action UI: select album -> create article
+  // Locate a header actions area if exists; otherwise, this will be part of the form UI in that page.
     
     const handleArticleGenerated = (generatedData: Partial<Article>) => {
         setFormData(prev => ({
@@ -259,19 +297,27 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
                     <div className="space-y-6">
                          <h2 className="admin-section-title">Contenu & Métadonnées</h2>
                         <FormTextArea 
-                            label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true}
-                            onAIAssist={() => openAssistant('Contenu (JSON)', `Rédige le contenu d'un article de mode sur "${formData.title}". Structure-le en paragraphes, titres, et une citation. Fournis le résultat au format JSON en respectant le schéma.`, contentJsonSchema)}
+                            label="Contenu (collez du texte ou JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true}
+                            onAIAssist={() => openAssistant('Contenu', `Rédige le contenu d'un article de mode sur "${formData.title}". Structure-le en paragraphes, titres (level 2-3), une citation et des images si besoin. Donne du texte brut (je gèrerai la mise en forme).`)}
                         />
                         <div className="text-xs text-pm-off-white/50">
-                            <p>Format: tableau d'objets. Types: 'paragraph', 'heading' (avec level: 2 ou 3), 'quote' (avec author?), 'image' (avec src, alt, caption?).</p>
-                            <p>{'Ex: [{"type": "paragraph", "text": "Bonjour."}]'}</p>
+                            <p>Astuce: collez du texte simple; il sera converti en paragraphes automatiquement. Le JSON reste supporté.</p>
                         </div>
                          <FormInput label="Tags (séparés par des virgules)" name="tags" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : ''} onChange={(e) => setFormData(p => ({...p, tags: e.target.value.split(',').map(tag => tag.trim())}))} />
                     </div>
 
-                    <div className="flex justify-end gap-4 pt-4 border-t border-pm-gold/20">
-                        <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
-                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
+                    <div className="flex items-center justify-between gap-4 pt-4 border-t border-pm-gold/20">
+                        <div className="flex items-center gap-2 text-xs">
+                            <kbd className="px-2 py-0.5 bg-black/60 border border-pm-off-white/20 rounded">Tab</kbd>
+                            <span className="text-pm-off-white/60">pour naviguer</span>
+                            <span className="text-pm-off-white/30">•</span>
+                            <kbd className="px-2 py-0.5 bg-black/60 border border-pm-off-white/20 rounded">Échap</kbd>
+                            <span className="text-pm-off-white/60">pour fermer</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button type="button" onClick={onCancel} className="px-4 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-xs rounded-full hover:border-white">Annuler</button>
+                            <button type="submit" className="px-5 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
+                        </div>
                     </div>
                 </form>
             </div>

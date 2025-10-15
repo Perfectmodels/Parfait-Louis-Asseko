@@ -1,9 +1,9 @@
 import React, { useEffect, lazy, Suspense } from 'react';
-import { HashRouter, Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
-import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-// keep import lines; AdminLayout is provided by admin package now
+import SiteLayoutRoute from './components/SiteLayoutRoute';
+import AdminLayout from './components/admin/AdminLayout';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -14,6 +14,7 @@ const FashionDay = lazy(() => import('./pages/FashionDay'));
 const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Gallery = lazy(() => import('./pages/Gallery'));
 const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
@@ -25,15 +26,10 @@ const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
-const BeginnerClassroom = lazy(() => import('./pages/BeginnerClassroom'));
-const BeginnerChapterDetail = lazy(() => import('./pages/BeginnerChapterDetail'));
 const Chat = lazy(() => import('./pages/Chat'));
 
-// Admin Components and Pages
-const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout'));
-const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
-
-// Legacy Admin Pages (to be migrated)
+// Admin Pages
+const Admin = lazy(() => import('./pages/Admin'));
 const AdminAgency = lazy(() => import('./pages/AdminAgency'));
 const AdminCasting = lazy(() => import('./pages/AdminCasting'));
 const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
@@ -50,10 +46,12 @@ const AdminSettings = lazy(() => import('./pages/AdminSettings'));
 const AdminComments = lazy(() => import('./pages/AdminComments'));
 const AdminBookings = lazy(() => import('./pages/AdminBookings'));
 const AdminMessages = lazy(() => import('./pages/AdminMessages'));
-const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents'));
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+const AdminApiKeys = lazy(() => import('./pages/AdminApiKeys'));
+const AdminProfile = lazy(() => import('./pages/AdminProfile'));
+const AdminGallery = lazy(() => import('./pages/AdminGallery'));
 
 
 // Role-specific pages
@@ -74,17 +72,16 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
-const LoadingFallback: React.FC = () => (
-    <div className="w-full py-40 flex items-center justify-center">
-        <p className="text-pm-gold text-2xl font-playfair animate-pulse">Chargement...</p>
-    </div>
+const LoadingFallback: React.FC<{fullscreen?: boolean}> = ({ fullscreen = false }) => (
+  <div className={`w-full ${fullscreen ? 'min-h-[60vh]' : 'py-40'} flex items-center justify-center`}>
+    <p className="text-pm-gold text-2xl font-playfair animate-pulse">Chargement...</p>
+  </div>
 );
 
 
 const AppContent: React.FC = () => {
     const location = useLocation();
-    const { data } = useData();
-    const [authTick, setAuthTick] = React.useState(0);
+    const { data, isInitialized } = useData();
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -117,86 +114,81 @@ const AppContent: React.FC = () => {
     }, [location.pathname, data]);
 
 
-    // Listen for custom auth changes to force remount of routes
-    useEffect(() => {
-        const handler = () => setAuthTick((t) => t + 1);
-        window.addEventListener('pmm-auth-changed', handler);
-        return () => window.removeEventListener('pmm-auth-changed', handler);
-    }, []);
+    if (!isInitialized || !data) {
+      return <LoadingFallback fullscreen />;
+    }
 
     return (
-      <>
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes key={`auth-${authTick}`}> 
-            {/* Public + non-admin protected routes under site Layout */}
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/agence" element={<Agency />} />
-              <Route path="/mannequins" element={<Models />} />
-              <Route path="/mannequins/:id" element={<ModelDetail />} />
-              <Route path="/fashion-day" element={<FashionDay />} />
-              <Route path="/magazine" element={<Magazine />} />
-              <Route path="/magazine/:slug" element={<ArticleDetail />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/services/:slug" element={<ServiceDetail />} />
-              <Route path="/casting" element={<Casting />} />
-              <Route path="/casting-formulaire" element={<CastingForm />} />
-              <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-use" element={<TermsOfUse />} />
-              <Route path="/chat" element={<Chat />} />
+        <>
+            <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                    {/* Public and non-admin protected routes under site layout */}
+                    <Route element={<SiteLayoutRoute />}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/agence" element={<Agency />} />
+                        <Route path="/mannequins" element={<Models />} />
+                        <Route path="/mannequins/:id" element={<ModelDetail />} />
+                        <Route path="/fashion-day" element={<FashionDay />} />
+                        <Route path="/magazine" element={<Magazine />} />
+                        <Route path="/magazine/:slug" element={<ArticleDetail />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/services" element={<Services />} />
+                        <Route path="/galerie" element={<Gallery />} />
+                        <Route path="/services/:slug" element={<ServiceDetail />} />
+                        <Route path="/casting" element={<Casting />} />
+                        <Route path="/casting-formulaire" element={<CastingForm />} />
+                        <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                        <Route path="/terms-of-use" element={<TermsOfUse />} />
+                        <Route path="/chat" element={<Chat />} />
 
-              {/* Non-admin protected */}
-              <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
-              <Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
-              <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
-              <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
-              <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
+                        {/* Protected non-admin routes */}
+                        <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
+                        <Route path="/formations/forum" element={<ProtectedRoute role="student"><ClassroomForum /></ProtectedRoute>} />
+                        <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
+                        <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
+                        <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
+                        <Route path="/panel" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
 
-              <Route path="/classroom-debutant" element={<ProtectedRoute role="beginner"><BeginnerClassroom /></ProtectedRoute>} />
-              <Route path="/classroom-debutant/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="beginner"><BeginnerChapterDetail /></ProtectedRoute>} />
+                        {/* Classroom Débutant retiré */}
 
-              <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
-              <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
+                        <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
+                        <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
+                    </Route>
 
-              {/* NotFound for non-admin */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
+                    {/* Admin routes with dedicated layout and nesting */}
+                    <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
+                        <Route index element={<Admin />} />
+                        <Route path="profile" element={<AdminProfile />} />
+                        <Route path="api-keys" element={<AdminApiKeys />} />
+                        <Route path="models" element={<AdminModels />} />
+                        <Route path="magazine" element={<AdminMagazine />} />
+                        <Route path="classroom" element={<AdminClassroom />} />
+                        <Route path="settings" element={<AdminSettings />} />
+                        <Route path="agency" element={<AdminAgency />} />
+                        <Route path="casting-applications" element={<AdminCasting />} />
+                        <Route path="casting-results" element={<AdminCastingResults />} />
+                        <Route path="fashion-day-applications" element={<AdminFashionDay />} />
+                        <Route path="fashion-day-events" element={<AdminFashionDayEvents />} />
+                        <Route path="news" element={<AdminNews />} />
+                        <Route path="classroom-progress" element={<AdminClassroomProgress />} />
+                        <Route path="model-access" element={<AdminModelAccess />} />
+                        {/* Débutants retiré du panel admin */}
+                        <Route path="recovery-requests" element={<AdminRecovery />} />
+                        <Route path="comments" element={<AdminComments />} />
+                        <Route path="messages" element={<AdminMessages />} />
+                        <Route path="bookings" element={<AdminBookings />} />
+                        <Route path="payments" element={<AdminPayments />} />
+                        <Route path="absences" element={<AdminAbsences />} />
+                        <Route path="artistic-direction" element={<AdminArtisticDirection />} />
+                        <Route path="gallery" element={<AdminGallery />} />
+                    </Route>
 
-            {/* Admin routes under dedicated AdminLayout */}
-            <Route
-              path="/admin"
-              element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}
-            >
-              <Route index element={<AdminDashboard />} />
-              <Route path="models" element={<AdminModels />} />
-              <Route path="magazine" element={<AdminMagazine />} />
-              <Route path="classroom" element={<AdminClassroom />} />
-              <Route path="settings" element={<AdminSettings />} />
-              <Route path="agency" element={<AdminAgency />} />
-              <Route path="casting-applications" element={<AdminCasting />} />
-              <Route path="casting-results" element={<AdminCastingResults />} />
-              <Route path="fashion-day-applications" element={<AdminFashionDay />} />
-              <Route path="fashion-day-events" element={<AdminFashionDayEvents />} />
-              <Route path="news" element={<AdminNews />} />
-              <Route path="classroom-progress" element={<AdminClassroomProgress />} />
-              <Route path="model-access" element={<AdminModelAccess />} />
-              <Route path="beginner-students-access" element={<AdminBeginnerStudents />} />
-              <Route path="recovery-requests" element={<AdminRecovery />} />
-              <Route path="comments" element={<AdminComments />} />
-              <Route path="messages" element={<AdminMessages />} />
-              <Route path="bookings" element={<AdminBookings />} />
-              <Route path="payments" element={<AdminPayments />} />
-              <Route path="absences" element={<AdminAbsences />} />
-              <Route path="artistic-direction" element={<AdminArtisticDirection />} />
-              {/* Fallback unknown admin paths to admin dashboard */}
-              <Route path="*" element={<Navigate to="." replace />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </>
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </Suspense>
+        </>
     );
 }
 
@@ -216,10 +208,10 @@ const App: React.FC = () => {
 
   return (
     <DataProvider>
-      <HashRouter>
+      <BrowserRouter>
         <ScrollToTop />
         <AppContent />
-      </HashRouter>
+      </BrowserRouter>
     </DataProvider>
   );
 };

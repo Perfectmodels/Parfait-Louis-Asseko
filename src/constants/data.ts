@@ -1,8 +1,8 @@
 // FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser } from '../types';
 
 export const siteConfig = {
-  logo: '/icons/icon-192.png',
+  logo: 'https://i.ibb.co/NdrpzGpm/blob.jpg',
 };
 
 export const navLinks: NavLink[] = [
@@ -11,6 +11,7 @@ export const navLinks: NavLink[] = [
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
+  { path: '/galerie', label: 'Galerie', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
@@ -30,12 +31,12 @@ export const contactInfo: ContactInfo = {
 };
 
 export const siteImages: SiteImages = {
-    hero: '/fallbacks/hero.jpg',
-    about: '/fallbacks/about.jpg',
-    fashionDayBg: '/fallbacks/fashion-day.jpg',
-    agencyHistory: '/fallbacks/agency-history.jpg',
-    classroomBg: '/fallbacks/classroom.jpg',
-    castingBg: '/fallbacks/casting.jpg',
+    hero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+    about: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
+    fashionDayBg: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+    agencyHistory: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
+    classroomBg: '/assets/placeholder-model.png',
+    castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
 };
 
 export const apiKeys: ApiKeys = {
@@ -47,6 +48,29 @@ export const apiKeys: ApiKeys = {
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
 };
+
+export const adminUsers: AdminUser[] = [
+  {
+    id: 'admin-super-1',
+    name: 'Administrateur',
+    username: 'admin',
+    password: 'admin2025',
+    email: 'admin@perfectmodels.ga',
+    phone: '+241 077 00 00 00',
+    avatarUrl: '',
+    role: 'SuperAdmin',
+    permissions: {
+      canEditContent: true,
+      canPublishContent: true,
+      canManageModels: true,
+      canManagePayments: true,
+      canModerateComments: true,
+      canManageAdmins: true,
+    },
+    deputies: [],
+    active: true,
+  }
+];
 
 export const juryMembers: JuryMember[] = [
     { id: 'jury1', name: 'Martelly', username: 'jury1', password: 'password2025' },
@@ -75,12 +99,12 @@ export const models: Model[] = [
         height: '1m78',
         gender: 'Femme',
         location: 'Libreville',
-        imageUrl: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+        imageUrl: '/assets/placeholder-model.png',
         isPublic: true,
         portfolioImages: [
-            'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
-            'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-            'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+            '/assets/placeholder-model.png',
+            '/assets/placeholder-model.png',
+            '/assets/placeholder-model.png',
         ],
         distinctions: [
             { name: "Palmarès National & International", titles: ["Miss Gabon 2022", "Top Model Afrique Centrale 2023"] }
@@ -102,12 +126,12 @@ export const models: Model[] = [
         level: 'Pro',
         height: '1m75',
         gender: 'Femme',
-        imageUrl: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+        imageUrl: '/assets/placeholder-model.png',
         isPublic: true,
         portfolioImages: [
-            'https://i.postimg.cc/Xv24Dvp1/NR-09484.jpg',
-            'https://i.postimg.cc/59Qbnb1p/NR-09503-Modifier.jpg',
-            'https://i.postimg.cc/k5skXhC2/NR-09474.jpg',
+            '/assets/placeholder-model.png',
+            '/assets/placeholder-model.png',
+            '/assets/placeholder-model.png',
         ],
         distinctions: [
             { name: "Reconnaissance Artistique", titles: ["Visage de l'Année - Gabon Fashion Awards 2023", "Meilleure Collaboration Photo avec NR Picture"] }
@@ -129,10 +153,10 @@ export const models: Model[] = [
         level: 'Pro',
         height: '1m88',
         gender: 'Homme',
-        imageUrl: 'https://i.ibb.co/Rk1fG3ph/farelmd-37.jpg',
+        imageUrl: '/assets/placeholder-model.png',
         isPublic: true,
         portfolioImages: [
-             'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
+             '/assets/placeholder-model.png',
         ],
         distinctions: [
             { name: "Podiums Masculins", titles: ["Mannequin Homme de l'Année - PFD Awards 2025", "Prix de l'Élégance Masculine - Libreville Fashion Week"] }

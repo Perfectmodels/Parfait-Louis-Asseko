@@ -61,7 +61,6 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose, notificati
             icon: UsersIcon,
             children: [
                 { name: 'Mannequins Pro', href: '/admin/models', icon: UsersIcon },
-                { name: 'Débutants', href: '/admin/beginner-students-access', icon: UserGroupIcon },
                 { name: 'Direction Artistique', href: '/admin/artistic-direction', icon: PaintBrushIcon },
                 { name: 'Candidatures Casting', href: '/admin/casting-applications', icon: ClipboardDocumentListIcon, badge: notifications.casting },
                 { name: 'Résultats Casting', href: '/admin/casting-results', icon: ClipboardDocumentCheckIcon },

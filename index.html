@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/assets/t-shirt.png" />
+    <link rel="icon" href="https://i.ibb.co/NdrpzGpm/blob.jpg" type="image/jpeg" />
+    <link rel="shortcut icon" href="https://i.ibb.co/NdrpzGpm/blob.jpg" type="image/jpeg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfect Models Management</title>
     
@@ -12,21 +13,26 @@
     <!-- Fallback Open Graph tags for social sharing -->
     <meta property="og:title" content="Perfect Models Management" />
     <meta property="og:description" content="L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine." />
-    <meta property="og:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
+    <meta property="og:image" content="https://i.ibb.co/NdrpzGpm/blob.jpg" />
     <meta property="og:url" content="https://www.perfectmodels.ga/" />
     <meta property="og:site_name" content="Perfect Models Management" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
 
     <!-- PWA Manifest -->
+    <meta name="theme-color" content="#D4AF37" />
     <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#111111" />
+    <link rel="apple-touch-icon" href="https://i.ibb.co/NdrpzGpm/blob.jpg" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind is now built via PostCSS; styles imported in src/index.css -->
+    <!-- Tailwind (bundled via PostCSS) -->
+    <link rel="stylesheet" href="/src/index.css" />
 
 <script type="importmap">
 {
@@ -53,5 +59,11 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
+    <!-- Brevo SDK -->
+    <script src="https://cdn.brevo.com/js/sdk-loader.js" async></script>
+    <script>
+      window.Brevo = window.Brevo || [];
+      Brevo.push(["init", { client_key: "283qy5jejm6a3uspkttqc6j7" }]);
+    </script>
 </body>
 </html>

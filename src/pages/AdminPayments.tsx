@@ -71,6 +71,25 @@ const AdminPayments: React.FC = () => {
         }
     };
 
+    // Aggregates per model and global expenses placeholder
+    const perModel = useMemo(() => {
+        const map = new Map<string, { name: string; totalPaid: number; monthsPaid: Set<string>; lastStatus: MonthlyPayment['status'] }>();
+        for (const p of payments) {
+            const key = p.modelId;
+            const entry = map.get(key) || { name: p.modelName, totalPaid: 0, monthsPaid: new Set<string>(), lastStatus: p.status };
+            entry.totalPaid += Number(p.amount || 0);
+            entry.monthsPaid.add(p.month);
+            entry.lastStatus = p.status;
+            map.set(key, entry);
+        }
+        return Array.from(map.entries()).map(([modelId, v]) => ({ modelId, ...v }));
+    }, [payments]);
+
+    const totalExpenses = useMemo(() => {
+        // If you track expenses elsewhere, sum here. Placeholder 0 for now.
+        return 0;
+    }, [payments]);
+
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Comptabilité" noIndex />
@@ -98,6 +117,47 @@ const AdminPayments: React.FC = () => {
                 </div>
 
                 <div className="admin-section-wrapper overflow-x-auto">
+                    <h2 className="admin-section-title">Récapitulatif par Mannequin</h2>
+                    <table className="admin-table mb-10">
+                        <thead>
+                            <tr>
+                                <th>Mannequin</th>
+                                <th>Montant total payé</th>
+                                <th>Mois réglés</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {perModel.map(row => (
+                                <tr key={row.modelId}>
+                                    <td>{row.name}</td>
+                                    <td>{row.totalPaid.toLocaleString('fr-FR')} FCFA</td>
+                                    <td>{Array.from(row.monthsPaid).sort().join(', ') || '-'}</td>
+                                    <td><span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(row.lastStatus)}`}>{row.lastStatus}</span></td>
+                                </tr>
+                            ))}
+                            {perModel.length === 0 && (
+                                <tr><td colSpan={4} className="text-center text-pm-off-white/60">Aucune donnée</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div className="p-4 bg-black border border-pm-gold/10 rounded">
+                            <p className="text-sm text-pm-off-white/60">Total payé</p>
+                            <p className="text-2xl text-pm-gold font-bold">{payments.reduce((s, p) => s + (p.amount || 0), 0).toLocaleString('fr-FR')} FCFA</p>
+                        </div>
+                        <div className="p-4 bg-black border border-pm-gold/10 rounded">
+                            <p className="text-sm text-pm-off-white/60">Dépenses</p>
+                            <p className="text-2xl text-pm-gold font-bold">{totalExpenses.toLocaleString('fr-FR')} FCFA</p>
+                        </div>
+                        <div className="p-4 bg-black border border-pm-gold/10 rounded">
+                            <p className="text-sm text-pm-off-white/60">Mois couverts</p>
+                            <p className="text-2xl text-pm-gold font-bold">{new Set(payments.map(p => p.month)).size}</p>
+                        </div>
+                    </div>
+
+                    <h2 className="admin-section-title">Paiements</h2>
                     <table className="admin-table">
                         <thead>
                             <tr>

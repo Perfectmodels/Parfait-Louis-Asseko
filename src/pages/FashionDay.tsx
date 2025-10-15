@@ -4,6 +4,7 @@ import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIc
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayEvent, Artist } from '../types';
+import AutoCarousel from '../components/AutoCarousel';
 
 interface AccordionItemProps {
     title: string;
@@ -35,13 +36,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ title, description, image
             >
                 <div className="overflow-hidden">
                     <div className="p-4 border-t border-pm-gold/20">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                            {(images || []).map((img, idx) => (
-                                <button key={idx} onClick={() => onImageClick(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${title}`} className="aspect-square block bg-black group overflow-hidden border-2 border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300 rounded-md">
-                                    <img src={img} alt={`${title} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
-                                </button>
-                            ))}
-                        </div>
+                        <AutoCarousel images={images || []} onImageClick={onImageClick} />
                     </div>
                 </div>
             </div>
@@ -179,20 +174,32 @@ const FashionDay: React.FC = () => {
                </section> 
             )}
 
-            {/* Stylists */}
+            {/* Stylists in 3-column grid */}
             {selectedEdition.stylists && selectedEdition.stylists.length > 0 && (
                 <section className="mt-16">
                     <h3 className="section-title">Galeries des Créateurs</h3>
-                    <div className="space-y-4 max-w-6xl mx-auto">
-                        {selectedEdition.stylists.map((stylist, index) => (
-                            <AccordionItem
-                                key={stylist.name}
-                                title={stylist.name}
-                                description={stylist.description}
-                                images={stylist.images || []}
-                                onImageClick={setSelectedImage}
-                                defaultOpen={index === 0}
-                            />
+                    <div className="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 max-w-6xl mx-auto">
+                        {selectedEdition.stylists.map((stylist) => (
+                          <div key={stylist.name} className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="text-xl font-playfair text-pm-gold">{stylist.name}</h4>
+                            </div>
+                            {stylist.description && (
+                              <p className="text-sm text-pm-off-white/70 mb-3">{stylist.description}</p>
+                            )}
+                            <div className="grid grid-cols-3 gap-2">
+                              {(stylist.images || []).slice(0, 9).map((src, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => setSelectedImage(src)}
+                                  aria-label={`Voir ${stylist.name} ${idx + 1}`}
+                                  className="relative aspect-square rounded overflow-hidden ring-1 ring-pm-gold/10 hover:ring-pm-gold"
+                                >
+                                  <img src={src} alt={`${stylist.name} ${idx + 1}`} loading="lazy" className="w-full h-full object-cover" />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         ))}
                     </div>
                 </section>
@@ -202,7 +209,7 @@ const FashionDay: React.FC = () => {
             {selectedEdition.artists && selectedEdition.artists.length > 0 && (
                 <section className="mt-16">
                     <h3 className="section-title">Performances Artistiques</h3>
-                    <div className="space-y-4 max-w-6xl mx-auto">
+                    <div className="space-y-4 max-w-5xl xl:max-w-6xl mx-auto">
                         {selectedEdition.artists.map((artist: Artist, index: number) => (
                             <AccordionItem
                                 key={`${artist.name}-${index}`}

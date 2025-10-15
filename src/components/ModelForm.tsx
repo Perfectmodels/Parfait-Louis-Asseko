@@ -12,10 +12,28 @@ interface ModelFormProps {
 }
 
 const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreating, mode }) => {
-    const [formData, setFormData] = useState<Model>(model);
+    const defaultMeasurements = { chest: '', waist: '', hips: '', shoeSize: '' };
+    const normalizeModel = (m: Model): Model => {
+        const normalized: Model = {
+            ...m,
+            imageUrl: m.imageUrl || '/assets/placeholder-model.png',
+            gender: m.gender || 'Femme',
+            height: m.height || '',
+            level: m.level || 'Pro',
+            measurements: { ...(m.measurements || {} as any) },
+            categories: Array.isArray(m.categories) ? m.categories : [],
+            portfolioImages: Array.isArray(m.portfolioImages) ? m.portfolioImages : [],
+            experience: m.experience || '',
+            journey: m.journey || '',
+        };
+        normalized.measurements = { ...defaultMeasurements, ...(normalized.measurements || {}) } as any;
+        return normalized;
+    };
+
+    const [formData, setFormData] = useState<Model>(normalizeModel(model));
 
     useEffect(() => {
-        setFormData(model);
+        setFormData(normalizeModel(model));
     }, [model]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -35,7 +53,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
         setFormData(prev => ({
             ...prev,
             measurements: {
-                ...prev.measurements,
+                ...(prev.measurements || defaultMeasurements),
                 [name]: value,
             }
         }));
