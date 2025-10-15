@@ -39,19 +39,27 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
         try {
             setIsUploading(true);
             setProgress(0);
-            // Prefer ddownload if server route is configured, else fallback to Firebase Storage
+            // Prefer Storacha; then ddownload; fallback Firebase Storage
             const form = new FormData();
             form.append('file', file);
-            const proxyResp = await fetch('/api/ddownload-upload', { method: 'POST', body: form });
-            if (proxyResp.ok) {
-                const json = await proxyResp.json();
-                // Extract link from ddownload response shape; fallback to raw
-                const url = json?.result?.url || json?.result || json?.raw || '';
-                if (url) {
-                    onChange(url);
-                    return;
+            // 1) Storacha
+            try {
+                const storachaResp = await fetch('/api/storacha-upload', { method: 'POST', body: form });
+                if (storachaResp.ok) {
+                    const sjson = await storachaResp.json();
+                    const surl = sjson?.url || sjson?.result?.url || sjson?.data?.url || sjson?.raw || '';
+                    if (surl) { onChange(surl); return; }
                 }
-            }
+            } catch {}
+            // 2) ddownload
+            try {
+                const ddResp = await fetch('/api/ddownload-upload', { method: 'POST', body: form });
+                if (ddResp.ok) {
+                    const djson = await ddResp.json();
+                    const durl = djson?.url || djson?.result?.url || djson?.result || djson?.raw || '';
+                    if (durl) { onChange(durl); return; }
+                }
+            } catch {}
             // Fallback: Firebase Storage
             const timestamp = Date.now();
             const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
