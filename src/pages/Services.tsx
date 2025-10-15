@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { Service } from '../types';
 import ServiceCard from '../components/ServiceCard';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Services: React.FC = () => {
     const { data } = useData();
@@ -24,6 +25,13 @@ const Services: React.FC = () => {
     ];
     
     const [activeCategory, setActiveCategory] = useState<string>(categoryOrder[0]);
+    const [selected, setSelected] = useState<Record<string, boolean>>({});
+    const navigate = useNavigate();
+
+    const selectedTitles = useMemo(
+      () => Object.entries(selected).filter(([k,v]) => v).map(([k]) => k),
+      [selected]
+    );
 
 
     return (
@@ -59,7 +67,33 @@ const Services: React.FC = () => {
                     ))}
                 </div>
 
-                {/* Tab Content */}
+                {/* Actions bar */}
+                <div className="flex items-center justify-between gap-4 mb-6">
+                  <div className="text-sm text-pm-off-white/70">
+                    {selectedTitles.length > 0 ? `${selectedTitles.length} service(s) sélectionné(s)` : 'Sélectionnez des services à commander'}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      disabled={selectedTitles.length === 0}
+                      onClick={() => {
+                        const q = selectedTitles.join(', ');
+                        navigate(`/contact?service=${encodeURIComponent(q)}`);
+                      }}
+                      className={`px-5 py-2 rounded-full text-sm font-bold uppercase tracking-widest transition ${selectedTitles.length===0 ? 'opacity-50 cursor-not-allowed border border-pm-off-white/20 text-pm-off-white/60' : 'bg-pm-gold text-pm-dark hover:bg-white'}`}
+                    >
+                      Commander les services sélectionnés
+                    </button>
+                    <button
+                      disabled={selectedTitles.length === 0}
+                      onClick={() => setSelected({})}
+                      className="px-4 py-2 rounded-full text-xs border border-pm-gold/30 text-pm-gold hover:bg-pm-gold hover:text-pm-dark"
+                    >
+                      Réinitialiser
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tab Content with selectable services */}
                 <div>
                     {categoryOrder.map(category => (
                         servicesByCategory[category] && (
@@ -71,9 +105,19 @@ const Services: React.FC = () => {
                                 hidden={activeCategory !== category}
                                 className={`animate-fade-in ${activeCategory === category ? 'block' : 'hidden'}`}
                             >
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {servicesByCategory[category].map((service, index) => (
-                                        <ServiceCard key={index} service={service} />
+                                        <div key={index} className={`relative group ${selected[service.title] ? 'ring-2 ring-pm-gold rounded-lg' : ''}`}>
+                                          <label className="absolute top-3 left-3 z-10 inline-flex items-center gap-2 text-xs bg-black/60 px-2 py-1 rounded-full border border-pm-gold/40">
+                                            <input
+                                              type="checkbox"
+                                              checked={Boolean(selected[service.title])}
+                                              onChange={(e) => setSelected((prev) => ({...prev, [service.title]: e.target.checked}))}
+                                            />
+                                            Sélectionner
+                                          </label>
+                                          <ServiceCard service={service} />
+                                        </div>
                                     ))}
                                 </div>
                             </div>

@@ -9,7 +9,13 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const userRole = sessionStorage.getItem('classroom_role');
   const hasAccess = sessionStorage.getItem('classroom_access') === 'granted';
+  const adminId = sessionStorage.getItem('admin_id');
   const location = useLocation();
+
+  // Special-case: admin access also valid if an admin session exists
+  if (role === 'admin' && adminId) {
+    return children;
+  }
 
   if (hasAccess && userRole === role) {
     return children;

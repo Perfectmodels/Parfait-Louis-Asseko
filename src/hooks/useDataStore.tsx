@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, InternalMessage } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -11,6 +11,7 @@ import {
     contactInfo as initialContactInfo, 
     siteImages as initialSiteImages, 
     apiKeys as initialApiKeys, 
+    adminUsers as initialAdminUsers,
     castingApplications as initialCastingApplications, 
     fashionDayApplications as initialFashionDayApplications, 
     forumThreads as initialForumThreads,
@@ -81,6 +82,8 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    adminUsers: AdminUser[];
+    internalMessages?: InternalMessage[];
 }
 
 const deepCleanUndefined = (value: any): any => {
@@ -121,6 +124,7 @@ export const useDataStore = () => {
         absences: initialAbsences,
         monthlyPayments: initialMonthlyPayments,
         photoshootBriefs: initialPhotoshootBriefs,
+        adminUsers: initialAdminUsers,
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,
@@ -161,6 +165,8 @@ export const useDataStore = () => {
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
+                    adminUsers: (dbData.adminUsers && dbData.adminUsers.length > 0) ? dbData.adminUsers : (initialData.adminUsers || []),
+                    internalMessages: Array.isArray(dbData.internalMessages) ? dbData.internalMessages : (initialData.internalMessages || []),
                 };
                 
                 // Always use navLinks from code to ensure route integrity

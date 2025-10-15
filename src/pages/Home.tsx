@@ -271,7 +271,7 @@ const Home: React.FC = () => {
         title="Accueil | L'Élégance Redéfinie"
         description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
         keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
-        image={siteImages.hero}
+        image={'https://i.ibb.co/NdrpzGpm/blob.jpg'}
         schema={organizationSchema}
         type="website"
       />
