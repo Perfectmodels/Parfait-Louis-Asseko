@@ -156,6 +156,7 @@ const AdminMessages: React.FC = () => {
     };
     
     return (
+        <>
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Messages de Contact" noIndex />
             <div className="container mx-auto px-6">
@@ -316,6 +317,7 @@ const AdminMessages: React.FC = () => {
             )}
           </div>
         )}
+        </>
     );
 };
 
