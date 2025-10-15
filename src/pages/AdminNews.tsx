@@ -89,6 +89,18 @@ const AdminNews: React.FC = () => {
                 <button onClick={handleStartCreate} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
                     <PlusIcon className="w-5 h-5"/> Ajouter une Actualité
                 </button>
+                {/* Convert from Album quick action */}
+                {(data?.galleryAlbums || []).length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <select id="album-select" className="admin-input !py-2 !h-10">
+                      {(data?.galleryAlbums || []).map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
+                    </select>
+                    <button onClick={() => {
+                      const sel = document.getElementById('album-select') as HTMLSelectElement | null;
+                      if (sel?.value) (window as any).dispatchEvent(new CustomEvent('pmm:create-news-from-album', { detail: { albumId: sel.value } }));
+                    }} className="action-btn !flex !items-center !gap-2 !px-4 !py-2"><SparklesIcon className="w-5 h-5"/> Depuis Album</button>
+                  </div>
+                )}
             </div>
         </div>
 

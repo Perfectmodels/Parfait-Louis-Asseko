@@ -216,6 +216,9 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
     window.addEventListener('pmm:create-article-from-album', handler);
     return () => window.removeEventListener('pmm:create-article-from-album', handler);
   }, []);
+
+  // Quick action UI: select album -> create article
+  // Locate a header actions area if exists; otherwise, this will be part of the form UI in that page.
     
     const handleArticleGenerated = (generatedData: Partial<Article>) => {
         setFormData(prev => ({
