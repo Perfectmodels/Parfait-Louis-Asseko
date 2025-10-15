@@ -4,8 +4,7 @@ import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
-import BookingForm from '../components/BookingForm';
-import { ContactMessage } from '../types';
+import { ContactMessage, BookingRequest } from '../types';
 
 const Contact: React.FC = () => {
     const { data, saveData } = useData();
@@ -13,16 +12,31 @@ const Contact: React.FC = () => {
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
     
-    // Unified simple contact form (general message)
-    const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    // Unified form: message or booking
+    const [formType, setFormType] = useState<'message' | 'booking'>('message');
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        clientCompany: '',
+        requestedModels: '',
+        startDate: '',
+        endDate: '',
+    });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
     
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const service = params.get('service');
+        const model = params.get('model');
         if (service) {
             setFormData(prev => ({ ...prev, subject: `Demande de devis pour : ${service}` }));
+        }
+        if (model) {
+            setFormData(prev => ({ ...prev, requestedModels: model }));
+            setFormType('booking');
         }
     }, [location.search]);
 
@@ -38,27 +52,45 @@ const Contact: React.FC = () => {
             return;
         }
 
-        const newContactMessage: ContactMessage = {
-            id: `contact-${Date.now()}`,
-            submissionDate: new Date().toISOString(),
-            status: 'Nouveau',
-            name: formData.name,
-            email: formData.email,
-            subject: formData.subject,
-            message: formData.message,
-        };
-
         try {
-            const updatedMessages = [...(data.contactMessages || []), newContactMessage];
-            await saveData({ ...data, contactMessages: updatedMessages });
-            
-            setStatus('success');
-            setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
-            setFormData({ name: '', email: '', subject: '', message: '' });
+            if (formType === 'booking') {
+                const newRequest: BookingRequest = {
+                    id: `booking-${Date.now()}`,
+                    submissionDate: new Date().toISOString(),
+                    status: 'Nouveau',
+                    clientName: formData.name,
+                    clientEmail: formData.email,
+                    clientCompany: formData.clientCompany,
+                    requestedModels: formData.requestedModels,
+                    startDate: formData.startDate,
+                    endDate: formData.endDate,
+                    message: formData.message,
+                };
+                const updatedRequests = [...(data.bookingRequests || []), newRequest];
+                await saveData({ ...data, bookingRequests: updatedRequests });
+                setStatus('success');
+                setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');
+            } else {
+                const newContactMessage: ContactMessage = {
+                    id: `contact-${Date.now()}`,
+                    submissionDate: new Date().toISOString(),
+                    status: 'Nouveau',
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                };
+                const updatedMessages = [...(data.contactMessages || []), newContactMessage];
+                await saveData({ ...data, contactMessages: updatedMessages });
+                setStatus('success');
+                setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
+            }
+
+            setFormData({ name: '', email: '', subject: '', message: '', clientCompany: '', requestedModels: '', startDate: '', endDate: '' });
         } catch (error) {
             setStatus('error');
             setStatusMessage('Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer.');
-            console.error("Error saving contact message:", error);
+            console.error("Error saving contact submission:", error);
         }
     };
 
@@ -105,33 +137,57 @@ const Contact: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Unified Forms: Message + Booking */}
-                    <div className="lg:col-span-2 grid grid-cols-1 gap-8">
+                    {/* Unified Form: Message or Booking */}
+                    <div className="lg:col-span-2">
                       <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                          <h2 className="text-3xl font-playfair text-pm-gold mb-6">Envoyez-nous un message</h2>
-                          <form onSubmit={handleSubmit} className="space-y-6">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormInput label="Votre Nom" name="name" value={formData.name} onChange={handleChange} required />
-                                <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-                              </div>
-                              <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
-                              <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
-                              <div className="flex justify-end">
-                                  <button type="submit" disabled={status === 'loading'} className="px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
-                                      {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
-                                  </button>
-                              </div>
-                              {statusMessage && (
-                                  <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                                      {statusMessage}
-                                  </p>
-                              )}
-                          </form>
-                      </div>
+                        <div className="flex flex-wrap items-center gap-3 mb-6">
+                          <h2 className="text-3xl font-playfair text-pm-gold">Nous Contacter</h2>
+                          <div className="ml-auto flex items-center gap-2 text-sm">
+                            <label className="inline-flex items-center gap-2">
+                              <input type="radio" name="formType" value="message" checked={formType==='message'} onChange={() => setFormType('message')} />
+                              Message
+                            </label>
+                            <label className="inline-flex items-center gap-2">
+                              <input type="radio" name="formType" value="booking" checked={formType==='booking'} onChange={() => setFormType('booking')} />
+                              Booking
+                            </label>
+                          </div>
+                        </div>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormInput label="Votre Nom" name="name" value={formData.name} onChange={handleChange} required />
+                            <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                          </div>
 
-                      <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Demande de Booking</h2>
-                        <BookingForm />
+                          {formType === 'booking' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <FormInput label="Société (optionnel)" name="clientCompany" value={formData.clientCompany} onChange={handleChange} />
+                              <FormInput label="Mannequin(s) souhaité(s)" name="requestedModels" value={formData.requestedModels} onChange={handleChange} required={formType==='booking'} />
+                            </div>
+                          )}
+
+                          <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required={formType==='message'} />
+
+                          {formType === 'booking' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <FormInput label="Date de début (souhaitée)" name="startDate" type="date" value={formData.startDate} onChange={handleChange} />
+                              <FormInput label="Date de fin (souhaitée)" name="endDate" type="date" value={formData.endDate} onChange={handleChange} />
+                            </div>
+                          )}
+
+                          <FormTextArea label={formType==='booking' ? 'Détails du projet' : 'Votre Message'} name="message" value={formData.message} onChange={handleChange} required />
+
+                          <div className="flex justify-end">
+                            <button type="submit" disabled={status === 'loading'} className="px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
+                              {status === 'loading' ? 'Envoi en cours...' : (formType==='booking' ? 'Envoyer la demande' : 'Envoyer')}
+                            </button>
+                          </div>
+                          {statusMessage && (
+                            <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                              {statusMessage}
+                            </p>
+                          )}
+                        </form>
                       </div>
                     </div>
                 </div>
