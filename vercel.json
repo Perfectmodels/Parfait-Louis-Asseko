@@ -10,6 +10,9 @@
       ]
     }
   ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
   "functions": {
     "api/imgbb-upload.js": { "memory": 256, "maxDuration": 30 }
   }

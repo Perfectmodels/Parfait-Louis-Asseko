@@ -112,7 +112,7 @@ const AdminMagazine: React.FC = () => {
 
           <div className="admin-section-wrapper !p-4 space-y-4">
             {localArticles.map((article, index) => {
-              const articleUrl = `${window.location.origin}/#/magazine/${article.slug}`;
+              const articleUrl = `${window.location.origin}/magazine/${article.slug}`;
               const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`;
               
               return (

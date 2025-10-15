@@ -152,7 +152,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
         const currentNews = newsItems[currentIndex];
         if (!currentNews) return;
 
-        const longUrl = currentNews.link ? `${window.location.origin}/#${currentNews.link}` : window.location.origin;
+        const longUrl = currentNews.link ? `${window.location.origin}${currentNews.link}` : window.location.origin;
         const generatedUrl = await generateShortLink({
             link: longUrl,
             title: currentNews.title,

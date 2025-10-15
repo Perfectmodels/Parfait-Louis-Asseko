@@ -1,5 +1,5 @@
 import React, { useEffect, lazy, Suspense } from 'react';
-import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import SiteLayoutRoute from './components/SiteLayoutRoute';
@@ -212,10 +212,10 @@ const App: React.FC = () => {
 
   return (
     <DataProvider>
-      <HashRouter>
+      <BrowserRouter>
         <ScrollToTop />
         <AppContent />
-      </HashRouter>
+      </BrowserRouter>
     </DataProvider>
   );
 };
