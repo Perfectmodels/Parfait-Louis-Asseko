@@ -59,5 +59,11 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
+    <!-- Brevo SDK -->
+    <script src="https://cdn.brevo.com/js/sdk-loader.js" async></script>
+    <script>
+      window.Brevo = window.Brevo || [];
+      Brevo.push(["init", { client_key: "283qy5jejm6a3uspkttqc6j7" }]);
+    </script>
 </body>
 </html>
