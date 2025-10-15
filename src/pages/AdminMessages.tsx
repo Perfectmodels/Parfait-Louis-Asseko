@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { ContactMessage, InternalMessage, InternalParticipant, InternalAttachment } from '../types';
+import AIAssistant from '../components/AIAssistant';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
@@ -12,7 +13,8 @@ const AdminMessages: React.FC = () => {
     const { data, saveData } = useData();
     const [filter, setFilter] = useState<StatusFilter>('Toutes');
     const [composeOpen, setComposeOpen] = useState(false);
-    const [compose, setCompose] = useState<{to: string; subject: string; body: string; attachments: InternalAttachment[]}>({ to: '', subject: '', body: '', attachments: [] });
+    const [compose, setCompose] = useState<{to: string; subject: string; body: string; attachments: InternalAttachment[]; template: string}>({ to: '', subject: '', body: '', attachments: [], template: 'plain' });
+    const [showAI, setShowAI] = useState(false);
 
     const messages = useMemo(() => {
         return [...(data?.contactMessages || [])].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime());
@@ -54,21 +56,59 @@ const AdminMessages: React.FC = () => {
         const to = compose.to.split(',').map(s => s.trim()).filter(Boolean).map(resolveParticipant).filter(Boolean) as InternalParticipant[];
         if (to.length === 0) { alert('Destinataire introuvable'); return; }
         const from = resolveParticipant(currentAdminId) || { kind: 'admin', id: currentAdminId, name: 'Administrateur' };
+        const htmlBody = renderEmailTemplate(compose.template, compose.subject, compose.body);
         const message: InternalMessage = {
             id: `msg-${Date.now()}`,
             createdAt: new Date().toISOString(),
             from,
             to,
             subject: compose.subject,
-            body: compose.body,
+            body: htmlBody,
             attachments: compose.attachments,
             readBy: [from.id],
         };
         const updated = [ ...(data.internalMessages || []), message ];
         await saveData({ ...data, internalMessages: updated });
-        setCompose({ to: '', subject: '', body: '', attachments: [] });
+        setCompose({ to: '', subject: '', body: '', attachments: [], template: 'plain' });
         setComposeOpen(false);
         alert('Message envoyé.');
+    };
+
+    const renderEmailTemplate = (tpl: string, subject: string, body: string): string => {
+      const safeBody = body.replace(/\n/g, '<br/>');
+      const base = (content: string) => `
+        <div style="font-family:Montserrat,Arial,sans-serif;background:#0b0b0b;color:#f6f6f6;padding:24px">
+          <table role="presentation" width="100%" style="max-width:640px;margin:0 auto;background:#111;border:1px solid rgba(212,175,55,0.2)">
+            <tr><td style="padding:24px">
+              <h1 style="margin:0 0 16px;font-size:22px;color:#D4AF37;font-family:'Playfair Display',serif">${subject || 'Message'}</h1>
+              ${content}
+              <hr style="border:none;border-top:1px solid rgba(212,175,55,0.2);margin:24px 0"/>
+              <p style="font-size:12px;color:#aaa;margin:0">Perfect Models Management • Libreville, Gabon</p>
+            </td></tr>
+          </table>
+        </div>`;
+      if (tpl === 'partnership') {
+        return base(`
+          <p style="margin:0 0 12px">Bonjour,</p>
+          <p style="margin:0 0 12px">${safeBody}</p>
+          <div style="margin-top:16px;padding:12px;border:1px solid rgba(212,175,55,0.3);background:#0f0f0f;border-radius:8px">
+            <p style="margin:0;color:#D4AF37;font-weight:700">Proposition de Partenariat</p>
+            <p style="margin:8px 0 0;color:#ddd">Découvrons comment créer de la valeur ensemble autour de la mode.</p>
+          </div>
+        `);
+      }
+      if (tpl === 'sponsorship') {
+        return base(`
+          <p style="margin:0 0 12px">Bonjour,</p>
+          <p style="margin:0 0 12px">${safeBody}</p>
+          <ul style="margin:12px 0;padding-left:20px;color:#ddd">
+            <li>Visibilité événementielle (logo, annonces)</li>
+            <li>Activation de marque (stands, contenus)</li>
+            <li>Relations presse et influence</li>
+          </ul>
+        `);
+      }
+      return base(`<p style="margin:0 0 12px">${safeBody}</p>`);
     };
 
     const getStatusColor = (status: ContactMessage['status']) => {
@@ -156,7 +196,7 @@ const AdminMessages: React.FC = () => {
                           </div>
                           <p className="text-xs text-pm-off-white/60">{new Date(m.createdAt).toLocaleString('fr-FR')}</p>
                         </div>
-                        <p className="mt-3 whitespace-pre-wrap text-sm text-pm-off-white/90">{m.body}</p>
+                        <div className="mt-3 text-sm text-pm-off-white/90" dangerouslySetInnerHTML={{ __html: m.body }} />
                         {m.attachments && m.attachments.length > 0 && (
                           <div className="mt-3 text-xs text-pm-off-white/70">Pièces jointes: {m.attachments.map(a => a.filename).join(', ')}</div>
                         )}
@@ -181,12 +221,25 @@ const AdminMessages: React.FC = () => {
                   <label className="admin-label">À (noms ou IDs, séparés par des virgules)</label>
                   <input className="admin-input" value={compose.to} onChange={e => setCompose(c => ({...c, to: e.target.value}))} placeholder="ex: Administrateur, Noemi Kim" />
                 </div>
-                <div>
-                  <label className="admin-label">Objet</label>
-                  <input className="admin-input" value={compose.subject} onChange={e => setCompose(c => ({...c, subject: e.target.value}))} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="admin-label">Objet</label>
+                    <input className="admin-input" value={compose.subject} onChange={e => setCompose(c => ({...c, subject: e.target.value}))} />
+                  </div>
+                  <div>
+                    <label className="admin-label">Template</label>
+                    <select className="admin-input" value={compose.template} onChange={e => setCompose(c => ({...c, template: e.target.value}))}>
+                      <option value="plain">Générique</option>
+                      <option value="partnership">Demande de Partenariat</option>
+                      <option value="sponsorship">Demande de Sponsoring</option>
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <label className="admin-label">Message</label>
+                  <div className="flex items-center justify-end mb-2">
+                    <button type="button" onClick={() => setShowAI(true)} className="text-xs text-pm-gold hover:underline">Assistance IA</button>
+                  </div>
                   <textarea className="admin-input admin-textarea" rows={6} value={compose.body} onChange={e => setCompose(c => ({...c, body: e.target.value}))} />
                 </div>
                 <div>
@@ -205,11 +258,24 @@ const AdminMessages: React.FC = () => {
                     <p className="text-xs text-pm-off-white/60 mt-2">{compose.attachments.map(a => a.filename).join(', ')}</p>
                   )}
                 </div>
+                <div>
+                  <label className="admin-label">Prévisualisation</label>
+                  <div className="p-4 bg-black border border-pm-gold/20 rounded min-h-[120px]" dangerouslySetInnerHTML={{ __html: renderEmailTemplate(compose.template, compose.subject, compose.body) }} />
+                </div>
                 <div className="text-right">
                   <button onClick={handleSendInternal} className="px-6 py-2 bg-pm-gold text-pm-dark rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white">Envoyer</button>
                 </div>
               </div>
             </div>
+            {showAI && (
+              <AIAssistant
+                isOpen={showAI}
+                onClose={() => setShowAI(false)}
+                onInsertContent={(content) => setCompose(c => ({...c, body: content }))}
+                fieldName="Email"
+                initialPrompt="Transforme ce texte en email HTML élégant pour une demande de partenariat/sponsoring, ton professionnel et chaleureux."
+              />
+            )}
           </div>
         )}
     );
