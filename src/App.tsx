@@ -51,6 +51,8 @@ const AdminBeginnerStudents = lazy(() => import('./pages/AdminBeginnerStudents')
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+const AdminApiKeys = lazy(() => import('./pages/AdminApiKeys'));
+const AdminProfile = lazy(() => import('./pages/AdminProfile'));
 
 
 // Role-specific pages
@@ -159,6 +161,8 @@ const AppContent: React.FC = () => {
                     {/* Admin routes with dedicated layout and nesting */}
                     <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
                         <Route index element={<Admin />} />
+                        <Route path="profile" element={<AdminProfile />} />
+                        <Route path="api-keys" element={<AdminApiKeys />} />
                         <Route path="models" element={<AdminModels />} />
                         <Route path="magazine" element={<AdminMagazine />} />
                         <Route path="classroom" element={<AdminClassroom />} />
