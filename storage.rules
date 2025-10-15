@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Public read for uploaded images; secure write by requiring auth if you add auth later.
+    match /images/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.resource.size < 5 * 1024 * 1024  // < 5MB
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // Default deny for other paths (uploads should go under /images/yyyy/mm/...)
+    match /{allPaths=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+  }
+}
