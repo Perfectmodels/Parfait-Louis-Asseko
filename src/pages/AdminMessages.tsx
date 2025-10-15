@@ -41,12 +41,12 @@ const AdminMessages: React.FC = () => {
     // Internal messaging helpers
     const currentAdminId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_id') || '' : '';
     const allParticipants: InternalParticipant[] = [
-        ...(data?.adminUsers || []).map(a => ({ kind: 'admin', id: a.id, name: a.name, email: a.email })),
-        ...(data?.models || []).map(m => ({ kind: 'model', id: m.id, name: m.name, email: m.email })),
-        ...(data?.beginnerStudents || []).map(b => ({ kind: 'beginner', id: b.id, name: b.name })),
-        ...(data?.juryMembers || []).map(j => ({ kind: 'jury', id: j.id, name: j.name })),
-        ...(data?.registrationStaff || []).map(r => ({ kind: 'registration', id: r.id, name: r.name })),
-    ];
+        ...(data?.adminUsers || []).filter(Boolean).map((a) => ({ kind: 'admin', id: a.id || '', name: a.name || 'Admin', email: a.email })),
+        ...(data?.models || []).filter(Boolean).map((m) => ({ kind: 'model', id: m.id || '', name: m.name || 'Mannequin', email: m.email })),
+        ...(data?.beginnerStudents || []).filter(Boolean).map((b) => ({ kind: 'beginner', id: b.id || '', name: b.name || 'Débutant' })),
+        ...(data?.juryMembers || []).filter(Boolean).map((j) => ({ kind: 'jury', id: j.id || '', name: j.name || 'Jury' })),
+        ...(data?.registrationStaff || []).filter(Boolean).map((r) => ({ kind: 'registration', id: r.id || '', name: r.name || 'Enregistrement' })),
+    ].filter((p) => p && p.id && p.name);
     const resolveParticipant = (nameOrId: string): InternalParticipant | null => {
         const needle = nameOrId.toLowerCase().trim();
         return allParticipants.find(p => p.id === nameOrId || p.name.toLowerCase() === needle) || null;
@@ -227,14 +227,14 @@ const AdminMessages: React.FC = () => {
                       <div key={m.id} className="bg-black p-4 border border-pm-gold/10 rounded-lg">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="text-sm text-pm-off-white/70">De <span className="font-semibold">{m.from.name}</span> ➜ {m.to.map(t => t.name).join(', ')}</p>
+                            <p className="text-sm text-pm-off-white/70">De <span className="font-semibold">{m.from?.name || 'Inconnu'}</span> ➜ {(m.to || []).filter(Boolean).map((t) => t?.name || '—').join(', ')}</p>
                             <h3 className="text-lg font-bold text-pm-gold mt-1">{m.subject || '(Sans objet)'}</h3>
                           </div>
                           <p className="text-xs text-pm-off-white/60">{new Date(m.createdAt).toLocaleString('fr-FR')}</p>
                         </div>
-                        <div className="mt-3 text-sm text-pm-off-white/90" dangerouslySetInnerHTML={{ __html: m.body }} />
-                        {m.attachments && m.attachments.length > 0 && (
-                          <div className="mt-3 text-xs text-pm-off-white/70">Pièces jointes: {m.attachments.map(a => a.filename).join(', ')}</div>
+                        <div className="mt-3 text-sm text-pm-off-white/90" dangerouslySetInnerHTML={{ __html: m.body || '' }} />
+                        {Array.isArray(m.attachments) && m.attachments.length > 0 && (
+                          <div className="mt-3 text-xs text-pm-off-white/70">Pièces jointes: {m.attachments.filter(Boolean).map(a => a?.filename || 'fichier').join(', ')}</div>
                         )}
                       </div>
                     ))}
