@@ -65,8 +65,14 @@ const Login: React.FC = () => {
     const normalizedUsername = normalizeUsername(username);
     const normalizedNameKey = normalizeNameKey(username);
 
-    // Admin Login (from adminUsers)
-    const loggedAdmin = (data.adminUsers || []).find(a => normalizeUsername(a.username) === normalizedUsername && a.active !== false);
+    // Admin Login (from adminUsers) — accept username, email, or full name
+    const candidateAdmin = (data.adminUsers || []).find(a => {
+      const matchesUsername = a.username ? normalizeUsername(a.username) === normalizedUsername : false;
+      const matchesEmail = a.email ? normalizeUsername(a.email) === normalizedUsername : false;
+      const matchesName = a.name ? normalizeNameKey(a.name) === normalizedNameKey : false;
+      return matchesUsername || matchesEmail || matchesName;
+    });
+    const loggedAdmin = candidateAdmin && candidateAdmin.active !== false ? candidateAdmin : undefined;
     if (loggedAdmin && loggedAdmin.password === password) {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
