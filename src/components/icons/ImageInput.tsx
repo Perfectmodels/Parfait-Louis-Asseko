@@ -39,10 +39,22 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
         try {
             setIsUploading(true);
             setProgress(0);
-            // Prefer Storacha; then ddownload; fallback Firebase Storage
+            // Prefer imgbb; then Storacha; puis ddownload; fallback Firebase Storage
             const form = new FormData();
             form.append('file', file);
-            // 1) Storacha
+            // 1) imgbb
+            try {
+                // imgbb attend 'image' base64 ou multipart 'image'
+                const imgbbForm = new FormData();
+                imgbbForm.append('image', file);
+                const imgbbResp = await fetch('/api/imgbb-upload', { method: 'POST', body: imgbbForm });
+                if (imgbbResp.ok) {
+                    const ij = await imgbbResp.json();
+                    const iurl = ij?.data?.url || ij?.data?.display_url || ij?.data?.image?.url || '';
+                    if (iurl) { onChange(iurl); return; }
+                }
+            } catch {}
+            // 2) Storacha
             try {
                 const storachaResp = await fetch('/api/storacha-upload', { method: 'POST', body: form });
                 if (storachaResp.ok) {
@@ -51,7 +63,7 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
                     if (surl) { onChange(surl); return; }
                 }
             } catch {}
-            // 2) ddownload
+            // 3) ddownload
             try {
                 const ddResp = await fetch('/api/ddownload-upload', { method: 'POST', body: form });
                 if (ddResp.ok) {
