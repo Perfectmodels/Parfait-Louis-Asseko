@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
-import { storage } from '../../firebaseConfig';
+// imgbb upload only
 
 interface ImageInputProps {
     label: string;
@@ -38,55 +38,24 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
 
         try {
             setIsUploading(true);
-            setProgress(0);
-            // Prefer imgbb; then Storacha; puis ddownload; fallback Firebase Storage
-            const form = new FormData();
-            form.append('file', file);
-            // 1) imgbb
-            try {
-                // imgbb attend 'image' base64 ou multipart 'image'
-                const imgbbForm = new FormData();
-                imgbbForm.append('image', file);
-                const imgbbResp = await fetch('/api/imgbb-upload', { method: 'POST', body: imgbbForm });
-                if (imgbbResp.ok) {
-                    const ij = await imgbbResp.json();
-                    const iurl = ij?.data?.url || ij?.data?.display_url || ij?.data?.image?.url || '';
-                    if (iurl) { onChange(iurl); return; }
-                }
-            } catch {}
-            // 2) Storacha
-            try {
-                const storachaResp = await fetch('/api/storacha-upload', { method: 'POST', body: form });
-                if (storachaResp.ok) {
-                    const sjson = await storachaResp.json();
-                    const surl = sjson?.url || sjson?.result?.url || sjson?.data?.url || sjson?.raw || '';
-                    if (surl) { onChange(surl); return; }
-                }
-            } catch {}
-            // 3) ddownload
-            try {
-                const ddResp = await fetch('/api/ddownload-upload', { method: 'POST', body: form });
-                if (ddResp.ok) {
-                    const djson = await ddResp.json();
-                    const durl = djson?.url || djson?.result?.url || djson?.result || djson?.raw || '';
-                    if (durl) { onChange(durl); return; }
-                }
-            } catch {}
-            // Fallback: Firebase Storage
-            const timestamp = Date.now();
-            const safeName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const storagePath = `images/${year}/${month}/${timestamp}-${safeName}`;
-            const metadata = { contentType: file.type, cacheControl: 'public, max-age=31536000, immutable' } as const;
-            const task = storage.ref().child(storagePath).put(file, metadata);
-            task.on('state_changed', (s) => setProgress(Math.round((s.bytesTransferred / s.totalBytes) * 100)));
-            await task;
-            onChange(await storage.ref().child(storagePath).getDownloadURL());
+            setProgress(10);
+            // imgbb: multipart 'image'
+            const imgbbForm = new FormData();
+            imgbbForm.append('image', file);
+            const imgbbResp = await fetch('/api/imgbb-upload', { method: 'POST', body: imgbbForm });
+            setProgress(70);
+            if (imgbbResp.ok) {
+                const ij = await imgbbResp.json();
+                const iurl = ij?.data?.url || ij?.data?.display_url || ij?.data?.image?.url || '';
+                if (iurl) { onChange(iurl); setProgress(100); return; }
+                throw new Error('Réponse imgbb invalide');
+            } else {
+                const t = await imgbbResp.text();
+                throw new Error(t || 'imgbb upload failed');
+            }
         } catch (err) {
             console.error('Upload failed', err);
-            alert("Échec du téléversement. Vérifiez vos permissions Firebase Storage.");
+            alert("Échec du téléversement sur imgbb.");
         } finally {
             setIsUploading(false);
         }
