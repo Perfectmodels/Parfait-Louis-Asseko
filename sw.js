@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pmm-v4';
+const CACHE_NAME = 'pmm-v6';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -52,10 +52,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // App shell routing for SPA: network-first for index.html to avoid stale hashed chunks
+  // App shell routing for SPA: network-first with no-store for index.html to avoid stale hashed chunks
   if (request.mode === 'navigate' && url.origin === self.location.origin) {
     event.respondWith(
-      fetch('/index.html')
+      fetch('/index.html', { cache: 'no-store' })
         .then((resp) => {
           const copy = resp.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
@@ -69,7 +69,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first for static assets
+  // Dynamic chunks and static assets: network-first to avoid 404 on stale hashed names
+  if (url.origin === self.location.origin && url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.ok) {
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse.clone()));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(request).then((cached) => cached || caches.match('/offline.html')))
+    );
+    return;
+  }
+
+  // Cache-first for other static assets
   event.respondWith(
     caches.match(request).then((cached) => {
       const fetchPromise = fetch(request).then((networkResponse) => {
