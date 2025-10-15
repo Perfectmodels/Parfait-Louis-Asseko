@@ -269,9 +269,18 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
                          <FormInput label="Tags (séparés par des virgules)" name="tags" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : ''} onChange={(e) => setFormData(p => ({...p, tags: e.target.value.split(',').map(tag => tag.trim())}))} />
                     </div>
 
-                    <div className="flex justify-end gap-4 pt-4 border-t border-pm-gold/20">
-                        <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
-                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
+                    <div className="flex items-center justify-between gap-4 pt-4 border-t border-pm-gold/20">
+                        <div className="flex items-center gap-2 text-xs">
+                            <kbd className="px-2 py-0.5 bg-black/60 border border-pm-off-white/20 rounded">Tab</kbd>
+                            <span className="text-pm-off-white/60">pour naviguer</span>
+                            <span className="text-pm-off-white/30">•</span>
+                            <kbd className="px-2 py-0.5 bg-black/60 border border-pm-off-white/20 rounded">Échap</kbd>
+                            <span className="text-pm-off-white/60">pour fermer</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button type="button" onClick={onCancel} className="px-4 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-xs rounded-full hover:border-white">Annuler</button>
+                            <button type="submit" className="px-5 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
+                        </div>
                     </div>
                 </form>
             </div>
