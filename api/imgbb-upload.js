@@ -19,6 +19,8 @@ export default async function handler(req, res) {
         'Content-Type': req.headers['content-type'] || 'application/octet-stream',
       },
       body: req,
+      // Required when streaming a request body in Node/Undici
+      duplex: 'half',
     });
 
     const text = await upstream.text();
