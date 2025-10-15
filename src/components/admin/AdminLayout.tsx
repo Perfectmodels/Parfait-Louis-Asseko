@@ -40,6 +40,17 @@ const AdminLayout: React.FC = () => {
   const { data } = useData();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const currentAdmin = useMemo(() => {
+    const adminId = sessionStorage.getItem('admin_id');
+    return (data?.adminUsers || []).find(a => a.id === adminId) || null;
+  }, [data?.adminUsers]);
+
+  const can = (perm: keyof NonNullable<typeof currentAdmin>['permissions']) => {
+    if (!currentAdmin) return true; // fallback: show all if none
+    if (currentAdmin.role === 'SuperAdmin') return true;
+    return Boolean(currentAdmin.permissions?.[perm]);
+  };
+
   const counts = useMemo(() => {
     return {
       newCastingApps:
@@ -60,14 +71,16 @@ const AdminLayout: React.FC = () => {
       title: 'Tableau de bord',
       items: [
         { label: 'Accueil', to: '/admin', icon: HomeIcon },
+        { label: 'Mon Profil', to: '/admin/profile', icon: KeyIcon },
+        { label: 'Clés API', to: '/admin/api-keys', icon: Cog6ToothIcon },
       ],
     },
     {
       title: 'Talents',
       items: [
-        { label: 'Mannequins Pro', to: '/admin/models', icon: UsersIcon },
-        { label: 'Débutants', to: '/admin/beginner-students-access', icon: UserGroupIcon },
-        { label: 'Direction Artistique', to: '/admin/artistic-direction', icon: PaintBrushIcon },
+        ...(can('canManageModels') ? [{ label: 'Mannequins Pro', to: '/admin/models', icon: UsersIcon } as NavItem] : []),
+        ...(can('canManageModels') ? [{ label: 'Débutants', to: '/admin/beginner-students-access', icon: UserGroupIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: 'Direction Artistique', to: '/admin/artistic-direction', icon: PaintBrushIcon } as NavItem] : []),
         {
           label: 'Candidatures Casting',
           to: '/admin/casting-applications',
@@ -81,11 +94,11 @@ const AdminLayout: React.FC = () => {
     {
       title: 'Contenu',
       items: [
-        { label: 'Magazine', to: '/admin/magazine', icon: NewspaperIcon },
-        { label: 'Actualités', to: '/admin/news', icon: PresentationChartLineIcon },
-        { label: "Contenu de l'Agence", to: '/admin/agency', icon: BuildingStorefrontIcon },
+        ...(can('canEditContent') ? [{ label: 'Magazine', to: '/admin/magazine', icon: NewspaperIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: 'Actualités', to: '/admin/news', icon: PresentationChartLineIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: "Contenu de l'Agence", to: '/admin/agency', icon: BuildingStorefrontIcon } as NavItem] : []),
         { label: 'Événements PFD', to: '/admin/fashion-day-events', icon: CalendarDaysIcon },
-        { label: 'Commentaires', to: '/admin/comments', icon: ChatBubbleLeftRightIcon },
+        ...(can('canModerateComments') ? [{ label: 'Commentaires', to: '/admin/comments', icon: ChatBubbleLeftRightIcon } as NavItem] : []),
         { label: 'Classroom Pro', to: '/admin/classroom', icon: BookOpenIcon },
         { label: 'Paramètres', to: '/admin/settings', icon: Cog6ToothIcon },
       ],
@@ -93,7 +106,7 @@ const AdminLayout: React.FC = () => {
     {
       title: 'Opérations',
       items: [
-        { label: 'Comptabilité', to: '/admin/payments', icon: CurrencyDollarIcon },
+        ...(can('canManagePayments') ? [{ label: 'Comptabilité', to: '/admin/payments', icon: CurrencyDollarIcon } as NavItem] : []),
         { label: 'Absences', to: '/admin/absences', icon: CalendarIcon },
         {
           label: 'Bookings',
