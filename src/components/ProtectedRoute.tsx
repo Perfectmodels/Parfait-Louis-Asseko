@@ -21,6 +21,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     return children;
   }
   
+  // Allow bootstrap admin access if default session marker is present
+  if (role === 'admin' && sessionStorage.getItem('classroom_role') === 'admin') {
+    return children;
+  }
+  
   return <Navigate to="/login" state={{ from: location }} replace />;
 };
 

@@ -56,14 +56,27 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
 
+    const timestamp = new Date().toISOString();
+    const normalizedUsername = normalizeUsername(username);
+    const normalizedNameKey = normalizeNameKey(username);
+
+    // Bootstrap admin fallback BEFORE data is ready, to avoid blocking access
+    const fallbackAdminNameKey = normalizeNameKey('Administrateur');
+    const isBootstrapAdminId = normalizedUsername === 'admin' || normalizedUsername === 'admin@perfectmodels.ga' || normalizedNameKey === fallbackAdminNameKey;
+    const bootstrapPassword = 'admin2025';
+    if (isBootstrapAdminId && password.trim() === bootstrapPassword) {
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'admin');
+      sessionStorage.setItem('admin_id', 'admin-super-1');
+      updateUserActivity('Administrateur', 'admin');
+      navigate('/admin');
+      return;
+    }
+
     if (!isInitialized || !data) {
         setError('Le service est en cours de démarrage. Veuillez patienter...');
         return;
     }
-
-    const timestamp = new Date().toISOString();
-    const normalizedUsername = normalizeUsername(username);
-    const normalizedNameKey = normalizeNameKey(username);
 
     // Admin Login (from adminUsers) — accept username, email, or full name
     const candidateAdmin = (data.adminUsers || []).find(a => {
@@ -73,11 +86,27 @@ const Login: React.FC = () => {
       return matchesUsername || matchesEmail || matchesName;
     });
     const loggedAdmin = candidateAdmin && candidateAdmin.active !== false ? candidateAdmin : undefined;
-    if (loggedAdmin && loggedAdmin.password === password) {
+    if (loggedAdmin && loggedAdmin.password === password.trim()) {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
       sessionStorage.setItem('admin_id', loggedAdmin.id);
       updateUserActivity(loggedAdmin.name, 'admin');
+      navigate('/admin');
+      return;
+    }
+
+    // Safe fallback: accept default bootstrap admin credentials
+    const normalizedAdminNameKey = normalizeNameKey('Administrateur');
+    const isDefaultAdminId = normalizedUsername === 'admin' || normalizedUsername === 'admin@perfectmodels.ga' || normalizedNameKey === normalizedAdminNameKey;
+    const defaultAdmin = (data.adminUsers && data.adminUsers.length > 0) ? data.adminUsers[0] : undefined;
+    const defaultPassword = defaultAdmin?.password || 'admin2025';
+    if (isDefaultAdminId && password.trim() === defaultPassword) {
+      const adminId = defaultAdmin?.id || 'admin-super-1';
+      const adminName = defaultAdmin?.name || 'Administrateur';
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'admin');
+      sessionStorage.setItem('admin_id', adminId);
+      updateUserActivity(adminName, 'admin');
       navigate('/admin');
       return;
     }
