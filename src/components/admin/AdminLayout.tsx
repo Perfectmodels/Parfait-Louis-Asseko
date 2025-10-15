@@ -10,6 +10,7 @@ import {
   ClipboardDocumentCheckIcon,
   KeyIcon,
   NewspaperIcon,
+  PhotoIcon,
   PresentationChartLineIcon,
   BuildingStorefrontIcon,
   CalendarDaysIcon,
