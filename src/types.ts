@@ -335,6 +335,34 @@ export interface ContactMessage {
   message: string;
 }
 
+// ================== INTERNAL MESSAGING ==================
+export type UserKind = 'admin' | 'model' | 'beginner' | 'jury' | 'registration';
+
+export interface InternalAttachment {
+  filename: string;
+  contentType: string;
+  contentBase64?: string; // used for email sending; avoid very large payloads
+  url?: string; // optional URL if uploaded elsewhere
+}
+
+export interface InternalParticipant {
+  kind: UserKind;
+  id: string;
+  name: string;
+  email?: string;
+}
+
+export interface InternalMessage {
+  id: string;
+  createdAt: string;
+  from: InternalParticipant;
+  to: InternalParticipant[]; // support multi-recipient
+  subject: string;
+  body: string;
+  attachments?: InternalAttachment[];
+  readBy?: string[]; // user ids who read
+}
+
 export interface AIAssistantProps {
     isOpen: boolean;
     onClose: () => void;
