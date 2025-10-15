@@ -1,10 +1,10 @@
-const CACHE_NAME = 'pmm-v3';
+const CACHE_NAME = 'pmm-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
-  '/public/offline.html',
+  '/offline.html',
 ];
 
 // Install event: cache core assets
@@ -52,18 +52,19 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // App shell routing for SPA: serve index.html for navigation requests within our origin
+  // App shell routing for SPA: network-first for index.html to avoid stale hashed chunks
   if (request.mode === 'navigate' && url.origin === self.location.origin) {
     event.respondWith(
-      caches.match('/index.html').then((cached) => {
-        return (
-          cached || fetch('/index.html').then((resp) => {
-            const copy = resp.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
-            return resp;
-          }).catch(() => caches.match('/public/offline.html'))
-        );
-      })
+      fetch('/index.html')
+        .then((resp) => {
+          const copy = resp.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
+          return resp;
+        })
+        .catch(async () => {
+          const cached = await caches.match('/index.html');
+          return cached || (await caches.match('/offline.html'));
+        })
     );
     return;
   }
@@ -76,7 +77,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse.clone()));
         }
         return networkResponse;
-      }).catch(() => cached || caches.match('/public/offline.html'));
+      }).catch(() => cached || caches.match('/offline.html'));
       return cached || fetchPromise;
     })
   );
