@@ -178,7 +178,7 @@ const FashionDay: React.FC = () => {
             {selectedEdition.stylists && selectedEdition.stylists.length > 0 && (
                 <section className="mt-16">
                     <h3 className="section-title">Galeries des Créateurs</h3>
-                    <div className="space-y-4 max-w-6xl mx-auto">
+                    <div className="space-y-4 max-w-5xl xl:max-w-6xl mx-auto">
                         {selectedEdition.stylists.map((stylist, index) => (
                             <AccordionItem
                                 key={stylist.name}
@@ -197,7 +197,7 @@ const FashionDay: React.FC = () => {
             {selectedEdition.artists && selectedEdition.artists.length > 0 && (
                 <section className="mt-16">
                     <h3 className="section-title">Performances Artistiques</h3>
-                    <div className="space-y-4 max-w-6xl mx-auto">
+                    <div className="space-y-4 max-w-5xl xl:max-w-6xl mx-auto">
                         {selectedEdition.artists.map((artist: Artist, index: number) => (
                             <AccordionItem
                                 key={`${artist.name}-${index}`}

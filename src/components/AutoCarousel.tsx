@@ -59,7 +59,7 @@ const AutoCarousel: React.FC<AutoCarouselProps> = ({
         {images.map((src, idx) => (
           <button
             key={idx}
-            className="relative aspect-square flex-shrink-0 w-[160px] sm:w-[200px] md:w-[240px] lg:w-[260px] xl:w-[280px] snap-start bg-black border-2 border-transparent hover:border-pm-gold rounded-md overflow-hidden group"
+            className="relative aspect-square flex-shrink-0 w-[120px] sm:w-[160px] md:w-[180px] lg:w-[200px] xl:w-[220px] snap-start bg-black border-2 border-transparent hover:border-pm-gold rounded-md overflow-hidden group"
             aria-label={`Voir l'image ${idx + 1}`}
             onClick={() => onImageClick?.(src)}
           >
