@@ -24,11 +24,57 @@ const AdminProfile: React.FC = () => {
 
   useEffect(() => {
     if (!isInitialized || !data) return;
-    if (currentAdmin) setAdmin(JSON.parse(JSON.stringify(currentAdmin)));
-    setTeam(JSON.parse(JSON.stringify(data.adminUsers || [])));
-  }, [isInitialized, data, currentAdmin]);
+    const list = data.adminUsers || [];
+    let selected: AdminUser | null = currentAdmin;
+    if (!selected && list.length > 0) {
+      const normalized = (v: string) => v.toLowerCase().trim();
+      const byIdOrName = list.find(a =>
+        (a.username && normalized(a.username) === 'admin') ||
+        (a.email && normalized(a.email) === 'admin@perfectmodels.ga') ||
+        (a.name && normalized(a.name) === 'administrateur') ||
+        a.role === 'SuperAdmin'
+      ) || list[0];
+      selected = byIdOrName || null;
+    }
+    if (!selected && list.length === 0) {
+      selected = {
+        id: 'admin-super-1',
+        name: 'Administrateur',
+        username: 'admin',
+        password: 'admin2025',
+        email: 'admin@perfectmodels.ga',
+        phone: '',
+        avatarUrl: '',
+        role: 'SuperAdmin',
+        permissions: {
+          canEditContent: true,
+          canPublishContent: true,
+          canManageModels: true,
+          canManagePayments: true,
+          canModerateComments: true,
+          canManageAdmins: true,
+        },
+        deputies: [],
+        active: true,
+      } as AdminUser;
+    }
+    if (selected) {
+      setAdmin(JSON.parse(JSON.stringify(selected)));
+      if (adminId !== selected.id) {
+        sessionStorage.setItem('admin_id', selected.id);
+      }
+    }
+    setTeam(JSON.parse(JSON.stringify(list)));
+  }, [isInitialized, data, currentAdmin, adminId]);
 
-  if (!data || !admin) return <div className="min-h-screen bg-pm-dark"/>;
+  if (!data || !admin) return (
+    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+      <div className="container mx-auto px-6 max-w-3xl">
+        <h1 className="admin-page-title">Mon Profil Administrateur</h1>
+        <p className="admin-page-subtitle">Initialisation du profil en cours...</p>
+      </div>
+    </div>
+  );
 
   const isSuper = currentAdmin?.role === 'SuperAdmin';
 
