@@ -185,7 +185,16 @@ const AdminModels: React.FC = () => {
             alert("Les informations du site ne sont pas chargées.");
             return;
         }
-        const htmlContent = generateModelSheetHtml(model, data.siteConfig, data.contactInfo);
+        const safeModel = {
+            ...model,
+            measurements: {
+                chest: model.measurements?.chest || '',
+                waist: model.measurements?.waist || '',
+                hips: model.measurements?.hips || '',
+                shoeSize: model.measurements?.shoeSize || ''
+            }
+        } as Model;
+        const htmlContent = generateModelSheetHtml(safeModel, data.siteConfig, data.contactInfo);
         const printWindow = window.open('', '_blank');
         if (printWindow) {
             printWindow.document.write(htmlContent);
