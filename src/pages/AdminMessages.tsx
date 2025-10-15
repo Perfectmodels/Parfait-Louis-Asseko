@@ -244,7 +244,6 @@ const AdminMessages: React.FC = () => {
             </div>
         </div>
 
-        {/* Compose Modal */}
         {composeOpen && (
           <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true">
             <div className="bg-pm-dark border border-pm-gold/20 rounded-lg shadow-2xl w-full max-w-2xl">
