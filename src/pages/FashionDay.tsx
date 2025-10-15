@@ -174,20 +174,32 @@ const FashionDay: React.FC = () => {
                </section> 
             )}
 
-            {/* Stylists */}
+            {/* Stylists in 3-column grid */}
             {selectedEdition.stylists && selectedEdition.stylists.length > 0 && (
                 <section className="mt-16">
                     <h3 className="section-title">Galeries des Créateurs</h3>
-                    <div className="space-y-4 max-w-5xl xl:max-w-6xl mx-auto">
-                        {selectedEdition.stylists.map((stylist, index) => (
-                            <AccordionItem
-                                key={stylist.name}
-                                title={stylist.name}
-                                description={stylist.description}
-                                images={stylist.images || []}
-                                onImageClick={setSelectedImage}
-                                defaultOpen={index === 0}
-                            />
+                    <div className="grid gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 max-w-6xl mx-auto">
+                        {selectedEdition.stylists.map((stylist) => (
+                          <div key={stylist.name} className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="text-xl font-playfair text-pm-gold">{stylist.name}</h4>
+                            </div>
+                            {stylist.description && (
+                              <p className="text-sm text-pm-off-white/70 mb-3">{stylist.description}</p>
+                            )}
+                            <div className="grid grid-cols-3 gap-2">
+                              {(stylist.images || []).slice(0, 9).map((src, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => setSelectedImage(src)}
+                                  aria-label={`Voir ${stylist.name} ${idx + 1}`}
+                                  className="relative aspect-square rounded overflow-hidden ring-1 ring-pm-gold/10 hover:ring-pm-gold"
+                                >
+                                  <img src={src} alt={`${stylist.name} ${idx + 1}`} loading="lazy" className="w-full h-full object-cover" />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         ))}
                     </div>
                 </section>
