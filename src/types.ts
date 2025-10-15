@@ -373,6 +373,20 @@ export interface GalleryItem {
   order?: number;
 }
 
+export type GalleryAlbumCategory = 'Défilé' | 'Shooting' | 'Collaboration' | 'Autre';
+
+export interface GalleryAlbum {
+  id: string;
+  title: string;
+  description?: string;
+  category?: GalleryAlbumCategory | string;
+  coverUrl?: string;
+  images: string[];
+  tags?: string[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface AIAssistantProps {
     isOpen: boolean;
     onClose: () => void;

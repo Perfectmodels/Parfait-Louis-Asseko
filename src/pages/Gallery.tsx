@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { GalleryAlbum } from '../types';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const Gallery: React.FC = () => {
@@ -12,6 +13,11 @@ const Gallery: React.FC = () => {
     const acc = new Set<string>();
     if (!data) return [];
 
+    // Albums curated first (if any album has images)
+    const albums = (data.galleryAlbums || []) as GalleryAlbum[];
+    if (albums && albums.length > 0) {
+      albums.forEach(alb => (alb.images || []).forEach(u => { if (u) acc.add(u); }));
+    } else {
     // Site images
     Object.values(data.siteImages || {}).forEach((url) => { if (url) acc.add(url as string); });
 
@@ -34,6 +40,7 @@ const Gallery: React.FC = () => {
       (ev.stylists || []).forEach((s) => (s.images || []).forEach((u) => { if (u) acc.add(u); }));
       (ev.artists || []).forEach((a) => (a.images || []).forEach((u) => { if (u) acc.add(u); }));
     });
+    }
 
     const list = Array.from(acc).filter((u) => typeof u === 'string' && (u as string).length > 4) as string[];
     return list;

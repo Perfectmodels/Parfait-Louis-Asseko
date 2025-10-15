@@ -151,6 +151,31 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
         onSave(normalized);
     };
 
+  const handleCreateFromAlbum = (albumId: string) => {
+    const album = (data?.galleryAlbums || []).find(a => a.id === albumId);
+    if (!album) { alert('Album introuvable'); return; }
+    const cover = album.coverUrl || album.images[0] || '';
+    const excerpt = (album.description || '').slice(0, 160);
+    onSave({
+      id: `news-${Date.now()}`,
+      title: album.title,
+      date: new Date().toISOString().split('T')[0],
+      imageUrl: cover,
+      excerpt,
+      link: '/galerie'
+    });
+  };
+
+  // Pré-remplissage via évènement depuis AdminGallery
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      const albumId = e?.detail?.albumId;
+      if (albumId) handleCreateFromAlbum(albumId);
+    };
+    window.addEventListener('pmm:create-news-from-album', handler);
+    return () => window.removeEventListener('pmm:create-news-from-album', handler);
+  }, []);
+
     const openAssistant = (fieldName: string, initialPrompt: string) => {
         setAssistantState({ isOpen: true, fieldName, initialPrompt });
     };

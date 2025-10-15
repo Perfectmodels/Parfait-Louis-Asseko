@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, InternalMessage, GalleryItem } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, InternalMessage, GalleryItem, GalleryAlbum } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -84,6 +84,7 @@ export interface AppData {
     adminUsers: AdminUser[];
     internalMessages?: InternalMessage[];
     gallery?: GalleryItem[];
+    galleryAlbums?: GalleryAlbum[];
 }
 
 const deepCleanUndefined = (value: any): any => {
@@ -167,6 +168,7 @@ export const useDataStore = () => {
                     adminUsers: (dbData.adminUsers && dbData.adminUsers.length > 0) ? dbData.adminUsers : (initialData.adminUsers || []),
                     internalMessages: Array.isArray(dbData.internalMessages) ? dbData.internalMessages : (initialData.internalMessages || []),
                     gallery: Array.isArray(dbData.gallery) ? dbData.gallery : (initialData.gallery || []),
+                    galleryAlbums: Array.isArray(dbData.galleryAlbums) ? dbData.galleryAlbums : (initialData.galleryAlbums || []),
                 };
                 
                 // Always use navLinks from code to ensure route integrity

@@ -186,6 +186,36 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
         }
         onSave({ ...formData, content: parsedContent });
     };
+
+  const handleCreateArticleFromAlbum = (albumId: string) => {
+    const album = (data?.galleryAlbums || []).find(a => a.id === albumId);
+    if (!album) { alert('Album introuvable'); return; }
+    const content = [
+      { type: 'heading', level: 2, text: album.title },
+      ...(album.description ? [{ type: 'paragraph', text: album.description }] : []),
+      ...album.images.slice(0, 12).map(src => ({ type: 'image', src, alt: album.title }))
+    ];
+    onSave({
+      slug: `${album.title.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}`,
+      title: album.title,
+      category: album.category || 'Galerie',
+      excerpt: album.description || '',
+      imageUrl: album.coverUrl || album.images[0] || '',
+      author: 'PMM',
+      date: new Date().toISOString().split('T')[0],
+      content,
+      tags: ['galerie', 'album']
+    });
+  };
+
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      const albumId = e?.detail?.albumId;
+      if (albumId) handleCreateArticleFromAlbum(albumId);
+    };
+    window.addEventListener('pmm:create-article-from-album', handler);
+    return () => window.removeEventListener('pmm:create-article-from-album', handler);
+  }, []);
     
     const handleArticleGenerated = (generatedData: Partial<Article>) => {
         setFormData(prev => ({
