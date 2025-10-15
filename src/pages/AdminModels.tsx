@@ -246,6 +246,7 @@ const AdminModels: React.FC = () => {
                                 <th>Nom</th>
                                 <th>Niveau</th>
                                 <th>Public</th>
+                                <th>Édition</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -261,6 +262,16 @@ const AdminModels: React.FC = () => {
                                         </button>
                                     </td>
                                     <td>
+                                        <button
+                                            onClick={() => setEditingModel(model)}
+                                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pm-gold text-pm-gold hover:bg-pm-gold hover:text-pm-dark text-xs"
+                                            title="Éditer le profil"
+                                            aria-label={`Éditer le profil de ${model.name}`}
+                                        >
+                                            <PencilIcon className="w-4 h-4"/> Éditer le profil
+                                        </button>
+                                    </td>
+                                    <td>
                                         <div className="flex items-center gap-2">
                                             <button 
                                                 onClick={() => handlePrint(model)} 
@@ -269,7 +280,6 @@ const AdminModels: React.FC = () => {
                                             >
                                                 <PrinterIcon className="w-5 h-5"/>
                                             </button>
-                                            <button onClick={() => setEditingModel(model)} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
                                             <button onClick={() => handleDelete(model.id)} className="p-2 text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
                                         </div>
                                     </td>
