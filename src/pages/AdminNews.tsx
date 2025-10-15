@@ -89,6 +89,18 @@ const AdminNews: React.FC = () => {
                 <button onClick={handleStartCreate} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
                     <PlusIcon className="w-5 h-5"/> Ajouter une Actualité
                 </button>
+                {/* Convert from Album quick action */}
+                {(data?.galleryAlbums || []).length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <select id="album-select" className="admin-input !py-2 !h-10">
+                      {(data?.galleryAlbums || []).map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
+                    </select>
+                    <button onClick={() => {
+                      const sel = document.getElementById('album-select') as HTMLSelectElement | null;
+                      if (sel?.value) (window as any).dispatchEvent(new CustomEvent('pmm:create-news-from-album', { detail: { albumId: sel.value } }));
+                    }} className="action-btn !flex !items-center !gap-2 !px-4 !py-2"><SparklesIcon className="w-5 h-5"/> Depuis Album</button>
+                  </div>
+                )}
             </div>
         </div>
 
@@ -139,8 +151,42 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(formData);
+        // Auto-fill missing fields and normalize
+        const normalized: NewsItem = {
+          ...formData,
+          title: formData.title.trim() || 'Nouvelle actualité',
+          date: formData.date || new Date().toISOString().split('T')[0],
+          excerpt: formData.excerpt || '',
+          imageUrl: formData.imageUrl || '/assets/placeholder-model.png',
+          link: formData.link || '',
+        };
+        onSave(normalized);
     };
+
+  const handleCreateFromAlbum = (albumId: string) => {
+    const album = (data?.galleryAlbums || []).find(a => a.id === albumId);
+    if (!album) { alert('Album introuvable'); return; }
+    const cover = album.coverUrl || album.images[0] || '';
+    const excerpt = (album.description || '').slice(0, 160);
+    onSave({
+      id: `news-${Date.now()}`,
+      title: album.title,
+      date: new Date().toISOString().split('T')[0],
+      imageUrl: cover,
+      excerpt,
+      link: '/galerie'
+    });
+  };
+
+  // Pré-remplissage via évènement depuis AdminGallery
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      const albumId = e?.detail?.albumId;
+      if (albumId) handleCreateFromAlbum(albumId);
+    };
+    window.addEventListener('pmm:create-news-from-album', handler);
+    return () => window.removeEventListener('pmm:create-news-from-album', handler);
+  }, []);
 
     const openAssistant = (fieldName: string, initialPrompt: string) => {
         setAssistantState({ isOpen: true, fieldName, initialPrompt });

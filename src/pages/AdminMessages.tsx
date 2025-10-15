@@ -1,7 +1,9 @@
 
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-import { ContactMessage } from '../types';
+import { ContactMessage, InternalMessage, InternalParticipant, InternalAttachment } from '../types';
+import AIAssistant from '../components/AIAssistant';
+import Modal from '../components/Modal';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
@@ -11,6 +13,10 @@ type StatusFilter = 'Toutes' | 'Nouveau' | 'Lu' | 'Archivé';
 const AdminMessages: React.FC = () => {
     const { data, saveData } = useData();
     const [filter, setFilter] = useState<StatusFilter>('Toutes');
+    const [composeOpen, setComposeOpen] = useState(false);
+    const [compose, setCompose] = useState<{to: string; subject: string; body: string; attachments: InternalAttachment[]; template: string}>({ to: '', subject: '', body: '', attachments: [], template: 'plain' });
+    const [showAI, setShowAI] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState(false);
 
     const messages = useMemo(() => {
         return [...(data?.contactMessages || [])].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime());
@@ -33,6 +39,113 @@ const AdminMessages: React.FC = () => {
         await saveData({ ...data, contactMessages: updatedMessages });
     };
 
+    // Internal messaging helpers
+    const currentAdminId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_id') || '' : '';
+    const allParticipants: InternalParticipant[] = [
+        ...(data?.adminUsers || []).filter(Boolean).map((a) => ({ kind: 'admin', id: a.id || '', name: a.name || 'Admin', email: a.email })),
+        ...(data?.models || []).filter(Boolean).map((m) => ({ kind: 'model', id: m.id || '', name: m.name || 'Mannequin', email: m.email })),
+        ...(data?.juryMembers || []).filter(Boolean).map((j) => ({ kind: 'jury', id: j.id || '', name: j.name || 'Jury' })),
+        ...(data?.registrationStaff || []).filter(Boolean).map((r) => ({ kind: 'registration', id: r.id || '', name: r.name || 'Enregistrement' })),
+    ].filter((p) => p && p.id && p.name);
+    const resolveParticipant = (nameOrId: string): InternalParticipant | null => {
+        const needle = nameOrId.toLowerCase().trim();
+        return allParticipants.find(p => p.id === nameOrId || p.name.toLowerCase() === needle) || null;
+    };
+
+    const handleSendInternal = async () => {
+        if (!data) return;
+        const to = compose.to.split(',').map(s => s.trim()).filter(Boolean).map(resolveParticipant).filter(Boolean) as InternalParticipant[];
+        if (to.length === 0) { alert('Destinataire introuvable'); return; }
+        const from = resolveParticipant(currentAdminId) || { kind: 'admin', id: currentAdminId, name: 'Administrateur' };
+        const htmlBody = renderEmailTemplate(compose.template, compose.subject, compose.body);
+        const message: InternalMessage = {
+            id: `msg-${Date.now()}`,
+            createdAt: new Date().toISOString(),
+            from,
+            to,
+            subject: compose.subject,
+            body: htmlBody,
+            attachments: compose.attachments,
+            readBy: [from.id],
+        };
+        const updated = [ ...(data.internalMessages || []), message ];
+        await saveData({ ...data, internalMessages: updated });
+        setCompose({ to: '', subject: '', body: '', attachments: [], template: 'plain' });
+        setComposeOpen(false);
+        alert('Message envoyé.');
+    };
+
+    const handleSendEmail = async () => {
+      try {
+        setIsSendingEmail(true);
+        const tokens = compose.to.split(',').map(s => s.trim()).filter(Boolean);
+        const toEmails: string[] = [];
+        for (const t of tokens) {
+          if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(t)) {
+            toEmails.push(t);
+            continue;
+          }
+          const p = resolveParticipant(t);
+          if (p?.email) toEmails.push(p.email);
+        }
+        const unique = Array.from(new Set(toEmails));
+        if (unique.length === 0) { alert("Aucune adresse e-mail valide trouvée pour les destinataires."); return; }
+        const html = renderEmailTemplate(compose.template, compose.subject, compose.body);
+        const resp = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: unique, subject: compose.subject || '(Sans objet)', html, attachments: compose.attachments || [] }),
+        });
+        if (!resp.ok) {
+          const t = await resp.text();
+          throw new Error(t);
+        }
+        alert('E-mail envoyé avec succès.');
+      } catch (e: any) {
+        console.error('send-email failed', e);
+        alert("Échec de l'envoi de l'e-mail.");
+      } finally {
+        setIsSendingEmail(false);
+      }
+    };
+
+    const renderEmailTemplate = (tpl: string, subject: string, body: string): string => {
+      const safeBody = body.replace(/\n/g, '<br/>');
+      const base = (content: string) => `
+        <div style="font-family:Montserrat,Arial,sans-serif;background:#0b0b0b;color:#f6f6f6;padding:24px">
+          <table role="presentation" width="100%" style="max-width:640px;margin:0 auto;background:#111;border:1px solid rgba(212,175,55,0.2)">
+            <tr><td style="padding:24px">
+              <h1 style="margin:0 0 16px;font-size:22px;color:#D4AF37;font-family:'Playfair Display',serif">${subject || 'Message'}</h1>
+              ${content}
+              <hr style="border:none;border-top:1px solid rgba(212,175,55,0.2);margin:24px 0"/>
+              <p style="font-size:12px;color:#aaa;margin:0">Perfect Models Management • Libreville, Gabon</p>
+            </td></tr>
+          </table>
+        </div>`;
+      if (tpl === 'partnership') {
+        return base(`
+          <p style="margin:0 0 12px">Bonjour,</p>
+          <p style="margin:0 0 12px">${safeBody}</p>
+          <div style="margin-top:16px;padding:12px;border:1px solid rgba(212,175,55,0.3);background:#0f0f0f;border-radius:8px">
+            <p style="margin:0;color:#D4AF37;font-weight:700">Proposition de Partenariat</p>
+            <p style="margin:8px 0 0;color:#ddd">Découvrons comment créer de la valeur ensemble autour de la mode.</p>
+          </div>
+        `);
+      }
+      if (tpl === 'sponsorship') {
+        return base(`
+          <p style="margin:0 0 12px">Bonjour,</p>
+          <p style="margin:0 0 12px">${safeBody}</p>
+          <ul style="margin:12px 0;padding-left:20px;color:#ddd">
+            <li>Visibilité événementielle (logo, annonces)</li>
+            <li>Activation de marque (stands, contenus)</li>
+            <li>Relations presse et influence</li>
+          </ul>
+        `);
+      }
+      return base(`<p style="margin:0 0 12px">${safeBody}</p>`);
+    };
+
     const getStatusColor = (status: ContactMessage['status']) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
@@ -43,6 +156,7 @@ const AdminMessages: React.FC = () => {
     };
     
     return (
+        <>
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Messages de Contact" noIndex />
             <div className="container mx-auto px-6">
@@ -50,8 +164,13 @@ const AdminMessages: React.FC = () => {
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Dashboard
                 </Link>
-                <h1 className="text-4xl font-playfair text-pm-gold">Messages de Contact</h1>
-                <p className="text-pm-off-white/70 mt-2 mb-8">Gérez les messages reçus via le formulaire de contact public.</p>
+                <div className="flex items-end justify-between gap-4 mb-8">
+                  <div>
+                    <h1 className="text-4xl font-playfair text-pm-gold">Messagerie & Contact</h1>
+            <p className="text-pm-off-white/70 mt-2">Gérez les messages reçus et envoyez des messages internes.</p>
+                  </div>
+                  <button onClick={() => setComposeOpen(true)} className="px-4 py-2 bg-pm-gold text-pm-dark rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white">Nouveau Message</button>
+                </div>
 
                 <div className="flex items-center gap-4 mb-8 flex-wrap">
                     {(['Toutes', 'Nouveau', 'Lu', 'Archivé'] as const).map(f => (
@@ -99,8 +218,99 @@ const AdminMessages: React.FC = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Internal messages (simple list) */}
+                <div className="mt-12">
+                  <h2 className="admin-section-title">Messages Internes</h2>
+                  <div className="space-y-3">
+                    {(data?.internalMessages || []).slice().reverse().map(m => (
+                      <div key={m.id} className="bg-black p-4 border border-pm-gold/10 rounded-lg">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-sm text-pm-off-white/70">De <span className="font-semibold">{m.from?.name || 'Inconnu'}</span> ➜ {(m.to || []).filter(Boolean).map((t) => t?.name || '—').join(', ')}</p>
+                            <h3 className="text-lg font-bold text-pm-gold mt-1">{m.subject || '(Sans objet)'}</h3>
+                          </div>
+                          <p className="text-xs text-pm-off-white/60">{new Date(m.createdAt).toLocaleString('fr-FR')}</p>
+                        </div>
+                        <div className="mt-3 text-sm text-pm-off-white/90" dangerouslySetInnerHTML={{ __html: m.body || '' }} />
+                        {Array.isArray(m.attachments) && m.attachments.length > 0 && (
+                          <div className="mt-3 text-xs text-pm-off-white/70">Pièces jointes: {m.attachments.filter(Boolean).map(a => a?.filename || 'fichier').join(', ')}</div>
+                        )}
+                      </div>
+                    ))}
+                    {(data?.internalMessages || []).length === 0 && <p className="text-pm-off-white/60">Aucun message interne.</p>}
+                  </div>
+                </div>
             </div>
         </div>
+
+        {composeOpen && (
+          <Modal isOpen={composeOpen} onClose={() => setComposeOpen(false)} title="Nouveau message" maxWidthClass="max-w-2xl">
+            <div className="space-y-4">
+                <div>
+                  <label className="admin-label">À (noms ou IDs, séparés par des virgules)</label>
+                  <input className="admin-input" value={compose.to} onChange={e => setCompose(c => ({...c, to: e.target.value}))} placeholder="ex: Administrateur, Noemi Kim" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="admin-label">Objet</label>
+                    <input className="admin-input" value={compose.subject} onChange={e => setCompose(c => ({...c, subject: e.target.value}))} />
+                  </div>
+                  <div>
+                    <label className="admin-label">Template</label>
+                    <select className="admin-input" value={compose.template} onChange={e => setCompose(c => ({...c, template: e.target.value}))}>
+                      <option value="plain">Générique</option>
+                      <option value="partnership">Demande de Partenariat</option>
+                      <option value="sponsorship">Demande de Sponsoring</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="admin-label">Message</label>
+                  <div className="flex items-center justify-end mb-2">
+                    <button type="button" onClick={() => setShowAI(true)} className="text-xs text-pm-gold hover:underline">Assistance IA</button>
+                  </div>
+                  <textarea className="admin-input admin-textarea" rows={6} value={compose.body} onChange={e => setCompose(c => ({...c, body: e.target.value}))} />
+                </div>
+                <div>
+                  <label className="admin-label">Pièces jointes (URL publiques pour l'instant)</label>
+                  <input className="admin-input" placeholder="https://..." onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const url = (e.target as HTMLInputElement).value.trim();
+                      if (!url) return;
+                      const filename = url.split('/').pop() || 'fichier';
+                      setCompose(c => ({...c, attachments: [ ...(c.attachments || []), { filename, contentType: 'application/octet-stream', url } ]}));
+                      (e.target as HTMLInputElement).value = '';
+                    }
+                  }} />
+                  {compose.attachments.length > 0 && (
+                    <p className="text-xs text-pm-off-white/60 mt-2">{compose.attachments.map(a => a.filename).join(', ')}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="admin-label">Prévisualisation</label>
+                  <div className="p-4 bg-black border border-pm-gold/20 rounded min-h-[120px]" dangerouslySetInnerHTML={{ __html: renderEmailTemplate(compose.template, compose.subject, compose.body) }} />
+                </div>
+                <div className="flex flex-wrap gap-3 justify-end">
+                  <button onClick={handleSendInternal} className="px-6 py-2 bg-pm-gold text-pm-dark rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white">Envoyer (interne)</button>
+                  <button onClick={handleSendEmail} disabled={isSendingEmail} className="px-6 py-2 border border-pm-gold text-pm-gold rounded-full font-bold uppercase tracking-widest text-sm hover:bg-pm-gold/10 disabled:opacity-50">
+                    {isSendingEmail ? 'Envoi…' : 'Envoyer par e-mail'}
+                  </button>
+                </div>
+            </div>
+            {showAI && (
+              <AIAssistant
+                isOpen={showAI}
+                onClose={() => setShowAI(false)}
+                onInsertContent={(content) => setCompose(c => ({...c, body: content }))}
+                fieldName="Email"
+                initialPrompt="Transforme ce texte en email HTML élégant pour une demande de partenariat/sponsoring, ton professionnel et chaleureux."
+              />
+            )}
+          </Modal>
+        )}
+        </>
     );
 };
 

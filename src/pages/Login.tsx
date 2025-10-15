@@ -42,33 +42,81 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
+  const normalizeUsername = (value: string) => value.toLowerCase().trim();
+  const normalizeNameKey = (value: string) =>
+    value
+      .toLowerCase()
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '') // remove spaces
+      .replace(/[^a-z0-9]/g, '');
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const timestamp = new Date().toISOString();
+    const normalizedUsername = normalizeUsername(username);
+    const normalizedNameKey = normalizeNameKey(username);
+
+    // Bootstrap admin fallback BEFORE data is ready, to avoid blocking access
+    const fallbackAdminNameKey = normalizeNameKey('Administrateur');
+    const isBootstrapAdminId = normalizedUsername === 'admin' || normalizedUsername === 'admin@perfectmodels.ga' || normalizedNameKey === fallbackAdminNameKey;
+    const bootstrapPassword = 'admin2025';
+    if (isBootstrapAdminId && password.trim() === bootstrapPassword) {
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'admin');
+      sessionStorage.setItem('admin_id', 'admin-super-1');
+      updateUserActivity('Administrateur', 'admin');
+      navigate('/admin');
+      return;
+    }
 
     if (!isInitialized || !data) {
         setError('Le service est en cours de démarrage. Veuillez patienter...');
         return;
     }
 
-    const timestamp = new Date().toISOString();
-    const normalizedUsername = username.toLowerCase();
-
-    // Admin Login
-    if (normalizedUsername === 'admin' && password === 'admin2025') {
+    // Admin Login (from adminUsers) — accept username, email, or full name
+    const candidateAdmin = (data.adminUsers || []).find(a => {
+      const matchesUsername = a.username ? normalizeUsername(a.username) === normalizedUsername : false;
+      const matchesEmail = a.email ? normalizeUsername(a.email) === normalizedUsername : false;
+      const matchesName = a.name ? normalizeNameKey(a.name) === normalizedNameKey : false;
+      return matchesUsername || matchesEmail || matchesName;
+    });
+    const loggedAdmin = candidateAdmin && candidateAdmin.active !== false ? candidateAdmin : undefined;
+    if (loggedAdmin && loggedAdmin.password === password.trim()) {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
-      updateUserActivity('Administrateur', 'admin');
-      try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
+      sessionStorage.setItem('admin_id', loggedAdmin.id);
+      updateUserActivity(loggedAdmin.name, 'admin');
       navigate('/admin');
       return;
     }
 
-    // Model Login
-    const loggedInModel = data.models.find(m => 
-        m.username.toLowerCase() === normalizedUsername || 
-        m.name.toLowerCase() === normalizedUsername
-    );
+    // Safe fallback: accept default bootstrap admin credentials
+    const normalizedAdminNameKey = normalizeNameKey('Administrateur');
+    const isDefaultAdminId = normalizedUsername === 'admin' || normalizedUsername === 'admin@perfectmodels.ga' || normalizedNameKey === normalizedAdminNameKey;
+    const defaultAdmin = (data.adminUsers && data.adminUsers.length > 0) ? data.adminUsers[0] : undefined;
+    const defaultPassword = defaultAdmin?.password || 'admin2025';
+    if (isDefaultAdminId && password.trim() === defaultPassword) {
+      const adminId = defaultAdmin?.id || 'admin-super-1';
+      const adminName = defaultAdmin?.name || 'Administrateur';
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'admin');
+      sessionStorage.setItem('admin_id', adminId);
+      updateUserActivity(adminName, 'admin');
+      navigate('/admin');
+      return;
+    }
+
+    // Model Login (accept matricule, username, or full name; accent/space-insensitive for names)
+    const loggedInModel = data.models.find(m => {
+        const modelUsername = m.username ? normalizeUsername(m.username) : '';
+        const modelNameKey = m.name ? normalizeNameKey(m.name) : '';
+        return modelUsername === normalizedUsername || modelNameKey === normalizedNameKey;
+    });
     if (loggedInModel && loggedInModel.password === password) {
         sessionStorage.setItem('classroom_access', 'granted');
         sessionStorage.setItem('classroom_role', 'student');
@@ -77,31 +125,12 @@ const Login: React.FC = () => {
         const updatedModels = data.models.map(m => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
         await saveData({ ...data, models: updatedModels });
         updateUserActivity(loggedInModel.name, 'student');
-        try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
         
         navigate('/profil');
         return;
     }
     
-    // Beginner Student Login
-    const loggedInBeginner = data.beginnerStudents.find(bs => 
-        bs.matricule.toLowerCase() === normalizedUsername ||
-        bs.name.toLowerCase() === normalizedUsername
-    );
-    if (loggedInBeginner && loggedInBeginner.password === password) {
-        sessionStorage.setItem('classroom_access', 'granted');
-        sessionStorage.setItem('classroom_role', 'beginner');
-        sessionStorage.setItem('userId', loggedInBeginner.id);
-        sessionStorage.setItem('userName', loggedInBeginner.name);
-        
-        const updatedBeginners = data.beginnerStudents.map(bs => bs.id === loggedInBeginner.id ? { ...bs, lastLogin: timestamp } : bs);
-        await saveData({ ...data, beginnerStudents: updatedBeginners });
-        updateUserActivity(loggedInBeginner.name, 'beginner');
-        try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
-
-        navigate('/classroom-debutant');
-        return;
-    }
+    // Débutants retirés: plus d'accès séparé
 
     // Jury Login
     const loggedInJury = data.juryMembers.find(j => 
@@ -114,7 +143,6 @@ const Login: React.FC = () => {
         sessionStorage.setItem('userId', loggedInJury.id);
         sessionStorage.setItem('userName', loggedInJury.name);
         updateUserActivity(loggedInJury.name, 'jury');
-        try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
         navigate('/jury/casting');
         return;
     }
@@ -130,7 +158,6 @@ const Login: React.FC = () => {
         sessionStorage.setItem('userId', loggedInStaff.id);
         sessionStorage.setItem('userName', loggedInStaff.name);
         updateUserActivity(loggedInStaff.name, 'registration');
-        try { window.dispatchEvent(new Event('pmm-auth-changed')); } catch {}
         navigate('/enregistrement/casting');
         return;
     }

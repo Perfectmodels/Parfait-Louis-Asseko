@@ -78,7 +78,6 @@ const AdminDashboard: React.FC = () => {
     // Calculer les statistiques
     const stats = {
         totalModels: data?.models?.length || 0,
-        totalBeginners: data?.beginnerStudents?.length || 0,
         newCastingApps: data?.castingApplications?.filter(app => app.status === 'Nouveau').length || 0,
         newFashionDayApps: data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0,
         newRecoveryRequests: data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0,
@@ -144,12 +143,7 @@ const AdminDashboard: React.FC = () => {
                                 icon={UsersIcon}
                                 color="gold"
                             />
-                            <StatsCard
-                                title="Débutants"
-                                value={stats.totalBeginners}
-                                icon={UserGroupIcon}
-                                color="blue"
-                            />
+                            
                             <StatsCard
                                 title="Notifications"
                                 value={totalNotifications}
