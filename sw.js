@@ -1,10 +1,12 @@
-const CACHE_NAME = 'pmm-v6';
+const CACHE_NAME = 'pmm-v7';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
   '/offline.html',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
 ];
 
 // Install event: cache core assets

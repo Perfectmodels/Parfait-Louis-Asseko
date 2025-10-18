@@ -200,7 +200,7 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
       title: album.title,
       category: album.category || 'Galerie',
       excerpt: album.description || '',
-      imageUrl: album.coverUrl || album.images[0] || '',
+      imageUrl: album.coverUrl || (album.images && album.images.length > 0 ? album.images[0] : '') || '',
       author: 'PMM',
       date: new Date().toISOString().split('T')[0],
       content,

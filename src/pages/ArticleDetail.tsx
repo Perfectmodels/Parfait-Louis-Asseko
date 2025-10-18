@@ -155,7 +155,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
                     <div>
                         <p class="category">${article.category}</p>
                         <h1>${article.title}</h1>
-                        <p class="meta">Par ${article.author} • ${new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        <p class="meta">Par ${article.author} • ${article.date && !isNaN(new Date(article.date).getTime()) ? new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Date inconnue'}</p>
                     </div>
                      ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
                 </header>
@@ -326,10 +326,12 @@ const ArticleDetail: React.FC = () => {
   
   const safeContent = Array.isArray(article.content) ? article.content : [];
   
+  const safeDate = article.date && !isNaN(new Date(article.date).getTime()) ? new Date(article.date).toISOString() : new Date().toISOString();
+  
   const articleSchema = {
       "@context": "https://schema.org", "@type": "NewsArticle", "headline": article.title,
       "image": [article.imageUrl, ...safeContent.filter(c => c.type === 'image').map(c => (c as { src: string }).src)],
-      "datePublished": new Date(article.date).toISOString(),
+      "datePublished": safeDate,
       "author": [{"@type": "Organization", "name": article.author, "url": window.location.origin}],
       "publisher": {"@type": "Organization", "name": "Perfect Models Management", "logo": {"@type": "ImageObject", "url": data?.siteConfig.logo}},
       "description": article.excerpt
@@ -337,10 +339,10 @@ const ArticleDetail: React.FC = () => {
 
   const renderContent = (content: ArticleContent) => {
     switch (content.type) {
-      case 'heading': return content.level === 2 ? <h2 className="text-3xl font-playfair text-pm-gold mt-8 mb-4">{content.text}</h2> : <h3 className="text-2xl font-playfair text-pm-gold mt-6 mb-3">{content.text}</h3>;
-      case 'paragraph': return <p className="mb-4 leading-relaxed">{content.text}</p>;
-      case 'quote': return <blockquote className="my-6 p-4 border-l-4 border-pm-gold bg-black/50 italic"><p className="text-xl">"{content.text}"</p>{content.author && <cite className="block text-right mt-2 not-italic text-pm-off-white/70">— {content.author}</cite>}</blockquote>;
-      case 'image': return <figure className="my-8"><img src={content.src} alt={content.alt} className="w-full h-auto object-cover rounded-lg" />{content.caption && <figcaption className="mt-2 text-sm text-center text-pm-off-white/60">{content.caption}</figcaption>}</figure>;
+      case 'heading': return content.level === 2 ? <h2 className="text-3xl font-playfair text-pm-gold mt-8 mb-4 leading-tight">{content.text}</h2> : <h3 className="text-2xl font-playfair text-pm-gold mt-6 mb-3 leading-tight">{content.text}</h3>;
+      case 'paragraph': return <p className="mb-6 leading-relaxed text-base lg:text-lg">{content.text}</p>;
+      case 'quote': return <blockquote className="my-8 p-6 border-l-4 border-pm-gold bg-black/50 italic rounded-r-lg"><p className="text-xl lg:text-2xl leading-relaxed">"{content.text}"</p>{content.author && <cite className="block text-right mt-4 not-italic text-pm-off-white/70 text-sm">— {content.author}</cite>}</blockquote>;
+      case 'image': return <figure className="my-8"><img src={content.src} alt={content.alt} className="w-full h-auto object-cover rounded-lg shadow-lg" />{content.caption && <figcaption className="mt-3 text-sm text-center text-pm-off-white/60 italic">{content.caption}</figcaption>}</figure>;
       default: return null;
     }
   };
@@ -358,12 +360,18 @@ const ArticleDetail: React.FC = () => {
               <h1 className="text-4xl lg:text-5xl font-playfair text-pm-off-white my-4 leading-tight">{article.title}</h1>
               <div className="text-sm text-pm-off-white/60 flex items-center gap-4 flex-wrap">
                 <span>Par {article.author}</span><span>•</span>
-                <span>{new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span><span>•</span>
+                <span>{article.date && !isNaN(new Date(article.date).getTime()) ? new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Date inconnue'}</span><span>•</span>
                 <span className="flex items-center gap-1.5"><EyeIcon className="w-4 h-4" /> {article.viewCount || 0} vues</span>
               </div>
             </header>
             <img src={article.imageUrl} alt={article.title} className="w-full h-auto object-cover my-8" />
-            <div className="prose prose-invert prose-lg max-w-none text-pm-off-white/80">{safeContent.map((contentBlock, index) => <div key={index}>{renderContent(contentBlock)}</div>)}</div>
+            <div className="max-w-none text-pm-off-white/80 space-y-6">
+              {safeContent.map((contentBlock, index) => (
+                <div key={index} className="w-full">
+                  {renderContent(contentBlock)}
+                </div>
+              ))}
+            </div>
             <div className="mt-12 pt-6 border-t border-pm-gold/20 flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div className="flex items-center gap-4">
                     <button onClick={() => handleReaction('like')} disabled={!!userReaction} aria-pressed={userReaction === 'like'} className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${userReaction === 'like' ? 'bg-pm-gold text-pm-dark border-pm-gold' : 'border-pm-off-white/50 hover:bg-pm-dark'}`}><HandThumbUpIcon className="w-5 h-5" /> J'aime ({article.reactions?.likes || 0})</button>
@@ -398,7 +406,7 @@ const ArticleDetail: React.FC = () => {
             </div>
             <div className="space-y-6">
               {comments.length > 0 ? (
-                comments.map(comment => <div key={comment.id} className="flex items-start gap-4"><UserCircleIcon className="w-10 h-10 text-pm-gold/30 flex-shrink-0" aria-hidden="true" /><div className="flex-grow bg-black p-4 border border-pm-off-white/10 rounded-lg"><div className="flex justify-between items-center text-sm mb-2"><p className="font-bold text-pm-off-white">{comment.authorName}</p><p className="text-xs text-pm-off-white/50">{new Date(comment.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</p></div><p className="text-pm-off-white/80 whitespace-pre-wrap">{comment.content}</p></div></div>)
+                comments.map(comment => <div key={comment.id} className="flex items-start gap-4"><UserCircleIcon className="w-10 h-10 text-pm-gold/30 flex-shrink-0" aria-hidden="true" /><div className="flex-grow bg-black p-4 border border-pm-off-white/10 rounded-lg"><div className="flex justify-between items-center text-sm mb-2"><p className="font-bold text-pm-off-white">{comment.authorName}</p><p className="text-xs text-pm-off-white/50">{comment.createdAt && !isNaN(new Date(comment.createdAt).getTime()) ? new Date(comment.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Date inconnue'}</p></div><p className="text-pm-off-white/80 whitespace-pre-wrap">{comment.content}</p></div></div>)
               ) : (<p className="text-center text-pm-off-white/60 py-8">Aucun commentaire pour le moment. Soyez le premier à réagir !</p>)}
             </div>
           </section>
