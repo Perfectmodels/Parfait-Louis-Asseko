@@ -162,6 +162,11 @@ export const useDataStore = () => {
         const unsubscribe = onValue(dbRef, (snapshot) => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
+            const toArray = <T,>(val: any): T[] => {
+                if (Array.isArray(val)) return val as T[];
+                if (val && typeof val === 'object') return Object.values(val) as T[];
+                return [] as T[];
+            };
             if (dbData) {
                 // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
                 const mergedData: AppData = {
@@ -178,8 +183,9 @@ export const useDataStore = () => {
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
                     adminUsers: (dbData.adminUsers && dbData.adminUsers.length > 0) ? dbData.adminUsers : (initialData.adminUsers || []),
                     internalMessages: Array.isArray(dbData.internalMessages) ? dbData.internalMessages : (initialData.internalMessages || []),
-                    gallery: Array.isArray(dbData.gallery) ? dbData.gallery : (initialData.gallery || []),
-                    galleryAlbums: Array.isArray(dbData.galleryAlbums) ? dbData.galleryAlbums : (initialData.galleryAlbums || []),
+                    // Normalize arrays stored as objects by Firebase
+                    gallery: toArray(dbData.gallery),
+                    galleryAlbums: toArray(dbData.galleryAlbums),
                     featureFlags: dbData.featureFlags ? { ...initialData.featureFlags, ...dbData.featureFlags } : initialData.featureFlags,
                     auditLog: Array.isArray(dbData.auditLog) ? dbData.auditLog : (initialData.auditLog || []),
                 };
