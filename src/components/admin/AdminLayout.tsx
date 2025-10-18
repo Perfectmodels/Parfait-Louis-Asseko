@@ -152,7 +152,7 @@ const AdminLayout: React.FC = () => {
   ];
 
   const linkBaseClass =
-    'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors';
+    'flex items-center gap-3 px-3 py-2 rounded-md text-[15px] md:text-sm lg:text-base transition-colors';
   const linkActiveClass = 'bg-pm-gold/10 text-pm-gold';
   const linkInactiveClass = 'text-pm-off-white/80 hover:text-pm-gold hover:bg-pm-gold/5';
 

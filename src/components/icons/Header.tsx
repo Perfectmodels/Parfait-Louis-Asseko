@@ -366,7 +366,7 @@ const Header: React.FC = () => {
           )}
           
           {/* Desktop Navigation - visible on xl screens and up */}
-          <nav className="hidden xl:flex items-center gap-8">
+          <nav className="hidden xl:flex items-center gap-10 text-[16px]">
             <NavLinks navLinks={processedNavLinks} />
             
             <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
@@ -379,7 +379,7 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Tablet Navigation - visible on lg screens */}
-          <nav className="hidden lg:flex xl:hidden items-center gap-6">
+          <nav className="hidden lg:flex xl:hidden items-center gap-6 text-[15px]">
             <NavLinks navLinks={processedNavLinks.slice(0, 4)} />
             
             <div className="flex items-center gap-4 pl-4 border-l border-pm-gold/20">
