@@ -118,3 +118,12 @@
   .printable-sheet { box-shadow: none !important; border: none !important; padding: 0 !important; margin: 0 !important; }
   body { background-color: white !important; }
 }
+
+/* Override backdrop blur globally to prevent blurry appearance behind overlays */
+@layer utilities {
+  .backdrop-blur,
+  .backdrop-blur-sm {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
