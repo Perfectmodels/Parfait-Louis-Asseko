@@ -4,6 +4,7 @@ import { useData } from '../contexts/DataContext';
 import { Service } from '../types';
 import ServiceCard from '../components/ServiceCard';
 import { Link, useNavigate } from 'react-router-dom';
+import { ShareIcon, XMarkIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 const Services: React.FC = () => {
     const { data } = useData();
@@ -27,6 +28,24 @@ const Services: React.FC = () => {
     const [activeCategory, setActiveCategory] = useState<string>(categoryOrder[0]);
     const [selected, setSelected] = useState<Record<string, boolean>>({});
     const navigate = useNavigate();
+    const [shareOpen, setShareOpen] = useState(false);
+    const [shareUrl, setShareUrl] = useState('');
+    const [copied, setCopied] = useState(false);
+
+    const openShare = () => {
+      const title = 'Nos Services | Perfect Models Management';
+      const description = 'Découvrez nos prestations sur mesure et réservez directement.';
+      const image = data?.siteImages.about || '';
+      const url = `${window.location.origin}/api/share?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&image=${encodeURIComponent(image)}&url=${encodeURIComponent(window.location.href)}&type=website`;
+      setShareUrl(url);
+      setShareOpen(true);
+    };
+
+    const handleCopy = () => {
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
 
     const selectedTitles = useMemo(
       () => Object.entries(selected).filter(([k,v]) => v).map(([k]) => k),
@@ -72,7 +91,7 @@ const Services: React.FC = () => {
                   <div className="text-sm text-pm-off-white/70">
                     {selectedTitles.length > 0 ? `${selectedTitles.length} service(s) sélectionné(s)` : 'Sélectionnez des services à commander'}
                   </div>
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
                     <button
                       disabled={selectedTitles.length === 0}
                       onClick={() => {
@@ -82,6 +101,9 @@ const Services: React.FC = () => {
                       className={`px-5 py-2 rounded-full text-sm font-bold uppercase tracking-widest transition ${selectedTitles.length===0 ? 'opacity-50 cursor-not-allowed border border-pm-off-white/20 text-pm-off-white/60' : 'bg-pm-gold text-pm-dark hover:bg-white'}`}
                     >
                       Commander les services sélectionnés
+                    </button>
+                    <button onClick={openShare} className="px-4 py-2 rounded-full text-xs border border-pm-gold/30 text-pm-gold hover:bg-pm-gold/10 inline-flex items-center gap-2">
+                      <ShareIcon className="w-4 h-4"/> Partager
                     </button>
                     <button
                       disabled={selectedTitles.length === 0}
@@ -125,6 +147,24 @@ const Services: React.FC = () => {
                     ))}
                 </div>
             </div>
+            {shareOpen && (
+              <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={() => setShareOpen(false)}>
+                <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+                  <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
+                    <h2 className="text-xl font-playfair text-pm-gold">Partager la page Services</h2>
+                    <button onClick={() => setShareOpen(false)} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
+                  </header>
+                  <main className="p-6 space-y-4">
+                    <div className="flex items-center gap-2">
+                      <input type="text" readOnly value={shareUrl} className="admin-input flex-grow !pr-10" />
+                      <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
+                        {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </main>
+                </div>
+              </div>
+            )}
         </div>
     );
 };

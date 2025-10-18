@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { CheckCircleIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { ShareIcon, XMarkIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 const ServiceDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -22,6 +23,26 @@ const ServiceDetail: React.FC = () => {
     if (!service) {
         return <NotFound />;
     }
+
+    const [isShareOpen, setIsShareOpen] = useState(false);
+    const [shareUrl, setShareUrl] = useState('');
+    const [copied, setCopied] = useState(false);
+
+    const handleShare = () => {
+        const longUrl = window.location.href;
+        const title = service.title;
+        const description = service.description;
+        const image = data?.siteImages.about || '';
+        const url = `${window.location.origin}/api/share?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&image=${encodeURIComponent(image)}&url=${encodeURIComponent(longUrl)}&type=website`;
+        setShareUrl(url);
+        setIsShareOpen(true);
+    };
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     return (
         <div className="bg-pm-dark text-pm-off-white">
@@ -59,6 +80,9 @@ const ServiceDetail: React.FC = () => {
                               >
                                 Commander ce service
                               </button>
+                              <button onClick={handleShare} className="ml-4 inline-flex items-center gap-2 px-6 py-3 border border-pm-gold text-pm-gold rounded-full hover:bg-pm-gold/10">
+                                <ShareIcon className="w-5 h-5"/> Partager
+                              </button>
                         </div>
                         <div className="lg:col-span-2">
                              {service.details && (
@@ -78,6 +102,24 @@ const ServiceDetail: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {isShareOpen && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={() => setIsShareOpen(false)}>
+                    <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+                        <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
+                            <h2 className="text-xl font-playfair text-pm-gold">Partager le Service</h2>
+                            <button onClick={() => setIsShareOpen(false)} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
+                        </header>
+                        <main className="p-6 space-y-4">
+                            <div className="flex items-center gap-2">
+                                <input type="text" readOnly value={shareUrl} className="admin-input flex-grow !pr-10" />
+                                <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
+                                    {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
+                                </button>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
