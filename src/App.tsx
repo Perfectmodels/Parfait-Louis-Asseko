@@ -15,6 +15,9 @@ const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Gallery = lazy(() => import('./pages/Gallery'));
+const NewsDetail = lazy(() => import('./pages/NewsDetail'));
+const AlbumDetail = lazy(() => import('./pages/AlbumDetail'));
+const FashionDayEdition = lazy(() => import('./pages/FashionDayEdition'));
 const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
@@ -135,13 +138,16 @@ const AppContent: React.FC = () => {
                         <Route path="/fashion-day" element={<FashionDay />} />
                         <Route path="/magazine" element={<Magazine />} />
                         <Route path="/magazine/:slug" element={<ArticleDetail />} />
+                        <Route path="/actualites/:id" element={<NewsDetail />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/services" element={<Services />} />
                         <Route path="/galerie" element={<Gallery />} />
+                        <Route path="/galerie/albums/:id" element={<AlbumDetail />} />
                         <Route path="/services/:slug" element={<ServiceDetail />} />
                         <Route path="/casting" element={<Casting />} />
                         <Route path="/casting-formulaire" element={<CastingForm />} />
                         <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
+                        <Route path="/fashion-day/:edition" element={<FashionDayEdition />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                         <Route path="/terms-of-use" element={<TermsOfUse />} />
