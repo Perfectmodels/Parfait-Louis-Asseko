@@ -26,7 +26,7 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
         if (!file) return;
 
         // Validation basique pour limiter les lenteurs et erreurs
-        const MAX_SIZE_MB = 5;
+        const MAX_SIZE_MB = 20;
         if (!file.type.startsWith('image/')) {
             alert('Veuillez sélectionner un fichier image.');
             return;
