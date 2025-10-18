@@ -1,4 +1,4 @@
-import React, { useEffect, lazy, Suspense } from 'react';
+import React, { useEffect, lazy, Suspense, useRef } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { DataProvider, useData } from './contexts/DataContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -193,7 +193,7 @@ const AppContent: React.FC = () => {
 }
 
 const App: React.FC = () => {
-
+  // Register service worker
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -204,6 +204,65 @@ const App: React.FC = () => {
         });
       });
     }
+  }, []);
+
+  // Rehydrate session from localStorage for up to 72 hours
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('pmm_auth');
+      if (!raw) return;
+      const auth = JSON.parse(raw) as { role: string; userId?: string; adminId?: string; expiresAt: number };
+      if (!auth || !auth.expiresAt || Date.now() > auth.expiresAt) {
+        localStorage.removeItem('pmm_auth');
+        return;
+      }
+      // If sessionStorage not already set, restore minimal keys used across the app
+      if (!sessionStorage.getItem('classroom_access')) {
+        sessionStorage.setItem('classroom_access', 'granted');
+        sessionStorage.setItem('classroom_role', auth.role);
+        if (auth.adminId) sessionStorage.setItem('admin_id', auth.adminId);
+        if (auth.userId) sessionStorage.setItem('userId', auth.userId);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Capture PWA beforeinstallprompt and optionally trigger after login
+  const deferredPromptRef = useRef<any>(null);
+  useEffect(() => {
+    const handleBeforeInstall = (e: any) => {
+      e.preventDefault();
+      deferredPromptRef.current = e;
+      (window as any).pmmDeferredPrompt = e;
+
+      // If login requested an install prompt, show it now
+      if (localStorage.getItem('pmm_install_on_login') === '1') {
+        try {
+          e.prompt();
+          e.userChoice?.finally?.(() => {
+            localStorage.removeItem('pmm_install_on_login');
+            deferredPromptRef.current = null;
+            (window as any).pmmDeferredPrompt = null;
+          });
+        } catch {
+          // no-op
+        }
+      }
+    };
+
+    const handleInstalled = () => {
+      localStorage.removeItem('pmm_install_on_login');
+      deferredPromptRef.current = null;
+      (window as any).pmmDeferredPrompt = null;
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall as any);
+    window.addEventListener('appinstalled', handleInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall as any);
+      window.removeEventListener('appinstalled', handleInstalled);
+    };
   }, []);
 
   return (

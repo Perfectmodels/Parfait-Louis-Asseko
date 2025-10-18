@@ -52,6 +52,27 @@ const Login: React.FC = () => {
       .replace(/\s+/g, '') // remove spaces
       .replace(/[^a-z0-9]/g, '');
 
+  const persistAuth = (role: string, ids?: { userId?: string; adminId?: string }) => {
+    // Persist for 72 hours
+    const expiresAt = Date.now() + 72 * 60 * 60 * 1000;
+    const payload = { role, userId: ids?.userId, adminId: ids?.adminId, expiresAt };
+    localStorage.setItem('pmm_auth', JSON.stringify(payload));
+  };
+
+  const maybePromptInstall = () => {
+    // Flag to request install when the browser fires beforeinstallprompt
+    localStorage.setItem('pmm_install_on_login', '1');
+    const dp: any = (window as any).pmmDeferredPrompt;
+    if (dp && typeof dp.prompt === 'function') {
+      try {
+        dp.prompt();
+        dp.userChoice?.finally?.(() => localStorage.removeItem('pmm_install_on_login'));
+      } catch {
+        // ignore
+      }
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -68,6 +89,8 @@ const Login: React.FC = () => {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
       sessionStorage.setItem('admin_id', 'admin-super-1');
+      persistAuth('admin', { adminId: 'admin-super-1' });
+      maybePromptInstall();
       updateUserActivity('Administrateur', 'admin');
       navigate('/admin');
       return;
@@ -90,6 +113,8 @@ const Login: React.FC = () => {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
       sessionStorage.setItem('admin_id', loggedAdmin.id);
+      persistAuth('admin', { adminId: loggedAdmin.id });
+      maybePromptInstall();
       updateUserActivity(loggedAdmin.name, 'admin');
       navigate('/admin');
       return;
@@ -106,6 +131,8 @@ const Login: React.FC = () => {
       sessionStorage.setItem('classroom_access', 'granted');
       sessionStorage.setItem('classroom_role', 'admin');
       sessionStorage.setItem('admin_id', adminId);
+      persistAuth('admin', { adminId });
+      maybePromptInstall();
       updateUserActivity(adminName, 'admin');
       navigate('/admin');
       return;
@@ -121,6 +148,8 @@ const Login: React.FC = () => {
         sessionStorage.setItem('classroom_access', 'granted');
         sessionStorage.setItem('classroom_role', 'student');
         sessionStorage.setItem('userId', loggedInModel.id);
+        persistAuth('student', { userId: loggedInModel.id });
+        maybePromptInstall();
         
         const updatedModels = data.models.map(m => m.id === loggedInModel.id ? { ...m, lastLogin: timestamp } : m);
         await saveData({ ...data, models: updatedModels });
@@ -142,6 +171,8 @@ const Login: React.FC = () => {
         sessionStorage.setItem('classroom_role', 'jury');
         sessionStorage.setItem('userId', loggedInJury.id);
         sessionStorage.setItem('userName', loggedInJury.name);
+        persistAuth('jury', { userId: loggedInJury.id });
+        maybePromptInstall();
         updateUserActivity(loggedInJury.name, 'jury');
         navigate('/jury/casting');
         return;
@@ -157,6 +188,8 @@ const Login: React.FC = () => {
         sessionStorage.setItem('classroom_role', 'registration');
         sessionStorage.setItem('userId', loggedInStaff.id);
         sessionStorage.setItem('userName', loggedInStaff.name);
+        persistAuth('registration', { userId: loggedInStaff.id });
+        maybePromptInstall();
         updateUserActivity(loggedInStaff.name, 'registration');
         navigate('/enregistrement/casting');
         return;
