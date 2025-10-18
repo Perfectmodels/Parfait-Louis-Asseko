@@ -326,6 +326,11 @@ const ArticleDetail: React.FC = () => {
   
   const safeContent = Array.isArray(article.content) ? article.content : [];
   
+  // Debug: Log article content for troubleshooting
+  console.log('Article content:', article.content);
+  console.log('Safe content:', safeContent);
+  console.log('Content length:', safeContent.length);
+  
   const articleSchema = {
       "@context": "https://schema.org", "@type": "NewsArticle", "headline": article.title,
       "image": [article.imageUrl, ...safeContent.filter(c => c.type === 'image').map(c => (c as { src: string }).src)],
@@ -336,12 +341,68 @@ const ArticleDetail: React.FC = () => {
   };
 
   const renderContent = (content: ArticleContent) => {
+    // Debug: Log the content being rendered
+    console.log('Rendering content:', content);
+    
+    if (!content || typeof content !== 'object') {
+      console.warn('Contenu invalide:', content);
+      return null;
+    }
+
     switch (content.type) {
-      case 'heading': return content.level === 2 ? <h2 className="text-3xl font-playfair text-pm-gold mt-8 mb-4">{content.text}</h2> : <h3 className="text-2xl font-playfair text-pm-gold mt-6 mb-3">{content.text}</h3>;
-      case 'paragraph': return <p className="mb-4 leading-relaxed">{content.text}</p>;
-      case 'quote': return <blockquote className="my-6 p-4 border-l-4 border-pm-gold bg-black/50 italic"><p className="text-xl">"{content.text}"</p>{content.author && <cite className="block text-right mt-2 not-italic text-pm-off-white/70">— {content.author}</cite>}</blockquote>;
-      case 'image': return <figure className="my-8"><img src={content.src} alt={content.alt} className="w-full h-auto object-cover rounded-lg" />{content.caption && <figcaption className="mt-2 text-sm text-center text-pm-off-white/60">{content.caption}</figcaption>}</figure>;
-      default: return null;
+      case 'heading': 
+        if (!content.text) {
+          console.warn('Heading sans texte:', content);
+          return null;
+        }
+        return content.level === 2 ? 
+          <h2 className="text-3xl font-playfair text-pm-gold mt-8 mb-4">{content.text}</h2> : 
+          <h3 className="text-2xl font-playfair text-pm-gold mt-6 mb-3">{content.text}</h3>;
+      case 'paragraph': 
+        if (!content.text) {
+          console.warn('Paragraphe sans texte:', content);
+          return null;
+        }
+        return <p className="mb-4 leading-relaxed text-pm-off-white/80">{content.text}</p>;
+      case 'quote': 
+        if (!content.text) {
+          console.warn('Citation sans texte:', content);
+          return null;
+        }
+        return (
+          <blockquote className="my-6 p-4 border-l-4 border-pm-gold bg-black/50 italic">
+            <p className="text-xl text-pm-off-white/90">"{content.text}"</p>
+            {content.author && <cite className="block text-right mt-2 not-italic text-pm-off-white/70">— {content.author}</cite>}
+          </blockquote>
+        );
+      case 'image': 
+        if (!content.src) {
+          console.warn('Image sans source:', content);
+          return null;
+        }
+        return (
+          <figure className="my-8">
+            <img 
+              src={content.src} 
+              alt={content.alt || 'Image de l\'article'} 
+              className="w-full h-auto object-cover rounded-lg shadow-lg" 
+              loading="lazy"
+              onError={(e) => {
+                console.error('Erreur de chargement de l\'image:', content.src);
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            {content.caption && <figcaption className="mt-2 text-sm text-center text-pm-off-white/60 italic">{content.caption}</figcaption>}
+          </figure>
+        );
+      default: 
+        console.warn('Type de contenu non reconnu:', content);
+        return (
+          <div className="p-4 bg-red-900/20 border border-red-500/50 rounded-lg text-red-300">
+            <p className="text-sm">Type de contenu non supporté: {content.type}</p>
+            <pre className="text-xs mt-2 opacity-70">{JSON.stringify(content, null, 2)}</pre>
+          </div>
+        );
     }
   };
 
@@ -363,7 +424,24 @@ const ArticleDetail: React.FC = () => {
               </div>
             </header>
             <img src={article.imageUrl} alt={article.title} className="w-full h-auto object-cover my-8" />
-            <div className="prose prose-invert prose-lg max-w-none text-pm-off-white/80">{safeContent.map((contentBlock, index) => <div key={index}>{renderContent(contentBlock)}</div>)}</div>
+            <div className="article-content max-w-none">
+              {safeContent.length > 0 ? (
+                safeContent.map((contentBlock, index) => {
+                  // Debug: Log each content block
+                  console.log(`Content block ${index}:`, contentBlock);
+                  return (
+                    <div key={index} className="content-block">
+                      {renderContent(contentBlock)}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-8 text-pm-off-white/60">
+                  <p>Aucun contenu disponible pour cet article.</p>
+                  <p className="text-sm mt-2">Contenu brut: {JSON.stringify(article.content)}</p>
+                </div>
+              )}
+            </div>
             <div className="mt-12 pt-6 border-t border-pm-gold/20 flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div className="flex items-center gap-4">
                     <button onClick={() => handleReaction('like')} disabled={!!userReaction} aria-pressed={userReaction === 'like'} className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${userReaction === 'like' ? 'bg-pm-gold text-pm-dark border-pm-gold' : 'border-pm-off-white/50 hover:bg-pm-dark'}`}><HandThumbUpIcon className="w-5 h-5" /> J'aime ({article.reactions?.likes || 0})</button>
