@@ -3,6 +3,7 @@
   "short_name": "PMM",
   "description": "L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#D4AF37",

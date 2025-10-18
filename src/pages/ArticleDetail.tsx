@@ -155,7 +155,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
                     <div>
                         <p class="category">${article.category}</p>
                         <h1>${article.title}</h1>
-                        <p class="meta">Par ${article.author} • ${new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        <p class="meta">Par ${article.author} • ${article.date && !isNaN(new Date(article.date).getTime()) ? new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Date inconnue'}</p>
                     </div>
                      ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
                 </header>
@@ -326,10 +326,12 @@ const ArticleDetail: React.FC = () => {
   
   const safeContent = Array.isArray(article.content) ? article.content : [];
   
+  const safeDate = article.date && !isNaN(new Date(article.date).getTime()) ? new Date(article.date).toISOString() : new Date().toISOString();
+  
   const articleSchema = {
       "@context": "https://schema.org", "@type": "NewsArticle", "headline": article.title,
       "image": [article.imageUrl, ...safeContent.filter(c => c.type === 'image').map(c => (c as { src: string }).src)],
-      "datePublished": new Date(article.date).toISOString(),
+      "datePublished": safeDate,
       "author": [{"@type": "Organization", "name": article.author, "url": window.location.origin}],
       "publisher": {"@type": "Organization", "name": "Perfect Models Management", "logo": {"@type": "ImageObject", "url": data?.siteConfig.logo}},
       "description": article.excerpt
@@ -358,7 +360,7 @@ const ArticleDetail: React.FC = () => {
               <h1 className="text-4xl lg:text-5xl font-playfair text-pm-off-white my-4 leading-tight">{article.title}</h1>
               <div className="text-sm text-pm-off-white/60 flex items-center gap-4 flex-wrap">
                 <span>Par {article.author}</span><span>•</span>
-                <span>{new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span><span>•</span>
+                <span>{article.date && !isNaN(new Date(article.date).getTime()) ? new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Date inconnue'}</span><span>•</span>
                 <span className="flex items-center gap-1.5"><EyeIcon className="w-4 h-4" /> {article.viewCount || 0} vues</span>
               </div>
             </header>
@@ -404,7 +406,7 @@ const ArticleDetail: React.FC = () => {
             </div>
             <div className="space-y-6">
               {comments.length > 0 ? (
-                comments.map(comment => <div key={comment.id} className="flex items-start gap-4"><UserCircleIcon className="w-10 h-10 text-pm-gold/30 flex-shrink-0" aria-hidden="true" /><div className="flex-grow bg-black p-4 border border-pm-off-white/10 rounded-lg"><div className="flex justify-between items-center text-sm mb-2"><p className="font-bold text-pm-off-white">{comment.authorName}</p><p className="text-xs text-pm-off-white/50">{new Date(comment.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</p></div><p className="text-pm-off-white/80 whitespace-pre-wrap">{comment.content}</p></div></div>)
+                comments.map(comment => <div key={comment.id} className="flex items-start gap-4"><UserCircleIcon className="w-10 h-10 text-pm-gold/30 flex-shrink-0" aria-hidden="true" /><div className="flex-grow bg-black p-4 border border-pm-off-white/10 rounded-lg"><div className="flex justify-between items-center text-sm mb-2"><p className="font-bold text-pm-off-white">{comment.authorName}</p><p className="text-xs text-pm-off-white/50">{comment.createdAt && !isNaN(new Date(comment.createdAt).getTime()) ? new Date(comment.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Date inconnue'}</p></div><p className="text-pm-off-white/80 whitespace-pre-wrap">{comment.content}</p></div></div>)
               ) : (<p className="text-center text-pm-off-white/60 py-8">Aucun commentaire pour le moment. Soyez le premier à réagir !</p>)}
             </div>
           </section>
