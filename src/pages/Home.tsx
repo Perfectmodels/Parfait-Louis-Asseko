@@ -153,8 +153,9 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
         if (!currentNews) return;
 
         const longUrl = currentNews.link ? `${window.location.origin}${currentNews.link}` : window.location.origin;
+        const shareUrl = `${window.location.origin}/api/share?title=${encodeURIComponent(currentNews.title)}&description=${encodeURIComponent(currentNews.excerpt)}&image=${encodeURIComponent(currentNews.imageUrl)}&url=${encodeURIComponent(longUrl)}&type=website`;
         const generatedUrl = await generateShortLink({
-            link: longUrl,
+            link: shareUrl,
             title: currentNews.title,
             description: currentNews.excerpt,
             imageUrl: currentNews.imageUrl,
