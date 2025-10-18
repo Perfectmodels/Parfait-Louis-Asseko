@@ -454,15 +454,38 @@ export interface Absence {
   isExcused: boolean;
 }
 
+export type PaymentCategory =
+  | 'Cotisation mensuelle'
+  | "Frais d'inscription"
+  | 'Cotisation + Inscription'
+  | 'Avance cotisation'
+  | 'Autre';
+
 export interface MonthlyPayment {
-  id: string; // e.g., 'modelId-YYYY-MM'
+  id: string; // e.g., 'payment-<timestamp>'
   modelId: string;
   modelName: string;
   month: string; // 'YYYY-MM'
   amount: number;
-  paymentDate: string; // YYYY-MM-DD
+  paymentDate: string; // ISO date or datetime (YYYY-MM-DD or YYYY-MM-DDTHH:mm)
   method: 'Virement' | 'Espèces' | 'Autre';
   status: 'Payé' | 'En attente' | 'En retard';
+  category?: PaymentCategory; // nature du paiement
+  notes?: string;
+}
+
+export type AccountingEntryKind = 'income' | 'expense';
+
+export interface AccountingEntry {
+  id: string;
+  kind: AccountingEntryKind; // income or expense
+  category: string; // e.g., Commission, Collaboration, Location, Marketing, Autre
+  label: string; // short description
+  amount: number;
+  dateTime: string; // ISO datetime
+  method?: 'Virement' | 'Espèces' | 'Autre';
+  relatedModelId?: string;
+  relatedModelName?: string;
   notes?: string;
 }
 
