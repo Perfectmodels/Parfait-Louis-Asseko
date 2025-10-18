@@ -30,27 +30,27 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({ albums, onAlbumClick, selecte
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
       {filteredAlbums.map((album) => (
         <div
           key={album.id}
           className="group cursor-pointer"
           onClick={() => onAlbumClick(album)}
         >
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-black border border-pm-gold/20 group-hover:border-pm-gold transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-pm-gold/20">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-black border border-pm-gold/20 group-hover:border-pm-gold transition-all duration-500 group-hover:shadow-xl group-hover:shadow-pm-gold/20">
             {/* Album Cover */}
             {album.coverUrl ? (
               <img
                 src={album.coverUrl}
                 alt={album.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
               />
             ) : album.images && album.images.length > 0 ? (
               <img
                 src={album.images[0]}
                 alt={album.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
               />
             ) : (
