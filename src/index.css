@@ -48,6 +48,41 @@
   .admin-table { @apply w-full border border-pm-gold/20 text-pm-off-white; }
   .admin-table th, .admin-table td { @apply border border-pm-gold/20 p-3 text-left; }
   .admin-table th { @apply bg-black/50 font-playfair text-pm-gold; }
+  
+  /* Article content styles */
+  .article-content {
+    @apply text-pm-off-white/90 leading-relaxed;
+  }
+  .article-content .content-block {
+    @apply mb-4;
+  }
+  .article-content h2 {
+    @apply text-3xl font-playfair text-pm-gold mt-8 mb-4 font-bold;
+  }
+  .article-content h3 {
+    @apply text-2xl font-playfair text-pm-gold mt-6 mb-3 font-semibold;
+  }
+  .article-content p {
+    @apply mb-4 leading-relaxed text-pm-off-white/80;
+  }
+  .article-content blockquote {
+    @apply my-6 p-4 border-l-4 border-pm-gold bg-black/50 italic;
+  }
+  .article-content blockquote p {
+    @apply text-xl text-pm-off-white/90 mb-0;
+  }
+  .article-content blockquote cite {
+    @apply block text-right mt-2 not-italic text-pm-off-white/70;
+  }
+  .article-content figure {
+    @apply my-8;
+  }
+  .article-content img {
+    @apply w-full h-auto object-cover rounded-lg shadow-lg;
+  }
+  .article-content figcaption {
+    @apply mt-2 text-sm text-center text-pm-off-white/60 italic;
+  }
   .admin-table tr:hover { @apply bg-pm-gold/10; }
   
   /* Mobile Navigation Improvements */
