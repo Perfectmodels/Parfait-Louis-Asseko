@@ -27,7 +27,10 @@ import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
+import GlobalSearch from '../../admin/components/GlobalSearch';
+import NotificationsDropdown from '../../admin/components/NotificationsDropdown';
 
 interface NavItem {
   label: string;
@@ -40,6 +43,7 @@ const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const { data } = useData();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const currentAdmin = useMemo(() => {
     const adminId = sessionStorage.getItem('admin_id');
@@ -129,6 +133,20 @@ const AdminLayout: React.FC = () => {
           icon: ExclamationTriangleIcon,
           badge: counts.newRecoveryRequests,
         },
+      ],
+    },
+    {
+      title: 'Pilotage',
+      items: [
+        ...(data?.featureFlags?.reports
+          ? ([{ label: 'Rapports', to: '/admin/reports', icon: PresentationChartLineIcon }] as NavItem[])
+          : []),
+        ...(data?.featureFlags?.calendar
+          ? ([{ label: 'Calendrier', to: '/admin/calendar', icon: CalendarDaysIcon }] as NavItem[])
+          : []),
+        ...(data?.featureFlags?.auditLog
+          ? ([{ label: "Journal d'audit", to: '/admin/audit-log', icon: ExclamationTriangleIcon }] as NavItem[])
+          : []),
       ],
     },
   ];
@@ -230,7 +248,23 @@ const AdminLayout: React.FC = () => {
             <Bars3Icon className="w-6 h-6" />
           </button>
           <h1 className="text-pm-gold font-semibold">Administration</h1>
-          <div className="ml-auto" />
+          <div className="ml-auto flex items-center gap-2">
+            {data?.featureFlags?.globalSearch && (
+              <>
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className="text-pm-off-white/80 hover:text-white"
+                  aria-label="Rechercher"
+                >
+                  <MagnifyingGlassIcon className="w-6 h-6" />
+                </button>
+                <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+              </>
+            )}
+            {data?.featureFlags?.notificationsCenter && (
+              <NotificationsDropdown />
+            )}
+          </div>
         </header>
 
         <main className="p-4 md:p-6">

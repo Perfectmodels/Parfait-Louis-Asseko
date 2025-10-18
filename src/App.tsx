@@ -52,6 +52,10 @@ const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection
 const AdminApiKeys = lazy(() => import('./pages/AdminApiKeys'));
 const AdminProfile = lazy(() => import('./pages/AdminProfile'));
 const AdminGallery = lazy(() => import('./pages/AdminGallery'));
+// New admin pages (pilotage)
+const AdminReports = lazy(() => import('./admin/pages/AdminReports'));
+const AdminCalendar = lazy(() => import('./admin/pages/AdminCalendar'));
+const AdminAuditLog = lazy(() => import('./admin/pages/AdminAuditLog'));
 
 
 // Role-specific pages
@@ -183,6 +187,10 @@ const AppContent: React.FC = () => {
                         <Route path="absences" element={<AdminAbsences />} />
                         <Route path="artistic-direction" element={<AdminArtisticDirection />} />
                         <Route path="gallery" element={<AdminGallery />} />
+                        {/* Pilotage */}
+                        <Route path="reports" element={<AdminReports />} />
+                        <Route path="calendar" element={<AdminCalendar />} />
+                        <Route path="audit-log" element={<AdminAuditLog />} />
                     </Route>
 
                     <Route path="*" element={<NotFound />} />

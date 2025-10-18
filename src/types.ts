@@ -387,6 +387,44 @@ export interface GalleryAlbum {
   updatedAt?: string;
 }
 
+// ================== ADMIN PLATFORM EXTENSIONS ==================
+export interface FeatureFlags {
+  globalSearch: boolean;
+  notificationsCenter: boolean;
+  auditLog: boolean;
+  reports: boolean;
+  calendar: boolean;
+}
+
+export type AuditLogAction =
+  | 'LOGIN'
+  | 'LOGOUT'
+  | 'CREATE'
+  | 'UPDATE'
+  | 'DELETE'
+  | 'PUBLISH'
+  | 'APPROVE'
+  | 'REJECT'
+  | 'PAYMENT_RECORD'
+  | 'BOOKING_STATUS_CHANGE';
+
+export interface AuditLogEntry {
+  id: string;
+  timestamp: string; // ISO date
+  actor: {
+    id: string;
+    name: string;
+    role: AdminRole | 'System';
+  };
+  action: AuditLogAction;
+  entity: {
+    type: string; // e.g., 'Model', 'Article', 'Booking', 'Message'
+    id?: string;
+    name?: string;
+  };
+  details?: string;
+}
+
 export interface AIAssistantProps {
     isOpen: boolean;
     onClose: () => void;
