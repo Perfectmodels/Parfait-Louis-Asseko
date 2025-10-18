@@ -324,7 +324,31 @@ const ArticleDetail: React.FC = () => {
   if (!isInitialized) return <div className="min-h-screen bg-pm-dark"></div>;
   if (!article) return <NotFound />;
   
-  const safeContent = Array.isArray(article.content) ? article.content : [];
+  // Normalize content blocks to handle Firebase object-based arrays and raw text
+  const normalizeContent = (value: any): ArticleContent[] => {
+    if (Array.isArray(value)) return value as ArticleContent[];
+    if (value && typeof value === 'object') {
+      const entries = Object.entries(value as Record<string, unknown>);
+      // Sort numerically if keys are numeric-like ("0", "1", "10", ...)
+      const sorted = entries.sort(([a], [b]) => {
+        const ia = Number(a);
+        const ib = Number(b);
+        const aIsNum = !Number.isNaN(ia);
+        const bIsNum = !Number.isNaN(ib);
+        if (aIsNum && bIsNum) return ia - ib;
+        return 0;
+      });
+      return sorted.map(([, v]) => v as ArticleContent);
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(/\n\n+/)
+        .map((p) => ({ type: 'paragraph', text: p.trim() }))
+        .filter((b) => (b as any).text);
+    }
+    return [] as ArticleContent[];
+  };
+  const safeContent = normalizeContent(article.content);
   
   const articleSchema = {
       "@context": "https://schema.org", "@type": "NewsArticle", "headline": article.title,
