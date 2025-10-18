@@ -134,12 +134,12 @@ const Footer: React.FC = () => {
                                     </Link>
                                 </li>
                             ))}
-                             <li>
-                                <Link to="/login" className="hover:text-pm-gold transition-colors text-sm inline-flex items-center gap-2">
-                                    <span className="w-1 h-1 rounded-full bg-pm-gold/60" />
+                             <li className="pt-2">
+                                <Link to="/login" className="inline-flex items-center gap-3 px-4 py-2 rounded-full border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-xs hover:bg-pm-gold hover:text-pm-dark transition-all shadow-[0_0_20px_rgba(212,175,55,0.25)]">
+                                    <span className="inline-block w-2 h-2 rounded-full bg-pm-gold" />
                                     Accès Panel
                                 </Link>
-                            </li>
+                              </li>
                         </ul>
                     </div>
                     
