@@ -23,6 +23,31 @@ export default {
         'playfair': ['"Playfair Display"', 'serif'],
         'montserrat': ['"Montserrat"', 'sans-serif'],
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            color: '#f0f0f0',
+            h2: {
+              color: '#D4AF37',
+              fontFamily: '"Playfair Display", serif',
+            },
+            h3: {
+              color: '#D4AF37',
+              fontFamily: '"Playfair Display", serif',
+            },
+            strong: {
+              color: '#f0f0f0',
+            },
+            a: {
+              color: '#D4AF37',
+              '&:hover': {
+                color: '#ffffff',
+              },
+            },
+          },
+        },
+      },
       animation: {
           'marquee': 'marquee 60s linear infinite',
           'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -65,5 +90,7 @@ export default {
       }
     }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }
