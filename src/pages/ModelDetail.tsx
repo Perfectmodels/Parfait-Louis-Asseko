@@ -196,14 +196,16 @@ const ModelDetail: React.FC = () => {
 
     setIsGeneratingLink(true);
     const longUrl = window.location.href;
+    // Use serverless share endpoint to provide OG meta for scrapers
+    const shareUrl = `${window.location.origin}/api/share?title=${encodeURIComponent(model.name)}&description=${encodeURIComponent(`Découvrez le portfolio de ${model.name}, mannequin chez Perfect Models Management.`)}&image=${encodeURIComponent(model.imageUrl)}&url=${encodeURIComponent(longUrl)}&type=profile`;
     const generatedUrl = await generateShortLink(
-        {
-            link: longUrl,
-            title: model.name,
-            description: `Découvrez le portfolio de ${model.name}, mannequin chez Perfect Models Management.`,
-            imageUrl: model.imageUrl,
-        },
-        data?.apiKeys
+      {
+        link: shareUrl,
+        title: model.name,
+        description: `Découvrez le portfolio de ${model.name}, mannequin chez Perfect Models Management.`,
+        imageUrl: model.imageUrl,
+      },
+      data?.apiKeys
     );
     setShortUrl(generatedUrl);
     setIsGeneratingLink(false);
