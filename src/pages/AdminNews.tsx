@@ -166,7 +166,7 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
   const handleCreateFromAlbum = (albumId: string) => {
     const album = (data?.galleryAlbums || []).find(a => a.id === albumId);
     if (!album) { alert('Album introuvable'); return; }
-    const cover = album.coverUrl || album.images[0] || '';
+    const cover = album.coverUrl || (album.images && album.images.length > 0 ? album.images[0] : '') || '';
     const excerpt = (album.description || '').slice(0, 160);
     onSave({
       id: `news-${Date.now()}`,

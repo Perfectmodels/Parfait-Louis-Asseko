@@ -199,7 +199,7 @@ const AdminGallery: React.FC = () => {
               {albums.map((a) => (
                 <div key={a.id} className="bg-pm-dark/50 p-3 rounded border border-pm-gold/10">
                   <div className="flex items-center gap-3">
-                    <img src={a.coverUrl || a.images[0] || '/assets/placeholder-model.png'} alt={a.title} className="w-20 h-14 object-cover rounded" />
+                    <img src={a.coverUrl || (a.images && a.images.length > 0 ? a.images[0] : '/assets/placeholder-model.png')} alt={a.title} className="w-20 h-14 object-cover rounded" />
                     <div className="min-w-0 flex-1">
                       <p className="font-bold truncate">{a.title}</p>
                       <p className="text-xs text-pm-off-white/60">{a.category || 'Autre'} • {(a.images || []).length} images</p>
