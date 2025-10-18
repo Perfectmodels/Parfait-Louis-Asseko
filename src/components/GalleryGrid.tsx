@@ -32,10 +32,11 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({ albums, onAlbumClick, selecte
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
       {filteredAlbums.map((album) => (
-        <div
+        <a
           key={album.id}
           className="group cursor-pointer"
-          onClick={() => onAlbumClick(album)}
+          href={`/galerie/albums/${album.id}`}
+          onClick={(e) => { e.preventDefault(); onAlbumClick(album); }}
         >
           <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-black border border-pm-gold/20 group-hover:border-pm-gold transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-pm-gold/20">
             {/* Album Cover */}
@@ -107,7 +108,7 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({ albums, onAlbumClick, selecte
               </p>
             )}
           </div>
-        </div>
+        </a>
       ))}
     </div>
   );

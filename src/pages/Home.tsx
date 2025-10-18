@@ -186,11 +186,9 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
                             <h3 className="text-2xl md:text-4xl font-playfair text-pm-gold font-extrabold mb-3">{currentNews.title}</h3>
                             <p className="text-sm md:text-base text-pm-off-white/90 mb-5">{currentNews.excerpt}</p>
                              <div className="flex items-center gap-4">
-                                {currentNews.link && (
-                                    <Link to={currentNews.link} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                                        Lire la suite
-                                    </Link>
-                                )}
+                                <Link to={currentNews.link || `/actualites/${currentNews.id}`} className="inline-block px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+                                    Lire la suite
+                                </Link>
                                 <button onClick={handleShareClick} className="p-3 bg-pm-dark/50 border border-pm-gold/30 rounded-full text-pm-gold hover:bg-pm-gold/20 transition-colors" aria-label="Partager cette actualité">
                                     <ShareIcon className="w-5 h-5" />
                                 </button>
