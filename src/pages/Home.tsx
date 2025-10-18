@@ -282,23 +282,23 @@ const Home: React.FC = () => {
         style={{ backgroundImage: `url('${siteImages.hero}')` }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/80 to-transparent"></div>
-        <div className="relative z-10 p-6 animate-fade-in w-full max-w-5xl space-y-8">
+        <div className="relative z-10 p-6 animate-fade-in w-full max-w-5xl space-y-6 sm:space-y-8">
           <div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
               L'Élégance Redéfinie
             </h1>
-            <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
+            <p className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
               Nous révélons les talents et valorisons la beauté africaine.
             </p>
           </div>
           
           {nextEvent ? (
               <div className="mt-10 bg-black/50 backdrop-blur-sm py-6 px-4 rounded-lg border border-pm-gold/20">
-                  <h3 className="text-2xl md:text-3xl font-playfair text-white mb-2">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-playfair text-white mb-2">
                       Prochain Événement : Perfect Fashion Day - Édition {nextEvent.edition}
                   </h3>
-                  <p className="text-lg md:text-xl text-pm-gold mb-6">"{nextEvent.theme}"</p>
-                  <div className="my-6">
+                  <p className="text-base sm:text-lg md:text-xl text-pm-gold mb-6">"{nextEvent.theme}"</p>
+                  <div className="my-4 sm:my-6">
                      <CountdownTimer targetDate={nextEvent.date} />
                   </div>
                   <Link to="/fashion-day-application" className="mt-4 inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">

@@ -325,6 +325,7 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     setIsOpen(false);
     sessionStorage.clear();
+    localStorage.removeItem('pmm_auth');
     setIsLoggedIn(false);
     setUserRole(null);
     navigate('/login');

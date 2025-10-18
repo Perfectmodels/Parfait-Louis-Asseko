@@ -48,9 +48,9 @@ const CountdownTimer: React.FC<{ targetDate: string }> = ({ targetDate }) => {
     if (value === undefined) return;
 
     timerComponents.push(
-      <div key={interval} className="flex flex-col items-center bg-black p-4 w-24 rounded-lg border border-pm-gold/20">
-        <span className="text-4xl font-bold text-pm-gold">{String(value).padStart(2, '0')}</span>
-        <span className="text-xs uppercase tracking-wider text-pm-off-white/70">{frenchLabels[interval]}</span>
+      <div key={interval} className="flex flex-col items-center bg-black p-3 sm:p-4 w-16 sm:w-20 md:w-24 rounded-lg border border-pm-gold/20">
+        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-pm-gold">{String(value).padStart(2, '0')}</span>
+        <span className="text-[10px] sm:text-xs uppercase tracking-wider text-pm-off-white/70">{frenchLabels[interval]}</span>
       </div>
     );
   });
@@ -58,7 +58,7 @@ const CountdownTimer: React.FC<{ targetDate: string }> = ({ targetDate }) => {
   return (
     <div>
       {timerComponents.length ? (
-        <div className="flex justify-center gap-4 md:gap-8">
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6">
           {timerComponents}
         </div>
       ) : (
