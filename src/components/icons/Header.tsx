@@ -360,14 +360,19 @@ const Header: React.FC = () => {
       >
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
-            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
-              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
+            <Link to="/" className="flex-shrink-0 group" onClick={() => setIsOpen(false)} aria-label="Aller à l'accueil">
+              <span className="inline-flex p-1.5 rounded-full border border-pm-gold/40 bg-black/40 shadow-[0_0_20px_rgba(212,175,55,0.25)] group-hover:shadow-[0_0_36px_rgba(212,175,55,0.45)] transition-shadow">
+                <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto rounded-full" />
+              </span>
             </Link>
           )}
           
           {/* Desktop Navigation - visible on xl screens and up */}
-          <nav className="hidden xl:flex items-center gap-8">
-            <NavLinks navLinks={processedNavLinks} />
+          <nav className="hidden xl:flex items-center gap-10 text-[16px]">
+            {/* Styled nav with underline glow */}
+            <div className="flex items-center gap-8">
+              <NavLinks navLinks={processedNavLinks.filter(n => n.path !== '/')} />
+            </div>
             
             <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
                 <Link to="/casting-formulaire" className="px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
@@ -379,8 +384,8 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Tablet Navigation - visible on lg screens */}
-          <nav className="hidden lg:flex xl:hidden items-center gap-6">
-            <NavLinks navLinks={processedNavLinks.slice(0, 4)} />
+          <nav className="hidden lg:flex xl:hidden items-center gap-6 text-[15px]">
+            <NavLinks navLinks={processedNavLinks.filter(n => n.path !== '/').slice(0, 4)} />
             
             <div className="flex items-center gap-4 pl-4 border-l border-pm-gold/20">
                 <Link to="/casting-formulaire" className="px-4 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">

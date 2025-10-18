@@ -195,15 +195,16 @@ const ModelDetail: React.FC = () => {
     if (shortUrl) return;
 
     setIsGeneratingLink(true);
-    const longUrl = window.location.href;
+    // Short server-rendered OG URL
+    const shareUrl = `${window.location.origin}/api/s/m/${encodeURIComponent(model.id)}`;
     const generatedUrl = await generateShortLink(
-        {
-            link: longUrl,
-            title: model.name,
-            description: `Découvrez le portfolio de ${model.name}, mannequin chez Perfect Models Management.`,
-            imageUrl: model.imageUrl,
-        },
-        data?.apiKeys
+      {
+        link: shareUrl,
+        title: model.name,
+        description: `Découvrez le portfolio de ${model.name}, mannequin chez Perfect Models Management.`,
+        imageUrl: model.imageUrl,
+      },
+      data?.apiKeys
     );
     setShortUrl(generatedUrl);
     setIsGeneratingLink(false);

@@ -6,7 +6,7 @@ import Marquee from './Marquee';
 
 const Layout: React.FC = () => {
   return (
-    <div className="bg-pm-dark min-h-screen flex flex-col font-montserrat">
+    <div className="bg-pm-dark min-h-screen flex flex-col font-montserrat text-[15px] md:text-base lg:text-lg">
       <Marquee />
       <Header />
       <main className="flex-grow pt-24 lg:pt-28">

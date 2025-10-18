@@ -27,12 +27,13 @@
 
 @layer components {
   .page-container { @apply container mx-auto px-6 py-16 lg:py-24 space-y-20 lg:space-y-28; }
-  .page-title { @apply text-3xl sm:text-5xl md:text-6xl font-playfair text-pm-gold text-center font-extrabold mb-6 leading-tight; }
-  .page-subtitle { @apply text-center text-base sm:text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/80 mt-2 mb-12; }
-  .section-title { @apply text-3xl sm:text-4xl md:text-5xl font-playfair font-extrabold text-center text-pm-gold mb-10 relative pb-4 leading-tight; text-shadow: 1px 1px 6px rgba(0,0,0,0.6); }
+  /* Responsive typography tuned per device */
+  .page-title { @apply text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-playfair text-pm-gold text-center font-extrabold mb-6 leading-tight; }
+  .page-subtitle { @apply text-center text-base sm:text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto text-pm-off-white/80 mt-2 mb-12; }
+  .section-title { @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-playfair font-extrabold text-center text-pm-gold mb-10 relative pb-4 leading-tight; text-shadow: 1px 1px 6px rgba(0,0,0,0.6); }
   .section-title::after { content: ''; @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-pm-gold; }
   .section-subtitle { @apply text-center text-sm sm:text-base md:text-lg max-w-3xl mx-auto text-pm-off-white/80 mb-8 leading-relaxed; }
-  .content-section { @apply bg-black border border-pm-gold/20 p-5 sm:p-8 lg:p-14 rounded-lg; }
+  .content-section { @apply bg-black border border-pm-gold/20 p-5 sm:p-8 md:p-10 lg:p-14 rounded-lg; }
   .card-base { @apply bg-black border border-pm-gold/20 transition-all duration-300 rounded-lg; }
   .card-base:hover { @apply border-pm-gold shadow-2xl shadow-pm-gold/20 -translate-y-2; }
   .admin-page-header { @apply flex flex-col sm:flex-row justify-between items-start gap-4 mb-12; }

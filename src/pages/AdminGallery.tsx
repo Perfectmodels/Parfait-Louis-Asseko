@@ -51,7 +51,9 @@ const AdminGallery: React.FC = () => {
     let updated: GalleryAlbum[];
     if (isCreatingAlbum) {
       const id = album.id || `album-${Date.now()}`;
-      updated = [ ...albums, { ...album, id } ];
+      // Ensure createdAt is set and album is normalized
+      const createdAt = album.createdAt || new Date().toISOString();
+      updated = [ ...albums, { ...album, id, createdAt } ];
     } else {
       updated = albums.map((a) => a.id === album.id ? album : a);
     }

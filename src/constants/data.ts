@@ -1,5 +1,5 @@
 // FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, FeatureFlags, AuditLogEntry } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/NdrpzGpm/blob.jpg',
@@ -203,6 +203,15 @@ export const contactMessages: ContactMessage[] = [];
 export const absences: Absence[] = [];
 export const monthlyPayments: MonthlyPayment[] = [];
 export const photoshootBriefs: PhotoshootBrief[] = [];
+// Optional extensions (empty by default)
+export const featureFlags: FeatureFlags = {
+  globalSearch: true,
+  notificationsCenter: true,
+  auditLog: true,
+  reports: true,
+  calendar: true,
+};
+export const auditLog: AuditLogEntry[] = [];
 export const beginnerStudents: BeginnerStudent[] = [
     {
         id: 'casting-1720000000001',
