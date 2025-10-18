@@ -93,10 +93,7 @@ const Gallery: React.FC = () => {
               <button
                 onClick={() => {
                   const a = albums[0];
-                  const title = `Galerie – ${a.title}`;
-                  const description = a.description || 'Découvrez nos albums photos.';
-                  const img = a.coverUrl || a.images?.[0] || data.siteImages.fashionDayBg || '';
-                  const url = `${window.location.origin}/api/share?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&image=${encodeURIComponent(img)}&url=${encodeURIComponent(window.location.href)}&type=website`;
+                  const url = `${window.location.origin}/api/s/al/${encodeURIComponent(a.id)}`;
                   setShareUrl(url);
                   setShareOpen(true);
                 }}

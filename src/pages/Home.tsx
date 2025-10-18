@@ -152,8 +152,7 @@ const NewsCarousel: React.FC<NewsCarouselProps> = ({ newsItems, apiKeys }) => {
         const currentNews = newsItems[currentIndex];
         if (!currentNews) return;
 
-        const longUrl = currentNews.link ? `${window.location.origin}${currentNews.link}` : window.location.origin;
-        const shareUrl = `${window.location.origin}/api/share?title=${encodeURIComponent(currentNews.title)}&description=${encodeURIComponent(currentNews.excerpt)}&image=${encodeURIComponent(currentNews.imageUrl)}&url=${encodeURIComponent(longUrl)}&type=website`;
+        const shareUrl = `${window.location.origin}/api/s/n/${encodeURIComponent(currentNews.id)}`;
         const generatedUrl = await generateShortLink({
             link: shareUrl,
             title: currentNews.title,

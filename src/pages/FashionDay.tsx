@@ -123,10 +123,7 @@ const FashionDay: React.FC = () => {
             <h1 className="page-title">Perfect Fashion Day</h1>
             <button
               onClick={() => {
-                const title = `Perfect Fashion Day – Édition ${selectedEdition.edition}`;
-                const description = selectedEdition.theme || 'L’événement mode de référence.';
-                const img = (selectedEdition.stylists?.[0]?.images?.[0]) || data.siteImages.fashionDayBg || '';
-                const url = `${window.location.origin}/api/share?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&image=${encodeURIComponent(img)}&url=${encodeURIComponent(window.location.href)}&type=event`;
+                const url = `${window.location.origin}/api/s/fd/${encodeURIComponent(selectedEdition.edition)}`;
                 setShareUrl(url);
                 setShareOpen(true);
               }}

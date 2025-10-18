@@ -50,9 +50,7 @@ const AlbumModal: React.FC<AlbumModalProps> = ({ album, onClose }) => {
   const shareAlbum = async () => {
     if (!album) return;
     const origin = window.location.origin;
-    const pageUrl = window.location.href;
-    const cover = album.coverUrl || album.images?.[0] || '';
-    const shareUrl = `${origin}/api/share?title=${encodeURIComponent(album.title)}&description=${encodeURIComponent(album.description || `Découvrez l'album ${album.title}`)}&image=${encodeURIComponent(cover)}&url=${encodeURIComponent(pageUrl)}&type=website`;
+    const shareUrl = `${origin}/api/s/al/${encodeURIComponent(album.id)}`;
 
     try {
       if (navigator.share) {

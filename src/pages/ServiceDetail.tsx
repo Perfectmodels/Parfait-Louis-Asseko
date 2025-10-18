@@ -29,11 +29,7 @@ const ServiceDetail: React.FC = () => {
     const [copied, setCopied] = useState(false);
 
     const handleShare = () => {
-        const longUrl = window.location.href;
-        const title = service.title;
-        const description = service.description;
-        const image = data?.siteImages.about || '';
-        const url = `${window.location.origin}/api/share?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&image=${encodeURIComponent(image)}&url=${encodeURIComponent(longUrl)}&type=website`;
+        const url = `${window.location.origin}/api/s/s/${encodeURIComponent(service.slug)}`;
         setShareUrl(url);
         setIsShareOpen(true);
     };
