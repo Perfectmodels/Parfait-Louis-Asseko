@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { GalleryAlbum } from '../types';
-import { XMarkIcon, PhotoIcon, EyeIcon, CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, PhotoIcon, EyeIcon, CalendarIcon, TagIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 import GalleryCarousel from '../components/GalleryCarousel';
 import GalleryGrid from '../components/GalleryGrid';
 import GalleryFilters from '../components/GalleryFilters';
@@ -15,6 +15,9 @@ const Gallery: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'carousel' | 'grid'>('carousel');
   const modalRef = useRef<HTMLDivElement>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const albums: GalleryAlbum[] = useMemo(() => {
     if (!data?.galleryAlbums) return [];
@@ -84,7 +87,22 @@ const Gallery: React.FC = () => {
         <SEO title="Galerie" description="Découvrez nos albums photos d'événements, shootings et collaborations." image={data.siteImages.fashionDayBg} />
         <div className="container mx-auto px-6">
           <h1 className="page-title">Galerie</h1>
-          <p className="page-subtitle">Découvrez nos albums photos d'événements, shootings et collaborations.</p>
+          <div className="flex items-center justify-between gap-4">
+            <p className="page-subtitle">Découvrez nos albums photos d'événements, shootings et collaborations.</p>
+            {albums.length > 0 && (
+              <button
+                onClick={() => {
+                  const a = albums[0];
+                  const url = `${window.location.origin}/api/s/al/${encodeURIComponent(a.id)}`;
+                  setShareUrl(url);
+                  setShareOpen(true);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-pm-gold text-pm-gold rounded-full hover:bg-pm-gold/10"
+              >
+                <ShareIcon className="w-5 h-5"/> Partager
+              </button>
+            )}
+          </div>
 
           {/* Albums Section */}
           {albums.length > 0 && (
@@ -181,6 +199,25 @@ const Gallery: React.FC = () => {
         album={selectedAlbum}
         onClose={() => setSelectedAlbum(null)}
       />
+
+      {shareOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={() => setShareOpen(false)}>
+          <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
+              <h2 className="text-xl font-playfair text-pm-gold">Partager la Galerie</h2>
+              <button onClick={() => setShareOpen(false)} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
+            </header>
+            <main className="p-6 space-y-4">
+              <div className="flex items-center gap-2">
+                <input type="text" readOnly value={shareUrl} className="admin-input flex-grow !pr-10" />
+                <button onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(()=>setCopied(false), 2000); }} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
+                  {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
+                </button>
+              </div>
+            </main>
+          </div>
+        </div>
+      )}
 
       {/* Legacy Image Modal */}
       {selectedImage && (

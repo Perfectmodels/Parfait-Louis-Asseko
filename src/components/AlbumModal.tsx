@@ -49,20 +49,19 @@ const AlbumModal: React.FC<AlbumModalProps> = ({ album, onClose }) => {
 
   const shareAlbum = async () => {
     if (!album) return;
-    
-    const shareData = {
-      title: album.title,
-      text: album.description || `Découvrez l'album ${album.title}`,
-      url: window.location.href,
-    };
+    const origin = window.location.origin;
+    const shareUrl = `${origin}/api/s/al/${encodeURIComponent(album.id)}`;
 
     try {
       if (navigator.share) {
-        await navigator.share(shareData);
+        await navigator.share({
+          title: album.title,
+          text: album.description || `Découvrez l'album ${album.title}`,
+          url: shareUrl,
+        });
       } else {
-        // Fallback: copy to clipboard
-        await navigator.clipboard.writeText(window.location.href);
-        alert('Lien copié dans le presse-papiers');
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Lien de partage copié dans le presse-papiers');
       }
     } catch (error) {
       console.error('Erreur lors du partage:', error);

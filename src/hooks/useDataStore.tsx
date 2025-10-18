@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Added NavLink to the import from types.ts to use the centralized definition.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, InternalMessage, GalleryItem, GalleryAlbum } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminUser, InternalMessage, GalleryItem, GalleryAlbum, FeatureFlags, AuditLogEntry } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -85,6 +85,9 @@ export interface AppData {
     internalMessages?: InternalMessage[];
     gallery?: GalleryItem[];
     galleryAlbums?: GalleryAlbum[];
+    // Platform extensions (optional, non-breaking)
+    featureFlags?: FeatureFlags;
+    auditLog?: AuditLogEntry[];
 }
 
 const deepCleanUndefined = (value: any): any => {
@@ -143,6 +146,14 @@ export const useDataStore = () => {
         registrationStaff: initialRegistrationStaff,
         beginnerCourseData: initialBeginnerCourseData,
         faqData: initialFaqData,
+        featureFlags: {
+            globalSearch: true,
+            notificationsCenter: true,
+            auditLog: true,
+            reports: true,
+            calendar: true,
+        },
+        auditLog: [],
     }), []);
     
     useEffect(() => {
@@ -151,9 +162,14 @@ export const useDataStore = () => {
         const unsubscribe = onValue(dbRef, (snapshot) => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
+            const toArray = <T,>(val: any): T[] => {
+                if (Array.isArray(val)) return val as T[];
+                if (val && typeof val === 'object') return Object.values(val) as T[];
+                return [] as T[];
+            };
             if (dbData) {
                 // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
-                const mergedData = {
+                const mergedData: AppData = {
                     ...initialData,
                     ...dbData,
                     models: (dbData.models && dbData.models.length > 0) ? dbData.models : initialData.models,
@@ -167,8 +183,11 @@ export const useDataStore = () => {
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
                     adminUsers: (dbData.adminUsers && dbData.adminUsers.length > 0) ? dbData.adminUsers : (initialData.adminUsers || []),
                     internalMessages: Array.isArray(dbData.internalMessages) ? dbData.internalMessages : (initialData.internalMessages || []),
-                    gallery: Array.isArray(dbData.gallery) ? dbData.gallery : (initialData.gallery || []),
-                    galleryAlbums: Array.isArray(dbData.galleryAlbums) ? dbData.galleryAlbums : (initialData.galleryAlbums || []),
+                    // Normalize arrays stored as objects by Firebase
+                    gallery: toArray(dbData.gallery),
+                    galleryAlbums: toArray(dbData.galleryAlbums),
+                    featureFlags: dbData.featureFlags ? { ...initialData.featureFlags, ...dbData.featureFlags } : initialData.featureFlags,
+                    auditLog: Array.isArray(dbData.auditLog) ? dbData.auditLog : (initialData.auditLog || []),
                 };
                 
                 // Always use navLinks from code to ensure route integrity
