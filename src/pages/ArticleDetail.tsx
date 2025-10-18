@@ -337,10 +337,10 @@ const ArticleDetail: React.FC = () => {
 
   const renderContent = (content: ArticleContent) => {
     switch (content.type) {
-      case 'heading': return content.level === 2 ? <h2 className="text-3xl font-playfair text-pm-gold mt-8 mb-4">{content.text}</h2> : <h3 className="text-2xl font-playfair text-pm-gold mt-6 mb-3">{content.text}</h3>;
-      case 'paragraph': return <p className="mb-4 leading-relaxed">{content.text}</p>;
-      case 'quote': return <blockquote className="my-6 p-4 border-l-4 border-pm-gold bg-black/50 italic"><p className="text-xl">"{content.text}"</p>{content.author && <cite className="block text-right mt-2 not-italic text-pm-off-white/70">— {content.author}</cite>}</blockquote>;
-      case 'image': return <figure className="my-8"><img src={content.src} alt={content.alt} className="w-full h-auto object-cover rounded-lg" />{content.caption && <figcaption className="mt-2 text-sm text-center text-pm-off-white/60">{content.caption}</figcaption>}</figure>;
+      case 'heading': return content.level === 2 ? <h2 className="text-3xl font-playfair text-pm-gold mt-8 mb-4 leading-tight">{content.text}</h2> : <h3 className="text-2xl font-playfair text-pm-gold mt-6 mb-3 leading-tight">{content.text}</h3>;
+      case 'paragraph': return <p className="mb-6 leading-relaxed text-base lg:text-lg">{content.text}</p>;
+      case 'quote': return <blockquote className="my-8 p-6 border-l-4 border-pm-gold bg-black/50 italic rounded-r-lg"><p className="text-xl lg:text-2xl leading-relaxed">"{content.text}"</p>{content.author && <cite className="block text-right mt-4 not-italic text-pm-off-white/70 text-sm">— {content.author}</cite>}</blockquote>;
+      case 'image': return <figure className="my-8"><img src={content.src} alt={content.alt} className="w-full h-auto object-cover rounded-lg shadow-lg" />{content.caption && <figcaption className="mt-3 text-sm text-center text-pm-off-white/60 italic">{content.caption}</figcaption>}</figure>;
       default: return null;
     }
   };
@@ -363,7 +363,13 @@ const ArticleDetail: React.FC = () => {
               </div>
             </header>
             <img src={article.imageUrl} alt={article.title} className="w-full h-auto object-cover my-8" />
-            <div className="prose prose-invert prose-lg max-w-none text-pm-off-white/80">{safeContent.map((contentBlock, index) => <div key={index}>{renderContent(contentBlock)}</div>)}</div>
+            <div className="max-w-none text-pm-off-white/80 space-y-6">
+              {safeContent.map((contentBlock, index) => (
+                <div key={index} className="w-full">
+                  {renderContent(contentBlock)}
+                </div>
+              ))}
+            </div>
             <div className="mt-12 pt-6 border-t border-pm-gold/20 flex flex-col sm:flex-row justify-between items-center gap-6">
                 <div className="flex items-center gap-4">
                     <button onClick={() => handleReaction('like')} disabled={!!userReaction} aria-pressed={userReaction === 'like'} className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${userReaction === 'like' ? 'bg-pm-gold text-pm-dark border-pm-gold' : 'border-pm-off-white/50 hover:bg-pm-dark'}`}><HandThumbUpIcon className="w-5 h-5" /> J'aime ({article.reactions?.likes || 0})</button>
