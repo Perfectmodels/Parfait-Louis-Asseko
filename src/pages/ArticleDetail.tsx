@@ -271,36 +271,45 @@ const ArticleDetail: React.FC = () => {
     }
   };
   
-  const handleShare = async () => {
+  const handleShare = () => {
     if (!article) return;
     setIsShareOpen(true);
-    if (shortUrl) return;
-    setIsGeneratingLink(true);
-    // Short server-rendered OG URL
     const shareUrl = `${window.location.origin}/api/s/a/${encodeURIComponent(article.slug)}`;
-    const generatedUrl = await generateShortLink({ link: shareUrl, title: article.title, description: article.excerpt, imageUrl: article.imageUrl }, data?.apiKeys);
-    setShortUrl(generatedUrl);
-    setIsGeneratingLink(false);
+    setShortUrl(shareUrl);
   };
 
   const handleDownloadPdf = () => {
     if (!article || !data?.siteConfig) return;
     setIsDownloading('pdf');
     const htmlContent = generateArticleHtml(article, data.siteConfig);
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
+    // Try using the new window method; fallback to data URL for mobile browsers blocking popups
+    try {
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
         printWindow.document.write(htmlContent);
         printWindow.document.close();
         printWindow.focus();
         setTimeout(() => {
-            printWindow.print();
-            printWindow.close();
-            setIsDownloading(null);
+          printWindow.print();
+          printWindow.close();
+          setIsDownloading(null);
         }, 250);
-    } else {
-        alert("Veuillez autoriser les pop-ups pour imprimer l'article.");
-        setIsDownloading(null);
+        return;
+      }
+    } catch {
+      // ignore and fallback below
     }
+    // Fallback: create a blob and open via object URL (better on mobile)
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${article.slug}.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    setIsDownloading(null);
   };
 
   const handleDownloadImage = async () => {
@@ -308,11 +317,20 @@ const ArticleDetail: React.FC = () => {
     if (!element || !article) return;
     setIsDownloading('image');
     try {
-        const canvas = await html2canvas(element, { useCORS: true, backgroundColor: '#000000', scale: 2 });
+        const canvas = await html2canvas(element, { useCORS: true, backgroundColor: '#000000', scale: Math.min(2, window.devicePixelRatio || 1.5) });
+        const dataUrl = canvas.toDataURL('image/png');
+        // Try anchor download first
         const link = document.createElement('a');
         link.download = `${article.slug}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.href = dataUrl;
+        document.body.appendChild(link);
         link.click();
+        link.remove();
+        // Fallback for iOS Safari which may ignore download attribute
+        if (!('download' in HTMLAnchorElement.prototype)) {
+          const imgWindow = window.open();
+          if (imgWindow) imgWindow.document.write(`<img src="${dataUrl}" style="width:100%"/>`);
+        }
     } catch (error) {
         console.error("Erreur lors de la génération de l'image:", error);
         alert("Une erreur est survenue lors de la création de l'image.");
@@ -324,7 +342,31 @@ const ArticleDetail: React.FC = () => {
   if (!isInitialized) return <div className="min-h-screen bg-pm-dark"></div>;
   if (!article) return <NotFound />;
   
-  const safeContent = Array.isArray(article.content) ? article.content : [];
+  // Normalize content blocks to handle Firebase object-based arrays and raw text
+  const normalizeContent = (value: any): ArticleContent[] => {
+    if (Array.isArray(value)) return value as ArticleContent[];
+    if (value && typeof value === 'object') {
+      const entries = Object.entries(value as Record<string, unknown>);
+      // Sort numerically if keys are numeric-like ("0", "1", "10", ...)
+      const sorted = entries.sort(([a], [b]) => {
+        const ia = Number(a);
+        const ib = Number(b);
+        const aIsNum = !Number.isNaN(ia);
+        const bIsNum = !Number.isNaN(ib);
+        if (aIsNum && bIsNum) return ia - ib;
+        return 0;
+      });
+      return sorted.map(([, v]) => v as ArticleContent);
+    }
+    if (typeof value === 'string') {
+      return value
+        .split(/\n\n+/)
+        .map((p) => ({ type: 'paragraph', text: p.trim() }))
+        .filter((b) => (b as any).text);
+    }
+    return [] as ArticleContent[];
+  };
+  const safeContent = normalizeContent(article.content);
   
   const safeDate = article.date && !isNaN(new Date(article.date).getTime()) ? new Date(article.date).toISOString() : new Date().toISOString();
   

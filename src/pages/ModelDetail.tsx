@@ -189,25 +189,11 @@ const ModelDetail: React.FC = () => {
     }
   }, [isBookingModalOpen, selectedImage, isShareOpen]);
 
-  const handleShare = async () => {
+  const handleShare = () => {
     if (!model) return;
     setIsShareOpen(true);
-    if (shortUrl) return;
-
-    setIsGeneratingLink(true);
-    // Short server-rendered OG URL
     const shareUrl = `${window.location.origin}/api/s/m/${encodeURIComponent(model.id)}`;
-    const generatedUrl = await generateShortLink(
-      {
-        link: shareUrl,
-        title: model.name,
-        description: `Découvrez le portfolio de ${model.name}, mannequin chez Perfect Models Management.`,
-        imageUrl: model.imageUrl,
-      },
-      data?.apiKeys
-    );
-    setShortUrl(generatedUrl);
-    setIsGeneratingLink(false);
+    setShortUrl(shareUrl);
   };
 
   const handlePrintPortfolio = () => {
