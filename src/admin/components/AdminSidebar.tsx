@@ -23,7 +23,11 @@ import {
     BuildingStorefrontIcon,
     SparklesIcon,
     AcademicCapIcon,
-    SignalIcon
+    SignalIcon,
+    DocumentTextIcon,
+    PhotoIcon,
+    GlobeAltIcon,
+    CursorArrowRaysIcon
 } from '@heroicons/react/24/outline';
 
 interface AdminSidebarProps {
