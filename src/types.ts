@@ -472,6 +472,11 @@ export interface MonthlyPayment {
   status: 'Payé' | 'En attente' | 'En retard';
   category?: PaymentCategory; // nature du paiement
   notes?: string;
+  // Détail des montants lorsque la catégorie combine plusieurs natures
+  breakdown?: {
+    cotisation?: number;
+    inscription?: number;
+  };
 }
 
 export type AccountingEntryKind = 'income' | 'expense';
