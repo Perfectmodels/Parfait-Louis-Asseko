@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { 
     HomeIcon, 
     UsersIcon, 
@@ -20,7 +20,6 @@ import AdminHeader from '../components/AdminHeader';
 const AdminLayout: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
     const { data } = useData();
 
     const handleLogout = () => {
@@ -62,6 +61,7 @@ const AdminLayout: React.FC = () => {
             <div className="lg:pl-72">
                 {/* Header */}
                 <AdminHeader 
+                    title="Administration"
                     onMenuClick={() => setSidebarOpen(true)}
                     onLogout={handleLogout}
                     totalNotifications={totalNotifications}

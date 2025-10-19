@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
-import { ContactMessage, InternalMessage, InternalParticipant, InternalAttachment } from '../types';
+import { ContactMessage, InternalMessage, InternalParticipant, InternalAttachment, UserKind } from '../types';
 import AIAssistant from '../components/AIAssistant';
 import Modal from '../components/Modal';
 import SEO from '../components/SEO';
@@ -42,10 +42,10 @@ const AdminMessages: React.FC = () => {
     // Internal messaging helpers
     const currentAdminId = typeof window !== 'undefined' ? sessionStorage.getItem('admin_id') || '' : '';
     const allParticipants: InternalParticipant[] = [
-        ...(data?.adminUsers || []).filter(Boolean).map((a) => ({ kind: 'admin', id: a.id || '', name: a.name || 'Admin', email: a.email })),
-        ...(data?.models || []).filter(Boolean).map((m) => ({ kind: 'model', id: m.id || '', name: m.name || 'Mannequin', email: m.email })),
-        ...(data?.juryMembers || []).filter(Boolean).map((j) => ({ kind: 'jury', id: j.id || '', name: j.name || 'Jury' })),
-        ...(data?.registrationStaff || []).filter(Boolean).map((r) => ({ kind: 'registration', id: r.id || '', name: r.name || 'Enregistrement' })),
+        ...(data?.adminUsers || []).filter(Boolean).map((a) => ({ kind: 'admin' as UserKind, id: a.id || '', name: a.name || 'Admin', email: a.email })),
+        ...(data?.models || []).filter(Boolean).map((m) => ({ kind: 'model' as UserKind, id: m.id || '', name: m.name || 'Mannequin', email: m.email })),
+        ...(data?.juryMembers || []).filter(Boolean).map((j) => ({ kind: 'jury' as UserKind, id: j.id || '', name: j.name || 'Jury' })),
+        ...(data?.registrationStaff || []).filter(Boolean).map((r) => ({ kind: 'registration' as UserKind, id: r.id || '', name: r.name || 'Enregistrement' })),
     ].filter((p) => p && p.id && p.name);
     const resolveParticipant = (nameOrId: string): InternalParticipant | null => {
         const needle = nameOrId.toLowerCase().trim();

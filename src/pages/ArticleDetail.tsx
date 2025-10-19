@@ -252,7 +252,7 @@ const ArticleDetail: React.FC = () => {
   };
   
   const handleReaction = async (reactionType: 'like' | 'dislike') => {
-    if (userReaction || !data || !article) return;
+    if (userReaction || !data || !article || !slug) return;
     const articleIndex = data.articles.findIndex(a => a.slug === slug);
     if (articleIndex === -1) return;
     const currentReactions = data.articles[articleIndex].reactions || { likes: 0, dislikes: 0 };
@@ -341,18 +341,13 @@ const ArticleDetail: React.FC = () => {
   };
 
   const renderContent = (content: ArticleContent) => {
-    // Debug: Log the content being rendered
-    console.log('Rendering content:', content);
-    
     if (!content || typeof content !== 'object') {
-      console.warn('Contenu invalide:', content);
       return null;
     }
 
     switch (content.type) {
       case 'heading': 
         if (!content.text) {
-          console.warn('Heading sans texte:', content);
           return null;
         }
         return content.level === 2 ? 
@@ -360,13 +355,11 @@ const ArticleDetail: React.FC = () => {
           <h3 className="text-2xl font-playfair text-pm-gold mt-6 mb-3">{content.text}</h3>;
       case 'paragraph': 
         if (!content.text) {
-          console.warn('Paragraphe sans texte:', content);
           return null;
         }
         return <p className="mb-4 leading-relaxed text-pm-off-white/80">{content.text}</p>;
       case 'quote': 
         if (!content.text) {
-          console.warn('Citation sans texte:', content);
           return null;
         }
         return (
@@ -377,7 +370,6 @@ const ArticleDetail: React.FC = () => {
         );
       case 'image': 
         if (!content.src) {
-          console.warn('Image sans source:', content);
           return null;
         }
         return (
@@ -388,7 +380,6 @@ const ArticleDetail: React.FC = () => {
               className="w-full h-auto object-cover rounded-lg shadow-lg" 
               loading="lazy"
               onError={(e) => {
-                console.error('Erreur de chargement de l\'image:', content.src);
                 e.currentTarget.style.display = 'none';
               }}
             />
@@ -396,13 +387,7 @@ const ArticleDetail: React.FC = () => {
           </figure>
         );
       default: 
-        console.warn('Type de contenu non reconnu:', content);
-        return (
-          <div className="p-4 bg-red-900/20 border border-red-500/50 rounded-lg text-red-300">
-            <p className="text-sm">Type de contenu non supporté: {content.type}</p>
-            <pre className="text-xs mt-2 opacity-70">{JSON.stringify(content, null, 2)}</pre>
-          </div>
-        );
+        return null;
     }
   };
 

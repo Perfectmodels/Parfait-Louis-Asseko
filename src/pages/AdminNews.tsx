@@ -45,6 +45,23 @@ const AdminNews: React.FC = () => {
     }
   };
 
+  const handleCreateFromAlbum = (albumId: string) => {
+    if (!data) return;
+    const album = (data.galleryAlbums || []).find((a: any) => a.id === albumId);
+    if (!album) { alert('Album introuvable'); return; }
+    const cover = album.coverUrl || album.images[0] || '';
+    const excerpt = (album.description || '').slice(0, 160);
+    const newItem: NewsItem = {
+      id: `news-${Date.now()}`,
+      title: album.title,
+      date: new Date().toISOString().split('T')[0],
+      imageUrl: cover,
+      excerpt,
+      link: '/galerie'
+    };
+    handleFormSave(newItem);
+  };
+
   const handleMove = async (index: number, direction: 'up' | 'down') => {
     if (!data) return;
     const newItems = [...localNews];
@@ -69,7 +86,7 @@ const AdminNews: React.FC = () => {
   };
 
   if (editingItem) {
-    return <NewsForm item={editingItem} onSave={handleFormSave} onCancel={() => {setEditingItem(null); setIsCreating(false);}} isCreating={isCreating}/>
+    return <NewsForm item={editingItem} onSave={handleFormSave} onCancel={() => {setEditingItem(null); setIsCreating(false);}} isCreating={isCreating} onCreateFromAlbum={handleCreateFromAlbum}/>
   }
 
   return (
@@ -128,7 +145,7 @@ const AdminNews: React.FC = () => {
   );
 };
 
-const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onCancel: () => void, isCreating: boolean }> = ({ item, onSave, onCancel, isCreating }) => {
+const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onCancel: () => void, isCreating: boolean, onCreateFromAlbum?: (albumId: string) => void }> = ({ item, onSave, onCancel, isCreating, onCreateFromAlbum }) => {
     const [formData, setFormData] = useState(item);
     const [assistantState, setAssistantState] = useState<{isOpen: boolean; fieldName: string; initialPrompt: string}>({
         isOpen: false,
@@ -164,18 +181,9 @@ const NewsForm: React.FC<{ item: NewsItem, onSave: (item: NewsItem) => void, onC
     };
 
   const handleCreateFromAlbum = (albumId: string) => {
-    const album = (data?.galleryAlbums || []).find(a => a.id === albumId);
-    if (!album) { alert('Album introuvable'); return; }
-    const cover = album.coverUrl || album.images[0] || '';
-    const excerpt = (album.description || '').slice(0, 160);
-    onSave({
-      id: `news-${Date.now()}`,
-      title: album.title,
-      date: new Date().toISOString().split('T')[0],
-      imageUrl: cover,
-      excerpt,
-      link: '/galerie'
-    });
+    if (onCreateFromAlbum) {
+      onCreateFromAlbum(albumId);
+    }
   };
 
   // Pré-remplissage via évènement depuis AdminGallery

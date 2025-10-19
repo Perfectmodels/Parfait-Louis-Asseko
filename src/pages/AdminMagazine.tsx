@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Article } from '../types';
+import { Article, ArticleContent } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, StarIcon, SparklesIcon } from '@heroicons/react/24/outline';
@@ -48,6 +48,29 @@ const AdminMagazine: React.FC = () => {
     }
   };
 
+  const handleCreateArticleFromAlbum = (albumId: string) => {
+    if (!data) return;
+    const album = (data.galleryAlbums || []).find(a => a.id === albumId);
+    if (!album) { alert('Album introuvable'); return; }
+    const content: ArticleContent[] = [
+      { type: 'heading', level: 2, text: album.title },
+      ...(album.description ? [{ type: 'paragraph' as const, text: album.description }] : []),
+      ...album.images.slice(0, 12).map((src: string) => ({ type: 'image' as const, src, alt: album.title }))
+    ];
+    const newArticle: Article = {
+      slug: `${album.title.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}`,
+      title: album.title,
+      category: album.category || 'Galerie',
+      excerpt: album.description || '',
+      imageUrl: album.coverUrl || album.images[0] || '',
+      author: 'PMM',
+      date: new Date().toISOString().split('T')[0],
+      content,
+      tags: ['galerie', 'album']
+    };
+    handleFormSave(newArticle);
+  };
+
   const handleSetFeatured = async (slugToFeature: string) => {
     if (!data) return;
     const updatedArticles = localArticles.map(article => ({
@@ -86,7 +109,7 @@ const AdminMagazine: React.FC = () => {
   };
 
   if (editingArticle) {
-    return <ArticleForm article={editingArticle} onSave={handleFormSave} onCancel={() => {setEditingArticle(null); setIsCreating(false);}} isCreating={isCreating}/>
+    return <ArticleForm article={editingArticle} onSave={handleFormSave} onCancel={() => {setEditingArticle(null); setIsCreating(false);}} isCreating={isCreating} onCreateFromAlbum={handleCreateArticleFromAlbum}/>
   }
 
   return (
@@ -146,7 +169,7 @@ const AdminMagazine: React.FC = () => {
   );
 };
 
-const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => void, onCancel: () => void, isCreating: boolean }> = ({ article, onSave, onCancel, isCreating }) => {
+const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => void, onCancel: () => void, isCreating: boolean, onCreateFromAlbum?: (albumId: string) => void }> = ({ article, onSave, onCancel, isCreating, onCreateFromAlbum }) => {
     const [formData, setFormData] = useState(article);
     const [contentJson, setContentJson] = useState(JSON.stringify(article.content, null, 2));
     
@@ -188,24 +211,9 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
     };
 
   const handleCreateArticleFromAlbum = (albumId: string) => {
-    const album = (data?.galleryAlbums || []).find(a => a.id === albumId);
-    if (!album) { alert('Album introuvable'); return; }
-    const content = [
-      { type: 'heading', level: 2, text: album.title },
-      ...(album.description ? [{ type: 'paragraph', text: album.description }] : []),
-      ...album.images.slice(0, 12).map(src => ({ type: 'image', src, alt: album.title }))
-    ];
-    onSave({
-      slug: `${album.title.toLowerCase().replace(/\s+/g,'-')}-${Date.now()}`,
-      title: album.title,
-      category: album.category || 'Galerie',
-      excerpt: album.description || '',
-      imageUrl: album.coverUrl || album.images[0] || '',
-      author: 'PMM',
-      date: new Date().toISOString().split('T')[0],
-      content,
-      tags: ['galerie', 'album']
-    });
+    if (onCreateFromAlbum) {
+      onCreateFromAlbum(albumId);
+    }
   };
 
   React.useEffect(() => {

@@ -87,11 +87,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
         };
 
         try{
-            if (!import.meta.env.VITE_API_KEY) {
+            const apiKey = import.meta.env.VITE_GOOGLE_AI_API_KEY;
+            if (!apiKey) {
                 throw new Error("La clé API n'est pas configurée.");
             }
             
-            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             
             let response;
             const model = 'gemini-2.5-flash';
@@ -113,7 +114,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
                 });
             }
             
-            const textResult = response.text;
+            const textResult = response.text || '';
             setGeneratedContent(textResult);
 
         } catch (err: any) {

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { AIAssistantProps } from '../types';
-import CloseIcon from './icons/CloseIcon';
+import CloseIcon from '../components/icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 import { GoogleGenAI, Type } from '@google/genai';
 
@@ -113,7 +113,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
                 });
             }
             
-            const textResult = response.text;
+            const textResult = response.text || '';
             setGeneratedContent(textResult);
 
         } catch (err: any) {
