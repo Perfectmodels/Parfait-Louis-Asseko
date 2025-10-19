@@ -11,6 +11,13 @@ const GalleryCarousel: React.FC<GalleryCarouselProps> = ({ albums, onAlbumClick 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    // Reset index if it's out of bounds when albums change
+    if (currentIndex >= albums.length && albums.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [albums, currentIndex]);
+
+  useEffect(() => {
     if (albums.length <= 1) return;
     
     const interval = setInterval(() => {
