@@ -1,9 +1,25 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { MonthlyPayment, Model, AccountingEntry } from '../types';
 import SEO from '../components/SEO';
-import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, PlusIcon, TrashIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+    PlusIcon,
+    PencilIcon,
+    TrashIcon,
+    ChartBarIcon,
+    ArrowDownTrayIcon,
+    MagnifyingGlassIcon,
+    CalendarIcon,
+    CurrencyDollarIcon,
+    ArrowTrendingUpIcon,
+    BanknotesIcon
+} from '@heroicons/react/24/outline';
+import AdminCard from '../admin/components/AdminCard';
+import AdminTable from '../admin/components/AdminTable';
+import AdminButton from '../admin/components/AdminButton';
+import { AdminInput, AdminSelect, AdminTextarea } from '../admin/components/AdminInput';
+import AdminModal from '../admin/components/AdminModal';
+import AdminPageHeader from '../admin/components/AdminPageHeader';
 
 const AdminPayments: React.FC = () => {
     const { data, saveData } = useData();
@@ -11,30 +27,51 @@ const AdminPayments: React.FC = () => {
     const [editingPayment, setEditingPayment] = useState<MonthlyPayment | null>(null);
     const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
     const [editingEntry, setEditingEntry] = useState<AccountingEntry | null>(null);
-    const [monthFilter, setMonthFilter] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('');
+    const [activeTab, setActiveTab] = useState<'payments' | 'entries' | 'analytics'>('payments');
 
     const payments = useMemo(() => {
-        return [...(data?.monthlyPayments || [])].sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime());
+        return [...(data?.monthlyPayments || [])].sort((a, b) =>
+            new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime()
+        );
     }, [data?.monthlyPayments]);
 
     const entries = useMemo(() => {
-        return [...(data?.accountingEntries || [])].sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime());
+        return [...(data?.accountingEntries || [])].sort((a, b) =>
+            new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
+        );
     }, [data?.accountingEntries]);
 
     const models = useMemo(() => {
         return [...(data?.models || [])].sort((a, b) => a.name.localeCompare(b.name));
     }, [data?.models]);
 
+    // Filtres avancés
     const filteredPayments = useMemo(() => {
-        if (!monthFilter) return payments;
-        return payments.filter(p => p.month === monthFilter);
-    }, [payments, monthFilter]);
+        return payments.filter(payment => {
+            const matchesSearch = searchTerm === '' ||
+                payment.modelName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                payment.notes?.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesStatus = statusFilter === '' || payment.status === statusFilter;
+            const matchesCategory = categoryFilter === '' || payment.category === categoryFilter;
+            return matchesSearch && matchesStatus && matchesCategory;
+        });
+    }, [payments, searchTerm, statusFilter, categoryFilter]);
 
-    const uniqueMonths = useMemo(() => {
-        const months = new Set(payments.map(p => p.month));
-        return Array.from(months).sort().reverse();
+    // Statistiques financières
+    const financialStats = useMemo(() => {
+        const totalPaid = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+        const pendingPayments = payments.filter(p => p.status === 'En attente').length;
+        const latePayments = payments.filter(p => p.status === 'En retard').length;
+        const thisMonth = new Date().toISOString().slice(0, 7);
+        const currentMonthPayments = payments.filter(p => p.month === thisMonth).reduce((sum, p) => sum + (p.amount || 0), 0);
+
+        return { totalPaid, pendingPayments, latePayments, currentMonthPayments };
     }, [payments]);
 
+    // Gestionnaires d'événements
     const handleOpenModal = (payment: MonthlyPayment | null = null) => {
         setEditingPayment(payment);
         setIsModalOpen(true);
@@ -49,7 +86,7 @@ const AdminPayments: React.FC = () => {
         } else {
             updatedPayments = [...payments, { ...paymentData, id: `payment-${Date.now()}` }];
         }
-        
+
         try {
             await saveData({ ...data, monthlyPayments: updatedPayments });
             setIsModalOpen(false);
@@ -92,195 +129,330 @@ const AdminPayments: React.FC = () => {
         }
     };
 
-    const handleDeleteEntry = async (entryId: string) => {
-        if (!data) return;
-        if (!window.confirm('Supprimer cette écriture ?')) return;
-        const updated = (data.accountingEntries || []).filter(e => e.id !== entryId);
-        await saveData({ ...data, accountingEntries: updated });
-    };
-    
-    const getStatusColor = (status: MonthlyPayment['status']) => {
-        switch (status) {
-            case 'Payé': return 'bg-green-500/20 text-green-300';
-            case 'En attente': return 'bg-yellow-500/20 text-yellow-300';
-            case 'En retard': return 'bg-red-500/20 text-red-300';
-            default: return 'bg-gray-500/20 text-gray-300';
-        }
-    };
+    // Export de données
+    const exportData = (type: 'csv' | 'json') => {
+        let content: string;
 
-    // Aggregates per model and global expenses placeholder
-    const perModel = useMemo(() => {
-        const map = new Map<string, { name: string; totalPaid: number; monthsPaid: Set<string>; lastStatus: MonthlyPayment['status'] }>();
-        for (const p of payments) {
-            const key = p.modelId;
-            const entry = map.get(key) || { name: p.modelName, totalPaid: 0, monthsPaid: new Set<string>(), lastStatus: p.status };
-            entry.totalPaid += Number(p.amount || 0);
-            entry.monthsPaid.add(p.month);
-            entry.lastStatus = p.status;
-            map.set(key, entry);
-        }
-        return Array.from(map.entries()).map(([modelId, v]) => ({ modelId, ...v }));
-    }, [payments]);
+        if (activeTab === 'payments') {
+            const exportData = filteredPayments.map(p => ({
+                Mois: p.month,
+                Mannequin: p.modelName,
+                Montant: p.amount,
+                Nature: p.category,
+                Date_Paiement: p.paymentDate,
+                Methode: p.method,
+                Statut: p.status,
+                Notes: p.notes
+            }));
 
-    const totalExpenses = useMemo(() => {
-        // If you track expenses elsewhere, sum here. Placeholder 0 for now.
-        return 0;
-    }, [payments]);
+            if (type === 'csv') {
+                content = 'data:text/csv;charset=utf-8,' +
+                    Object.keys(exportData[0]).join(',') + '\n' +
+                    exportData.map(row => Object.values(row).join(',')).join('\n');
+            } else {
+                content = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            }
+        } else {
+            const exportData = entries.map(e => ({
+                Type: e.kind === 'income' ? 'Revenu' : 'Dépense',
+                Categorie: e.category,
+                Libelle: e.label,
+                Montant: e.amount,
+                Date_Heure: e.dateTime,
+                Methode: e.method,
+                Mannequin_Lie: e.relatedModelName || 'N/A',
+                Notes: e.notes
+            }));
+
+            if (type === 'csv') {
+                content = 'data:text/csv;charset=utf-8,' +
+                    Object.keys(exportData[0]).join(',') + '\n' +
+                    exportData.map(row => Object.values(row).join(',')).join('\n');
+            } else {
+                content = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            }
+        }
+
+        const link = document.createElement('a');
+        link.href = content;
+        link.download = `data_${new Date().toISOString().split('T')[0]}.${type}`;
+        link.click();
+    };
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Admin - Comptabilité" noIndex />
-            <div className="container mx-auto px-6">
-                <div className="admin-page-header">
-                    <div>
-                        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                            <ChevronLeftIcon className="w-5 h-5" />
-                            Retour au Dashboard
-                        </Link>
-                        <h1 className="admin-page-title">Comptabilité</h1>
-                        <p className="admin-page-subtitle">Suivi des cotisations, inscriptions, avances et autres revenus/dépenses.</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <button onClick={() => handleOpenEntryModal()} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
-                            <PlusIcon className="w-5 h-5"/> Nouvelle Écriture
-                        </button>
-                        <button onClick={() => handleOpenModal()} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
-                            <PlusIcon className="w-5 h-5"/> Ajouter Paiement Mannequin
-                        </button>
-                    </div>
+        <div className="min-h-screen bg-pm-dark">
+            <SEO title="Comptabilité Premium" noIndex />
+
+            <div className="container mx-auto px-6 py-8">
+                {/* Header avec navigation */}
+                <AdminPageHeader
+                    title="Comptabilité Premium"
+                    subtitle="Gestion financière avancée avec analyses et rapports"
+                    actions={[
+                        <AdminButton
+                            key="add-payment"
+                            variant="primary"
+                            icon={PlusIcon}
+                            onClick={() => handleOpenModal()}
+                        >
+                            Nouveau Paiement
+                        </AdminButton>,
+                        <AdminButton
+                            key="add-entry"
+                            variant="secondary"
+                            icon={PlusIcon}
+                            onClick={() => handleOpenEntryModal()}
+                        >
+                            Nouvelle Écriture
+                        </AdminButton>
+                    ]}
+                />
+
+                {/* Onglets de navigation */}
+                <div className="mb-8">
+                    <nav className="flex space-x-1 bg-pm-dark/50 p-1 rounded-lg">
+                        {[
+                            { id: 'payments', label: 'Paiements', icon: BanknotesIcon },
+                            { id: 'entries', label: 'Écritures', icon: ChartBarIcon },
+                            { id: 'analytics', label: 'Analytiques', icon: ArrowTrendingUpIcon }
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    activeTab === tab.id
+                                        ? 'bg-pm-gold text-black'
+                                        : 'text-pm-off-white hover:text-pm-gold'
+                                }`}
+                            >
+                                <tab.icon className="w-4 h-4" />
+                                {tab.label}
+                            </button>
+                        ))}
+                    </nav>
                 </div>
 
-                <div className="mb-6 flex items-center gap-4">
-                    <label className="admin-label !mb-0">Filtrer par mois :</label>
-                    <select value={monthFilter} onChange={e => setMonthFilter(e.target.value)} className="admin-input !w-auto">
-                        <option value="">Tous les mois</option>
-                        {uniqueMonths.map(month => <option key={month} value={month}>{month}</option>)}
-                    </select>
+                {/* Filtres et recherche */}
+                <div className="mb-6 flex flex-wrap gap-4 items-center">
+                    <div className="flex-1 min-w-64">
+                        <AdminInput
+                            label=""
+                            placeholder="Rechercher par mannequin, notes..."
+                            icon={MagnifyingGlassIcon}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <AdminSelect
+                        label=""
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        options={[
+                            { value: '', label: 'Tous les statuts' },
+                            { value: 'Payé', label: 'Payé' },
+                            { value: 'En attente', label: 'En attente' },
+                            { value: 'En retard', label: 'En retard' }
+                        ]}
+                    />
+                    <AdminSelect
+                        label=""
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        options={[
+                            { value: '', label: 'Toutes les natures' },
+                            { value: 'Cotisation mensuelle', label: 'Cotisation mensuelle' },
+                            { value: 'Frais d\'inscription', label: 'Frais d\'inscription' },
+                            { value: 'Cotisation + Inscription', label: 'Cotisation + Inscription' }
+                        ]}
+                    />
+                    <AdminButton
+                        variant="outline"
+                        icon={ArrowDownTrayIcon}
+                        onClick={() => exportData('csv')}
+                    >
+                        Exporter CSV
+                    </AdminButton>
                 </div>
 
-                <div className="admin-section-wrapper overflow-x-auto">
-                    <h2 className="admin-section-title">Récapitulatif par Mannequin</h2>
-                    <table className="admin-table mb-10">
-                        <thead>
-                            <tr>
-                                <th>Mannequin</th>
-                                <th>Montant total payé</th>
-                                <th>Mois réglés</th>
-                                <th>Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {perModel.map(row => (
-                                <tr key={row.modelId}>
-                                    <td>
-                                        <button className="text-pm-gold hover:underline" onClick={() => handleOpenModal({ id: '', modelId: row.modelId, modelName: row.name, month: new Date().toISOString().slice(0,7), amount: 0, paymentDate: new Date().toISOString().split('T')[0], method: 'Virement', status: 'En attente', notes: '' })}>
-                                            {row.name}
-                                        </button>
-                                    </td>
-                                    <td>{row.totalPaid.toLocaleString('fr-FR')} FCFA</td>
-                                    <td>{Array.from(row.monthsPaid).sort().join(', ') || '-'}</td>
-                                    <td><span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(row.lastStatus)}`}>{row.lastStatus}</span></td>
-                                </tr>
-                            ))}
-                            {perModel.length === 0 && (
-                                <tr><td colSpan={4} className="text-center text-pm-off-white/60">Aucune donnée</td></tr>
-                            )}
-                        </tbody>
-                    </table>
+                {/* Contenu des onglets */}
+                {activeTab === 'payments' && (
+                    <div className="space-y-6">
+                        {/* Statistiques rapides */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <AdminCard
+                                title="Total Payé"
+                                description={`${financialStats.totalPaid.toLocaleString('fr-FR')} FCFA`}
+                                icon={CurrencyDollarIcon}
+                                link="#"
+                            />
+                            <AdminCard
+                                title="Paiements en Attente"
+                                description={`${financialStats.pendingPayments} paiements`}
+                                icon={CalendarIcon}
+                                link="#"
+                            />
+                            <AdminCard
+                                title="Paiements en Retard"
+                                description={`${financialStats.latePayments} paiements`}
+                                icon={ArrowTrendingUpIcon}
+                                link="#"
+                            />
+                            <AdminCard
+                                title="Ce Mois"
+                                description={`${financialStats.currentMonthPayments.toLocaleString('fr-FR')} FCFA`}
+                                icon={BanknotesIcon}
+                                link="#"
+                            />
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div className="p-4 bg-black border border-pm-gold/10 rounded">
-                            <p className="text-sm text-pm-off-white/60">Total payé</p>
-                            <p className="text-2xl text-pm-gold font-bold">{payments.reduce((s, p) => s + (p.amount || 0), 0).toLocaleString('fr-FR')} FCFA</p>
-                        </div>
-                        <div className="p-4 bg-black border border-pm-gold/10 rounded">
-                            <p className="text-sm text-pm-off-white/60">Dépenses</p>
-                            <p className="text-2xl text-pm-gold font-bold">{totalExpenses.toLocaleString('fr-FR')} FCFA</p>
-                        </div>
-                        <div className="p-4 bg-black border border-pm-gold/10 rounded">
-                            <p className="text-sm text-pm-off-white/60">Mois couverts</p>
-                            <p className="text-2xl text-pm-gold font-bold">{new Set(payments.map(p => p.month)).size}</p>
-                        </div>
-                    </div>
-
-                    <h2 className="admin-section-title">Grand Livre - Écritures Générales</h2>
-                    <table className="admin-table mb-10">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Catégorie</th>
-                                <th>Libellé</th>
-                                <th>Montant</th>
-                                <th>Date/Heure</th>
-                                <th>Méthode</th>
-                                <th>Lié à</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {entries.map(e => (
-                                <tr key={e.id}>
-                                    <td>{e.kind === 'income' ? 'Revenu' : 'Dépense'}</td>
-                                    <td>{e.category}</td>
-                                    <td>{e.label}</td>
-                                    <td className={e.kind === 'income' ? 'text-green-400' : 'text-red-400'}>
-                                        {e.amount.toLocaleString('fr-FR')} FCFA
-                                    </td>
-                                    <td>{new Date(e.dateTime).toLocaleString('fr-FR')}</td>
-                                    <td>{e.method || '-'}</td>
-                                    <td>{e.relatedModelName || '-'}</td>
-                                    <td>
+                        {/* Table des paiements */}
+                        <AdminTable
+                            data={filteredPayments}
+                            columns={[
+                                {
+                                    key: 'month',
+                                    label: 'Mois',
+                                    sortable: true
+                                },
+                                {
+                                    key: 'modelName',
+                                    label: 'Mannequin',
+                                    sortable: true
+                                },
+                                {
+                                    key: 'amount',
+                                    label: 'Montant',
+                                    render: (value) => `${value?.toLocaleString('fr-FR') || 0} FCFA`,
+                                    sortable: true
+                                },
+                                {
+                                    key: 'category',
+                                    label: 'Nature'
+                                },
+                                {
+                                    key: 'paymentDate',
+                                    label: 'Date',
+                                    render: (value) => value ? new Date(value).toLocaleDateString('fr-FR') : '-',
+                                    sortable: true
+                                },
+                                {
+                                    key: 'method',
+                                    label: 'Méthode'
+                                },
+                                {
+                                    key: 'status',
+                                    label: 'Statut',
+                                    render: (value) => {
+                                        const colors = {
+                                            'Payé': 'bg-green-500/20 text-green-300',
+                                            'En attente': 'bg-yellow-500/20 text-yellow-300',
+                                            'En retard': 'bg-red-500/20 text-red-300'
+                                        };
+                                        return <span className={`px-2 py-0.5 text-xs rounded-full ${colors[value as keyof typeof colors] || 'bg-gray-500/20 text-gray-300'}`}>
+                                            {value || 'Inconnu'}
+                                        </span>;
+                                    }
+                                },
+                                {
+                                    key: 'actions',
+                                    label: 'Actions',
+                                    render: (_, item) => (
                                         <div className="flex items-center gap-2">
-                                            <button onClick={() => handleOpenEntryModal(e)} className="text-pm-gold/70 hover:text-pm-gold p-1"><PencilIcon className="w-5 h-5"/></button>
-                                            <button onClick={() => handleDeleteEntry(e.id)} className="text-red-500/70 hover:text-red-500 p-1"><TrashIcon className="w-5 h-5"/></button>
+                                            <AdminButton
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleOpenModal(item)}
+                                                icon={PencilIcon}
+                                            >
+                                                Modifier
+                                            </AdminButton>
+                                            <AdminButton
+                                                variant="danger"
+                                                size="sm"
+                                                onClick={() => handleDelete(item.id)}
+                                                icon={TrashIcon}
+                                            >
+                                                Supprimer
+                                            </AdminButton>
                                         </div>
-                                    </td>
-                                </tr>
-                            ))}
-                            {entries.length === 0 && (
-                                <tr><td colSpan={8} className="text-center text-pm-off-white/60">Aucune écriture</td></tr>
-                            )}
-                        </tbody>
-                    </table>
+                                    )
+                                }
+                            ]}
+                            onRowClick={(payment) => handleOpenModal(payment)}
+                            emptyMessage="Aucun paiement trouvé"
+                        />
+                    </div>
+                )}
 
-                    <h2 className="admin-section-title">Paiements Mannequins</h2>
-                    <table className="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Mois</th>
-                                <th>Mannequin</th>
-                                <th>Montant</th>
-                                <th>Nature</th>
-                                <th>Date Paiement</th>
-                                <th>Méthode</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredPayments.map(p => (
-                                <tr key={p.id}>
-                                    <td>{p.month}</td>
-                                    <td>{p.modelName}</td>
-                                    <td>{p.amount.toLocaleString('fr-FR')} FCFA</td>
-                                    <td>{p.category || '-'}</td>
-                                    <td>{new Date(p.paymentDate).toLocaleDateString('fr-FR')}</td>
-                                    <td>{p.method}</td>
-                                    <td><span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(p.status)}`}>{p.status}</span></td>
-                                    <td>
-                                        <div className="flex items-center gap-2">
-                                            <button onClick={() => handleOpenModal(p)} className="text-pm-gold/70 hover:text-pm-gold p-1"><PencilIcon className="w-5 h-5"/></button>
-                                            <button onClick={() => handleDelete(p.id)} className="text-red-500/70 hover:text-red-500 p-1"><TrashIcon className="w-5 h-5"/></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                     {filteredPayments.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun paiement trouvé.</p>}
-                </div>
+                {activeTab === 'entries' && (
+                    <div className="space-y-6">
+                        <AdminTable
+                            data={entries}
+                            columns={[
+                                {
+                                    key: 'kind',
+                                    label: 'Type',
+                                    render: (value) => value === 'income' ? 'Revenu' : 'Dépense'
+                                },
+                                {
+                                    key: 'category',
+                                    label: 'Catégorie'
+                                },
+                                {
+                                    key: 'label',
+                                    label: 'Libellé'
+                                },
+                                {
+                                    key: 'amount',
+                                    label: 'Montant',
+                                    render: (value, item) => (
+                                        <span className={item.kind === 'income' ? 'text-green-400' : 'text-red-400'}>
+                                            {value?.toLocaleString('fr-FR') || 0} FCFA
+                                        </span>
+                                    )
+                                },
+                                {
+                                    key: 'dateTime',
+                                    label: 'Date/Heure',
+                                    render: (value) => value ? new Date(value).toLocaleString('fr-FR') : '-'
+                                },
+                                {
+                                    key: 'method',
+                                    label: 'Méthode'
+                                },
+                                {
+                                    key: 'relatedModelName',
+                                    label: 'Mannequin lié'
+                                }
+                            ]}
+                            onRowClick={(entry) => handleOpenEntryModal(entry)}
+                            emptyMessage="Aucune écriture trouvée"
+                        />
+                    </div>
+                )}
+
+                {activeTab === 'analytics' && (
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <AdminCard
+                                title="Répartition par Statut"
+                                description="Analyse des paiements par statut"
+                                icon={ChartBarIcon}
+                                link="#"
+                            />
+
+                            <AdminCard
+                                title="Évolution Mensuelle"
+                                description="Revenus mensuels des 6 derniers mois"
+                                icon={ArrowTrendingUpIcon}
+                                link="#"
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
 
+            {/* Modals */}
             {isModalOpen && (
                 <PaymentModal
                     payment={editingPayment}
@@ -307,6 +479,7 @@ interface PaymentModalProps {
     onClose: () => void;
     onSave: (payment: MonthlyPayment) => void;
 }
+
 const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, onSave }) => {
     const [formData, setFormData] = useState<Omit<MonthlyPayment, 'id' | 'modelName'>>({
         modelId: payment?.modelId || '',
@@ -318,7 +491,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, o
         category: payment?.category || 'Cotisation mensuelle',
         notes: payment?.notes || ''
     });
-    
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: name === 'amount' ? parseFloat(value) || 0 : value }));
@@ -339,130 +512,120 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, o
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-lg">
-                <form onSubmit={handleSubmit}>
-                    <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
-                        <h2 className="text-2xl font-playfair text-pm-gold">{payment ? 'Modifier' : 'Ajouter'} un Paiement</h2>
-                        <button type="button" onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
-                    </header>
-                    <main className="p-6 space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="admin-label">Mannequin</label>
-                                <select name="modelId" value={formData.modelId} onChange={handleChange} className="admin-input" required>
-                                    <option value="">Sélectionner...</option>
-                                    {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                                </select>
-                            </div>
-                             <div>
-                                <label className="admin-label">Mois Concerné</label>
-                                <input type="month" name="month" value={formData.month} onChange={handleChange} className="admin-input" required/>
-                            </div>
-                        </div>
-                        {/* Amount and date row - amount adapts to category */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                {formData.category === 'Cotisation + Inscription' ? (
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label className="admin-label">Montant Cotisation (FCFA)</label>
-                                            <input
-                                                type="number"
-                                                name="breakdown.cotisation"
-                                                value={formData.breakdown?.cotisation || 0}
-                                                onChange={(e) => {
-                                                    const val = parseFloat(e.target.value) || 0;
-                                                    const inscription = formData.breakdown?.inscription || 0;
-                                                    const breakdown = { cotisation: val, inscription } as NonNullable<typeof formData.breakdown>;
-                                                    const amount = (breakdown.cotisation || 0) + (breakdown.inscription || 0);
-                                                    setFormData(prev => ({ ...prev, breakdown, amount }));
-                                                }}
-                                                className="admin-input"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="admin-label">Montant Inscription (FCFA)</label>
-                                            <input
-                                                type="number"
-                                                name="breakdown.inscription"
-                                                value={formData.breakdown?.inscription || 0}
-                                                onChange={(e) => {
-                                                    const val = parseFloat(e.target.value) || 0;
-                                                    const cotisation = formData.breakdown?.cotisation || 0;
-                                                    const breakdown = { cotisation, inscription: val } as NonNullable<typeof formData.breakdown>;
-                                                    const amount = (breakdown.cotisation || 0) + (breakdown.inscription || 0);
-                                                    setFormData(prev => ({ ...prev, breakdown, amount }));
-                                                }}
-                                                className="admin-input"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="admin-label">Montant Total</label>
-                                            <input type="number" value={(formData.breakdown?.cotisation || 0) + (formData.breakdown?.inscription || 0)} readOnly className="admin-input opacity-70" />
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <label className="admin-label">Montant (FCFA)</label>
-                                        <input type="number" name="amount" value={formData.amount} onChange={handleChange} className="admin-input" required/>
-                                    </div>
-                                )}
-                            </div>
-                            <div>
-                                <label className="admin-label">Date de Paiement</label>
-                                <input type="date" name="paymentDate" value={formData.paymentDate} onChange={handleChange} className="admin-input" required/>
-                            </div>
-                        </div>
-                         <div>
-                            <label className="admin-label">Nature du Paiement</label>
-                            <select name="category" value={formData.category} onChange={handleChange} className="admin-input">
-                                <option>Cotisation mensuelle</option>
-                                <option>Frais d'inscription</option>
-                                <option>Cotisation + Inscription</option>
-                                <option>Avance cotisation</option>
-                                <option>Autre</option>
-                            </select>
-                         </div>
-                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="admin-label">Méthode</label>
-                                <select name="method" value={formData.method} onChange={handleChange} className="admin-input">
-                                    <option>Virement</option>
-                                    <option>Espèces</option>
-                                    <option>Autre</option>
-                                </select>
-                            </div>
-                             <div>
-                                <label className="admin-label">Statut</label>
-                                <select name="status" value={formData.status} onChange={handleChange} className="admin-input">
-                                    <option>En attente</option>
-                                    <option>Payé</option>
-                                    <option>En retard</option>
-                                </select>
-                            </div>
-                         </div>
-                         <div>
-                            <label className="admin-label">Notes</label>
-                            <textarea name="notes" value={formData.notes || ''} onChange={handleChange} rows={3} className="admin-textarea"/>
-                         </div>
-                    </main>
-                    <footer className="p-4 flex justify-end gap-4 border-t border-pm-gold/20">
-                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-bold uppercase tracking-wider">Annuler</button>
-                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">
-                            Sauvegarder
-                        </button>
-                    </footer>
-                </form>
-            </div>
-        </div>
+        <AdminModal
+            isOpen={true}
+            onClose={onClose}
+            title={payment ? 'Modifier Paiement' : 'Ajouter Paiement'}
+            size="lg"
+            actions={
+                <>
+                    <AdminButton variant="secondary" onClick={onClose}>
+                        Annuler
+                    </AdminButton>
+                    <AdminButton variant="primary" onClick={handleSubmit}>
+                        Sauvegarder
+                    </AdminButton>
+                </>
+            }
+        >
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                    <AdminSelect
+                        label="Mannequin"
+                        value={formData.modelId}
+                        onChange={handleChange}
+                        name="modelId"
+                        required
+                        options={models.map(m => ({ value: m.id, label: m.name }))}
+                    />
+                    <AdminInput
+                        label="Mois Concerné"
+                        type="month"
+                        name="month"
+                        value={formData.month}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <AdminInput
+                        label="Montant (FCFA)"
+                        type="number"
+                        name="amount"
+                        value={formData.amount}
+                        onChange={handleChange}
+                        required
+                    />
+                    <AdminInput
+                        label="Date de Paiement"
+                        type="date"
+                        name="paymentDate"
+                        value={formData.paymentDate}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <AdminSelect
+                        label="Nature du Paiement"
+                        name="category"
+                        value={formData.category}
+                        onChange={handleChange}
+                        options={[
+                            { value: 'Cotisation mensuelle', label: 'Cotisation mensuelle' },
+                            { value: 'Frais d\'inscription', label: 'Frais d\'inscription' },
+                            { value: 'Cotisation + Inscription', label: 'Cotisation + Inscription' },
+                            { value: 'Avance cotisation', label: 'Avance cotisation' },
+                            { value: 'Autre', label: 'Autre' }
+                        ]}
+                    />
+                    <AdminSelect
+                        label="Méthode"
+                        name="method"
+                        value={formData.method}
+                        onChange={handleChange}
+                        options={[
+                            { value: 'Virement', label: 'Virement' },
+                            { value: 'Espèces', label: 'Espèces' },
+                            { value: 'Autre', label: 'Autre' }
+                        ]}
+                    />
+                </div>
+
+                <AdminSelect
+                    label="Statut"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    options={[
+                        { value: 'En attente', label: 'En attente' },
+                        { value: 'Payé', label: 'Payé' },
+                        { value: 'En retard', label: 'En retard' }
+                    ]}
+                />
+
+                <AdminTextarea
+                    label="Notes"
+                    name="notes"
+                    value={formData.notes || ''}
+                    onChange={handleChange}
+                    rows={3}
+                />
+            </form>
+        </AdminModal>
     );
 };
 
-export default AdminPayments;
+interface EntryModalProps {
+    entry: AccountingEntry | null;
+    models: Model[];
+    onClose: () => void;
+    onSave: (entry: AccountingEntry) => void;
+}
 
-// ===== Entry Modal =====
-const EntryModal: React.FC<{ entry: AccountingEntry | null; models: Model[]; onClose: () => void; onSave: (e: AccountingEntry) => void; }> = ({ entry, models, onClose, onSave }) => {
+const EntryModal: React.FC<EntryModalProps> = ({ entry, models, onClose, onSave }) => {
     const [form, setForm] = useState<AccountingEntry>({
         id: entry?.id || '',
         kind: entry?.kind || 'income',
@@ -489,74 +652,112 @@ const EntryModal: React.FC<{ entry: AccountingEntry | null; models: Model[]; onC
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.label || !form.category) { alert('Veuillez renseigner le libellé et la catégorie.'); return; }
+        if (!form.label || !form.category) {
+            alert('Veuillez renseigner le libellé et la catégorie.');
+            return;
+        }
         onSave(form);
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-lg">
-                <form onSubmit={submit}>
-                    <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
-                        <h2 className="text-2xl font-playfair text-pm-gold">{entry ? 'Modifier' : 'Nouvelle'} Écriture</h2>
-                        <button type="button" onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
-                    </header>
-                    <main className="p-6 space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="admin-label">Type</label>
-                                <select name="kind" value={form.kind} onChange={handleChange} className="admin-input">
-                                    <option value="income">Revenu</option>
-                                    <option value="expense">Dépense</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="admin-label">Catégorie</label>
-                                <input name="category" value={form.category} onChange={handleChange} className="admin-input" placeholder="Commission, Collaboration, Autre..."/>
-                            </div>
-                        </div>
-                        <div>
-                            <label className="admin-label">Libellé</label>
-                            <input name="label" value={form.label} onChange={handleChange} className="admin-input" placeholder="Description courte"/>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="admin-label">Montant (FCFA)</label>
-                                <input type="number" name="amount" value={form.amount} onChange={handleChange} className="admin-input"/>
-                            </div>
-                            <div>
-                                <label className="admin-label">Date/Heure</label>
-                                <input type="datetime-local" name="dateTime" value={form.dateTime.slice(0,16)} onChange={handleChange} className="admin-input"/>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="admin-label">Méthode</label>
-                                <select name="method" value={form.method} onChange={handleChange} className="admin-input">
-                                    <option>Virement</option>
-                                    <option>Espèces</option>
-                                    <option>Autre</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="admin-label">Mannequin lié (optionnel)</label>
-                                <select value={form.relatedModelId || ''} onChange={handleRelatedModel} className="admin-input">
-                                    <option value="">Aucun</option>
-                                    {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label className="admin-label">Notes</label>
-                            <textarea name="notes" value={form.notes || ''} onChange={handleChange} rows={3} className="admin-textarea"/>
-                        </div>
-                    </main>
-                    <footer className="p-4 flex justify-end gap-4 border-t border-pm-gold/20">
-                        <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-bold uppercase tracking-wider">Annuler</button>
-                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">Sauvegarder</button>
-                    </footer>
-                </form>
-            </div>
-        </div>
+        <AdminModal
+            isOpen={true}
+            onClose={onClose}
+            title={entry ? 'Modifier Écriture' : 'Ajouter Écriture'}
+            size="lg"
+            actions={
+                <>
+                    <AdminButton variant="secondary" onClick={onClose}>
+                        Annuler
+                    </AdminButton>
+                    <AdminButton variant="primary" onClick={submit}>
+                        Sauvegarder
+                    </AdminButton>
+                </>
+            }
+        >
+            <form onSubmit={submit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                    <AdminSelect
+                        label="Type"
+                        name="kind"
+                        value={form.kind}
+                        onChange={handleChange}
+                        options={[
+                            { value: 'income', label: 'Revenu' },
+                            { value: 'expense', label: 'Dépense' }
+                        ]}
+                    />
+                    <AdminInput
+                        label="Catégorie"
+                        name="category"
+                        value={form.category}
+                        onChange={handleChange}
+                        placeholder="Commission, Collaboration, Autre..."
+                    />
+                </div>
+
+                <AdminInput
+                    label="Libellé"
+                    name="label"
+                    value={form.label}
+                    onChange={handleChange}
+                    placeholder="Description courte"
+                    required
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                    <AdminInput
+                        label="Montant (FCFA)"
+                        type="number"
+                        name="amount"
+                        value={form.amount}
+                        onChange={handleChange}
+                        required
+                    />
+                    <AdminInput
+                        label="Date/Heure"
+                        type="datetime-local"
+                        name="dateTime"
+                        value={form.dateTime.slice(0, 16)}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <AdminSelect
+                        label="Méthode"
+                        name="method"
+                        value={form.method}
+                        onChange={handleChange}
+                        options={[
+                            { value: 'Virement', label: 'Virement' },
+                            { value: 'Espèces', label: 'Espèces' },
+                            { value: 'Autre', label: 'Autre' }
+                        ]}
+                    />
+                    <AdminSelect
+                        label="Mannequin lié (optionnel)"
+                        value={form.relatedModelId || ''}
+                        onChange={handleRelatedModel}
+                        options={[
+                            { value: '', label: 'Aucun' },
+                            ...models.map(m => ({ value: m.id, label: m.name }))
+                        ]}
+                    />
+                </div>
+
+                <AdminTextarea
+                    label="Notes"
+                    name="notes"
+                    value={form.notes || ''}
+                    onChange={handleChange}
+                    rows={3}
+                />
+            </form>
+        </AdminModal>
     );
 };
+
+export default AdminPayments;
