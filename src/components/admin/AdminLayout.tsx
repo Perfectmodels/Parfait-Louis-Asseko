@@ -77,14 +77,19 @@ const AdminLayout: React.FC = () => {
       items: [
         { label: 'Accueil', to: '/admin', icon: HomeIcon },
         { label: 'Mon Profil', to: '/admin/profile', icon: KeyIcon },
-        ...(can('canManageAdmins') ? [{ label: 'Clés API', to: '/admin/api-keys', icon: Cog6ToothIcon } as NavItem] : []),
       ],
     },
     {
-      title: 'Talents',
+      title: 'Formation',
       items: [
-        ...(can('canManageModels') ? [{ label: 'Mannequins Pro', to: '/admin/models', icon: UsersIcon } as NavItem] : []),
-        ...(can('canEditContent') ? [{ label: 'Direction Artistique', to: '/admin/artistic-direction', icon: PaintBrushIcon } as NavItem] : []),
+        { label: 'Classroom Pro', to: '/admin/classroom', icon: BookOpenIcon },
+      ],
+    },
+    {
+      title: 'Suivi',
+      items: [
+        { label: 'Suivi Classroom', to: '/admin/classroom-progress', icon: AcademicCapIcon },
+        { label: 'Absences', to: '/admin/absences', icon: CalendarIcon },
         {
           label: 'Candidatures Casting',
           to: '/admin/casting-applications',
@@ -92,40 +97,18 @@ const AdminLayout: React.FC = () => {
           badge: counts.newCastingApps,
         },
         { label: 'Résultats Casting', to: '/admin/casting-results', icon: ClipboardDocumentCheckIcon },
-        { label: 'Accès Mannequins', to: '/admin/model-access', icon: KeyIcon },
-      ],
-    },
-    {
-      title: 'Contenu',
-      items: [
-        ...(can('canEditContent') ? [{ label: 'Magazine', to: '/admin/magazine', icon: NewspaperIcon } as NavItem] : []),
-        ...(can('canEditContent') ? [{ label: 'Galerie', to: '/admin/gallery', icon: PhotoIcon } as NavItem] : []),
-        ...(can('canEditContent') ? [{ label: 'Actualités', to: '/admin/news', icon: PresentationChartLineIcon } as NavItem] : []),
-        ...(can('canEditContent') ? [{ label: "Contenu de l'Agence", to: '/admin/agency', icon: BuildingStorefrontIcon } as NavItem] : []),
-        { label: 'Événements PFD', to: '/admin/fashion-day-events', icon: CalendarDaysIcon },
-        ...(can('canModerateComments') ? [{ label: 'Commentaires', to: '/admin/comments', icon: ChatBubbleLeftRightIcon } as NavItem] : []),
-        { label: 'Classroom Pro', to: '/admin/classroom', icon: BookOpenIcon },
-        { label: 'Paramètres', to: '/admin/settings', icon: Cog6ToothIcon },
-      ],
-    },
-    {
-      title: 'Opérations',
-      items: [
-        ...(can('canManagePayments') ? [{ label: 'Comptabilité', to: '/admin/payments', icon: CurrencyDollarIcon } as NavItem] : []),
-        { label: 'Absences', to: '/admin/absences', icon: CalendarIcon },
-        {
-          label: 'Bookings',
-          to: '/admin/bookings',
-          icon: BriefcaseIcon,
-          badge: counts.newBookingRequests,
-        },
         {
           label: 'Candidatures PFD',
           to: '/admin/fashion-day-applications',
           icon: SparklesIcon,
           badge: counts.newFashionDayApps,
         },
-        { label: 'Suivi Classroom', to: '/admin/classroom-progress', icon: AcademicCapIcon },
+        {
+          label: 'Bookings',
+          to: '/admin/bookings',
+          icon: BriefcaseIcon,
+          badge: counts.newBookingRequests,
+        },
         { label: 'Messages', to: '/admin/messages', icon: EnvelopeIcon, badge: counts.newMessages },
         {
           label: 'Récupération',
@@ -133,17 +116,32 @@ const AdminLayout: React.FC = () => {
           icon: ExclamationTriangleIcon,
           badge: counts.newRecoveryRequests,
         },
-      ],
-    },
-    {
-      title: 'Pilotage',
-      items: [
-        ...(data?.featureFlags?.reports
-          ? ([{ label: 'Rapports', to: '/admin/reports', icon: PresentationChartLineIcon }] as NavItem[])
-          : []),
         ...(data?.featureFlags?.calendar
           ? ([{ label: 'Calendrier', to: '/admin/calendar', icon: CalendarDaysIcon }] as NavItem[])
           : []),
+      ],
+    },
+    {
+      title: 'Comptabilité',
+      items: [
+        ...(can('canManagePayments') ? [{ label: 'Comptabilité', to: '/admin/payments', icon: CurrencyDollarIcon } as NavItem] : []),
+        ...(data?.featureFlags?.reports
+          ? ([{ label: 'Rapports Comptables', to: '/admin/reports', icon: PresentationChartLineIcon }] as NavItem[])
+          : []),
+      ],
+    },
+    {
+      title: 'Technique',
+      items: [
+        ...(can('canManageModels') ? [{ label: 'Mannequins Pro', to: '/admin/models', icon: UsersIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: 'Direction Artistique', to: '/admin/artistic-direction', icon: PaintBrushIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: 'Magazine', to: '/admin/magazine', icon: NewspaperIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: 'Galerie', to: '/admin/gallery', icon: PhotoIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: 'Actualités', to: '/admin/news', icon: PresentationChartLineIcon } as NavItem] : []),
+        ...(can('canEditContent') ? [{ label: "Contenu de l'Agence", to: '/admin/agency', icon: BuildingStorefrontIcon } as NavItem] : []),
+        { label: 'Accès Mannequins', to: '/admin/model-access', icon: KeyIcon },
+        { label: 'Paramètres', to: '/admin/settings', icon: Cog6ToothIcon },
+        ...(can('canManageAdmins') ? [{ label: 'Clés API', to: '/admin/api-keys', icon: Cog6ToothIcon } as NavItem] : []),
         ...(data?.featureFlags?.auditLog
           ? ([{ label: "Journal d'audit", to: '/admin/audit-log', icon: ExclamationTriangleIcon }] as NavItem[])
           : []),

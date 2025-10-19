@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { MonthlyPayment, Model, AccountingEntry } from '../types';
 import SEO from '../components/SEO';
@@ -360,16 +360,60 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ payment, models, onClose, o
                                 <input type="month" name="month" value={formData.month} onChange={handleChange} className="admin-input" required/>
                             </div>
                         </div>
+                        {/* Amount and date row - amount adapts to category */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="admin-label">Montant (FCFA)</label>
-                                <input type="number" name="amount" value={formData.amount} onChange={handleChange} className="admin-input" required/>
+                                {formData.category === 'Cotisation + Inscription' ? (
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="admin-label">Montant Cotisation (FCFA)</label>
+                                            <input
+                                                type="number"
+                                                name="breakdown.cotisation"
+                                                value={formData.breakdown?.cotisation || 0}
+                                                onChange={(e) => {
+                                                    const val = parseFloat(e.target.value) || 0;
+                                                    const inscription = formData.breakdown?.inscription || 0;
+                                                    const breakdown = { cotisation: val, inscription } as NonNullable<typeof formData.breakdown>;
+                                                    const amount = (breakdown.cotisation || 0) + (breakdown.inscription || 0);
+                                                    setFormData(prev => ({ ...prev, breakdown, amount }));
+                                                }}
+                                                className="admin-input"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="admin-label">Montant Inscription (FCFA)</label>
+                                            <input
+                                                type="number"
+                                                name="breakdown.inscription"
+                                                value={formData.breakdown?.inscription || 0}
+                                                onChange={(e) => {
+                                                    const val = parseFloat(e.target.value) || 0;
+                                                    const cotisation = formData.breakdown?.cotisation || 0;
+                                                    const breakdown = { cotisation, inscription: val } as NonNullable<typeof formData.breakdown>;
+                                                    const amount = (breakdown.cotisation || 0) + (breakdown.inscription || 0);
+                                                    setFormData(prev => ({ ...prev, breakdown, amount }));
+                                                }}
+                                                className="admin-input"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="admin-label">Montant Total</label>
+                                            <input type="number" value={(formData.breakdown?.cotisation || 0) + (formData.breakdown?.inscription || 0)} readOnly className="admin-input opacity-70" />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <label className="admin-label">Montant (FCFA)</label>
+                                        <input type="number" name="amount" value={formData.amount} onChange={handleChange} className="admin-input" required/>
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <label className="admin-label">Date de Paiement</label>
                                 <input type="date" name="paymentDate" value={formData.paymentDate} onChange={handleChange} className="admin-input" required/>
                             </div>
-                         </div>
+                        </div>
                          <div>
                             <label className="admin-label">Nature du Paiement</label>
                             <select name="category" value={formData.category} onChange={handleChange} className="admin-input">
