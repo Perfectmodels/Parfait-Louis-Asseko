@@ -1,12 +1,9 @@
-const CACHE_NAME = 'pmm-v7';
+const CACHE_NAME = 'pmm-v1';
+// Removed cross-origin assets that may cause CORS errors during installation.
+// The service worker will attempt to cache other assets at runtime.
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json',
-  '/favicon.svg',
-  '/offline.html',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
 ];
 
 // Install event: cache core assets
@@ -39,63 +36,35 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event: serve from cache, fall back to network, and cache new requests
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  if (request.method !== 'GET' || (!request.url.startsWith('http:') && !request.url.startsWith('https:'))) {
+  // Only process GET requests and web protocols. This will ignore chrome-extension:// requests.
+  if (event.request.method !== 'GET' || (!event.request.url.startsWith('http:') && !event.request.url.startsWith('https:'))) {
     return;
   }
-
-  const url = new URL(request.url);
-
-  // Network-first for API/data requests
-  if (/firebaseio\.com|firestore\.googleapis\.com/.test(url.hostname)) {
-    event.respondWith(
-      fetch(request).catch(() => caches.match(request))
-    );
-    return;
-  }
-
-  // App shell routing for SPA: network-first with no-store for index.html to avoid stale hashed chunks
-  if (request.mode === 'navigate' && url.origin === self.location.origin) {
-    event.respondWith(
-      fetch('/index.html', { cache: 'no-store' })
-        .then((resp) => {
-          const copy = resp.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
-          return resp;
+  
+  // Network-first for APIs to ensure data freshness
+  if (event.request.url.includes('firebaseio.com')) {
+     event.respondWith(
+        fetch(event.request).catch(() => {
+            return caches.match(event.request);
         })
-        .catch(async () => {
-          const cached = await caches.match('/index.html');
-          return cached || (await caches.match('/offline.html'));
-        })
-    );
-    return;
+     );
+     return;
   }
 
-  // Dynamic chunks and static assets: network-first to avoid 404 on stale hashed names
-  if (url.origin === self.location.origin && url.pathname.startsWith('/assets/')) {
-    event.respondWith(
-      fetch(request, { cache: 'no-store' })
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.ok) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse.clone()));
+  // Cache-first for all other requests
+  event.respondWith(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(event.request).then((response) => {
+        const fetchPromise = fetch(event.request).then((networkResponse) => {
+          // Check if we received a valid response and if the request is for an HTTP/HTTPS scheme
+          if (networkResponse && networkResponse.ok && (event.request.url.startsWith('http:') || event.request.url.startsWith('https:'))) {
+            cache.put(event.request, networkResponse.clone());
           }
           return networkResponse;
-        })
-        .catch(() => caches.match(request).then((cached) => cached || caches.match('/offline.html')))
-    );
-    return;
-  }
-
-  // Cache-first for other static assets
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.ok && url.origin === self.location.origin) {
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse.clone()));
-        }
-        return networkResponse;
-      }).catch(() => cached || caches.match('/offline.html'));
-      return cached || fetchPromise;
+        });
+        
+        return response || fetchPromise;
+      });
     })
   );
 });

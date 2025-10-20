@@ -199,8 +199,6 @@ export interface ApiKeys {
     domainUriPrefix: string;
   };
   imgbbApiKey?: string;
-  storachaApiKey?: string;
-  ddownloadApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -335,96 +333,6 @@ export interface ContactMessage {
   message: string;
 }
 
-// ================== INTERNAL MESSAGING ==================
-export type UserKind = 'admin' | 'model' | 'beginner' | 'jury' | 'registration';
-
-export interface InternalAttachment {
-  filename: string;
-  contentType: string;
-  contentBase64?: string; // used for email sending; avoid very large payloads
-  url?: string; // optional URL if uploaded elsewhere
-}
-
-export interface InternalParticipant {
-  kind: UserKind;
-  id: string;
-  name: string;
-  email?: string;
-}
-
-export interface InternalMessage {
-  id: string;
-  createdAt: string;
-  from: InternalParticipant;
-  to: InternalParticipant[]; // support multi-recipient
-  subject: string;
-  body: string;
-  attachments?: InternalAttachment[];
-  readBy?: string[]; // user ids who read
-}
-
-// ================== GALLERY ==================
-export interface GalleryItem {
-  id: string;
-  url: string;
-  title?: string;
-  category?: string;
-  createdAt: string;
-  order?: number;
-}
-
-export type GalleryAlbumCategory = 'Défilé' | 'Shooting' | 'Collaboration' | 'Autre';
-
-export interface GalleryAlbum {
-  id: string;
-  title: string;
-  description?: string;
-  category?: GalleryAlbumCategory | string;
-  coverUrl?: string;
-  images: string[];
-  tags?: string[];
-  createdAt: string;
-  updatedAt?: string;
-}
-
-// ================== ADMIN PLATFORM EXTENSIONS ==================
-export interface FeatureFlags {
-  globalSearch: boolean;
-  notificationsCenter: boolean;
-  auditLog: boolean;
-  reports: boolean;
-  calendar: boolean;
-}
-
-export type AuditLogAction =
-  | 'LOGIN'
-  | 'LOGOUT'
-  | 'CREATE'
-  | 'UPDATE'
-  | 'DELETE'
-  | 'PUBLISH'
-  | 'APPROVE'
-  | 'REJECT'
-  | 'PAYMENT_RECORD'
-  | 'BOOKING_STATUS_CHANGE';
-
-export interface AuditLogEntry {
-  id: string;
-  timestamp: string; // ISO date
-  actor: {
-    id: string;
-    name: string;
-    role: AdminRole | 'System';
-  };
-  action: AuditLogAction;
-  entity: {
-    type: string; // e.g., 'Model', 'Article', 'Booking', 'Message'
-    id?: string;
-    name?: string;
-  };
-  details?: string;
-}
-
 export interface AIAssistantProps {
     isOpen: boolean;
     onClose: () => void;
@@ -454,43 +362,15 @@ export interface Absence {
   isExcused: boolean;
 }
 
-export type PaymentCategory =
-  | 'Cotisation mensuelle'
-  | "Frais d'inscription"
-  | 'Cotisation + Inscription'
-  | 'Avance cotisation'
-  | 'Autre';
-
 export interface MonthlyPayment {
-  id: string; // e.g., 'payment-<timestamp>'
+  id: string; // e.g., 'modelId-YYYY-MM'
   modelId: string;
   modelName: string;
   month: string; // 'YYYY-MM'
   amount: number;
-  paymentDate: string; // ISO date or datetime (YYYY-MM-DD or YYYY-MM-DDTHH:mm)
+  paymentDate: string; // YYYY-MM-DD
   method: 'Virement' | 'Espèces' | 'Autre';
   status: 'Payé' | 'En attente' | 'En retard';
-  category?: PaymentCategory; // nature du paiement
-  notes?: string;
-  // Détail des montants lorsque la catégorie combine plusieurs natures
-  breakdown?: {
-    cotisation?: number;
-    inscription?: number;
-  };
-}
-
-export type AccountingEntryKind = 'income' | 'expense';
-
-export interface AccountingEntry {
-  id: string;
-  kind: AccountingEntryKind; // income or expense
-  category: string; // e.g., Commission, Collaboration, Location, Marketing, Autre
-  label: string; // short description
-  amount: number;
-  dateTime: string; // ISO datetime
-  method?: 'Virement' | 'Espèces' | 'Autre';
-  relatedModelId?: string;
-  relatedModelName?: string;
   notes?: string;
 }
 
@@ -512,37 +392,4 @@ export interface NavLink {
     label: string;
     inFooter: boolean;
     footerLabel?: string;
-}
-
-// ================== ADMIN & PERMISSIONS ==================
-export type AdminRole = 'SuperAdmin' | 'Formations' | 'Marketing' | 'Communication' | 'Discipline';
-
-export interface AdminPermissions {
-  canEditContent: boolean;
-  canPublishContent: boolean;
-  canManageModels: boolean;
-  canManagePayments: boolean;
-  canModerateComments: boolean;
-  canManageAdmins: boolean;
-}
-
-export interface AdminDeputy {
-  id: string; // generated id for deputy
-  name: string;
-  email?: string;
-  phone?: string;
-}
-
-export interface AdminUser {
-  id: string;
-  name: string;
-  username: string;
-  password: string;
-  email?: string;
-  phone?: string;
-  avatarUrl?: string;
-  role: AdminRole;
-  permissions: AdminPermissions;
-  deputies?: AdminDeputy[];
-  active?: boolean;
 }

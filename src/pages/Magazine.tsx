@@ -1,29 +1,63 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { Article } from '../types';
 import { useData } from '../contexts/DataContext';
-import Pagination from '../components/Pagination';
+
+const Pagination: React.FC<{ currentPage: number, totalPages: number, onPageChange: (page: number) => void }> = ({ currentPage, totalPages, onPageChange }) => {
+    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    return (
+        <nav aria-label="Pagination" className="flex justify-center items-center gap-4 mt-12 text-pm-off-white">
+            <button
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-black border border-pm-gold/50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pm-gold hover:text-pm-dark transition-colors"
+            >
+                Précédent
+            </button>
+            <div className="flex items-center gap-2">
+                {pageNumbers.map(number => (
+                    <button
+                        key={number}
+                        onClick={() => onPageChange(number)}
+                        className={`w-10 h-10 flex items-center justify-center rounded-md border transition-colors ${
+                            currentPage === number 
+                                ? 'bg-pm-gold text-pm-dark border-pm-gold' 
+                                : 'bg-black border-pm-gold/50 hover:bg-pm-gold/20'
+                        }`}
+                        aria-current={currentPage === number ? 'page' : undefined}
+                    >
+                        {number}
+                    </button>
+                ))}
+            </div>
+            <button
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-black border border-pm-gold/50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pm-gold hover:text-pm-dark transition-colors"
+            >
+                Suivant
+            </button>
+        </nav>
+    );
+};
+
 
 const Magazine: React.FC = () => {
   const { data, isInitialized } = useData();
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [category, setCategory] = useState<string>('Toutes');
   const ARTICLES_PER_PAGE = 9;
 
   const articles = data?.articles || [];
-  const categories = useMemo(() => ['Toutes', ...Array.from(new Set(articles.map(a => a.category)))], [articles]);
 
   let featuredArticle = articles.find(a => a.isFeatured);
   if (!featuredArticle && articles.length > 0) {
     featuredArticle = articles[0]; // Fallback to the first article if none is featured
   }
   
-  const otherArticles = articles
-    .filter(a => a.slug !== featuredArticle?.slug)
-    .filter(a => category === 'Toutes' || a.category === category)
-    .filter(a => a.title.toLowerCase().includes(searchTerm.toLowerCase()) || a.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
+  const otherArticles = articles.filter(a => a.slug !== featuredArticle?.slug);
 
   const totalPages = Math.ceil(otherArticles.length / ARTICLES_PER_PAGE);
   const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
@@ -48,7 +82,6 @@ const Magazine: React.FC = () => {
         description="Focus Model 241, le magazine en ligne de Perfect Models Management. Plongez dans les coulisses de la mode gabonaise avec des interviews exclusives, des analyses de tendances et des conseils de pro."
         keywords="magazine mode gabon, focus model 241, interview mannequin, tendances mode afrique, mode libreville"
         image={featuredArticle?.imageUrl}
-        type="website"
       />
       <header className="bg-black py-8 border-b-2 border-pm-gold">
         <div className="container mx-auto px-6 text-center">
@@ -76,19 +109,6 @@ const Magazine: React.FC = () => {
             </Link>
           </section>
         )}
-
-        {/* Controls */}
-        <section className="mb-6 -mt-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <label htmlFor="search-article" className="sr-only">Rechercher un article</label>
-              <input id="search-article" type="text" placeholder="Rechercher..." value={searchTerm} onChange={(e)=>{setSearchTerm(e.target.value); setCurrentPage(1);}} className="w-full md:w-72 bg-black border border-pm-gold/40 rounded-full px-4 py-2 focus:outline-none focus:border-pm-gold focus:ring-2 focus:ring-pm-gold/30" />
-              <select value={category} onChange={(e)=>{setCategory(e.target.value); setCurrentPage(1);}} className="bg-black border border-pm-gold/40 rounded-full px-4 py-2 focus:outline-none focus:border-pm-gold">
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-          </div>
-        </section>
 
         {/* Other Articles Grid */}
         <section>

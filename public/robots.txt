@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-
-# PWA resources
-Allow: /sw.js
-Allow: /manifest.json
-Allow: /favicon.svg

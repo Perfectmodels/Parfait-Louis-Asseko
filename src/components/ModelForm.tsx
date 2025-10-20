@@ -12,28 +12,10 @@ interface ModelFormProps {
 }
 
 const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreating, mode }) => {
-    const defaultMeasurements = { chest: '', waist: '', hips: '', shoeSize: '' };
-    const normalizeModel = (m: Model): Model => {
-        const normalized: Model = {
-            ...m,
-            imageUrl: m.imageUrl || '/assets/placeholder-model.png',
-            gender: m.gender || 'Femme',
-            height: m.height || '',
-            level: m.level || 'Pro',
-            measurements: { ...(m.measurements || {} as any) },
-            categories: Array.isArray(m.categories) ? m.categories : [],
-            portfolioImages: Array.isArray(m.portfolioImages) ? m.portfolioImages : [],
-            experience: m.experience || '',
-            journey: m.journey || '',
-        };
-        normalized.measurements = { ...defaultMeasurements, ...(normalized.measurements || {}) } as any;
-        return normalized;
-    };
-
-    const [formData, setFormData] = useState<Model>(normalizeModel(model));
+    const [formData, setFormData] = useState<Model>(model);
 
     useEffect(() => {
-        setFormData(normalizeModel(model));
+        setFormData(model);
     }, [model]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -53,7 +35,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
         setFormData(prev => ({
             ...prev,
             measurements: {
-                ...(prev.measurements || defaultMeasurements),
+                ...prev.measurements,
                 [name]: value,
             }
         }));
@@ -111,11 +93,15 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
                 
                 {isAdmin && (
-                    <Section title="Accès & Visibilité (Admin)">
+                    <Section title="Accès, Niveau & Visibilité (Admin)">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormInput label="Identifiant (Matricule)" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
                             <FormInput label="Mot de passe" name="password" value={formData.password} onChange={handleChange} />
                         </div>
+                        <FormSelect label="Niveau" name="level" value={formData.level || 'Débutant'} onChange={handleChange}>
+                            <option value="Débutant">Débutant</option>
+                            <option value="Pro">Pro</option>
+                        </FormSelect>
                         <div className="flex items-center gap-3 pt-2">
                             <input 
                                 type="checkbox"

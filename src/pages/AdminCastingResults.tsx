@@ -1,109 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, JuryMember, JuryScore } from '../types';
+import { CastingApplication, CastingApplicationStatus, Model, JuryMember } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
-
-const generateCastingSheetHtml = (app: CastingApplication, juryMembers: JuryMember[], siteConfig: any): string => {
-    const calculateAge = (birthDate: string): string => {
-        if (!birthDate) return 'N/A';
-        const age = new Date().getFullYear() - new Date(birthDate).getFullYear();
-        return `${age} ans`;
-    };
-
-    const juryScores: [string, JuryScore][] = app.scores ? Object.entries(app.scores) : [];
-    const overallScores = juryScores.map(([, score]) => score.overall);
-    const averageScore = overallScores.length > 0 ? (overallScores.reduce((a, b) => a + b, 0) / overallScores.length) : 0;
-    const decision = averageScore >= 5 ? 'Présélectionné' : 'Recalé';
-
-    const scoreRows = juryScores.map(([juryId, score]) => {
-        const jury = juryMembers.find(j => j.id === juryId);
-        return `
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 8px; font-weight: bold;">${jury?.name || juryId}</td>
-                <td style="padding: 8px; text-align: center;">${score.physique.toFixed(1)}</td>
-                <td style="padding: 8px; text-align: center;">${score.presence.toFixed(1)}</td>
-                <td style="padding: 8px; text-align: center;">${score.photogenie.toFixed(1)}</td>
-                <td style="padding: 8px; text-align: center;">${score.potentiel.toFixed(1)}</td>
-                <td style="padding: 8px; text-align: center; font-weight: bold; color: #D4AF37; background-color: #111;">${score.overall.toFixed(1)}</td>
-            </tr>
-        `;
-    }).join('');
-
-    return `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <style>
-                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; }
-                .sheet { padding: 40px; }
-                .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ccc; padding-bottom: 16px; }
-                .header h1 { font-size: 36px; margin: 0; }
-                .header img { height: 70px; }
-                .title { font-size: 56px; font-weight: bold; color: #D4AF37; }
-                .passage-box { text-align: center; background-color: #111; color: white; padding: 16px; }
-                .passage-box p { margin: 0; }
-                .passage-num { font-size: 80px; font-weight: bold; color: #D4AF37; line-height: 1; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-                th { background-color: #f2f2f2; padding: 10px 8px; border-bottom: 2px solid #ccc; }
-                .decision { font-weight: bold; font-size: 40px; ${decision === 'Présélectionné' ? 'color: green;' : 'color: red;'} }
-            </style>
-        </head>
-        <body>
-            <div class="sheet">
-                <header class="header">
-                    <div>
-                        <h1>Fiche Candidat</h1>
-                        <p>Casting Perfect Models Management</p>
-                    </div>
-                    ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
-                </header>
-                <section style="margin-top: 24px; display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
-                    <div>
-                        <h2 class="title">${app.firstName} ${app.lastName}</h2>
-                        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 18px;">
-                            <p><strong>Âge:</strong> ${calculateAge(app.birthDate)}</p>
-                            <p><strong>Genre:</strong> ${app.gender}</p>
-                            <p><strong>Taille:</strong> ${app.height} cm</p>
-                            <p><strong>Poids:</strong> ${app.weight} kg</p>
-                            <p><strong>Téléphone:</strong> ${app.phone}</p>
-                            <p><strong>Email:</strong> ${app.email}</p>
-                        </div>
-                    </div>
-                    <div class="passage-box">
-                        <p style="font-size: 14px; text-transform: uppercase;">Numéro de Passage</p>
-                        <p class="passage-num">#${String(app.passageNumber).padStart(3, '0')}</p>
-                    </div>
-                </section>
-                <section style="margin-top: 24px;">
-                    <h3>Évaluation du Jury</h3>
-                    <table>
-                        <thead><tr><th>Jury</th><th>Physique</th><th>Présence</th><th>Photogénie</th><th>Potentiel</th><th>Globale</th></tr></thead>
-                        <tbody>${scoreRows}</tbody>
-                    </table>
-                </section>
-                <section style="margin-top: 32px; padding-top: 16px; border-top: 2px solid #ccc; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h3>Moyenne Générale</h3>
-                        <p style="font-size: 60px; font-weight: bold; color: #D4AF37; margin:0;">${averageScore.toFixed(2)} <span style="font-size: 30px; color: #333;">/ 10</span></p>
-                    </div>
-                    <div>
-                        <h3>Décision Provisoire</h3>
-                        <p class="decision">${decision}</p>
-                    </div>
-                </section>
-            </div>
-        </body>
-        </html>
-    `;
-};
-
+import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
     const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
+    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     const applicantsWithScores = useMemo(() => {
         const juryMembers: JuryMember[] = data?.juryMembers || [];
@@ -135,28 +41,82 @@ const AdminCastingResults: React.FC = () => {
         await saveData({ ...data, castingApplications: updatedApps });
     };
     
-    // Validation: n'affecte plus la création de profils débutants; simplement met à jour le statut
-    const handleValidate = async (app: CastingApplication) => {
+    const handleValidateAndCreateModel = async (app: CastingApplication) => {
         if (!data) return;
-        if (app.status === 'Accepté') return;
-        await handleUpdateStatus(app.id, 'Accepté');
-        alert('Candidat marqué comme Accepté.');
-    };
 
-    const handlePrint = (app: CastingApplication) => {
-        if (!data?.juryMembers || !data.siteConfig) return;
-        const html = generateCastingSheetHtml(app, data.juryMembers, data.siteConfig);
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-            printWindow.document.write(html);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 250);
-        } else {
-            alert("Veuillez autoriser les pop-ups pour imprimer la fiche.");
+        if (app.status === 'Accepté') {
+            alert("Ce candidat a déjà été accepté et un profil a été créé.");
+            return;
+        }
+
+        const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
+        if (modelExists) {
+            alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
+            await handleUpdateStatus(app.id, 'Accepté'); // Mark as accepted anyway if name clash
+            return;
+        }
+
+        const currentYear = new Date().getFullYear();
+        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
+
+        const initial = app.firstName.charAt(0).toUpperCase();
+        const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
+        const existingNumbers = modelsWithSameInitial.map(m => {
+            const numPart = m.username.replace(`Man-PMM${initial}`, '');
+            return parseInt(numPart, 10) || 0;
+        });
+        const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+        const username = `Man-PMM${initial}${String(nextNumber).padStart(2, '0')}`;
+        const password = `${sanitizeForPassword(app.firstName)}${currentYear}`;
+        const id = `${app.lastName.toLowerCase()}-${app.firstName.toLowerCase()}`.replace(/[^a-z0-9-]/g, '') + `-${app.id.slice(-4)}`;
+
+        let experienceText = "Expérience à renseigner par l'administrateur.";
+        switch (app.experience) {
+            case 'none': experienceText = "Débutant(e) sans expérience préalable, prêt(e) à apprendre les bases du métier."; break;
+            case 'beginner': experienceText = "A déjà participé à quelques shootings photo en amateur ou pour de petites marques."; break;
+            case 'intermediate': experienceText = "A une expérience préalable en agence et a participé à des défilés ou des campagnes locales."; break;
+            case 'professional': experienceText = "Carrière de mannequin professionnel(le) établie avec un portfolio solide."; break;
+        }
+        
+        const age = app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : undefined;
+
+        const newModel: Model = {
+            id: id,
+            name: `${app.firstName} ${app.lastName}`,
+            username: username,
+            password: password,
+            level: 'Débutant',
+            email: app.email,
+            phone: app.phone,
+            age: age,
+            height: `${app.height}cm`,
+            gender: app.gender,
+            location: app.city,
+            imageUrl: `https://i.ibb.co/fVBxPNTP/T-shirt.png`, // Placeholder image
+            isPublic: false, // Default to private
+            distinctions: [],
+            measurements: {
+                chest: `${app.chest || '0'}cm`,
+                waist: `${app.waist || '0'}cm`,
+                hips: `${app.hips || '0'}cm`,
+                shoeSize: `${app.shoeSize || '0'}`,
+            },
+            categories: ['Défilé', 'Commercial'],
+            experience: experienceText,
+            journey: "Parcours à renseigner par l'administrateur.",
+            quizScores: {}
+        };
+
+        const updatedModels = [...data.models, newModel];
+        // FIX: Explicitly type `updatedApps` to prevent TypeScript from widening the `status` property to a generic `string`.
+        const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
+
+        try {
+            await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+            alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`);
+        } catch (error) {
+            console.error("Erreur lors de la création du mannequin:", error);
+            alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
     
@@ -183,6 +143,10 @@ const AdminCastingResults: React.FC = () => {
         { value: 'Refusé', label: 'Refusés' }
     ];
 
+    if (printingApp) {
+        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
+    }
+
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Résultats & Validation Casting" noIndex />
@@ -193,7 +157,7 @@ const AdminCastingResults: React.FC = () => {
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold">Résultats & Validation Casting</h1>
                 <p className="text-pm-off-white/70 mt-2 mb-8">
-                    Consultez les moyennes des candidats et validez leur entrée dans l'agence en tant que débutants.
+                    Consultez les moyennes des candidats et validez leur entrée dans l'agence.
                 </p>
 
                 <div className="flex items-center gap-4 mb-8 flex-wrap">
@@ -225,8 +189,8 @@ const AdminCastingResults: React.FC = () => {
                                         : `Notes manquantes: ${missingJuryNames}`;
                                     return (
                                     <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
-                                        <td className="p-4 font-bold text-pm-gold">#${String(app.passageNumber).padStart(3, '0')}</td>
-                                        <td className="p-4 font-semibold">{app.firstName} ${app.lastName}</td>
+                                        <td className="p-4 font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</td>
+                                        <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
                                         <td className="p-4 text-center" title={tooltip}>
                                             {app.juryVotes} / {data?.juryMembers.length || 4}
                                             {!app.isFullyScored && <span className="text-red-500 ml-1">*</span>}
@@ -236,7 +200,7 @@ const AdminCastingResults: React.FC = () => {
                                         <td className="p-4">
                                             <div className="flex items-center justify-center gap-2">
                                                 <button
-                                                    onClick={() => handlePrint(app)}
+                                                    onClick={() => setPrintingApp(app)}
                                                     className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
                                                     title="Télécharger la fiche PDF"
                                                 >
@@ -245,9 +209,9 @@ const AdminCastingResults: React.FC = () => {
                                                 {app.status === 'Présélectionné' && (
                                                     <>
                                                         <button 
-                                                            onClick={() => handleValidate(app)} 
+                                                            onClick={() => handleValidateAndCreateModel(app)} 
                                                             className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                                            title={app.isFullyScored ? "Accepter" : "En attente de toutes les notes"}
+                                                            title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
                                                             disabled={!app.isFullyScored}
                                                         >
                                                             <CheckBadgeIcon className="w-5 h-5"/>

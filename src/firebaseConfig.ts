@@ -1,6 +1,5 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
-import "firebase/compat/storage";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
@@ -19,4 +18,3 @@ const app = firebase.initializeApp(firebaseConfig);
 
 // Get a reference to the database service
 export const db = getDatabase(app);
-export const storage = firebase.storage();
