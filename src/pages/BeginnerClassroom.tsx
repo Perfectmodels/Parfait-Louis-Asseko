@@ -4,6 +4,7 @@ import { ChevronDownIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/o
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
 import { useData } from '../contexts/DataContext';
+import BeginnerQuiz from '../components/BeginnerQuiz';
 
 const BeginnerClassroom: React.FC = () => {
     const { data } = useData();
@@ -76,7 +77,7 @@ const BeginnerClassroom: React.FC = () => {
                             </button>
                             <div
                                 id={`module-content-${index}`}
-                                className={`transition-all duration-500 ease-in-out ${openModule === index ? 'max-h-full visible' : 'max-h-0 invisible'}`}
+                                className={`transition-all duration-500 ease-in-out ${openModule === index ? 'max-h-[5000px] visible' : 'max-h-0 invisible'}`}
                             >
                                 <div className="p-5 border-t border-pm-gold/20">
                                     <ul className="space-y-3 list-disc list-inside">
@@ -88,6 +89,9 @@ const BeginnerClassroom: React.FC = () => {
                                             </li>
                                         ))}
                                     </ul>
+                                    {module.quiz && module.quiz.length > 0 && (
+                                        <BeginnerQuiz quiz={module.quiz} moduleSlug={module.slug} />
+                                    )}
                                 </div>
                             </div>
                         </div>

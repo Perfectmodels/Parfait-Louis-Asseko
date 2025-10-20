@@ -4,7 +4,6 @@ import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
-// FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
@@ -12,15 +11,13 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
     ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
     : '';
 
-  const mobileStyles = isMobile ? 'py-3 lg:py-4 px-2 lg:px-4 rounded-lg hover:bg-pm-gold/10 active:bg-pm-gold/20 mobile-nav-item' : 'py-2';
-
   return (
     <NavLink
       to={to}
       onClick={onClick}
       end={to === '/'}
       className={({ isActive }) =>
-        `relative ${mobileStyles} text-pm-off-white uppercase text-sm lg:text-base tracking-widest transition-all duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${mobileAnimationClasses} ` +
+        `relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${mobileAnimationClasses} ` +
         (isActive ? "text-pm-gold" : "")
       }
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
@@ -63,16 +60,14 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile
     ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
     : '';
 
-    const mobileStyles = isMobile ? 'py-3 lg:py-4 px-2 lg:px-4 rounded-lg hover:bg-red-500/10 active:bg-red-500/20 mobile-nav-item' : 'py-2';
-
     return (
         <button
             onClick={onClick}
-            className={`flex items-center gap-2 ${mobileStyles} text-pm-off-white uppercase text-sm lg:text-base tracking-widest transition-all duration-300 hover:text-red-400 focus-style-self focus-visible:text-red-400 ${className} ${mobileAnimationClasses}`}
+            className={`flex items-center gap-2 py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${className} ${mobileAnimationClasses}`}
             aria-label="Déconnexion"
             style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
         >
-            <ArrowRightOnRectangleIcon className="w-5 h-5 lg:w-6 lg:h-6" />
+            <ArrowRightOnRectangleIcon className="w-5 h-5" />
             <span>Déconnexion</span>
         </button>
     );
@@ -111,7 +106,7 @@ export const Breadcrumb: React.FC = () => {
             '/casting': 'Casting', '/casting-formulaire': 'Postuler au Casting',
             '/fashion-day-application': 'Candidature PFD', '/profil': 'Mon Profil',
             '/formations': 'Classroom', '/formations/forum': 'Forum',
-            // '/classroom-debutant': 'Classroom Débutant' // retiré du panel
+            '/classroom-debutant': 'Classroom Débutant'
         };
 
         const pathnames = location.pathname.split('/').filter(Boolean);
@@ -218,8 +213,11 @@ const Header: React.FC = () => {
       document.body.style.overflow = 'hidden';
 
       const focusableElementsQuery = 'a[href], button:not([disabled])';
-      const focusableElements = mobileMenuRef.current?.querySelectorAll<HTMLElement>(focusableElementsQuery);
-      if (!focusableElements || focusableElements.length === 0) return;
+      const menu = mobileMenuRef.current;
+      if (!menu) return;
+      
+      const focusableElements = menu.querySelectorAll<HTMLElement>(focusableElementsQuery);
+      if (focusableElements.length === 0) return;
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
@@ -258,55 +256,6 @@ const Header: React.FC = () => {
     }
   }, [isOpen]);
 
-  // Add swipe gesture support for mobile menu
-  useEffect(() => {
-    if (!isOpen) return;
-
-    let startX = 0;
-    let startY = 0;
-    let isSwipeGesture = false;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      isSwipeGesture = false;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!isSwipeGesture) {
-        const currentX = e.touches[0].clientX;
-        const currentY = e.touches[0].clientY;
-        const diffX = Math.abs(currentX - startX);
-        const diffY = Math.abs(currentY - startY);
-        
-        // Determine if this is a horizontal swipe
-        isSwipeGesture = diffX > diffY && diffX > 10;
-      }
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (isSwipeGesture) {
-        const endX = e.changedTouches[0].clientX;
-        const diffX = endX - startX;
-        
-        // Swipe right to close menu
-        if (diffX > 50) {
-          setIsOpen(false);
-        }
-      }
-    };
-
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchmove', handleTouchMove, { passive: true });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [isOpen]);
-
   useEffect(() => {
     const role = sessionStorage.getItem('classroom_role');
     const access = sessionStorage.getItem('classroom_access') === 'granted';
@@ -325,7 +274,6 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     setIsOpen(false);
     sessionStorage.clear();
-    localStorage.removeItem('pmm_auth');
     setIsLoggedIn(false);
     setUserRole(null);
     navigate('/login');
@@ -360,19 +308,13 @@ const Header: React.FC = () => {
       >
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
-            <Link to="/" className="flex-shrink-0 group" onClick={() => setIsOpen(false)} aria-label="Aller à l'accueil">
-              <span className="inline-flex p-1.5 rounded-full border border-pm-gold/40 bg-black/40 shadow-[0_0_20px_rgba(212,175,55,0.25)] group-hover:shadow-[0_0_36px_rgba(212,175,55,0.45)] transition-shadow">
-                <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto rounded-full" />
-              </span>
+            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
             </Link>
           )}
           
-          {/* Desktop Navigation - visible on xl screens and up */}
-          <nav className="hidden xl:flex items-center gap-10 text-[16px]">
-            {/* Styled nav with underline glow */}
-            <div className="flex items-center gap-8">
-              <NavLinks navLinks={processedNavLinks.filter(n => n.path !== '/')} />
-            </div>
+          <nav className="hidden lg:flex items-center gap-8">
+            <NavLinks navLinks={processedNavLinks} />
             
             <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
                 <Link to="/casting-formulaire" className="px-5 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
@@ -383,22 +325,8 @@ const Header: React.FC = () => {
             </div>
           </nav>
 
-          {/* Tablet Navigation - visible on lg screens */}
-          <nav className="hidden lg:flex xl:hidden items-center gap-6 text-[15px]">
-            <NavLinks navLinks={processedNavLinks.filter(n => n.path !== '/').slice(0, 4)} />
-            
-            <div className="flex items-center gap-4 pl-4 border-l border-pm-gold/20">
-                <Link to="/casting-formulaire" className="px-4 py-2 text-pm-dark bg-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
-                    Postuler
-                </Link>
-                <SocialLinksComponent socialLinks={socialLinks} />
-                {isLoggedIn && <LogoutButton onClick={handleLogout} />}
-            </div>
-          </nav>
-
-          {/* Mobile/Tablet Menu Button - visible on screens smaller than xl */}
-          <div className="xl:hidden flex items-center">
-              <button ref={hamburgerButtonRef} onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2 touch-button mobile-focus" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">
+          <div className="lg:hidden flex items-center">
+              <button ref={hamburgerButtonRef} onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">
                   <AnimatedHamburgerIcon isOpen={isOpen} />
               </button>
           </div>
@@ -406,7 +334,7 @@ const Header: React.FC = () => {
       </header>
       
       <div 
-        className={`xl:hidden fixed inset-0 z-30 transition-opacity duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] mobile-menu-overlay ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
+        className={`lg:hidden fixed inset-0 z-30 transition-opacity duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
         aria-hidden={!isOpen}
       />
@@ -414,56 +342,19 @@ const Header: React.FC = () => {
       <div 
         id="mobile-menu-panel"
         ref={mobileMenuRef}
-        className={`xl:hidden fixed top-0 right-0 w-4/5 max-w-sm lg:max-w-md h-full bg-pm-dark mobile-menu-panel transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform flex flex-col ${
+        className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
         aria-hidden={!isOpen}
-        onTouchStart={(e) => {
-          const touch = e.touches[0];
-          const startX = touch.clientX;
-          const startY = touch.clientY;
-          
-          const handleTouchMove = (e: TouchEvent) => {
-            const touch = e.touches[0];
-            const currentX = touch.clientX;
-            const currentY = touch.clientY;
-            const diffX = startX - currentX;
-            const diffY = startY - currentY;
-            
-            // Swipe right to close (if swipe is more horizontal than vertical)
-            if (Math.abs(diffX) > Math.abs(diffY) && diffX < -50) {
-              setIsOpen(false);
-              document.removeEventListener('touchmove', handleTouchMove);
-              document.removeEventListener('touchend', handleTouchEnd);
-            }
-          };
-          
-          const handleTouchEnd = () => {
-            document.removeEventListener('touchmove', handleTouchMove);
-            document.removeEventListener('touchend', handleTouchEnd);
-          };
-          
-          document.addEventListener('touchmove', handleTouchMove, { passive: true });
-          document.addEventListener('touchend', handleTouchEnd);
-        }}
       >
-        <div className="flex justify-between items-center p-6 lg:p-8 border-b border-pm-gold/20 h-24 lg:h-28 flex-shrink-0">
-             <span id="mobile-menu-title" className="font-playfair text-xl lg:text-2xl text-pm-gold">Menu</span>
-             <button 
-               onClick={() => setIsOpen(false)}
-               className="text-pm-off-white/70 hover:text-pm-gold transition-colors p-2 -mr-2 touch-button mobile-focus"
-               aria-label="Fermer le menu"
-             >
-               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-               </svg>
-             </button>
+        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24 flex-shrink-0">
+             <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
         </div>
         <div className="flex-grow overflow-y-auto">
-            <nav className="flex flex-col p-8 lg:p-10 gap-6 lg:gap-8">
+            <nav className="flex flex-col p-8 gap-6">
               <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen}/>
               <div 
                 className={`text-center transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
@@ -472,7 +363,7 @@ const Header: React.FC = () => {
                   <Link
                       to="/casting-formulaire"
                       onClick={() => setIsOpen(false)}
-                      className="inline-block px-8 py-3 lg:px-10 lg:py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm lg:text-base rounded-full transition-all duration-300 hover:bg-white hover:scale-105 active:scale-95 touch-button mobile-focus"
+                      className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"
                   >
                       Postuler
                   </Link>
@@ -480,7 +371,7 @@ const Header: React.FC = () => {
               {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
             </nav>
         </div>
-        <div className="p-8 lg:p-10 border-t border-pm-gold/20 flex-shrink-0">
+        <div className="p-8 border-t border-pm-gold/20 flex-shrink-0">
              <SocialLinksComponent 
                 socialLinks={socialLinks} 
                 className="justify-center"

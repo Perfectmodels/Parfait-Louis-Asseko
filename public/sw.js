@@ -1,10 +1,9 @@
-const CACHE_NAME = 'pmm-v2';
+const CACHE_NAME = 'pmm-v1';
 // Removed cross-origin assets that may cause CORS errors during installation.
 // The service worker will attempt to cache other assets at runtime.
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/offline.html',
 ];
 
 // Install event: cache core assets

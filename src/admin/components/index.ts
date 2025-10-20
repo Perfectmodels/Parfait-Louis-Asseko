@@ -1,9 +1,0 @@
-export { default as AdminLayout } from '../layouts/AdminLayout';
-export { default as AdminSidebar } from './AdminSidebar';
-export { default as AdminHeader } from './AdminHeader';
-export { default as AdminCard } from './AdminCard';
-export { default as AdminPageHeader } from './AdminPageHeader';
-export { default as AdminTable } from './AdminTable';
-export { default as AdminButton } from './AdminButton';
-export { default as AdminModal } from './AdminModal';
-export { AdminInput, AdminTextarea, AdminSelect } from './AdminInput';
