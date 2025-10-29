@@ -1,5 +1,4 @@
-// FIX: Changed NavLink import to come from types.ts to resolve circular dependency.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, Module } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
@@ -13,6 +12,9 @@ export const navLinks: NavLink[] = [
   { path: '/magazine', label: 'Magazine', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
+  { path: '/generer-image', label: 'Image Gen', inFooter: true },
+  { path: '/analyser-image', label: 'Image Analysis', inFooter: true },
+  { path: '/live-chat', label: 'Live Chat', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
 ];
 

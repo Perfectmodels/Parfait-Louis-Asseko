@@ -47,8 +47,10 @@ const Services: React.FC = () => {
                                 key={category}
                                 role="tab"
                                 aria-selected={activeCategory === category}
-                                aria-controls={`tabpanel-${category.replace(/\s+/g, '-')}`}
-                                id={`tab-${category.replace(/\s+/g, '-')}`}
+                                // FIX: Cast category to string before calling replace to resolve type errors.
+                                aria-controls={`tabpanel-${String(category).replace(/\s+/g, '-')}`}
+                                // FIX: Cast category to string before calling replace to resolve type errors.
+                                id={`tab-${String(category).replace(/\s+/g, '-')}`}
                                 onClick={() => setActiveCategory(category)}
                                 className={`px-4 sm:px-6 py-3 text-xs sm:text-sm uppercase tracking-wider font-bold transition-colors relative focus-style-self focus-visible:bg-pm-gold/10 ${activeCategory === category ? 'text-pm-gold' : 'text-pm-off-white/70 hover:text-pm-gold'}`}
                             >
@@ -65,9 +67,11 @@ const Services: React.FC = () => {
                         servicesByCategory[category] && (
                             <div
                                 key={category}
-                                id={`tabpanel-${category.replace(/\s+/g, '-')}`}
+                                // FIX: Cast category to string before calling replace to resolve type errors.
+                                id={`tabpanel-${String(category).replace(/\s+/g, '-')}`}
                                 role="tabpanel"
-                                aria-labelledby={`tab-${category.replace(/\s+/g, '-')}`}
+                                // FIX: Cast category to string before calling replace to resolve type errors.
+                                aria-labelledby={`tab-${String(category).replace(/\s+/g, '-')}`}
                                 hidden={activeCategory !== category}
                                 className={`animate-fade-in ${activeCategory === category ? 'block' : 'hidden'}`}
                             >

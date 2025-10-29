@@ -1,10 +1,7 @@
-
-
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 
 const CastingForm: React.FC = () => {
@@ -36,6 +33,9 @@ const CastingForm: React.FC = () => {
             id: `casting-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
+            photoFullBodyUrl: null,
+            photoPortraitUrl: null,
+            photoProfileUrl: null,
         };
 
         try {
