@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { 
@@ -6,11 +6,10 @@ import {
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
     ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
-    SignalIcon
+    SignalIcon, ArrowUpRightIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
-
-type AdminTab = 'talents' | 'content' | 'accounting';
+import { motion } from 'framer-motion';
 
 interface ActiveUser {
     name: string;
@@ -31,19 +30,34 @@ const getRoleDisplayName = (role: string) => {
 
 const getRoleColor = (role: string) => {
     switch (role) {
-        case 'admin': return 'bg-red-500/20 text-red-300';
-        case 'student': return 'bg-pm-gold/20 text-pm-gold';
-        case 'beginner': return 'bg-blue-500/20 text-blue-300';
-        case 'jury': return 'bg-purple-500/20 text-purple-300';
-        case 'registration': return 'bg-teal-500/20 text-teal-300';
-        default: return 'bg-gray-500/20 text-gray-300';
+        case 'admin': return 'bg-red-500/20 text-red-300 border-red-500/30';
+        case 'student': return 'bg-pm-gold/20 text-pm-gold border-pm-gold/30';
+        case 'beginner': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        case 'jury': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+        case 'registration': return 'bg-teal-500/20 text-teal-300 border-teal-500/30';
+        default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
     }
 }
+
+const timeAgo = (date: Date) => {
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return `il y a ${Math.floor(interval)} ans`;
+    interval = seconds / 2592000;
+    if (interval > 1) return `il y a ${Math.floor(interval)} mois`;
+    interval = seconds / 86400;
+    if (interval > 1) return `il y a ${Math.floor(interval)} jours`;
+    interval = seconds / 3600;
+    if (interval > 1) return `il y a ${Math.floor(interval)} heures`;
+    interval = seconds / 60;
+    if (interval > 1) return `il y a ${Math.floor(interval)} minutes`;
+    return "à l'instant";
+};
+
 
 const Admin: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useData();
-    const [activeTab, setActiveTab] = useState<AdminTab>('talents');
     const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
 
     useEffect(() => {
@@ -57,7 +71,7 @@ const Admin: React.FC = () => {
         };
 
         checkActivity();
-        const interval = setInterval(checkActivity, 5000); // Refresh every 5 seconds
+        const interval = setInterval(checkActivity, 5000);
 
         return () => clearInterval(interval);
     }, []);
@@ -66,18 +80,39 @@ const Admin: React.FC = () => {
         sessionStorage.clear();
         navigate('/login');
     };
-    
-    const newCastingApps = data?.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newFashionDayApps = data?.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
-    const newRecoveryRequests = data?.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
-    const newBookingRequests = data?.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
-    const newMessages = data?.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
 
-    const tabs: { id: AdminTab; label: string; icon: React.ElementType }[] = [
-        { id: 'talents', label: 'Talents', icon: UsersIcon },
-        { id: 'content', label: 'Contenu', icon: NewspaperIcon },
-        { id: 'accounting', label: 'Comptabilité & Suivi', icon: BriefcaseIcon },
-    ];
+    const stats = useMemo(() => {
+        if (!data) return { newCastingApps: 0, newBookingRequests: 0, newMessages: 0, totalModels: 0, recentActivities: [] };
+
+        const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
+        const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
+        const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
+        const totalModels = data.models?.length || 0;
+        
+        const recentCasting = (data.castingApplications || [])
+            .filter(app => app.status === 'Nouveau')
+            .map(app => ({ type: 'casting', text: `Nouvelle candidature de ${app.firstName} ${app.lastName}`, link: '/admin/casting-applications', date: new Date(app.submissionDate) }));
+
+        const recentBookings = (data.bookingRequests || [])
+            .filter(req => req.status === 'Nouveau')
+            .map(req => ({ type: 'booking', text: `Demande de booking de ${req.clientName}`, link: '/admin/bookings', date: new Date(req.submissionDate) }));
+            
+        const recentMessages = (data.contactMessages || [])
+            .filter(msg => msg.status === 'Nouveau')
+            .map(msg => ({ type: 'message', text: `Nouveau message de ${msg.name}`, link: '/admin/messages', date: new Date(msg.submissionDate) }));
+
+        const allRecent = [...recentCasting, ...recentBookings, ...recentMessages]
+            .sort((a, b) => b.date.getTime() - a.date.getTime())
+            .slice(0, 5);
+            
+        return { newCastingApps, newBookingRequests, newMessages, totalModels, recentActivities: allRecent };
+    }, [data]);
+    
+    const activityIconMap = {
+        casting: ClipboardDocumentListIcon,
+        booking: BriefcaseIcon,
+        message: EnvelopeIcon,
+    };
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
@@ -88,114 +123,110 @@ const Admin: React.FC = () => {
                         <h1 className="admin-page-title">Tableau de Bord Administratif</h1>
                         <p className="admin-page-subtitle">Gestion complète de la plateforme Perfect Models Management.</p>
                     </div>
-                    <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
+                    <button onClick={handleLogout} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
                         <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
                     </button>
                 </header>
 
-                <div className="admin-section-wrapper mb-8">
-                    <h2 className="admin-section-title flex items-center gap-2"><SignalIcon className="w-6 h-6"/>Activité en Direct</h2>
-                    {activeUsers.length > 0 ? (
-                        <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {activeUsers.map(user => (
-                                <li key={user.name} className="bg-pm-dark/50 p-3 rounded-md flex items-center gap-3">
-                                    <span className="w-2.5 h-2.5 bg-green-500 rounded-full flex-shrink-0 animate-pulse"></span>
-                                    <div>
-                                        <p className="font-semibold text-sm truncate">{user.name}</p>
-                                        <p className={`text-xs px-1.5 py-0.5 rounded-full inline-block ${getRoleColor(user.role)}`}>{getRoleDisplayName(user.role)}</p>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p className="text-sm text-pm-off-white/60">Aucun utilisateur actif dans les 15 dernières minutes.</p>
-                    )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <StatCard title="Nouvelles Candidatures" value={stats.newCastingApps} icon={ClipboardDocumentListIcon} link="/admin/casting-applications" />
+                    <StatCard title="Nouveaux Bookings" value={stats.newBookingRequests} icon={BriefcaseIcon} link="/admin/bookings" />
+                    <StatCard title="Nouveaux Messages" value={stats.newMessages} icon={EnvelopeIcon} link="/admin/messages" />
+                    <StatCard title="Total Mannequins" value={stats.totalModels} icon={UsersIcon} link="/admin/models" />
                 </div>
 
-                <div className="border-b border-pm-gold/20 mb-8">
-                    <nav className="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
-                        {tabs.map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`group inline-flex items-center gap-2 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                                    activeTab === tab.id
-                                    ? 'border-pm-gold text-pm-gold'
-                                    : 'border-transparent text-pm-off-white/70 hover:text-pm-gold hover:border-pm-gold/50'
-                                }`}
-                                aria-current={activeTab === tab.id ? 'page' : undefined}
-                            >
-                                <tab.icon className="w-5 h-5" />
-                                {tab.label}
-                            </button>
-                        ))}
-                    </nav>
-                </div>
-                
-                <div className="animate-fade-in">
-                    {activeTab === 'talents' && (
-                        <TabContent title="Gestion des Talents et du Recrutement">
-                            <DashboardCard title="Gérer les Mannequins Pro" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou rétrograder des profils de mannequins."/>
-                            <DashboardCard title="Gérer les Débutants" icon={UserGroupIcon} link="/admin/beginner-students-access" description="Consulter les accès et promouvoir les mannequins en formation."/>
-                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo aux mannequins."/>
-                            <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Consulter et traiter les candidatures pour les castings." notificationCount={newCastingApps} />
-                            <DashboardCard title="Résultats & Validation Casting" icon={ClipboardDocumentCheckIcon} link="/admin/casting-results" description="Valider les candidats et créer leurs profils de débutant." />
-                             <DashboardCard title="Accès Mannequins Pro" icon={KeyIcon} link="/admin/model-access" description="Consulter les identifiants des mannequins confirmés." />
-                        </TabContent>
-                    )}
-                    {activeTab === 'content' && (
-                         <TabContent title="Gestion du Contenu et de la Formation">
-                            <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine Focus Model 241." />
-                            <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier et gérer les actualités de la page d'accueil." />
-                            <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services, la chronologie et les réalisations." />
-                            <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
-                             <DashboardCard title="Modérer les Commentaires" icon={ChatBubbleLeftRightIcon} link="/admin/comments" description="Gérer les commentaires laissés sur les articles du magazine." />
-                             <DashboardCard title="Gérer le Classroom Pro" icon={BookOpenIcon} link="/admin/classroom" description="Modifier les modules et chapitres de la formation avancée." />
-                            <DashboardCard title="Paramètres du Site" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, les images et les clés API." />
-                         </TabContent>
-                    )}
-                     {activeTab === 'accounting' && (
-                         <TabContent title="Comptabilité, Opérations et Suivi">
-                             <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels des mannequins." />
-                             <DashboardCard title="Suivi des Absences" icon={CalendarIcon} link="/admin/absences" description="Enregistrer et consulter les absences des mannequins." />
-                             <DashboardCard title="Demandes de Booking" icon={BriefcaseIcon} link="/admin/bookings" description="Consulter et gérer les demandes de booking des clients." notificationCount={newBookingRequests} />
-                            <DashboardCard title="Candidatures PFD" icon={SparklesIcon} link="/admin/fashion-day-applications" description="Gérer les inscriptions pour l'événement Perfect Fashion Day." notificationCount={newFashionDayApps} />
-                             <DashboardCard title="Suivi Classroom Pro" icon={AcademicCapIcon} link="/admin/classroom-progress" description="Voir la progression des mannequins confirmés aux quiz." />
-                             <DashboardCard title="Messages de Contact" icon={EnvelopeIcon} link="/admin/messages" description="Lire et gérer les messages reçus via le formulaire de contact." notificationCount={newMessages} />
-                             <DashboardCard title="Demandes de Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Traiter les demandes de coordonnées oubliées." notificationCount={newRecoveryRequests} />
-                         </TabContent>
-                    )}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <main className="lg:col-span-2 space-y-10">
+                        <Section title="Accès Rapides" icon={HomeIcon}>
+                            <DashboardCard title="Gérer les Mannequins" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou archiver des profils de mannequins."/>
+                            <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine." />
+                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo."/>
+                            <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels." />
+                        </Section>
+                        <Section title="Gestion du Site" icon={Cog6ToothIcon}>
+                           <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services et la chronologie." />
+                           <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
+                           <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier les actualités de la page d'accueil." />
+                           <DashboardCard title="Paramètres Généraux" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, logos et clés API." />
+                        </Section>
+                    </main>
+
+                    <aside className="lg:col-span-1 space-y-8">
+                        <div className="admin-section-wrapper">
+                            <h2 className="admin-section-title flex items-center gap-2"><SignalIcon className="w-6 h-6"/>Activité en Direct</h2>
+                            {activeUsers.length > 0 ? (
+                                <ul className="space-y-3">
+                                    {activeUsers.map(user => (
+                                        <li key={user.name} className="flex items-center gap-3 bg-pm-dark/50 p-2 rounded-md border-l-4" style={{borderColor: getRoleColor(user.role).match(/border-([a-z]+)-(\d+)/)?.[0].replace('border-','')}}>
+                                            <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 animate-pulse"></span>
+                                            <div>
+                                                <p className="font-semibold text-sm truncate">{user.name}</p>
+                                                <p className={`text-xs px-1.5 py-0.5 rounded-full inline-block ${getRoleColor(user.role)}`}>{getRoleDisplayName(user.role)}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm text-center py-4 text-pm-off-white/60">Aucun utilisateur actif.</p>
+                            )}
+                        </div>
+                        <div className="admin-section-wrapper">
+                             <h2 className="admin-section-title flex items-center gap-2">Notifications Récentes</h2>
+                             {stats.recentActivities.length > 0 ? (
+                                <ul className="space-y-3">
+                                    {stats.recentActivities.map((activity, index) => {
+                                        const Icon = activityIconMap[activity.type as keyof typeof activityIconMap];
+                                        return (
+                                        <li key={index}>
+                                            <Link to={activity.link} className="flex items-start gap-3 p-2 rounded-md hover:bg-pm-dark/50">
+                                                <Icon className="w-5 h-5 text-pm-gold/80 mt-1 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-sm leading-tight">{activity.text}</p>
+                                                    <p className="text-xs text-pm-off-white/60">{timeAgo(activity.date)}</p>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    )})}
+                                </ul>
+                             ) : (
+                                <p className="text-sm text-center py-4 text-pm-off-white/60">Aucune nouvelle notification.</p>
+                             )}
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>
     );
 };
 
-const TabContent: React.FC<{ title: string; children: React.ReactNode; }> = ({ title, children }) => (
+const Section: React.FC<{ title: string; icon: React.ElementType; children: React.ReactNode; }> = ({ title, icon: Icon, children }) => (
     <section>
-        <h2 className="text-xl font-bold text-pm-off-white/80 mb-6">{title}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <h2 className="admin-section-title flex items-center gap-3"><Icon className="w-6 h-6"/>{title}</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {children}
         </div>
     </section>
 );
 
-interface DashboardCardProps {
-    title: string;
-    icon: React.ElementType;
-    link: string;
-    description: string;
-    notificationCount?: number;
-}
-const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, description, notificationCount }) => (
-    <Link to={link} className="relative group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-1 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
-        {notificationCount && notificationCount > 0 && (
-            <span className="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full animate-pulse-slow">
-                {notificationCount}
-            </span>
-        )}
-        <Icon className="w-10 h-10 text-pm-gold mb-4" />
-        <h2 className="text-lg font-bold text-pm-off-white group-hover:text-pm-gold transition-colors mb-1">{title}</h2>
+const StatCard: React.FC<{ title: string; value: number; icon: React.ElementType; link: string; }> = ({ title, value, icon: Icon, link }) => (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <Link to={link} className="block p-4 bg-black border border-pm-gold/20 rounded-lg hover:bg-pm-dark/50 transition-colors">
+            <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold uppercase text-pm-off-white/70 tracking-wider">{title}</p>
+                <Icon className="w-6 h-6 text-pm-gold/50" />
+            </div>
+            <p className="text-4xl font-bold text-pm-gold mt-2">{value}</p>
+        </Link>
+    </motion.div>
+);
+
+const DashboardCard: React.FC<{ title: string; icon: React.ElementType; link: string; description: string;}> = ({ title, icon: Icon, link, description }) => (
+    <Link to={link} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-1 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
+        <div className="flex justify-between items-start">
+            <Icon className="w-8 h-8 text-pm-gold mb-4 transition-transform group-hover:scale-110" />
+            <ArrowUpRightIcon className="w-5 h-5 text-pm-off-white/40 transition-all duration-300 group-hover:text-pm-gold group-hover:translate-x-1 group-hover:-translate-y-1"/>
+        </div>
+        <h3 className="text-lg font-bold text-pm-off-white group-hover:text-pm-gold transition-colors mb-1">{title}</h3>
         <p className="text-xs text-pm-off-white/70 leading-relaxed">{description}</p>
     </Link>
 );

@@ -111,7 +111,8 @@ const AdminCastingResults: React.FC = () => {
             .filter(app => app.scores && Object.keys(app.scores).length > 0)
             .map(app => {
                 const scores = Object.values(app.scores!);
-                const averageScore = scores.reduce((sum, s) => sum + s.overall, 0) / scores.length;
+                // FIX: Cast the score object 's' to JuryScore to resolve type inference issues with Object.values.
+                const averageScore = scores.reduce((sum, s) => sum + (s as JuryScore).overall, 0) / scores.length;
                 
                 const scoredJuryIds = Object.keys(app.scores || {});
                 const missingJuries = juryMembers.filter(j => !scoredJuryIds.includes(j.id));

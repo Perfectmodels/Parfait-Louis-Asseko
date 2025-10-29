@@ -1,5 +1,7 @@
 {
   "name": "Perfect Models Management",
   "description": "The official website for Perfect Models Management, a modeling agency based in Libreville, Gabon. Discover our models, events, and services.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }

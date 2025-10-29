@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -36,9 +36,9 @@ import {
     registrationStaff as initialRegistrationStaff,
     beginnerStudents as initialBeginnerStudents,
     faqData as initialFaqData
-} from '../constants/data';
-import { articles as initialArticles } from '../constants/magazineData';
-import { courseData as initialCourseData } from '../constants/courseData';
+} from '../../constants/data';
+import { articles as initialArticles } from '../../constants/magazineData';
+import { courseData as initialCourseData } from '../../constants/courseData';
 import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
 
 export interface AppData {

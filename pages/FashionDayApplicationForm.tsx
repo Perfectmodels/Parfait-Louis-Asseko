@@ -1,9 +1,6 @@
-
-
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-// FIX: Corrected import path for types from '../src/types' to '../types'.
 import { FashionDayApplication, FashionDayApplicationRole } from '../types';
 import { Link } from 'react-router-dom';
 
@@ -69,64 +66,4 @@ const FashionDayApplicationForm: React.FC = () => {
                 <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
                     Vous souhaitez participer à la prochaine édition ? Remplissez le formulaire ci-dessous.
                 </p>
-                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg">
-                    <FormInput label="Nom Complet ou Nom de la Marque" name="name" value={formData.name} onChange={handleChange} required />
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-                        <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
-                    </div>
-                    <FormSelect label="Je postule en tant que" name="role" value={formData.role} onChange={handleChange} required>
-                        <option value="Mannequin">Mannequin</option>
-                        <option value="Styliste">Styliste / Créateur</option>
-                        <option value="Partenaire">Partenaire / Sponsor</option>
-                        <option value="Photographe">Photographe / Vidéaste</option>
-                        <option value="MUA">Maquilleur(se) / Coiffeur(se) (MUA)</option>
-                        <option value="Autre">Autre (précisez dans le message)</option>
-                    </FormSelect>
-                    <FormTextArea
-                        label="Message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        rows={6}
-                        placeholder="Présentez-vous, décrivez votre projet, ou laissez un lien vers votre portfolio..."
-                        required
-                    />
-                     <div className="pt-4">
-                        <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
-                            {status === 'loading' ? 'Envoi en cours...' : 'Envoyer ma candidature'}
-                        </button>
-                    </div>
-
-                    {statusMessage && (
-                        <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                            {statusMessage}
-                            {status === 'success' && <Link to="/fashion-day" className="underline ml-2">Retour à la page de l'événement</Link>}
-                        </p>
-                    )}
-                </form>
-            </div>
-        </div>
-    );
-};
-
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <input {...props} id={props.name} className="admin-input" />
-    </div>
-);
-const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <select {...props} id={props.name} className="admin-input">{props.children}</select>
-    </div>
-);
-const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, rows: number, required?: boolean, placeholder?: string}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <textarea {...props} id={props.name} className="admin-input admin-textarea" />
-    </div>
-);
-
-export default FashionDayApplicationForm;
+                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold
