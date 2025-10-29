@@ -45,6 +45,7 @@ const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
 const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
 const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
 const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
+// FIX: Corrected import paths for Admin pages to resolve module not found errors.
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));

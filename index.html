@@ -1,19 +1,228 @@
-<script type="importmap">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfect Models Management</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/fVBxPNTP/T-shirt.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Apple PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PMM">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/fVBxPNTP/T-shirt.png">
+    
+    <!-- Theme color -->
+    <meta name="theme-color" content="#D4AF37" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script type="importmap">
 {
   "imports": {
-    "firebase/": "https://aistudiocdn.com/firebase@^12.4.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "firebase/compat/app": "https://aistudiocdn.com/firebase@^12.4.0/compat/app",
+    "firebase/compat/database": "https://aistudiocdn.com/firebase@^12.4.0/compat/database",
+    "firebase/database": "https://aistudiocdn.com/firebase@^12.4.0/database",
     "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
     "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.5",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0",
-    "vite": "https://aistudiocdn.com/vite@^7.1.12",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0",
     "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
     "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/",
-    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1"
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.4.0/",
+    "vite": "https://aistudiocdn.com/vite@^7.1.12",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0"
   }
 }
 </script>
-full contents of index.html<link rel="stylesheet" href="/index.css">
-<script type="module" src="/index.tsx"></script>
+    
+    <style>
+      @import url('https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css');
+      
+      :root {
+        --pm-dark: #111111;
+        --pm-gold: #D4AF37;
+        --pm-off-white: #f0f0f0;
+      }
+      
+      body {
+        background-color: var(--pm-dark);
+        color: var(--pm-off-white);
+        font-family: 'Montserrat', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .card-base {
+        background-color: black;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        transition: all 0.3s ease-in-out;
+      }
+      
+      .page-container {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+      }
+
+      .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        color: var(--pm-gold);
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .page-subtitle {
+        text-align: center;
+        font-size: 1.125rem;
+        max-width: 48rem;
+        margin: 0 auto 3rem auto;
+        color: rgba(240, 240, 240, 0.8);
+      }
+      .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        text-align: center;
+        color: var(--pm-gold);
+        margin-bottom: 2rem;
+      }
+      
+      .admin-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: rgba(240, 240, 240, 0.7);
+        margin-bottom: 0.5rem;
+      }
+      .admin-input, .admin-textarea, .admin-select {
+        width: 100%;
+        background-color: var(--pm-dark);
+        border: 1px solid rgba(240, 240, 240, 0.3);
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        color: var(--pm-off-white);
+        transition: all 0.2s ease-in-out;
+      }
+      .admin-input:focus, .admin-textarea:focus, .admin-select:focus {
+        outline: none;
+        border-color: var(--pm-gold);
+        box-shadow: 0 0 0 1px var(--pm-gold);
+      }
+      .admin-textarea { min-height: 100px; }
+      
+      .admin-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .admin-page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.25rem;
+        color: var(--pm-gold);
+      }
+      .admin-page-subtitle {
+        color: rgba(240, 240, 240, 0.7);
+        margin-top: 0.5rem;
+      }
+      .admin-section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--pm-gold);
+        border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .admin-section-wrapper {
+        background-color: black;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .admin-table {
+        width: 100%;
+        text-align: left;
+      }
+      .admin-table th {
+        padding: 1rem;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: rgba(240, 240, 240, 0.7);
+      }
+      .admin-table td {
+        padding: 1rem;
+        border-top: 1px solid var(--pm-dark);
+      }
+      .action-btn {
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        transition: background-color 0.2s;
+        border: 1px solid transparent;
+      }
+
+      /* Animate Glow for CTA */
+      @keyframes glow {
+        0%, 100% { box-shadow: 0 0 5px #D4AF37, 0 0 10px #D4AF37; }
+        50% { box-shadow: 0 0 20px #D4AF37, 0 0 30px #D4AF37; }
+      }
+      .animate-glow {
+        animation: glow 2s ease-in-out infinite;
+      }
+
+      @keyframes marquee {
+        '0%': { transform: 'translateX(0%)' },
+        '100%': { transform: 'translateX(-50%)' },
+      }
+      .animate-marquee {
+        animation: marquee 60s linear infinite;
+      }
+      
+      @keyframes pulse-slow {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      .animate-pulse-slow {
+        animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      @keyframes fadeIn {
+        '0%': { opacity: 0 },
+        '100%': { opacity: 1 },
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      
+      .prose { color: rgba(240, 240, 240, 0.8); max-width: 65ch; }
+      .prose h2, .prose h3 { font-family: 'Playfair Display', serif; color: var(--pm-gold); }
+      .prose a { color: var(--pm-gold); text-decoration: underline; }
+
+      @media print {
+        .print-hide { display: none; }
+        .printable-content { display: block; }
+        body { background-color: #ffffff; }
+      }
+
+    </style>
+</head>
+<body>
+    <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
