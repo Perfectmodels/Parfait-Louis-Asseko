@@ -87,40 +87,35 @@ const ProgressModal: React.FC<ProgressModalProps> = ({ model, onClose, courseDat
                 </header>
                 <main className="p-6 overflow-y-auto flex-grow">
                     <div className="space-y-4">
-                        {courseData.map(module => (
-                            <div key={module.slug}>
-                                <h3 className="text-xl font-bold text-pm-gold/80 mb-2">{module.title}</h3>
-                                <div className="space-y-2">
-                                    {module.chapters.map(chapter => {
-                                        // FIX: Quiz results are stored against the module slug, not the chapter slug.
-                                        const result = model.quizScores?.[module.slug];
-                                        return (
-                                            <div key={chapter.slug} className="bg-pm-dark/50 p-3 rounded-md flex justify-between items-center">
-                                                <div>
-                                                    <p className="text-pm-off-white/90">{chapter.title}</p>
-                                                     {result && <p className="text-xs text-pm-off-white/60">Passé le: {formatTimestamp(result.timestamp)}</p>}
-                                                </div>
-                                                {result ? (
-                                                    <div className="flex items-center gap-3">
-                                                         {result.timesLeft > 0 && (
-                                                            <div className="flex items-center gap-1 text-yellow-400" title={`${result.timesLeft} sortie(s) de la page détectée(s)`}>
-                                                                <ExclamationTriangleIcon className="w-4 h-4" />
-                                                                <span className="text-xs font-bold">{result.timesLeft}</span>
-                                                            </div>
-                                                         )}
-                                                        <span className={`font-bold text-lg ${getScoreColor(result.score, result.total)}`}>
-                                                            {result.score} / {result.total}
-                                                        </span>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-xs text-pm-off-white/50">Non complété</span>
-                                                )}
+                        {courseData.filter(m => m.quiz && m.quiz.length > 0).map(module => {
+                            // FIX: Quiz results are stored against the module slug, not the chapter slug.
+                            const result = model.quizScores?.[module.slug];
+                            return (
+                                <div key={module.slug} className="bg-pm-dark/50 p-3 rounded-md">
+                                    <h3 className="text-lg font-bold text-pm-gold/80 mb-2">{module.title}</h3>
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            {result ? (
+                                                <>
+                                                    <p className={`font-bold text-2xl ${getScoreColor(result.score, result.total)}`}>
+                                                        {result.score} / {result.total}
+                                                    </p>
+                                                    <p className="text-xs text-pm-off-white/60">Passé le: {formatTimestamp(result.timestamp)}</p>
+                                                </>
+                                            ) : (
+                                                <span className="text-sm text-pm-off-white/50">Non complété</span>
+                                            )}
+                                        </div>
+                                        {result && result.timesLeft > 0 && (
+                                            <div className="flex items-center gap-1 text-yellow-400" title={`${result.timesLeft} sortie(s) de la page détectée(s) pendant le quiz`}>
+                                                <ExclamationTriangleIcon className="w-5 h-5" />
+                                                <span className="text-sm font-bold">{result.timesLeft}</span>
                                             </div>
-                                        );
-                                    })}
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </main>
             </div>

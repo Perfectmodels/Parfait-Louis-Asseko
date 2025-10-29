@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, JuryMember, BeginnerStudent, JuryScore } from '../types';
+import { CastingApplication, CastingApplicationStatus, BeginnerStudent, JuryScore, JuryMember } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
