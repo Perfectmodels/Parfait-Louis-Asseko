@@ -1,10 +1,11 @@
+
 import React, { useEffect, lazy, Suspense } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-import AIAssistantIcon from './components/AIAssistantIcon';
+import AIAssistantIcon from '/src/components/AIAssistantIcon';
 import { PWAInstaller } from './components/PWAInstaller';
 import { registerServiceWorker } from './utils/pwa';
 
