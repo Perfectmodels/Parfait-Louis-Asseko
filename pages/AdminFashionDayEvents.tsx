@@ -166,7 +166,8 @@ const ArrayEditor: React.FC<{
     setItems: (items: any[]) => void;
     renderItem: (item: any, updateItem: (newItem: any) => void, index: number) => React.ReactNode;
     getNewItem: () => any;
-    getItemTitle: (item: any) => string;
+    // FIX: Updated getItemTitle prop to accept index as an argument to resolve type error.
+    getItemTitle: (item: any, index: number) => string;
 }> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -182,7 +183,8 @@ const ArrayEditor: React.FC<{
     };
 
     const handleDeleteItem = (index: number) => {
-        if (window.confirm(`Supprimer "${getItemTitle(items[index])}" ?`)) {
+        // FIX: Pass index to getItemTitle call.
+        if (window.confirm(`Supprimer "${getItemTitle(items[index], index)}" ?`)) {
             setItems(items.filter((_, i) => i !== index));
         }
     };
@@ -192,7 +194,8 @@ const ArrayEditor: React.FC<{
             {items.map((item, index) => (
                 <div key={index} className="bg-pm-dark/50 border border-pm-off-white/10 rounded-md overflow-hidden">
                     <button type="button" onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full p-3 text-left font-bold flex justify-between items-center hover:bg-pm-gold/5">
-                        <span className="truncate pr-4">{getItemTitle(item)}</span>
+                        {/* FIX: Pass index to getItemTitle call. */}
+                        <span className="truncate pr-4">{getItemTitle(item, index)}</span>
                         <ChevronDownIcon className={`w-5 h-5 transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`} />
                     </button>
                     {openIndex === index && (
