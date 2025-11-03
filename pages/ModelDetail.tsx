@@ -6,6 +6,7 @@ import NotFound from './NotFound';
 import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/solid';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+// FIX: Corrected import path for BookingForm.
 import BookingForm from '../components/BookingForm';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
 
@@ -152,7 +153,6 @@ const ModelDetail: React.FC = () => {
             
             modal.focus();
             
-            // FIX: Untyped function calls may not accept type arguments. Replaced generic with type assertion.
             const focusableElements = modal.querySelectorAll(
                 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
             ) as NodeListOf<HTMLElement>;

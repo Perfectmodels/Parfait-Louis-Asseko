@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
@@ -5,7 +6,7 @@ import { FashionDayEvent, Stylist, Partner, Artist } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
+import ImageUploader from '../components/ImageUploader';
 
 type EditableData = Pick<AppData, 'fashionDayEvents'>;
 
@@ -53,43 +54,61 @@ const AdminFashionDayEvents: React.FC = () => {
                         <ArrayEditor 
                             items={localData.fashionDayEvents}
                             setItems={newItems => setLocalData(p => ({...p!, fashionDayEvents: newItems}))}
-                            renderItem={(item: FashionDayEvent, onChange) => (
+                            renderItem={(item: FashionDayEvent, updateItem) => (
                                 <div className="space-y-4">
-                                    <FormInput label="Édition (Numéro)" type="number" value={item.edition} onChange={e => onChange('edition', parseInt(e.target.value, 10))} />
-                                    <FormInput label="Date (AAAA-MM-JJTHH:MM:SS)" value={item.date} onChange={e => onChange('date', e.target.value)} />
-                                    <FormInput label="Thème" value={item.theme} onChange={e => onChange('theme', e.target.value)} />
-                                    <FormTextArea label="Description" value={item.description} onChange={e => onChange('description', e.target.value)} />
-                                    <FormInput label="Lieu" value={item.location || ''} onChange={e => onChange('location', e.target.value)} />
-                                    <FormInput label="Promoteur" value={item.promoter || ''} onChange={e => onChange('promoter', e.target.value)} />
+                                    <FormInput label="Édition (Numéro)" type="number" value={item.edition} onChange={e => updateItem({...item, edition: parseInt(e.target.value, 10)})} />
+                                    <FormInput label="Date (AAAA-MM-JJTHH:MM:SS)" value={item.date} onChange={e => updateItem({...item, date: e.target.value})} />
+                                    <FormInput label="Thème" value={item.theme} onChange={e => updateItem({...item, theme: e.target.value})} />
+                                    <FormTextArea label="Description" value={item.description} onChange={e => updateItem({...item, description: e.target.value})} />
+                                    <FormInput label="Lieu" value={item.location || ''} onChange={e => updateItem({...item, location: e.target.value})} />
+                                    <FormInput label="Promoteur" value={item.promoter || ''} onChange={e => updateItem({...item, promoter: e.target.value})} />
 
                                     <SubArrayEditor
                                         title="Stylistes"
                                         items={item.stylists || []}
-                                        setItems={newStylists => onChange('stylists', newStylists)}
+                                        setItems={newStylists => updateItem({...item, stylists: newStylists})}
                                         getNewItem={() => ({ name: 'Nouveau Styliste', description: '', images: [] })}
                                         getItemTitle={stylist => stylist.name}
-                                        renderItem={(stylist: Stylist, onStylistChange) => (
+                                        renderItem={(stylist: Stylist, updateStylist) => (
                                             <>
-                                                <FormInput label="Nom du Styliste" value={stylist.name} onChange={e => onStylistChange('name', e.target.value)} />
-                                                <FormTextArea label="Description" value={stylist.description} onChange={e => onStylistChange('description', e.target.value)} />
-                                                <FormTextArea label="Images (URLs, une par ligne)" value={(stylist.images || []).join('\n')} onChange={e => onStylistChange('images', e.target.value.split('\n').filter(Boolean))} />
+                                                <FormInput label="Nom du Styliste" value={stylist.name} onChange={e => updateStylist({ ...stylist, name: e.target.value })} />
+                                                <FormTextArea label="Description" value={stylist.description} onChange={e => updateStylist({ ...stylist, description: e.target.value })} />
+                                                <SubArrayEditor
+                                                    title="Images du Styliste"
+                                                    items={stylist.images || []}
+                                                    setItems={newImages => updateStylist({ ...stylist, images: newImages })}
+                                                    getNewItem={() => ''}
+                                                    getItemTitle={(_, index) => `Image ${index + 1}`}
+                                                    renderItem={(image: string, updateImage, index) => (
+                                                        <ImageUploader label={`Image ${index + 1}`} value={image} onChange={newUrl => updateImage(newUrl)} />
+                                                    )}
+                                                />
                                             </>
                                         )}
                                     />
                                     
-                                     <FormTextArea label="Mannequins Vedettes (séparés par des virgules)" value={(item.featuredModels || []).join(', ')} onChange={e => onChange('featuredModels', e.target.value.split(',').map((s: string) => s.trim()))} />
+                                     <FormTextArea label="Mannequins Vedettes (séparés par des virgules)" value={(item.featuredModels || []).join(', ')} onChange={e => updateItem({...item, featuredModels: e.target.value.split(',').map((s: string) => s.trim())})} />
                                      
                                      <SubArrayEditor
                                         title="Artistes"
                                         items={item.artists || []}
-                                        setItems={newArtists => onChange('artists', newArtists)}
+                                        setItems={newArtists => updateItem({...item, artists: newArtists})}
                                         getNewItem={() => ({ name: 'Nouvel Artiste', description: '', images: [] })}
                                         getItemTitle={artist => artist.name}
-                                        renderItem={(artist: Artist, onArtistChange) => (
+                                        renderItem={(artist: Artist, updateArtist) => (
                                             <>
-                                                <FormInput label="Nom de l'Artiste" value={artist.name} onChange={e => onArtistChange('name', e.target.value)} />
-                                                <FormTextArea label="Description" value={artist.description} onChange={e => onArtistChange('description', e.target.value)} />
-                                                <FormTextArea label="Images (URLs, une par ligne)" value={(artist.images || []).join('\n')} onChange={e => onArtistChange('images', e.target.value.split('\n').filter(Boolean))} />
+                                                <FormInput label="Nom de l'Artiste" value={artist.name} onChange={e => updateArtist({ ...artist, name: e.target.value })} />
+                                                <FormTextArea label="Description" value={artist.description} onChange={e => updateArtist({ ...artist, description: e.target.value })} />
+                                                <SubArrayEditor
+                                                    title="Images de l'Artiste"
+                                                    items={artist.images || []}
+                                                    setItems={newImages => updateArtist({ ...artist, images: newImages })}
+                                                    getNewItem={() => ''}
+                                                    getItemTitle={(_, index) => `Image ${index + 1}`}
+                                                    renderItem={(image: string, updateImage, index) => (
+                                                        <ImageUploader label={`Image ${index + 1}`} value={image} onChange={newUrl => updateImage(newUrl)} />
+                                                    )}
+                                                />
                                             </>
                                         )}
                                     />
@@ -97,13 +116,13 @@ const AdminFashionDayEvents: React.FC = () => {
                                     <SubArrayEditor
                                         title="Partenaires"
                                         items={item.partners || []}
-                                        setItems={newPartners => onChange('partners', newPartners)}
+                                        setItems={newPartners => updateItem({...item, partners: newPartners})}
                                         getNewItem={() => ({ name: 'Nouveau Partenaire', type: 'Partenaire' })}
                                         getItemTitle={partner => partner.name}
-                                        renderItem={(partner: Partner, onPartnerChange) => (
+                                        renderItem={(partner: Partner, updatePartner) => (
                                             <>
-                                                <FormInput label="Nom du Partenaire" value={partner.name} onChange={e => onPartnerChange('name', e.target.value)} />
-                                                <FormInput label="Type de Partenariat" value={(partner as any).type} onChange={e => onPartnerChange('type', e.target.value)} />
+                                                <FormInput label="Nom du Partenaire" value={partner.name} onChange={e => updatePartner({ ...partner, name: e.target.value })} />
+                                                <FormInput label="Type de Partenariat" value={(partner as any).type} onChange={e => updatePartner({ ...partner, type: e.target.value })} />
                                             </>
                                         )}
                                     />
@@ -145,15 +164,15 @@ const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({lab
 const ArrayEditor: React.FC<{
     items: any[];
     setItems: (items: any[]) => void;
-    renderItem: (item: any, onChange: (key: string, value: any) => void, index: number) => React.ReactNode;
+    renderItem: (item: any, updateItem: (newItem: any) => void, index: number) => React.ReactNode;
     getNewItem: () => any;
     getItemTitle: (item: any) => string;
 }> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-    const handleItemChange = (index: number, key: string, value: any) => {
+    const handleUpdateItem = (index: number, newItem: any) => {
         const newItems = [...items];
-        newItems[index] = { ...newItems[index], [key]: value };
+        newItems[index] = newItem;
         setItems(newItems);
     };
 
@@ -178,7 +197,7 @@ const ArrayEditor: React.FC<{
                     </button>
                     {openIndex === index && (
                         <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
-                            {renderItem(item, (key, value) => handleItemChange(index, key, value), index)}
+                            {renderItem(item, (newItem) => handleUpdateItem(index, newItem), index)}
                             <div className="text-right pt-2">
                                 <button type="button" onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
                             </div>

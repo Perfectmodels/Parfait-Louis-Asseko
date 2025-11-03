@@ -21,7 +21,7 @@ const getRoleDisplayName = (role: string) => {
     switch (role) {
         case 'admin': return 'Administrateur';
         case 'student': return 'Mannequin Pro';
-        case 'beginner': return 'Débutant';
+        // FIX: Removed 'beginner' role as feature is deprecated.
         case 'jury': return 'Jury';
         case 'registration': return 'Enregistrement';
         default: return role;
@@ -32,7 +32,7 @@ const getRoleColor = (role: string) => {
     switch (role) {
         case 'admin': return 'bg-red-500/20 text-red-300 border-red-500/30';
         case 'student': return 'bg-pm-gold/20 text-pm-gold border-pm-gold/30';
-        case 'beginner': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        // FIX: Removed 'beginner' role color as feature is deprecated.
         case 'jury': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
         case 'registration': return 'bg-teal-500/20 text-teal-300 border-teal-500/30';
         default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';

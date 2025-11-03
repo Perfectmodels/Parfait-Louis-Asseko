@@ -37,23 +37,6 @@ export interface Model {
   lastActivity?: string;
 }
 
-export interface BeginnerStudent {
-  id: string; 
-  name: string;
-  matricule: string;
-  password: string;
-  quizScores: { 
-    [chapterSlug: string]: {
-      score: number;
-      total: number;
-      timesLeft: number;
-      timestamp: string;
-    }
-  };
-  lastLogin?: string;
-  lastActivity?: string;
-}
-
 export interface Stylist {
   name: string;
   description: string;
@@ -199,6 +182,7 @@ export interface ApiKeys {
     domainUriPrefix: string;
   };
   imgbbApiKey?: string;
+  brevoApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -362,6 +346,7 @@ export interface Absence {
   isExcused: boolean;
 }
 
+// FIX: Replaced Transaction with MonthlyPayment to standardize financial data types.
 export interface MonthlyPayment {
   id: string; // e.g., 'modelId-YYYY-MM'
   modelId: string;

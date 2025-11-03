@@ -1,11 +1,10 @@
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { FashionDayEvent } from '../types';
+import { FashionDayEvent, Artist } from '../types';
 
 const FashionDay: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -92,7 +91,7 @@ const FashionDay: React.FC = () => {
                 aria-pressed={selectedEdition.edition === event.edition}
                 className={`px-6 py-2 text-sm uppercase tracking-widest rounded-full transition-colors duration-300 ${selectedEdition.edition === event.edition ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold hover:text-pm-dark'}`}
               >
-                Édition {event.edition} ({event.date.split(' ').pop()})
+                Édition {event.edition} ({new Date(event.date).getFullYear()})
               </button>
             ))}
           </div>
@@ -100,12 +99,12 @@ const FashionDay: React.FC = () => {
           {/* Event Details */}
           <div className="content-section">
             <h2 className="text-4xl font-playfair text-center text-pm-gold mb-2">Thème : "{selectedEdition.theme}"</h2>
-            <p className="text-center text-pm-off-white/70 mb-8">{selectedEdition.date}</p>
+            <p className="text-center text-pm-off-white/70 mb-8">{new Date(selectedEdition.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
             <p className="text-center max-w-3xl mx-auto mb-12">{selectedEdition.description}</p>
             
             {selectedEdition.location && (
               <div className="flex flex-wrap justify-center gap-8 mb-12 text-center border-y border-pm-gold/20 py-8">
-                <InfoPill icon={CalendarDaysIcon} title="Date" content={selectedEdition.date} />
+                <InfoPill icon={CalendarDaysIcon} title="Date" content={new Date(selectedEdition.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} />
                 <InfoPill icon={MapPinIcon} title="Lieu" content={selectedEdition.location} />
                 <InfoPill icon={SparklesIcon} title="Promoteur" content={selectedEdition.promoter || 'Parfait Asseko'} />
               </div>
@@ -156,7 +155,7 @@ const FashionDay: React.FC = () => {
                         <p className="text-sm text-pm-off-white/70">{stylist.description}</p>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                          {stylist.images.map((img, idx) => (
+                          {(stylist.images || []).map((img, idx) => (
                               <button key={idx} onClick={() => setSelectedImage(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${stylist.name}`} className="aspect-square block bg-black group overflow-hidden border border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300">
                                   <img src={img} alt={`${stylist.name} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
                               </button>

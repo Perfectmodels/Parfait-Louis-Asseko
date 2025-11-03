@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
-import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ArrowRightOnRectangleIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
 // FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
@@ -107,7 +107,7 @@ export const Breadcrumb: React.FC = () => {
             '/casting': 'Casting', '/casting-formulaire': 'Postuler au Casting',
             '/fashion-day-application': 'Candidature PFD', '/profil': 'Mon Profil',
             '/formations': 'Classroom', '/formations/forum': 'Forum',
-            '/classroom-debutant': 'Classroom Débutant'
+// FIX: Removed "Classroom Débutant" from breadcrumb map as the feature is deprecated.
         };
 
         const pathnames = location.pathname.split('/').filter(Boolean);
@@ -203,6 +203,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mobileSearch, setMobileSearch] = useState('');
 
   const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -213,7 +214,7 @@ const Header: React.FC = () => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
 
-      const focusableElementsQuery = 'a[href], button:not([disabled])';
+      const focusableElementsQuery = 'a[href], button:not([disabled]), input';
       const menu = mobileMenuRef.current;
       if (!menu) return;
       
@@ -280,6 +281,15 @@ const Header: React.FC = () => {
     setUserRole(null);
     navigate('/login');
   };
+
+  const handleMobileSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mobileSearch.trim()) {
+      navigate(`/mannequins?q=${encodeURIComponent(mobileSearch.trim())}`);
+      setIsOpen(false);
+      setMobileSearch('');
+    }
+  };
   
   const siteConfig = data?.siteConfig;
   const navLinksFromData = data?.navLinks || [];
@@ -311,7 +321,7 @@ const Header: React.FC = () => {
         <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
             <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
-              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300" />
+              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300 bg-black rounded-full border-2 border-pm-gold p-1" />
             </Link>
           )}
           
@@ -355,8 +365,23 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24 flex-shrink-0">
              <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
         </div>
-        <div className="flex-grow overflow-y-auto">
-            <nav className="flex flex-col p-8 gap-6">
+        <div className="flex-grow overflow-y-auto p-8">
+            <form onSubmit={handleMobileSearch} className="mb-8">
+              <div className="relative">
+                  <input
+                      type="search"
+                      value={mobileSearch}
+                      onChange={(e) => setMobileSearch(e.target.value)}
+                      placeholder="Rechercher un mannequin..."
+                      className="w-full bg-black border-2 border-pm-gold/50 rounded-full py-2 pl-10 pr-4 text-pm-off-white focus:outline-none focus:border-pm-gold transition-colors"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MagnifyingGlassIcon className="w-5 h-5 text-pm-gold/60" />
+                  </div>
+              </div>
+            </form>
+
+            <nav className="flex flex-col gap-6">
               <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen}/>
               <div 
                 className={`text-center transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}

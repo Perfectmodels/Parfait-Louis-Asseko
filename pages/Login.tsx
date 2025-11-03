@@ -48,16 +48,13 @@ const Login: React.FC = () => {
     const users = [
         { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
         ...data.models.map(m => ({ type: 'student', user: m, path: '/profil' })),
-        ...data.beginnerStudents.map(bs => ({ type: 'beginner', user: bs, path: '/classroom-debutant' })),
         ...data.juryMembers.map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...data.registrationStaff.map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    // FIX: Add 'username' in user type guard to ensure property exists before access.
     const foundUser = users.find(u => 
         (
             ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            ('matricule' in u.user && u.user.matricule?.toLowerCase() === normalizedUsername) || 
             u.user.name.toLowerCase() === normalizedUsername
         ) && u.user.password === password
     );
@@ -70,8 +67,8 @@ const Login: React.FC = () => {
         
         updateUserActivity(foundUser.user.name, foundUser.type);
 
-        if (foundUser.type === 'student' || foundUser.type === 'beginner') {
-            const listKey = foundUser.type === 'student' ? 'models' : 'beginnerStudents';
+        if (foundUser.type === 'student') {
+            const listKey = 'models';
             const updatedList = (data as any)[listKey].map((item: any) => 
                 item.id === (foundUser.user as any).id ? { ...item, lastLogin: timestamp } : item
             );
@@ -113,7 +110,7 @@ const Login: React.FC = () => {
         >
           <div className="bg-black/50 border border-pm-gold/20 p-8 rounded-lg shadow-2xl shadow-black/50 text-center">
             <Link to="/">
-                <img src={data?.siteConfig.logo} alt="Logo" className="h-20 w-auto mx-auto mb-6" />
+                <img src={data?.siteConfig.logo} alt="Logo" className="h-20 w-auto mx-auto mb-6 bg-black rounded-full border-2 border-pm-gold p-1" />
             </Link>
             <h1 className="text-3xl font-playfair text-pm-gold mb-2">Accès Privé</h1>
             <p className="text-pm-off-white/70 mb-8">

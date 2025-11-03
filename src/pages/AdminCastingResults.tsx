@@ -1,10 +1,11 @@
+
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, Model, JuryMember } from '../types';
+import { CastingApplication, CastingApplicationStatus, Model, JuryMember, JuryScore } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
-import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
+import PrintableCastingSheet from '../components/PrintableCastingSheet';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
@@ -17,7 +18,8 @@ const AdminCastingResults: React.FC = () => {
             .filter(app => app.scores && Object.keys(app.scores).length > 0)
             .map(app => {
                 const scores = Object.values(app.scores!);
-                const averageScore = scores.reduce((sum, s) => sum + s.overall, 0) / scores.length;
+                // FIX: Cast the score object 's' to JuryScore to resolve type inference issues with Object.values.
+                const averageScore = scores.reduce((sum, s) => sum + (s as JuryScore).overall, 0) / scores.length;
                 
                 const scoredJuryIds = Object.keys(app.scores || {});
                 const missingJuries = juryMembers.filter(j => !scoredJuryIds.includes(j.id));
@@ -189,8 +191,8 @@ const AdminCastingResults: React.FC = () => {
                                         : `Notes manquantes: ${missingJuryNames}`;
                                     return (
                                     <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
-                                        <td className="p-4 font-bold text-pm-gold">#{String(app.passageNumber).padStart(3, '0')}</td>
-                                        <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
+                                        <td className="p-4 font-bold text-pm-gold">#${String(app.passageNumber).padStart(3, '0')}</td>
+                                        <td className="p-4 font-semibold">{app.firstName} ${app.lastName}</td>
                                         <td className="p-4 text-center" title={tooltip}>
                                             {app.juryVotes} / {data?.juryMembers.length || 4}
                                             {!app.isFullyScored && <span className="text-red-500 ml-1">*</span>}

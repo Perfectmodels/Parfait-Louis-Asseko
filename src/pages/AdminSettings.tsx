@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
-import { Testimonial, Partner } from '../types';
+import { Testimonial, Partner, FAQCategory, FAQItem, ApiKeys } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/icons/ImageInput';
 
-type EditableData = Omit<AppData, 'models' | 'articles' | 'courseData' | 'beginnerCourseData' | 'beginnerStudents' | 'castingApplications' | 'fashionDayApplications' | 'newsItems' | 'forumThreads' | 'forumReplies' | 'articleComments' | 'recoveryRequests' | 'bookingRequests' | 'contactMessages' | 'juryMembers' | 'registrationStaff' >;
+// FIX: Removed beginner-related data types from the editable data definition.
+type EditableData = Pick<AppData, 'contactInfo' | 'siteConfig' | 'siteImages' | 'socialLinks' | 'agencyPartners' | 'testimonials' | 'faqData' | 'apiKeys'>;
 
 const AdminSettings: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -15,8 +16,15 @@ const AdminSettings: React.FC = () => {
 
     useEffect(() => {
         if (isInitialized && data) {
-            const { models, articles, courseData, beginnerCourseData, beginnerStudents, castingApplications, fashionDayApplications, newsItems, forumThreads, forumReplies, articleComments, recoveryRequests, bookingRequests, contactMessages, juryMembers, registrationStaff, ...editableData } = data;
-            setLocalData(JSON.parse(JSON.stringify(editableData)));
+            // FIX: Removed deprecated beginner-related properties from destructuring.
+            const { 
+                contactInfo, siteConfig, siteImages, socialLinks, agencyPartners, 
+                testimonials, faqData, apiKeys
+            } = data;
+            setLocalData(JSON.parse(JSON.stringify({ 
+                contactInfo, siteConfig, siteImages, socialLinks, agencyPartners, 
+                testimonials, faqData, apiKeys 
+            })));
         }
     }, [isInitialized, data]);
     
@@ -29,13 +37,20 @@ const AdminSettings: React.FC = () => {
 
     const handleSimpleChange = (section: keyof EditableData, key: string, value: any) => {
         if (!localData) return;
-        setLocalData(prev => ({
-            ...prev!,
-            [section]: {
-                ...(prev![section] as object),
-                [key]: value
+        setLocalData(prev => {
+            if (!prev) return null;
+            const sectionData = prev[section];
+            if (typeof sectionData === 'object' && sectionData !== null) {
+                return {
+                    ...prev,
+                    [section]: {
+                        ...(sectionData as object),
+                        [key]: value
+                    }
+                };
             }
-        }));
+            return prev;
+        });
     };
     
     if (!localData || !data) {
@@ -68,6 +83,14 @@ const AdminSettings: React.FC = () => {
                             <FormInput label="Email public" value={localData.contactInfo.email} onChange={e => handleSimpleChange('contactInfo', 'email', e.target.value)} />
                             <FormInput label="Téléphone" value={localData.contactInfo.phone} onChange={e => handleSimpleChange('contactInfo', 'phone', e.target.value)} />
                             <FormInput label="Adresse" value={localData.contactInfo.address} onChange={e => handleSimpleChange('contactInfo', 'address', e.target.value)} />
+                        </div>
+                    </div>
+
+                    <div className="admin-section-wrapper">
+                        <h2 className="admin-section-title">Clés API</h2>
+                        <div className="space-y-4">
+                            <FormInput label="Clé API Brevo (pour les emails)" value={localData.apiKeys.brevoApiKey || ''} onChange={e => handleSimpleChange('apiKeys', 'brevoApiKey', e.target.value)} />
+                            <FormInput label="Clé API ImgBB (pour les images)" value={localData.apiKeys.imgbbApiKey || ''} onChange={e => handleSimpleChange('apiKeys', 'imgbbApiKey', e.target.value)} />
                         </div>
                     </div>
 
@@ -133,6 +156,34 @@ const AdminSettings: React.FC = () => {
                             />
                         </div>
                     </div>
+
+                    <div className="admin-section-wrapper">
+                        <h2 className="admin-section-title">FAQ (Foire Aux Questions)</h2>
+                        <ArrayEditor 
+                            items={localData.faqData}
+                            setItems={newItems => setLocalData(p => ({...p!, faqData: newItems}))}
+                            renderItem={(item: FAQCategory, onChange) => (
+                                <>
+                                    <FormInput label="Catégorie" value={item.category} onChange={e => onChange('category', e.target.value)} />
+                                    <SubArrayEditor
+                                        title="Questions"
+                                        items={item.items || []}
+                                        setItems={newItems => onChange('items', newItems)}
+                                        getNewItem={() => ({ question: 'Nouvelle Question ?', answer: 'Réponse...' })}
+                                        getItemTitle={item => item.question}
+                                        renderItem={(faq: FAQItem, onFaqChange) => (
+                                            <>
+                                                <FormInput label="Question" value={faq.question} onChange={e => onFaqChange('question', e.target.value)} />
+                                                <FormTextArea label="Réponse" value={faq.answer} onChange={e => onFaqChange('answer', e.target.value)} />
+                                            </>
+                                        )}
+                                    />
+                                </>
+                            )}
+                            getNewItem={() => ({ category: 'Nouvelle Catégorie', items: [] })}
+                            getItemTitle={item => item.category}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,17 +193,13 @@ const AdminSettings: React.FC = () => {
 
 const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
-        <div className="flex justify-between items-center mb-1">
-            <label className="admin-label !mb-0">{label}</label>
-        </div>
+        <label className="admin-label">{label}</label>
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
 const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
-        <div className="flex justify-between items-center mb-1">
-            <label className="admin-label !mb-0">{label}</label>
-        </div>
+        <label className="admin-label">{label}</label>
         <textarea value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
     </div>
 );
@@ -207,5 +254,13 @@ const ArrayEditor: React.FC<{
         </div>
     );
 };
+
+const SubArrayEditor: React.FC<{ title: string } & Omit<React.ComponentProps<typeof ArrayEditor>, 'items' | 'setItems'> & { items: any[], setItems: (items: any[]) => void }> = ({ title, ...props }) => (
+    <div className="p-3 bg-black/50 border border-pm-off-white/10 rounded-md">
+        <h4 className="text-md font-bold text-pm-gold/80 mb-3">{title}</h4>
+        <ArrayEditor {...props} />
+    </div>
+);
+
 
 export default AdminSettings;
