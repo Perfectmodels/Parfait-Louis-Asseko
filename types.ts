@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export interface Model {
@@ -37,22 +38,7 @@ export interface Model {
   lastActivity?: string;
 }
 
-export interface BeginnerStudent {
-  id: string; 
-  name: string;
-  matricule: string;
-  password: string;
-  quizScores: { 
-    [chapterSlug: string]: {
-      score: number;
-      total: number;
-      timesLeft: number;
-      timestamp: string;
-    }
-  };
-  lastLogin?: string;
-  lastActivity?: string;
-}
+// FIX: Removed BeginnerStudent interface as the feature is deprecated.
 
 export interface Stylist {
   name: string;
@@ -199,6 +185,7 @@ export interface ApiKeys {
     domainUriPrefix: string;
   };
   imgbbApiKey?: string;
+  brevoApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -362,6 +349,7 @@ export interface Absence {
   isExcused: boolean;
 }
 
+// FIX: Added MonthlyPayment interface to standardize financial data types.
 export interface MonthlyPayment {
   id: string; // e.g., 'modelId-YYYY-MM'
   modelId: string;
@@ -387,7 +375,6 @@ export interface PhotoshootBrief {
   status: 'Nouveau' | 'Lu' | 'Archivé';
 }
 
-// FIX: Added NavLink interface to centralize type definitions and resolve circular dependencies.
 export interface NavLink {
     path: string;
     label: string;

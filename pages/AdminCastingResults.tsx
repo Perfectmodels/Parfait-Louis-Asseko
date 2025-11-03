@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, BeginnerStudent, JuryScore, JuryMember } from '../types';
+import { CastingApplication, CastingApplicationStatus, Model, JuryScore, JuryMember } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
@@ -111,7 +111,6 @@ const AdminCastingResults: React.FC = () => {
             .filter(app => app.scores && Object.keys(app.scores).length > 0)
             .map(app => {
                 const scores = Object.values(app.scores!);
-                // FIX: Cast the score object 's' to JuryScore to resolve type inference issues with Object.values.
                 const averageScore = scores.reduce((sum, s) => sum + (s as JuryScore).overall, 0) / scores.length;
                 
                 const scoredJuryIds = Object.keys(app.scores || {});
@@ -136,7 +135,7 @@ const AdminCastingResults: React.FC = () => {
         await saveData({ ...data, castingApplications: updatedApps });
     };
     
-    const handleValidateAndCreateBeginner = async (app: CastingApplication) => {
+    const handleValidateAndCreateModel = async (app: CastingApplication) => {
         if (!data) return;
 
         if (app.status === 'Accepté') {
@@ -144,35 +143,45 @@ const AdminCastingResults: React.FC = () => {
             return;
         }
         
-        const studentExists = data.beginnerStudents.some(s => s.id === app.id);
-        if (studentExists) {
-            alert("Ce candidat a déjà été validé et un profil débutant a été créé.");
+        const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
+        if (modelExists) {
+            alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
             await handleUpdateStatus(app.id, 'Accepté');
             return;
         }
 
         const currentYear = new Date().getFullYear();
-        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
+        const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f']/g, "").replace(/[^a-z0-9-]/g, "");
 
-        const existingMatricules = data.beginnerStudents.map(s => parseInt(s.matricule.split('-')[2], 10) || 0);
-        const nextNumber = existingMatricules.length > 0 ? Math.max(...existingMatricules) + 1 : 1;
-        const matricule = `DEB-${currentYear}-${String(nextNumber).padStart(3, '0')}`;
+        const initial = app.firstName.charAt(0).toUpperCase();
+        const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
+        const existingNumbers = modelsWithSameInitial.map(m => parseInt(m.username.replace(`Man-PMM${initial}`, ''), 10) || 0);
+        const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+        const username = `Man-PMM${initial}${String(nextNumber).padStart(2, '0')}`;
         const password = `${sanitizeForPassword(app.firstName)}${currentYear}`;
+        const id = `${sanitizeForPassword(app.lastName)}-${sanitizeForPassword(app.firstName)}-${app.id.slice(-4)}`;
+        
+        const age = app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : undefined;
 
-        const newBeginnerStudent: BeginnerStudent = {
-            id: app.id,
-            name: `${app.firstName} ${app.lastName}`,
-            matricule: matricule,
-            password: password,
-            quizScores: {}
+        const newModel: Model = {
+            id, name: `${app.firstName} ${app.lastName}`, username, password, level: 'Débutant',
+            email: app.email, phone: app.phone, age, height: `${app.height}cm`, gender: app.gender, location: app.city,
+            imageUrl: `https://i.ibb.co/fVBxPNTP/T-shirt.png`, // Placeholder image
+            isPublic: false, distinctions: [], portfolioImages: [],
+            measurements: {
+                chest: `${app.chest || '0'}cm`, waist: `${app.waist || '0'}cm`,
+                hips: `${app.hips || '0'}cm`, shoeSize: `${app.shoeSize || '0'}`,
+            },
+            categories: [], experience: 'Nouveau mannequin issu du casting.',
+            journey: 'Profil créé automatiquement après validation du casting.', quizScores: {}
         };
         
-        const updatedBeginnerStudents = [...data.beginnerStudents, newBeginnerStudent];
-        const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
+        const updatedModels = [...data.models, newModel];
+        const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' as const } : localApp);
 
         try {
-            await saveData({ ...data, beginnerStudents: updatedBeginnerStudents, castingApplications: updatedApps });
-            alert(`Le profil débutant pour ${newBeginnerStudent.name} a été créé avec succès (Matricule: ${matricule}). La candidature a été marquée comme "Accepté".`);
+            await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+            alert(`Le profil débutant pour ${newModel.name} a été créé avec succès (Identifiant: ${username}). La candidature a été marquée comme "Accepté".`);
         } catch (error) {
             console.error("Erreur lors de la création du profil débutant:", error);
             alert("Une erreur est survenue lors de la sauvegarde.");
@@ -229,7 +238,7 @@ const AdminCastingResults: React.FC = () => {
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold">Résultats & Validation Casting</h1>
                 <p className="text-pm-off-white/70 mt-2 mb-8">
-                    Consultez les moyennes des candidats et validez leur entrée dans l'agence en tant que débutants.
+                    Consultez les moyennes des candidats et validez leur entrée dans l'agence.
                 </p>
 
                 <div className="flex items-center gap-4 mb-8 flex-wrap">
@@ -281,7 +290,7 @@ const AdminCastingResults: React.FC = () => {
                                                 {app.status === 'Présélectionné' && (
                                                     <>
                                                         <button 
-                                                            onClick={() => handleValidateAndCreateBeginner(app)} 
+                                                            onClick={() => handleValidateAndCreateModel(app)} 
                                                             className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed" 
                                                             title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
                                                             disabled={!app.isFullyScored}

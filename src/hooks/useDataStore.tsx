@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../../firebaseConfig';
+import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../../types';
+// FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -19,6 +20,7 @@ import {
     bookingRequests as initialBookingRequests,
     contactMessages as initialContactMessages,
     absences as initialAbsences,
+    // FIX: Changed to import 'monthlyPayments' instead of non-existent 'transactions'.
     monthlyPayments as initialMonthlyPayments,
     photoshootBriefs as initialPhotoshootBriefs,
     newsItems as initialNewsItems, 
@@ -34,12 +36,11 @@ import {
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
-    beginnerStudents as initialBeginnerStudents,
     faqData as initialFaqData
-} from '../../constants/data';
-import { articles as initialArticles } from '../../constants/magazineData';
-import { courseData as initialCourseData } from '../../constants/courseData';
-import { beginnerCourseData as initialBeginnerCourseData } from '../constants/beginnerCourseData';
+} from '../constants/data';
+import { articles as initialArticles } from '../constants/magazineData';
+import { courseData as initialCourseData } from '../constants/courseData';
+// FIX: Removed import for beginnerCourseData as the file and feature are deprecated.
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -73,10 +74,10 @@ export interface AppData {
     contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
-    beginnerCourseData: Module[];
-    beginnerStudents: BeginnerStudent[];
+    // FIX: Removed beginner-related properties from AppData.
     faqData: FAQCategory[];
     absences: Absence[];
+    // FIX: Changed 'transactions' to 'monthlyPayments' and 'Transaction' to 'MonthlyPayment'.
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
 }
@@ -100,6 +101,7 @@ export const useDataStore = () => {
         bookingRequests: initialBookingRequests,
         contactMessages: initialContactMessages,
         absences: initialAbsences,
+        // FIX: Changed to use 'monthlyPayments' and 'initialMonthlyPayments'.
         monthlyPayments: initialMonthlyPayments,
         photoshootBriefs: initialPhotoshootBriefs,
         newsItems: initialNewsItems,
@@ -117,8 +119,7 @@ export const useDataStore = () => {
         courseData: initialCourseData,
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
-        beginnerCourseData: initialBeginnerCourseData,
-        beginnerStudents: initialBeginnerStudents,
+        // FIX: Removed beginner-related properties from initial data.
         faqData: initialFaqData,
     }), []);
     
@@ -136,7 +137,7 @@ export const useDataStore = () => {
                     models: (dbData.models && dbData.models.length > 0) ? dbData.models : initialData.models,
                     articles: (dbData.articles && dbData.articles.length > 0) ? dbData.articles : initialData.articles,
                     courseData: (dbData.courseData && dbData.courseData.length > 0) ? dbData.courseData : initialData.courseData,
-                    beginnerCourseData: (dbData.beginnerCourseData && dbData.beginnerCourseData.length > 0) ? dbData.beginnerCourseData : initialData.beginnerCourseData,
+                    // FIX: Removed beginnerCourseData from merge logic.
                     newsItems: (dbData.newsItems && dbData.newsItems.length > 0) ? dbData.newsItems : initialData.newsItems,
                     testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,

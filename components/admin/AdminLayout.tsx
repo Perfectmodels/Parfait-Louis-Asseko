@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
@@ -7,8 +6,10 @@ import {
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
     ClipboardDocumentCheckIcon, UserGroupIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
     Bars3Icon, XMarkIcon,
-    // FIX: Added missing BookOpenIcon import
-    BookOpenIcon
+    BookOpenIcon,
+    PhotoIcon,
+    MicrophoneIcon,
+    PaperAirplaneIcon
 } from '@heroicons/react/24/outline';
 
 interface NavItemProps {
@@ -64,12 +65,19 @@ const navSections = [
         ]
     },
     {
+        title: 'Outils IA',
+        links: [
+            { to: '/admin/generer-image', icon: SparklesIcon, label: 'Générateur d\'Image' },
+            { to: '/admin/analyser-image', icon: PhotoIcon, label: 'Analyse d\'Image' },
+            { to: '/admin/live-chat', icon: MicrophoneIcon, label: 'Live Chat IA' },
+        ]
+    },
+    {
         title: 'Classroom & Suivi',
         links: [
             { to: '/admin/classroom', icon: BookOpenIcon, label: 'Classroom Pro' },
             { to: '/admin/classroom-progress', icon: AcademicCapIcon, label: 'Suivi Pro' },
             { to: '/admin/model-access', icon: KeyIcon, label: 'Accès Pro' },
-            { to: '/admin/beginner-students-access', icon: UserGroupIcon, label: 'Accès Débutants' },
             { to: '/admin/absences', icon: CalendarIcon, label: 'Suivi Absences'},
             { to: '/admin/payments', icon: CurrencyDollarIcon, label: 'Comptabilité' },
             { to: '/admin/artistic-direction', icon: PaintBrushIcon, label: 'Direction Artistique' },
@@ -78,6 +86,7 @@ const navSections = [
      {
         title: 'Communication',
         links: [
+            { to: '/admin/mailing', icon: PaperAirplaneIcon, label: 'Mailing' },
             { to: '/admin/messages', icon: EnvelopeIcon, label: 'Messages de Contact' },
             { to: '/admin/comments', icon: ChatBubbleLeftRightIcon, label: 'Commentaires' },
             { to: '/admin/recovery-requests', icon: ExclamationTriangleIcon, label: 'Demandes de Récupération' },

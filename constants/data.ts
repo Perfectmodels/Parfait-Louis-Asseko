@@ -1,4 +1,6 @@
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, BeginnerStudent, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, Module } from '../types';
+
+// FIX: Removed BeginnerStudent from import as the type is deprecated.
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
@@ -12,9 +14,6 @@ export const navLinks: NavLink[] = [
   { path: '/magazine', label: 'Magazine', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
-  { path: '/generer-image', label: 'Image Gen', inFooter: true },
-  { path: '/analyser-image', label: 'Image Analysis', inFooter: true },
-  { path: '/live-chat', label: 'Live Chat', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
 ];
 
@@ -48,6 +47,7 @@ export const apiKeys: ApiKeys = {
         domainUriPrefix: 'https://perfectmodels.page.link'
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
+    brevoApiKey: 'VOTRE_CLÉ_API_BREVO_ICI',
 };
 
 export const juryMembers: JuryMember[] = [
@@ -181,38 +181,8 @@ export const contactMessages: ContactMessage[] = [];
 export const absences: Absence[] = [];
 export const monthlyPayments: MonthlyPayment[] = [];
 export const photoshootBriefs: PhotoshootBrief[] = [];
-export const beginnerStudents: BeginnerStudent[] = [
-    {
-        id: 'casting-1720000000001',
-        name: "Alicia Dubois",
-        matricule: "DEB-2025-001",
-        password: "alicia2025",
-        quizScores: {}
-    },
-    {
-        id: 'casting-1720000000002',
-        name: "Jordan Lefebvre",
-        matricule: "DEB-2025-002",
-        password: "jordan2025",
-        quizScores: { 
-            'module-1-decouverte-du-mannequinat': { score: 2, total: 3, timesLeft: 0, timestamp: '2024-07-06T10:00:00Z' } 
-        }
-    },
-    {
-        id: 'casting-1720000000003',
-        name: "Chloé Moreau",
-        matricule: "DEB-2025-003",
-        password: "chloe2025",
-        quizScores: {}
-    },
-    {
-        id: 'casting-1720000000004',
-        name: "Lucas Girard",
-        matricule: "DEB-2025-004",
-        password: "lucas2025",
-        quizScores: {}
-    }
-];
+// FIX: Removed beginnerStudents array as the feature is deprecated.
+
 
 
 export const newsItems: NewsItem[] = [
