@@ -1,5 +1,4 @@
-
-import { Module } from '../types';
+import { Module } from '../../types';
 
 export const beginnerCourseData: Module[] = [
   {
