@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import { Model, ModelDistinction } from '../types';
-import ImageInput from './icons/ImageInput';
+import { Model, ModelDistinction } from '../../types';
+import ImageUploader from './ImageUploader';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
@@ -127,7 +128,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 </Section>
 
                 <Section title="Physique & Mensurations">
-                    <ImageInput label="Photo Principale" value={formData.imageUrl} onChange={handleImageChange} />
+                    <ImageUploader label="Photo Principale" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementChange} />
@@ -144,14 +145,14 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                             <ArrayEditor
                                 items={formData.distinctions || []}
                                 setItems={newItems => setFormData(p => ({...p, distinctions: newItems}))}
-                                renderItem={(item: ModelDistinction, onChange) => (
+                                renderItem={(item: ModelDistinction, updateItem) => (
                                     <>
-                                        <FormInput label="Nom de la distinction" name="name" value={item.name} onChange={e => onChange('name', e.target.value)} />
+                                        <FormInput label="Nom de la distinction" name="name" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
                                         <FormTextArea 
                                             label="Titres (un par ligne)" 
                                             name="titles"
                                             value={(item.titles || []).join('\n')} 
-                                            onChange={e => onChange('titles', e.target.value.split('\n').filter(Boolean))} 
+                                            onChange={e => updateItem({ ...item, titles: e.target.value.split('\n').filter(Boolean) })} 
                                         />
                                     </>
                                 )}
@@ -191,7 +192,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                         {(formData.portfolioImages || []).map((url, index) => (
                             <div key={index} className="flex items-end gap-2">
                                 <div className="flex-grow">
-                                    <ImageInput 
+                                    <ImageUploader 
                                         label={`Photo ${index + 1}`} 
                                         value={url} 
                                         onChange={(value) => handlePortfolioImagesChange(index, value)} 
@@ -252,15 +253,15 @@ const FormTextArea: React.FC<{label: string, name: string, value: any, onChange:
 const ArrayEditor: React.FC<{
     items: any[];
     setItems: (items: any[]) => void;
-    renderItem: (item: any, onChange: (key: string, value: any) => void, index: number) => React.ReactNode;
+    renderItem: (item: any, updateItem: (newItem: any) => void, index: number) => React.ReactNode;
     getNewItem: () => any;
     getItemTitle: (item: any) => string;
 }> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    const handleItemChange = (index: number, key: string, value: any) => {
+    const handleUpdateItem = (index: number, newItem: any) => {
         const newItems = [...items];
-        newItems[index] = { ...newItems[index], [key]: value };
+        newItems[index] = newItem;
         setItems(newItems);
     };
 
@@ -285,7 +286,7 @@ const ArrayEditor: React.FC<{
                     </button>
                     {openIndex === index && (
                         <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
-                            {renderItem(item, (key, value) => handleItemChange(index, key, value), index)}
+                            {renderItem(item, (newItem) => handleUpdateItem(index, newItem), index)}
                             <div className="text-right pt-2">
                                 <button type="button" onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
                             </div>
