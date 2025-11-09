@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import SEO from '../components/SEO';
+import SEO from '../../../components/SEO';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 
 const ImageGeneration: React.FC = () => {
@@ -20,10 +20,10 @@ const ImageGeneration: React.FC = () => {
         setGeneratedImage(null);
 
         try {
-            if (!process.env.API_KEY) {
+            if (!import.meta.env.VITE_API_KEY) {
                 throw new Error("La clé API n'est pas configurée.");
             }
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
             const response = await ai.models.generateImages({
                 model: 'imagen-4.0-generate-001',
