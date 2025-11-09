@@ -30,10 +30,19 @@ const AdminMailing: React.FC = () => {
         setStatus('loading');
         setStatusMessage('');
 
-        const brevoApiKey = data?.apiKeys?.brevoApiKey;
+        const brevoApiKey = data?.apiKeys?.brevoApiKey?.trim();
         if (!brevoApiKey || brevoApiKey === 'VOTRE_CLÉ_API_BREVO_ICI') {
             setStatus('error');
-            setStatusMessage('La clé API Brevo n\'est pas configurée dans les paramètres.');
+            setStatusMessage('Erreur : La clé API Brevo n\'est pas configurée dans les paramètres d\'administration.');
+            console.error('Clé API Brevo non configurée ou invalide');
+            return;
+        }
+
+        // Validation basique de la clé API (format général des clés Brevo)
+        if (!/^[a-zA-Z0-9]{40,}$/.test(brevoApiKey)) {
+            setStatus('error');
+            setStatusMessage('Erreur : Format de clé API Brevo invalide.');
+            console.error('Format de clé API Brevo invalide');
             return;
         }
 
@@ -66,8 +75,22 @@ const AdminMailing: React.FC = () => {
             });
 
             if (!response.ok) {
-                const errorBody = await response.json();
-                throw new Error(errorBody.message || `Erreur API: ${response.statusText}`);
+                let errorMessage = `Erreur API: ${response.status} ${response.statusText}`;
+                try {
+                    const errorBody = await response.json();
+                    errorMessage = errorBody.message || errorBody.error?.message || errorMessage;
+                    
+                    // Journalisation détaillée pour le débogage
+                    console.error('Détails de l\'erreur Brevo:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        error: errorBody,
+                        headers: Object.fromEntries(response.headers.entries())
+                    });
+                } catch (e) {
+                    console.error('Erreur lors de la lecture de la réponse:', e);
+                }
+                throw new Error(errorMessage);
             }
 
             setStatus('success');

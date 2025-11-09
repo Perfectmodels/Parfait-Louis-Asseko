@@ -2,7 +2,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import Header, { Breadcrumb } from './Header';
-import Footer from './Footer';
+import NewFooter from '../NewFooter';
 import Marquee from './Marquee';
 import AdminLayout from '../admin/AdminLayout';
 
@@ -27,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Breadcrumb />
         {children}
       </main>
-      <Footer />
+      <NewFooter />
     </div>
   );
 };
