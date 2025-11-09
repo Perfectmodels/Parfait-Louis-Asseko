@@ -16,9 +16,10 @@ export default {
         'montserrat': ['"Montserrat"', 'sans-serif'],
       },
       animation: {
-          'marquee': 'marquee 60s linear infinite',
+          'marquee': 'marquee 180s linear infinite',
           'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           'fade-in': 'fadeIn 0.5s ease-in-out',
+          'glow': 'glow 2s ease-in-out infinite',
       },
       keyframes: {
           marquee: {
@@ -28,6 +29,10 @@ export default {
           fadeIn: {
               '0%': { opacity: 0 },
               '100%': { opacity: 1 },
+          },
+          glow: {
+            '0%, 100%': { boxShadow: '0 0 5px #D4AF37, 0 0 10px #D4AF37' },
+            '50%': { boxShadow: '0 0 20px #D4AF37, 0 0 30px #D4AF37' },
           },
       }
     }
