@@ -1,133 +1,122 @@
-
-import React, { useState, useCallback, useRef } from 'react';
-import { useData } from '../contexts/DataContext';
-import { ArrowUpTrayIcon, ArrowPathIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import React, { useState, useRef } from 'react';
+import { storage } from '../../firebaseConfig';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ArrowUpTrayIcon, PhotoIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
 interface ImageUploaderProps {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
+  onUploadComplete: (url: string) => void;
+  storagePath: string; // e.g., 'site-images' or 'model-portfolios/model-id'
+  currentImageUrl?: string;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange }) => {
-    const { data } = useData();
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadComplete, storagePath, currentImageUrl }) => {
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(currentImageUrl || null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleUpload = useCallback(async (file: File) => {
-        const apiKey = data?.apiKeys?.imgbbApiKey;
-        if (!apiKey || apiKey === 'YOUR_IMGBB_API_KEY_HERE') {
-            setError("La clé API ImgBB n'est pas configurée dans les paramètres.");
-            return;
-        }
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleUpload(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-        setIsLoading(true);
-        setError(null);
+  const handleUpload = (file: File) => {
+    if (!file) return;
 
-        const formData = new FormData();
-        formData.append('image', file);
+    setError(null);
+    setUploading(true);
+    setProgress(0);
 
-        try {
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-                method: 'POST',
-                body: formData,
-            });
+    const storageRef = ref(storage, `${storagePath}/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
 
-            if (!response.ok) {
-                 const errorData = await response.json();
-                throw new Error(errorData?.error?.message || "L'upload a échoué. Vérifiez la clé API et le fichier.");
-            }
-
-            const result = await response.json();
-            if (result.data && result.data.url) {
-                onChange(result.data.url);
-            } else {
-                throw new Error("L'API ImgBB n'a pas retourné d'URL valide.");
-            }
-        } catch (err: any) {
-            setError(err.message || "Une erreur est survenue lors de l'upload.");
-            console.error(err);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [data?.apiKeys?.imgbbApiKey, onChange]);
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            handleUpload(file);
-        }
-    };
-    
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const file = e.dataTransfer.files?.[0];
-        if (file && file.type.startsWith('image/')) {
-            handleUpload(file);
-        }
-    };
-
-    const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange(e.target.value);
-    };
-
-    const triggerFileSelect = () => {
-        fileInputRef.current?.click();
-    };
-
-    return (
-        <div>
-            <label className="admin-label">{label}</label>
-            <div className="flex items-start gap-4">
-                <div 
-                    className="w-28 h-28 flex-shrink-0 bg-black border-2 border-dashed border-pm-off-white/20 rounded-md flex items-center justify-center relative group"
-                    onDrop={handleDrop}
-                    onDragOver={(e) => e.preventDefault()}
-                >
-                    {value ? (
-                        <img src={value} alt="Prévisualisation" className="w-full h-full object-cover rounded-md" />
-                    ) : (
-                        <PhotoIcon className="w-12 h-12 text-pm-off-white/30" />
-                    )}
-                    {isLoading && (
-                        <div className="absolute inset-0 bg-black/70 flex items-center justify-center rounded-md">
-                            <ArrowPathIcon className="w-8 h-8 text-pm-gold animate-spin" />
-                        </div>
-                    )}
-                     <button
-                        type="button"
-                        onClick={triggerFileSelect}
-                        className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md cursor-pointer"
-                        title="Changer l'image"
-                    >
-                        <ArrowUpTrayIcon className="w-8 h-8 text-pm-gold" />
-                    </button>
-                </div>
-                <div className="flex-grow">
-                    <input
-                        type="text"
-                        value={value}
-                        onChange={handleUrlChange}
-                        placeholder="URL de l'image ou téléversez"
-                        className="admin-input"
-                    />
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        accept="image/png, image/jpeg, image/gif, image/webp"
-                        className="hidden"
-                    />
-                    <p className="text-xs text-pm-off-white/60 mt-2">
-                        Cliquez ou glissez-déposez une image, ou collez une URL.
-                    </p>
-                    {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
-                </div>
-            </div>
-        </div>
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setProgress(prog);
+      },
+      (err) => {
+        console.error("Upload error:", err);
+        setError('Upload failed. Please try again.');
+        setUploading(false);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          onUploadComplete(downloadURL);
+          setUploading(false);
+          setPreview(downloadURL);
+        });
+      }
     );
+  };
+
+  const triggerFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPreview(null);
+    onUploadComplete(''); // Notify parent component that image is removed
+  }
+
+  return (
+    <div className="w-full">
+      <label className="block text-sm font-medium text-gray-300 mb-1">
+        Image
+      </label>
+      <div 
+        className="mt-1 flex justify-center items-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md cursor-pointer hover:border-pm-gold transition-colors"
+        onClick={triggerFileSelect}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png, image/jpeg, image/webp"
+          onChange={handleFileSelect}
+          className="hidden"
+          disabled={uploading}
+        />
+        {preview ? (
+          <div className="relative group">
+            <img src={preview} alt="Preview" className="max-h-60 rounded-lg object-contain" />
+            <div 
+              onClick={removeImage}
+              className="absolute top-1 right-1 bg-black/50 rounded-full text-white cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <XCircleIcon className="w-6 h-6" />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-1 text-center">
+            <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
+            <div className="flex text-sm text-gray-400">
+              <p className="pl-1">Click to upload an image</p>
+            </div>
+            <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 10MB</p>
+          </div>
+        )}
+      </div>
+      {uploading && (
+        <div className="mt-2">
+          <div className="w-full bg-gray-700 rounded-full h-2.5">
+            <div className="bg-pm-gold h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+          </div>
+          <p className="text-sm text-right text-gray-400">{progress}%</p>
+        </div>
+      )}
+      {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+    </div>
+  );
 };
 
 export default ImageUploader;

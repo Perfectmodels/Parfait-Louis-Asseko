@@ -24,46 +24,53 @@ const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
 const Login = lazy(() => import('./pages/Login'));
-const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
-const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
-const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
-const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
-const ForumThread = lazy(() => import('./pages/ForumThread'));
-// FIX: Removed Beginner Classroom pages as the feature has been deprecated.
+// Admin - Apprentissage
+const Activity = lazy(() => import('./pages/admin/Activity'));
+const ChapterDetail = lazy(() => import('./pages/admin/ChapterDetail'));
+const ModelDashboard = lazy(() => import('./pages/admin/ModelDashboard'));
+const ClassroomForum = lazy(() => import('./pages/admin/ClassroomForum'));
+const ForumThread = lazy(() => import('./pages/admin/ForumThread'));
+const BeginnerClassroom = lazy(() => import('./pages/admin/BeginnerClassroom'));
+const BeginnerChapterDetail = lazy(() => import('./pages/admin/BeginnerChapterDetail'));
+
+// Admin - IA
+const ImageGeneration = lazy(() => import('./pages/admin/ai/ImageGeneration'));
+const ImageAnalysis = lazy(() => import('./pages/admin/ai/ImageAnalysis'));
+
+// Chat
 const Chat = lazy(() => import('./pages/Chat'));
-const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
-const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
 const LiveChat = lazy(() => import('./pages/LiveChat'));
 
 
 // Admin Pages
-const Admin = lazy(() => import('./pages/Admin'));
-const AdminAgency = lazy(() => import('./pages/AdminAgency'));
-const AdminCasting = lazy(() => import('./pages/AdminCasting'));
-const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
-const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
-const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
-const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
-const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
-// FIX: Corrected import paths for Admin pages to resolve module not found errors.
-const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
-const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
-const AdminModels = lazy(() => import('./pages/AdminModels'));
-const AdminNews = lazy(() => import('./pages/AdminNews'));
-const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
-const AdminSettings = lazy(() => import('./pages/AdminSettings'));
-const AdminComments = lazy(() => import('./pages/AdminComments'));
-const AdminBookings = lazy(() => import('./pages/AdminBookings'));
-const AdminMessages = lazy(() => import('./pages/AdminMessages'));
-// FIX: Removed AdminBeginnerStudents as the feature has been deprecated.
-const AdminPayments = lazy(() => import('./pages/AdminPayments'));
-const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
-const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
-const AdminMailing = lazy(() => import('./pages/AdminMailing'));
+const Admin = lazy(() => import('./pages/admin/Admin'));
+const AdminAgency = lazy(() => import('./pages/admin/AdminAgency'));
+const AdminCasting = lazy(() => import('./pages/admin/AdminCasting'));
+const AdminCastingResults = lazy(() => import('./pages/admin/AdminCastingResults'));
+const AdminClassroom = lazy(() => import('./pages/admin/AdminClassroom'));
+const AdminClassroomProgress = lazy(() => import('./pages/admin/AdminClassroomProgress'));
+const AdminFashionDay = lazy(() => import('./pages/admin/AdminFashionDay'));
+const AdminFashionDayEvents = lazy(() => import('./pages/admin/AdminFashionDayEvents'));
+const AdminMagazine = lazy(() => import('./pages/admin/AdminMagazine'));
+const AdminModelAccess = lazy(() => import('./pages/admin/AdminModelAccess'));
+const AdminMessages = lazy(() => import('./pages/admin/AdminMessages'));
+const AdminModels = lazy(() => import('./pages/admin/AdminModels'));
+const AdminNews = lazy(() => import('./pages/admin/AdminNews'));
+const AdminPayments = lazy(() => import('./pages/admin/AdminPayments'));
+const AdminRecovery = lazy(() => import('./pages/admin/AdminRecovery'));
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
+const AdminAbsences = lazy(() => import('./pages/admin/AdminAbsences'));
+const AdminArtisticDirection = lazy(() => import('./pages/admin/AdminArtisticDirection'));
+const AdminBeginnerStudents = lazy(() => import('./pages/admin/AdminBeginnerStudents'));
+const AdminBookings = lazy(() => import('./pages/admin/AdminBookings'));
+const AdminCastingLive = lazy(() => import('./pages/admin/AdminCastingLive'));
+const AdminComments = lazy(() => import('./pages/admin/AdminComments'));
+const AdminMailing = lazy(() => import('./pages/admin/AdminMailing'));
+const Gallery = lazy(() => import('./pages/Gallery'));
 
 
 // Role-specific pages
-const JuryCasting = lazy(() => import('./pages/JuryCasting'));
+const JuryCasting = lazy(() => import('./pages/admin/JuryCasting'));
 const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
 
 // Static Pages
@@ -98,7 +105,9 @@ const pageVariants = {
     }
 };
 
-const pageTransition = {
+import { Transition } from 'framer-motion';
+
+const pageTransition: Transition = {
     type: "tween",
     ease: "anticipate",
     duration: 0.5
@@ -126,6 +135,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/magazine" element={<Magazine />} />
                     <Route path="/magazine/:slug" element={<ArticleDetail />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/galerie" element={<Gallery />} />
                     <Route path="/services" element={<Services />} />
                     <Route path="/services/:slug" element={<ServiceDetail />} />
                     <Route path="/casting" element={<Casting />} />

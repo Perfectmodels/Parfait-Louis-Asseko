@@ -1,13 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
-// FIX: Corrected import path for BookingForm.
-import BookingForm from '../components/BookingForm';
-import { ContactMessage } from '../../types';
+import { ContactMessage, BookingRequest } from '../../types';
 
 const Contact: React.FC = () => {
     const { data, saveData } = useData();
@@ -15,18 +13,32 @@ const Contact: React.FC = () => {
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
     
-    const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    const [isBooking, setIsBooking] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        company: '',
+        requestedModels: '',
+        startDate: '',
+        endDate: '',
+    });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
     
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const service = params.get('service');
+        const model = params.get('model');
         if (service) {
             setFormData(prev => ({ ...prev, subject: `Demande de devis pour : ${service}` }));
         }
+        if (model) {
+            setFormData(prev => ({ ...prev, requestedModels: model }));
+            setIsBooking(true);
+        }
     }, [location.search]);
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,27 +51,45 @@ const Contact: React.FC = () => {
             return;
         }
 
-        const newContactMessage: ContactMessage = {
-            id: `contact-${Date.now()}`,
-            submissionDate: new Date().toISOString(),
-            status: 'Nouveau',
-            name: formData.name,
-            email: formData.email,
-            subject: formData.subject,
-            message: formData.message,
-        };
-
         try {
-            const updatedMessages = [...(data.contactMessages || []), newContactMessage];
-            await saveData({ ...data, contactMessages: updatedMessages });
+            if (isBooking) {
+                const newRequest: BookingRequest = {
+                    id: `booking-${Date.now()}`,
+                    submissionDate: new Date().toISOString(),
+                    status: 'Nouveau',
+                    clientName: formData.name,
+                    clientEmail: formData.email,
+                    clientCompany: formData.company,
+                    requestedModels: formData.requestedModels,
+                    startDate: formData.startDate,
+                    endDate: formData.endDate,
+                    message: formData.message,
+                };
+                const updatedRequests = [...(data.bookingRequests || []), newRequest];
+                await saveData({ ...data, bookingRequests: updatedRequests });
+                setStatus('success');
+                setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');
+            } else {
+                const newContactMessage: ContactMessage = {
+                    id: `contact-${Date.now()}`,
+                    submissionDate: new Date().toISOString(),
+                    status: 'Nouveau',
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                };
+                const updatedMessages = [...(data.contactMessages || []), newContactMessage];
+                await saveData({ ...data, contactMessages: updatedMessages });
+                setStatus('success');
+                setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
+            }
             
-            setStatus('success');
-            setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
-            setFormData({ name: '', email: '', subject: '', message: '' });
+            setFormData({ name: '', email: '', subject: '', message: '', company: '', requestedModels: '', startDate: '', endDate: '' });
         } catch (error) {
             setStatus('error');
             setStatusMessage('Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer.');
-            console.error("Error saving contact message:", error);
+            console.error("Error saving data:", error);
         }
     };
 
@@ -106,18 +136,43 @@ const Contact: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Contact Form */}
+                    {/* Merged Form */}
                     <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Envoyez-nous un message</h2>
+                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Envoyez un message ou une demande de booking</h2>
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <FormInput label="Votre Nom" name="name" value={formData.name} onChange={handleChange} required />
-                            <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-                            <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
-                            <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormInput label="Votre Nom Complet" name="name" value={formData.name} onChange={handleChange} required />
+                                <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                            </div>
+                            
+                            <div className="flex items-center space-x-4 my-4">
+                                <span className="text-pm-off-white/80">Type de demande :</span>
+                                <button type="button" onClick={() => setIsBooking(false)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${!isBooking ? 'bg-pm-gold text-pm-dark' : 'bg-pm-dark-lighter hover:bg-pm-dark-light'}`}>
+                                    Message Général
+                                </button>
+                                <button type="button" onClick={() => setIsBooking(true)} className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${isBooking ? 'bg-pm-gold text-pm-dark' : 'bg-pm-dark-lighter hover:bg-pm-dark-light'}`}>
+                                    Booking
+                                </button>
+                            </div>
+
+                            {isBooking ? (
+                                <>
+                                    <FormInput label="Société (optionnel)" name="company" value={formData.company} onChange={handleChange} />
+                                    <FormInput label="Mannequin(s) souhaité(s)" name="requestedModels" value={formData.requestedModels} onChange={handleChange} required />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <FormInput label="Date de début" name="startDate" type="date" value={formData.startDate} onChange={handleChange} />
+                                        <FormInput label="Date de fin" name="endDate" type="date" value={formData.endDate} onChange={handleChange} />
+                                    </div>
+                                </>
+                            ) : (
+                                <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
+                            )}
+                            
+                            <FormTextArea label="Votre Message / Détails du projet" name="message" value={formData.message} onChange={handleChange} required />
                             
                             <div>
                                 <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
-                                    {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
+                                    {status === 'loading' ? 'Envoi en cours...' : (isBooking ? 'Envoyer la demande de booking' : 'Envoyer le message')}
                                 </button>
                             </div>
                             
@@ -129,17 +184,6 @@ const Contact: React.FC = () => {
                         </form>
                     </div>
                 </div>
-
-                <div className="mt-16 max-w-6xl mx-auto">
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6 text-center">Demande de Booking</h2>
-                        <p className="text-center text-pm-off-white/80 mb-8 -mt-4">
-                            Pour un ou plusieurs mannequins, ou pour tout autre projet.
-                        </p>
-                        <BookingForm />
-                    </div>
-                </div>
-
             </div>
         </div>
     );
@@ -160,15 +204,15 @@ const SocialLink: React.FC<{ href: string, icon: React.ElementType }> = ({ href,
 
 const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <input {...props} id={props.name} className="admin-input" />
+        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/80 mb-1">{props.label}</label>
+        <input {...props} id={props.name} className="w-full bg-pm-dark-lighter border border-pm-gold/20 rounded-md p-3 focus:ring-pm-gold focus:border-pm-gold transition-all" />
     </div>
 );
 
 const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" />
+        <label htmlFor={props.name} className="block text-sm font-medium text-pm-off-white/80 mb-1">{props.label}</label>
+        <textarea {...props} id={props.name} rows={5} className="w-full bg-pm-dark-lighter border border-pm-gold/20 rounded-md p-3 focus:ring-pm-gold focus:border-pm-gold transition-all" />
     </div>
 );
 
