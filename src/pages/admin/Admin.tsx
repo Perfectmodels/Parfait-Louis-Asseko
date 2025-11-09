@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import SEO from '../components/SEO';
+import SEO from '../../components/SEO';
 import { 
     UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
@@ -8,7 +8,7 @@ import {
     ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
     SignalIcon, ArrowUpRightIcon
 } from '@heroicons/react/24/outline';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { motion } from 'framer-motion';
 
 interface ActiveUser {

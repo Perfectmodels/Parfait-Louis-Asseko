@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
-import { BookingRequest } from '../../types';
-import SEO from '../components/SEO';
+import { useData } from '../../../contexts/DataContext';
+import { BookingRequest } from '../../../types';
+import SEO from '../../../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
