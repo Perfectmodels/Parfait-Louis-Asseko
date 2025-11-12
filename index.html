@@ -20,118 +20,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'pm-dark': '#111111',
-              'pm-gold': '#D4AF37',
-              'pm-off-white': '#f0f0f0',
-            },
-            fontFamily: {
-              'playfair': ['"Playfair Display"', 'serif'],
-              'montserrat': ['"Montserrat"', 'sans-serif'],
-            },
-            animation: {
-              'marquee': 'marquee 180s linear infinite',
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'fade-in': 'fadeIn 0.5s ease-in-out',
-              'glow': 'glow 2s ease-in-out infinite',
-            },
-            keyframes: {
-              marquee: {
-                '0%': { transform: 'translateX(0%)' },
-                '100%': { transform: 'translateX(-50%)' },
-              },
-              fadeIn: {
-                '0%': { opacity: 0 },
-                '100%': { opacity: 1 },
-              },
-              glow: {
-                '0%, 100%': { boxShadow: '0 0 5px #D4AF37, 0 0 10px #D4AF37' },
-                '50%': { boxShadow: '0 0 20px #D4AF37, 0 0 30px #D4AF37' },
-              },
-            }
-          }
-        }
-      }
-    </script>
-    <style type="text/tailwindcss">
-        @tailwind base;
-        @tailwind components;
-        @tailwind utilities;
-
-        @layer base {
-          body {
-            @apply bg-pm-dark text-pm-off-white font-montserrat antialiased;
-          }
-          @media print {
-            .print-hide { @apply hidden; }
-            .printable-content { @apply block; }
-            body { @apply bg-white; }
-          }
-        }
-        @layer components {
-          .card-base { @apply bg-black border border-pm-gold/20 transition-all duration-300; }
-          .page-container { @apply max-w-7xl mx-auto px-6 pt-20 pb-20; }
-          .page-title { @apply font-playfair text-5xl text-pm-gold text-center mb-4; }
-          .page-subtitle { @apply text-center text-lg max-w-3xl mx-auto mb-12 text-pm-off-white/80; }
-          .section-title { @apply font-playfair text-4xl text-center text-pm-gold mb-8; }
-          .cta-btn-gold { @apply w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30; }
-          .cta-btn-outline { @apply w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark; }
-          .admin-label { @apply block text-sm font-bold text-pm-off-white/70 mb-2; }
-          .admin-input, .admin-textarea, .admin-select { @apply w-full bg-pm-dark border border-pm-off-white/30 rounded-md py-2 px-3 text-pm-off-white transition-all duration-200; }
-          .admin-input:focus, .admin-textarea:focus, .admin-select:focus { @apply outline-none border-pm-gold ring-1 ring-pm-gold; }
-          .admin-textarea { @apply min-h-[120px]; }
-          .admin-page-header { @apply flex justify-between items-start mb-8 flex-wrap gap-4; }
-          .admin-page-title { @apply font-playfair text-4xl text-pm-gold; }
-          .admin-page-subtitle { @apply text-pm-off-white/70 mt-2; }
-          .admin-section-title { @apply font-playfair text-2xl text-pm-gold border-b-2 border-pm-gold/20 pb-2 mb-6; }
-          .admin-section-wrapper { @apply bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30; }
-          .admin-table { @apply w-full text-left; }
-          .admin-table th { @apply p-4 uppercase text-xs tracking-wider text-pm-off-white/70; }
-          .admin-table td { @apply p-4 border-t border-pm-dark; }
-          .action-btn { @apply p-2 rounded-md transition-colors border border-transparent; }
-          .prose { @apply text-pm-off-white/80 max-w-none; }
-          .prose h2, .prose h3 { @apply font-playfair text-pm-gold; }
-          .prose a { @apply text-pm-gold underline; }
-        }
-        @layer utilities {
-          .animate-glow {
-            animation: glow 2s ease-in-out infinite;
-          }
-          .focus-style-self {
-            @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pm-gold focus-visible:ring-offset-pm-dark;
-          }
-        }
-    </style>
-    
-    <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "firebase/compat/app": "https://aistudiocdn.com/firebase@^12.4.0/compat/app",
-    "firebase/compat/database": "https://aistudiocdn.com/firebase@^12.4.0/compat/database",
-    "firebase/database": "https://aistudiocdn.com/firebase@^12.4.0/database",
     "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
     "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.5",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0",
     "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/",
     "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "firebase/": "https://aistudiocdn.com/firebase@^12.4.0/",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.5.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0",
     "vite": "https://aistudiocdn.com/vite@^7.1.12",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0"
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
   }
 }
 </script>
-    
 </head>
 <body>
     <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
