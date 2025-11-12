@@ -6,3 +6,5 @@ const BeginnerChapterDetail: React.FC = () => {
 };
 
 export default BeginnerChapterDetail;
+
+

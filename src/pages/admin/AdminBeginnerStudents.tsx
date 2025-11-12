@@ -6,3 +6,5 @@ const AdminBeginnerStudents: React.FC = () => {
 };
 
 export default AdminBeginnerStudents;
+
+

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { GalleryAlbum } from '../types';
-import { XMarkIcon, PhotoIcon, EyeIcon, CalendarIcon, TagIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import GalleryCarousel from '../components/gallery/GalleryCarousel';
 import GalleryGrid from '../components/gallery/GalleryGrid';
 import GalleryFilters from '../components/gallery/GalleryFilters';
@@ -18,10 +18,10 @@ const Gallery: React.FC = () => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   const albums: GalleryAlbum[] = useMemo(() => {
-    if (!data?.galleryAlbums) return [];
+    if (!data?.fashionDayEvents) return [];
     
     // Filtrer par recherche si un terme de recherche est fourni
-    let filteredAlbums = [...(data.galleryAlbums as GalleryAlbum[])];
+    let filteredAlbums = [...(data.fashionDayEvents as unknown as GalleryAlbum[])];
     
     if (searchQuery) {
       const query = searchQuery.toLowerCase();

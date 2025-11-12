@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import SEO from '../components/SEO';
-import { SparklesIcon } from '@heroicons/react/24/solid';
+import SEO from '../../../components/SEO';
+// Data context is available if needed for future features
+// const { data } = useData(); 
+import { PhotoIcon, ArrowPathIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import ImageUploader from '../../../components/ImageUploader';
 
 const ImageGeneration: React.FC = () => {
     const [prompt, setPrompt] = useState('');
@@ -36,7 +39,7 @@ const ImageGeneration: React.FC = () => {
             });
 
             if (response.generatedImages && response.generatedImages.length > 0) {
-                const base64ImageBytes: string = response.generatedImages[0].image.imageBytes;
+                const base64ImageBytes = response.generatedImages[0].image?.imageBytes || '';
                 const imageUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
                 setGeneratedImage(imageUrl);
             } else {
@@ -116,3 +119,4 @@ const ImageGeneration: React.FC = () => {
 };
 
 export default ImageGeneration;
+

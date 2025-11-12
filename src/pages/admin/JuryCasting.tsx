@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { CastingApplication, JuryScore } from '../../types';
-import SEO from '../components/SEO';
+import SEO from '../../components/SEO';
 import { XMarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import ScoreInput from '../components/ScoreInput';
+import ScoreInput from '../../components/ScoreInput';
 
 const JuryCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -228,3 +228,5 @@ const JuryCasting: React.FC = () => {
 };
 
 export default JuryCasting;
+
+

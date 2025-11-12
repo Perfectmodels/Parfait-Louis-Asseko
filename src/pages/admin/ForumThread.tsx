@@ -1,13 +1,10 @@
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
-// FIX: Corrected import path for types from '../src/types' to '../types'.
+import SEO from '../../components/SEO';
+import { useData } from '../../contexts/DataContext';
 import { ForumReply } from '../../types';
-import NotFound from './NotFound';
+import NotFound from '../../components/NotFound';
 
 const ForumThread: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -130,3 +127,5 @@ const ForumThread: React.FC = () => {
 };
 
 export default ForumThread;
+
+

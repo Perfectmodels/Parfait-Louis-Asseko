@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { MonthlyPayment } from '../../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -194,3 +194,5 @@ const AdminPayments: React.FC = () => {
 };
 
 export default AdminPayments;
+
+

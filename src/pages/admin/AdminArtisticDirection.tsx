@@ -1,8 +1,8 @@
 
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { PhotoshootBrief, Model } from '../../types';
-import SEO from '../components/SEO';
+import SEO from '../../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -180,3 +180,5 @@ const FormTextArea: React.FC<any> = (props) => (
 );
 
 export default AdminArtisticDirection;
+
+

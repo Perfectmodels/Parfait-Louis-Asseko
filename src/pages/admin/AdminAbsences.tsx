@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { Absence } from '../../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -173,3 +173,5 @@ const AdminAbsences: React.FC = () => {
 };
 
 export default AdminAbsences;
+
+

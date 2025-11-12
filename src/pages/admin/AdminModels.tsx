@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { Model, ContactInfo } from '../../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -286,3 +286,5 @@ const AdminModels: React.FC = () => {
 };
 
 export default AdminModels;
+
+

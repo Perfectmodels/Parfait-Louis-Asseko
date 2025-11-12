@@ -1,6 +1,6 @@
 import React from 'react';
-import { useData } from '../contexts/DataContext';
-import SEO from '../components/SEO';
+import { useData } from '../../contexts/DataContext';
+import SEO from '../../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon, XCircleIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { RecoveryRequest } from '../../types';
@@ -88,3 +88,5 @@ const AdminRecovery: React.FC = () => {
 };
 
 export default AdminRecovery;
+
+

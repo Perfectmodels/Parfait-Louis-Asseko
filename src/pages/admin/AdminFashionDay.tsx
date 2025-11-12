@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationStatus, FashionDayApplicationRole } from '../../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -168,3 +168,4 @@ const InfoItem: React.FC<{label: string, value: React.ReactNode}> = ({label, val
 );
 
 export default AdminFashionDayApps;
+

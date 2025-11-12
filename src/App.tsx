@@ -30,8 +30,9 @@ const ChapterDetail = lazy(() => import('./pages/admin/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/admin/ModelDashboard'));
 const ClassroomForum = lazy(() => import('./pages/admin/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/admin/ForumThread'));
-const BeginnerClassroom = lazy(() => import('./pages/admin/BeginnerClassroom'));
-const BeginnerChapterDetail = lazy(() => import('./pages/admin/BeginnerChapterDetail'));
+// Commented out unused imports
+// const BeginnerClassroom = lazy(() => import('./pages/admin/BeginnerClassroom'));
+// const BeginnerChapterDetail = lazy(() => import('./pages/admin/BeginnerChapterDetail'));
 
 // Admin - IA
 const ImageGeneration = lazy(() => import('./pages/admin/ai/ImageGeneration'));
@@ -61,9 +62,10 @@ const AdminRecovery = lazy(() => import('./pages/admin/AdminRecovery'));
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 const AdminAbsences = lazy(() => import('./pages/admin/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/admin/AdminArtisticDirection'));
-const AdminBeginnerStudents = lazy(() => import('./pages/admin/AdminBeginnerStudents'));
+// Commented out unused imports
+// const AdminBeginnerStudents = lazy(() => import('./pages/admin/AdminBeginnerStudents'));
 const AdminBookings = lazy(() => import('./pages/admin/AdminBookings'));
-const AdminCastingLive = lazy(() => import('./pages/admin/AdminCastingLive'));
+// const AdminCastingLive = lazy(() => import('./pages/admin/AdminCastingLive'));
 const AdminComments = lazy(() => import('./pages/admin/AdminComments'));
 const AdminMailing = lazy(() => import('./pages/admin/AdminMailing'));
 const Gallery = lazy(() => import('./pages/Gallery'));
