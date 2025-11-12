@@ -379,14 +379,3 @@ export interface NavLink {
     inFooter: boolean;
     footerLabel?: string;
 }
-
-export interface GalleryAlbum {
-  id: string;
-  title: string;
-  description?: string;
-  category?: string;
-  coverImage?: string;
-  images?: string[];
-  imageCount: number;
-  createdAt: string;
-}

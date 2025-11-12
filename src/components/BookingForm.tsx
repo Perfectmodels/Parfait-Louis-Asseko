@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { BookingRequest } from '../../types';
+import { BookingRequest } from '../types';
 
 interface BookingFormProps {
     prefilledModelName?: string;
