@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { Module, Chapter } from '../../types';
-import SEO from '../components/SEO';
+import SEO from '../../components/SEO';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const AdminClassroom: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -65,7 +65,7 @@ const AdminClassroom: React.FC = () => {
       }
   };
 
-  const handleModuleChange = (moduleIndex: number, field: keyof Module, value: any) => {
+  const handleModuleChange = (moduleIndex: number, field: keyof Module, value: string) => {
     const updatedCourse = [...course];
     if (field === 'title') {
         const newSlug = generateSlug(value);
@@ -89,7 +89,7 @@ const AdminClassroom: React.FC = () => {
     setCourse(updatedCourse);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!data || !course) return;
     saveData({ ...data, courseData: course });
     alert("Changements enregistrés avec succès dans la base de données.");
@@ -183,3 +183,4 @@ const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({lab
 );
 
 export default AdminClassroom;
+

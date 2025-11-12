@@ -1,7 +1,7 @@
 import React from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { ArticleComment } from '../../types';
-import SEO from '../components/SEO';
+import SEO from '../../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 
@@ -75,3 +75,5 @@ const AdminComments: React.FC = () => {
 };
 
 export default AdminComments;
+
+

@@ -1,251 +1,163 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  EnvelopeIcon, 
-  PhoneIcon, 
-  MapPinIcon,
-  ArrowRightIcon,
-  CheckCircleIcon
-} from '@heroicons/react/24/outline';
-// Import des icônes avec les noms corrects pour Heroicons v2.2.0
-import { 
-  FaceSmileIcon as FacebookIcon,
-  PhotoIcon as InstagramIcon,
-  ChatBubbleLeftRightIcon as TwitterIcon,
-  VideoCameraIcon as YoutubeIcon,
-  UserGroupIcon as LinkedinIcon
-} from '@heroicons/react/24/outline';
+import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 
-interface FooterLinkProps {
-  to: string;
-  children: React.ReactNode;
-  icon?: React.ComponentType<{ className?: string }>;
-  className?: string;
-}
-
-const FooterLink: React.FC<FooterLinkProps> = ({ to, children, icon: Icon, className = '' }) => (
-  <motion.li
-    whileHover={{ x: 5 }}
-    className="group"
-  >
-    <Link
-      to={to}
-      className={`flex items-center gap-2 text-pm-off-white/80 hover:text-pm-gold transition-colors ${className}`}
-    >
-      {Icon && <Icon className="w-4 h-4" />}
-      <span>{children}</span>
-    </Link>
-  </motion.li>
+// Définition des types pour les icônes de médias sociaux
+const FacebookIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
+  </svg>
 );
 
+const InstagramIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd" />
+  </svg>
+);
+
+interface SocialLink {
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  url: string;
+}
+
+interface QuickLink {
+  name: string;
+  to: string;
+}
+
+interface ContactInfo {
+  icon: React.ComponentType<{ className?: string }>;
+  text: string;
+  url: string;
+}
+
 const NewFooter: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const currentYear = new Date().getFullYear();
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    
-    setIsLoading(true);
-    try {
-      // Simuler un appel API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setIsSubscribed(true);
-      setEmail('');
-    } catch (error) {
-      console.error('Erreur lors de l\'abonnement :', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const siteConfig = {
+    siteName: 'Perfect Models',
+    description: 'Agence de mannequins professionnels'
   };
-
-  const socialLinks = [
+  
+  const navLinks = [
+    { name: 'Accueil', to: '/', inFooter: true, footerLabel: 'Accueil', label: 'Accueil', path: '/' },
+    { name: 'Services', to: '/services', inFooter: true, footerLabel: 'Services', label: 'Services', path: '/services' },
+    { name: 'Modèles', to: '/models', inFooter: true, footerLabel: 'Modèles', label: 'Modèles', path: '/models' },
+    { name: 'Contact', to: '/contact', inFooter: true, footerLabel: 'Contact', label: 'Contact', path: '/contact' }
+  ];
+  
+  const socialLinks: SocialLink[] = [
     { name: 'Facebook', icon: FacebookIcon, url: '#' },
-    { name: 'Instagram', icon: InstagramIcon, url: '#' },
-    { name: 'Twitter', icon: TwitterIcon, url: '#' },
-    { name: 'YouTube', icon: YoutubeIcon, url: '#' },
-    { name: 'LinkedIn', icon: LinkedinIcon, url: '#' },
+    { name: 'Instagram', icon: InstagramIcon, url: '#' }
   ];
-
-  const quickLinks = [
-    { name: 'Accueil', to: '/' },
-    { name: 'À propos', to: '/about' },
-    { name: 'Services', to: '/services' },
-    { name: 'Modèles', to: '/models' },
-    { name: 'Contact', to: '/contact' },
-  ];
-
-  const legalLinks = [
-    { name: 'Mentions légales', to: '/legal' },
-    { name: 'Politique de confidentialité', to: '/privacy' },
-    { name: 'Conditions d\'utilisation', to: '/terms' },
-    { name: 'Politique des cookies', to: '/cookies' },
-  ];
-
-  const contactInfo = [
+  
+  const contactInfo: ContactInfo[] = [
     { 
       icon: EnvelopeIcon, 
-      text: 'contact@perfectmodels.com',
-      url: 'mailto:contact@perfectmodels.com'
+      text: 'contact@example.com',
+      url: 'mailto:contact@example.com'
     },
     { 
       icon: PhoneIcon, 
-      text: '+33 1 23 45 67 89',
-      url: 'tel:+33123456789'
+      text: '+1 234 567 8900',
+      url: 'tel:+12345678900'
     },
     { 
       icon: MapPinIcon, 
-      text: '123 Avenue des Champs-Élysées, 75008 Paris',
-      url: 'https://maps.google.com'
-    },
+      text: '123 Fashion St, Paris, France',
+      url: 'https://maps.google.com/'
+    }
   ];
 
+  const footerLinks: QuickLink[] = navLinks
+    .filter(link => link.inFooter)
+    .map(link => ({
+      name: link.footerLabel || link.label,
+      to: link.path
+    }));
+
+  const keyServices: QuickLink[] = [
+    { name: "Booking Mannequins", to: "/contact?service=Booking+Mannequins" },
+    { name: "Candidature Casting", to: "/casting-formulaire" },
+    { name: "Organisation Défilés", to: "/contact?service=Organisation+D%C3%A9fil%C3%A9s+de+Mode" },
+    { name: "Formation Mannequins", to: "/contact?service=Formation+Mannequins" },
+  ];
+
+  const renderSocialIcons = () => (
+    <div className="flex space-x-4">
+      {socialLinks.map((link: SocialLink) => (
+        <a
+          key={link.name}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-pm-off-white/70 hover:text-pm-gold transition-colors"
+          aria-label={link.name}
+        >
+          <link.icon className="w-5 h-5" />
+        </a>
+      ))}
+    </div>
+  );
+
+  const renderQuickLinks = (links: QuickLink[]) => (
+    <ul className="space-y-3">
+      {links.map((link: QuickLink) => (
+        <li key={link.name}>
+          <Link to={link.to} className="hover:text-pm-gold transition-colors text-sm">
+            {link.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+
+  const renderContactInfo = () => (
+    <ul className="space-y-4">
+      {contactInfo.map((item: ContactInfo, index: number) => (
+        <li key={index} className="flex items-start gap-3">
+          <item.icon className="w-5 h-5 mt-0.5 text-pm-gold flex-shrink-0" />
+          <a href={item.url} className="text-pm-off-white/80 hover:text-pm-gold transition-colors">
+            {item.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+
   return (
-    <footer className="bg-pm-dark text-pm-off-white">
-      {/* Bandeau supérieur */}
-      <div className="bg-pm-gold/10 border-b border-pm-gold/20">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-              <h3 className="text-xl font-bold text-pm-gold mb-2">Restez informé</h3>
-              <p className="text-pm-off-white/80">Abonnez-vous à notre newsletter pour ne rien manquer</p>
-            </div>
-            
-            <form onSubmit={handleSubscribe} className="w-full md:w-auto">
-              <div className="flex flex-col sm:flex-row gap-2 w-full">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Votre adresse email"
-                  className="px-4 py-2 rounded-full bg-pm-off-white/5 border border-pm-off-white/10 text-pm-off-white placeholder-pm-off-white/50 focus:outline-none focus:ring-2 focus:ring-pm-gold/50 flex-grow"
-                  required
-                  disabled={isLoading || isSubscribed}
-                />
-                <button
-                  type="submit"
-                  disabled={isLoading || isSubscribed}
-                  className="px-6 py-2 bg-pm-gold hover:bg-pm-gold/90 text-pm-dark font-medium rounded-full transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? (
-                    'Envoi...'
-                  ) : isSubscribed ? (
-                    <>
-                      <CheckCircleIcon className="w-5 h-5" />
-                      Merci !
-                    </>
-                  ) : (
-                    <>
-                      <span>S&apos;abonner</span>
-                      <ArrowRightIcon className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
+    <footer className="bg-pm-dark text-pm-off-white py-12">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="text-xl font-bold mb-4">Perfect Models</h3>
+            <p className="text-pm-off-white/70 mb-4">
+              Votre agence de mannequins professionnels
+            </p>
+            {renderSocialIcons()}
+          </div>
+          
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Liens rapides</h4>
+            {renderQuickLinks(footerLinks)}
+          </div>
+          
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Services clés</h4>
+            {renderQuickLinks(keyServices)}
+          </div>
+          
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Contact</h4>
+            {renderContactInfo()}
           </div>
         </div>
-      </div>
-
-      {/* Contenu principal */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Colonne 1: Logo et description */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-pm-gold">Perfect Models</span>
-            </div>
-            <p className="text-pm-off-white/80">
-              Agence de mannequins d'exception, façonnant l'avenir de la mode avec élégance et professionnalisme.
-            </p>
-            <div className="flex gap-4 pt-2">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={social.name}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-pm-off-white/60 hover:text-pm-gold transition-colors"
-                    aria-label={social.name}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Colonne 2: Liens rapides */}
-          <div>
-            <h4 className="text-lg font-semibold text-pm-gold mb-4">Navigation</h4>
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <FooterLink key={link.name} to={link.to}>
-                  {link.name}
-                </FooterLink>
-              ))}
-            </ul>
-          </div>
-
-          {/* Colonne 3: Liens légaux */}
-          <div>
-            <h4 className="text-lg font-semibold text-pm-gold mb-4">Légal</h4>
-            <ul className="space-y-3">
-              {legalLinks.map((link) => (
-                <FooterLink key={link.name} to={link.to}>
-                  {link.name}
-                </FooterLink>
-              ))}
-            </ul>
-          </div>
-
-          {/* Colonne 4: Contact */}
-          <div>
-            <h4 className="text-lg font-semibold text-pm-gold mb-4">Contact</h4>
-            <ul className="space-y-3">
-              {contactInfo.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <motion.li 
-                    key={index}
-                    className="flex items-start gap-3"
-                    whileHover={{ x: 5 }}
-                  >
-                    <Icon className="w-5 h-5 text-pm-gold mt-0.5 flex-shrink-0" />
-                    <a 
-                      href={item.url} 
-                      className="text-pm-off-white/80 hover:text-pm-gold transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.text}
-                    </a>
-                  </motion.li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Copyright */}
-      <div className="border-t border-pm-off-white/10">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-pm-off-white/60">
-              &copy; {currentYear} Perfect Models. Tous droits réservés.
-            </p>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="text-pm-off-white/60">
-                Développé avec <span className="text-red-500">❤</span> par votre agence
-              </span>
-            </div>
+        
+        <div className="border-t border-pm-off-white/10 mt-12 pt-8 text-center text-sm">
+          <p>&copy; {new Date().getFullYear()} Perfect Models. Tous droits réservés.</p>
+          <div className="flex justify-center space-x-4 mt-2">
+            <Link to="/terms" className="hover:text-pm-gold transition-colors">Conditions d'utilisation</Link>
+            <span>|</span>
+            <Link to="/privacy" className="hover:text-pm-gold transition-colors">Politique de confidentialité</Link>
           </div>
         </div>
       </div>

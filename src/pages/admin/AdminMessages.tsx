@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 import { ContactMessage } from '../../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -105,3 +105,5 @@ const AdminMessages: React.FC = () => {
 };
 
 export default AdminMessages;
+
+

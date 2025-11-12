@@ -1,12 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
-import { AppData } from '../hooks/useDataStore';
-import { Testimonial, Partner, FAQCategory, FAQItem } from '../../types';
-import SEO from '../components/SEO';
+import { useData } from '../../../contexts/DataContext';
+import { AppData } from '../../../types';
+import { Testimonial, Partner, FAQCategory, FAQItem } from '../../../types';
+import SEO from '../../../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import ImageUploader from '../components/ImageUploader';
+import ImageUploader from '../../../components/ImageUploader';
 
 type EditableData = Pick<AppData, 'contactInfo' | 'siteConfig' | 'siteImages' | 'socialLinks' | 'agencyPartners' | 'testimonials' | 'faqData' | 'apiKeys'>;
 
@@ -34,7 +33,7 @@ const AdminSettings: React.FC = () => {
         alert("Changements enregistrés avec succès dans la base de données.");
     };
 
-    const handleSimpleChange = (section: keyof EditableData, key: string, value: any) => {
+    const handleSimpleChange = (section: keyof EditableData, key: string, value: string) => {
         if (!localData) return;
         setLocalData(prev => {
             if (!prev) return null;
@@ -117,11 +116,15 @@ const AdminSettings: React.FC = () => {
                     <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Partenaires de l'Agence</h2>
                         <div className="space-y-4">
-                            <ArrayEditor 
+                            <ArrayEditor<Partner>
                                 items={localData.agencyPartners}
                                 setItems={newItems => setLocalData(p => ({...p!, agencyPartners: newItems}))}
-                                renderItem={(item: Partner, updateItem) => (
-                                    <FormInput label="Nom du partenaire" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
+                                renderItem={(item, updateItem) => (
+                                    <FormInput 
+                                        label="Nom du partenaire" 
+                                        value={item.name} 
+                                        onChange={e => updateItem({ ...item, name: e.target.value })} 
+                                    />
                                 )}
                                 getNewItem={() => ({ name: 'Nouveau Partenaire' })}
                                 getItemTitle={item => item.name}
@@ -132,14 +135,26 @@ const AdminSettings: React.FC = () => {
                      <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Témoignages</h2>
                         <div className="space-y-4">
-                            <ArrayEditor 
+                            <ArrayEditor<Testimonial>
                                 items={localData.testimonials}
                                 setItems={newItems => setLocalData(p => ({...p!, testimonials: newItems}))}
-                                renderItem={(item: Testimonial, updateItem) => (
+                                renderItem={(item, updateItem) => (
                                     <>
-                                        <FormInput label="Nom" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
-                                        <FormInput label="Rôle" value={item.role} onChange={e => updateItem({ ...item, role: e.target.value })} />
-                                        <ImageUploader label="Photo" value={item.imageUrl} onChange={value => updateItem({ ...item, imageUrl: value })} />
+                                        <FormInput 
+                                            label="Nom" 
+                                            value={item.name} 
+                                            onChange={e => updateItem({ ...item, name: e.target.value })} 
+                                        />
+                                        <FormInput 
+                                            label="Rôle" 
+                                            value={item.role} 
+                                            onChange={e => updateItem({ ...item, role: e.target.value })} 
+                                        />
+                                        <ImageUploader 
+                                            label="Photo" 
+                                            value={item.imageUrl} 
+                                            onChange={value => updateItem({ ...item, imageUrl: value })} 
+                                        />
                                         <FormTextArea 
                                             label="Citation" 
                                             value={item.quote} 
@@ -155,22 +170,34 @@ const AdminSettings: React.FC = () => {
 
                     <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">FAQ (Foire Aux Questions)</h2>
-                        <ArrayEditor 
+                        <ArrayEditor<FAQCategory>
                             items={localData.faqData}
                             setItems={newItems => setLocalData(p => ({...p!, faqData: newItems}))}
-                            renderItem={(item: FAQCategory, updateItem) => (
+                            renderItem={(item, updateItem) => (
                                 <>
-                                    <FormInput label="Catégorie" value={item.category} onChange={e => updateItem({ ...item, category: e.target.value })} />
-                                    <SubArrayEditor
+                                    <FormInput 
+                                        label="Catégorie" 
+                                        value={item.category} 
+                                        onChange={e => updateItem({ ...item, category: e.target.value })} 
+                                    />
+                                    <SubArrayEditor<FAQItem>
                                         title="Questions"
                                         items={item.items || []}
                                         setItems={newItems => updateItem({ ...item, items: newItems })}
                                         getNewItem={() => ({ question: 'Nouvelle Question ?', answer: 'Réponse...' })}
                                         getItemTitle={subItem => subItem.question}
-                                        renderItem={(faq: FAQItem, updateFaq) => (
+                                        renderItem={(faq, updateFaq) => (
                                             <>
-                                                <FormInput label="Question" value={faq.question} onChange={e => updateFaq({ ...faq, question: e.target.value })} />
-                                                <FormTextArea label="Réponse" value={faq.answer} onChange={e => updateFaq({ ...faq, answer: e.target.value })} />
+                                                <FormInput 
+                                                    label="Question" 
+                                                    value={faq.question} 
+                                                    onChange={e => updateFaq({ ...faq, question: e.target.value })} 
+                                                />
+                                                <FormTextArea 
+                                                    label="Réponse" 
+                                                    value={faq.answer} 
+                                                    onChange={e => updateFaq({ ...faq, answer: e.target.value })} 
+                                                />
                                             </>
                                         )}
                                     />
@@ -186,35 +213,52 @@ const AdminSettings: React.FC = () => {
     );
 };
 
-const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormInput: React.FC<{label: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void}> = ({label, value, onChange}) => (
     <div>
         <label className="admin-label">{label}</label>
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormTextArea: React.FC<{label: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void}> = ({label, value, onChange}) => (
     <div>
         <label className="admin-label">{label}</label>
         <textarea value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
     </div>
 );
 
-const ArrayEditor: React.FC<{
-    items: any[];
-    setItems: (items: any[]) => void;
-    renderItem: (item: any, updateItem: (newItem: any) => void, index: number) => React.ReactNode;
-    getNewItem: () => any;
-    getItemTitle: (item: any) => string;
-}> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
+interface ArrayEditorProps<T> {
+    items: T[];
+    setItems: (items: T[]) => void;
+    renderItem: (item: T, updateItem: (newItem: T) => void, index: number) => React.ReactNode;
+    getNewItem: () => T;
+    getItemTitle: (item: T) => string;
+}
+
+interface SubArrayEditorProps<T> {
+    title: string;
+    items: T[];
+    setItems: (items: T[]) => void;
+    renderItem: (item: T, updateItem: (newItem: T) => void, index: number) => React.ReactNode;
+    getNewItem: () => T;
+    getItemTitle: (item: T) => string;
+}
+
+const ArrayEditor = <T extends object>({ 
+    items, 
+    setItems, 
+    renderItem, 
+    getNewItem, 
+    getItemTitle 
+}: ArrayEditorProps<T>) => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    const handleUpdateItem = (index: number, newItem: any) => {
+    const handleUpdateItem = (index: number, newItem: T) => {
         const newItems = [...items];
         newItems[index] = newItem;
         setItems(newItems);
     };
 
-    const handleAddItem = () => {
+    const handleAddItem = (): void => {
         setItems([...items, getNewItem()]);
         setOpenIndex(items.length);
     };
@@ -250,12 +294,27 @@ const ArrayEditor: React.FC<{
     );
 };
 
-const SubArrayEditor: React.FC<{ title: string } & Omit<React.ComponentProps<typeof ArrayEditor>, 'items' | 'setItems'> & { items: any[], setItems: (items: any[]) => void }> = ({ title, ...props }) => (
+const SubArrayEditor = <T extends object>({ 
+    title, 
+    items, 
+    setItems, 
+    renderItem, 
+    getNewItem, 
+    getItemTitle 
+}: SubArrayEditorProps<T>) => (
     <div className="p-3 bg-black/50 border border-pm-off-white/10 rounded-md">
         <h4 className="text-md font-bold text-pm-gold/80 mb-3">{title}</h4>
-        <ArrayEditor {...props} />
+        <ArrayEditor<T>
+            items={items}
+            setItems={setItems}
+            renderItem={renderItem}
+            getNewItem={getNewItem}
+            getItemTitle={getItemTitle}
+        />
     </div>
 );
 
 
 export default AdminSettings;
+
+

@@ -50,6 +50,7 @@ export interface Artist {
 }
 
 export interface FashionDayEvent {
+  id: string;
   edition: number;
   date: string;
   theme: string;
