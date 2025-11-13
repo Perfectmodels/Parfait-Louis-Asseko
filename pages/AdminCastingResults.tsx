@@ -1,13 +1,7 @@
 import React, { useMemo, useState } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminCastingResults.tsx
-import { useData } from '../../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, Model, JuryScore, JuryMember } from '../../types';
-import SEO from '../../components/SEO';
-=======
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model, JuryScore, JuryMember } from '../types';
 import SEO from '../components/SEO';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminCastingResults.tsx
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
@@ -331,4 +325,3 @@ const AdminCastingResults: React.FC = () => {
 };
 
 export default AdminCastingResults;
-

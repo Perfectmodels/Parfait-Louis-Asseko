@@ -1,15 +1,11 @@
+
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChatBubbleLeftRightIcon, PlusIcon } from '@heroicons/react/24/outline';
-<<<<<<< HEAD:src/pages/admin/ClassroomForum.tsx
-import SEO from '../../components/SEO';
-import { useData } from '../../contexts/DataContext';
-import { ForumThread } from '../../types';
-=======
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { ForumThread } from '../types';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/ClassroomForum.tsx
 
 const ClassroomForum: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -119,10 +115,4 @@ const ClassroomForum: React.FC = () => {
     );
 };
 
-<<<<<<< HEAD:src/pages/admin/ClassroomForum.tsx
 export default ClassroomForum;
-
-
-=======
-export default ClassroomForum;
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/ClassroomForum.tsx

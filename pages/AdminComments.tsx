@@ -1,13 +1,7 @@
 import React from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminComments.tsx
-import { useData } from '../../contexts/DataContext';
-import { ArticleComment } from '../../types';
-import SEO from '../../components/SEO';
-=======
 import { useData } from '../contexts/DataContext';
 import { ArticleComment } from '../types';
 import SEO from '../components/SEO';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminComments.tsx
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 
@@ -81,5 +75,3 @@ const AdminComments: React.FC = () => {
 };
 
 export default AdminComments;
-
-

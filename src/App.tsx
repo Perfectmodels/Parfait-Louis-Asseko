@@ -2,72 +2,74 @@
 import React, { useEffect, lazy, Suspense } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { DataProvider, useData } from '../contexts/DataContext';
-import Layout from '../components/icons/Layout';
-import ProtectedRoute from '../components/ProtectedRoute';
-import { PWAInstaller } from '../components/PWAInstaller';
-import { registerServiceWorker } from '../utils/pwa';
+import { DataProvider, useData } from './contexts/DataContext';
+import Layout from './components/icons/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
+import AIAssistantIcon from '@/components/AIAssistantIcon';
+import { PWAInstaller } from './components/PWAInstaller';
+import { registerServiceWorker } from './utils/pwa';
 
 // Lazy-loaded Pages
-const Home = lazy(() => import('../pages/Home'));
-const Agency = lazy(() => import('../pages/Agency'));
-const Models = lazy(() => import('../pages/Models'));
-const ModelDetail = lazy(() => import('../pages/ModelDetail'));
-const FashionDay = lazy(() => import('../pages/FashionDay'));
-const Magazine = lazy(() => import('../pages/Magazine'));
-const ArticleDetail = lazy(() => import('../pages/ArticleDetail'));
-const Contact = lazy(() => import('../pages/Contact'));
-const Services = lazy(() => import('../pages/Services'));
-const ServiceDetail = lazy(() => import('../pages/ServiceDetail'));
-const Casting = lazy(() => import('../pages/Casting'));
-const CastingForm = lazy(() => import('../pages/CastingForm'));
-const FashionDayApplicationForm = lazy(() => import('../pages/FashionDayApplicationForm'));
-const Login = lazy(() => import('../pages/Login'));
-const Activity = lazy(() => import('../pages/Activity')); // Renamed Formations
-const ChapterDetail = lazy(() => import('../pages/ChapterDetail'));
-const ModelDashboard = lazy(() => import('../pages/ModelDashboard')); // Profil
-const ClassroomForum = lazy(() => import('../pages/ClassroomForum'));
-const ForumThread = lazy(() => import('../pages/ForumThread'));
+const Home = lazy(() => import('./pages/Home'));
+const Agency = lazy(() => import('./pages/Agency'));
+const Models = lazy(() => import('./pages/Models'));
+const ModelDetail = lazy(() => import('./pages/ModelDetail'));
+const FashionDay = lazy(() => import('./pages/FashionDay'));
+const Magazine = lazy(() => import('./pages/Magazine'));
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Services = lazy(() => import('./pages/Services'));
+const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
+const Casting = lazy(() => import('./pages/Casting'));
+const CastingForm = lazy(() => import('./pages/CastingForm'));
+const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
+const Login = lazy(() => import('./pages/Login'));
+const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
+const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
+const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
+const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
+const ForumThread = lazy(() => import('./pages/ForumThread'));
 // FIX: Removed Beginner Classroom pages as the feature has been deprecated.
-const Chat = lazy(() => import('../pages/Chat'));
-const ImageGeneration = lazy(() => import('../pages/ImageGeneration'));
-const ImageAnalysis = lazy(() => import('../pages/ImageAnalysis'));
-const LiveChat = lazy(() => import('../pages/LiveChat'));
+const Chat = lazy(() => import('./pages/Chat'));
+const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
+const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
+const LiveChat = lazy(() => import('./pages/LiveChat'));
 
 
 // Admin Pages
-const Admin = lazy(() => import('../pages/Admin'));
-const AdminAgency = lazy(() => import('../pages/AdminAgency'));
-const AdminCasting = lazy(() => import('../pages/AdminCasting'));
-const AdminCastingResults = lazy(() => import('../pages/AdminCastingResults'));
-const AdminClassroom = lazy(() => import('../pages/AdminClassroom'));
-const AdminClassroomProgress = lazy(() => import('../pages/AdminClassroomProgress'));
-const AdminFashionDay = lazy(() => import('../pages/AdminFashionDay'));
-const AdminFashionDayEvents = lazy(() => import('../pages/AdminFashionDayEvents'));
-const AdminMagazine = lazy(() => import('../pages/AdminMagazine'));
-const AdminModelAccess = lazy(() => import('../pages/AdminModelAccess'));
-const AdminModels = lazy(() => import('../pages/AdminModels'));
-const AdminNews = lazy(() => import('../pages/AdminNews'));
-const AdminRecovery = lazy(() => import('../pages/AdminRecovery'));
-const AdminSettings = lazy(() => import('../pages/AdminSettings'));
-const AdminComments = lazy(() => import('../pages/AdminComments'));
-const AdminBookings = lazy(() => import('../pages/AdminBookings'));
-const AdminMessages = lazy(() => import('../pages/AdminMessages'));
+const Admin = lazy(() => import('./pages/Admin'));
+const AdminAgency = lazy(() => import('./pages/AdminAgency'));
+const AdminCasting = lazy(() => import('./pages/AdminCasting'));
+const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
+const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
+const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
+const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
+const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
+// FIX: Corrected import paths for Admin pages to resolve module not found errors.
+const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
+const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
+const AdminModels = lazy(() => import('./pages/AdminModels'));
+const AdminNews = lazy(() => import('./pages/AdminNews'));
+const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
+const AdminSettings = lazy(() => import('./pages/AdminSettings'));
+const AdminComments = lazy(() => import('./pages/AdminComments'));
+const AdminBookings = lazy(() => import('./pages/AdminBookings'));
+const AdminMessages = lazy(() => import('./pages/AdminMessages'));
 // FIX: Removed AdminBeginnerStudents as the feature has been deprecated.
-const AdminPayments = lazy(() => import('../pages/AdminPayments'));
-const AdminAbsences = lazy(() => import('../pages/AdminAbsences'));
-const AdminArtisticDirection = lazy(() => import('../pages/AdminArtisticDirection'));
-const AdminMailing = lazy(() => import('../pages/AdminMailing'));
+const AdminPayments = lazy(() => import('./pages/AdminPayments'));
+const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
+const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+const AdminMailing = lazy(() => import('./pages/AdminMailing'));
 
 
 // Role-specific pages
-const JuryCasting = lazy(() => import('../pages/JuryCasting'));
-const RegistrationCasting = lazy(() => import('../pages/RegistrationCasting'));
+const JuryCasting = lazy(() => import('./pages/JuryCasting'));
+const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
 
 // Static Pages
-const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy'));
-const TermsOfUse = lazy(() => import('../pages/TermsOfUse'));
-const NotFound = lazy(() => import('../pages/NotFound'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 
 const ScrollToTop: React.FC = () => {
@@ -97,8 +99,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-    type: "tween" as const,
-    ease: "easeInOut" as const,
+    type: "tween",
+    ease: "anticipate",
     duration: 0.5
 };
 
@@ -218,6 +220,7 @@ const AppContent: React.FC = () => {
             <Suspense fallback={<LoadingFallback />}>
                 <AnimatedRoutes />
             </Suspense>
+            <AIAssistantIcon />
         </Layout>
     );
 }

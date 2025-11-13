@@ -1,12 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminModels.tsx
-import { useData } from '../../contexts/DataContext';
-import { Model, ContactInfo } from '../../types';
-=======
 import { useData } from '../contexts/DataContext';
 import { Model, ContactInfo } from '../types';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminModels.tsx
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, EyeIcon, EyeSlashIcon, PrinterIcon } from '@heroicons/react/24/outline';
@@ -291,5 +286,3 @@ const AdminModels: React.FC = () => {
 };
 
 export default AdminModels;
-
-

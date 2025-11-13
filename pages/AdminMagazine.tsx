@@ -1,14 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminMagazine.tsx
-import { useData } from '../../contexts/DataContext';
-import { Article, ArticleContent } from '../../types';
-import SEO from '../../components/SEO';
-=======
 import { useData } from '../contexts/DataContext';
 import { Article, ArticleContent } from '../types';
 import SEO from '../components/SEO';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminMagazine.tsx
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, StarIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import ImageUploader from '../components/ImageUploader';
@@ -316,5 +310,3 @@ const AIAssistButton: React.FC<{onClick: () => void}> = ({onClick}) => (
 );
 
 export default AdminMagazine;
-
-

@@ -1,18 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminNews.tsx
-import { useData } from '../../contexts/DataContext';
-import { NewsItem } from '../../types';
-import SEO from '../../components/SEO';
-=======
 import { useData } from '../contexts/DataContext';
 import { NewsItem } from '../types';
 import SEO from '../components/SEO';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminNews.tsx
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 // FIX: Corrected the import to use ImageUploader component for consistency and to fix the broken path.
-import ImageUploader from '../../components/ImageUploader';
+import ImageUploader from '../components/ImageUploader';
 
 const AdminNews: React.FC = () => {
     const { data, saveData } = useData();
@@ -106,16 +100,7 @@ const NewsForm: React.FC<{ newsItem: NewsItem, onSave: (item: NewsItem) => void,
                 <form onSubmit={handleSubmit} className="admin-section-wrapper space-y-4">
                     <FormInput label="Titre" name="title" value={formData.title} onChange={handleChange} />
                     <FormInput label="Date" name="date" type="date" value={formData.date} onChange={handleChange} />
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-pm-off-white mb-2">
-                            Image
-                        </label>
-                        <ImageUploader 
-                            onUploadComplete={url => setFormData(p => ({...p, imageUrl: url}))}
-                            storagePath="news-images"
-                            currentImageUrl={formData.imageUrl}
-                        />
-                    </div>
+                    <ImageUploader label="Image" value={formData.imageUrl} onChange={value => setFormData(p => ({...p, imageUrl: value}))} />
                     <FormTextArea label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange} />
                     <FormInput label="Lien (optionnel)" name="link" value={formData.link || ''} onChange={handleChange} />
                     <div className="flex justify-end gap-4 pt-4">
@@ -142,4 +127,3 @@ const FormTextArea: React.FC<{label: string, name: string, value: string, onChan
 );
 
 export default AdminNews;
-

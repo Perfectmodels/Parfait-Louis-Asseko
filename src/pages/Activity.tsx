@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
-<<<<<<< HEAD:src/pages/admin/Activity.tsx
-import SEO from '../../components/SEO';
-import BackToTopButton from '../../components/BackToTopButton';
-import { QuizQuestion, Module, SiteImages } from '../../types';
-import { useData } from '../../contexts/DataContext';
-=======
 import SEO from '../components/SEO';
 import BackToTopButton from '../components/BackToTopButton';
 import { QuizQuestion, Module, SiteImages } from '../types';
 import { useData } from '../contexts/DataContext';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/Activity.tsx
 
 // --- STUDENT VIEW ---
 const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteImages: SiteImages; }> = ({ onLogout, courseData, siteImages }) => {
@@ -170,4 +163,3 @@ const Formations: React.FC = () => {
 };
 
 export default Formations;
-

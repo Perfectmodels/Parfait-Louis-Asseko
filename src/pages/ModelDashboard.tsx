@@ -1,21 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD:src/pages/admin/ModelDashboard.tsx
-import { useData } from '../../contexts/DataContext';
-import SEO from '../../components/SEO';
-import { Link, useNavigate } from 'react-router-dom';
-import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import { Model, PhotoshootBrief } from '../../types';
-// FIX: Corrected import path for ModelForm.
-import ModelForm from '../../components/ModelForm';
-=======
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { Model, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/ModelDashboard.tsx
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 
@@ -252,5 +242,3 @@ const BriefItem: React.FC<{ brief: PhotoshootBrief, expandedBriefId: string | nu
 };
 
 export default ModelDashboard;
-
-

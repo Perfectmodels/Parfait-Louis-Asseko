@@ -1,13 +1,7 @@
 import React, { useState, useMemo } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminBookings.tsx
-import { useData } from '../../contexts/DataContext';
-import { BookingRequest } from '../../types';
-import SEO from '../../components/SEO';
-=======
 import { useData } from '../contexts/DataContext';
 import { BookingRequest } from '../types';
 import SEO from '../components/SEO';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminBookings.tsx
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
@@ -112,4 +106,3 @@ const AdminBookings: React.FC = () => {
 };
 
 export default AdminBookings;
-

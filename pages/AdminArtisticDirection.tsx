@@ -1,14 +1,8 @@
 
 import React, { useState, useMemo } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminArtisticDirection.tsx
-import { useData } from '../../contexts/DataContext';
-import { PhotoshootBrief, Model } from '../../types';
-import SEO from '../../components/SEO';
-=======
 import { useData } from '../contexts/DataContext';
 import { PhotoshootBrief, Model } from '../types';
 import SEO from '../components/SEO';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminArtisticDirection.tsx
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -186,5 +180,3 @@ const FormTextArea: React.FC<any> = (props) => (
 );
 
 export default AdminArtisticDirection;
-
-

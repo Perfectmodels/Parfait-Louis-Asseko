@@ -1,11 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import SEO from '../../../components/SEO';
-// Data context is available if needed for future features
-// import { useData } from '../../../contexts/DataContext';
-import { MagnifyingGlassIcon, PhotoIcon, ArrowUpTrayIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
-// ImageUploader is available if needed for future features
-// import ImageUploader from '../../../components/ImageUploader';
+import SEO from '../components/SEO';
+import { SparklesIcon, PhotoIcon, PaperAirplaneIcon, ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 
 const fileToBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -66,11 +62,7 @@ const ImageAnalysis: React.FC = () => {
                 contents: { parts: [imagePart, textPart] },
             });
             
-            if (response.text) {
-                setAnalysisResult(response.text);
-            } else {
-                throw new Error("Aucune réponse n'a été reçue de l'API.");
-            }
+            setAnalysisResult(response.text);
 
         } catch (err: any) {
             console.error("Erreur de l'API Gemini:", err);
@@ -151,4 +143,3 @@ const ImageAnalysis: React.FC = () => {
 };
 
 export default ImageAnalysis;
-
