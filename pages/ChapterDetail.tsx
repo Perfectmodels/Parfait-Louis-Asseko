@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
+import NotFound from './NotFound';
+import SEO from '../components/SEO';
 import { ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { useData } from '../contexts/DataContext';
+import { QuizQuestion, Model, Chapter, Module } from '../types';
+import QuizComponent from '../components/QuizComponent';
 
-// Importations depuis src/
-import { useData } from '../src/contexts/DataContext';
-import { Chapter, Module } from '../src/types';
-import QuizComponent from '../src/components/QuizComponent';
-import SEO from '../src/components/SEO';
-import NotFound from '../src/components/NotFound';
 
 const generateChapterHtml = (chapter: Chapter, module: Module, siteConfig: any): string => {
     const contentHtml = chapter.content.split('\n').map(p => `<p style="margin-bottom: 1em; line-height: 1.6;">${p}</p>`).join('');
@@ -131,4 +130,3 @@ const ChapterDetail: React.FC = () => {
 };
 
 export default ChapterDetail;
-

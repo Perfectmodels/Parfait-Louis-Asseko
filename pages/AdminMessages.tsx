@@ -1,12 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminMessages.tsx
-import { useData } from '../../contexts/DataContext';
-import { ContactMessage } from '../../types';
-=======
 import { useData } from '../contexts/DataContext';
 import { ContactMessage } from '../types';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminMessages.tsx
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
@@ -110,5 +105,3 @@ const AdminMessages: React.FC = () => {
 };
 
 export default AdminMessages;
-
-

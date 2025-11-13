@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
-import { useData } from '../../contexts/DataContext';
-import SEO from '../../components/SEO';
+import { useData } from '../contexts/DataContext';
+import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, XMarkIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Model, Module } from '../types';
@@ -126,5 +126,3 @@ const ProgressModal: React.FC<ProgressModalProps> = ({ model, onClose, courseDat
 
 
 export default AdminClassroomProgress;
-
-

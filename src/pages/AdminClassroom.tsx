@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminClassroom.tsx
-import { useData } from '../../contexts/DataContext';
-import { Module, Chapter } from '../../types';
-import SEO from '../../components/SEO';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-=======
 import { useData } from '../contexts/DataContext';
 import { Module, Chapter } from '../types';
 import SEO from '../components/SEO';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/AdminClassroom.tsx
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 const AdminClassroom: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -71,7 +64,7 @@ const AdminClassroom: React.FC = () => {
       }
   };
 
-  const handleModuleChange = (moduleIndex: number, field: keyof Module, value: string) => {
+  const handleModuleChange = (moduleIndex: number, field: keyof Module, value: any) => {
     const updatedCourse = [...course];
     if (field === 'title') {
         const newSlug = generateSlug(value);
@@ -95,7 +88,7 @@ const AdminClassroom: React.FC = () => {
     setCourse(updatedCourse);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!data || !course) return;
     saveData({ ...data, courseData: course });
     alert("Changements enregistrés avec succès dans la base de données.");
@@ -189,4 +182,3 @@ const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({lab
 );
 
 export default AdminClassroom;
-

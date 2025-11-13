@@ -1,13 +1,4 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminSettings.tsx
-import { useData } from '../../../contexts/DataContext';
-import { AppData } from '../../../types';
-import { Testimonial, Partner, FAQCategory, FAQItem } from '../../../types';
-import SEO from '../../../components/SEO';
-import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import ImageUploader from '../../../components/ImageUploader';
-=======
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
 import { Testimonial, Partner, FAQCategory, FAQItem, ApiKeys } from '../types';
@@ -15,7 +6,6 @@ import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import ImageInput from '../components/icons/ImageInput';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/AdminSettings.tsx
 
 // FIX: Removed beginner-related data types from the editable data definition.
 type EditableData = Pick<AppData, 'contactInfo' | 'siteConfig' | 'siteImages' | 'socialLinks' | 'agencyPartners' | 'testimonials' | 'faqData' | 'apiKeys'>;
@@ -45,7 +35,7 @@ const AdminSettings: React.FC = () => {
         alert("Changements enregistrés avec succès dans la base de données.");
     };
 
-    const handleSimpleChange = (section: keyof EditableData, key: string, value: string) => {
+    const handleSimpleChange = (section: keyof EditableData, key: string, value: any) => {
         if (!localData) return;
         setLocalData(prev => {
             if (!prev) return null;
@@ -129,22 +119,13 @@ const AdminSettings: React.FC = () => {
                     <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Partenaires de l'Agence</h2>
                         <div className="space-y-4">
-                            <ArrayEditor<Partner>
+                            <ArrayEditor 
                                 items={localData.agencyPartners}
                                 setItems={newItems => setLocalData(p => ({...p!, agencyPartners: newItems}))}
-<<<<<<< HEAD:src/pages/admin/AdminSettings.tsx
-                                renderItem={(item, updateItem) => (
-                                    <FormInput 
-                                        label="Nom du partenaire" 
-                                        value={item.name} 
-                                        onChange={e => updateItem({ ...item, name: e.target.value })} 
-                                    />
-=======
                                 renderItem={(item: Partner, onChange) => (
                                     <>
                                         <FormInput label="Nom du partenaire" value={item.name} onChange={e => onChange('name', e.target.value)} />
                                     </>
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/AdminSettings.tsx
                                 )}
                                 getNewItem={() => ({ name: 'Nouveau Partenaire' })}
                                 getItemTitle={item => item.name}
@@ -155,34 +136,14 @@ const AdminSettings: React.FC = () => {
                      <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Témoignages</h2>
                         <div className="space-y-4">
-                            <ArrayEditor<Testimonial>
+                            <ArrayEditor 
                                 items={localData.testimonials}
                                 setItems={newItems => setLocalData(p => ({...p!, testimonials: newItems}))}
-<<<<<<< HEAD:src/pages/admin/AdminSettings.tsx
-                                renderItem={(item, updateItem) => (
-                                    <>
-                                        <FormInput 
-                                            label="Nom" 
-                                            value={item.name} 
-                                            onChange={e => updateItem({ ...item, name: e.target.value })} 
-                                        />
-                                        <FormInput 
-                                            label="Rôle" 
-                                            value={item.role} 
-                                            onChange={e => updateItem({ ...item, role: e.target.value })} 
-                                        />
-                                        <ImageUploader 
-                                            label="Photo" 
-                                            value={item.imageUrl} 
-                                            onChange={value => updateItem({ ...item, imageUrl: value })} 
-                                        />
-=======
                                 renderItem={(item: Testimonial, onChange) => (
                                     <>
                                         <FormInput label="Nom" value={item.name} onChange={e => onChange('name', e.target.value)} />
                                         <FormInput label="Rôle" value={item.role} onChange={e => onChange('role', e.target.value)} />
                                         <ImageInput label="Photo" value={item.imageUrl} onChange={value => onChange('imageUrl', value)} />
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/AdminSettings.tsx
                                         <FormTextArea 
                                             label="Citation" 
                                             value={item.quote} 
@@ -198,49 +159,22 @@ const AdminSettings: React.FC = () => {
 
                     <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">FAQ (Foire Aux Questions)</h2>
-                        <ArrayEditor<FAQCategory>
+                        <ArrayEditor 
                             items={localData.faqData}
                             setItems={newItems => setLocalData(p => ({...p!, faqData: newItems}))}
-<<<<<<< HEAD:src/pages/admin/AdminSettings.tsx
-                            renderItem={(item, updateItem) => (
-                                <>
-                                    <FormInput 
-                                        label="Catégorie" 
-                                        value={item.category} 
-                                        onChange={e => updateItem({ ...item, category: e.target.value })} 
-                                    />
-                                    <SubArrayEditor<FAQItem>
-=======
                             renderItem={(item: FAQCategory, onChange) => (
                                 <>
                                     <FormInput label="Catégorie" value={item.category} onChange={e => onChange('category', e.target.value)} />
                                     <SubArrayEditor
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/AdminSettings.tsx
                                         title="Questions"
                                         items={item.items || []}
                                         setItems={newItems => onChange('items', newItems)}
                                         getNewItem={() => ({ question: 'Nouvelle Question ?', answer: 'Réponse...' })}
-<<<<<<< HEAD:src/pages/admin/AdminSettings.tsx
-                                        getItemTitle={subItem => subItem.question}
-                                        renderItem={(faq, updateFaq) => (
-                                            <>
-                                                <FormInput 
-                                                    label="Question" 
-                                                    value={faq.question} 
-                                                    onChange={e => updateFaq({ ...faq, question: e.target.value })} 
-                                                />
-                                                <FormTextArea 
-                                                    label="Réponse" 
-                                                    value={faq.answer} 
-                                                    onChange={e => updateFaq({ ...faq, answer: e.target.value })} 
-                                                />
-=======
                                         getItemTitle={item => item.question}
                                         renderItem={(faq: FAQItem, onFaqChange) => (
                                             <>
                                                 <FormInput label="Question" value={faq.question} onChange={e => onFaqChange('question', e.target.value)} />
                                                 <FormTextArea label="Réponse" value={faq.answer} onChange={e => onFaqChange('answer', e.target.value)} />
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/AdminSettings.tsx
                                             </>
                                         )}
                                     />
@@ -257,48 +191,19 @@ const AdminSettings: React.FC = () => {
     );
 };
 
-const FormInput: React.FC<{label: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void}> = ({label, value, onChange}) => (
+const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
         <label className="admin-label">{label}</label>
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void}> = ({label, value, onChange}) => (
+const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
     <div>
         <label className="admin-label">{label}</label>
         <textarea value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
     </div>
 );
 
-<<<<<<< HEAD:src/pages/admin/AdminSettings.tsx
-interface ArrayEditorProps<T> {
-    items: T[];
-    setItems: (items: T[]) => void;
-    renderItem: (item: T, updateItem: (newItem: T) => void, index: number) => React.ReactNode;
-    getNewItem: () => T;
-    getItemTitle: (item: T) => string;
-}
-
-interface SubArrayEditorProps<T> {
-    title: string;
-    items: T[];
-    setItems: (items: T[]) => void;
-    renderItem: (item: T, updateItem: (newItem: T) => void, index: number) => React.ReactNode;
-    getNewItem: () => T;
-    getItemTitle: (item: T) => string;
-}
-
-const ArrayEditor = <T extends object>({ 
-    items, 
-    setItems, 
-    renderItem, 
-    getNewItem, 
-    getItemTitle 
-}: ArrayEditorProps<T>) => {
-    const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-    const handleUpdateItem = (index: number, newItem: T) => {
-=======
 const ArrayEditor: React.FC<{
     items: any[];
     setItems: (items: any[]) => void;
@@ -309,13 +214,12 @@ const ArrayEditor: React.FC<{
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     const handleItemChange = (index: number, key: string, value: any) => {
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/AdminSettings.tsx
         const newItems = [...items];
         newItems[index] = { ...newItems[index], [key]: value };
         setItems(newItems);
     };
 
-    const handleAddItem = (): void => {
+    const handleAddItem = () => {
         setItems([...items, getNewItem()]);
         setOpenIndex(items.length);
     };
@@ -351,27 +255,12 @@ const ArrayEditor: React.FC<{
     );
 };
 
-const SubArrayEditor = <T extends object>({ 
-    title, 
-    items, 
-    setItems, 
-    renderItem, 
-    getNewItem, 
-    getItemTitle 
-}: SubArrayEditorProps<T>) => (
+const SubArrayEditor: React.FC<{ title: string } & Omit<React.ComponentProps<typeof ArrayEditor>, 'items' | 'setItems'> & { items: any[], setItems: (items: any[]) => void }> = ({ title, ...props }) => (
     <div className="p-3 bg-black/50 border border-pm-off-white/10 rounded-md">
         <h4 className="text-md font-bold text-pm-gold/80 mb-3">{title}</h4>
-        <ArrayEditor<T>
-            items={items}
-            setItems={setItems}
-            renderItem={renderItem}
-            getNewItem={getNewItem}
-            getItemTitle={getItemTitle}
-        />
+        <ArrayEditor {...props} />
     </div>
 );
 
 
 export default AdminSettings;
-
-

@@ -1,12 +1,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminFashionDay.tsx
-import { useData } from '../../contexts/DataContext';
-import { FashionDayApplication, FashionDayApplicationStatus, FashionDayApplicationRole } from '../../types';
-=======
 import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationStatus, FashionDayApplicationRole } from '../types';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminFashionDay.tsx
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -173,4 +168,3 @@ const InfoItem: React.FC<{label: string, value: React.ReactNode}> = ({label, val
 );
 
 export default AdminFashionDayApps;
-

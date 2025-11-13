@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminCasting.tsx
-import { useData } from '../../contexts/DataContext';
-import { CastingApplication, CastingApplicationStatus, Model } from '../../types';
-=======
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminCasting.tsx
 import SEO from '../components/SEO';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
@@ -304,5 +299,3 @@ const InfoItem: React.FC<{label: string, value: React.ReactNode}> = ({label, val
 );
 
 export default AdminCasting;
-
-

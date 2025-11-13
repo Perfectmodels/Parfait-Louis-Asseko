@@ -1,17 +1,12 @@
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-<<<<<<< HEAD:src/pages/admin/ForumThread.tsx
-import SEO from '../../components/SEO';
-import { useData } from '../../contexts/DataContext';
-import { ForumReply } from '../../types';
-import NotFound from '../../components/NotFound';
-=======
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { ForumReply } from '../types';
 import NotFound from './NotFound';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/ForumThread.tsx
 
 const ForumThread: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -133,10 +128,4 @@ const ForumThread: React.FC = () => {
     );
 };
 
-<<<<<<< HEAD:src/pages/admin/ForumThread.tsx
 export default ForumThread;
-
-
-=======
-export default ForumThread;
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:src/pages/ForumThread.tsx

@@ -6,5 +6,3 @@ const BeginnerClassroom: React.FC = () => {
 };
 
 export default BeginnerClassroom;
-
-

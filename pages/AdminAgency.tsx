@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
 import { Service, AchievementCategory } from '../types';
 import SEO from '../components/SEO';
@@ -237,4 +237,3 @@ const ArrayEditor: React.FC<{
 };
 
 export default AdminAgency;
-

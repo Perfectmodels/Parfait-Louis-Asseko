@@ -1,15 +1,9 @@
 import React, { useState, useMemo } from 'react';
-<<<<<<< HEAD:src/pages/admin/JuryCasting.tsx
-import { useData } from '../../contexts/DataContext';
-import { CastingApplication, JuryScore } from '../../types';
-import SEO from '../../components/SEO';
-=======
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, JuryScore } from '../types';
 import SEO from '../components/SEO';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/JuryCasting.tsx
 import { XMarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import ScoreInput from '../../components/ScoreInput';
+import ScoreInput from '../components/ScoreInput';
 
 const JuryCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -234,5 +228,3 @@ const JuryCasting: React.FC = () => {
 };
 
 export default JuryCasting;
-
-

@@ -1,12 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminPayments.tsx
-import { useData } from '../../contexts/DataContext';
-import { MonthlyPayment } from '../../types';
-=======
 import { useData } from '../contexts/DataContext';
 import { MonthlyPayment } from '../types';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminPayments.tsx
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -199,5 +194,3 @@ const AdminPayments: React.FC = () => {
 };
 
 export default AdminPayments;
-
-

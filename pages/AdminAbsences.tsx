@@ -1,11 +1,6 @@
 import React, { useState, useMemo } from 'react';
-<<<<<<< HEAD:src/pages/admin/AdminAbsences.tsx
-import { useData } from '../../contexts/DataContext';
-import { Absence } from '../../types';
-=======
 import { useData } from '../contexts/DataContext';
 import { Absence } from '../types';
->>>>>>> 95ce282020fa4c741066597c693e1256e3332cb0:pages/AdminAbsences.tsx
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -178,5 +173,3 @@ const AdminAbsences: React.FC = () => {
 };
 
 export default AdminAbsences;
-
-
