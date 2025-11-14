@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
@@ -13,7 +14,6 @@ const Footer: React.FC = () => {
     
     const footerLinks = navLinks.filter(link => link.inFooter);
 
-    // Select a few key services to highlight in the footer
     const keyServices = [
         { label: "Booking Mannequins", link: "/contact?service=Booking+Mannequins" },
         { label: "Candidature Casting", link: "/casting-formulaire" },
@@ -24,12 +24,31 @@ const Footer: React.FC = () => {
     return (
         <footer className="bg-black text-pm-off-white/70 border-t border-pm-gold/20">
             <div className="container mx-auto px-6 py-16">
+
+                <div className="text-center mb-16 pb-12 border-b border-pm-gold/10">
+                    <h3 className="text-3xl font-playfair text-pm-gold mb-2">Restez Connecté</h3>
+                    <p className="max-w-xl mx-auto text-pm-off-white/70 mb-6">
+                        Abonnez-vous à notre newsletter pour recevoir les dernières actualités, les dates de casting et les exclusivités de l'agence.
+                    </p>
+                    <form className="max-w-md mx-auto flex gap-2" onSubmit={(e) => e.preventDefault()}>
+                        <input 
+                            type="email" 
+                            placeholder="Votre adresse email" 
+                            className="admin-input flex-grow !rounded-full" 
+                            required 
+                        />
+                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase text-sm rounded-full hover:bg-white transition-colors">
+                            S'abonner
+                        </button>
+                    </form>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                     {/* Column 1: Brand & Social */}
                     <div className="space-y-4">
                         {siteConfig?.logo && (
                             <Link to="/">
-                                <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-16 w-auto" />
+                                <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-16 w-auto bg-black rounded-full border-2 border-pm-gold p-1" />
                             </Link>
                         )}
                         <p className="text-sm">L'élégance redéfinie. Berceau de talents et plateforme dédiée à l'avenir de la mode africaine.</p>
@@ -53,11 +72,6 @@ const Footer: React.FC = () => {
                                     </Link>
                                 </li>
                             ))}
-                             <li>
-                                <Link to="/login" className="hover:text-pm-gold transition-colors text-sm">
-                                    Accès Panel
-                                </Link>
-                            </li>
                         </ul>
                     </div>
                     
@@ -97,7 +111,12 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="mt-16 pt-8 border-t border-pm-off-white/10 text-center text-sm">
+                <div className="mt-16 pt-12 border-t border-pm-off-white/10 text-center text-sm">
+                    <div className="mb-8">
+                         <Link to="/login" className="cta-btn-outline">
+                            Accès Panel
+                        </Link>
+                    </div>
                     <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
                      <div className="mt-2 space-x-4">
                         <Link to="/terms-of-use" className="hover:text-pm-gold transition-colors">Conditions d'Utilisation</Link>

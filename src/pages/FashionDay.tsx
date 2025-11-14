@@ -1,10 +1,54 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { FashionDayEvent, Artist } from '../types';
+import { FashionDayEvent, Artist } from '../../types';
+
+interface AccordionItemProps {
+    title: string;
+    description: string;
+    images: string[];
+    onImageClick: (img: string) => void;
+    defaultOpen?: boolean;
+}
+
+const AccordionItem: React.FC<AccordionItemProps> = ({ title, description, images, onImageClick, defaultOpen = false }) => {
+    const [isOpen, setIsOpen] = useState(defaultOpen);
+
+    return (
+        <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg overflow-hidden transition-all duration-300">
+            <button 
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex justify-between items-center p-4 text-left hover:bg-pm-gold/10"
+                aria-expanded={isOpen}
+            >
+                <div>
+                    <h4 className="text-2xl font-playfair text-pm-gold">{title}</h4>
+                    {description && <p className="text-sm text-pm-off-white/70 mt-1">{description}</p>}
+                </div>
+                <ChevronDownIcon className={`w-6 h-6 text-pm-gold flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <div
+                className="grid transition-all duration-500 ease-in-out"
+                style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+            >
+                <div className="overflow-hidden">
+                    <div className="p-4 border-t border-pm-gold/20">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                            {(images || []).map((img, idx) => (
+                                <button key={idx} onClick={() => onImageClick(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${title}`} className="aspect-square block bg-black group overflow-hidden border-2 border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300 rounded-md">
+                                    <img src={img} alt={`${title} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 const FashionDay: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -123,53 +167,58 @@ const FashionDay: React.FC = () => {
                   </div>
               </div>
             )}
-
-            {/* Featured Artists and Models */}
-            {selectedEdition.artists && selectedEdition.featuredModels && (
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12 pt-8 border-t border-pm-gold/10">
-                  <div>
-                      <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><MicrophoneIcon className="w-6 h-6" aria-hidden="true"/> Artistes & Performances</h3>
-                      <ul className="list-disc list-inside text-pm-off-white/80 space-y-2">
-                          {/* FIX: Correctly render artist name and description. An Artist object cannot be rendered directly as a ReactNode. */}
-                          {selectedEdition.artists.map((artist, index) => <li key={index}>{artist.name} - <span className="text-xs text-pm-off-white/70">{artist.description}</span></li>)}
-                      </ul>
-                  </div>
-                  <div>
-                      <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><UserGroupIcon className="w-6 h-6" aria-hidden="true"/> Mannequins Vedettes</h3>
-                      <p className="text-pm-off-white/80">
-                          {selectedEdition.featuredModels.join(', ')} et toute la Perfect Models Squad.
-                      </p>
-                  </div>
-               </div> 
+          </div>
+            
+            {/* Featured Models */}
+            {selectedEdition.featuredModels && selectedEdition.featuredModels.length > 0 && (
+               <section className="mt-16">
+                    <h3 className="section-title"><UserGroupIcon className="w-8 h-8 inline-block mr-3" aria-hidden="true"/> Mannequins Vedettes</h3>
+                    <p className="text-pm-off-white/80 text-center max-w-4xl mx-auto">
+                        {selectedEdition.featuredModels.join(', ')} et toute la Perfect Models Squad.
+                    </p>
+               </section> 
             )}
 
-            {/* Stylists Gallery */}
-            {selectedEdition.stylists && (
-              <div>
-                <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Stylistes Participants</h3>
-                <div className="space-y-12">
-                  {selectedEdition.stylists.map((stylist) => (
-                    <div key={stylist.name} className="bg-pm-dark p-6 border border-pm-gold/10 rounded-lg">
-                      <div className="text-center mb-4">
-                        <h4 className="text-2xl font-bold font-playfair text-pm-gold">{stylist.name}</h4>
-                        <p className="text-sm text-pm-off-white/70">{stylist.description}</p>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                          {(stylist.images || []).map((img, idx) => (
-                              <button key={idx} onClick={() => setSelectedImage(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${stylist.name}`} className="aspect-square block bg-black group overflow-hidden border border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300">
-                                  <img src={img} alt={`${stylist.name} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
-                              </button>
-                          ))}
-                      </div>
+            {/* Stylists */}
+            {selectedEdition.stylists && selectedEdition.stylists.length > 0 && (
+                <section className="mt-16">
+                    <h3 className="section-title">Galeries des Créateurs</h3>
+                    <div className="space-y-4 max-w-6xl mx-auto">
+                        {selectedEdition.stylists.map((stylist, index) => (
+                            <AccordionItem
+                                key={stylist.name}
+                                title={stylist.name}
+                                description={stylist.description}
+                                images={stylist.images || []}
+                                onImageClick={setSelectedImage}
+                                defaultOpen={index === 0}
+                            />
+                        ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                </section>
             )}
             
-            {selectedEdition.partners && (
-              <div className="mt-20">
-                <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Partenaires & Sponsors</h3>
+            {/* Artists */}
+            {selectedEdition.artists && selectedEdition.artists.length > 0 && (
+                <section className="mt-16">
+                    <h3 className="section-title">Performances Artistiques</h3>
+                    <div className="space-y-4 max-w-6xl mx-auto">
+                        {selectedEdition.artists.map((artist: Artist, index: number) => (
+                            <AccordionItem
+                                key={`${artist.name}-${index}`}
+                                title={artist.name}
+                                description={artist.description}
+                                images={artist.images || []}
+                                onImageClick={setSelectedImage}
+                            />
+                        ))}
+                    </div>
+                </section>
+            )}
+            
+            {selectedEdition.partners && selectedEdition.partners.length > 0 && (
+              <section className="mt-16">
+                <h3 className="section-title">Partenaires & Sponsors</h3>
                 <div className="flex justify-center items-center gap-12 flex-wrap">
                     {selectedEdition.partners.map(p => (
                         <div key={p.name} className="text-center">
@@ -178,9 +227,8 @@ const FashionDay: React.FC = () => {
                         </div>
                     ))}
                 </div>
-              </div>
+              </section>
             )}
-          </div>
         </div>
       </div>
       
@@ -229,6 +277,5 @@ const InfoPill: React.FC<InfoPillProps> = ({ icon: Icon, title, content }) => (
         </div>
     </div>
 );
-
 
 export default FashionDay;
