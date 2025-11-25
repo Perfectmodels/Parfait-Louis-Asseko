@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
-import { Article } from '../../types';
+import { Article } from '../types';
 import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
-import { useDataStore } from '../hooks/useDataStore';
 
 interface ArticleGeneratorProps {
     isOpen: boolean;
@@ -19,7 +18,6 @@ const FormTextArea: React.FC<{label: string, name: string, value: any, onChange:
 );
 
 const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, onArticleGenerated }) => {
-    const { data } = useDataStore();
     const [formData, setFormData] = useState({
         subject: '',
         bio: '',
@@ -97,8 +95,11 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
         };
 
         try {
-            const geminiApiKey = data?.apiKeys?.geminiApiKey || process.env.API_KEY!;
-            const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+            if (!process.env.API_KEY) {
+                throw new Error("La clé API Gemini n'est pas configurée.");
+            }
+            
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
@@ -110,9 +111,6 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
             });
 
             const jsonResult = response.text;
-            if (!jsonResult) {
-                throw new Error("Aucune réponse générée par l'IA");
-            }
             const parsedArticle: Partial<Article> = JSON.parse(jsonResult);
             onArticleGenerated(parsedArticle);
 
@@ -125,7 +123,9 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
 
     }, [formData, onArticleGenerated]);
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">

@@ -119,176 +119,6 @@ export interface Article {
     likes: number;
     dislikes: number;
   };
-  // Nouveaux champs pour magazine avancé
-  status?: 'draft' | 'review' | 'published' | 'archived';
-  publishedAt?: string;
-  scheduledAt?: string;
-  authorId?: string;
-  editorId?: string;
-  reviewerId?: string;
-  featuredModels?: string[];
-  editorialTheme?: string;
-  season?: string;
-  estimatedReadTime?: number;
-  seoTitle?: string;
-  seoDescription?: string;
-  socialMediaImage?: string;
-  priority?: 'low' | 'medium' | 'high';
-  language?: 'fr' | 'en';
-  translationOf?: string;
-  gallery?: string[];
-  videoUrl?: string;
-  relatedArticles?: string[];
-  sponsoredContent?: boolean;
-  sponsorName?: string;
-  callToAction?: {
-    text: string;
-    link: string;
-    type: 'primary' | 'secondary';
-  };
-}
-
-// Types pour la gestion des utilisateurs du magazine
-export interface MagazineUser {
-  id: string;
-  name: string;
-  email: string;
-  username: string;
-  role: MagazineRole;
-  avatar?: string;
-  bio?: string;
-  specializations?: string[];
-  isActive: boolean;
-  permissions: MagazinePermission[];
-  createdAt: string;
-  lastLoginAt?: string;
-  articlesCount: number;
-  publishedArticlesCount: number;
-  socialLinks?: {
-    instagram?: string;
-    linkedin?: string;
-    twitter?: string;
-    portfolio?: string;
-  };
-}
-
-export type MagazineRole = 
-  | 'editor-in-chief'
-  | 'senior-editor'
-  | 'editor'
-  | 'junior-editor'
-  | 'photographer'
-  | 'journalist'
-  | 'contributor'
-  | 'translator'
-  | 'social-media-manager';
-
-export type MagazinePermission = 
-  | 'create-article'
-  | 'edit-own-article'
-  | 'edit-any-article'
-  | 'publish-article'
-  | 'schedule-article'
-  | 'delete-article'
-  | 'manage-users'
-  | 'approve-article'
-  | 'feature-article'
-  | 'manage-calendar'
-  | 'access-analytics'
-  | 'manage-gallery'
-  | 'translate-article';
-
-// Types pour le calendrier éditorial
-export interface EditorialCalendar {
-  id: string;
-  title: string;
-  description?: string;
-  startDate: string;
-  endDate: string;
-  status: 'planning' | 'in-progress' | 'completed' | 'cancelled';
-  articles: string[]; // article slugs
-  assignedUsers: string[]; // user ids
-  theme: string;
-  season: string;
-  priority: 'low' | 'medium' | 'high';
-  budget?: number;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Types pour les campagnes de promotion
-export interface PromotionCampaign {
-  id: string;
-  name: string;
-  description: string;
-  type: 'magazine-issue' | 'collection-launch' | 'model-feature' | 'event-promotion';
-  status: 'draft' | 'active' | 'completed' | 'cancelled';
-  startDate: string;
-  endDate: string;
-  targetAudience: string[];
-  featuredModels: string[]; // model ids
-  featuredArticles: string[]; // article slugs
-  socialMediaPosts: SocialMediaPost[];
-  budget?: number;
-  metrics: {
-    reach: number;
-    engagement: number;
-    clicks: number;
-    conversions: number;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface SocialMediaPost {
-  id: string;
-  platform: 'instagram' | 'facebook' | 'twitter' | 'linkedin' | 'tiktok';
-  content: string;
-  imageUrl?: string;
-  videoUrl?: string;
-  scheduledAt?: string;
-  publishedAt?: string;
-  status: 'draft' | 'scheduled' | 'published';
-  metrics?: {
-    likes: number;
-    shares: number;
-    comments: number;
-    views: number;
-  };
-}
-
-// Types pour les galeries de photos
-export interface PhotoGallery {
-  id: string;
-  title: string;
-  description?: string;
-  category: 'editorial' | 'behind-scenes' | 'runway' | 'portrait' | 'campaign';
-  photographer?: string;
-  models: string[]; // model ids
-  images: GalleryImage[];
-  tags: string[];
-  isPublished: boolean;
-  publishedAt?: string;
-  featuredImage?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface GalleryImage {
-  id: string;
-  url: string;
-  alt: string;
-  caption?: string;
-  tags?: string[];
-  featuredModel?: string; // model id
-  metadata?: {
-    camera?: string;
-    lens?: string;
-    settings?: string;
-    location?: string;
-    date?: string;
-  };
 }
 
 
@@ -345,9 +175,6 @@ export interface SiteImages {
 
 export interface Partner {
   name: string;
-  role?: string;
-  imageUrl?: string;
-  id?: string;
 }
 
 export interface ApiKeys {
@@ -359,7 +186,6 @@ export interface ApiKeys {
   };
   imgbbApiKey?: string;
   brevoApiKey?: string;
-  geminiApiKey?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';

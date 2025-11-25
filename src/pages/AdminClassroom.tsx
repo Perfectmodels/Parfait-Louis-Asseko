@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Module, Chapter } from '../../types';
+import { Module, Chapter } from '../types';
 import SEO from '../components/SEO';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon, SparklesIcon } from '@heroicons/react/24/outline';
 

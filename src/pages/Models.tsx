@@ -1,5 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
 import ModelCard from '../components/ModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -8,17 +7,8 @@ type GenderFilter = 'Tous' | 'Femme' | 'Homme';
 
 const Models: React.FC = () => {
   const { data, isInitialized } = useData();
-  const location = useLocation();
-  
-  const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
-  const initialSearchTerm = queryParams.get('q') || '';
-
   const [filter, setFilter] = useState<GenderFilter>('Tous');
-  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
-
-  useEffect(() => {
-    setSearchTerm(initialSearchTerm);
-  }, [initialSearchTerm]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const models = data?.models || [];
   

@@ -1,9 +1,49 @@
 import React, { useState } from 'react';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { Article } from '../../types';
+import { Article } from '../types';
 import { useData } from '../contexts/DataContext';
-import Pagination from '../components/Pagination';
+
+const Pagination: React.FC<{ currentPage: number, totalPages: number, onPageChange: (page: number) => void }> = ({ currentPage, totalPages, onPageChange }) => {
+    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    return (
+        <nav aria-label="Pagination" className="flex justify-center items-center gap-4 mt-12 text-pm-off-white">
+            <button
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-black border border-pm-gold/50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pm-gold hover:text-pm-dark transition-colors"
+            >
+                Précédent
+            </button>
+            <div className="flex items-center gap-2">
+                {pageNumbers.map(number => (
+                    <button
+                        key={number}
+                        onClick={() => onPageChange(number)}
+                        className={`w-10 h-10 flex items-center justify-center rounded-md border transition-colors ${
+                            currentPage === number 
+                                ? 'bg-pm-gold text-pm-dark border-pm-gold' 
+                                : 'bg-black border-pm-gold/50 hover:bg-pm-gold/20'
+                        }`}
+                        aria-current={currentPage === number ? 'page' : undefined}
+                    >
+                        {number}
+                    </button>
+                ))}
+            </div>
+            <button
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-black border border-pm-gold/50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pm-gold hover:text-pm-dark transition-colors"
+            >
+                Suivant
+            </button>
+        </nav>
+    );
+};
+
 
 const Magazine: React.FC = () => {
   const { data, isInitialized } = useData();

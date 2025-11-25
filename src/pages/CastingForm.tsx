@@ -1,13 +1,13 @@
 
+
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { CastingApplication, FashionDayApplicationRole } from '../../types';
+import { CastingApplication } from '../types';
 import { Link } from 'react-router-dom';
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
-    // FIX: Simplified useState initialization to avoid potential issues with React.lazy type inference.
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
@@ -35,9 +35,6 @@ const CastingForm: React.FC = () => {
             id: `casting-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
-            photoFullBodyUrl: null,
-            photoPortraitUrl: null,
-            photoProfileUrl: null,
         };
 
         try {

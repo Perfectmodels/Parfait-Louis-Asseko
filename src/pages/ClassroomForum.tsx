@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import { ChatBubbleLeftRightIcon, PlusIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-// FIX: Corrected import path for types from '../src/types' to '../types'.
-import { ForumThread } from '../../types';
+import { ForumThread } from '../types';
 
 const ClassroomForum: React.FC = () => {
     const { data, saveData, isInitialized } = useData();

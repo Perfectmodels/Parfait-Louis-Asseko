@@ -4,8 +4,7 @@ import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import { Model, PhotoshootBrief } from '../../types';
-// FIX: Corrected import path for ModelForm.
+import { Model, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
@@ -102,25 +101,16 @@ const ModelDashboard: React.FC = () => {
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    <aside className="lg:col-span-1 space-y-4 lg:sticky lg:top-28 self-start">
-                         <div className="bg-black p-6 border border-pm-gold/20 rounded-lg text-center">
-                            <img src={editableModel.imageUrl} alt={editableModel.name} className="w-32 h-32 rounded-full object-cover mx-auto mb-4 border-4 border-pm-gold/50" />
-                            <h2 className="text-2xl font-playfair text-pm-gold">{editableModel.name}</h2>
-                            <p className="text-sm text-pm-off-white/70">{editableModel.level}</p>
-                         </div>
-                         <Link to="/formations" className="group block bg-black p-4 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg flex items-center gap-4">
-                             <BookOpenIcon className="w-8 h-8 text-pm-gold" />
-                            <div>
-                                <h2 className="font-bold text-pm-gold">Accéder au Classroom</h2>
-                                <p className="text-xs text-pm-off-white/70">Continuez votre formation.</p>
-                            </div>
+                    <aside className="lg:col-span-1 space-y-4">
+                         <Link to="/formations" className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
+                             <BookOpenIcon className="w-8 h-8 text-pm-gold mb-3" />
+                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Accéder au Classroom</h2>
+                            <p className="text-sm text-pm-off-white/70">Continuez votre formation.</p>
                         </Link>
-                        <Link to={`/mannequins/${editableModel.id}`} target="_blank" rel="noopener noreferrer" className="group block bg-black p-4 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg flex items-center gap-4">
-                             <UserIcon className="w-8 h-8 text-pm-gold" />
-                            <div>
-                                <h2 className="font-bold text-pm-gold">Voir mon Portfolio</h2>
-                                <p className="text-xs text-pm-off-white/70">Consultez votre profil public.</p>
-                            </div>
+                        <Link to={`/mannequins/${editableModel.id}`} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
+                             <UserIcon className="w-8 h-8 text-pm-gold mb-3" />
+                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Voir mon Portfolio Public</h2>
+                            <p className="text-sm text-pm-off-white/70">Consultez votre profil public.</p>
                         </Link>
                     </aside>
                     
@@ -144,17 +134,19 @@ const ModelDashboard: React.FC = () => {
                                 />
                             )}
                             {activeTab === 'results' && (
-                                <div className="admin-section-wrapper">
-                                    <h2 className="admin-section-title">Résultats des Quiz</h2>
+                                <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30">
+                                    <h2 className="text-2xl font-playfair text-pm-gold mb-6">Résultats des Quiz</h2>
                                     {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
                                         <ul className="space-y-3">
                                             {courseModulesWithQuizzes.map(module => {
                                                 const scoreData = editableModel.quizScores?.[module.slug];
+                                                // FIX: Calculate percentage from the score object.
                                                 const percentage = scoreData ? Math.round((scoreData.score / scoreData.total) * 100) : null;
                                                 return (
                                                     <li key={module.slug} className="flex justify-between items-center bg-pm-dark p-3 rounded-md text-sm">
                                                         <span className="text-pm-off-white/80">{module.title}</span>
                                                         {percentage !== null ? (
+                                                            // FIX: Use the calculated percentage for display and color coding.
                                                             <span className={`font-bold text-lg ${getScoreColor(percentage)}`}>{percentage}%</span>
                                                         ) : (
                                                             <span className="text-xs text-pm-off-white/50">Non complété</span>
@@ -169,8 +161,8 @@ const ModelDashboard: React.FC = () => {
                                 </div>
                             )}
                             {activeTab === 'briefs' && (
-                                <div className="admin-section-wrapper space-y-4">
-                                    <h2 className="admin-section-title">Briefings de Séances Photo</h2>
+                                <div className="bg-black p-6 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30 space-y-4">
+                                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">Briefings de Séances Photo</h2>
                                     {myBriefs.length > 0 ? (
                                         myBriefs.map(brief => (
                                             <BriefItem key={brief.id} brief={brief} expandedBriefId={expandedBriefId} onToggle={handleToggleBrief} />
@@ -188,7 +180,6 @@ const ModelDashboard: React.FC = () => {
     );
 };
 
-// ... Les autres sous-composants (TabButton, BriefItem) restent les mêmes
 const TabButton: React.FC<{name: string, icon: React.ElementType, isActive: boolean, onClick: () => void, notificationCount?: number}> = ({ name, icon: Icon, isActive, onClick, notificationCount = 0 }) => (
     <button
         onClick={onClick}

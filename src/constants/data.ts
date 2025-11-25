@@ -1,9 +1,8 @@
-
-// FIX: Removed BeginnerStudent from import as the type is deprecated.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../../types';
+// FIX: Corrected import to use MonthlyPayment as the Transaction type is deprecated.
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
 };
 
 export const navLinks: NavLink[] = [
@@ -18,14 +17,14 @@ export const navLinks: NavLink[] = [
 ];
 
 export const socialLinks: SocialLinks = {
-    facebook: 'https://www.facebook.com/perfectmodels.ga/',
-    instagram: 'https://www.instagram.com/perfectmodels.ga',
-    youtube: 'https://www.youtube.com/@PMM241',
+    facebook: 'https://www.facebook.com/PerfectModels241',
+    instagram: 'https://www.instagram.com/perfectmodelsmanagement_/',
+    youtube: 'https://www.youtube.com/@perfectmodelsmanagement6013',
 };
 
 export const contactInfo: ContactInfo = {
     email: 'contact@perfectmodels.ga',
-    phone: '+241 077 50 79 50',
+    phone: '+241 077 00 00 00',
     address: 'Libreville, Gabon',
     notificationEmail: 'contact@perfectmodels.ga',
 };
@@ -42,13 +41,13 @@ export const siteImages: SiteImages = {
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
+    // FIX: Added firebaseDynamicLinks for short link generation.
     firebaseDynamicLinks: {
         webApiKey: "AIzaSyB_jjJEXU7yvJv49aiPCJqEZgiyfJEJzrg",
         domainUriPrefix: 'https://perfectmodels.page.link'
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
-    brevoApiKey: process.env.BREVO_API_KEY || 'xkeysib-placeholder',
-    geminiApiKey: 'AIzaSyCISDm_zB-kVjACsG82Ey6S4WAhvC7dTNQ',
+    brevoApiKey: 'VOTRE_CLÉ_API_BREVO_ICI',
 };
 
 export const juryMembers: JuryMember[] = [
