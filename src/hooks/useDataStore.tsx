@@ -1,12 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../../firebaseConfig';
+import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
-import { 
-    Model, Article, ContactMessage, BookingRequest, FAQCategory, EditorialCalendar, MagazineUser, PromotionCampaign, PhotoGallery,
-    NavLink, ModelDistinction, Service, AchievementCategory, Partner, FashionDayEvent, Testimonial, Module, ContactInfo, SiteImages, ApiKeys,
-    CastingApplication, MonthlyPayment, JuryMember, NewsItem, ForumThread, ForumReply, ArticleComment, RecoveryRequest, RegistrationStaff, Absence, PhotoshootBrief
-} from '../../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -42,7 +38,7 @@ import {
     registrationStaff as initialRegistrationStaff,
     faqData as initialFaqData
 } from '../constants/data';
-import { articles as initialArticles, photoGalleries as initialPhotoGalleries } from '../constants/magazineData';
+import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
 // FIX: Removed import for beginnerCourseData as the file and feature are deprecated.
 
@@ -67,27 +63,22 @@ export interface AppData {
     contactInfo: ContactInfo;
     siteImages: SiteImages;
     apiKeys: ApiKeys;
-    // Nouvelles collections pour magazine avancé
-    magazineUsers: MagazineUser[];
-    editorialCalendar: EditorialCalendar[];
-    promotionCampaigns: PromotionCampaign[];
-    photoGalleries: PhotoGallery[];
-    // Collections existantes manquantes
     castingApplications: CastingApplication[];
-    bookingRequests: BookingRequest[];
-    contactMessages: ContactMessage[];
-    faqData: FAQCategory[];
-    monthlyPayments: MonthlyPayment[];
-    juryMembers: JuryMember[];
+    fashionDayApplications: FashionDayApplication[];
     newsItems: NewsItem[];
     forumThreads: ForumThread[];
     forumReplies: ForumReply[];
     articleComments: ArticleComment[];
     recoveryRequests: RecoveryRequest[];
+    bookingRequests: BookingRequest[];
+    contactMessages: ContactMessage[];
+    juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
     // FIX: Removed beginner-related properties from AppData.
+    faqData: FAQCategory[];
     absences: Absence[];
     // FIX: Changed 'transactions' to 'monthlyPayments' and 'Transaction' to 'MonthlyPayment'.
+    monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
 }
 
@@ -102,7 +93,7 @@ export const useDataStore = () => {
         siteImages: initialSiteImages,
         apiKeys: initialApiKeys,
         castingApplications: initialCastingApplications,
-        // fashionDayApplications: initialFashionDayApplications,
+        fashionDayApplications: initialFashionDayApplications,
         forumThreads: initialForumThreads,
         forumReplies: initialForumReplies,
         articleComments: initialArticleComments,
@@ -130,11 +121,6 @@ export const useDataStore = () => {
         registrationStaff: initialRegistrationStaff,
         // FIX: Removed beginner-related properties from initial data.
         faqData: initialFaqData,
-        // Nouvelles collections pour magazine avancé
-        magazineUsers: [],
-        editorialCalendar: [],
-        promotionCampaigns: [],
-        photoGalleries: initialPhotoGalleries,
     }), []);
     
     useEffect(() => {
