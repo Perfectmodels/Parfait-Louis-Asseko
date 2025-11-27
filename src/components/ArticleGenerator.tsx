@@ -106,7 +106,7 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
                 }
             });
 
-            const jsonResult = response.text;
+            const jsonResult = response.text || '';
             const parsedArticle: Partial<Article> = JSON.parse(jsonResult);
             onArticleGenerated(parsedArticle);
 
