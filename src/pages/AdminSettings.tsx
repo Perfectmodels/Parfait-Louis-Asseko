@@ -1,13 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { AppData } from '../hooks/useDataStore';
-import { Testimonial, Partner, FAQCategory, FAQItem, ApiKeys } from '../types';
+import { Testimonial, Partner, FAQCategory, FAQItem } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
+import ImageUploader from '../components/ImageUploader';
 
-// FIX: Removed beginner-related data types from the editable data definition.
 type EditableData = Pick<AppData, 'contactInfo' | 'siteConfig' | 'siteImages' | 'socialLinks' | 'agencyPartners' | 'testimonials' | 'faqData' | 'apiKeys'>;
 
 const AdminSettings: React.FC = () => {
@@ -16,7 +16,6 @@ const AdminSettings: React.FC = () => {
 
     useEffect(() => {
         if (isInitialized && data) {
-            // FIX: Removed deprecated beginner-related properties from destructuring.
             const { 
                 contactInfo, siteConfig, siteImages, socialLinks, agencyPartners, 
                 testimonials, faqData, apiKeys
@@ -58,7 +57,6 @@ const AdminSettings: React.FC = () => {
     }
 
     return (
-        <>
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Paramètres du Site" noIndex />
             <div className="container mx-auto px-6">
@@ -97,13 +95,13 @@ const AdminSettings: React.FC = () => {
                     <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Images du Site</h2>
                         <div className="space-y-4">
-                            <ImageInput label="Logo" value={localData.siteConfig.logo} onChange={value => handleSimpleChange('siteConfig', 'logo', value)} />
-                            <ImageInput label="Image Héros (Accueil)" value={localData.siteImages.hero} onChange={value => handleSimpleChange('siteImages', 'hero', value)} />
-                            <ImageInput label="Image 'À Propos' (Accueil)" value={localData.siteImages.about} onChange={value => handleSimpleChange('siteImages', 'about', value)} />
-                            <ImageInput label="Fond 'Fashion Day' (Accueil)" value={localData.siteImages.fashionDayBg} onChange={value => handleSimpleChange('siteImages', 'fashionDayBg', value)} />
-                            <ImageInput label="Image 'Notre Histoire' (Agence)" value={localData.siteImages.agencyHistory} onChange={value => handleSimpleChange('siteImages', 'agencyHistory', value)} />
-                            <ImageInput label="Fond 'Classroom'" value={localData.siteImages.classroomBg} onChange={value => handleSimpleChange('siteImages', 'classroomBg', value)} />
-                            <ImageInput label="Affiche 'Casting'" value={localData.siteImages.castingBg} onChange={value => handleSimpleChange('siteImages', 'castingBg', value)} />
+                            <ImageUploader label="Logo" value={localData.siteConfig.logo} onChange={value => handleSimpleChange('siteConfig', 'logo', value)} />
+                            <ImageUploader label="Image Héros (Accueil)" value={localData.siteImages.hero} onChange={value => handleSimpleChange('siteImages', 'hero', value)} />
+                            <ImageUploader label="Image 'À Propos' (Accueil)" value={localData.siteImages.about} onChange={value => handleSimpleChange('siteImages', 'about', value)} />
+                            <ImageUploader label="Fond 'Fashion Day' (Accueil)" value={localData.siteImages.fashionDayBg} onChange={value => handleSimpleChange('siteImages', 'fashionDayBg', value)} />
+                            <ImageUploader label="Image 'Notre Histoire' (Agence)" value={localData.siteImages.agencyHistory} onChange={value => handleSimpleChange('siteImages', 'agencyHistory', value)} />
+                            <ImageUploader label="Fond 'Classroom'" value={localData.siteImages.classroomBg} onChange={value => handleSimpleChange('siteImages', 'classroomBg', value)} />
+                            <ImageUploader label="Affiche 'Casting'" value={localData.siteImages.castingBg} onChange={value => handleSimpleChange('siteImages', 'castingBg', value)} />
                         </div>
                     </div>
                     
@@ -122,10 +120,8 @@ const AdminSettings: React.FC = () => {
                             <ArrayEditor 
                                 items={localData.agencyPartners}
                                 setItems={newItems => setLocalData(p => ({...p!, agencyPartners: newItems}))}
-                                renderItem={(item: Partner, onChange) => (
-                                    <>
-                                        <FormInput label="Nom du partenaire" value={item.name} onChange={e => onChange('name', e.target.value)} />
-                                    </>
+                                renderItem={(item: Partner, updateItem) => (
+                                    <FormInput label="Nom du partenaire" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
                                 )}
                                 getNewItem={() => ({ name: 'Nouveau Partenaire' })}
                                 getItemTitle={item => item.name}
@@ -139,15 +135,15 @@ const AdminSettings: React.FC = () => {
                             <ArrayEditor 
                                 items={localData.testimonials}
                                 setItems={newItems => setLocalData(p => ({...p!, testimonials: newItems}))}
-                                renderItem={(item: Testimonial, onChange) => (
+                                renderItem={(item: Testimonial, updateItem) => (
                                     <>
-                                        <FormInput label="Nom" value={item.name} onChange={e => onChange('name', e.target.value)} />
-                                        <FormInput label="Rôle" value={item.role} onChange={e => onChange('role', e.target.value)} />
-                                        <ImageInput label="Photo" value={item.imageUrl} onChange={value => onChange('imageUrl', value)} />
+                                        <FormInput label="Nom" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
+                                        <FormInput label="Rôle" value={item.role} onChange={e => updateItem({ ...item, role: e.target.value })} />
+                                        <ImageUploader label="Photo" value={item.imageUrl} onChange={value => updateItem({ ...item, imageUrl: value })} />
                                         <FormTextArea 
                                             label="Citation" 
                                             value={item.quote} 
-                                            onChange={e => onChange('quote', e.target.value)}
+                                            onChange={e => updateItem({ ...item, quote: e.target.value })}
                                         />
                                     </>
                                 )}
@@ -162,19 +158,19 @@ const AdminSettings: React.FC = () => {
                         <ArrayEditor 
                             items={localData.faqData}
                             setItems={newItems => setLocalData(p => ({...p!, faqData: newItems}))}
-                            renderItem={(item: FAQCategory, onChange) => (
+                            renderItem={(item: FAQCategory, updateItem) => (
                                 <>
-                                    <FormInput label="Catégorie" value={item.category} onChange={e => onChange('category', e.target.value)} />
+                                    <FormInput label="Catégorie" value={item.category} onChange={e => updateItem({ ...item, category: e.target.value })} />
                                     <SubArrayEditor
                                         title="Questions"
                                         items={item.items || []}
-                                        setItems={newItems => onChange('items', newItems)}
+                                        setItems={newItems => updateItem({ ...item, items: newItems })}
                                         getNewItem={() => ({ question: 'Nouvelle Question ?', answer: 'Réponse...' })}
-                                        getItemTitle={item => item.question}
-                                        renderItem={(faq: FAQItem, onFaqChange) => (
+                                        getItemTitle={subItem => subItem.question}
+                                        renderItem={(faq: FAQItem, updateFaq) => (
                                             <>
-                                                <FormInput label="Question" value={faq.question} onChange={e => onFaqChange('question', e.target.value)} />
-                                                <FormTextArea label="Réponse" value={faq.answer} onChange={e => onFaqChange('answer', e.target.value)} />
+                                                <FormInput label="Question" value={faq.question} onChange={e => updateFaq({ ...faq, question: e.target.value })} />
+                                                <FormTextArea label="Réponse" value={faq.answer} onChange={e => updateFaq({ ...faq, answer: e.target.value })} />
                                             </>
                                         )}
                                     />
@@ -187,7 +183,6 @@ const AdminSettings: React.FC = () => {
                 </div>
             </div>
         </div>
-        </>
     );
 };
 
@@ -207,15 +202,15 @@ const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({lab
 const ArrayEditor: React.FC<{
     items: any[];
     setItems: (items: any[]) => void;
-    renderItem: (item: any, onChange: (key: string, value: any) => void, index: number) => React.ReactNode;
+    renderItem: (item: any, updateItem: (newItem: any) => void, index: number) => React.ReactNode;
     getNewItem: () => any;
     getItemTitle: (item: any) => string;
 }> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    const handleItemChange = (index: number, key: string, value: any) => {
+    const handleUpdateItem = (index: number, newItem: any) => {
         const newItems = [...items];
-        newItems[index] = { ...newItems[index], [key]: value };
+        newItems[index] = newItem;
         setItems(newItems);
     };
 
@@ -240,7 +235,7 @@ const ArrayEditor: React.FC<{
                     </button>
                     {openIndex === index && (
                         <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
-                            {renderItem(item, (key, value) => handleItemChange(index, key, value), index)}
+                            {renderItem(item, (newItem) => handleUpdateItem(index, newItem), index)}
                             <div className="text-right pt-2">
                                 <button type="button" onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
                             </div>

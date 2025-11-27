@@ -1,6 +1,7 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Crawl-delay: 1
 
 # Interdire l'exploration des zones privées et d'administration.
 Disallow: /admin/
@@ -10,6 +11,14 @@ Disallow: /formations/
 Disallow: /jury/
 Disallow: /enregistrement/
 Disallow: /chat
+Disallow: /*?*
+Disallow: /#/
+
+# Autoriser les fichiers importants pour le SEO
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /assets/
 
 # Emplacement des sitemaps
 Sitemap: https://www.perfectmodels.ga/sitemap.txt

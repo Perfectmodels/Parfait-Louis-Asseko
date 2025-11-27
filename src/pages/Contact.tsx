@@ -1,10 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
-import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useLocation, Link } from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/SocialIcons';
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
+// FIX: Corrected import path for BookingForm.
 import BookingForm from '../components/BookingForm';
 import { ContactMessage } from '../types';
 
@@ -67,34 +69,88 @@ const Contact: React.FC = () => {
     };
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24 min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white min-h-screen">
             <SEO 
                 title="Contact | Perfect Models Management"
                 description="Contactez-nous pour toute demande de booking, de partenariat ou d'information. L'équipe de Perfect Models Management est à votre disposition à Libreville, Gabon."
                 keywords="contacter agence mannequin, booking mannequin gabon, partenariat mode, pmm contact"
                 image={data?.siteImages.about}
             />
-            <div className="container mx-auto px-6">
-                <div className="text-center">
-                    <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold mb-4">Contactez-nous</h1>
-                    <p className="max-w-2xl mx-auto text-pm-off-white/80">
-                        Une question, un projet de collaboration ou une demande de booking ? Notre équipe est à votre écoute.
-                    </p>
+            
+            {/* Hero Section */}
+            <motion.section 
+                className="relative py-20 lg:py-32 overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+            >
+                <div className="absolute inset-0 bg-gradient-to-br from-pm-gold/10 to-transparent"></div>
+                <div className="relative container mx-auto px-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="text-center max-w-4xl mx-auto"
+                    >
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-playfair text-pm-gold mb-6">
+                            Contactez-nous
+                        </h1>
+                        <p className="text-lg md:text-xl text-pm-off-white/80 leading-relaxed max-w-3xl mx-auto">
+                            Une question, un projet de collaboration ou une demande de booking ? Notre équipe est à votre écoute.
+                        </p>
+                    </motion.div>
                 </div>
+            </motion.section>
 
-                <div className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <div className="container mx-auto px-6 pb-16">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                    
                     {/* Contact Info */}
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Nos Coordonnées</h2>
+                    <motion.div 
+                        className="bg-black/50 backdrop-blur-sm p-8 lg:p-10 border border-pm-gold/20 rounded-2xl shadow-2xl"
+                        initial={{ opacity: 0, x: -50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <h2 className="text-3xl lg:text-4xl font-playfair text-pm-gold mb-8">Nos Coordonnées</h2>
                         {contactInfo && (
-                            <div className="space-y-4 text-lg">
-                                <InfoItem icon={MapPinIcon} text={contactInfo.address} />
-                                <InfoItem icon={PhoneIcon} text={contactInfo.phone} />
-                                <InfoItem icon={EnvelopeIcon} text={contactInfo.email} href={`mailto:${contactInfo.email}`} />
+                            <div className="space-y-6">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.3 }}
+                                    transition={{ duration: 0.6, delay: 0.1 }}
+                                >
+                                    <InfoItem icon={MapPinIcon} text={contactInfo.address} />
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.3 }}
+                                    transition={{ duration: 0.6, delay: 0.2 }}
+                                >
+                                    <InfoItem icon={PhoneIcon} text={contactInfo.phone} />
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.3 }}
+                                    transition={{ duration: 0.6, delay: 0.3 }}
+                                >
+                                    <InfoItem icon={EnvelopeIcon} text={contactInfo.email} href={`mailto:${contactInfo.email}`} />
+                                </motion.div>
                             </div>
                         )}
-                        <div className="mt-8 pt-6 border-t border-pm-gold/10">
-                            <h3 className="text-xl font-bold text-pm-off-white mb-4">Suivez-nous</h3>
+                        
+                        <motion.div 
+                            className="mt-10 pt-8 border-t border-pm-gold/10"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            transition={{ duration: 0.6, delay: 0.4 }}
+                        >
+                            <h3 className="text-xl font-bold text-pm-off-white mb-6">Suivez-nous</h3>
                             {socialLinks && (
                                 <div className="flex space-x-6">
                                     {socialLinks.facebook && <SocialLink href={socialLinks.facebook} icon={FacebookIcon} />}
@@ -102,43 +158,83 @@ const Contact: React.FC = () => {
                                     {socialLinks.youtube && <SocialLink href={socialLinks.youtube} icon={YoutubeIcon} />}
                                 </div>
                             )}
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
 
                     {/* Contact Form */}
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Envoyez-nous un message</h2>
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                    <motion.div 
+                        className="bg-black/50 backdrop-blur-sm p-8 lg:p-10 border border-pm-gold/20 rounded-2xl shadow-2xl"
+                        initial={{ opacity: 0, x: 50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <h2 className="text-3xl lg:text-4xl font-playfair text-pm-gold mb-8">Envoyez-nous un message</h2>
+                        <motion.form 
+                            onSubmit={handleSubmit} 
+                            className="space-y-6"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                        >
                             <FormInput label="Votre Nom" name="name" value={formData.name} onChange={handleChange} required />
                             <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
                             <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
                             <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
                             
-                            <div>
-                                <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, amount: 0.3 }}
+                                transition={{ duration: 0.6, delay: 0.3 }}
+                            >
+                                <button 
+                                    type="submit" 
+                                    disabled={status === 'loading'} 
+                                    className="w-full px-8 py-4 bg-gradient-to-r from-pm-gold to-yellow-400 text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:scale-105 hover:shadow-2xl hover:shadow-pm-gold/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
                                     {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
                                 </button>
-                            </div>
+                            </motion.div>
                             
                             {statusMessage && (
-                                <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={`text-center text-sm p-4 rounded-lg ${status === 'success' ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'bg-red-500/20 text-red-300 border border-red-500/30'}`}
+                                >
                                     {statusMessage}
-                                </p>
+                                </motion.div>
                             )}
-                        </form>
-                    </div>
+                        </motion.form>
+                    </motion.div>
                 </div>
 
-                <div className="mt-16 max-w-6xl mx-auto">
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6 text-center">Demande de Booking</h2>
-                        <p className="text-center text-pm-off-white/80 mb-8 -mt-4">
-                            Pour un ou plusieurs mannequins, ou pour tout autre projet.
-                        </p>
+                {/* Booking Section */}
+                <motion.div 
+                    className="mt-16 max-w-6xl mx-auto"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <div className="bg-black/50 backdrop-blur-sm p-8 lg:p-12 border border-pm-gold/20 rounded-2xl shadow-2xl">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            transition={{ duration: 0.6 }}
+                            className="text-center"
+                        >
+                            <h2 className="text-3xl lg:text-4xl font-playfair text-pm-gold mb-4">Demande de Booking</h2>
+                            <p className="text-pm-off-white/80 mb-8 text-lg">
+                                Pour un ou plusieurs mannequins, ou pour tout autre projet.
+                            </p>
+                        </motion.div>
                         <BookingForm />
                     </div>
-                </div>
-
+                </motion.div>
             </div>
         </div>
     );

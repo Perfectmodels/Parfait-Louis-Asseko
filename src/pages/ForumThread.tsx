@@ -5,6 +5,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+// FIX: Corrected import path for types from '../src/types' to '../types'.
 import { ForumReply } from '../types';
 import NotFound from './NotFound';
 
