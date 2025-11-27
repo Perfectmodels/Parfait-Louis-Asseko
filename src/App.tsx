@@ -5,7 +5,6 @@ import { DataProvider, useData } from './contexts/DataContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ChatProvider } from './contexts/ChatContext';
 import Layout from './components/icons/Layout';
-import ResponsiveLayout from './components/ResponsiveLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
@@ -171,14 +170,12 @@ const AppContent: React.FC = () => {
 
     return (
         <Layout>
-            <ResponsiveLayout>
-                <Suspense fallback={<LoadingFallback />}>
-                    <AnimatedRoutes />
-                </Suspense>
-                <AIAssistantIcon />
-                <PWAInstallPrompt />
-                <OfflineIndicator />
-            </ResponsiveLayout>
+            <Suspense fallback={<LoadingFallback />}>
+                <AnimatedRoutes />
+            </Suspense>
+            <AIAssistantIcon />
+            <PWAInstallPrompt />
+            <OfflineIndicator />
         </Layout>
     );
 }
