@@ -12,11 +12,7 @@ import {
   ArrowUturnLeftIcon,
   CheckCircleIcon,
   EllipsisVerticalIcon,
-  PaperClipIcon,
-  StarIcon,
-  TagIcon,
-  ArrowUpIcon,
-  ArrowDownIcon
+  PaperClipIcon
 } from '@heroicons/react/24/outline';
 
 const ChatList: React.FC = () => {
@@ -90,24 +86,6 @@ const ChatList: React.FC = () => {
     
     return filtered;
   }, [chats, filter, searchTerm, filterChats, selectedLabels, sortBy, sortOrder]);
-
-  // Obtenir toutes les étiquettes disponibles
-  const availableLabels = useMemo(() => {
-    const labels = new Map<string, { name: string; color: string; count: number }>();
-    
-    chats.forEach(chat => {
-      chat.labels?.forEach(label => {
-        const existing = labels.get(label.id);
-        if (existing) {
-          existing.count++;
-        } else {
-          labels.set(label.id, { name: label.name, color: label.color, count: 1 });
-        }
-      });
-    });
-    
-    return Array.from(labels.entries()).map(([id, data]) => ({ id, ...data }));
-  }, [chats]);
 
   const formatLastMessage = (message: any) => {
     if (!message) return '';

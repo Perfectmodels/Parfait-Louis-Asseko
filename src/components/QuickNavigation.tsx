@@ -7,7 +7,6 @@ import {
   CalendarIcon,
   ChatBubbleLeftRightIcon,
   BellIcon,
-  Cog6ToothIcon,
   CameraIcon,
   DocumentTextIcon,
   UserGroupIcon,
@@ -89,7 +88,7 @@ const QuickNavigation: React.FC<QuickNavigationProps> = ({
     const recent = getRecentPages();
     const updated = [
       { href, title: getPageTitle(href), timestamp: Date.now() },
-      ...recent.filter(p => p.href !== href)
+      ...recent.filter((p: any) => p.href !== href)
     ].slice(0, 10);
     
     localStorage.setItem('recent_pages', JSON.stringify(updated));
@@ -99,16 +98,24 @@ const QuickNavigation: React.FC<QuickNavigationProps> = ({
   const getPageTitle = (href: string): string => {
     const titles: Record<string, string> = {
       '/': 'Accueil',
-      '/mannequins': 'Mannequins',
-      '/contact': 'Contact',
-      '/casting': 'Casting',
-      '/profil': 'Profil',
       '/admin': 'Admin',
-      '/chat': 'Messages',
-      '/notifications-settings': 'Notifications',
+      '/admin/dashboard': 'Dashboard',
+      '/admin/models': 'Mannequins',
+      '/admin/casting': 'Casting',
+      '/admin/fashion-day': 'Fashion Day',
+      '/admin/gallery': 'Galerie',
+      '/admin/news': 'Actualités',
+      '/admin/magazine': 'Magazine',
+      '/admin/analytics': 'Analytics',
+      '/mannequins': 'Mannequins',
+      '/casting': 'Casting',
+      '/fashion-day': 'Fashion Day',
+      '/galerie': 'Galerie',
+      '/magazine': 'Magazine',
+      '/contact': 'Contact'
     };
     
-    return titles[href] || href.replace('/', '').charAt(0).toUpperCase() + href.slice(2) || 'Page';
+    return titles[href] || href;
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -223,7 +230,7 @@ const QuickNavigation: React.FC<QuickNavigationProps> = ({
           <div className="mb-6">
             <h4 className="text-sm font-medium text-gray-700 mb-3">Pages Récentes</h4>
             <div className="space-y-1">
-              {recentPages.map((page, index) => (
+              {recentPages.map((page: any, index: number) => (
                 <button
                   key={index}
                   onClick={() => handleNavigation(page.href)}

@@ -76,7 +76,7 @@ const pageVariants = {
 
 const pageTransition = {
     type: "tween" as const,
-    ease: "anticipate",
+    ease: "easeInOut", // Utilisation d'une chaîne de caractères valide
     duration: 0.5
 };
 

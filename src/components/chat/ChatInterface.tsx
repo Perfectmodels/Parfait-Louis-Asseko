@@ -3,22 +3,18 @@ import { useChat } from '../../contexts/ChatContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
   PaperAirplaneIcon, 
-  PaperClipIcon, 
-  FaceSmileIcon, 
-  MicrophoneIcon,
-  CameraIcon,
-  EllipsisHorizontalIcon,
   ArrowLeftIcon,
+  CheckIcon,
+  CheckCircleIcon,
+  ChatBubbleLeftRightIcon,
   PhoneIcon,
   VideoCameraIcon,
   MagnifyingGlassIcon,
-  CheckCircleIcon,
-  CheckIcon,
-  ChatBubbleLeftRightIcon,
-  PlusIcon,
+  EllipsisHorizontalIcon,
   XMarkIcon,
-  BellSlashIcon,
-  EllipsisVerticalIcon
+  PlusIcon,
+  CameraIcon,
+  MicrophoneIcon
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';
 
@@ -30,28 +26,15 @@ const ChatInterface: React.FC = () => {
     sendMessage,
     sendTypingIndicator,
     markAsRead,
-    reactToMessage,
-    replyToMessage,
-    forwardMessage,
-    deleteMessage,
     editMessage,
-    toggleMessageSelection,
-    selectedMessages,
-    clearSelection,
-    deleteSelectedMessages,
     isRecording,
-    setIsRecording,
-    showEmojiPicker,
-    setShowEmojiPicker,
-    searchTerm,
-    setSearchTerm
+    setIsRecording
   } = useChat();
 
   const { user } = useAuth();
   const [messageText, setMessageText] = useState('');
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [editingMessage, setEditingMessage] = useState<string | null>(null);
-  const [showChatInfo, setShowChatInfo] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [showOptions, setShowOptions] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   
@@ -181,8 +164,8 @@ const ChatInterface: React.FC = () => {
 
   const chatMessages = messages[activeChat.id] || [];
   const typingUsers = Object.entries(isTyping[activeChat.id] || {})
-    .filter(([userId, typing]) => typing && userId !== user?.id)
-    .map(([, , userName]) => userName);
+    .filter(([userId, isTyping]) => isTyping && userId !== user?.id)
+    .map(([userId]) => userId);
 
   return (
     <div className="flex-1 flex flex-col bg-white">
