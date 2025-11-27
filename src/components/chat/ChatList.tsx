@@ -12,7 +12,11 @@ import {
   ArrowUturnLeftIcon,
   CheckCircleIcon,
   EllipsisVerticalIcon,
-  PaperClipIcon
+  PaperClipIcon,
+  StarIcon,
+  TagIcon,
+  ArrowUpIcon,
+  ArrowDownIcon
 } from '@heroicons/react/24/outline';
 
 const ChatList: React.FC = () => {
@@ -27,26 +31,83 @@ const ChatList: React.FC = () => {
     archiveChat,
     muteChat,
     pinChat,
-    deleteChat
+    deleteChat,
+    toggleFavorite,
+    initiateCall
   } = useChat();
 
   const { user } = useAuth();
-  const [filter, setFilter] = useState<'all' | 'unread' | 'archived' | 'pinned'>('all');
+  const [filter, setFilter] = useState<'all' | 'unread' | 'archived' | 'pinned' | 'favorites'>('all');
   const [showChatOptions, setShowChatOptions] = useState<string | null>(null);
+  
+  // Nouveaux états Phase 1
+  const [sortBy] = useState<'recent' | 'name' | 'unread' | 'priority'>('recent');
+  const [sortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedLabels] = useState<string[]>([]);
 
-  // Filtrer les chats selon le filtre et la recherche
+  // Filtrer les chats selon le filtre, recherche, étiquettes et tri
   const filteredChats = useMemo(() => {
     let filtered = filterChats(filter);
     
-    if (searchTerm) {
+    // Filtre par étiquettes
+    if (selectedLabels.length > 0) {
       filtered = filtered.filter(chat => 
-        chat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        chat.lastMessage?.text.toLowerCase().includes(searchTerm.toLowerCase())
+        chat.labels?.some(label => selectedLabels.includes(label.id))
       );
     }
     
+    // Recherche textuelle
+    if (searchTerm) {
+      filtered = filtered.filter(chat => 
+        chat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        chat.lastMessage?.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        chat.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Tri
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (sortBy) {
+        case 'recent':
+          comparison = (b.lastActivity || b.createdAt) - (a.lastActivity || a.createdAt);
+          break;
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'unread':
+          comparison = b.unreadCount - a.unreadCount;
+          break;
+        case 'priority':
+          const priorityOrder = { high: 3, normal: 2, low: 1 };
+          comparison = priorityOrder[b.priority || 'normal'] - priorityOrder[a.priority || 'normal'];
+          break;
+      }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+    
     return filtered;
-  }, [chats, filter, searchTerm, filterChats]);
+  }, [chats, filter, searchTerm, filterChats, selectedLabels, sortBy, sortOrder]);
+
+  // Obtenir toutes les étiquettes disponibles
+  const availableLabels = useMemo(() => {
+    const labels = new Map<string, { name: string; color: string; count: number }>();
+    
+    chats.forEach(chat => {
+      chat.labels?.forEach(label => {
+        const existing = labels.get(label.id);
+        if (existing) {
+          existing.count++;
+        } else {
+          labels.set(label.id, { name: label.name, color: label.color, count: 1 });
+        }
+      });
+    });
+    
+    return Array.from(labels.entries()).map(([id, data]) => ({ id, ...data }));
+  }, [chats]);
 
   const formatLastMessage = (message: any) => {
     if (!message) return '';
@@ -106,6 +167,9 @@ const ChatList: React.FC = () => {
       case 'pin':
         pinChat(chatId);
         break;
+      case 'favorite':
+        toggleFavorite(chatId);
+        break;
       case 'delete':
         if (confirm('Êtes-vous sûr de vouloir supprimer cette conversation ?')) {
           deleteChat(chatId);
@@ -113,6 +177,12 @@ const ChatList: React.FC = () => {
         break;
       case 'unarchive':
         archiveChat(chatId);
+        break;
+      case 'voiceCall':
+        initiateCall(chatId, 'voice');
+        break;
+      case 'videoCall':
+        initiateCall(chatId, 'video');
         break;
     }
     setShowChatOptions(null);

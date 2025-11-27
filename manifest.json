@@ -2,11 +2,77 @@
   "name": "Perfect Models Management",
   "short_name": "PMM",
   "description": "L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine.",
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": [
+    "business",
+    "lifestyle",
+    "photography"
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Portfolio",
+      "short_name": "Portfolio",
+      "description": "Voir le portfolio des mannequins",
+      "url": "/models",
+      "icons": [
+        {
+          "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Casting",
+      "short_name": "Casting",
+      "description": "Participer aux castings",
+      "url": "/casting",
+      "icons": [
+        {
+          "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "short_name": "Messages",
+      "description": "Accéder à la messagerie",
+      "url": "/chat",
+      "icons": [
+        {
+          "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
   "icons": [
+    {
+      "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
+      "sizes": "72x72",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
+      "sizes": "96x96",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
+      "sizes": "128x128",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
     {
       "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
       "sizes": "144x144",
@@ -15,7 +81,19 @@
     },
     {
       "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
+      "sizes": "152x152",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
       "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.ibb.co/NdrpzGpm/blob.jpg",
+      "sizes": "384x384",
       "type": "image/jpeg",
       "purpose": "any maskable"
     },
@@ -28,7 +106,7 @@
   ],
   "screenshots": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjMTExMTExIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjQ4IiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5QZXJmZWN0IE1vZGVsczwvdGV4dD4KPHRleHQgeD0iNTAlIiB5PSI2MCUiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNENEFGMzciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkFnZW5jZSBkZSBNYW5uZXF1aW5zPC90ZXh0Pgo8L3N2Zz4=",
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjMTExMTExIi8+Cjx0ZXh0IHg9IjUwJSIgeT0iNDAlIiBmb250LXNpemU9IjQ4IiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5QZXJmZWN0IE1vZGVsczwvdGV4dD4KPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNENEFGMzciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkFnZW5jZSBkZSBNYW5uZXF1aW5zPC90ZXh0Pgo8L3N2Zz4=",
       "sizes": "1280x720",
       "type": "image/svg+xml",
       "form_factor": "wide",
@@ -41,5 +119,8 @@
       "form_factor": "narrow",
       "label": "Portfolio de Mannequin"
     }
-  ]
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }

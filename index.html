@@ -2,25 +2,217 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Perfect Models Management</title>
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/NdrpzGpm/blob.jpg" />
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- PWA meta tags -->
+    <!-- PWA Meta Tags - Android -->
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="PMM">
+    <meta name="theme-color" content="#D4AF37" />
+    <meta name="msapplication-TileColor" content="#D4AF37" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- PWA Meta Tags - iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PMM">
     <link rel="apple-touch-icon" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
+    <link rel="apple-touch-icon" sizes="96x96" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
+    <link rel="apple-touch-icon" sizes="128x128" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
+    <link rel="apple-touch-icon" sizes="192x192" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
+    <link rel="apple-touch-icon" sizes="384x384" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
+    <link rel="apple-touch-icon" sizes="512x512" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
     
-    <!-- Theme color -->
-    <meta name="theme-color" content="#D4AF37" />
+    <!-- iOS Splash Screens -->
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="https://i.ibb.co/NdrpzGpm/blob.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
 
-    <!-- Google Fonts -->
+    <!-- Security and Performance -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://i.ibb.co" crossorigin>
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//i.ibb.co">
+
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- PWA Installation Prompt Styles -->
+    <style>
+        .pwa-install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Montserrat', sans-serif;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .pwa-install-prompt.show {
+            display: flex;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .pwa-install-prompt .content {
+            flex: 1;
+        }
+        
+        .pwa-install-prompt .title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .pwa-install-prompt .description {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .pwa-install-prompt .actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 16px;
+        }
+        
+        .pwa-install-prompt button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pwa-install-prompt .install-btn {
+            background: white;
+            color: #D4AF37;
+        }
+        
+        .pwa-install-prompt .install-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .pwa-install-prompt .dismiss-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .pwa-install-prompt .dismiss-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* iOS Standalone Mode Adjustments */
+        @supports (-webkit-touch-callout: none) {
+            html {
+                height: -webkit-fill-available;
+            }
+            body {
+                min-height: -webkit-fill-available;
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+        
+        /* Loading Screen */
+        .pwa-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .pwa-loading .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .pwa-loading .title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #D4AF37;
+        }
+        
+        .pwa-loading .subtitle {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .pwa-loading.hide {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+    </style>
+
 <script type="importmap">
 {
   "imports": {
@@ -40,8 +232,127 @@
 </script>
 </head>
 <body>
+    <!-- PWA Loading Screen -->
+    <div id="pwa-loading" class="pwa-loading">
+        <img src="https://i.ibb.co/NdrpzGpm/blob.jpg" alt="Perfect Models" class="logo">
+        <div class="title">Perfect Models</div>
+        <div class="subtitle">Agence de Mannequins</div>
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div id="pwa-install-prompt" class="pwa-install-prompt">
+        <div class="content">
+            <div class="title">Installer Perfect Models</div>
+            <div class="description">Accédez à l'application même hors ligne</div>
+        </div>
+        <div class="actions">
+            <button id="pwa-install-dismiss" class="dismiss-btn">Plus tard</button>
+            <button id="pwa-install-button" class="install-btn">Installer</button>
+        </div>
+    </div>
+
     <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
     <div id="root"></div>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('[PWA] Service Worker enregistré avec succès:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            if (newWorker) {
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        // New version available
+                                        if (confirm('Une nouvelle version de l\'application est disponible. Voulez-vous mettre à jour ?')) {
+                                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                            window.location.reload();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error('[PWA] Erreur d\'enregistrement du Service Worker:', error);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installButton = document.getElementById('pwa-install-button');
+        const dismissButton = document.getElementById('pwa-install-dismiss');
+        const installPrompt = document.getElementById('pwa-install-prompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install prompt after 3 seconds
+            setTimeout(() => {
+                if (!localStorage.getItem('pwa-install-dismissed')) {
+                    installPrompt.classList.add('show');
+                }
+            }, 3000);
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`[PWA] Installation ${outcome}`);
+                deferredPrompt = null;
+            }
+            installPrompt.classList.remove('show');
+        });
+
+        dismissButton.addEventListener('click', () => {
+            installPrompt.classList.remove('show');
+            localStorage.setItem('pwa-install-dismissed', 'true');
+        });
+
+        // Hide loading screen when app is ready
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('pwa-loading');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hide');
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 300);
+                }
+            }, 1000);
+        });
+
+        // Handle online/offline status
+        window.addEventListener('online', () => {
+            console.log('[PWA] Connexion rétablie');
+            document.body.classList.remove('offline');
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('[PWA] Connexion perdue');
+            document.body.classList.add('offline');
+        });
+
+        // iOS Standalone Mode Detection
+        if (window.navigator.standalone === true) {
+            document.body.classList.add('ios-standalone');
+        }
+
+        // Theme detection for iOS
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-theme');
+        }
+    </script>
+    
     <script type="module" src="./src/index.tsx"></script>
 </body>
 </html>

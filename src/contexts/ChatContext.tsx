@@ -10,7 +10,7 @@ export interface Message {
   senderAvatar?: string;
   timestamp: number;
   status: 'sending' | 'sent' | 'delivered' | 'read';
-  type: 'text' | 'image' | 'file' | 'voice' | 'location';
+  type: 'text' | 'image' | 'file' | 'voice' | 'location' | 'poll' | 'contact';
   replyTo?: Message;
   reactions?: Array<{
     emoji: string;
@@ -23,7 +23,45 @@ export interface Message {
     url: string;
     type: string;
     size: number;
+    thumbnail?: string;
   }>;
+  // Nouvelles fonctionnalités Phase 1
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  editedAt?: number;
+  deletedAt?: number;
+  forwardedFrom?: {
+    chatId: string;
+    chatName: string;
+    originalSender: string;
+  };
+  location?: {
+    lat: number;
+    lng: number;
+    address: string;
+  };
+  poll?: {
+    question: string;
+    options: Array<{
+      id: string;
+      text: string;
+      votes: string[];
+    }>;
+    expiresAt?: number;
+    multipleChoice: boolean;
+    anonymous: boolean;
+  };
+  contactCard?: {
+    name: string;
+    phone: string;
+    email?: string;
+    company?: string;
+    position?: string;
+  };
+  voiceNote?: {
+    duration: number;
+    waveform: number[];
+    transcription?: string;
+  };
 }
 
 export interface Chat {
@@ -38,14 +76,74 @@ export interface Chat {
     role: string;
     isOnline: boolean;
     lastSeen?: number;
+    permissions: {
+      canSendMessages: boolean;
+      canAddMembers: boolean;
+      canRemoveMembers: boolean;
+      canEditInfo: boolean;
+    };
   }>;
   lastMessage?: Message;
   unreadCount: number;
   isMuted: boolean;
   isPinned: boolean;
   isArchived: boolean;
+  isFavorite: boolean;
   createdAt: number;
   description?: string;
+  // Nouvelles fonctionnalités Phase 1
+  encryption: 'none' | 'basic' | 'end-to-end';
+  autoDelete: number; // en secondes, 0 = désactivé
+  permissions: {
+    canAddMembers: boolean;
+    canRemoveMembers: boolean;
+    canEditInfo: boolean;
+    canSendMessages: boolean;
+    canDeleteMessages: boolean;
+    canPinMessages: boolean;
+  };
+  sharedMedia: {
+    images: Array<{
+      id: string;
+      url: string;
+      thumbnail: string;
+      timestamp: number;
+      senderId: string;
+    }>;
+    videos: Array<{
+      id: string;
+      url: string;
+      thumbnail: string;
+      duration: number;
+      timestamp: number;
+      senderId: string;
+    }>;
+    files: Array<{
+      id: string;
+      name: string;
+      url: string;
+      size: number;
+      type: string;
+      timestamp: number;
+      senderId: string;
+    }>;
+  };
+  calls: Array<{
+    id: string;
+    type: 'voice' | 'video';
+    startTime: number;
+    endTime?: number;
+    participants: string[];
+    duration?: number;
+    status: 'ongoing' | 'ended' | 'missed';
+  }>;
+  labels: Array<{
+    id: string;
+    name: string;
+    color: string;
+  }>;
+  priority: 'low' | 'normal' | 'high';
+  lastActivity: number;
 }
 
 export interface ChatContextType {
@@ -57,8 +155,9 @@ export interface ChatContextType {
   onlineUsers: Set<string>;
   searchTerm: string;
   selectedMessages: Set<string>;
+  theme: 'light' | 'dark' | 'auto';
 
-  // Actions
+  // Actions existantes
   setActiveChat: (chat: Chat | null) => void;
   sendMessage: (text: string, type?: Message['type'], attachments?: any[]) => void;
   sendTypingIndicator: (isTyping: boolean) => void;
@@ -79,7 +178,7 @@ export interface ChatContextType {
 
   // Recherche et filtres
   setSearchTerm: (term: string) => void;
-  filterChats: (filter: 'all' | 'unread' | 'archived' | 'pinned') => Chat[];
+  filterChats: (filter: 'all' | 'unread' | 'archived' | 'pinned' | 'favorites') => Chat[];
   
   // Sélection
   toggleMessageSelection: (messageId: string) => void;
@@ -91,6 +190,89 @@ export interface ChatContextType {
   setIsRecording: (recording: boolean) => void;
   showEmojiPicker: boolean;
   setShowEmojiPicker: (show: boolean) => void;
+
+  // Nouvelles fonctionnalités Phase 1
+  // Sondages
+  createPoll: (chatId: string, question: string, options: string[], multipleChoice?: boolean, anonymous?: boolean) => void;
+  votePoll: (messageId: string, optionId: string) => void;
+  endPoll: (messageId: string) => void;
+
+  // Appels vocaux/vidéo
+  initiateCall: (chatId: string, type: 'voice' | 'video') => void;
+  answerCall: (callId: string) => void;
+  endCall: (callId: string) => void;
+  rejectCall: (callId: string) => void;
+
+  // Partage de position
+  shareLocation: (chatId: string, location: { lat: number; lng: number; address: string }) => void;
+  requestLocation: (chatId: string) => void;
+
+  // Cartes de contact
+  shareContact: (chatId: string, contact: Message['contactCard']) => void;
+  saveContact: (contact: Message['contactCard']) => void;
+
+  // Notes vocales avancées
+  startVoiceRecording: () => void;
+  stopVoiceRecording: () => void;
+  playVoiceNote: (messageId: string) => void;
+  pauseVoiceNote: (messageId: string) => void;
+  transcribeVoiceNote: (messageId: string) => void;
+
+  // Chiffrement
+  enableEncryption: (chatId: string, level: Chat['encryption']) => void;
+  verifyEncryption: (chatId: string) => boolean;
+
+  // Auto-suppression
+  setAutoDelete: (chatId: string, seconds: number) => void;
+  cancelAutoDelete: (chatId: string) => void;
+
+  // Étiquettes et favoris
+  addLabel: (chatId: string, label: { name: string; color: string }) => void;
+  removeLabel: (chatId: string, labelId: string) => void;
+  toggleFavorite: (chatId: string) => void;
+
+  // Thèmes
+  setTheme: (theme: 'light' | 'dark' | 'auto') => void;
+
+  // Appels vocaux et vidéo
+  activeCall: {
+    id: string;
+    chatId: string;
+    type: 'voice' | 'video';
+    status: 'calling' | 'connected' | 'ended';
+    participants: string[];
+    startTime: number;
+  } | null;
+  setActiveCall: (call: any) => void;
+
+  // Enregistrement vocal
+  voiceRecording: {
+    isRecording: boolean;
+    duration: number;
+    waveform: number[];
+    messageId?: string;
+  };
+  setVoiceRecording: (recording: any) => void;
+
+  // Chiffrement
+  encryptionKeys: { [chatId: string]: string };
+  setEncryptionKeys: (keys: { [chatId: string]: string }) => void;
+
+  // Recherche avancée
+  searchInChat: (chatId: string, query: string, filters?: {
+    senderId?: string;
+    dateRange?: { start: number; end: number };
+    messageType?: Message['type'];
+    hasAttachments?: boolean;
+  }) => Message[];
+
+  // Médias partagés
+  getSharedMedia: (chatId: string, type: 'images' | 'videos' | 'files') => any[];
+  downloadMedia: (mediaId: string) => void;
+
+  // Priorité des messages
+  setMessagePriority: (messageId: string, priority: Message['priority']) => void;
+  getHighPriorityMessages: (chatId: string) => Message[];
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -102,7 +284,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     debugMode: true
   });
 
-  // État principal
+  // État principal existant
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<{ [chatId: string]: Message[] }>({});
@@ -111,7 +293,25 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMessages, setSelectedMessages] = useState<Set<string>>(new Set());
 
-  // État UI
+  // Nouveaux états Phase 1
+  const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>('auto');
+  const [activeCall, setActiveCall] = useState<{
+    id: string;
+    chatId: string;
+    type: 'voice' | 'video';
+    status: 'calling' | 'connected' | 'ended';
+    participants: string[];
+    startTime: number;
+  } | null>(null);
+  const [voiceRecording, setVoiceRecording] = useState<{
+    isRecording: boolean;
+    duration: number;
+    waveform: number[];
+    messageId?: string;
+  }>({ isRecording: false, duration: 0, waveform: [] });
+  const [encryptionKeys, setEncryptionKeys] = useState<{ [chatId: string]: string }>({});
+
+  // État UI existant
   const [isRecording, setIsRecording] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
@@ -452,7 +652,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [user, chats]);
 
   // Filtrer les chats
-  const filterChats = useCallback((filter: 'all' | 'unread' | 'archived' | 'pinned') => {
+  const filterChats = useCallback((filter: 'all' | 'unread' | 'archived' | 'pinned' | 'favorites') => {
     return chats.filter(chat => {
       switch (filter) {
         case 'unread':
@@ -461,6 +661,8 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           return chat.isArchived;
         case 'pinned':
           return chat.isPinned;
+        case 'favorites':
+          return chat.isFavorite;
         default:
           return !chat.isArchived;
       }
@@ -550,7 +752,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     onlineUsers,
     searchTerm,
     selectedMessages,
-
+    
     // Actions
     setActiveChat,
     sendMessage,
@@ -583,7 +785,47 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isRecording,
     setIsRecording,
     showEmojiPicker,
-    setShowEmojiPicker
+    setShowEmojiPicker,
+    
+    // Nouveaux états Phase 1
+    theme,
+    setTheme,
+    activeCall,
+    setActiveCall,
+    voiceRecording,
+    setVoiceRecording,
+    encryptionKeys,
+    setEncryptionKeys,
+    
+    // Nouvelles fonctionnalités Phase 1 (placeholders pour l'instant)
+    createPoll: () => {},
+    votePoll: () => {},
+    endPoll: () => {},
+    initiateCall: () => {},
+    answerCall: () => {},
+    endCall: () => {},
+    rejectCall: () => {},
+    shareLocation: () => {},
+    requestLocation: () => {},
+    shareContact: () => {},
+    saveContact: () => {},
+    startVoiceRecording: () => {},
+    stopVoiceRecording: () => {},
+    playVoiceNote: () => {},
+    pauseVoiceNote: () => {},
+    transcribeVoiceNote: () => {},
+    enableEncryption: () => {},
+    verifyEncryption: () => false,
+    setAutoDelete: () => {},
+    cancelAutoDelete: () => {},
+    addLabel: () => {},
+    removeLabel: () => {},
+    toggleFavorite: () => {},
+    searchInChat: () => [],
+    getSharedMedia: () => [],
+    downloadMedia: () => {},
+    setMessagePriority: () => {},
+    getHighPriorityMessages: () => []
   };
 
   return (

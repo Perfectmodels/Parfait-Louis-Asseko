@@ -8,7 +8,8 @@ import Layout from './components/icons/Layout';
 import ResponsiveLayout from './components/ResponsiveLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
-import { PWAInstaller } from './components/PWAInstaller';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
+import OfflineIndicator from './components/OfflineIndicator';
 import { registerServiceWorker } from './utils/pwa';
 
 // Lazy-loaded Pages
@@ -175,6 +176,8 @@ const AppContent: React.FC = () => {
                     <AnimatedRoutes />
                 </Suspense>
                 <AIAssistantIcon />
+                <PWAInstallPrompt />
+                <OfflineIndicator />
             </ResponsiveLayout>
         </Layout>
     );
@@ -193,7 +196,6 @@ const App: React.FC = () => {
           <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ScrollToTop />
             <AppContent />
-            <PWAInstaller />
           </HashRouter>
         </DataProvider>
       </ChatProvider>
