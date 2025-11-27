@@ -1,9 +1,11 @@
-
 import React, { useEffect, lazy, Suspense } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { ChatProvider } from './contexts/ChatContext';
 import Layout from './components/icons/Layout';
+import ResponsiveLayout from './components/ResponsiveLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
 import { PWAInstaller } from './components/PWAInstaller';
@@ -168,10 +170,12 @@ const AppContent: React.FC = () => {
 
     return (
         <Layout>
-            <Suspense fallback={<LoadingFallback />}>
-                <AnimatedRoutes />
-            </Suspense>
-            <AIAssistantIcon />
+            <ResponsiveLayout>
+                <Suspense fallback={<LoadingFallback />}>
+                    <AnimatedRoutes />
+                </Suspense>
+                <AIAssistantIcon />
+            </ResponsiveLayout>
         </Layout>
     );
 }
@@ -183,13 +187,17 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <DataProvider>
-      <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <ScrollToTop />
-        <AppContent />
-        <PWAInstaller />
-      </HashRouter>
-    </DataProvider>
+    <AuthProvider>
+      <ChatProvider>
+        <DataProvider>
+          <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <ScrollToTop />
+            <AppContent />
+            <PWAInstaller />
+          </HashRouter>
+        </DataProvider>
+      </ChatProvider>
+    </AuthProvider>
   );
 };
 
