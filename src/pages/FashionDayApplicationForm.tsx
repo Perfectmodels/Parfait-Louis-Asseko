@@ -1,5 +1,4 @@
 
-
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -109,6 +108,7 @@ const FashionDayApplicationForm: React.FC = () => {
     );
 };
 
+// FIX: Added missing helper components
 const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
@@ -128,4 +128,5 @@ const FormTextArea: React.FC<{label: string, name: string, value: string, onChan
     </div>
 );
 
+// FIX: Added missing default export
 export default FashionDayApplicationForm;

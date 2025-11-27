@@ -1,30 +1,38 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Article } from '../types';
+import { Article, ArticleContent } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, StarIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/icons/ImageInput';
-import { FacebookIcon } from '../components/icons/SocialIcons';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, StarIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import ImageUploader from '../components/ImageUploader';
+import ArticleGenerator from '../components/ArticleGenerator';
+import AIAssistant from '../components/AIAssistant';
+import ArticlePreview from '../components/ArticlePreview';
+
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
   const [localArticles, setLocalArticles] = useState<Article[]>([]);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
   useEffect(() => {
     if (data?.articles) {
-      setLocalArticles([...data.articles]);
+      setLocalArticles([...data.articles].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     }
   }, [data?.articles, isInitialized]);
   
   const handleFormSave = async (articleToSave: Article) => {
     if (!data) return;
     let updatedArticles;
+    
     if (isCreating) {
-        const newArticle = { ...articleToSave, slug: articleToSave.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') + '-' + Date.now() };
-        updatedArticles = [newArticle, ...localArticles];
+        if (!articleToSave.slug) {
+            articleToSave.slug = articleToSave.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') + '-' + Date.now();
+        }
+        updatedArticles = [articleToSave, ...localArticles];
     } else {
         updatedArticles = localArticles.map(a => a.slug === articleToSave.slug ? articleToSave : a);
     }
@@ -52,18 +60,6 @@ const AdminMagazine: React.FC = () => {
       isFeatured: article.slug === slugToFeature
     }));
     await saveData({ ...data, articles: updatedArticles });
-    alert(`L'article a été mis à la une.`);
-  };
-
-  const handleMove = async (index: number, direction: 'up' | 'down') => {
-    if (!data) return;
-    const newArticles = [...localArticles];
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= newArticles.length) return;
-
-    [newArticles[index], newArticles[targetIndex]] = [newArticles[targetIndex], newArticles[index]];
-    
-    await saveData({ ...data, articles: newArticles });
   };
   
   const handleStartCreate = () => {
@@ -77,9 +73,24 @@ const AdminMagazine: React.FC = () => {
       author: 'Focus Model 241',
       date: new Date().toISOString().split('T')[0],
       content: [{ type: 'paragraph', text: '' }],
-      viewCount: 0,
-      reactions: { likes: 0, dislikes: 0 },
     });
+  };
+
+  const handleArticleGenerated = (generatedData: Partial<Article>) => {
+    setIsCreating(true);
+    setEditingArticle(prev => ({
+        slug: '',
+        title: '',
+        category: 'Interview',
+        excerpt: '',
+        imageUrl: '',
+        author: 'Focus Model 241',
+        date: new Date().toISOString().split('T')[0],
+        content: [{ type: 'paragraph', text: '' }],
+        ...prev, // Keep any existing data if any
+        ...generatedData
+    }));
+    setIsGeneratorOpen(false);
   };
 
   if (editingArticle) {
@@ -87,77 +98,86 @@ const AdminMagazine: React.FC = () => {
   }
 
   return (
-    <>
-      <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-        <SEO title="Admin - Gérer le Magazine" noIndex />
-        <div className="container mx-auto px-6">
-          <div className="flex justify-between items-start mb-8 flex-wrap gap-4">
-              <div>
-                   <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                      <ChevronLeftIcon className="w-5 h-5" />
-                      Retour au Dashboard
-                  </Link>
-                  <h1 className="text-4xl font-playfair text-pm-gold">Gérer le Magazine</h1>
-              </div>
-              <div className="flex items-center gap-4">
-                   <button onClick={handleStartCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                      <PlusIcon className="w-5 h-5"/> Ajouter Article
-                  </button>
-              </div>
-          </div>
+    <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+      <SEO title="Admin - Gérer le Magazine" noIndex />
+      <div className="container mx-auto px-6">
+        <div className="admin-page-header">
+            <div>
+                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                    <ChevronLeftIcon className="w-5 h-5" />
+                    Retour au Dashboard
+                </Link>
+                <h1 className="admin-page-title">Gérer le Magazine</h1>
+                <p className="admin-page-subtitle">Gérez les articles du magazine en ligne Focus Model 241.</p>
+            </div>
+            <div className="flex items-center gap-4">
+                <button onClick={() => setIsGeneratorOpen(true)} className="action-btn-outline !flex !items-center !gap-2">
+                    <SparklesIcon className="w-5 h-5"/> Générer avec IA
+                </button>
+                 <button onClick={handleStartCreate} className="action-btn !flex !items-center !gap-2">
+                    <PlusIcon className="w-5 h-5"/> Ajouter un Article
+                </button>
+            </div>
+        </div>
 
-          <div className="bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30 space-y-4">
-            {localArticles.map((article, index) => {
-              const articleUrl = `${window.location.origin}/magazine/${article.slug}`;
-              const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`;
-              
-              return (
-              <div key={article.slug} className="flex items-center justify-between p-4 bg-pm-dark/50 rounded-md hover:bg-pm-dark">
-                <div className="flex items-center gap-4">
-                  {article.isFeatured && <StarIcon className="w-6 h-6 text-pm-gold flex-shrink-0" title="Article à la une"/>}
-                  <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover rounded"/>
-                  <div>
-                    <h2 className="font-bold">{article.title}</h2>
-                    <p className="text-sm text-pm-off-white/70">{article.category} - {article.date}</p>
-                  </div>
+        <div className="admin-section-wrapper">
+          {localArticles.map((article) => (
+            <div key={article.slug} className="flex items-center justify-between p-3 border-b border-pm-dark hover:bg-pm-dark/50">
+              <div className="flex items-center gap-4">
+                {article.isFeatured && <StarIcon className="w-5 h-5 text-pm-gold flex-shrink-0" title="Article à la une"/>}
+                <img src={article.imageUrl} alt={article.title} className="w-24 h-16 object-cover rounded hidden sm:block"/>
+                <div>
+                  <h2 className="font-bold">{article.title}</h2>
+                  <p className="text-sm text-pm-off-white/70">{article.category} - {new Date(article.date).toLocaleDateString()}</p>
                 </div>
-                <div className="flex items-center gap-4">
-                  <a href={facebookShareUrl} target="_blank" rel="noopener noreferrer" className="text-pm-gold/70 hover:text-pm-gold" title="Partager sur Facebook">
-                      <FacebookIcon className="w-5 h-5"/>
-                  </a>
-                  <button onClick={() => handleSetFeatured(article.slug)} className="text-pm-gold/70 hover:text-pm-gold" title="Mettre à la une">
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {!article.isFeatured && (
+                  <button onClick={() => handleSetFeatured(article.slug)} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Mettre à la une">
                       <StarIcon className="w-5 h-5"/>
                   </button>
-                  <button onClick={() => handleMove(index, 'up')} disabled={index === 0} className="disabled:opacity-30" title="Monter"><ArrowUpIcon className="w-5 h-5"/></button>
-                  <button onClick={() => handleMove(index, 'down')} disabled={index === localArticles.length - 1} className="disabled:opacity-30" title="Descendre"><ArrowDownIcon className="w-5 h-5"/></button>
-                  <button onClick={() => { setEditingArticle(article); setIsCreating(false); }} className="text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
-                  <button onClick={() => handleDelete(article.slug)} className="text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
-                </div>
+                )}
+                <button onClick={() => { setEditingArticle(article); setIsCreating(false); }} className="p-2 text-pm-gold/70 hover:text-pm-gold" title="Modifier"><PencilIcon className="w-5 h-5"/></button>
+                <button onClick={() => handleDelete(article.slug)} className="p-2 text-red-500/70 hover:text-red-500" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
               </div>
-            )})}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
-    </>
+      <ArticleGenerator isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} onArticleGenerated={handleArticleGenerated} />
+    </div>
   );
 };
 
-const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => void, onCancel: () => void, isCreating: boolean }> = ({ article, onSave, onCancel, isCreating }) => {
+
+interface ArticleFormProps {
+  article: Article;
+  onSave: (article: Article) => void;
+  onCancel: () => void;
+  isCreating: boolean;
+}
+
+const ArticleForm: React.FC<ArticleFormProps> = ({ article, onSave, onCancel, isCreating }) => {
     const [formData, setFormData] = useState(article);
     const [contentJson, setContentJson] = useState(JSON.stringify(article.content, null, 2));
+    const [isAIOpen, setIsAIOpen] = useState(false);
+    const [activeAIField, setActiveAIField] = useState<{ fieldName: string, prompt: string, schema?: any } | null>(null);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-    useEffect(() => {
-        setFormData(article);
-        setContentJson(JSON.stringify(article.content, null, 2));
-    }, [article]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-    
-    const handleImageChange = (value: string) => {
-        setFormData(prev => ({ ...prev, imageUrl: value }));
+
+    const handlePreview = () => {
+        try {
+            const parsedContent = JSON.parse(contentJson);
+            const currentArticleState = { ...formData, content: parsedContent };
+            setFormData(currentArticleState); // Update formData to pass to preview
+            setIsPreviewOpen(true);
+        } catch (error) {
+            alert("Le format JSON du contenu est invalide. Impossible de prévisualiser.");
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -169,56 +189,124 @@ const ArticleForm: React.FC<{ article: Article, onSave: (article: Article) => vo
             alert("Le format JSON du contenu est invalide.");
         }
     };
+    
+    const openAIAssistant = (fieldName: string, prompt: string, schema?: any) => {
+        setActiveAIField({ fieldName, prompt, schema });
+        setIsAIOpen(true);
+    };
+
+    const handleAIInsert = (content: string) => {
+        if (!activeAIField) return;
+        
+        if (activeAIField.fieldName === 'content') {
+            try {
+                const parsed = JSON.parse(content);
+                setContentJson(JSON.stringify(parsed, null, 2));
+            } catch {
+                const newContent = JSON.stringify([{ type: 'paragraph', text: content }], null, 2);
+                setContentJson(newContent);
+            }
+        } else if (activeAIField.fieldName === 'tags') {
+            setFormData(prev => ({...prev, tags: content.split(',').map(tag => tag.trim())}));
+        }
+        else {
+            setFormData(prev => ({ ...prev, [activeAIField.fieldName]: content }));
+        }
+    };
 
     return (
-        <>
-         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <div className="container mx-auto px-6 max-w-3xl">
-                <h1 className="text-4xl font-playfair text-pm-gold mb-8">{isCreating ? 'Nouvel Article' : 'Modifier l\'Article'}</h1>
-                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-6 rounded-lg shadow-lg shadow-black/30">
-                    <FormInput 
-                        label="Titre" name="title" value={formData.title} onChange={handleChange}
-                    />
-                    <ImageInput label="Image de l'article" value={formData.imageUrl} onChange={handleImageChange} />
-                    <FormInput label="Catégorie" name="category" value={formData.category} onChange={handleChange} />
-                    <FormTextArea 
-                        label="Extrait" name="excerpt" value={formData.excerpt} onChange={handleChange}
-                    />
-                    <FormTextArea 
-                        label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} isJson={true}
-                    />
-                    <div className="text-xs text-pm-off-white/50">
-                        <p>Format: tableau d'objets. Types: 'paragraph', 'heading' (avec level: 2 ou 3), 'quote' (avec author?), 'image' (avec src, alt, caption?).</p>
-                        <p>{'Ex: [{"type": "paragraph", "text": "Bonjour."}]'}</p>
-                    </div>
-                     <FormInput label="Tags (séparés par des virgules)" name="tags" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : ''} onChange={(e) => setFormData(p => ({...p, tags: e.target.value.split(',').map(tag => tag.trim())}))} />
+                <button onClick={onCancel} className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                    <ChevronLeftIcon className="w-5 h-5" />
+                    Retour à la liste
+                </button>
+                <h1 className="admin-page-title mb-8">{isCreating ? 'Nouvel Article' : 'Modifier l\'Article'}</h1>
+                <form onSubmit={handleSubmit} className="admin-section-wrapper space-y-6">
+                    <FormInput label="Titre" name="title" value={formData.title} onChange={handleChange} onAIAssist={() => openAIAssistant('title', 'Génère 5 titres accrocheurs pour un article de mode.')} />
+                    <ImageUploader label="Image de couverture" value={formData.imageUrl} onChange={value => setFormData(p => ({...p, imageUrl: value}))} />
+                    <FormSelect label="Catégorie" name="category" value={formData.category} onChange={handleChange}>
+                        <option>Interview</option><option>Événement</option><option>Tendance</option><option>Conseils</option><option>Portrait</option>
+                    </FormSelect>
+                    <FormTextArea label="Extrait (résumé)" name="excerpt" value={formData.excerpt} onChange={handleChange} rows={3} onAIAssist={() => openAIAssistant('excerpt', `Rédige un résumé de 2 phrases pour un article intitulé "${formData.title}".`)} />
+                    <FormTextArea label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} rows={15} onAIAssist={() => openAIAssistant('content', `Rédige un article complet sur "${formData.title}" en respectant le format JSON.`, { type: 'array', items: { type: 'object' }})} />
+                    <FormInput label="Tags (séparés par des virgules)" name="tags" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : ''} onChange={(e) => setFormData(p => ({...p, tags: e.target.value.split(',').map(tag => tag.trim())}))} onAIAssist={() => openAIAssistant('tags', `Génère 5 tags SEO pertinents pour un article sur "${formData.title}". Sépare-les par des virgules.`)} />
 
                     <div className="flex justify-end gap-4 pt-4">
                         <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
-                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
+                        <button type="button" onClick={handlePreview} className="px-6 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">Prévisualiser</button>
+                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white">Sauvegarder</button>
                     </div>
                 </form>
             </div>
+            {activeAIField && (
+                <AIAssistant 
+                    isOpen={isAIOpen}
+                    onClose={() => setIsAIOpen(false)}
+                    onInsertContent={handleAIInsert}
+                    fieldName={activeAIField.fieldName}
+                    initialPrompt={activeAIField.prompt}
+                    jsonSchema={activeAIField.schema}
+                />
+            )}
+            <ArticlePreviewModal 
+                isOpen={isPreviewOpen} 
+                onClose={() => setIsPreviewOpen(false)} 
+                article={formData} 
+            />
         </div>
-       </>
-    )
-}
+    );
+};
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string}> = ({label, name, value, onChange, type="text"}) => (
+const ArticlePreviewModal: React.FC<{ isOpen: boolean, onClose: () => void, article: Article }> = ({ isOpen, onClose, article }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={onClose}>
+            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20 flex-shrink-0">
+                    <h2 className="text-2xl font-playfair text-pm-gold">Prévisualisation de l'Article</h2>
+                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer la prévisualisation"><XMarkIcon className="w-6 h-6"/></button>
+                </header>
+                <main className="overflow-y-auto flex-grow">
+                   <div className="p-4 sm:p-8">
+                      <ArticlePreview article={article} />
+                   </div>
+                </main>
+            </div>
+        </div>
+    );
+};
+
+
+const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, onAIAssist?: () => void}> = ({label, onAIAssist, ...props}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
-            <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            <label htmlFor={props.name} className="admin-label !mb-0">{label}</label>
+            {onAIAssist && <AIAssistButton onClick={onAIAssist} />}
         </div>
-        <input type={type} id={name} name={name} value={value} onChange={onChange} className="admin-input" />
+        <input {...props} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, isJson?: boolean}> = ({label, name, value, onChange, isJson=false}) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows: number, onAIAssist?: () => void}> = ({label, onAIAssist, ...props}) => (
     <div>
         <div className="flex justify-between items-center mb-1">
-            <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70">{label}</label>
+            <label htmlFor={props.name} className="admin-label !mb-0">{label}</label>
+            {onAIAssist && <AIAssistButton onClick={onAIAssist} />}
         </div>
-        <textarea id={name} name={name} value={value} onChange={onChange} rows={isJson ? 10 : 5} className={`admin-input admin-textarea ${isJson ? 'font-mono text-sm' : ''}`} />
+        <textarea {...props} className="admin-input admin-textarea" />
     </div>
+);
+const FormSelect: React.FC<any> = (props) => (
+    <div>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <select {...props} className="admin-input">{props.children}</select>
+    </div>
+);
+const AIAssistButton: React.FC<{onClick: () => void}> = ({onClick}) => (
+    <button type="button" onClick={onClick} className="inline-flex items-center gap-1 text-xs text-pm-gold/80 hover:text-pm-gold">
+        <SparklesIcon className="w-4 h-4" /> Assister
+    </button>
 );
 
 export default AdminMagazine;

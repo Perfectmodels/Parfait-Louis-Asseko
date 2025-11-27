@@ -1,7 +1,8 @@
+
 import React, { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Article } from '../types';
-import CloseIcon from './icons/CloseIcon';
+import CloseIcon from '../components/icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 
 interface ArticleGeneratorProps {
@@ -12,7 +13,7 @@ interface ArticleGeneratorProps {
 
 const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows: number}> = ({label, name, value, onChange, rows}) => (
     <div>
-        <label htmlFor={name} className="block text-sm font-medium text-pm-off-white/70 mb-1">{label}</label>
+        <label htmlFor={name} className="admin-label">{label}</label>
         <textarea id={name} name={name} value={value} onChange={onChange} rows={rows} className="admin-input admin-textarea" />
     </div>
 );
@@ -95,7 +96,11 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
         };
 
         try {
-            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY! });
+            if (!import.meta.env.VITE_GEMINI_API_KEY) {
+                throw new Error("La clé API Gemini n'est pas configurée.");
+            }
+            
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
             
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
