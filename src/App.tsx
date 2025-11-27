@@ -31,6 +31,7 @@ const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const AdminRoutes = lazy(() => import('./pages/AdminRoutes'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 const NotificationsSettings = lazy(() => import('./pages/NotificationsSettings'));
+const WebSocketTest = lazy(() => import('./pages/WebSocketTest'));
 // FIX: Removed Beginner Classroom pages as the feature has been deprecated.
 const Chat = lazy(() => import('./pages/Chat'));
 
@@ -104,6 +105,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                     <Route path="/notifications-settings" element={<NotificationsSettings />} />
+                    <Route path="/websocket-test" element={<WebSocketTest />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
