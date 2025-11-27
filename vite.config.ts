@@ -5,4 +5,23 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: './',
   plugins: [react()],
+  server: {
+    port: 5175,
+    strictPort: true,
+    host: true,
+    hmr: {
+      port: 5175
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          motion: ['framer-motion']
+        }
+      }
+    }
+  }
 })
