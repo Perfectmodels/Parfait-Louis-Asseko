@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { BookingRequest } from '../types';
 import SEO from '../components/SEO';
+import SmartBookingCalendar from '../components/SmartBookingCalendar';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
@@ -58,6 +59,14 @@ const AdminBookings: React.FC = () => {
                             {f}
                         </button>
                     ))}
+                </div>
+
+                {/* Smart Booking Calendar */}
+                <div className="mb-8">
+                    <SmartBookingCalendar 
+                        adminMode={true}
+                        onBookingSelect={(booking: BookingRequest) => console.log('Selected booking:', booking)}
+                    />
                 </div>
 
                 <div className="space-y-4">
