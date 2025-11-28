@@ -1,15 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { Article, ArticleContent } from '../types';
+import { Article } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, StarIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, StarIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import ImageUploader from '../components/ImageUploader';
 import ArticleGenerator from '../components/ArticleGenerator';
 import AIAssistant from '../components/AIAssistant';
 import ArticlePreview from '../components/ArticlePreview';
-
+import { FacebookIcon } from '../components/icons/SocialIcons';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -169,6 +168,10 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onSave, onCancel, is
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleImageChange = (value: string) => {
+        setFormData(prev => ({ ...prev, imageUrl: value }));
+    };
+
     const handlePreview = () => {
         try {
             const parsedContent = JSON.parse(contentJson);
@@ -224,7 +227,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onSave, onCancel, is
                 <h1 className="admin-page-title mb-8">{isCreating ? 'Nouvel Article' : 'Modifier l\'Article'}</h1>
                 <form onSubmit={handleSubmit} className="admin-section-wrapper space-y-6">
                     <FormInput label="Titre" name="title" value={formData.title} onChange={handleChange} onAIAssist={() => openAIAssistant('title', 'Génère 5 titres accrocheurs pour un article de mode.')} />
-                    <ImageUploader label="Image de couverture" value={formData.imageUrl} onChange={value => setFormData(p => ({...p, imageUrl: value}))} />
+                    <ImageUploader label="Image de couverture" value={formData.imageUrl} onChange={handleImageChange} />
                     <FormSelect label="Catégorie" name="category" value={formData.category} onChange={handleChange}>
                         <option>Interview</option><option>Événement</option><option>Tendance</option><option>Conseils</option><option>Portrait</option>
                     </FormSelect>

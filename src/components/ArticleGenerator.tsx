@@ -95,7 +95,11 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
         };
 
         try {
-            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY! });
+            if (!process.env.API_KEY) {
+                throw new Error("La clé API Gemini n'est pas configurée.");
+            }
+            
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
@@ -106,7 +110,7 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
                 }
             });
 
-            const jsonResult = response.text || '';
+            const jsonResult = response.text;
             const parsedArticle: Partial<Article> = JSON.parse(jsonResult);
             onArticleGenerated(parsedArticle);
 
@@ -119,7 +123,9 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
 
     }, [formData, onArticleGenerated]);
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
