@@ -1,14 +1,12 @@
+
 import React, { useEffect, lazy, Suspense } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
-import { AuthProvider } from './contexts/AuthContext';
-import { ChatProvider } from './contexts/ChatContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
-import PWAInstallPrompt from './components/PWAInstallPrompt';
-import OfflineIndicator from './components/OfflineIndicator';
+import { PWAInstaller } from './components/PWAInstaller';
 import { registerServiceWorker } from './utils/pwa';
 
 // Lazy-loaded Pages
@@ -30,12 +28,39 @@ const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
-const AdminRoutes = lazy(() => import('./pages/AdminRoutes'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
-const NotificationsSettings = lazy(() => import('./pages/NotificationsSettings'));
-const WebSocketTest = lazy(() => import('./pages/WebSocketTest'));
 // FIX: Removed Beginner Classroom pages as the feature has been deprecated.
 const Chat = lazy(() => import('./pages/Chat'));
+const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
+const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
+const LiveChat = lazy(() => import('./pages/LiveChat'));
+
+
+// Admin Pages
+const Admin = lazy(() => import('./pages/Admin'));
+const AdminAgency = lazy(() => import('./pages/AdminAgency'));
+const AdminCasting = lazy(() => import('./pages/AdminCasting'));
+const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
+const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
+const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
+const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
+const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
+// FIX: Corrected import paths for Admin pages to resolve module not found errors.
+const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
+const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
+const AdminModels = lazy(() => import('./pages/AdminModels'));
+const AdminNews = lazy(() => import('./pages/AdminNews'));
+const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
+const AdminSettings = lazy(() => import('./pages/AdminSettings'));
+const AdminComments = lazy(() => import('./pages/AdminComments'));
+const AdminBookings = lazy(() => import('./pages/AdminBookings'));
+const AdminMessages = lazy(() => import('./pages/AdminMessages'));
+// FIX: Removed AdminBeginnerStudents as the feature has been deprecated.
+const AdminPayments = lazy(() => import('./pages/AdminPayments'));
+const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
+const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+const AdminMailing = lazy(() => import('./pages/AdminMailing'));
+
 
 // Role-specific pages
 const JuryCasting = lazy(() => import('./pages/JuryCasting'));
@@ -74,8 +99,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-    type: "tween" as const,
-    ease: "easeInOut", // Utilisation d'une chaîne de caractères valide
+    type: "tween",
+    ease: "anticipate",
     duration: 0.5
 };
 
@@ -106,8 +131,6 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/casting" element={<Casting />} />
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
-                    <Route path="/notifications-settings" element={<NotificationsSettings />} />
-                    <Route path="/websocket-test" element={<WebSocketTest />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
@@ -125,7 +148,31 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
                     
-                    <Route path="/admin/*" element={<AdminRoutes />} />
+                    <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
+                    <Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
+                    <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
+                    <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
+                    <Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
+                    <Route path="/admin/agency" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />
+                    <Route path="/admin/casting-applications" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
+                    <Route path="/admin/casting-results" element={<ProtectedRoute role="admin"><AdminCastingResults /></ProtectedRoute>} />
+                    <Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
+                    <Route path="/admin/fashion-day-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
+                    <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
+                    <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
+                    <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
+                    {/* FIX: Removed AdminBeginnerStudents route as the feature has been deprecated. */}
+                    <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
+                    <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
+                    <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
+                    <Route path="/admin/bookings" element={<ProtectedRoute role="admin"><AdminBookings /></ProtectedRoute>} />
+                    <Route path="/admin/payments" element={<ProtectedRoute role="admin"><AdminPayments /></ProtectedRoute>} />
+                    <Route path="/admin/absences" element={<ProtectedRoute role="admin"><AdminAbsences /></ProtectedRoute>} />
+                    <Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
+                    <Route path="/admin/generer-image" element={<ProtectedRoute role="admin"><ImageGeneration /></ProtectedRoute>} />
+                    <Route path="/admin/analyser-image" element={<ProtectedRoute role="admin"><ImageAnalysis /></ProtectedRoute>} />
+                    <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
+                    <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>
@@ -174,8 +221,6 @@ const AppContent: React.FC = () => {
                 <AnimatedRoutes />
             </Suspense>
             <AIAssistantIcon />
-            <PWAInstallPrompt />
-            <OfflineIndicator />
         </Layout>
     );
 }
@@ -187,16 +232,13 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <AuthProvider>
-      <ChatProvider>
-        <DataProvider>
-          <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <ScrollToTop />
-            <AppContent />
-          </HashRouter>
-        </DataProvider>
-      </ChatProvider>
-    </AuthProvider>
+    <DataProvider>
+      <HashRouter>
+        <ScrollToTop />
+        <AppContent />
+        <PWAInstaller />
+      </HashRouter>
+    </DataProvider>
   );
 };
 
