@@ -19,12 +19,14 @@ const AdminClassroomProgress = React.lazy(() => import('./AdminClassroomProgress
 const AdminModelAccess = React.lazy(() => import('./AdminModelAccess'));
 const AdminRecovery = React.lazy(() => import('./AdminRecovery'));
 const AdminComments = React.lazy(() => import('./AdminComments'));
-const AdminMessages = React.lazy(() => import('./AdminMessages'));
 const AdminBookings = React.lazy(() => import('./AdminBookings'));
 const AdminPayments = React.lazy(() => import('./AdminPayments'));
 const AdminAbsences = React.lazy(() => import('./AdminAbsences'));
 const AdminArtisticDirection = React.lazy(() => import('./AdminArtisticDirection'));
-const AdminMailing = React.lazy(() => import('./AdminMailing'));
+const AdminAnalytics = React.lazy(() => import('./AdminAnalytics'));
+const AdminCastingLive = React.lazy(() => import('./AdminCastingLive'));
+const AdminGallery = React.lazy(() => import('./AdminGallery'));
+const Chat = React.lazy(() => import('./Chat'));
 
 const AdminRoutes: React.FC = () => {
     return (
@@ -46,9 +48,11 @@ const AdminRoutes: React.FC = () => {
                         {/* Content */}
                         <Route path="magazine" element={<AdminMagazine />} />
                         <Route path="news" element={<AdminNews />} />
+                        <Route path="gallery" element={<AdminGallery />} />
                         
                         {/* Events */}
                         <Route path="casting-applications" element={<AdminCasting />} />
+                        <Route path="casting-live" element={<AdminCastingLive />} />
                         <Route path="casting-results" element={<AdminCastingResults />} />
                         <Route path="fashion-day-applications" element={<AdminFashionDay />} />
                         <Route path="fashion-day-events" element={<AdminFashionDayEvents />} />
@@ -60,13 +64,13 @@ const AdminRoutes: React.FC = () => {
                         <Route path="absences" element={<AdminAbsences />} />
                         
                         {/* Communication */}
-                        <Route path="messages" element={<AdminMessages />} />
-                        <Route path="mailing" element={<AdminMailing />} />
                         <Route path="comments" element={<AdminComments />} />
+                        <Route path="messaging" element={<Chat />} />
                         
                         {/* Management */}
                         <Route path="agency" element={<AdminAgency />} />
                         <Route path="artistic-direction" element={<AdminArtisticDirection />} />
+                        <Route path="analytics" element={<AdminAnalytics />} />
                         <Route path="payments" element={<AdminPayments />} />
                         <Route path="recovery-requests" element={<AdminRecovery />} />
                         <Route path="settings" element={<AdminSettings />} />

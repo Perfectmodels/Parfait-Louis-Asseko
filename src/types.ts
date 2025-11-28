@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface Model {
   id: string;
   name: string;
@@ -35,6 +33,31 @@ export interface Model {
   };
   lastLogin?: string;
   lastActivity?: string;
+}
+
+// Gallery Types
+export interface Photo {
+  id: string;
+  url: string;
+  caption: string;
+  date: string;
+  photographer: string;
+  tags: string[];
+}
+
+export interface GalleryAlbum {
+  id: string;
+  title: string;
+  description: string;
+  category: 'shooting' | 'défilé' | 'événement' | 'backstage' | 'portrait' | 'autre';
+  coverImage: string;
+  photos: Photo[];
+  date: string;
+  location?: string;
+  isPublic: boolean;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Stylist {
@@ -307,25 +330,6 @@ export interface BookingRequest {
   message: string;
 }
 
-export interface ContactMessage {
-  id: string;
-  submissionDate: string;
-  status: 'Nouveau' | 'Lu' | 'Archivé';
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
-export interface AIAssistantProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onInsertContent: (content: string) => void;
-    fieldName: string;
-    initialPrompt: string;
-    jsonSchema?: any;
-}
-
 export interface FAQItem {
   question: string;
   answer: string;
@@ -334,6 +338,239 @@ export interface FAQItem {
 export interface FAQCategory {
   category: string;
   items: FAQItem[];
+}
+
+// Permissions pour le système de messagerie
+export enum MessagingPermission {
+  VIEW_MESSAGING = 'VIEW_MESSAGING',
+  SEND_MESSAGES = 'SEND_MESSAGES',
+  MANAGE_CONVERSATIONS = 'MANAGE_CONVERSATIONS',
+  DELETE_MESSAGES = 'DELETE_MESSAGES',
+  ACCESS_ALL_CONVERSATIONS = 'ACCESS_ALL_CONVERSATIONS',
+  MANAGE_TEMPLATES = 'MANAGE_TEMPLATES',
+  MANAGE_AUTOMATION = 'MANAGE_AUTOMATION',
+  VIEW_ANALYTICS = 'VIEW_ANALYTICS',
+  EXPORT_CONVERSATIONS = 'EXPORT_CONVERSATIONS',
+  URGENT_MESSAGES = 'URGENT_MESSAGES'
+}
+
+// Mapping des permissions par rôle pour la messagerie
+export const MESSAGING_ROLE_PERMISSIONS: Record<string, MessagingPermission[]> = {
+  admin: [
+    MessagingPermission.VIEW_MESSAGING,
+    MessagingPermission.SEND_MESSAGES,
+    MessagingPermission.MANAGE_CONVERSATIONS,
+    MessagingPermission.DELETE_MESSAGES,
+    MessagingPermission.ACCESS_ALL_CONVERSATIONS,
+    MessagingPermission.MANAGE_TEMPLATES,
+    MessagingPermission.MANAGE_AUTOMATION,
+    MessagingPermission.VIEW_ANALYTICS,
+    MessagingPermission.EXPORT_CONVERSATIONS,
+    MessagingPermission.URGENT_MESSAGES
+  ],
+  booking_manager: [
+    MessagingPermission.VIEW_MESSAGING,
+    MessagingPermission.SEND_MESSAGES,
+    MessagingPermission.MANAGE_CONVERSATIONS,
+    MessagingPermission.ACCESS_ALL_CONVERSATIONS,
+    MessagingPermission.MANAGE_TEMPLATES,
+    MessagingPermission.VIEW_ANALYTICS,
+    MessagingPermission.URGENT_MESSAGES
+  ],
+  event_manager: [
+    MessagingPermission.VIEW_MESSAGING,
+    MessagingPermission.SEND_MESSAGES,
+    MessagingPermission.MANAGE_CONVERSATIONS,
+    MessagingPermission.ACCESS_ALL_CONVERSATIONS,
+    MessagingPermission.MANAGE_TEMPLATES,
+    MessagingPermission.VIEW_ANALYTICS,
+    MessagingPermission.URGENT_MESSAGES
+  ],
+  content_manager: [
+    MessagingPermission.VIEW_MESSAGING,
+    MessagingPermission.SEND_MESSAGES,
+    MessagingPermission.MANAGE_TEMPLATES
+  ],
+  model: [
+    MessagingPermission.VIEW_MESSAGING,
+    MessagingPermission.SEND_MESSAGES
+  ]
+};
+
+// Types pour la messagerie avancée de l'agence
+export interface AgencyMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderName: string;
+  senderRole: 'admin' | 'model' | 'client' | 'agency';
+  content: string;
+  timestamp: Date;
+  type: 'text' | 'file' | 'image' | 'casting_update' | 'booking_confirm' | 'urgent' | 'voice_note' | 'location' | 'contact_card';
+  status: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  attachments?: Array<{
+    id: string;
+    name: string;
+    url: string;
+    type: string;
+    size: number;
+    thumbnail?: string;
+  }>;
+  reactions?: Array<{
+    emoji: string;
+    userId: string;
+    timestamp: Date;
+  }>;
+  replyTo?: string;
+  forwarded?: boolean;
+  edited?: boolean;
+  deleted?: boolean;
+  metadata?: {
+    castingId?: string;
+    bookingId?: string;
+    modelId?: string;
+    clientId?: string;
+    deadline?: Date;
+    location?: {
+      lat: number;
+      lng: number;
+      address: string;
+    };
+    contactCard?: {
+      name: string;
+      phone?: string;
+      email?: string;
+      company?: string;
+      position?: string;
+    };
+    voiceNote?: {
+      url: string;
+      duration: number;
+      waveform: number[];
+      transcribed?: boolean;
+    };
+  };
+}
+
+export interface AgencyConversation {
+  id: string;
+  title: string;
+  type: 'model_chat' | 'client_discussion' | 'casting_coordination' | 'booking_management' | 'team_communication' | 'casting_followup' | 'contract_negotiation';
+  participants: Array<{
+    id: string;
+    name: string;
+    role: 'admin' | 'model' | 'client' | 'agency';
+    avatar?: string;
+    isOnline: boolean;
+    lastSeen?: Date;
+    permissions: {
+      canSendMessages: boolean;
+      canAddMembers: boolean;
+      canRemoveMembers: boolean;
+      canEditInfo: boolean;
+      canDeleteMessages: boolean;
+    };
+  }>;
+  lastMessage?: AgencyMessage;
+  unreadCount: number;
+  isPinned: boolean;
+  isArchived: boolean;
+  isMuted: boolean;
+  isFavorite: boolean;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  status: 'active' | 'pending' | 'closed' | 'cancelled';
+  createdAt: Date;
+  updatedAt: Date;
+  tags: string[];
+  metadata?: {
+    relatedCasting?: string;
+    relatedBooking?: string;
+    relatedModel?: string;
+    relatedClient?: string;
+    deadline?: Date;
+    budget?: number;
+    location?: string;
+    contractStatus?: 'draft' | 'sent' | 'signed' | 'rejected';
+    nextAction?: string;
+    nextActionDate?: Date;
+  };
+  settings: {
+    autoDelete: number; // en heures, 0 = désactivé
+    encryption: 'none' | 'basic' | 'end-to-end';
+    allowScreenshots: boolean;
+    allowForwarding: boolean;
+    requireConfirmation: boolean;
+  };
+}
+
+export interface AgencyMessagingStats {
+  totalConversations: number;
+  activeConversations: number;
+  unreadMessages: number;
+  urgentMessages: number;
+  pendingActions: number;
+  todayActivity: {
+    messagesSent: number;
+    messagesReceived: number;
+    newConversations: number;
+    resolvedConversations: number;
+  };
+  weeklyTrend: {
+    date: string;
+    messages: number;
+    conversations: number;
+  }[];
+  typeDistribution: {
+    model_chat: number;
+    client_discussion: number;
+    casting_coordination: number;
+    booking_management: number;
+    team_communication: number;
+  };
+  priorityDistribution: {
+    urgent: number;
+    high: number;
+    normal: number;
+    low: number;
+  };
+}
+
+export interface MessagingTemplate {
+  id: string;
+  name: string;
+  category: 'casting' | 'booking' | 'contract' | 'general' | 'urgent';
+  content: string;
+  variables: Array<{
+    name: string;
+    type: 'text' | 'date' | 'number' | 'boolean';
+    required: boolean;
+    defaultValue?: string;
+  }>;
+  isSystem: boolean;
+  createdBy: string;
+  createdAt: Date;
+  usageCount: number;
+}
+
+export interface MessagingAutomation {
+  id: string;
+  name: string;
+  trigger: 'new_booking' | 'casting_confirmed' | 'deadline_approaching' | 'message_received' | 'no_reply';
+  conditions: Array<{
+    field: string;
+    operator: 'equals' | 'contains' | 'greater_than' | 'less_than';
+    value: string | number;
+  }>;
+  actions: Array<{
+    type: 'send_template' | 'assign_to' | 'change_priority' | 'send_notification' | 'create_task';
+    parameters: Record<string, any>;
+  }>;
+  isActive: boolean;
+  createdBy: string;
+  createdAt: Date;
+  lastTriggered?: Date;
+  triggerCount: number;
 }
 
 export interface Absence {
@@ -357,6 +594,18 @@ export interface MonthlyPayment {
   method: 'Virement' | 'Espèces' | 'Autre';
   status: 'Payé' | 'En attente' | 'En retard';
   notes?: string;
+}
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+  timestamp: string;
+  status: 'Nouveau' | 'Lu' | 'Répondu';
+  priority: 'normal' | 'urgent';
 }
 
 export interface PhotoshootBrief {

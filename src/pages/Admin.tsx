@@ -82,11 +82,10 @@ const Admin: React.FC = () => {
     };
 
     const stats = useMemo(() => {
-        if (!data) return { newCastingApps: 0, newBookingRequests: 0, newMessages: 0, totalModels: 0, recentActivities: [] };
+        if (!data) return { newCastingApps: 0, newBookingRequests: 0, totalModels: 0, recentActivities: [] };
 
         const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
         const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
-        const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
         const totalModels = data.models?.length || 0;
         
         const recentCasting = (data.castingApplications || [])
@@ -96,22 +95,17 @@ const Admin: React.FC = () => {
         const recentBookings = (data.bookingRequests || [])
             .filter(req => req.status === 'Nouveau')
             .map(req => ({ type: 'booking', text: `Demande de booking de ${req.clientName}`, link: '/admin/bookings', date: new Date(req.submissionDate) }));
-            
-        const recentMessages = (data.contactMessages || [])
-            .filter(msg => msg.status === 'Nouveau')
-            .map(msg => ({ type: 'message', text: `Nouveau message de ${msg.name}`, link: '/admin/messages', date: new Date(msg.submissionDate) }));
 
-        const allRecent = [...recentCasting, ...recentBookings, ...recentMessages]
+        const allRecent = [...recentCasting, ...recentBookings]
             .sort((a, b) => b.date.getTime() - a.date.getTime())
             .slice(0, 5);
             
-        return { newCastingApps, newBookingRequests, newMessages, totalModels, recentActivities: allRecent };
+        return { newCastingApps, newBookingRequests, totalModels, recentActivities: allRecent };
     }, [data]);
     
     const activityIconMap = {
         casting: ClipboardDocumentListIcon,
         booking: BriefcaseIcon,
-        message: EnvelopeIcon,
     };
 
     return (
@@ -123,10 +117,9 @@ const Admin: React.FC = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <StatCard title="Nouvelles Candidatures" value={stats.newCastingApps} icon={ClipboardDocumentListIcon} />
                 <StatCard title="Nouveaux Bookings" value={stats.newBookingRequests} icon={BriefcaseIcon} />
-                <StatCard title="Nouveaux Messages" value={stats.newMessages} icon={EnvelopeIcon} />
                 <StatCard title="Total Mannequins" value={stats.totalModels} icon={UsersIcon} />
             </div>
 

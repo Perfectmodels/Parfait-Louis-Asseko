@@ -4,9 +4,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ChatProvider } from './contexts/ChatContext';
+import { ChatIntegration } from './components/ChatIntegration';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-import AIAssistantIcon from './components/AIAssistantIcon';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
 import { registerServiceWorker } from './utils/pwa';
@@ -19,7 +19,6 @@ const ModelDetail = lazy(() => import('./pages/ModelDetail'));
 const FashionDay = lazy(() => import('./pages/FashionDay'));
 const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
-const Contact = lazy(() => import('./pages/Contact'));
 const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
@@ -33,9 +32,11 @@ const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const AdminRoutes = lazy(() => import('./pages/AdminRoutes'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 const NotificationsSettings = lazy(() => import('./pages/NotificationsSettings'));
-const WebSocketTest = lazy(() => import('./pages/WebSocketTest'));
+const International = lazy(() => import('./pages/International'));
+const Motivation = lazy(() => import('./pages/Motivation'));
+const Application = lazy(() => import('./pages/Application'));
+const Gallery = lazy(() => import('./pages/Gallery'));
 // FIX: Removed Beginner Classroom pages as the feature has been deprecated.
-const Chat = lazy(() => import('./pages/Chat'));
 
 // Role-specific pages
 const JuryCasting = lazy(() => import('./pages/JuryCasting'));
@@ -75,7 +76,7 @@ const pageVariants = {
 
 const pageTransition = {
     type: "tween" as const,
-    ease: "easeInOut", // Utilisation d'une chaîne de caractères valide
+    ease: "easeInOut" as const,
     duration: 0.5
 };
 
@@ -100,18 +101,19 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/fashion-day" element={<FashionDay />} />
                     <Route path="/magazine" element={<Magazine />} />
                     <Route path="/magazine/:slug" element={<ArticleDetail />} />
-                    <Route path="/contact" element={<Contact />} />
                     <Route path="/services" element={<Services />} />
                     <Route path="/services/:slug" element={<ServiceDetail />} />
                     <Route path="/casting" element={<Casting />} />
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
+                    <Route path="/international" element={<International />} />
+                    <Route path="/motivation" element={<Motivation />} />
+                    <Route path="/application" element={<Application />} />
+                    <Route path="/galerie" element={<Gallery />} />
                     <Route path="/notifications-settings" element={<NotificationsSettings />} />
-                    <Route path="/websocket-test" element={<WebSocketTest />} />
-                    <Route path="/login" element={<Login />} />
+                                        <Route path="/login" element={<Login />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
-                    <Route path="/chat" element={<Chat />} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -146,9 +148,8 @@ const AppContent: React.FC = () => {
             const newFashionDayApps = data.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
             const newRecoveryRequests = data.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
             const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
-            const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
 
-            const totalNotifications = newCastingApps + newFashionDayApps + newRecoveryRequests + newBookingRequests + newMessages;
+            const totalNotifications = newCastingApps + newFashionDayApps + newRecoveryRequests + newBookingRequests;
 
             if (totalNotifications > 0) {
                 document.title = `(${totalNotifications}) Admin | ${originalTitle}`;
@@ -173,7 +174,6 @@ const AppContent: React.FC = () => {
             <Suspense fallback={<LoadingFallback />}>
                 <AnimatedRoutes />
             </Suspense>
-            <AIAssistantIcon />
             <PWAInstallPrompt />
             <OfflineIndicator />
         </Layout>
@@ -188,14 +188,16 @@ const App: React.FC = () => {
 
   return (
     <AuthProvider>
-      <ChatProvider>
-        <DataProvider>
-          <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <ScrollToTop />
-            <AppContent />
-          </HashRouter>
-        </DataProvider>
-      </ChatProvider>
+      <DataProvider>
+        <ChatProvider>
+          <ChatIntegration>
+            <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <ScrollToTop />
+              <AppContent />
+            </HashRouter>
+          </ChatIntegration>
+        </ChatProvider>
+      </DataProvider>
     </AuthProvider>
   );
 };

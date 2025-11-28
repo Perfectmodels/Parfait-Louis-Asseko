@@ -25,9 +25,10 @@ export interface UseWebSocketReturn {
 }
 
 export const useWebSocket = (options: UseWebSocketOptions = {}): UseWebSocketReturn => {
+  // Désactiver WebSocket par défaut
   const {
     url = 'ws://localhost:8080',
-    autoConnect = true,
+    autoConnect = false, // Désactivé par défaut
     debugMode = false,
     ...wsConfig
   } = options;
@@ -44,6 +45,13 @@ export const useWebSocket = (options: UseWebSocketOptions = {}): UseWebSocketRet
 
   // Initialisation du WebSocket Manager
   useEffect(() => {
+    // Ne pas initialiser le WebSocket si autoConnect est false
+    if (!autoConnect) {
+      console.log('[WebSocket] WebSocket désactivé (autoConnect=false)');
+      return;
+    }
+    
+    console.log('[WebSocket] Initialisation du WebSocket...');
     const manager = new WebSocketManager({
       url,
       ...wsConfig
