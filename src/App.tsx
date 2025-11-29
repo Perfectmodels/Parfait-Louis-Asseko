@@ -4,9 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ChatProvider } from './contexts/ChatContext';
-import { ChatIntegration } from './components/ChatIntegration';
-import Layout from './components/icons/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
+import { ChatIntegration, Layout, ProtectedRoute } from './components';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -55,7 +53,7 @@ const pageTransition = {
     type: "tween",
     ease: "easeInOut",
     duration: 0.5
-};
+} as const;
 
 const AnimatedRoutes: React.FC = () => {
     const location = useLocation();

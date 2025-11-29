@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChatBubbleLeftRightIcon, PlusIcon } from '@heroicons/react/24/outline';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { useData } from '../contexts/DataContext';
 import { ForumThread } from '../types';
 
@@ -14,8 +14,8 @@ const ClassroomForum: React.FC = () => {
 
     const userId = sessionStorage.getItem('userId');
     const user = data?.models.find(m => m.id === userId);
-    
-    const threads = data?.forumThreads.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
+
+    const threads = data?.forumThreads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) || [];
 
     const handleCreateThread = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,7 +40,7 @@ const ClassroomForum: React.FC = () => {
             alert("Impossible de créer la discussion.");
         }
     };
-    
+
     if (!isInitialized || !user) {
         return <div className="bg-pm-dark text-pm-off-white min-h-screen flex items-center justify-center"><p>Chargement...</p></div>;
     }
@@ -59,7 +59,7 @@ const ClassroomForum: React.FC = () => {
                             </div>
                         </div>
                         <button onClick={() => setIsCreating(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-lg shadow-pm-gold/20">
-                            <PlusIcon className="w-5 h-5"/> Lancer une Discussion
+                            <PlusIcon className="w-5 h-5" /> Lancer une Discussion
                         </button>
                     </header>
 
@@ -101,7 +101,7 @@ const ClassroomForum: React.FC = () => {
                                 </div>
                             </Link>
                         ))}
-                         {threads.length === 0 && !isCreating && (
+                        {threads.length === 0 && !isCreating && (
                             <div className="text-center py-16">
                                 <p className="text-pm-off-white/70">Aucune discussion pour le moment.</p>
                                 <p className="mt-2 text-pm-off-white/70">Soyez le premier à en lancer une !</p>

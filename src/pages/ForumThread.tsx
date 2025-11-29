@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { useData } from '../contexts/DataContext';
 import { ForumReply } from '../types';
 import NotFound from './NotFound';
@@ -13,12 +13,12 @@ const ForumThread: React.FC = () => {
     const { threadId } = useParams<{ threadId: string }>();
     const [newReply, setNewReply] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    
+
     const userId = sessionStorage.getItem('userId');
     const user = data?.models.find(m => m.id === userId);
 
     const thread = data?.forumThreads.find(t => t.id === threadId);
-    const replies = data?.forumReplies.filter(r => r.threadId === threadId).sort((a,b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) || [];
+    const replies = data?.forumReplies.filter(r => r.threadId === threadId).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) || [];
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -46,7 +46,7 @@ const ForumThread: React.FC = () => {
             alert("Impossible d'envoyer la réponse.");
         }
     };
-    
+
     if (!isInitialized) {
         return <div className="bg-pm-dark text-pm-off-white min-h-screen flex items-center justify-center"><p>Chargement...</p></div>;
     }
@@ -54,16 +54,16 @@ const ForumThread: React.FC = () => {
     if (!thread) {
         return <NotFound />;
     }
-    
+
     const formatTimestamp = (timestamp: string) => {
-      const date = new Date(timestamp);
-      return date.toLocaleString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const date = new Date(timestamp);
+        return date.toLocaleString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
 
     return (
         <>
             <SEO title={thread.title} noIndex />
-             <div className="bg-pm-dark text-pm-off-white h-screen flex flex-col pt-28">
+            <div className="bg-pm-dark text-pm-off-white h-screen flex flex-col pt-28">
                 <div className="container mx-auto px-4 sm:px-6 flex-grow flex flex-col h-full overflow-hidden">
                     <header className="flex items-center gap-4 mb-4 flex-shrink-0">
                         <Link to="/formations/forum" className="text-pm-gold hover:underline p-2">
@@ -74,7 +74,7 @@ const ForumThread: React.FC = () => {
                             <p className="text-xs text-pm-off-white/60">Lancé par {thread.authorName}</p>
                         </div>
                     </header>
-                    
+
                     <main className="flex-grow bg-black border border-pm-gold/20 rounded-t-lg overflow-y-auto p-4 space-y-4">
                         {/* Initial Post */}
                         <div className="bg-pm-dark p-4 border border-pm-gold/20 rounded-lg">
@@ -123,7 +123,7 @@ const ForumThread: React.FC = () => {
                         </form>
                     </footer>
                 </div>
-             </div>
+            </div>
         </>
     );
 };

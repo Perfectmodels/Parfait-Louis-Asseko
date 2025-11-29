@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Header, { Breadcrumb } from './Header';
 import Footer from './Footer';
 import Marquee from './Marquee';
-import AdminLayout from '../admin/AdminLayout';
+import AdminLayout from './AdminLayout';
 
 interface LayoutProps {
   children: React.ReactNode;

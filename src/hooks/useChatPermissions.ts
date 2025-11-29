@@ -2,18 +2,18 @@ import { useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { MessagingPermission, MESSAGING_ROLE_PERMISSIONS } from '../types';
 
-export const useMessagingPermissions = () => {
+export const useChatPermissions = () => {
   const { user } = useAuth();
 
   const userPermissions = useMemo(() => {
     if (!user) return [];
-    
+
     // Obtenir les permissions basées sur le rôle
     const rolePermissions = MESSAGING_ROLE_PERMISSIONS[user.role] || [];
-    
+
     // Ajouter les permissions personnalisées si elles existent
     const customPermissions = user.permissions || [];
-    
+
     // Combiner et dédupliquer
     return [...new Set([...rolePermissions, ...customPermissions])];
   }, [user]);
@@ -73,12 +73,12 @@ export const useMessagingPermissions = () => {
   // Vérifier si l'utilisateur peut accéder à une conversation spécifique
   const canAccessConversation = (conversationParticipants: Array<{ id: string; role: string }>): boolean => {
     if (!user) return false;
-    
+
     // Si l'utilisateur a la permission d'accéder à toutes les conversations
     if (hasPermission(MessagingPermission.ACCESS_ALL_CONVERSATIONS)) {
       return true;
     }
-    
+
     // Si l'utilisateur est un participant de la conversation
     const isParticipant = conversationParticipants.some(p => p.id === user.id);
     return isParticipant;
@@ -87,17 +87,17 @@ export const useMessagingPermissions = () => {
   // Vérifier si l'utilisateur peut modifier une conversation
   const canEditConversation = (conversationCreatorId?: string): boolean => {
     if (!user) return false;
-    
-    return hasPermission(MessagingPermission.MANAGE_CONVERSATIONS) || 
-           (conversationCreatorId === user.id && hasPermission(MessagingPermission.SEND_MESSAGES));
+
+    return hasPermission(MessagingPermission.MANAGE_CONVERSATIONS) ||
+      (conversationCreatorId === user.id && hasPermission(MessagingPermission.SEND_MESSAGES));
   };
 
   // Vérifier si l'utilisateur peut supprimer un message
   const canDeleteMessage = (messageSenderId: string): boolean => {
     if (!user) return false;
-    
-    return hasPermission(MessagingPermission.DELETE_MESSAGES) || 
-           (messageSenderId === user.id && hasPermission(MessagingPermission.SEND_MESSAGES));
+
+    return hasPermission(MessagingPermission.DELETE_MESSAGES) ||
+      (messageSenderId === user.id && hasPermission(MessagingPermission.SEND_MESSAGES));
   };
 
   return {

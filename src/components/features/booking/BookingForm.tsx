@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
-import { BookingRequest } from '../types';
+import { useData } from '../../../contexts/DataContext';
+import { BookingRequest } from '../../../types';
 
 interface BookingFormProps {
     prefilledModelName?: string;
@@ -74,12 +74,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
                 <FormInput label="Votre Email" name="clientEmail" type="email" value={formData.clientEmail} onChange={handleChange} required />
             </div>
             <FormInput label="Société (optionnel)" name="clientCompany" value={formData.clientCompany} onChange={handleChange} />
-            <FormInput 
-                label="Mannequin(s) souhaité(s)" 
-                name="requestedModels" 
-                value={formData.requestedModels} 
-                onChange={handleChange} 
-                required 
+            <FormInput
+                label="Mannequin(s) souhaité(s)"
+                name="requestedModels"
+                value={formData.requestedModels}
+                onChange={handleChange}
+                required
                 disabled={!!prefilledModelName}
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -102,14 +102,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
     );
 };
 
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, disabled?: boolean}> = (props) => (
+const FormInput: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, disabled?: boolean }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean}> = (props) => (
+const FormTextArea: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" />

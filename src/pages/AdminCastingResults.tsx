@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model, JuryMember, JuryScore } from '../types';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
-import PrintableCastingSheet from '../components/PrintableCastingSheet';
+import { PrintableCastingSheet } from '../components';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
@@ -18,7 +18,7 @@ const AdminCastingResults: React.FC = () => {
             .map(app => {
                 const scores = Object.values(app.scores!);
                 const averageScore = scores.reduce((sum, s) => sum + (s as JuryScore).overall, 0) / scores.length;
-                
+
                 const scoredJuryIds = Object.keys(app.scores || {});
                 const missingJuries = juryMembers.filter(j => !scoredJuryIds.includes(j.id));
                 const isFullyScored = missingJuries.length === 0 && juryMembers.length > 0;
@@ -40,7 +40,7 @@ const AdminCastingResults: React.FC = () => {
         );
         await saveData({ ...data, castingApplications: updatedApps });
     };
-    
+
     const handleValidateAndCreateModel = async (app: CastingApplication) => {
         if (!data) return;
 
@@ -77,7 +77,7 @@ const AdminCastingResults: React.FC = () => {
             case 'intermediate': experienceText = "A une expérience préalable en agence et a participé à des défilés ou des campagnes locales."; break;
             case 'professional': experienceText = "Carrière de mannequin professionnel(le) établie avec un portfolio solide."; break;
         }
-        
+
         const age = app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : undefined;
 
         const newModel: Model = {
@@ -118,7 +118,7 @@ const AdminCastingResults: React.FC = () => {
             alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
-    
+
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
@@ -128,7 +128,7 @@ const AdminCastingResults: React.FC = () => {
             default: return 'bg-gray-500/20 text-gray-300';
         }
     };
-    
+
     const getScoreColor = (score: number) => {
         if (score >= 7.5) return 'text-green-400';
         if (score >= 5) return 'text-yellow-400';
@@ -169,7 +169,7 @@ const AdminCastingResults: React.FC = () => {
 
                 <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
                     <div className="overflow-x-auto">
-                         <table className="w-full text-left">
+                        <table className="w-full text-left">
                             <thead className="bg-pm-dark/50">
                                 <tr className="border-b border-pm-gold/20">
                                     <th className="p-4 uppercase text-xs tracking-wider">Passage</th>
@@ -187,54 +187,55 @@ const AdminCastingResults: React.FC = () => {
                                         ? "Toutes les notes ont été enregistrées."
                                         : `Notes manquantes: ${missingJuryNames}`;
                                     return (
-                                    <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
-                                        <td className="p-4 font-bold text-pm-gold">#${String(app.passageNumber).padStart(3, '0')}</td>
-                                        <td className="p-4 font-semibold">{app.firstName} ${app.lastName}</td>
-                                        <td className="p-4 text-center" title={tooltip}>
-                                            {app.juryVotes} / {data?.juryMembers.length || 4}
-                                            {!app.isFullyScored && <span className="text-red-500 ml-1">*</span>}
-                                        </td>
-                                        <td className={`p-4 text-center font-bold text-lg ${getScoreColor(app.averageScore)}`}>{app.averageScore.toFixed(2)}</td>
-                                        <td className="p-4 text-center"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
-                                        <td className="p-4">
-                                            <div className="flex items-center justify-center gap-2">
-                                                <button
-                                                    onClick={() => setPrintingApp(app)}
-                                                    className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
-                                                    title="Télécharger la fiche PDF"
-                                                >
-                                                    <PrinterIcon className="w-5 h-5"/>
-                                                </button>
-                                                {app.status === 'Présélectionné' && (
-                                                    <>
-                                                        <button 
-                                                            onClick={() => handleValidateAndCreateModel(app)} 
-                                                            className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                                            title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
-                                                            disabled={!app.isFullyScored}
-                                                        >
-                                                            <CheckBadgeIcon className="w-5 h-5"/>
-                                                        </button>
-                                                        <button onClick={() => handleUpdateStatus(app.id, 'Refusé')} className="action-btn bg-red-500/10 text-red-300 border-red-500/50 hover:bg-red-500/20" title="Refuser">
-                                                            <XCircleIcon className="w-5 h-5"/>
-                                                        </button>
-                                                    </>
-                                                )}
-                                                {app.status === 'Accepté' && (
-                                                    <span className="text-xs text-green-400">Profil Créé</span>
-                                                )}
-                                                {app.status === 'Refusé' && (
-                                                    <button onClick={() => handleUpdateStatus(app.id, 'Présélectionné')} className="action-btn bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20" title="Annuler le refus">
-                                                        <ArrowPathIcon className="w-5 h-5"/>
+                                        <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
+                                            <td className="p-4 font-bold text-pm-gold">#${String(app.passageNumber).padStart(3, '0')}</td>
+                                            <td className="p-4 font-semibold">{app.firstName} ${app.lastName}</td>
+                                            <td className="p-4 text-center" title={tooltip}>
+                                                {app.juryVotes} / {data?.juryMembers.length || 4}
+                                                {!app.isFullyScored && <span className="text-red-500 ml-1">*</span>}
+                                            </td>
+                                            <td className={`p-4 text-center font-bold text-lg ${getScoreColor(app.averageScore)}`}>{app.averageScore.toFixed(2)}</td>
+                                            <td className="p-4 text-center"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
+                                            <td className="p-4">
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <button
+                                                        onClick={() => setPrintingApp(app)}
+                                                        className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
+                                                        title="Télécharger la fiche PDF"
+                                                    >
+                                                        <PrinterIcon className="w-5 h-5" />
                                                     </button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )})}
+                                                    {app.status === 'Présélectionné' && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleValidateAndCreateModel(app)}
+                                                                className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
+                                                                disabled={!app.isFullyScored}
+                                                            >
+                                                                <CheckBadgeIcon className="w-5 h-5" />
+                                                            </button>
+                                                            <button onClick={() => handleUpdateStatus(app.id, 'Refusé')} className="action-btn bg-red-500/10 text-red-300 border-red-500/50 hover:bg-red-500/20" title="Refuser">
+                                                                <XCircleIcon className="w-5 h-5" />
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                    {app.status === 'Accepté' && (
+                                                        <span className="text-xs text-green-400">Profil Créé</span>
+                                                    )}
+                                                    {app.status === 'Refusé' && (
+                                                        <button onClick={() => handleUpdateStatus(app.id, 'Présélectionné')} className="action-btn bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20" title="Annuler le refus">
+                                                            <ArrowPathIcon className="w-5 h-5" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
-                         </table>
-                         {filteredApplicants.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun candidat ne correspond à ce filtre.</p>}
+                        </table>
+                        {filteredApplicants.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun candidat ne correspond à ce filtre.</p>}
                     </div>
                 </div>
             </div>

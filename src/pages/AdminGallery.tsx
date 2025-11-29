@@ -2,9 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { useNotifications } from '../hooks/useNotifications';
-import SEO from '../components/SEO';
-import AlbumCard from '../components/AlbumCard';
-import AlbumEditor from '../components/AlbumEditor';
+import { SEO, AlbumCard, AlbumEditor } from '../components';
 import { GalleryAlbum } from '../types';
 import { PlusIcon, EyeIcon, EyeSlashIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
@@ -22,27 +20,27 @@ const AdminGallery: React.FC = () => {
 
     const albums = useMemo(() => {
         const allAlbums = data?.galleryAlbums || [];
-        
+
         // Filter by status
-        const filteredByStatus = status === 'toutes' 
-            ? allAlbums 
+        const filteredByStatus = status === 'toutes'
+            ? allAlbums
             : allAlbums.filter((album: GalleryAlbum) => status === 'public' ? album.isPublic : !album.isPublic);
-        
+
         // Filter by category
-        const filteredByCategory = category === 'toutes' 
-            ? filteredByStatus 
+        const filteredByCategory = category === 'toutes'
+            ? filteredByStatus
             : filteredByStatus.filter((album: GalleryAlbum) => album.category === category);
-        
+
         // Filter by search term
         const filteredBySearch = searchTerm === ''
             ? filteredByCategory
-            : filteredByCategory.filter((album: GalleryAlbum) => 
+            : filteredByCategory.filter((album: GalleryAlbum) =>
                 album.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 album.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 album.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 album.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
             );
-        
+
         // Sort by date (newest first)
         return filteredBySearch.sort((a: GalleryAlbum, b: GalleryAlbum) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }, [data?.galleryAlbums, category, status, searchTerm]);
@@ -117,7 +115,7 @@ const AdminGallery: React.FC = () => {
     const handleToggleVisibility = async (album: GalleryAlbum) => {
         if (!data) return;
 
-        const updatedAlbums = data.galleryAlbums?.map((a: GalleryAlbum) => 
+        const updatedAlbums = data.galleryAlbums?.map((a: GalleryAlbum) =>
             a.id === album.id ? { ...a, isPublic: !a.isPublic } : a
         ) || [];
 
@@ -133,7 +131,7 @@ const AdminGallery: React.FC = () => {
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Galerie" noIndex />
-            
+
             <div className="container mx-auto px-6">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
@@ -185,11 +183,10 @@ const AdminGallery: React.FC = () => {
                                 <button
                                     key={cat}
                                     onClick={() => setCategory(cat)}
-                                    className={`px-4 py-1.5 text-xs font-medium uppercase tracking-wider rounded-full transition-all ${
-                                        category === cat
-                                            ? 'bg-pm-gold text-pm-dark'
-                                            : 'bg-black border border-pm-gold/30 text-pm-gold hover:bg-pm-gold/10'
-                                    }`}
+                                    className={`px-4 py-1.5 text-xs font-medium uppercase tracking-wider rounded-full transition-all ${category === cat
+                                        ? 'bg-pm-gold text-pm-dark'
+                                        : 'bg-black border border-pm-gold/30 text-pm-gold hover:bg-pm-gold/10'
+                                        }`}
                                 >
                                     {cat === 'toutes' ? 'Toutes' : cat}
                                 </button>
@@ -202,11 +199,10 @@ const AdminGallery: React.FC = () => {
                                 <button
                                     key={stat}
                                     onClick={() => setStatus(stat)}
-                                    className={`px-4 py-1.5 text-xs font-medium uppercase tracking-wider rounded-full transition-all ${
-                                        status === stat
-                                            ? 'bg-pm-gold text-pm-dark'
-                                            : 'bg-black border border-pm-gold/30 text-pm-gold hover:bg-pm-gold/10'
-                                    }`}
+                                    className={`px-4 py-1.5 text-xs font-medium uppercase tracking-wider rounded-full transition-all ${status === stat
+                                        ? 'bg-pm-gold text-pm-dark'
+                                        : 'bg-black border border-pm-gold/30 text-pm-gold hover:bg-pm-gold/10'
+                                        }`}
                                 >
                                     {stat === 'toutes' ? 'Tous statuts' : stat}
                                 </button>
@@ -232,16 +228,15 @@ const AdminGallery: React.FC = () => {
                         {albums.map((album: GalleryAlbum) => (
                             <div key={album.id} className="relative group">
                                 <AlbumCard album={album} />
-                                
+
                                 {/* Admin Actions Overlay */}
                                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
                                     <button
                                         onClick={() => handleToggleVisibility(album)}
-                                        className={`p-2 rounded-full bg-black/80 border ${
-                                            album.isPublic 
-                                                ? 'border-green-500 text-green-400' 
-                                                : 'border-orange-500 text-orange-400'
-                                        } hover:bg-black transition-colors`}
+                                        className={`p-2 rounded-full bg-black/80 border ${album.isPublic
+                                            ? 'border-green-500 text-green-400'
+                                            : 'border-orange-500 text-orange-400'
+                                            } hover:bg-black transition-colors`}
                                         title={album.isPublic ? 'Rendre privé' : 'Rendre public'}
                                     >
                                         {album.isPublic ? <EyeIcon className="w-4 h-4" /> : <EyeSlashIcon className="w-4 h-4" />}
@@ -261,14 +256,13 @@ const AdminGallery: React.FC = () => {
                                         <TrashIcon className="w-4 h-4" />
                                     </button>
                                 </div>
-                                
+
                                 {/* Visibility Badge */}
                                 <div className="absolute top-2 left-2">
-                                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                        album.isPublic 
-                                            ? 'bg-green-500/20 text-green-300 border border-green-500' 
-                                            : 'bg-orange-500/20 text-orange-300 border border-orange-500'
-                                    }`}>
+                                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${album.isPublic
+                                        ? 'bg-green-500/20 text-green-300 border border-green-500'
+                                        : 'bg-orange-500/20 text-orange-300 border border-orange-500'
+                                        }`}>
                                         {album.isPublic ? 'Public' : 'Privé'}
                                     </span>
                                 </div>
@@ -311,7 +305,7 @@ const AdminGallery: React.FC = () => {
 
                 {/* Public Gallery Link */}
                 <div className="text-center mt-16 pt-8 border-t border-pm-gold/20">
-                    <Link 
+                    <Link
                         to="/galerie"
                         className="inline-flex items-center gap-2 text-pm-gold hover:underline"
                     >

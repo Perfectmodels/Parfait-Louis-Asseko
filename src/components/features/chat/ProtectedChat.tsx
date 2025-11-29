@@ -1,6 +1,6 @@
 import React from 'react';
-import { MessagingPermission } from '../types';
-import { useChatPermissions } from '../hooks/useChatPermissions';
+import { MessagingPermission } from '../../../types';
+import { useChatPermissions } from '../../../hooks/useChatPermissions';
 
 interface ProtectedMessagingProps {
   children: React.ReactNode;

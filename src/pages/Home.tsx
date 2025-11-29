@@ -1,11 +1,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
-import TestimonialCarousel from '../components/TestimonialCarousel';
+import { SEO, TestimonialCarousel, ModelCard, ServiceCard } from '../components';
 import { useData } from '../contexts/DataContext';
-import ModelCard from '../components/ModelCard';
-import ServiceCard from '../components/ServiceCard';
 
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -28,7 +25,7 @@ const Home: React.FC = () => {
   return (
     <div className="text-pm-off-white">
 
-      <SEO 
+      <SEO
         title="Accueil | L'Élégance Redéfinie"
         description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
         keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
@@ -36,8 +33,8 @@ const Home: React.FC = () => {
       />
 
       {/* 1. Hero Section */}
-      <section 
-        className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed" 
+      <section
+        className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed"
         style={{ backgroundImage: `url('${siteImages.hero}')` }}
       >
         <div className="absolute inset-0 bg-pm-dark/80"></div>
@@ -63,7 +60,7 @@ const Home: React.FC = () => {
       <section className="page-container bg-black">
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
-            <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
+            <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover" />
           </div>
           <div className="md:w-1/2 text-center md:text-left">
             <p className="text-pm-off-white/80 mb-6 leading-relaxed">
@@ -103,8 +100,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* 5. Events */}
-      <section 
-        className="py-20 lg:py-28 bg-cover bg-center bg-fixed" 
+      <section
+        className="py-20 lg:py-28 bg-cover bg-center bg-fixed"
         style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}
       >
         <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm">

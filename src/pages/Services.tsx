@@ -1,21 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { useData } from '../contexts/DataContext';
 import { Service } from '../types';
-import { 
-    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
-    MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
-    PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon, HeartIcon, 
+import {
+    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon,
+    MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon,
+    PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon, HeartIcon,
     UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon, ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
 
 
 const iconMap: { [key: string]: React.ElementType } = {
-  AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
-  MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
-  PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon,
-  UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon, ClipboardDocumentListIcon
+    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon,
+    MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon,
+    PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon,
+    UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon, ClipboardDocumentListIcon
 };
 
 const ServiceListItem: React.FC<{ service: Service }> = ({ service }) => {
@@ -29,7 +29,7 @@ const ServiceListItem: React.FC<{ service: Service }> = ({ service }) => {
             <div className="flex-grow">
                 <h3 className="text-3xl font-playfair text-pm-gold mb-3">{service.title}</h3>
                 <p className="text-pm-off-white/80 leading-relaxed mb-4">{service.description}</p>
-                
+
                 {service.details && (
                     <div className="mb-6 mt-5 bg-pm-dark/50 p-4 rounded-md border-l-4 border-pm-gold">
                         <h4 className="font-bold text-pm-off-white mb-2">{service.details.title}</h4>
@@ -40,8 +40,8 @@ const ServiceListItem: React.FC<{ service: Service }> = ({ service }) => {
                         </ul>
                     </div>
                 )}
-                
-                <Link 
+
+                <Link
                     to={service.buttonLink}
                     className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20"
                 >
@@ -83,11 +83,11 @@ const Services: React.FC = () => {
                 <p className="page-subtitle">
                     Découvrez l’ensemble de nos services conçus pour répondre aux besoins des créateurs, marques, entreprises et particuliers. Chaque service peut être réservé directement depuis notre site.
                 </p>
-                
+
                 <div className="space-y-16">
                     {categoryOrder.map(category => (
                         servicesByCategory[category] && (
-                             <section key={category}>
+                            <section key={category}>
                                 <h2 className="section-title">{category}</h2>
                                 <div className="space-y-8">
                                     {servicesByCategory[category].map((service, index) => (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { ChartBarIcon, UserGroupIcon, CalendarIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 
 const AdminAnalytics: React.FC = () => {
