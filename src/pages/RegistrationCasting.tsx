@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const RegistrationCasting: React.FC = () => {
@@ -35,7 +35,7 @@ const RegistrationCasting: React.FC = () => {
         const existingPassageNumbers = data.castingApplications
             .map(app => app.passageNumber)
             .filter((num): num is number => num !== undefined && num !== null);
-        
+
         const nextPassageNumber = existingPassageNumbers.length > 0 ? Math.max(...existingPassageNumbers) + 1 : 1;
 
         const newApplicant: CastingApplication = {
@@ -87,7 +87,7 @@ const RegistrationCasting: React.FC = () => {
                                     <UserPlusIcon className="w-6 h-6" />
                                     Ajouter un Postulant
                                 </h2>
-                                
+
                                 <Section title="Informations Personnelles">
                                     <FormInput label="Prénom" name="firstName" value={formData.firstName} onChange={handleChange} required />
                                     <FormInput label="Nom" name="lastName" value={formData.lastName} onChange={handleChange} required />
@@ -126,10 +126,10 @@ const RegistrationCasting: React.FC = () => {
 
                         {/* Registered List */}
                         <div className="lg:col-span-2">
-                             <div className="flex justify-between items-center mb-6">
+                            <div className="flex justify-between items-center mb-6">
                                 <h2 className="admin-page-title !text-3xl">Liste des Passages</h2>
                                 <button onClick={handlePrint} className="print-hide inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                                    <PrinterIcon className="w-5 h-5"/> Imprimer la Liste
+                                    <PrinterIcon className="w-5 h-5" /> Imprimer la Liste
                                 </button>
                             </div>
                             <div className="admin-section-wrapper printable-content">
@@ -168,19 +168,19 @@ const RegistrationCasting: React.FC = () => {
 };
 
 // Reusable components
-const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
+const Section: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="pt-6 border-t border-pm-gold/20 first:pt-0 first:border-none">
         <h2 className="text-2xl font-playfair text-pm-gold mb-4">{title}</h2>
         <div className="space-y-4">{children}</div>
     </div>
 );
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean}> = (props) => (
+const FormInput: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
-const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, children: React.ReactNode}> = (props) => (
+const FormSelect: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, children: React.ReactNode }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <select {...props} id={props.name} className="admin-input">{props.children}</select>

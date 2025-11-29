@@ -1,13 +1,13 @@
 import React from 'react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 
-interface ImageInputProps {
+interface ImageUploaderProps {
     label: string;
     value: string;
     onChange: (value: string) => void;
 }
 
-const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange }) => {
 
     const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange(e.target.value);
@@ -41,4 +41,4 @@ const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => {
     );
 };
 
-export default ImageInput;
+export default ImageUploader;

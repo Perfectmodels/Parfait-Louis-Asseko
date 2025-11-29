@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import ProtectedRoute from '../components/ProtectedRoute';
-import Layout from '../components/icons/Layout';
+import { ProtectedRoute, Layout } from '../components';
 
 // Lazy load admin pages
 const Admin = React.lazy(() => import('./Admin'));

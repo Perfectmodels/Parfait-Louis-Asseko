@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { useLocation } from 'react-router-dom';
 import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
-import SEO from '../components/SEO';
+import { SEO, FacebookIcon, InstagramIcon, YoutubeIcon, BookingForm } from '../components';
 import { useData } from '../contexts/DataContext';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/icons/SocialIcons';
-import BookingForm from '../components/BookingForm';
 import { ContactMessage } from '../types';
 
 const Contact: React.FC = () => {
@@ -13,11 +11,11 @@ const Contact: React.FC = () => {
     const location = useLocation();
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
-    
+
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
-    
+
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const service = params.get('service');
@@ -51,7 +49,7 @@ const Contact: React.FC = () => {
         try {
             const updatedMessages = [...(data.contactMessages || []), newContactMessage];
             await saveData({ ...data, contactMessages: updatedMessages });
-            
+
             setStatus('success');
             setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
             setFormData({ name: '', email: '', subject: '', message: '' });
@@ -68,7 +66,7 @@ const Contact: React.FC = () => {
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24 min-h-screen">
-            <SEO 
+            <SEO
                 title="Contact | Perfect Models Management"
                 description="Contactez-nous pour toute demande de booking, de partenariat ou d'information. L'équipe de Perfect Models Management est à votre disposition à Libreville, Gabon."
                 keywords="contacter agence mannequin, booking mannequin gabon, partenariat mode, pmm contact"
@@ -113,13 +111,13 @@ const Contact: React.FC = () => {
                             <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
                             <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
                             <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
-                            
+
                             <div>
                                 <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
                                     {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
                                 </button>
                             </div>
-                            
+
                             {statusMessage && (
                                 <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
                                     {statusMessage}
@@ -144,7 +142,7 @@ const Contact: React.FC = () => {
     );
 };
 
-const InfoItem: React.FC<{icon: React.ElementType, text: string, href?: string}> = ({ icon: Icon, text, href }) => (
+const InfoItem: React.FC<{ icon: React.ElementType, text: string, href?: string }> = ({ icon: Icon, text, href }) => (
     <div className="flex items-start gap-4">
         <Icon className="w-6 h-6 text-pm-gold mt-1 flex-shrink-0" />
         {href ? <a href={href} className="hover:text-pm-gold transition-colors">{text}</a> : <span>{text}</span>}
@@ -157,14 +155,14 @@ const SocialLink: React.FC<{ href: string, icon: React.ElementType }> = ({ href,
     </a>
 );
 
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean}> = (props) => (
+const FormInput: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean}> = (props) => (
+const FormTextArea: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" />

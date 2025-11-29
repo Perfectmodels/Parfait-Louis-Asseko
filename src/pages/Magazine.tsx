@@ -1,47 +1,46 @@
 import React, { useState } from 'react';
 // FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { Article } from '../types';
 import { useData } from '../contexts/DataContext';
 
 const Pagination: React.FC<{ currentPage: number, totalPages: number, onPageChange: (page: number) => void }> = ({ currentPage, totalPages, onPageChange }) => {
-    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-    return (
-        <nav aria-label="Pagination" className="flex justify-center items-center gap-4 mt-12 text-pm-off-white">
-            <button
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-4 py-2 bg-black border border-pm-gold/50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pm-gold hover:text-pm-dark transition-colors"
-            >
-                Précédent
-            </button>
-            <div className="flex items-center gap-2">
-                {pageNumbers.map(number => (
-                    <button
-                        key={number}
-                        onClick={() => onPageChange(number)}
-                        className={`w-10 h-10 flex items-center justify-center rounded-md border transition-colors ${
-                            currentPage === number 
-                                ? 'bg-pm-gold text-pm-dark border-pm-gold' 
-                                : 'bg-black border-pm-gold/50 hover:bg-pm-gold/20'
-                        }`}
-                        aria-current={currentPage === number ? 'page' : undefined}
-                    >
-                        {number}
-                    </button>
-                ))}
-            </div>
-            <button
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-black border border-pm-gold/50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pm-gold hover:text-pm-dark transition-colors"
-            >
-                Suivant
-            </button>
-        </nav>
-    );
+  return (
+    <nav aria-label="Pagination" className="flex justify-center items-center gap-4 mt-12 text-pm-off-white">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-4 py-2 bg-black border border-pm-gold/50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pm-gold hover:text-pm-dark transition-colors"
+      >
+        Précédent
+      </button>
+      <div className="flex items-center gap-2">
+        {pageNumbers.map(number => (
+          <button
+            key={number}
+            onClick={() => onPageChange(number)}
+            className={`w-10 h-10 flex items-center justify-center rounded-md border transition-colors ${currentPage === number
+                ? 'bg-pm-gold text-pm-dark border-pm-gold'
+                : 'bg-black border-pm-gold/50 hover:bg-pm-gold/20'
+              }`}
+            aria-current={currentPage === number ? 'page' : undefined}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-4 py-2 bg-black border border-pm-gold/50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pm-gold hover:text-pm-dark transition-colors"
+      >
+        Suivant
+      </button>
+    </nav>
+  );
 };
 
 
@@ -56,7 +55,7 @@ const Magazine: React.FC = () => {
   if (!featuredArticle && articles.length > 0) {
     featuredArticle = articles[0]; // Fallback to the first article if none is featured
   }
-  
+
   const otherArticles = articles.filter(a => a.slug !== featuredArticle?.slug);
 
   const totalPages = Math.ceil(otherArticles.length / ARTICLES_PER_PAGE);
@@ -65,19 +64,19 @@ const Magazine: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-        setCurrentPage(page);
-        window.scrollTo({ top: 300, behavior: 'smooth' });
+      setCurrentPage(page);
+      window.scrollTo({ top: 300, behavior: 'smooth' });
     }
   };
 
 
   if (!isInitialized) {
-      return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement du magazine...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement du magazine...</div>;
   }
 
   return (
     <div className="bg-pm-dark text-pm-off-white">
-      <SEO 
+      <SEO
         title="Magazine | Focus Model 241"
         description="Focus Model 241, le magazine en ligne de Perfect Models Management. Plongez dans les coulisses de la mode gabonaise avec des interviews exclusives, des analyses de tendances et des conseils de pro."
         keywords="magazine mode gabon, focus model 241, interview mannequin, tendances mode afrique, mode libreville"
@@ -103,7 +102,7 @@ const Magazine: React.FC = () => {
                 <h2 className="text-4xl font-playfair my-3 text-pm-off-white transition-colors group-hover:text-pm-gold">{featuredArticle.title}</h2>
                 <p className="text-pm-off-white/70 mb-4">{featuredArticle.excerpt}</p>
                 <span className="font-bold text-pm-gold">
-                    Lire la suite <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  Lire la suite <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
                 </span>
               </div>
             </Link>
@@ -118,10 +117,10 @@ const Magazine: React.FC = () => {
             ))}
           </div>
           {totalPages > 1 && (
-             <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
             />
           )}
         </section>

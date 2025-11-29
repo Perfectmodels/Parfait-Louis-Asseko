@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import ModelCard from '../components/ModelCard';
-import SEO from '../components/SEO';
+import { ModelCard, SEO } from '../components';
 import { useData } from '../contexts/DataContext';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
@@ -11,7 +10,7 @@ const Models: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const models = data?.models || [];
-  
+
   const publicModels = useMemo(() => models.filter(model => model.isPublic === true), [models]);
 
   const filteredModels = useMemo(() => {
@@ -19,10 +18,10 @@ const Models: React.FC = () => {
       .filter(model => filter === 'Tous' || model.gender === filter)
       .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [filter, searchTerm, publicModels]);
-  
+
   const seoDescription = useMemo(() => {
-      const modelNames = publicModels.slice(0, 3).map(m => m.name).join(', ');
-      return `Découvrez le portfolio des mannequins de Perfect Models Management, incluant ${modelNames} et bien d'autres. Des visages uniques et professionnels prêts à incarner votre marque au Gabon.`;
+    const modelNames = publicModels.slice(0, 3).map(m => m.name).join(', ');
+    return `Découvrez le portfolio des mannequins de Perfect Models Management, incluant ${modelNames} et bien d'autres. Des visages uniques et professionnels prêts à incarner votre marque au Gabon.`;
   }, [publicModels]);
 
   const FilterButton: React.FC<{ gender: GenderFilter }> = ({ gender }) => (
@@ -36,12 +35,12 @@ const Models: React.FC = () => {
   );
 
   if (!isInitialized) {
-      return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement des mannequins...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement des mannequins...</div>;
   }
 
   return (
     <div className="bg-pm-dark text-pm-off-white min-h-screen">
-      <SEO 
+      <SEO
         title="Nos Mannequins | Le Visage de la Mode Gabonaise"
         description={seoDescription}
         keywords="mannequins hommes gabon, mannequins femmes gabon, book mannequins, agence de modèles photo, casting modèles libreville"

@@ -653,6 +653,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       calls: [],
       labels: [],
       priority: 'normal',
+      lastActivity: Date.now(),
     };
 
     setChats(prev => [...prev, newChat]);
@@ -730,6 +731,22 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     deleteChat(chatId);
   }, [user, deleteChat]);
+
+  const filterChats = useCallback((filter: 'all' | 'unread' | 'archived' | 'pinned' | 'favorites') => {
+    switch (filter) {
+      case 'unread':
+        return chats.filter(chat => chat.unreadCount > 0);
+      case 'archived':
+        return chats.filter(chat => chat.isArchived);
+      case 'pinned':
+        return chats.filter(chat => chat.isPinned);
+      case 'favorites':
+        return chats.filter(chat => chat.isFavorite);
+      case 'all':
+      default:
+        return chats.filter(chat => !chat.isArchived);
+    }
+  }, [chats]);
 
   const value: ChatContextType = {
     // État

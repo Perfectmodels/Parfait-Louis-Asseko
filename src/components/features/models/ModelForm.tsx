@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import { Model, ModelDistinction } from '../types';
-import ImageUploader from './ImageUploader';
+import { Model, ModelDistinction } from '../../../types';
+import { ImageUploader } from '../../../components';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ModelFormProps {
@@ -20,7 +21,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
-        
+
         if (type === 'checkbox') {
             const { checked } = e.target as HTMLInputElement;
             setFormData(prev => ({ ...prev, [name]: checked }));
@@ -79,7 +80,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 {isCreating ? 'Ajouter un Mannequin' : (isAdmin ? `Modifier le profil de ${model.name}` : `Mon Profil`)}
             </h1>
             <form onSubmit={handleSubmit} className="admin-section-wrapper space-y-8">
-                
+
                 <Section title="Informations de Base">
                     <FormInput label="Nom Complet" name="name" value={formData.name} onChange={handleChange} disabled={!isAdmin} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -91,7 +92,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     </div>
                     <FormInput label="Lieu de résidence" name="location" value={formData.location || ''} onChange={handleChange} />
                 </Section>
-                
+
                 {isAdmin && (
                     <Section title="Accès, Niveau & Visibilité (Admin)">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -103,7 +104,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                             <option value="Pro">Pro</option>
                         </FormSelect>
                         <div className="flex items-center gap-3 pt-2">
-                            <input 
+                            <input
                                 type="checkbox"
                                 id="isPublic"
                                 name="isPublic"
@@ -120,10 +121,10 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 )}
 
                 <Section title="Contact">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormInput label="Email" name="email" type="email" value={formData.email || ''} onChange={handleChange} />
                         <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone || ''} onChange={handleChange} />
-                     </div>
+                    </div>
                 </Section>
 
                 <Section title="Physique & Mensurations">
@@ -143,15 +144,15 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                             <label className="admin-label">Distinctions</label>
                             <ArrayEditor
                                 items={formData.distinctions || []}
-                                setItems={newItems => setFormData(p => ({...p, distinctions: newItems}))}
+                                setItems={newItems => setFormData(p => ({ ...p, distinctions: newItems }))}
                                 renderItem={(item: ModelDistinction, updateItem) => (
                                     <>
                                         <FormInput label="Nom de la distinction" name="name" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
-                                        <FormTextArea 
-                                            label="Titres (un par ligne)" 
+                                        <FormTextArea
+                                            label="Titres (un par ligne)"
                                             name="titles"
-                                            value={(item.titles || []).join('\n')} 
-                                            onChange={e => updateItem({ ...item, titles: e.target.value.split('\n').filter(Boolean) })} 
+                                            value={(item.titles || []).join('\n')}
+                                            onChange={e => updateItem({ ...item, titles: e.target.value.split('\n').filter(Boolean) })}
                                         />
                                     </>
                                 )}
@@ -178,23 +179,23 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                         </div>
                     )}
                     <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
-                    <FormTextArea 
+                    <FormTextArea
                         label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5}
                     />
-                    <FormTextArea 
-                        label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} 
+                    <FormTextArea
+                        label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5}
                     />
                 </Section>
-                
+
                 <Section title="Photos du Portfolio">
                     <div className="space-y-4">
                         {(formData.portfolioImages || []).map((url, index) => (
                             <div key={index} className="flex items-end gap-2">
                                 <div className="flex-grow">
-                                    <ImageUploader 
-                                        label={`Photo ${index + 1}`} 
-                                        value={url} 
-                                        onChange={(value) => handlePortfolioImagesChange(index, value)} 
+                                    <ImageUploader
+                                        label={`Photo ${index + 1}`}
+                                        value={url}
+                                        onChange={(value) => handlePortfolioImagesChange(index, value)}
                                     />
                                 </div>
                                 <button type="button" onClick={() => handleRemovePortfolioImage(index)} className="p-2 text-red-500/80 hover:text-red-500 bg-black rounded-md border border-pm-off-white/10 mb-2">
@@ -217,22 +218,22 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
     );
 };
 
-const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
+const Section: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="pt-8 first:pt-0">
         <h2 className="admin-section-title">{title}</h2>
         <div className="space-y-6">{children}</div>
     </div>
 );
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, disabled?: boolean}> = (props) => (
+const FormInput: React.FC<{ label: string, name: string, value: any, onChange: any, type?: string, disabled?: boolean }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input type={props.type || "text"} {...props} className="admin-input" />
     </div>
 );
 
-const FormSelect: React.FC<{label: string, name: string, value: any, onChange: any, children: React.ReactNode, disabled?: boolean}> = (props) => (
-     <div>
+const FormSelect: React.FC<{ label: string, name: string, value: any, onChange: any, children: React.ReactNode, disabled?: boolean }> = (props) => (
+    <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <select {...props} className="admin-input">
             {props.children}
@@ -240,7 +241,7 @@ const FormSelect: React.FC<{label: string, name: string, value: any, onChange: a
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean}> = (props) => (
+const FormTextArea: React.FC<{ label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean }> = (props) => (
     <div>
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={props.name} className="admin-label !mb-0">{props.label}</label>
@@ -274,7 +275,7 @@ const ArrayEditor: React.FC<{
             setItems(items.filter((_, i) => i !== index));
         }
     };
-    
+
     return (
         <div className="space-y-3">
             {items.map((item, index) => (
@@ -294,7 +295,7 @@ const ArrayEditor: React.FC<{
                 </div>
             ))}
             <button type="button" onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
-                <PlusIcon className="w-4 h-4"/> Ajouter une distinction
+                <PlusIcon className="w-4 h-4" /> Ajouter une distinction
             </button>
         </div>
     );

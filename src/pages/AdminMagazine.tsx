@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, StarIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import ImageInput from '../components/ImageInput';
-import ArticleGenerator from '../components/ArticleGenerator';
-import AIAssistant from '../components/AIAssistant';
+import { ImageInput, ArticleGenerator, AIAssistant } from '../components';
 
 interface Article {
     slug: string;

@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
 const ChapterDetail: React.FC = () => {
   const { data, isInitialized } = useData();
   const { moduleSlug, chapterSlug } = useParams<{ moduleSlug: string, chapterSlug: string }>();
-  
+
   const module = data?.courseData.find(m => m.slug === moduleSlug);
   const chapter = module?.chapters.find(c => c.slug === chapterSlug);
 
@@ -26,7 +26,7 @@ const ChapterDetail: React.FC = () => {
 
   return (
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-      <SEO 
+      <SEO
         title={`${chapter.title} | PMM Classroom`}
         description={`Leçon détaillée sur "${chapter.title}" du module "${module.title}". Maîtrisez les compétences essentielles du mannequinat avec le programme de formation de Perfect Models Management.`}
         keywords={`apprendre le mannequinat, cours ${chapter.title}, formation ${module.title}, pmm classroom`}
@@ -46,7 +46,7 @@ const ChapterDetail: React.FC = () => {
             Télécharger en PDF
           </button>
         </div>
-        
+
         <div className="printable-content">
           <article className="bg-black p-8 md:p-12 border border-pm-gold/20">
             <header>

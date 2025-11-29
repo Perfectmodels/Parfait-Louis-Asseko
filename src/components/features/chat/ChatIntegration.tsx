@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { useChat } from '../contexts/ChatContext';
-import { useData } from '../contexts/DataContext';
-import { AgencyConversation, AgencyMessage } from '../types';
+import { useChat } from '../../../contexts/ChatContext';
+import { useData } from '../../../contexts/DataContext';
+import { AgencyConversation, AgencyMessage } from '../../../types';
 
 interface AgencyMessagingIntegrationProps {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ export const ChatIntegration: React.FC<AgencyMessagingIntegrationProps> = ({ chi
     data.castingApplications.forEach(async (application) => {
       // Vérifier si une conversation existe déjà pour ce casting
       const existingConversationId = `casting-${application.id}`;
-      
+
       // Créer une conversation pour chaque nouvelle candidature
       if (application.status === 'Nouveau') {
         try {
@@ -327,7 +327,7 @@ export const useChatIntegration = () => {
 
   // Envoyer une notification urgente
   const sendUrgentNotification = async (conversationId: string, message: string, deadline?: Date) => {
-    const urgentContent = deadline 
+    const urgentContent = deadline
       ? `🚨 URGENT - Deadline ${deadline.toLocaleDateString('fr-FR')} 🚨\n\n${message}\n\nMerci de traiter en priorité.`
       : `🚨 URGENT 🚨\n\n${message}\n\nMerci de traiter en priorité.`;
 
@@ -337,7 +337,7 @@ export const useChatIntegration = () => {
   // Envoyer une mise à jour de casting
   const sendCastingUpdate = async (conversationId: string, update: string, castingId?: string) => {
     const content = `📅 MISE À JOUR CASTING\n\n${update}`;
-    
+
     const message: Partial<AgencyMessage> = {
       type: 'casting_update',
       metadata: {

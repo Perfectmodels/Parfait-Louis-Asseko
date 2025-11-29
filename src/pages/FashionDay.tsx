@@ -2,14 +2,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import SEO from '../components/SEO';
+import { SEO } from '../components';
 import { useData } from '../contexts/DataContext';
 import { FashionDayEvent, Artist } from '../types';
 
 const FashionDay: React.FC = () => {
   const { data, isInitialized } = useData();
   const fashionDayEvents = data?.fashionDayEvents || [];
-  
+
   const [selectedEdition, setSelectedEdition] = useState<FashionDayEvent | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -23,46 +23,46 @@ const FashionDay: React.FC = () => {
 
   useEffect(() => {
     if (selectedImage) {
-        prevActiveElement.current = document.activeElement as HTMLElement;
-        setTimeout(() => {
-            modalRef.current?.focus();
-            const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-            if (!focusableElements || focusableElements.length === 0) return;
+      prevActiveElement.current = document.activeElement as HTMLElement;
+      setTimeout(() => {
+        modalRef.current?.focus();
+        const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (!focusableElements || focusableElements.length === 0) return;
 
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
 
-            const handleKeyDown = (e: KeyboardEvent) => {
-                if (e.key === 'Escape') setSelectedImage(null);
-                if (e.key === 'Tab') {
-                    if (e.shiftKey) {
-                        if (document.activeElement === firstElement) {
-                            e.preventDefault();
-                            lastElement.focus();
-                        }
-                    } else {
-                        if (document.activeElement === lastElement) {
-                            e.preventDefault();
-                            firstElement.focus();
-                        }
-                    }
-                }
-            };
-            
-            document.addEventListener('keydown', handleKeyDown);
+        const handleKeyDown = (e: KeyboardEvent) => {
+          if (e.key === 'Escape') setSelectedImage(null);
+          if (e.key === 'Tab') {
+            if (e.shiftKey) {
+              if (document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+              }
+            } else {
+              if (document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+              }
+            }
+          }
+        };
 
-            return () => {
-                document.removeEventListener('keydown', handleKeyDown);
-                prevActiveElement.current?.focus();
-            };
-        }, 100);
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+          document.removeEventListener('keydown', handleKeyDown);
+          prevActiveElement.current?.focus();
+        };
+      }, 100);
     }
   }, [selectedImage]);
 
   if (!isInitialized || !data) {
     return <div className="min-h-screen bg-pm-dark"></div>;
   }
-  
+
   if (fashionDayEvents.length === 0 || !selectedEdition) {
     return <div className="min-h-screen flex items-center justify-center">Aucun événement à afficher.</div>;
   }
@@ -70,7 +70,7 @@ const FashionDay: React.FC = () => {
   return (
     <>
       <div className="bg-pm-dark text-pm-off-white">
-        <SEO 
+        <SEO
           title="Perfect Fashion Day | L'Événement Mode de Référence"
           description="Vibrez au rythme du Perfect Fashion Day, l'événement mode incontournable à Libreville. Revivez les éditions, découvrez les créateurs gabonais et les moments forts qui célèbrent la mode africaine."
           keywords="perfect fashion day, défilé de mode gabon, événement mode libreville, créateurs gabonais, mode africaine, fashion week gabon"
@@ -101,7 +101,7 @@ const FashionDay: React.FC = () => {
             <h2 className="text-4xl font-playfair text-center text-pm-gold mb-2">Thème : "{selectedEdition.theme}"</h2>
             <p className="text-center text-pm-off-white/70 mb-8">{new Date(selectedEdition.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
             <p className="text-center max-w-3xl mx-auto mb-12">{selectedEdition.description}</p>
-            
+
             {selectedEdition.location && (
               <div className="flex flex-wrap justify-center gap-8 mb-12 text-center border-y border-pm-gold/20 py-8">
                 <InfoPill icon={CalendarDaysIcon} title="Date" content={new Date(selectedEdition.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} />
@@ -109,38 +109,38 @@ const FashionDay: React.FC = () => {
                 <InfoPill icon={SparklesIcon} title="Promoteur" content={selectedEdition.promoter || 'Parfait Asseko'} />
               </div>
             )}
-            
+
             {selectedEdition.edition === 2 && (
               <div className="text-center my-12 py-8 bg-pm-dark/50 rounded-lg">
-                  <h3 className="text-3xl font-playfair text-pm-gold mb-4">Rejoignez l'Aventure de l'Édition 2</h3>
-                  <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
-                      Pour cette nouvelle édition, nous recherchons des talents visionnaires pour donner vie au thème "L’Art de Se Révler". Que vous soyez mannequin, styliste, partenaire, photographe ou que vous ayez un autre talent à partager, nous vous invitons à rejoindre cette célébration de la mode.
-                  </p>
-                  <div className="mt-8">
-                      <Link to="/fashion-day-application" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20">
-                          Participer à l'événement
-                      </Link>
-                  </div>
+                <h3 className="text-3xl font-playfair text-pm-gold mb-4">Rejoignez l'Aventure de l'Édition 2</h3>
+                <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+                  Pour cette nouvelle édition, nous recherchons des talents visionnaires pour donner vie au thème "L’Art de Se Révler". Que vous soyez mannequin, styliste, partenaire, photographe ou que vous ayez un autre talent à partager, nous vous invitons à rejoindre cette célébration de la mode.
+                </p>
+                <div className="mt-8">
+                  <Link to="/fashion-day-application" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20">
+                    Participer à l'événement
+                  </Link>
+                </div>
               </div>
             )}
 
             {/* Featured Artists and Models */}
             {selectedEdition.artists && selectedEdition.featuredModels && (
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12 pt-8 border-t border-pm-gold/10">
-                  <div>
-                      <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><MicrophoneIcon className="w-6 h-6" aria-hidden="true"/> Artistes & Performances</h3>
-                      <ul className="list-disc list-inside text-pm-off-white/80 space-y-2">
-                          {/* FIX: Correctly render artist name and description. An Artist object cannot be rendered directly as a ReactNode. */}
-                          {selectedEdition.artists.map((artist, index) => <li key={index}>{artist.name} - <span className="text-xs text-pm-off-white/70">{artist.description}</span></li>)}
-                      </ul>
-                  </div>
-                  <div>
-                      <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><UserGroupIcon className="w-6 h-6" aria-hidden="true"/> Mannequins Vedettes</h3>
-                      <p className="text-pm-off-white/80">
-                          {selectedEdition.featuredModels.join(', ')} et toute la Perfect Models Squad.
-                      </p>
-                  </div>
-               </div> 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12 pt-8 border-t border-pm-gold/10">
+                <div>
+                  <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><MicrophoneIcon className="w-6 h-6" aria-hidden="true" /> Artistes & Performances</h3>
+                  <ul className="list-disc list-inside text-pm-off-white/80 space-y-2">
+                    {/* FIX: Correctly render artist name and description. An Artist object cannot be rendered directly as a ReactNode. */}
+                    {selectedEdition.artists.map((artist, index) => <li key={index}>{artist.name} - <span className="text-xs text-pm-off-white/70">{artist.description}</span></li>)}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="flex items-center gap-3 text-2xl font-playfair text-pm-gold mb-4"><UserGroupIcon className="w-6 h-6" aria-hidden="true" /> Mannequins Vedettes</h3>
+                  <p className="text-pm-off-white/80">
+                    {selectedEdition.featuredModels.join(', ')} et toute la Perfect Models Squad.
+                  </p>
+                </div>
+              </div>
             )}
 
             {/* Stylists Gallery */}
@@ -155,38 +155,38 @@ const FashionDay: React.FC = () => {
                         <p className="text-sm text-pm-off-white/70">{stylist.description}</p>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                          {(stylist.images || []).map((img, idx) => (
-                              <button key={idx} onClick={() => setSelectedImage(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${stylist.name}`} className="aspect-square block bg-black group overflow-hidden border border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300">
-                                  <img src={img} alt={`${stylist.name} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
-                              </button>
-                          ))}
+                        {(stylist.images || []).map((img, idx) => (
+                          <button key={idx} onClick={() => setSelectedImage(img)} aria-label={`Agrandir l'image de la création ${idx + 1} de ${stylist.name}`} className="aspect-square block bg-black group overflow-hidden border border-transparent hover:border-pm-gold focus-style-self focus-visible:ring-2 focus-visible:ring-pm-gold transition-colors duration-300">
+                            <img src={img} alt={`${stylist.name} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+                          </button>
+                        ))}
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            
+
             {selectedEdition.partners && (
               <div className="mt-20">
                 <h3 className="section-title my-12 pt-8 border-t border-pm-gold/10">Partenaires & Sponsors</h3>
                 <div className="flex justify-center items-center gap-12 flex-wrap">
-                    {selectedEdition.partners.map(p => (
-                        <div key={p.name} className="text-center">
-                            <p className="text-pm-gold/80 text-sm">{p.type}</p>
-                            <p className="text-2xl font-bold tracking-wider">{p.name}</p>
-                        </div>
-                    ))}
+                  {selectedEdition.partners.map(p => (
+                    <div key={p.name} className="text-center">
+                      <p className="text-pm-gold/80 text-sm">{p.type}</p>
+                      <p className="text-2xl font-bold tracking-wider">{p.name}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
-      
+
       {/* Lightbox */}
       {selectedImage && (
-        <div 
+        <div
           ref={modalRef}
           tabIndex={-1}
           className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 cursor-pointer"
@@ -195,18 +195,18 @@ const FashionDay: React.FC = () => {
           aria-modal="true"
           aria-label="Vue agrandie de l'image"
         >
-          <button 
-            className="absolute top-4 right-4 text-white hover:text-pm-gold transition-colors z-10" 
+          <button
+            className="absolute top-4 right-4 text-white hover:text-pm-gold transition-colors z-10"
             aria-label="Fermer"
             onClick={() => setSelectedImage(null)}
           >
-            <XMarkIcon className="w-8 h-8"/>
+            <XMarkIcon className="w-8 h-8" />
           </button>
           <div className="relative max-w-5xl max-h-[90vh] cursor-default" onClick={(e) => e.stopPropagation()}>
-            <img 
-              src={selectedImage} 
-              alt="Vue agrandie" 
-              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl shadow-pm-gold/20" 
+            <img
+              src={selectedImage}
+              alt="Vue agrandie"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl shadow-pm-gold/20"
             />
           </div>
         </div>
@@ -216,18 +216,18 @@ const FashionDay: React.FC = () => {
 };
 
 interface InfoPillProps {
-    icon: React.ElementType;
-    title: string;
-    content: string;
+  icon: React.ElementType;
+  title: string;
+  content: string;
 }
 const InfoPill: React.FC<InfoPillProps> = ({ icon: Icon, title, content }) => (
-    <div className="flex items-center gap-3">
-        <Icon className="w-10 h-10 text-pm-gold" aria-hidden="true"/>
-        <div>
-            <span className="font-bold block text-left">{title}</span>
-            <span className="block text-left">{content}</span>
-        </div>
+  <div className="flex items-center gap-3">
+    <Icon className="w-10 h-10 text-pm-gold" aria-hidden="true" />
+    <div>
+      <span className="font-bold block text-left">{title}</span>
+      <span className="block text-left">{content}</span>
     </div>
+  </div>
 );
 
 
