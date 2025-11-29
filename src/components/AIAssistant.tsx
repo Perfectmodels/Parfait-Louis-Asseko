@@ -114,3 +114,4 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
 };
 
 export default AIAssistant;
+
