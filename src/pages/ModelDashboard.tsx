@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { SEO, ModelForm } from '../components';
+import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { Model, PhotoshootBrief } from '../types';
+// FIX: Corrected import path for ModelForm.
+import ModelForm from '../components/ModelForm';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 
@@ -27,18 +29,18 @@ const ModelDashboard: React.FC = () => {
             setEditableModel(JSON.parse(JSON.stringify(originalModel)));
         }
     }, [originalModel]);
-
+    
     const handleSave = async (updatedModel: Model) => {
         if (!data || !editableModel) return;
-
-        const updatedModels = data.models.map(m =>
+        
+        const updatedModels = data.models.map(m => 
             m.id === updatedModel.id ? updatedModel : m
         );
-
+        
         await saveData({ ...data, models: updatedModels });
         alert("Profil mis à jour avec succès.");
     };
-
+    
     const handleCancel = () => {
         if (originalModel) {
             setEditableModel(JSON.parse(JSON.stringify(originalModel)));
@@ -53,7 +55,7 @@ const ModelDashboard: React.FC = () => {
 
     const handleMarkAsRead = async (briefId: string) => {
         if (!data) return;
-        const updatedBriefs = data.photoshootBriefs.map(b =>
+        const updatedBriefs = data.photoshootBriefs.map(b => 
             b.id === briefId ? { ...b, status: 'Lu' as const } : b
         );
         await saveData({ ...data, photoshootBriefs: updatedBriefs });
@@ -78,7 +80,7 @@ const ModelDashboard: React.FC = () => {
             </div>
         );
     }
-
+    
     const getScoreColor = (scorePercentage: number) => {
         if (scorePercentage >= 80) return 'text-green-400';
         if (scorePercentage >= 50) return 'text-yellow-400';
@@ -94,25 +96,34 @@ const ModelDashboard: React.FC = () => {
                         <h1 className="text-4xl font-playfair text-pm-gold">Bienvenue, {editableModel.name.split(' ')[0]}</h1>
                         <p className="text-pm-off-white/80">Votre espace personnel pour gérer votre profil et suivre votre progression.</p>
                     </div>
-                    <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
+                     <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
                         <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
-                    </button>
+                     </button>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    <aside className="lg:col-span-1 space-y-4">
-                        <Link to="/formations" className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
-                            <BookOpenIcon className="w-8 h-8 text-pm-gold mb-3" />
-                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Accéder au Classroom</h2>
-                            <p className="text-sm text-pm-off-white/70">Continuez votre formation.</p>
+                    <aside className="lg:col-span-1 space-y-4 lg:sticky lg:top-28 self-start">
+                         <div className="bg-black p-6 border border-pm-gold/20 rounded-lg text-center">
+                            <img src={editableModel.imageUrl} alt={editableModel.name} className="w-32 h-32 rounded-full object-cover mx-auto mb-4 border-4 border-pm-gold/50" />
+                            <h2 className="text-2xl font-playfair text-pm-gold">{editableModel.name}</h2>
+                            <p className="text-sm text-pm-off-white/70">{editableModel.level}</p>
+                         </div>
+                         <Link to="/formations" className="group block bg-black p-4 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg flex items-center gap-4">
+                             <BookOpenIcon className="w-8 h-8 text-pm-gold" />
+                            <div>
+                                <h2 className="font-bold text-pm-gold">Accéder au Classroom</h2>
+                                <p className="text-xs text-pm-off-white/70">Continuez votre formation.</p>
+                            </div>
                         </Link>
-                        <Link to={`/mannequins/${editableModel.id}`} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
-                            <UserIcon className="w-8 h-8 text-pm-gold mb-3" />
-                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Voir mon Portfolio Public</h2>
-                            <p className="text-sm text-pm-off-white/70">Consultez votre profil public.</p>
+                        <Link to={`/mannequins/${editableModel.id}`} target="_blank" rel="noopener noreferrer" className="group block bg-black p-4 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg flex items-center gap-4">
+                             <UserIcon className="w-8 h-8 text-pm-gold" />
+                            <div>
+                                <h2 className="font-bold text-pm-gold">Voir mon Portfolio</h2>
+                                <p className="text-xs text-pm-off-white/70">Consultez votre profil public.</p>
+                            </div>
                         </Link>
                     </aside>
-
+                    
                     <main className="lg:col-span-3">
                         <div className="border-b border-pm-gold/20 mb-6">
                             <nav className="flex space-x-4" aria-label="Tabs">
@@ -121,10 +132,10 @@ const ModelDashboard: React.FC = () => {
                                 <TabButton name="Briefings" icon={EnvelopeIcon} isActive={activeTab === 'briefs'} onClick={() => setActiveTab('briefs')} notificationCount={newBriefsCount} />
                             </nav>
                         </div>
-
+                        
                         <div>
                             {activeTab === 'profile' && (
-                                <ModelForm
+                                <ModelForm 
                                     model={editableModel}
                                     onSave={handleSave}
                                     onCancel={handleCancel}
@@ -133,19 +144,17 @@ const ModelDashboard: React.FC = () => {
                                 />
                             )}
                             {activeTab === 'results' && (
-                                <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30">
-                                    <h2 className="text-2xl font-playfair text-pm-gold mb-6">Résultats des Quiz</h2>
+                                <div className="admin-section-wrapper">
+                                    <h2 className="admin-section-title">Résultats des Quiz</h2>
                                     {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
                                         <ul className="space-y-3">
                                             {courseModulesWithQuizzes.map(module => {
                                                 const scoreData = editableModel.quizScores?.[module.slug];
-                                                // FIX: Calculate percentage from the score object.
                                                 const percentage = scoreData ? Math.round((scoreData.score / scoreData.total) * 100) : null;
                                                 return (
                                                     <li key={module.slug} className="flex justify-between items-center bg-pm-dark p-3 rounded-md text-sm">
                                                         <span className="text-pm-off-white/80">{module.title}</span>
                                                         {percentage !== null ? (
-                                                            // FIX: Use the calculated percentage for display and color coding.
                                                             <span className={`font-bold text-lg ${getScoreColor(percentage)}`}>{percentage}%</span>
                                                         ) : (
                                                             <span className="text-xs text-pm-off-white/50">Non complété</span>
@@ -160,8 +169,8 @@ const ModelDashboard: React.FC = () => {
                                 </div>
                             )}
                             {activeTab === 'briefs' && (
-                                <div className="bg-black p-6 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30 space-y-4">
-                                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">Briefings de Séances Photo</h2>
+                                <div className="admin-section-wrapper space-y-4">
+                                    <h2 className="admin-section-title">Briefings de Séances Photo</h2>
                                     {myBriefs.length > 0 ? (
                                         myBriefs.map(brief => (
                                             <BriefItem key={brief.id} brief={brief} expandedBriefId={expandedBriefId} onToggle={handleToggleBrief} />
@@ -179,19 +188,21 @@ const ModelDashboard: React.FC = () => {
     );
 };
 
-const TabButton: React.FC<{ name: string, icon: React.ElementType, isActive: boolean, onClick: () => void, notificationCount?: number }> = ({ name, icon: Icon, isActive, onClick, notificationCount = 0 }) => (
+// ... Les autres sous-composants (TabButton, BriefItem) restent les mêmes
+const TabButton: React.FC<{name: string, icon: React.ElementType, isActive: boolean, onClick: () => void, notificationCount?: number}> = ({ name, icon: Icon, isActive, onClick, notificationCount = 0 }) => (
     <button
         onClick={onClick}
-        className={`relative flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-t-lg transition-colors border-b-2 ${isActive
-            ? 'border-pm-gold text-pm-gold'
+        className={`relative flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-t-lg transition-colors border-b-2 ${
+            isActive 
+            ? 'border-pm-gold text-pm-gold' 
             : 'border-transparent text-pm-off-white/70 hover:text-pm-gold'
-            }`}
+        }`}
     >
         <Icon className="w-5 h-5" />
         {name}
         {notificationCount > 0 && (
             <span className="absolute top-1 -right-1 flex h-4 w-4">
-                <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-xs items-center justify-center">{notificationCount}</span>
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-xs items-center justify-center">{notificationCount}</span>
             </span>
         )}
     </button>
@@ -212,14 +223,14 @@ const BriefItem: React.FC<{ brief: PhotoshootBrief, expandedBriefId: string | nu
             {isExpanded && (
                 <div className="p-4 border-t border-pm-gold/20 bg-black animate-fade-in space-y-4">
                     <div className="flex items-center gap-4 p-3 bg-pm-dark rounded-md">
-                        <CalendarDaysIcon className="w-6 h-6 text-pm-gold flex-shrink-0" />
+                        <CalendarDaysIcon className="w-6 h-6 text-pm-gold flex-shrink-0"/>
                         <div>
                             <p className="text-xs text-pm-off-white/70">Date & Heure</p>
                             <p className="font-semibold">{new Date(brief.dateTime).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' })}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-4 p-3 bg-pm-dark rounded-md">
-                        <MapPinIcon className="w-6 h-6 text-pm-gold flex-shrink-0" />
+                     <div className="flex items-center gap-4 p-3 bg-pm-dark rounded-md">
+                        <MapPinIcon className="w-6 h-6 text-pm-gold flex-shrink-0"/>
                         <div>
                             <p className="text-xs text-pm-off-white/70">Lieu</p>
                             <p className="font-semibold">{brief.location}</p>

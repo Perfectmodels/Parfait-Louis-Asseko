@@ -1,7 +1,6 @@
 
-
 import React, { useState } from 'react';
-import { SEO } from '../components';
+import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationRole } from '../types';
 import { Link } from 'react-router-dom';
@@ -59,7 +58,7 @@ const FashionDayApplicationForm: React.FC = () => {
             console.error(error);
         }
     };
-
+    
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Candidature Perfect Fashion Day" description="Postulez pour participer à la prochaine édition du Perfect Fashion Day. Mannequins, stylistes, photographes, partenaires, rejoignez l'aventure." noIndex />
@@ -91,7 +90,7 @@ const FashionDayApplicationForm: React.FC = () => {
                         placeholder="Présentez-vous, décrivez votre projet, ou laissez un lien vers votre portfolio..."
                         required
                     />
-                    <div className="pt-4">
+                     <div className="pt-4">
                         <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
                             {status === 'loading' ? 'Envoi en cours...' : 'Envoyer ma candidature'}
                         </button>
@@ -109,23 +108,25 @@ const FashionDayApplicationForm: React.FC = () => {
     );
 };
 
-const FormInput: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string }> = (props) => (
+// FIX: Added missing helper components
+const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
-const FormSelect: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode }> = (props) => (
+const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <select {...props} id={props.name} className="admin-input">{props.children}</select>
     </div>
 );
-const FormTextArea: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, rows: number, required?: boolean, placeholder?: string }> = (props) => (
+const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, rows: number, required?: boolean, placeholder?: string}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <textarea {...props} id={props.name} className="admin-input admin-textarea" />
     </div>
 );
 
+// FIX: Added missing default export
 export default FashionDayApplicationForm;

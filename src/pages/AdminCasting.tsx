@@ -1,24 +1,23 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
-import { SEO } from '../components';
+import SEO from '../components/SEO';
+// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
-    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     useEffect(() => {
         if (data?.castingApplications) {
             setLocalApps([...data.castingApplications].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()));
         }
     }, [data?.castingApplications, isInitialized]);
-
+    
     const filteredApps = useMemo(() => {
         if (filter === 'Toutes') return localApps;
         return localApps.filter(app => app.status === filter);
@@ -71,7 +70,7 @@ const AdminCasting: React.FC = () => {
             case 'intermediate': experienceText = "A une expérience préalable en agence et a participé à des défilés ou des campagnes locales."; break;
             case 'professional': experienceText = "Carrière de mannequin professionnel(le) établie avec un portfolio solide."; break;
         }
-
+        
         const age = app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : undefined;
 
         const newModel: Model = {
@@ -112,7 +111,7 @@ const AdminCasting: React.FC = () => {
             alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
-
+    
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
@@ -125,110 +124,143 @@ const AdminCasting: React.FC = () => {
 
     const statusOptions: (CastingApplicationStatus | 'Toutes')[] = ['Toutes', 'Nouveau', 'Présélectionné', 'Accepté', 'Refusé'];
 
-    if (printingApp) {
-        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
-    }
-
     return (
         <>
-            <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-                <SEO title="Admin - Candidatures Casting" noIndex />
-                <div className="container mx-auto px-6">
-                    <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-                        <ChevronLeftIcon className="w-5 h-5" />
-                        Retour au Tableau de Bord
-                    </Link>
-                    <h1 className="text-4xl font-playfair text-pm-gold mb-8">Candidatures Casting</h1>
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+            <SEO title="Admin - Candidatures Casting" noIndex />
+            <div className="container mx-auto px-6">
+                <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+                    <ChevronLeftIcon className="w-5 h-5" />
+                    Retour au Tableau de Bord
+                </Link>
+                <h1 className="text-4xl font-playfair text-pm-gold mb-8">Candidatures Casting</h1>
 
-                    <div className="flex flex-wrap items-center gap-4 mb-8">
-                        {statusOptions.map(f => (
-                            <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all ${filter === f ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
-                                {f}
-                            </button>
-                        ))}
-                    </div>
+                <div className="flex flex-wrap items-center gap-4 mb-8">
+                    {statusOptions.map(f => (
+                        <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all ${filter === f ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
+                            {f}
+                        </button>
+                    ))}
+                </div>
 
-                    <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-pm-dark/50">
-                                    <tr className="border-b border-pm-gold/20">
-                                        <th className="p-4 uppercase text-xs tracking-wider">Nom</th>
-                                        <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Âge</th>
-                                        <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Taille</th>
-                                        <th className="p-4 uppercase text-xs tracking-wider">Statut</th>
-                                        <th className="p-4 uppercase text-xs tracking-wider text-right">Actions</th>
+                <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-pm-dark/50">
+                                <tr className="border-b border-pm-gold/20">
+                                    <th className="p-4 uppercase text-xs tracking-wider">Nom</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Âge</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Taille</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider">Statut</th>
+                                    <th className="p-4 uppercase text-xs tracking-wider text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredApps.map(app => (
+                                    <tr key={app.id} className="border-b border-pm-dark hover:bg-pm-dark/50">
+                                        <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
+                                        <td className="p-4 hidden sm:table-cell">{app.birthDate ? `${new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans` : 'N/A'}</td>
+                                        <td className="p-4 hidden sm:table-cell">{app.height} cm</td>
+                                        <td className="p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
+                                        <td className="p-4">
+                                            <div className="flex items-center justify-end gap-4">
+                                                <button onClick={() => setSelectedApp(app)} className="text-pm-gold/70 hover:text-pm-gold"><EyeIcon className="w-5 h-5"/></button>
+                                                <button onClick={() => handleDelete(app.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredApps.map(app => (
-                                        <tr key={app.id} className="border-b border-pm-dark hover:bg-pm-dark/50">
-                                            <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
-                                            <td className="p-4 hidden sm:table-cell">{app.birthDate ? `${new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans` : 'N/A'}</td>
-                                            <td className="p-4 hidden sm:table-cell">{app.height} cm</td>
-                                            <td className="p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
-                                            <td className="p-4">
-                                                <div className="flex items-center justify-end gap-4">
-                                                    <button onClick={() => setSelectedApp(app)} className="text-pm-gold/70 hover:text-pm-gold"><EyeIcon className="w-5 h-5" /></button>
-                                                    <button onClick={() => handleDelete(app.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            {filteredApps.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune candidature trouvée.</p>}
-                        </div>
+                                ))}
+                            </tbody>
+                        </table>
+                        {filteredApps.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune candidature trouvée.</p>}
                     </div>
                 </div>
             </div>
-            {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} />}
+        </div>
+        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} />}
         </>
     );
 };
 
+const TabButton: React.FC<{ name: string, isActive: boolean, onClick: () => void }> = ({ name, isActive, onClick }) => (
+    <button
+        type="button"
+        onClick={onClick}
+        className={`relative px-1 py-2 font-medium text-sm transition-colors ${
+            isActive 
+            ? 'text-pm-gold' 
+            : 'text-pm-off-white/70 hover:text-pm-gold'
+        }`}
+    >
+        {name}
+        <span className={`absolute bottom-[-1px] left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0'}`}/>
+    </button>
+);
+
+
 const ApplicationModal: React.FC<{
-    app: CastingApplication,
-    onClose: () => void,
-    onUpdateStatus: (id: string, status: CastingApplicationStatus) => void,
+    app: CastingApplication, 
+    onClose: () => void, 
+    onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, 
     getStatusColor: (status: CastingApplicationStatus) => string,
     onValidateAndCreateModel: (app: CastingApplication) => void,
 }> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel }) => {
+    const [activeTab, setActiveTab] = useState<'personal' | 'measurements' | 'experience'>('personal');
+    const age = app.birthDate ? `${app.birthDate} (${new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans)` : 'N/A';
+
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
                 <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
                     <h2 className="text-2xl font-playfair text-pm-gold">Candidature de {app.firstName} {app.lastName}</h2>
-                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6" /></button>
+                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
                 </header>
-                <main className="p-6 overflow-y-auto flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Section title="Informations Personnelles">
-                        <InfoItem label="Nom complet" value={`${app.firstName} ${app.lastName}`} />
-                        <InfoItem label="Date de naissance" value={app.birthDate} />
-                        <InfoItem label="Email" value={app.email} />
-                        <InfoItem label="Téléphone" value={app.phone} />
-                        <InfoItem label="Nationalité" value={app.nationality} />
-                        <InfoItem label="Ville" value={app.city} />
-                        <InfoItem label="Genre" value={app.gender} />
-                    </Section>
-                    <Section title="Mensurations & Physique">
-                        <InfoItem label="Taille" value={`${app.height} cm`} />
-                        <InfoItem label="Poids" value={`${app.weight} kg`} />
-                        <InfoItem label="Poitrine" value={`${app.chest} cm`} />
-                        <InfoItem label="Taille (vêtement)" value={`${app.waist} cm`} />
-                        <InfoItem label="Hanches" value={`${app.hips} cm`} />
-                        <InfoItem label="Pointure" value={app.shoeSize} />
-                        <InfoItem label="Couleur des yeux" value={app.eyeColor} />
-                        <InfoItem label="Couleur des cheveux" value={app.hairColor} />
-                    </Section>
-                    <div className="md:col-span-2">
-                        <Section title="Expérience & Portfolio">
-                            <InfoItem label="Niveau d'expérience" value={app.experience} />
-                            <InfoItem label="Instagram" value={app.instagram} />
-                            <InfoItem label="Portfolio" value={app.portfolioLink} />
-                        </Section>
+                <main className="p-6 overflow-y-auto flex-grow">
+                     {/* Tab Navigation */}
+                    <div className="border-b border-pm-gold/20 mb-6">
+                        <nav className="flex -mb-px space-x-6">
+                            <TabButton name="Infos Personnelles" isActive={activeTab === 'personal'} onClick={() => setActiveTab('personal')} />
+                            <TabButton name="Mensurations" isActive={activeTab === 'measurements'} onClick={() => setActiveTab('measurements')} />
+                            <TabButton name="Expérience" isActive={activeTab === 'experience'} onClick={() => setActiveTab('experience')} />
+                        </nav>
                     </div>
-                    <div className="md:col-span-2">
+                    
+                    {/* Tab Panels */}
+                    <div className="animate-fade-in">
+                        {activeTab === 'personal' && (
+                             <Section title="Informations Personnelles">
+                                <InfoItem label="Nom complet" value={`${app.firstName} ${app.lastName}`} />
+                                <InfoItem label="Date de naissance" value={age} />
+                                <InfoItem label="Email" value={app.email} />
+                                <InfoItem label="Téléphone" value={app.phone} />
+                                <InfoItem label="Nationalité" value={app.nationality} />
+                                <InfoItem label="Ville" value={app.city} />
+                                <InfoItem label="Genre" value={app.gender} />
+                            </Section>
+                        )}
+                        {activeTab === 'measurements' && (
+                             <Section title="Mensurations & Physique">
+                                <InfoItem label="Taille" value={`${app.height} cm`} />
+                                <InfoItem label="Poids" value={`${app.weight} kg`} />
+                                <InfoItem label="Poitrine" value={`${app.chest || 'N/A'} cm`} />
+                                <InfoItem label="Taille (vêtement)" value={`${app.waist || 'N/A'} cm`} />
+                                <InfoItem label="Hanches" value={`${app.hips || 'N/A'} cm`} />
+                                <InfoItem label="Pointure" value={app.shoeSize || 'N/A'} />
+                                <InfoItem label="Couleur des yeux" value={app.eyeColor || 'N/A'} />
+                                <InfoItem label="Couleur des cheveux" value={app.hairColor || 'N/A'} />
+                            </Section>
+                        )}
+                         {activeTab === 'experience' && (
+                            <Section title="Expérience & Portfolio">
+                                <InfoItem label="Niveau d'expérience" value={app.experience} />
+                                <InfoItem label="Instagram" value={app.instagram ? <a href={`https://instagram.com/${app.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-pm-gold underline">{app.instagram}</a> : 'N/A'} />
+                                <InfoItem label="Portfolio" value={app.portfolioLink ? <a href={app.portfolioLink} target="_blank" rel="noopener noreferrer" className="text-pm-gold underline truncate block">{app.portfolioLink}</a> : 'N/A'} />
+                            </Section>
+                        )}
+                    </div>
+                    
+                    {/* Status section (always visible) */}
+                    <div className="mt-8">
                         <Section title="Statut">
                             <div className="flex items-center gap-2 flex-wrap">
                                 {(['Nouveau', 'Présélectionné', 'Accepté', 'Refusé'] as const).map(status => (
@@ -240,10 +272,10 @@ const ApplicationModal: React.FC<{
                         </Section>
                     </div>
                 </main>
-                <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
+                 <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
                     {app.status === 'Présélectionné' && (
                         <button onClick={() => onValidateAndCreateModel(app)} className="px-4 py-2 text-sm bg-green-600 text-white font-bold rounded-full hover:bg-green-500">
-                            Valider & Créer Profil Mannequin
+                            Valider & Créer Profil Débutant
                         </button>
                     )}
                 </footer>
@@ -252,17 +284,17 @@ const ApplicationModal: React.FC<{
     );
 };
 
-const Section: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
+const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
     <div>
         <h3 className="text-lg font-bold text-pm-gold mb-3 border-b border-pm-gold/20 pb-1">{title}</h3>
         <div className="space-y-2">{children}</div>
     </div>
 );
 
-const InfoItem: React.FC<{ label: string, value: React.ReactNode }> = ({ label, value }) => (
+const InfoItem: React.FC<{label: string, value: React.ReactNode}> = ({label, value}) => (
     <div className="grid grid-cols-3 text-sm">
         <strong className="text-pm-off-white/70 col-span-1">{label}:</strong>
-        <span className="truncate col-span-2">{value}</span>
+        <div className="truncate col-span-2">{value}</div>
     </div>
 );
 
