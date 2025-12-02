@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { siteConfig, socialLinks } from '../constants/data';
+import { getPageKeywords } from '../constants/seoKeywords';
 
 interface SEOProps {
   title?: string;
@@ -57,17 +58,21 @@ const SEO: React.FC<SEOProps> = ({
 
     const defaultDescription =
       "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
-    const defaultKeywords =
-      'mannequin, agence de mannequins, Gabon, Libreville, mode, défilé, Perfect Models Management, casting';
+
+    // Utilisation du générateur de mots-clés intelligent
+    const generatedKeywords = getPageKeywords(keywords || 'Agence de mannequins, Gabon, Mode');
+
     const defaultImage = siteConfig.logo;
     const siteUrl = window.location.href;
     const siteName = 'Perfect Models Management';
 
     // Balises standard
     setMeta('description', description || defaultDescription);
-    setMeta('keywords', keywords || defaultKeywords);
+    setMeta('keywords', generatedKeywords);
     setMeta('author', siteName);
     setMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
+    setMeta('geo.region', 'GA'); // Géolocalisation Gabon
+    setMeta('geo.placename', 'Libreville'); // Géolocalisation Libreville
 
     // Canonical
     setLink('canonical', canonicalUrl || siteUrl);
@@ -99,6 +104,13 @@ const SEO: React.FC<SEOProps> = ({
       "name": siteName,
       "url": window.location.origin,
       "logo": siteConfig.logo,
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+241 74 56 78 90", // Exemple, à remplacer par le vrai numéro si dispo dans data
+        "contactType": "customer service",
+        "areaServed": "GA",
+        "availableLanguage": "French"
+      },
       "sameAs": [
         socialLinks.facebook,
         socialLinks.instagram,
