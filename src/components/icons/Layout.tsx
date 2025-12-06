@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import Header, { Breadcrumb } from './Header';
@@ -13,12 +12,11 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
 
-  // Si la route commence par /admin, on utilise le layout d'administration.
+  // Switch to AdminLayout for admin routes
   if (location.pathname.startsWith('/admin')) {
     return <AdminLayout>{children}</AdminLayout>;
   }
-  
-  // Sinon, on utilise le layout public standard.
+
   return (
     <div className="bg-pm-dark min-h-screen flex flex-col font-montserrat">
       <Marquee />

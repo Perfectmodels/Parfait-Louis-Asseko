@@ -3,8 +3,7 @@ import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router
 import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
-// FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from './SocialIcons';
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
@@ -107,7 +106,6 @@ export const Breadcrumb: React.FC = () => {
             '/casting': 'Casting', '/casting-formulaire': 'Postuler au Casting',
             '/fashion-day-application': 'Candidature PFD', '/profil': 'Mon Profil',
             '/formations': 'Classroom', '/formations/forum': 'Forum',
-// FIX: Removed "Classroom Débutant" from breadcrumb map as the feature is deprecated.
         };
 
         const pathnames = location.pathname.split('/').filter(Boolean);
@@ -218,8 +216,7 @@ const Header: React.FC = () => {
       const menu = mobileMenuRef.current;
       if (!menu) return;
       
-      // FIX: Proactively fix potential 'Untyped function calls may not accept type arguments' error by using type assertion instead of generic.
-      const focusableElements = menu.querySelectorAll(focusableElementsQuery) as NodeListOf<HTMLElement>;
+      const focusableElements = menu.querySelectorAll<HTMLElement>(focusableElementsQuery);
       if (focusableElements.length === 0) return;
 
       const firstElement = focusableElements[0];

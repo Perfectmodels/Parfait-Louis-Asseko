@@ -1,2 +1,8 @@
-// This file is no longer used as the "Beginner Classroom" feature has been deprecated.
-export default () => null;
+// This component is no longer used because the 'Beginner Classroom' feature has been removed.
+import React from 'react';
+
+const BeginnerQuiz: React.FC = () => {
+  return null;
+};
+
+export default BeginnerQuiz;

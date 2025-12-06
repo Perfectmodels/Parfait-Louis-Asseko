@@ -1,5 +1,4 @@
-
-// FIX: Removed BeginnerStudent from import as the type is deprecated.
+// FIX: Corrected import to use MonthlyPayment as the Transaction type is deprecated.
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
@@ -42,6 +41,7 @@ export const siteImages: SiteImages = {
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
+    // FIX: Added firebaseDynamicLinks for short link generation.
     firebaseDynamicLinks: {
         webApiKey: "AIzaSyB_jjJEXU7yvJv49aiPCJqEZgiyfJEJzrg",
         domainUriPrefix: 'https://perfectmodels.page.link'
