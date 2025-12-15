@@ -12,6 +12,7 @@ const Agency = lazy(() => import('./pages/Agency'));
 const Models = lazy(() => import('./pages/Models'));
 const ModelDetail = lazy(() => import('./pages/ModelDetail'));
 const FashionDay = lazy(() => import('./pages/FashionDay'));
+const FashionDayReservation = lazy(() => import('./pages/FashionDayReservation'));
 const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -118,6 +119,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/mannequins" element={<Models />} />
                     <Route path="/mannequins/:id" element={<ModelDetail />} />
                     <Route path="/fashion-day" element={<FashionDay />} />
+                    <Route path="/fashion-day/reservation" element={<FashionDayReservation />} />
                     <Route path="/magazine" element={<Magazine />} />
                     <Route path="/magazine/:slug" element={<ArticleDetail />} />
                     <Route path="/contact" element={<Contact />} />
