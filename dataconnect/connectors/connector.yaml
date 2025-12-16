@@ -1,0 +1,56 @@
+# Configuration principale des connecteurs
+version: 1
+
+# Liste des connecteurs
+connectors:
+  - id: auth-connector
+    name: Authentification
+    description: Gestion des utilisateurs et des autorisations
+    path: ./auth-connector.yaml
+    enabled: true
+    
+  - id: storage-connector
+    name: Stockage
+    description: Gestion du stockage des fichiers
+    path: ./storage-connector.yaml
+    enabled: true
+
+# Configuration du cache
+cache:
+  enabled: true
+  ttl: 300  # 5 minutes
+
+# Journalisation
+logging:
+  level: info
+  format: json
+
+# Sécurité
+security:
+  validateSignatures: true
+  allowedDomains:
+    - "*.googleapis.com"
+    - "*.firebaseio.com"
+
+# Configuration de l'API
+api:
+  rest: true
+  graphql: true
+  subscriptions: true
+
+# Métriques
+metrics:
+  enabled: true
+  provider: prometheus
+
+# Configuration du déploiement
+deployment:
+  env:
+    NODE_ENV: production
+    LOG_LEVEL: info
+
+# Configuration des variables d'environnement requises
+requiredEnvVars:
+  - PROJECT_ID
+  - FIREBASE_CONFIG
+  - DATABASE_URL

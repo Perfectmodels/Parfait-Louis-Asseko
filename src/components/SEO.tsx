@@ -13,6 +13,8 @@ interface SEOProps {
   type?: 'website' | 'article' | 'profile' | 'event'; // Nouveau : type Open Graph
 }
 
+
+
 const SEO: React.FC<SEOProps> = ({
   title,
   description,
@@ -24,8 +26,8 @@ const SEO: React.FC<SEOProps> = ({
   type = 'website',
 }) => {
   useEffect(() => {
-    const defaultTitle = 'Perfect Models Management';
-    const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle;
+    const defaultTitle = siteConfig.title;
+    const pageTitle = title ? `${title} | ${siteConfig.name}` : defaultTitle;
 
     document.title = pageTitle;
 
@@ -56,20 +58,19 @@ const SEO: React.FC<SEOProps> = ({
       link.setAttribute('href', href);
     };
 
-    const defaultDescription =
-      "L'agence de mannequins de référence à Libreville, Gabon. Perfect Models Management révèle les talents, organise des événements mode d'exception et façonne l'avenir du mannequinat africain.";
+    const descriptionContent = description || siteConfig.description;
 
     // Utilisation du générateur de mots-clés intelligent
-    const generatedKeywords = getPageKeywords(keywords || 'Agence de mannequins, Gabon, Mode');
+    const generatedKeywords = getPageKeywords(keywords || siteConfig.keywords);
 
-    const defaultImage = siteConfig.logo;
+    const imageContent = image || siteConfig.defaultImage;
     const siteUrl = window.location.href;
-    const siteName = 'Perfect Models Management';
+    const siteName = siteConfig.name;
 
     // Balises standard
-    setMeta('description', description || defaultDescription);
+    setMeta('description', descriptionContent);
     setMeta('keywords', generatedKeywords);
-    setMeta('author', siteName);
+    setMeta('author', siteConfig.author);
     setMeta('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
     setMeta('geo.region', 'GA'); // Géolocalisation Gabon
     setMeta('geo.placename', 'Libreville'); // Géolocalisation Libreville
@@ -79,8 +80,8 @@ const SEO: React.FC<SEOProps> = ({
 
     // Open Graph
     setMeta('og:title', pageTitle, true);
-    setMeta('og:description', description || defaultDescription, true);
-    setMeta('og:image', image || defaultImage, true);
+    setMeta('og:description', descriptionContent, true);
+    setMeta('og:image', imageContent, true);
     setMeta('og:url', siteUrl, true);
     setMeta('og:site_name', siteName, true);
     setMeta('og:type', type, true);
@@ -91,8 +92,11 @@ const SEO: React.FC<SEOProps> = ({
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', pageTitle);
-    setMeta('twitter:description', description || defaultDescription);
-    setMeta('twitter:image', image || defaultImage);
+    setMeta('twitter:description', descriptionContent);
+    setMeta('twitter:image', imageContent);
+    if (siteConfig.twitterHandle) {
+      setMeta('twitter:site', siteConfig.twitterHandle);
+    }
 
     // JSON-LD Schema
     const schemaElementId = 'seo-schema-script';
@@ -102,7 +106,7 @@ const SEO: React.FC<SEOProps> = ({
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": siteName,
-      "url": window.location.origin,
+      "url": siteConfig.url,
       "logo": siteConfig.logo,
       "contactPoint": {
         "@type": "ContactPoint",
@@ -134,6 +138,8 @@ const SEO: React.FC<SEOProps> = ({
 
     // Cleanup
     return () => {
+      // On ne supprime pas les balises meta car cela pourrait affecter le SEO lors de la navigation
+      // Mais on peut nettoyer le script schema si nécessaire
       const el = document.getElementById(schemaElementId);
       if (el) el.remove();
     };

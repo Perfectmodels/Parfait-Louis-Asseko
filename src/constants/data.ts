@@ -1,9 +1,17 @@
 
 // FIX: Removed BeginnerStudent from import as the type is deprecated.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+  name: 'Perfect Models Management',
+  title: 'Perfect Models Management - Agence de Mannequins à Libreville',
+  description: "L'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode et notre vision qui redéfinit l'élégance africaine.",
+  url: 'https://www.perfectmodels.ga',
+  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png', // Logo principal
+  defaultImage: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg', // Image par défaut pour le partage social
+  keywords: 'Agence de mannequins, Gabon, Libreville, Mode, Casting, Fashion Day, Mannequinat, Perfect Models Management, PMM, Agence mode Afrique',
+  author: 'Perfect Models Management',
+  twitterHandle: '@PerfectModels241', // Si applicable
 };
 
 export const navLinks: NavLink[] = [
@@ -308,17 +316,58 @@ export const fashionDayEvents: FashionDayEvent[] = [
     date: "2026-01-31T18:00:00",
     theme: "L’Art de se révéler",
     location: "La Gare du Nord – Hôtel Restaurant Bar Casino, Carrefour Acaé",
-    description: "Après une première édition marquante, riche en émotions et en élégance, Perfect Models Management est fier d’annoncer le retour de la Perfect Fashion Day pour une deuxième édition inédite. Cette nouvelle rencontre mettra à l’honneur une mode profondément enracinée dans la culture, l’histoire personnelle et l’affirmation de soi.",
-    stylists: [],
-    featuredModels: [],
+    description: "La deuxième édition du Perfect Fashion Day s'annonce comme une révolution artistique. Sous le thème « L’Art de se révéler », nous invitons créateurs et mannequins à explorer l'essence même de l'identité individuelle à travers le prisme de la mode. Cet événement transcendera le simple défilé pour devenir une performance immersive où chaque passage racontera une histoire de métamorphose et d'affirmation de soi.",
+    stylists: [
+      { name: "Evo Style Creations", description: "Innovation et audace.", images: [] },
+      { name: "Rabibi", description: "L'élégance au naturel.", images: [] },
+      { name: "Miguel Fashion Style", description: "Couture fine et sur-mesure.", images: [] },
+      { name: "Rab's Collection", description: "Tradition revisitée.", images: [] },
+      { name: "Tito Style", description: "Le chic urbain gabonais.", images: [] },
+      { name: "Edele A", description: "Créatrice & Invitée d'honneur.", images: [] },
+      { name: "Nan's Ethnik", description: "Fusion culturelle.", images: [] },
+      { name: "Les Incompris", description: "Un style qui interpelle.", images: [] },
+      { name: "Le Pagne de Paris", description: "Le wax dans toute sa splendeur.", images: [] }
+    ],
+    featuredModels: [
+      "Noemi Kim", "Yann Aubin", "AJ Caramela", "Juliana Jodelle", "Stecya", "Lyne", "Cassandra", "Merveille"
+    ],
     artists: [
       {
-        name: 'Lady Riaba (Poésie)',
-        description: 'Slam introductif sur le thème « L’Art de se révéler »',
+        name: 'Lady Riaba',
+        description: 'Slam introductif inédit sur le thème « L’Art de se révéler ».',
+        images: []
+      },
+      {
+        name: 'AfroGroove Band',
+        description: 'Performance live fusionnant jazz et rythmes traditionnels gabonais.',
         images: []
       }
     ],
-    partners: []
+    partners: [
+      { type: "Sponsor Officiel", name: "La Gare du Nord" },
+      { type: "Partenaire Média", name: "Gabon 24" },
+      { type: "Partenaire Beauté", name: "Indi Hair" },
+      { type: "Support", name: "Darain Visuals" },
+      { type: "Support", name: "Femmes Belles Ambitieuses et Dynamiques" }
+    ],
+    pricingPackages: [
+      {
+        category: "Tables avec Bières Locales",
+        items: [
+          { name: "Table 1", capacity: "4 personnes", contents: "2 Seaux de Bières Locales + 1 Bouteille de Vin Blanc", price: "50 000 FCFA" },
+          { name: "Table 2", capacity: "6 personnes", contents: "3 Seaux de Bières Locales + 1 Bouteille de Vin Blanc", price: "70 000 FCFA" },
+          { name: "Table 3", capacity: "8 personnes", contents: "4 Seaux de Bières Locales + 1 Bouteille de Vin Blanc", price: "100 000 FCFA" }
+        ]
+      },
+      {
+        category: "Tables avec Bières Étrangères",
+        items: [
+          { name: "Table 4", capacity: "4 personnes", contents: "2 Seaux de Bières Étrangères + 1 Bouteille de Vin Blanc", price: "50 000 FCFA" },
+          { name: "Table 5", capacity: "6 personnes", contents: "3 Seaux de Bières Étrangères + 1 Bouteille de Vin Blanc", price: "80 000 FCFA" },
+          { name: "Table 6", capacity: "8 personnes", contents: "4 Seaux de Bières Étrangères + 1 Bouteille de Vin Blanc", price: "110 000 FCFA" }
+        ]
+      }
+    ]
   }
 ];
 

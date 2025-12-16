@@ -3,7 +3,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
-import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
+import { MapPinIcon, PhoneIcon, EnvelopeIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import Button from '../ui/Button';
 
 const Footer: React.FC = () => {
     const { data } = useData();
@@ -11,117 +12,135 @@ const Footer: React.FC = () => {
     const navLinks = data?.navLinks || [];
     const socialLinks = data?.socialLinks;
     const contactInfo = data?.contactInfo;
-    
+
+    // Filter out Home from footer links to reduce redundancy if desired, or keep specific ones
     const footerLinks = navLinks.filter(link => link.inFooter);
 
     const keyServices = [
         { label: "Booking Mannequins", link: "/contact?service=Booking+Mannequins" },
-        { label: "Candidature Casting", link: "/casting-formulaire" },
-        { label: "Organisation Défilés", link: "/contact?service=Organisation+D%C3%A9fil%C3%A9s+de+Mode" },
-        { label: "Formation Mannequins", link: "/contact?service=Formation+Mannequins" },
+        { label: "Devenir Mannequin", link: "/casting-formulaire" },
+        { label: "Fashion Day", link: "/fashion-day" },
+        { label: "Formation", link: "/formations" },
     ];
 
     return (
-        <footer className="bg-black text-pm-off-white/70 border-t border-pm-gold/20">
-            <div className="container mx-auto px-6 py-16">
+        <footer className="bg-black text-white relative overflow-hidden border-t border-white/5">
+            {/* Background Texture */}
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
 
-                <div className="text-center mb-16 pb-12 border-b border-pm-gold/10">
-                    <h3 className="text-3xl font-playfair text-pm-gold mb-2">Restez Connecté</h3>
-                    <p className="max-w-xl mx-auto text-pm-off-white/70 mb-6">
-                        Abonnez-vous à notre newsletter pour recevoir les dernières actualités, les dates de casting et les exclusivités de l'agence.
-                    </p>
-                    <form className="max-w-md mx-auto flex gap-2" onSubmit={(e) => e.preventDefault()}>
-                        <input 
-                            type="email" 
-                            placeholder="Votre adresse email" 
-                            className="admin-input flex-grow !rounded-full" 
-                            required 
-                        />
-                        <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase text-sm rounded-full hover:bg-white transition-colors">
-                            S'abonner
-                        </button>
-                    </form>
-                </div>
+            <div className="container mx-auto px-6 pt-24 pb-12 relative z-10">
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                    {/* Column 1: Brand & Social */}
-                    <div className="space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
+
+                    {/* Brand Section */}
+                    <div className="lg:col-span-4 space-y-8">
                         {siteConfig?.logo && (
-                            <Link to="/">
-                                <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-16 w-auto bg-black rounded-full border-2 border-pm-gold p-1" />
+                            <Link to="/" className="inline-block">
+                                <img
+                                    src={siteConfig.logo}
+                                    alt="Perfect Models Management"
+                                    className="h-12 w-auto brightness-0 invert opacity-90 hover:opacity-100 transition-opacity"
+                                />
                             </Link>
                         )}
-                        <p className="text-sm">L'élégance redéfinie. Berceau de talents et plateforme dédiée à l'avenir de la mode africaine.</p>
-                         {socialLinks && (
-                            <div className="flex space-x-4 pt-2">
-                                {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="Facebook"><FacebookIcon className="w-6 h-6" /></a>}
-                                {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="Instagram"><InstagramIcon className="w-6 h-6" /></a>}
-                                {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-colors" aria-label="YouTube"><YoutubeIcon className="w-6 h-6" /></a>}
+                        <p className="text-gray-400 leading-relaxed max-w-sm">
+                            L'excellence de la mode africaine. Nous découvrons et façonnons les icônes de demain, redéfinissant les standards de l'élégance à Libreville et au-delà.
+                        </p>
+
+                        {socialLinks && (
+                            <div className="flex items-center gap-6">
+                                {socialLinks.facebook && (
+                                    <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white hover:scale-110 transition-all duration-300">
+                                        <FacebookIcon className="w-6 h-6" />
+                                    </a>
+                                )}
+                                {socialLinks.instagram && (
+                                    <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white hover:scale-110 transition-all duration-300">
+                                        <InstagramIcon className="w-6 h-6" />
+                                    </a>
+                                )}
+                                {socialLinks.youtube && (
+                                    <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white hover:scale-110 transition-all duration-300">
+                                        <YoutubeIcon className="w-6 h-6" />
+                                    </a>
+                                )}
                             </div>
                         )}
                     </div>
 
-                    {/* Column 2: Explorer */}
-                    <div>
-                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Explorer</h3>
-                        <ul className="space-y-3">
+                    {/* Navigation Links */}
+                    <div className="lg:col-span-2 lg:col-start-6">
+                        <h4 className="font-playfair text-xl text-white mb-8">Explorer</h4>
+                        <ul className="space-y-4">
                             {footerLinks.map(link => (
                                 <li key={link.path}>
-                                    <Link to={link.path} className="hover:text-pm-gold transition-colors text-sm">
+                                    <Link to={link.path} className="text-gray-400 hover:text-pm-gold transition-colors flex items-center gap-2 group">
+                                        <span className="w-0 group-hover:w-2 h-[1px] bg-pm-gold transition-all duration-300 block" />
                                         {link.footerLabel || link.label}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    
-                    {/* Column 3: Key Services */}
-                    <div>
-                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Services Clés</h3>
-                        <ul className="space-y-3">
-                           {keyServices.map(service => (
-                               <li key={service.label}>
-                                   <Link to={service.link} className="hover:text-pm-gold transition-colors text-sm">
-                                       {service.label}
-                                   </Link>
-                               </li>
-                           ))}
+
+                    {/* Services Links */}
+                    <div className="lg:col-span-2">
+                        <h4 className="font-playfair text-xl text-white mb-8">Talents</h4>
+                        <ul className="space-y-4">
+                            {keyServices.map(service => (
+                                <li key={service.label}>
+                                    <Link to={service.link} className="text-gray-400 hover:text-pm-gold transition-colors flex items-center gap-2 group">
+                                        <span className="w-0 group-hover:w-2 h-[1px] bg-pm-gold transition-all duration-300 block" />
+                                        {service.label}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    {/* Column 4: Contact Info */}
-                    <div>
-                        <h3 className="text-lg font-bold text-pm-off-white uppercase tracking-wider mb-4">Contact</h3>
+                    {/* Contact & Newsletter */}
+                    <div className="lg:col-span-3">
+                        <h4 className="font-playfair text-xl text-white mb-8">Contact</h4>
                         {contactInfo && (
-                            <ul className="space-y-4 text-sm">
-                                <li className="flex items-start gap-3">
-                                    <MapPinIcon className="w-5 h-5 mt-0.5 text-pm-gold flex-shrink-0" />
+                            <ul className="space-y-4 mb-10">
+                                <li className="flex items-start gap-4 text-gray-400">
+                                    <MapPinIcon className="w-5 h-5 text-pm-gold shrink-0 mt-1" />
                                     <span>{contactInfo.address}</span>
                                 </li>
-                                <li className="flex items-start gap-3">
-                                    <PhoneIcon className="w-5 h-5 mt-0.5 text-pm-gold flex-shrink-0" />
+                                <li className="flex items-center gap-4 text-gray-400">
+                                    <PhoneIcon className="w-5 h-5 text-pm-gold shrink-0" />
                                     <span>{contactInfo.phone}</span>
                                 </li>
-                                <li className="flex items-start gap-3">
-                                    <EnvelopeIcon className="w-5 h-5 mt-0.5 text-pm-gold flex-shrink-0" />
-                                    <a href={`mailto:${contactInfo.email}`} className="hover:text-pm-gold transition-colors break-all">{contactInfo.email}</a>
+                                <li className="flex items-center gap-4 text-gray-400">
+                                    <EnvelopeIcon className="w-5 h-5 text-pm-gold shrink-0" />
+                                    <a href={`mailto:${contactInfo.email}`} className="hover:text-white transition-colors">{contactInfo.email}</a>
                                 </li>
                             </ul>
                         )}
+
+                        <div>
+                            <h5 className="text-sm font-bold uppercase tracking-widest text-pm-gold mb-4">Newsletter</h5>
+                            <form className="relative" onSubmit={(e) => e.preventDefault()}>
+                                <input
+                                    type="email"
+                                    placeholder="Votre email"
+                                    className="w-full bg-white/5 border border-white/10 rounded-none px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-pm-gold transition-colors"
+                                />
+                                <button type="submit" className="absolute right-0 top-0 h-full px-4 text-pm-gold hover:text-white transition-colors">
+                                    <ArrowRightIcon className="w-5 h-5" />
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
-                <div className="mt-16 pt-12 border-t border-pm-off-white/10 text-center text-sm">
-                    <div className="mb-8">
-                         <Link to="/login" className="cta-btn-outline">
-                            Accès Panel
-                        </Link>
-                    </div>
-                    <p>&copy; {new Date().getFullYear()} Perfect Models Management. Tous droits réservés.</p>
-                     <div className="mt-2 space-x-4">
-                        <Link to="/terms-of-use" className="hover:text-pm-gold transition-colors">Conditions d'Utilisation</Link>
-                        <span>|</span>
-                        <Link to="/privacy-policy" className="hover:text-pm-gold transition-colors">Politique de Confidentialité</Link>
+                {/* Bottom Bar */}
+                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-gray-500">
+                    <p>&copy; {new Date().getFullYear()} Perfect Models Management.</p>
+                    <div className="flex items-center gap-8">
+                        <Link to="/privacy-policy" className="hover:text-white transition-colors">Confidentialité</Link>
+                        <Link to="/terms-of-use" className="hover:text-white transition-colors">Conditions</Link>
+                        <Link to="/login" className="hover:text-pm-gold transition-colors">Admin</Link>
                     </div>
                 </div>
             </div>

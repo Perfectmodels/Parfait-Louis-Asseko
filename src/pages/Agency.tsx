@@ -1,225 +1,331 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
+import { ChevronDownIcon, CheckIcon, StarIcon, TrophyIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { FAQCategory } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import Button from '../components/ui/Button';
+
+// --- Sub-Components ---
+
+const AgencyHero: React.FC<{ image: string }> = ({ image }) => {
+    const ref = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start start", "end start"]
+    });
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+
+    return (
+        <div ref={ref} className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+            <motion.div
+                style={{ y, backgroundImage: `url('${image}')` }}
+                className="absolute inset-0 bg-cover bg-center"
+            />
+            <div className="absolute inset-0 bg-black/60" />
+
+            <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+                <motion.span
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.8 }}
+                    className="block text-pm-gold uppercase tracking-[0.3em] mb-4 text-sm font-bold"
+                >
+                    Notre Identité
+                </motion.span>
+                <motion.h1
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4, duration: 0.8 }}
+                    className="text-5xl md:text-7xl font-playfair text-white mb-6 leading-tight"
+                >
+                    Excellence & <span className="italic text-pm-gold">Passion</span>
+                </motion.h1>
+                <motion.p
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.6, duration: 0.8 }}
+                    className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto"
+                >
+                    Depuis 2021, nous redéfinissons les standards du mannequinat au Gabon en alliant professionnalisme rigoureux et vision artistique audacieuse.
+                </motion.p>
+            </div>
+        </div>
+    );
+};
+
+const ValueCard: React.FC<{ icon: any, title: string, text: string, delay: number }> = ({ icon: Icon, title, text, delay }) => {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay, duration: 0.6 }}
+            className="bg-pm-dark/50 border border-white/5 p-8 hover:border-pm-gold/30 transition-colors group"
+        >
+            <div className="w-12 h-12 bg-pm-gold/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-pm-gold group-hover:text-black transition-colors text-pm-gold">
+                <Icon className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-playfair text-white mb-4">{title}</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">{text}</p>
+        </motion.div>
+    );
+};
+
+const TimelineItem: React.FC<{ year: string, event: string, index: number }> = ({ year, event, index }) => {
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className={`flex items-center gap-8 mb-12 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} relative`}
+        >
+            <div className={`w-1/2 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                <span className="text-4xl md:text-5xl font-playfair text-pm-gold font-bold block mb-2">{year}</span>
+                <p className="text-gray-400 text-sm md:text-base">{event}</p>
+            </div>
+
+            {/* Center Dot */}
+            <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-pm-gold rounded-full border-4 border-black z-10 shadow-[0_0_15px_rgba(212,175,55,0.5)]"></div>
+        </motion.div>
+    );
+};
 
 const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
-    const [openFAQ, setOpenFAQ] = useState<string | null>('0-0'); // Open the first question by default
+    const [openFAQ, setOpenFAQ] = React.useState<string | null>('0-0');
 
     const toggleFAQ = (id: string) => {
         setOpenFAQ(openFAQ === id ? null : id);
     };
 
-    if (!faqData || faqData.length === 0) {
-        return null;
-    }
+    if (!faqData || faqData.length === 0) return null;
 
     return (
-        <section>
-            <h2 className="section-title">Questions Fréquemment Posées</h2>
-            <div className="max-w-4xl mx-auto space-y-8">
-                {faqData.map((category, catIndex) => (
-                    <div key={catIndex}>
-                        <h3 className="text-2xl font-playfair text-pm-gold mb-4">{category.category}</h3>
-                        <div className="space-y-3">
-                            {category.items.map((item, itemIndex) => {
-                                const faqId = `${catIndex}-${itemIndex}`;
-                                const isOpen = openFAQ === faqId;
-                                return (
-                                    <div key={itemIndex} className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden">
-                                        <button
-                                            onClick={() => toggleFAQ(faqId)}
-                                            className="w-full flex justify-between items-center p-5 text-left"
-                                            aria-expanded={isOpen}
-                                            aria-controls={`faq-answer-${faqId}`}
-                                        >
-                                            <span className="font-bold text-lg text-pm-off-white">{item.question}</span>
-                                            <ChevronDownIcon className={`w-6 h-6 text-pm-gold flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-                                        </button>
-                                        <div
-                                            id={`faq-answer-${faqId}`}
-                                            className="grid transition-all duration-500 ease-in-out"
-                                            style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
-                                        >
-                                            <div className="overflow-hidden">
-                                                <div className="px-5 pb-5 text-pm-off-white/80">
-                                                    {item.answer}
+        <section className="py-24 bg-pm-dark">
+            <div className="container mx-auto px-6 max-w-4xl">
+                <div className="text-center mb-16">
+                    <span className="text-pm-gold uppercase tracking-widest text-sm font-bold">Support</span>
+                    <h2 className="text-3xl md:text-4xl font-playfair text-white mt-2">Questions Fréquentes</h2>
+                </div>
+
+                <div className="space-y-12">
+                    {faqData.map((category, catIndex) => (
+                        <div key={catIndex}>
+                            <h3 className="text-xl font-playfair text-pm-gold mb-6 border-b border-white/10 pb-2">{category.category}</h3>
+                            <div className="space-y-4">
+                                {category.items.map((item, itemIndex) => {
+                                    const faqId = `${catIndex}-${itemIndex}`;
+                                    const isOpen = openFAQ === faqId;
+                                    return (
+                                        <div key={itemIndex} className="bg-white/5 rounded-lg overflow-hidden transition-colors hover:bg-white/10">
+                                            <button
+                                                onClick={() => toggleFAQ(faqId)}
+                                                className="w-full flex justify-between items-center p-6 text-left focus:outline-none"
+                                            >
+                                                <span className="font-medium text-white">{item.question}</span>
+                                                <ChevronDownIcon className={`w-5 h-5 text-pm-gold transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                                            </button>
+                                            <div
+                                                className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+                                            >
+                                                <div className="overflow-hidden">
+                                                    <div className="px-6 pb-6 text-gray-400 leading-relaxed text-sm">
+                                                        {item.answer}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </section>
     );
 };
 
+// --- Main Component ---
 
 const Agency: React.FC = () => {
-  const { data, isInitialized } = useData();
+    const { data, isInitialized } = useData();
 
-  if (!isInitialized || !data) {
-    return <div className="min-h-screen bg-pm-dark"></div>;
-  }
-  
-  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages, faqData } = data;
+    if (!isInitialized || !data) {
+        return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
+    }
 
-  return (
-    <div className="bg-pm-dark text-pm-off-white">
-      <SEO 
-        title="L'Agence | Notre Histoire et Nos Valeurs"
-        description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence, et les services qui font de nous un leader de la mode au Gabon."
-        keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
-        image={siteImages.agencyHistory}
-      />
-      <div className="page-container space-y-20 lg:space-y-28">
-
-        {/* À Propos */}
-        <section>
-          <h2 className="section-title">Notre Histoire</h2>
-          <div className="content-section flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2 p-2 border-2 border-pm-gold">
-              <img src={siteImages.agencyHistory} alt="L'équipe Perfect Models" className="w-full h-full object-cover"/>
-            </div>
-            <div className="md:w-1/2 text-lg leading-relaxed text-pm-off-white/90">
-              <p className="mb-4">{agencyInfo.about.p1}</p>
-              <p>{agencyInfo.about.p2}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Distinctions */}
-        <section>
-          <h2 className="section-title">Distinctions de nos Mannequins</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {modelDistinctions.map((distinction, index) => (
-              <DistinctionCard key={index} distinction={distinction} />
-            ))}
-          </div>
-        </section>
-
-        {/* Parcours (Timeline) */}
-        <section>
-          <h2 className="section-title">Notre Parcours</h2>
-           <div className="relative max-w-4xl mx-auto">
-                <div className="absolute left-1/2 h-full w-0.5 bg-pm-gold/30 transform -translate-x-1/2"></div>
-                {agencyTimeline.map((item, index) => (
-                    <div key={index} className={`relative flex items-center w-full my-8 ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}>
-                            <div className="bg-black p-4 border border-pm-gold/20 rounded-lg card-base">
-                                <h3 className="text-xl font-bold text-pm-gold">{item.year}</h3>
-                                <p className="text-pm-off-white/80 mt-1">{item.event}</p>
-                            </div>
-                        </div>
-                        <div className="absolute left-1/2 w-6 h-6 bg-pm-dark border-2 border-pm-gold rounded-full transform -translate-x-1/2 z-10"></div>
-                    </div>
-                ))}
-            </div>
-        </section>
-
-         {/* Réalisations */}
-        <section>
-            <h2 className="section-title">Nos Réalisations</h2>
-            <AchievementsTabs achievements={agencyAchievements} />
-        </section>
-
-         {/* Partenaires */}
-        <section>
-          <h2 className="section-title">Nos Partenaires Clé</h2>
-          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
-            {agencyPartners.map((partner, index) => (
-                <p key={index} className="text-lg font-normal text-pm-off-white/80">{partner.name}</p>
-            ))}
-          </div>
-        </section>
-        
-        {/* FAQ Section */}
-        <FAQ faqData={faqData} />
-
-        {/* Contact CTA */}
-        <section className="text-center content-section">
-          <h3 className="text-2xl font-playfair text-pm-gold mb-4">Une question ? Un projet ?</h3>
-          <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
-              Nous serions ravis d'échanger avec vous. Visitez notre page de contact pour nous envoyer un message ou trouver nos coordonnées.
-          </p>
-          <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
-              Nous Contacter
-          </Link>
-        </section>
-
-      </div>
-    </div>
-  );
-};
-
-const DistinctionCard: React.FC<{ distinction: ModelDistinction }> = ({ distinction }) => (
-    <div className="card-base p-6 text-center h-full flex flex-col justify-center items-center">
-        <CheckBadgeIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" aria-hidden="true" />
-        <h3 className="text-xl font-playfair text-pm-gold">{distinction.name}</h3>
-        <ul className="mt-2 text-sm text-pm-off-white/80 space-y-1">
-            {distinction.titles.map((title, index) => <li key={index}>✦ {title}</li>)}
-        </ul>
-    </div>
-);
-
-const AchievementsTabs: React.FC<{ achievements: AchievementCategory[] }> = ({ achievements }) => {
-    const [activeTab, setActiveTab] = useState(0);
+    const { agencyInfo, modelDistinctions, agencyTimeline, agencyPartners, siteImages, faqData } = data;
 
     return (
-        <div>
-            <div role="tablist" aria-label="Nos réalisations" className="flex justify-center border-b border-pm-gold/20 mb-8">
-                {achievements.map((category, index) => (
-                    <button
-                        key={index}
-                        role="tab"
-                        id={`tab-${index}`}
-                        aria-controls={`tab-panel-${index}`}
-                        aria-selected={activeTab === index}
-                        onClick={() => setActiveTab(index)}
-                        className={`px-6 py-3 text-sm uppercase tracking-wider font-bold transition-colors relative ${activeTab === index ? 'text-pm-gold' : 'text-pm-off-white/70 hover:text-pm-gold'}`}
-                    >
-                        {category.name}
-                        {activeTab === index && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold"/>}
-                    </button>
-                ))}
-            </div>
-            {achievements.map((category, index) => (
-                 <div
-                    key={index}
-                    id={`tab-panel-${index}`}
-                    role="tabpanel"
-                    hidden={activeTab !== index}
-                    aria-labelledby={`tab-${index}`}
-                    className={`transition-opacity duration-300 ${activeTab === index ? 'opacity-100' : 'opacity-0'}`}
-                >
-                    {activeTab === index && (
-                        <div className="content-section animate-fade-in">
-                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-pm-off-white/90">
-                                {category.items.map((item, itemIndex) => (
-                                    <div key={itemIndex} className="bg-pm-dark/50 p-4 rounded-lg flex items-start gap-3 border border-pm-gold/10">
-                                        <CheckBadgeIcon className="w-6 h-6 text-pm-gold flex-shrink-0 mt-0.5" />
-                                        <span>{item}</span>
-                                    </div>
-                                ))}
+        <div className="bg-black text-white selection:bg-pm-gold selection:text-black">
+            <SEO
+                title="L'Agence | Notre Histoire et Nos Valeurs"
+                description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence."
+                keywords="histoire agence pmm, valeurs mannequinat, agence de mode gabon"
+                image={siteImages.agencyHistory}
+            />
+
+            <AgencyHero image={siteImages.agencyHistory} />
+
+            {/* About Section */}
+            <section className="py-24 relative overflow-hidden">
+                <div className="container mx-auto px-6">
+                    <div className="flex flex-col lg:flex-row items-center gap-16">
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                            className="w-full lg:w-1/2 relative z-10"
+                        >
+                            <img
+                                src={siteImages.about}
+                                alt="À propos de PMM"
+                                className="w-full h-auto shadow-2xl shadow-pm-gold/10"
+                            />
+                            <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-pm-dark border border-pm-gold p-4 hidden md:flex items-center justify-center">
+                                <span className="font-playfair text-sm text-center">Since <br /><span className="text-2xl font-bold text-pm-gold">2021</span></span>
                             </div>
-                            {category.name === "Défilés de Mode" && 
-                                <p className="text-center mt-10 text-pm-gold/90 italic text-sm md:text-base bg-pm-dark/50 p-4 rounded-md">
-                                    "Notre agence a participé à tous les événements de mode depuis 2021, son année de création."
-                                </p>
-                            }
-                        </div>
-                    )}
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="w-full lg:w-1/2"
+                        >
+                            <h2 className="text-4xl font-playfair text-white mb-8 border-l-4 border-pm-gold pl-6">Notre Histoire</h2>
+                            <div className="text-gray-300 space-y-6 text-lg leading-relaxed">
+                                <p>{agencyInfo.about.p1}</p>
+                                <p>{agencyInfo.about.p2}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6 mt-12">
+                                <div className="bg-white/5 p-4 text-center">
+                                    <span className="block text-3xl font-playfair text-pm-gold mb-1">50+</span>
+                                    <span className="text-xs uppercase tracking-widest text-gray-500">Mannequins</span>
+                                </div>
+                                <div className="bg-white/5 p-4 text-center">
+                                    <span className="block text-3xl font-playfair text-pm-gold mb-1">20+</span>
+                                    <span className="text-xs uppercase tracking-widest text-gray-500">Campagnes</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
-            ))}
+            </section>
+
+            {/* Values Section */}
+            <section className="py-24 bg-pm-dark relative">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-5 pointer-events-none" />
+                <div className="container mx-auto px-6 relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-pm-gold uppercase tracking-widest text-sm font-bold">Philosophie</span>
+                        <h2 className="text-4xl font-playfair text-white mt-2">Nos Valeurs</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {agencyInfo.values.map((value, idx) => (
+                            <ValueCard
+                                key={idx}
+                                icon={!idx ? StarIcon : (idx === 1 ? UserGroupIcon : CheckIcon)}
+                                title={value.name}
+                                text={value.description}
+                                delay={idx * 0.2}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Timeline Section */}
+            <section className="py-24 overflow-hidden">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-20">
+                        <span className="text-pm-gold uppercase tracking-widest text-sm font-bold">Parcours</span>
+                        <h2 className="text-4xl font-playfair text-white mt-2">Les Grandes Étapes</h2>
+                    </div>
+
+                    <div className="relative max-w-4xl mx-auto">
+                        {/* Vertical Line */}
+                        <div className="absolute left-1/2 -translate-x-1/2 h-full w-[1px] bg-white/10"></div>
+
+                        {agencyTimeline.map((item, index) => (
+                            <TimelineItem key={index} year={item.year} event={item.event} index={index} />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Distinctions Section */}
+            <section className="py-24 bg-white/5">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <TrophyIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" />
+                        <h2 className="text-3xl md:text-4xl font-playfair text-white">Nos Distinctions</h2>
+                        <p className="text-gray-400 mt-4 max-w-2xl mx-auto">La reconnaissance de l'excellence de nos talents sur la scène nationale et internationale.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {modelDistinctions.map((dist, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.1 }}
+                                className="bg-black border border-white/10 p-6 text-center hover:border-pm-gold/50 transition-colors"
+                            >
+                                <h3 className="text-lg font-playfair text-white mb-4">{dist.name}</h3>
+                                <ul className="space-y-2">
+                                    {dist.titles.map((title, tIdx) => (
+                                        <li key={tIdx} className="text-sm text-pm-gold flex items-center justify-center gap-2">
+                                            <span className="w-1 h-1 bg-pm-gold rounded-full" />
+                                            {title}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Partners Section */}
+            <section className="py-20 border-y border-white/5">
+                <div className="container mx-auto px-6 text-center">
+                    <span className="text-gray-500 uppercase tracking-widest text-xs font-bold block mb-8">Ils nous font confiance</span>
+                    <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-8 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                        {agencyPartners.map((partner, idx) => (
+                            <span key={idx} className="text-xl md:text-2xl font-playfair text-white">{partner.name}</span>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ */}
+            <FAQ faqData={faqData} />
+
+            {/* Contact CTA */}
+            <section className="py-24 bg-pm-gold/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+                <div className="container mx-auto px-6 relative z-10 text-center">
+                    <h2 className="text-4xl md:text-5xl font-playfair text-white mb-6">Prêt à collaborer ?</h2>
+                    <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                        Que vous soyez une marque en quête d'excellence ou un talent prêt à éclore, nous sommes là pour vous.
+                    </p>
+                    <Link to="/contact">
+                        <Button className="py-4 px-10 text-lg">Contactez-nous</Button>
+                    </Link>
+                </div>
+            </section>
+
         </div>
     );
 };
-
 
 export default Agency;
