@@ -3,17 +3,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, SiteConfig } from '../types';
 
 // Import initial data to seed the database if it's empty
-import { 
-    models as initialModels, 
-    siteConfig as initialSiteConfig, 
-    contactInfo as initialContactInfo, 
-    siteImages as initialSiteImages, 
-    apiKeys as initialApiKeys, 
-    castingApplications as initialCastingApplications, 
-    fashionDayApplications as initialFashionDayApplications, 
+import {
+    models as initialModels,
+    siteConfig as initialSiteConfig,
+    contactInfo as initialContactInfo,
+    siteImages as initialSiteImages,
+    apiKeys as initialApiKeys,
+    castingApplications as initialCastingApplications,
+    fashionDayApplications as initialFashionDayApplications,
     forumThreads as initialForumThreads,
     forumReplies as initialForumReplies,
     articleComments as initialArticleComments,
@@ -24,16 +24,16 @@ import {
     // FIX: Changed to import 'monthlyPayments' instead of non-existent 'transactions'.
     monthlyPayments as initialMonthlyPayments,
     photoshootBriefs as initialPhotoshootBriefs,
-    newsItems as initialNewsItems, 
-    navLinks as initialNavLinks, 
-    fashionDayEvents as initialFashionDayEvents, 
-    socialLinks as initialSocialLinks, 
-    agencyTimeline as initialAgencyTimeline, 
-    agencyInfo as initialAgencyInfo, 
-    modelDistinctions as initialModelDistinctions, 
-    agencyServices as initialAgencyServices, 
-    agencyAchievements as initialAgencyAchievements, 
-    agencyPartners as initialAgencyPartners, 
+    newsItems as initialNewsItems,
+    navLinks as initialNavLinks,
+    fashionDayEvents as initialFashionDayEvents,
+    socialLinks as initialSocialLinks,
+    agencyTimeline as initialAgencyTimeline,
+    agencyInfo as initialAgencyInfo,
+    modelDistinctions as initialModelDistinctions,
+    agencyServices as initialAgencyServices,
+    agencyAchievements as initialAgencyAchievements,
+    agencyPartners as initialAgencyPartners,
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
@@ -44,7 +44,7 @@ import { courseData as initialCourseData } from '../constants/courseData';
 // FIX: Removed import for beginnerCourseData as the file and feature are deprecated.
 
 export interface AppData {
-    siteConfig: { logo: string };
+    siteConfig: SiteConfig;
     navLinks: NavLink[];
     socialLinks: { facebook: string; instagram: string; youtube: string; };
     agencyTimeline: { year: string; event: string; }[];
@@ -123,10 +123,10 @@ export const useDataStore = () => {
         // FIX: Removed beginner-related properties from initial data.
         faqData: initialFaqData,
     }), []);
-    
+
     useEffect(() => {
         const dbRef = ref(db, '/');
-        
+
         const unsubscribe = onValue(dbRef, (snapshot) => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
@@ -145,7 +145,7 @@ export const useDataStore = () => {
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
                 };
-                
+
                 // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
                 setData(mergedData);

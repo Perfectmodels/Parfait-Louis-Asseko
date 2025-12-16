@@ -1,366 +1,306 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, XMarkIcon, ChevronDownIcon, TicketIcon, UserPlusIcon } from '@heroicons/react/24/outline';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { CalendarDaysIcon, MapPinIcon, SparklesIcon, TicketIcon, XMarkIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { FashionDayEvent, Artist } from '../types';
+import { FashionDayEvent } from '../types';
+import Button from '../components/ui/Button';
 
-interface AccordionItemProps {
-  title: string;
-  description: string;
-  images: string[];
-  onImageClick: (img: string) => void;
-  defaultOpen?: boolean;
-}
+// --- Sub-Components ---
 
-const AccordionItem: React.FC<AccordionItemProps> = ({ title, description, images, onImageClick, defaultOpen = false }) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+const Hero: React.FC<{ image: string, title?: string }> = ({ image, title = "Le Rendez-vous Mode" }) => {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
   return (
-    <div className="bg-pm-dark/50 border border-pm-gold/20 rounded-lg overflow-hidden transition-all duration-300">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex justify-between items-center p-4 text-left hover:bg-pm-gold/10"
-        aria-expanded={isOpen}
-      >
-        <div>
-          <h4 className="text-2xl font-playfair text-pm-gold">{title}</h4>
-          {description && <p className="text-sm text-pm-off-white/70 mt-1">{description}</p>}
-        </div>
-        <ChevronDownIcon className={`w-6 h-6 text-pm-gold flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-      <div
-        className="grid transition-all duration-500 ease-in-out"
-        style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
-      >
-        <div className="overflow-hidden">
-          <div className="p-4 border-t border-pm-gold/20">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-              {(images || []).map((img, idx) => (
-                <button key={idx} onClick={() => onImageClick(img)} aria-label={`Agrandir l'image ${idx + 1} de ${title}`} className="aspect-square block bg-black group overflow-hidden border-2 border-transparent hover:border-pm-gold transition-colors duration-300 rounded-md">
-                  <img src={img} alt={`${title} - création ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+    <div ref={ref} className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+      <motion.div style={{ y, backgroundImage: `url('${image}')` }} className="absolute inset-0 bg-cover bg-center" />
+      <div className="absolute inset-0 bg-black/60" />
+      <div className="relative z-10 text-center px-4 max-w-5xl">
+        <motion.span initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 0.8 }} className="block text-pm-gold uppercase tracking-[0.3em] font-bold mb-4">
+          Perfect Fashion Day
+        </motion.span>
+        <motion.h1 initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4, duration: 0.8 }} className="text-5xl md:text-7xl lg:text-8xl font-playfair text-white mb-6 leading-tight">
+          {title}
+        </motion.h1>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 1 }} className="text-xl text-gray-300 max-w-2xl mx-auto">
+          La célébration ultime de l'élégance et de la créativité gabonaise.
+        </motion.p>
       </div>
     </div>
   );
 };
 
+const InfoCard: React.FC<{ icon: any, title: string, content: string, delay: number }> = ({ icon: Icon, title, content, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay, duration: 0.6 }}
+    className="bg-white/5 border border-white/10 p-8 text-center"
+  >
+    <Icon className="w-8 h-8 text-pm-gold mx-auto mb-4" />
+    <h3 className="text-white font-playfair text-xl mb-2">{title}</h3>
+    <p className="text-gray-400">{content}</p>
+  </motion.div>
+);
+
+// --- Main Layout ---
+
 const FashionDay: React.FC = () => {
   const { data, isInitialized } = useData();
-  const fashionDayEvents = data?.fashionDayEvents || [];
-
   const [selectedEdition, setSelectedEdition] = useState<FashionDayEvent | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const prevActiveElement = useRef<HTMLElement | null>(null);
 
-  // Trier les éditions : Édition 2 en premier, puis les autres par ordre décroissant
+  const fashionDayEvents = data?.fashionDayEvents || [];
   const sortedEvents = [...fashionDayEvents].sort((a, b) => {
+    // Priority to edition 2 (Next Event), then descending
     if (a.edition === 2) return -1;
     if (b.edition === 2) return 1;
     return b.edition - a.edition;
   });
 
   useEffect(() => {
-    // Sélectionner l'édition 2 par défaut (prochaine édition)
     if (sortedEvents.length > 0) {
-      const edition2 = sortedEvents.find(e => e.edition === 2);
-      setSelectedEdition(edition2 || sortedEvents[0]);
+      const nextEdition = sortedEvents.find(e => e.edition === 2);
+      setSelectedEdition(nextEdition || sortedEvents[0]);
     }
   }, [fashionDayEvents]);
 
-  useEffect(() => {
-    if (selectedImage) {
-      prevActiveElement.current = document.activeElement as HTMLElement;
-      setTimeout(() => {
-        modalRef.current?.focus();
-      }, 100);
-    }
-  }, [selectedImage]);
-
-  if (!isInitialized || !data) {
-    return <div className="min-h-screen bg-pm-dark"></div>;
-  }
-
-  if (!selectedEdition) {
-    return <div className="min-h-screen flex items-center justify-center">Aucun événement à afficher.</div>;
+  if (!isInitialized || !selectedEdition) {
+    return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
   }
 
   const isUpcoming = selectedEdition.edition === 2;
 
   return (
-    <>
-      <div className="bg-pm-dark text-pm-off-white">
-        <SEO
-          title="Perfect Fashion Day | L'Événement Mode de Référence"
-          description="Vibrez au rythme du Perfect Fashion Day, l'événement mode incontournable à Libreville. Découvrez la prochaine édition et revivez les moments forts."
-          keywords="perfect fashion day, défilé de mode gabon, événement mode libreville, créateurs gabonais, mode africaine"
-          image={data?.siteImages.fashionDayBg}
-        />
+    <div className="bg-black text-white selection:bg-pm-gold selection:text-black">
+      <SEO
+        title={`Perfect Fashion Day | Édition ${selectedEdition.edition}`}
+        description={`Découvrez le Perfect Fashion Day, l'événement mode de référence. Édition ${selectedEdition.edition} : ${selectedEdition.theme}.`}
+        keywords="fashion day, mode gabon, défilé, createurs"
+        image={data?.siteImages.fashionDayBg}
+      />
 
-        {/* Hero Section */}
-        <div className="relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-pm-dark z-10"></div>
-          <img
-            src={data?.siteImages.fashionDayBg}
-            alt="Perfect Fashion Day"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="relative z-20 text-center px-4">
-            <h1 className="text-5xl md:text-7xl font-playfair font-bold text-pm-gold mb-4">
-              Perfect Fashion Day
-            </h1>
-            <p className="text-xl md:text-2xl text-pm-off-white max-w-3xl mx-auto">
-              Plus qu'un défilé, une célébration de la créativité, de la culture et de l'identité gabonaise
-            </p>
-          </div>
-        </div>
+      <Hero image={data?.siteImages.fashionDayBg || ''} />
 
-        <div className="page-container">
-          {/* Sélecteur d'Éditions (Onglets) */}
-          <div className="flex justify-center gap-4 mb-12 flex-wrap" role="tablist" aria-label="Sélection de l'édition">
-            {sortedEvents.map(event => {
-              const isSelected = selectedEdition.edition === event.edition;
-              const isEdition2 = event.edition === 2;
-
-              return (
-                <button
-                  key={event.edition}
-                  onClick={() => setSelectedEdition(event)}
-                  role="tab"
-                  aria-selected={isSelected}
-                  aria-controls={`edition-${event.edition}-panel`}
-                  className={`relative px-8 py-4 text-sm font-bold uppercase tracking-widest rounded-lg transition-all duration-300 ${isSelected
-                    ? 'bg-pm-gold text-pm-dark shadow-lg shadow-pm-gold/30 scale-105'
-                    : 'bg-pm-dark/50 border-2 border-pm-gold/30 text-pm-gold hover:border-pm-gold hover:bg-pm-gold/10'
-                    }`}
-                >
-                  {isEdition2 && (
-                    <span className="absolute -top-2 -right-2 px-2 py-1 bg-pm-gold text-pm-dark text-xs rounded-full font-bold">
-                      Prochaine
-                    </span>
-                  )}
-                  <span className="block">Édition {event.edition}</span>
-                  <span className="block text-xs mt-1 opacity-80">
-                    {new Date(event.date).getFullYear()}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Contenu de l'Édition Sélectionnée */}
-          <div
-            role="tabpanel"
-            id={`edition-${selectedEdition.edition}-panel`}
-            aria-labelledby={`edition-${selectedEdition.edition}-tab`}
-            className="animate-fadeIn"
-          >
-            {/* Badge Prochaine Édition */}
-            {isUpcoming && (
-              <div className="text-center mb-8">
-                <span className="inline-block px-6 py-3 bg-gradient-to-r from-pm-gold to-yellow-500 text-pm-dark rounded-full text-sm font-bold uppercase tracking-widest shadow-lg shadow-pm-gold/30">
-                  🎉 Prochaine Édition
-                </span>
-              </div>
-            )}
-
-            {/* En-tête */}
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-playfair text-pm-gold mb-4">
-                Édition {selectedEdition.edition} - {new Date(selectedEdition.date).getFullYear()}
-              </h2>
-              <p className="text-3xl md:text-4xl font-playfair text-white mb-6">
-                "{selectedEdition.theme}"
-              </p>
-            </div>
-
-            {/* Informations Clés */}
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
-              <InfoCard
-                icon={CalendarDaysIcon}
-                title="Date"
-                content={new Date(selectedEdition.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-              />
-              <InfoCard
-                icon={MapPinIcon}
-                title="Lieu"
-                content={selectedEdition.location || 'À confirmer'}
-              />
-              <InfoCard
-                icon={SparklesIcon}
-                title="Promoteur"
-                content={selectedEdition.promoter || 'Parfait Asseko'}
-              />
-            </div>
-
-            {/* Description */}
-            <div className="max-w-4xl mx-auto mb-12">
-              <p className="text-lg text-pm-off-white/90 text-center leading-relaxed">
-                {selectedEdition.description}
-              </p>
-            </div>
-
-            {/* Stylistes Participants (pour édition 2) */}
-            {isUpcoming && selectedEdition.stylists && selectedEdition.stylists.length > 0 && (
-              <div className="mb-12">
-                <h3 className="text-3xl font-playfair text-center text-pm-gold mb-8">
-                  Stylistes Participants ({selectedEdition.stylists.length})
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-                  {selectedEdition.stylists.map((stylist, idx) => (
-                    <div key={idx} className="bg-pm-dark/50 border border-pm-gold/30 rounded-lg p-4 text-center hover:border-pm-gold transition-all hover:scale-105">
-                      <p className="text-lg font-bold text-white">{stylist.name}</p>
-                      {stylist.description && (
-                        <p className="text-sm text-pm-off-white/70 mt-1">{stylist.description}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Boutons d'Action (uniquement pour prochaine édition) */}
-            {isUpcoming && (
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-                <Link
-                  to="/fashion-day/reservation"
-                  className="group px-10 py-5 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-2xl shadow-pm-gold/30 flex items-center gap-3"
-                >
-                  <TicketIcon className="w-6 h-6" />
-                  Réserver une Table
-                </Link>
-                <Link
-                  to="/fashion-day-application"
-                  className="group px-10 py-5 bg-transparent border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark flex items-center gap-3"
-                >
-                  <UserPlusIcon className="w-6 h-6" />
-                  Participer à l'Événement
-                </Link>
-              </div>
-            )}
-
-            {/* Mannequins Vedettes */}
-            {selectedEdition.featuredModels && selectedEdition.featuredModels.length > 0 && (
-              <div className="mb-12 bg-pm-dark/30 border border-pm-gold/20 rounded-2xl p-8">
-                <h3 className="text-2xl font-playfair text-pm-gold mb-6 flex items-center justify-center gap-3">
-                  <UserGroupIcon className="w-7 h-7" />
-                  Mannequins Vedettes
-                </h3>
-                <p className="text-center text-pm-off-white/80 text-lg">
-                  {selectedEdition.featuredModels.join(', ')}
-                </p>
-              </div>
-            )}
-
-            {/* Galeries des Créateurs */}
-            {selectedEdition.stylists && selectedEdition.stylists.length > 0 && selectedEdition.stylists.some(s => s.images && s.images.length > 0) && (
-              <div className="mb-12">
-                <h3 className="text-3xl font-playfair text-pm-gold mb-8 text-center">
-                  Galeries des Créateurs
-                </h3>
-                <div className="space-y-4">
-                  {selectedEdition.stylists.filter(s => s.images && s.images.length > 0).map((stylist, index) => (
-                    <AccordionItem
-                      key={stylist.name}
-                      title={stylist.name}
-                      description={stylist.description}
-                      images={stylist.images || []}
-                      onImageClick={setSelectedImage}
-                      defaultOpen={index === 0}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Performances Artistiques */}
-            {selectedEdition.artists && selectedEdition.artists.length > 0 && (
-              <div className="mb-12">
-                <h3 className="text-3xl font-playfair text-pm-gold mb-8 text-center">
-                  Performances Artistiques
-                </h3>
-                <div className="space-y-4">
-                  {selectedEdition.artists.map((artist: Artist, index: number) => (
-                    <AccordionItem
-                      key={`${artist.name}-${index}`}
-                      title={artist.name}
-                      description={artist.description}
-                      images={artist.images || []}
-                      onImageClick={setSelectedImage}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Partenaires */}
-            {selectedEdition.partners && selectedEdition.partners.length > 0 && (
-              <div className="bg-pm-dark/30 border border-pm-gold/20 rounded-2xl p-8">
-                <h3 className="text-3xl font-playfair text-pm-gold mb-8 text-center">
-                  Partenaires & Sponsors
-                </h3>
-                <div className="flex justify-center items-center gap-12 flex-wrap">
-                  {selectedEdition.partners.map(p => (
-                    <div key={p.name} className="text-center">
-                      <p className="text-pm-gold/80 text-sm mb-1">{p.type}</p>
-                      <p className="text-xl font-bold tracking-wider">{p.name}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+      {/* Navigation / Edition Selector */}
+      <div className="sticky top-20 z-30 bg-black/80 backdrop-blur border-y border-white/10 py-4">
+        <div className="container mx-auto px-6 overflow-x-auto no-scrollbar">
+          <div className="flex justify-center gap-6 min-w-max">
+            {sortedEvents.map(event => (
+              <button
+                key={event.edition}
+                onClick={() => setSelectedEdition(event)}
+                className={`text-sm uppercase tracking-widest py-2 px-4 border-b-2 transition-colors ${selectedEdition.edition === event.edition
+                  ? 'border-pm-gold text-white'
+                  : 'border-transparent text-gray-500 hover:text-white'
+                  }`}
+              >
+                Édition {event.edition}
+                {event.edition === 2 && <span className="ml-2 text-[10px] bg-pm-gold text-black px-1.5 py-0.5 rounded font-bold">NEXT</span>}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Lightbox */}
-      {selectedImage && (
-        <div
-          ref={modalRef}
-          tabIndex={-1}
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 cursor-pointer"
-          onClick={() => setSelectedImage(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Vue agrandie de l'image"
+      <div className="container mx-auto px-6 py-24">
+
+        {/* Main Content */}
+        <motion.div
+          key={selectedEdition.edition} // Trigger animation on change
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="space-y-24"
         >
-          <button
-            className="absolute top-4 right-4 text-white hover:text-pm-gold transition-colors z-10"
-            aria-label="Fermer"
-            onClick={() => setSelectedImage(null)}
-          >
-            <XMarkIcon className="w-8 h-8" />
-          </button>
-          <div className="relative max-w-5xl max-h-[90vh] cursor-default" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={selectedImage}
-              alt="Vue agrandie"
-              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl shadow-pm-gold/20"
+
+          {/* Header Info */}
+          <div className="text-center max-w-4xl mx-auto">
+            <span className="text-pm-gold uppercase tracking-widest text-sm font-bold block mb-4">
+              {new Date(selectedEdition.date).getFullYear()}
+            </span>
+            <h2 className="text-4xl md:text-6xl font-playfair text-white mb-8">
+              "{selectedEdition.theme}"
+            </h2>
+            <p className="text-xl text-gray-400 leading-relaxed mb-12">
+              {selectedEdition.description}
+            </p>
+
+            {isUpcoming && (
+              <div className="flex flex-col sm:flex-row justify-center gap-6">
+                <Link to="/fashion-day/reservation">
+                  <Button variant="primary" className="px-8 py-3" icon={<TicketIcon className="w-5 h-5" />}>Réserver</Button>
+                </Link>
+                <Link to="/fashion-day-application">
+                  <Button variant="outline" className="px-8 py-3">Candidater</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Practical Info Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <InfoCard
+              icon={CalendarDaysIcon}
+              title="Date"
+              content={new Date(selectedEdition.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              delay={0}
+            />
+            <InfoCard
+              icon={MapPinIcon}
+              title="Lieu"
+              content={selectedEdition.location || 'Secret'}
+              delay={0.2}
+            />
+            <InfoCard
+              icon={SparklesIcon}
+              title="Vision"
+              content="Excellence & Avant-Garde"
+              delay={0.4}
             />
           </div>
-        </div>
-      )}
-    </>
+
+          {/* Designers / Artists Section */}
+          {(selectedEdition.stylists?.length || 0) > 0 && (
+            <div className="py-12 border-t border-white/10">
+              <h3 className="text-3xl font-playfair text-white mb-12 text-center">Les Créateurs</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {selectedEdition.stylists?.map((stylist, idx) => (
+                  <div key={idx} className="group relative overflow-hidden bg-white/5 aspect-[4/5]">
+                    {stylist.images?.[0] ? (
+                      <img src={stylist.images[0]} alt={stylist.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-white/5 to-white/10 text-pm-gold p-6 text-center">
+                        <span className="text-6xl font-playfair opacity-20 mb-4">{stylist.name.charAt(0)}</span>
+                        <span className="uppercase tracking-widest text-xs font-bold opacity-50">Collection à venir</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black to-transparent">
+                      <h4 className="text-2xl font-playfair text-white">{stylist.name}</h4>
+                      <p className="text-sm text-gray-300 mt-2 line-clamp-2">{stylist.description}</p>
+                      {stylist.images && stylist.images.length > 0 && (
+                        <button
+                          onClick={() => setSelectedImage(stylist.images[0])}
+                          className="mt-4 text-xs uppercase tracking-widest text-pm-gold hover:text-white transition-colors"
+                        >
+                          Voir Galerie
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Artists Section */}
+          {(selectedEdition.artists?.length || 0) > 0 && (
+            <div className="py-12 border-t border-white/10">
+              <h3 className="text-3xl font-playfair text-white mb-12 text-center">Performances Artistiques</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {selectedEdition.artists?.map((artist, idx) => (
+                  <div key={idx} className="bg-white/5 p-8 flex flex-col items-center text-center">
+                    <h4 className="text-2xl font-playfair text-white mb-2">{artist.name}</h4>
+                    <p className="text-gray-400">{artist.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pricing & Reservations */}
+          {selectedEdition.pricingPackages && selectedEdition.pricingPackages.length > 0 && (
+            <div className="py-24 border-t border-white/10">
+              <h3 className="text-3xl font-playfair text-white mb-4 text-center">Tarifs & Réservations</h3>
+              <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
+                Réservez votre table pour vivre cette expérience unique. Places limitées.
+              </p>
+              <div className="space-y-16">
+                {selectedEdition.pricingPackages.map((pkg, idx) => (
+                  <div key={idx}>
+                    <h4 className="text-xl text-pm-gold uppercase tracking-widest font-bold mb-8 text-center border-b border-white/10 pb-4 inline-block mx-auto px-8">{pkg.category}</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {pkg.items.map((item, itemIdx) => (
+                        <div key={itemIdx} className="bg-white/5 border border-white/10 p-8 hover:border-pm-gold transition-all duration-300 relative group flex flex-col">
+                          <div className="flex-grow">
+                            <h5 className="text-2xl font-playfair text-white mb-4">{item.name}</h5>
+                            <div className="text-sm text-gray-400 mb-6 flex items-center gap-2 bg-black/20 py-2 px-3 rounded-full w-fit">
+                              <UserGroupIcon className="w-4 h-4 text-pm-gold" /> {item.capacity}
+                            </div>
+                            <p className="text-gray-300 mb-8 border-t border-white/10 pt-4 leading-relaxed">{item.contents}</p>
+                          </div>
+                          <div className="mt-auto">
+                            <div className="text-3xl text-pm-gold font-bold mb-6">{item.price}</div>
+                            <Link to="/fashion-day/reservation" className="block">
+                              <button className="w-full py-3 border border-pm-gold text-pm-gold uppercase tracking-widest text-xs font-bold hover:bg-pm-gold hover:text-black transition-colors">
+                                Choisir
+                              </button>
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Pricing Notes */}
+                <div className="text-center text-sm text-gray-500 space-y-2 italic border-t border-white/10 pt-8 max-w-2xl mx-auto">
+                  <p>* Les tarifs incluent les boissons mentionnées sur la table.</p>
+                  <p>* Réservation requise à l'avance.</p>
+                  <p>* Places limitées - Premier arrivé, premier servi.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Partners */}
+          {(selectedEdition.partners?.length || 0) > 0 && (
+            <div className="text-center py-12 border-t border-white/10">
+              <span className="text-gray-500 uppercase tracking-widest text-xs font-bold block mb-8">Partenaires Officiels</span>
+              <div className="flex flex-wrap justify-center items-center gap-12 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                {selectedEdition.partners?.map((partner, idx) => (
+                  <div key={idx} className="text-center">
+                    <span className="block text-xl md:text-2xl font-playfair text-white">{partner.name}</span>
+                    <span className="text-xs text-pm-gold mt-1 uppercase tracking-wider">{partner.type}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </motion.div>
+      </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 cursor-pointer"
+          >
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              src={selectedImage}
+              className="max-h-[85vh] max-w-full object-contain rounded-sm shadow-2xl"
+            />
+            <button className="absolute top-6 right-6 text-white hover:text-pm-gold transition-colors">
+              <XMarkIcon className="w-8 h-8" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+    </div>
   );
 };
-
-// Composant InfoCard
-interface InfoCardProps {
-  icon: React.ElementType;
-  title: string;
-  content: string;
-}
-const InfoCard: React.FC<InfoCardProps> = ({ icon: Icon, title, content }) => (
-  <div className="bg-pm-dark/50 border border-pm-gold/30 rounded-xl p-6 text-center hover:border-pm-gold transition-all hover:scale-105">
-    <Icon className="w-12 h-12 text-pm-gold mx-auto mb-3" aria-hidden="true" />
-    <span className="font-bold block text-pm-gold mb-2">{title}</span>
-    <span className="block text-white">{content}</span>
-  </div>
-);
 
 export default FashionDay;

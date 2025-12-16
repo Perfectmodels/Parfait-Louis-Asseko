@@ -1,0 +1,211 @@
+specVersion: v1
+serviceId: parfait-louis-asseko-1
+location: us-east4
+
+# Configuration du schéma
+schema:
+  source: ./schema
+  datasource:
+    postgresql:
+      database: fdcdb
+      cloudSql:
+        instanceId: parfait-louis-asseko-1-fdc
+        schemaValidation: COMPATIBLE
+
+# Règles de sécurité
+auth:
+  # Authentification requise pour toutes les opérations
+  authentication:
+    providers:
+      - firebase
+  authorization:
+    # Règles par défaut (refus par défaut)
+    default: deny
+
+    # Règles pour les rôles personnalisés
+    roles:
+      - role: admin
+        description: "Administrateur système avec accès complet"
+        permissions:
+          - "*"
+        
+      - role: manager
+        description: "Gestionnaire avec accès à la gestion des modèles et castings"
+        permissions:
+          - "models:read"
+          - "models:write"
+          - "castings:read"
+          - "castings:write"
+          - "bookings:read"
+          - "bookings:write"
+        
+      - role: model
+        description: "Modèle avec accès à son profil et ses candidatures"
+        permissions:
+          - "profile:read"
+          - "profile:write"
+          - "applications:read"
+          - "applications:write"
+          - "bookings:read"
+        
+      - role: client
+        description: "Client avec accès aux castings et réservations"
+        permissions:
+          - "castings:read"
+          - "bookings:read"
+          - "bookings:write"
+
+# Configuration des connecteurs
+connectorDirs: ["./connectors"]
+
+# Définition des connecteurs
+connectors:
+  - name: auth-connector
+    type: auth
+    enabled: true
+    config:
+      requireEmailVerification: true
+      allowSignUp: true
+      defaultRole: model
+      
+  - name: storage-connector
+    type: storage
+    enabled: true
+    config:
+      provider: gcs
+      bucket: "${param:PROJECT_ID}.appspot.com"
+      maxFileSize: 10485760  # 10MB
+
+# Configuration de la mise en cache
+caching:
+  enabled: true
+  provider: redis
+  ttl: 300  # 5 minutes
+  maxSize: "100MB"
+
+# Journalisation et monitoring
+logging:
+  enabled: true
+  level: "info"
+  format: json
+  requestLogging: true
+  performanceSampling: 0.1  # 10% des requêtes
+
+# Sécurité avancée
+security:
+  # Protection contre les attaques par force brute
+  rateLimiting:
+    enabled: true
+    requestsPerMinute: 60
+    
+  # Protection contre les injections SQL
+  sqlInjectionProtection: true
+  
+  # Chiffrement des données sensibles
+  encryption:
+    enabled: true
+    keyRotationDays: 90
+    
+  # Configuration CORS
+  cors:
+    allowedOrigins:
+      - "https://${param:PROJECT_ID}.web.app"
+      - "https://${param:PROJECT_ID}.firebaseapp.com"
+      - "http://localhost:3000"
+    allowedMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allowedHeaders: ["Content-Type", "Authorization"]
+
+# Configuration des variables d'environnement
+params:
+  - name: PROJECT_ID
+    description: "ID du projet Firebase"
+    value: "${param:PROJECT_ID}"
+    
+  - name: NODE_ENV
+    description: "Environnement d'exécution"
+    value: production
+
+# Configuration du déploiement
+deploy:
+  # Planification des sauvegardes automatiques
+  backup:
+    enabled: true
+    schedule: "0 2 * * *"  # Tous les jours à 2h du matin
+    retentionDays: 30
+    
+  # Mise à l'échelle automatique
+  autoscaling:
+    minInstances: 1
+    maxInstances: 5
+    targetCpuUtilization: 60
+    
+  # Configuration des ressources
+  resources:
+    cpu: 1
+    memory: "1Gi"
+    
+  # Configuration des variables d'environnement
+  env:
+    - name: NODE_ENV
+      value: production
+    - name: LOG_LEVEL
+      value: info
+
+# Configuration des alertes
+alerts:
+  - name: high-error-rate
+    condition: "resource.type = 'cloud_run_revision' AND severity >= ERROR"
+    notificationChannels:
+      - type: email
+        recipients: ["admin@parfaitlouisasseko.com"]
+      - type: slack
+        webhook: ${SLACK_ALERTS_WEBHOOK}
+    
+  - name: high-latency
+    condition: "resource.type = 'cloud_run_revision' AND metric.latency > 1000"
+    notificationChannels:
+      - type: email
+        recipients: ["devops@parfaitlouisasseko.com"]
+      - type: slack
+        webhook: ${SLACK_ALERTS_WEBHOOK}
+
+# Configuration des métriques
+metrics:
+  enabled: true
+  provider: stackdriver
+  
+  # Métriques personnalisées
+  customMetrics:
+    - name: active_users
+      type: gauge
+      description: "Nombre d'utilisateurs actifs"
+      
+    - name: api_requests_total
+      type: counter
+      description: "Nombre total de requêtes API"
+      
+    - name: request_duration_seconds
+      type: histogram
+      description: "Durée des requêtes en secondes"
+
+# Configuration des tâches planifiées
+scheduledTasks:
+  - name: cleanup-expired-sessions
+    schedule: "0 3 * * *"  # Tous les jours à 3h du matin
+    handler: "./tasks/cleanupExpiredSessions.js"
+    
+  - name: send-reminders
+    schedule: "0 9 * * *"  # Tous les jours à 9h du matin
+    handler: "./tasks/sendReminders.js"
+
+# Configuration des webhooks
+webhooks:
+  - name: stripe-payments
+    path: "/webhooks/stripe"
+    handler: "./webhooks/stripe.js"
+    secret: ${STRIPE_WEBHOOK_SECRET}
+    
+  - name: sendgrid-events
+    path: "/webhooks/sendgrid"
+    handler: "./webhooks/sendgrid.js"
+    secret: ${SENDGRID_WEBHOOK_SECRET}

@@ -1,15 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { GoogleGenAI } from '@google/genai';
 import SEO from '../components/SEO';
-import { SparklesIcon, PhotoIcon, PaperAirplaneIcon, ArrowUpTrayIcon } from '@heroicons/react/24/solid';
-
-const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.onerror = error => reject(error);
-    });
+import { PhotoIcon, PaperAirplaneIcon, ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+import { geminiService } from '../services/geminiService';
+import Button from '../components/ui/Button';
 
 const ImageAnalysis: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
@@ -42,30 +35,11 @@ const ImageAnalysis: React.FC = () => {
         setAnalysisResult('');
 
         try {
-            if (!process.env.API_KEY) {
-                throw new Error("La clé API n'est pas configurée.");
-            }
-            
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-            const base64Data = await fileToBase64(file);
-
-            const imagePart = {
-                inlineData: {
-                    mimeType: file.type,
-                    data: base64Data,
-                },
-            };
-            const textPart = { text: prompt };
-
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: { parts: [imagePart, textPart] },
-            });
-            
-            setAnalysisResult(response.text);
+            const result = await geminiService.analyzeImage(file, prompt);
+            setAnalysisResult(result || "Aucune réponse de l'IA.");
 
         } catch (err: any) {
-            console.error("Erreur de l'API Gemini:", err);
+            console.error("Erreur Gemini:", err);
             setError(err.message || "Une erreur est survenue lors de l'analyse.");
         } finally {
             setIsLoading(false);
@@ -84,55 +58,60 @@ const ImageAnalysis: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                     <div className="bg-black p-6 border border-pm-gold/20 rounded-lg">
                         <label htmlFor="file-upload" className="block text-lg font-playfair text-pm-gold mb-4">1. Téléverser une Image</label>
-                        <div className="aspect-square bg-pm-dark/50 border-2 border-dashed border-pm-gold/50 rounded-lg flex items-center justify-center">
+                        <div className="aspect-square bg-pm-dark/50 border-2 border-dashed border-pm-gold/50 rounded-lg flex items-center justify-center relative overflow-hidden group">
                             {previewUrl ? (
-                                <img src={previewUrl} alt="Aperçu" className="max-h-full max-w-full object-contain rounded" />
+                                <img src={previewUrl} alt="Aperçu" className="w-full h-full object-cover rounded transition-transform duration-500 group-hover:scale-110" />
                             ) : (
                                 <div className="text-center text-pm-off-white/50">
-                                    <PhotoIcon className="w-16 h-16 mx-auto" />
+                                    <PhotoIcon className="w-16 h-16 mx-auto mb-2" />
                                     <p>Votre image apparaîtra ici.</p>
                                 </div>
                             )}
                         </div>
-                         <label htmlFor="file-upload" className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-pm-gold hover:text-pm-dark cursor-pointer">
-                            <ArrowUpTrayIcon className="w-5 h-5"/>
+                        <label htmlFor="file-upload" className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-pm-gold hover:text-pm-dark cursor-pointer transition-colors duration-300">
+                            <ArrowUpTrayIcon className="w-5 h-5" />
                             Choisir un fichier
                         </label>
                         <input id="file-upload" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                     </div>
 
-                    <div className="bg-black p-6 border border-pm-gold/20 rounded-lg">
-                         <label htmlFor="prompt" className="block text-lg font-playfair text-pm-gold mb-4">2. Poser une Question</label>
+                    <div className="bg-black p-6 border border-pm-gold/20 rounded-lg flex flex-col h-full">
+                        <label htmlFor="prompt" className="block text-lg font-playfair text-pm-gold mb-4">2. Poser une Question</label>
                         <textarea
                             id="prompt"
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
-                            rows={4}
-                            className="admin-textarea"
+                            rows={6}
+                            className="admin-textarea mb-4 flex-grow"
                             placeholder="Ex: Décris le style vestimentaire de la personne sur la photo."
                         />
-                        <button
+
+                        <Button
                             onClick={handleAnalyze}
-                            disabled={isLoading || !file || !prompt}
-                            className="mt-4 w-full inline-flex items-center justify-center gap-2 px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50"
+                            disabled={!file || !prompt}
+                            isLoading={isLoading}
+                            className="w-full mt-auto"
+                            icon={<PaperAirplaneIcon className="w-5 h-5" />}
                         >
-                            <PaperAirplaneIcon className="w-5 h-5" />
-                            {isLoading ? 'Analyse en cours...' : 'Analyser'}
-                        </button>
+                            Analyser
+                        </Button>
                     </div>
                 </div>
 
                 <div className="mt-12">
                     {isLoading && (
-                        <div className="p-8 bg-black rounded-lg border border-pm-gold/20">
-                            <p className="text-pm-gold animate-pulse">L'IA réfléchit...</p>
+                        <div className="p-8 bg-black rounded-lg border border-pm-gold/20 flex items-center justify-center gap-4">
+                            <div className="w-6 h-6 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" />
+                            <p className="text-pm-gold animate-pulse">L'IA analyse votre image...</p>
                         </div>
                     )}
-                    {error && <p className="p-4 bg-red-900/50 text-red-300 rounded-md">{error}</p>}
+                    {error && <p className="p-4 bg-red-900/30 border border-red-500/50 text-red-200 rounded-md">{error}</p>}
                     {analysisResult && (
-                        <div className="animate-fade-in bg-black p-8 border border-pm-gold/20 rounded-lg text-left">
-                            <h2 className="text-2xl font-playfair text-pm-gold mb-4">Résultat de l'Analyse</h2>
-                            <p className="whitespace-pre-wrap leading-relaxed text-pm-off-white/90">{analysisResult}</p>
+                        <div className="animate-fade-in bg-black p-8 border border-pm-gold/20 rounded-lg text-left shadow-2xl shadow-pm-gold/5">
+                            <h2 className="text-2xl font-playfair text-pm-gold mb-6 border-b border-pm-gold/20 pb-4">Résultat de l'Analyse</h2>
+                            <div className="prose prose-invert max-w-none">
+                                <p className="whitespace-pre-wrap leading-relaxed text-pm-off-white/90 text-lg">{analysisResult}</p>
+                            </div>
                         </div>
                     )}
                 </div>

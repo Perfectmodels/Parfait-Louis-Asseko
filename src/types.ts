@@ -1,3 +1,15 @@
+export interface SiteConfig {
+  name: string;
+  title: string;
+  description: string;
+  url: string;
+  logo: string;
+  defaultImage: string;
+  keywords: string;
+  author: string;
+  twitterHandle: string;
+}
+
 export interface Model {
   id: string;
   name: string;
@@ -12,7 +24,7 @@ export interface Model {
   imageUrl: string;
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
-  isPublic?: boolean; 
+  isPublic?: boolean;
   level?: 'Pro' | 'Débutant';
   measurements: {
     chest: string;
@@ -23,13 +35,13 @@ export interface Model {
   categories: string[];
   experience: string;
   journey: string;
-  quizScores: { 
+  quizScores: {
     [chapterSlug: string]: {
       score: number;
       total: number;
       timesLeft: number;
       timestamp: string;
-    } 
+    }
   };
   lastLogin?: string;
   lastActivity?: string;
@@ -84,6 +96,15 @@ export interface FashionDayEvent {
   artists?: Artist[];
   partners?: { type: string; name: string }[];
   description: string;
+  pricingPackages?: {
+    category: string;
+    items: {
+      name: string;
+      capacity: string;
+      contents: string;
+      price: string;
+    }[];
+  }[];
 }
 
 export interface SocialLinks {
@@ -98,7 +119,7 @@ export interface Service {
   title: string;
   category: 'Services Mannequinat' | 'Services Mode et Stylisme' | 'Services Événementiels';
   description: string;
-  details?: { 
+  details?: {
     title: string;
     points: string[];
   };
@@ -113,11 +134,11 @@ export interface AchievementCategory {
 }
 
 export interface ModelDistinction {
-    name: string;
-    titles: string[];
+  name: string;
+  titles: string[];
 }
 
-export type ArticleContent = 
+export type ArticleContent =
   | { type: 'heading'; level: 2 | 3; text: string }
   | { type: 'paragraph'; text: string }
   | { type: 'quote'; text: string; author?: string }
@@ -237,7 +258,7 @@ export interface CastingApplication {
   id: string;
   submissionDate: string;
   status: CastingApplicationStatus;
-  
+
   firstName: string;
   lastName: string;
   birthDate: string;
@@ -265,7 +286,7 @@ export interface CastingApplication {
   scores?: {
     [juryId: string]: JuryScore;
   };
-  
+
   passageNumber?: number;
 }
 
@@ -304,7 +325,7 @@ export interface ForumReply {
 export interface ArticleComment {
   id: string;
   articleSlug: string;
-  authorName: string; 
+  authorName: string;
   createdAt: string;
   content: string;
 }
@@ -622,8 +643,8 @@ export interface PhotoshootBrief {
 }
 
 export interface NavLink {
-    path: string;
-    label: string;
-    inFooter: boolean;
-    footerLabel?: string;
+  path: string;
+  label: string;
+  inFooter: boolean;
+  footerLabel?: string;
 }
