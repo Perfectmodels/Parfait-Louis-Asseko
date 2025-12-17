@@ -1,3 +1,29 @@
+/**
+ * Admin Dashboard Page
+ * 
+ * Page principale du panel administratif de Perfect Models Management.
+ * Affiche une vue d'ensemble complète de l'activité de l'agence.
+ * 
+ * Sections principales:
+ * 1. Header avec titre et bouton de déconnexion
+ * 2. Cartes de statistiques rapides (4 métriques clés)
+ * 3. Dashboard Analytics avec graphiques et tendances
+ * 4. Accès rapides aux fonctionnalités principales
+ * 5. Gestion du site (contenu, événements, paramètres)
+ * 6. Activité en direct (utilisateurs connectés)
+ * 7. Notifications récentes (dernières activités)
+ * 
+ * Fonctionnalités:
+ * - Statistiques en temps réel depuis Firebase
+ * - Suivi des utilisateurs actifs (15 dernières minutes)
+ * - Notifications des nouvelles activités
+ * - Navigation rapide vers toutes les sections
+ * - Design responsive et moderne
+ * 
+ * @author Perfect Models Management
+ * @version 2.0
+ */
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -12,12 +38,20 @@ import { useData } from '../contexts/DataContext';
 import { motion } from 'framer-motion';
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 
+/**
+ * Interface pour un utilisateur actif
+ */
 interface ActiveUser {
-    name: string;
-    role: string;
-    loginTime: number;
+    name: string;      // Nom de l'utilisateur
+    role: string;      // Rôle (admin, student, jury, registration)
+    loginTime: number; // Timestamp de connexion
 }
 
+/**
+ * Convertit un rôle technique en nom d'affichage français
+ * @param role - Rôle technique (admin, student, jury, registration)
+ * @returns Nom d'affichage en français
+ */
 const getRoleDisplayName = (role: string) => {
     switch (role) {
         case 'admin': return 'Administrateur';
@@ -29,6 +63,11 @@ const getRoleDisplayName = (role: string) => {
     }
 };
 
+/**
+ * Retourne les classes Tailwind CSS pour la couleur d'un rôle
+ * @param role - Rôle technique
+ * @returns Classes CSS pour background, text et border
+ */
 const getRoleColor = (role: string) => {
     switch (role) {
         case 'admin': return 'bg-red-500/20 text-red-300 border-red-500/30';
@@ -40,6 +79,11 @@ const getRoleColor = (role: string) => {
     }
 }
 
+/**
+ * Convertit une date en format relatif ("il y a X minutes")
+ * @param date - Date à convertir
+ * @returns Chaîne de caractères au format relatif
+ */
 const timeAgo = (date: Date) => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
     let interval = seconds / 31536000;
@@ -100,7 +144,7 @@ const Admin: React.FC = () => {
 
         const recentMessages = (data.contactMessages || [])
             .filter(msg => msg.status === 'Nouveau')
-            .map(msg => ({ type: 'message', text: `Nouveau message de ${msg.name}`, link: '/admin/messages', date: new Date(msg.submissionDate) }));
+            .map(msg => ({ type: 'message', text: `Nouveau message de ${msg.name}`, link: '/admin/messages', date: new Date(msg.timestamp) }));
 
         const allRecent = [...recentCasting, ...recentBookings, ...recentMessages]
             .sort((a, b) => b.date.getTime() - a.date.getTime())

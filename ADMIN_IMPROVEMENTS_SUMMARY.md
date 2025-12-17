@@ -42,7 +42,7 @@
 
 ## 📦 Fichiers Créés
 
-```
+```text
 src/components/admin/
 ├── GlobalSearch.tsx          (Nouveau)
 ├── NotificationCenter.tsx    (Nouveau)

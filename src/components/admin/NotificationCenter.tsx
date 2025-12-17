@@ -1,3 +1,23 @@
+/**
+ * NotificationCenter Component
+ * 
+ * Centre de notifications en temps réel pour le panel admin.
+ * Affiche toutes les nouvelles activités nécessitant l'attention de l'administrateur.
+ * 
+ * Fonctionnalités:
+ * - Notifications en temps réel depuis Firebase
+ * - 4 types de notifications: Casting, Booking, Messages, Perfect Fashion Day
+ * - Badge de compteur de notifications non lues
+ * - Marquer comme lu (individuellement ou en masse)
+ * - Liens directs vers les pages concernées
+ * - Horodatage relatif ("il y a X minutes")
+ * - Animations fluides avec Framer Motion
+ * - Raccourci clavier: Cmd/Ctrl + N
+ * 
+ * @author Perfect Models Management
+ * @version 2.0
+ */
+
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,19 +32,25 @@ import {
 } from '@heroicons/react/24/outline';
 import { useData } from '../../contexts/DataContext';
 
+/**
+ * Interface définissant la structure d'une notification
+ */
 interface Notification {
-    id: string;
-    type: 'casting' | 'booking' | 'message' | 'fashionday';
-    title: string;
-    description: string;
-    link: string;
-    date: Date;
-    read: boolean;
+    id: string;           // Identifiant unique (type-itemId)
+    type: 'casting' | 'booking' | 'message' | 'fashionday'; // Type de notification
+    title: string;        // Titre de la notification
+    description: string;  // Description détaillée
+    link: string;        // Lien vers la page concernée
+    date: Date;          // Date de création
+    read: boolean;       // Statut de lecture
 }
 
+/**
+ * Props du composant NotificationCenter
+ */
 interface NotificationCenterProps {
-    isOpen: boolean;
-    onClose: () => void;
+    isOpen: boolean;      // Contrôle l'affichage du panneau
+    onClose: () => void;  // Callback pour fermer le panneau
 }
 
 const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose }) => {
