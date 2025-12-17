@@ -1,3 +1,28 @@
+/**
+ * QuickActionsMenu Component
+ * 
+ * Menu d'actions rapides pour le panel admin.
+ * Permet d'accéder rapidement aux fonctionnalités les plus utilisées.
+ * 
+ * Fonctionnalités:
+ * - 6 actions rapides principales
+ * - Cartes avec gradients colorés pour différencier les catégories
+ * - Animations séquentielles d'apparition
+ * - Raccourci clavier: Cmd/Ctrl + P
+ * - Navigation directe vers les pages d'action
+ * 
+ * Actions disponibles:
+ * - Ajouter un mannequin
+ * - Créer un article de magazine
+ * - Créer un événement Perfect Fashion Day
+ * - Générer une image avec IA
+ * - Envoyer un email (campagne de mailing)
+ * - Enregistrer un paiement
+ * 
+ * @author Perfect Models Management
+ * @version 2.0
+ */
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,16 +33,18 @@ import {
     CalendarDaysIcon,
     SparklesIcon,
     EnvelopeIcon,
-    CurrencyDollarIcon,
-    PhotoIcon
+    CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 
+/**
+ * Interface définissant une action rapide
+ */
 interface QuickAction {
-    title: string;
-    description: string;
-    icon: React.ElementType;
-    link: string;
-    color: string;
+    title: string;        // Titre de l'action
+    description: string;  // Description courte
+    icon: React.ElementType; // Icône Heroicons
+    link: string;        // Lien de navigation
+    color: string;       // Classes Tailwind pour le gradient
 }
 
 const quickActions: QuickAction[] = [

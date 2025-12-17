@@ -1,3 +1,29 @@
+/**
+ * AnalyticsDashboard Component
+ * 
+ * Dashboard d'analytics avancé pour le panel admin.
+ * Affiche des statistiques en temps réel avec des indicateurs de tendance et des visualisations.
+ * 
+ * Fonctionnalités:
+ * - Statistiques en temps réel depuis Firebase
+ * - 4 cartes de métriques principales avec tendances
+ * - Graphiques d'activité avec barres de progression animées
+ * - Widget de revenus mensuels
+ * - Design moderne avec gradients et animations
+ * - Calcul automatique des tendances
+ * 
+ * Métriques affichées:
+ * - Total mannequins (avec tendance de croissance)
+ * - Candidatures casting (nouvelles/total)
+ * - Demandes booking (nouvelles/total)
+ * - Messages (nouveaux/total)
+ * - Revenus mensuels (FCFA)
+ * - Activité récente (graphiques)
+ * 
+ * @author Perfect Models Management
+ * @version 2.0
+ */
+
 import React, { useMemo } from 'react';
 import { useData } from '../../contexts/DataContext';
 import { motion } from 'framer-motion';
@@ -12,15 +38,18 @@ import {
     CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 
+/**
+ * Props pour une carte de statistique
+ */
 interface StatCardProps {
-    title: string;
-    value: number | string;
-    icon: React.ElementType;
-    trend?: {
-        value: number;
-        isPositive: boolean;
+    title: string;        // Titre de la métrique
+    value: number | string; // Valeur à afficher
+    icon: React.ElementType; // Icône Heroicons
+    trend?: {            // Tendance optionnelle
+        value: number;   // Pourcentage de variation
+        isPositive: boolean; // Direction de la tendance
     };
-    color: string;
+    color: string;       // Classes Tailwind pour le gradient
 }
 
 const AnalyticsStatCard: React.FC<StatCardProps> = ({ title, value, icon: Icon, trend, color }) => (
