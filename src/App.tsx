@@ -5,6 +5,9 @@ import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { PWAInstaller } from './components/PWAInstaller';
+import ScrollToTopButton from './components/ScrollToTop';
+import WhatsAppButton from './components/WhatsAppButton';
+import CookieConsent from './components/CookieConsent';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -233,6 +236,11 @@ const App: React.FC = () => {
                 <ScrollToTop />
                 <AppContent />
                 <PWAInstaller />
+
+                {/* New UX Improvements */}
+                <ScrollToTopButton />
+                <WhatsAppButton />
+                <CookieConsent />
             </BrowserRouter>
         </DataProvider>
     );
