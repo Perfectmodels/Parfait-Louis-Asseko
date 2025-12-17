@@ -1,32 +1,138 @@
-
-import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { MapPinIcon, EnvelopeIcon, PhoneIcon, PaperAirplaneIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
-// FIX: Corrected import path for BookingForm.
-import BookingForm from '../components/BookingForm';
-import { ContactMessage } from '../types';
+import { ContactMessage, BookingRequest } from '../types';
+import Button from '../components/ui/Button';
+
+// --- Sub-components ---
+
+const ContactHero: React.FC<{ image: string }> = ({ image }) => {
+    const ref = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start start", "end start"]
+    });
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+
+    return (
+        <div ref={ref} className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+            <motion.div
+                style={{ y, backgroundImage: `url('${image}')` }}
+                className="absolute inset-0 bg-cover bg-center"
+            />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+            <div className="relative z-10 text-center px-4">
+                <motion.span
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.8 }}
+                    className="block text-pm-gold uppercase tracking-[0.3em] mb-4 text-sm font-bold"
+                >
+                    Nous sommes à votre écoute
+                </motion.span>
+                <motion.h1
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4, duration: 0.8 }}
+                    className="text-5xl md:text-7xl font-playfair text-white mb-6"
+                >
+                    Contactez-nous
+                </motion.h1>
+            </div>
+        </div>
+    );
+};
+
+const ContactInput: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
+    <div className="relative group">
+        <input
+            {...props}
+            className="w-full bg-transparent border-b border-white/20 py-4 text-lg text-white placeholder-transparent focus:outline-none focus:border-pm-gold transition-colors peer"
+            placeholder={label}
+        />
+        <label
+            className="absolute left-0 top-4 text-gray-500 text-lg transition-all duration-300 pointer-events-none peer-focus:-top-2 peer-focus:text-xs peer-focus:text-pm-gold peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-gray-400"
+        >
+            {label}
+        </label>
+        <div className="absolute bottom-0 left-0 w-0 h-px bg-pm-gold transition-all duration-500 group-hover:w-full peer-focus:w-full" />
+    </div>
+);
+
+const ContactTextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }> = ({ label, ...props }) => (
+    <div className="relative group">
+        <textarea
+            {...props}
+            rows={4}
+            className="w-full bg-transparent border-b border-white/20 py-4 text-lg text-white placeholder-transparent focus:outline-none focus:border-pm-gold transition-colors peer resize-none"
+            placeholder={label}
+        />
+        <label
+            className="absolute left-0 top-4 text-gray-500 text-lg transition-all duration-300 pointer-events-none peer-focus:-top-2 peer-focus:text-xs peer-focus:text-pm-gold peer-not-placeholder-shown:-top-2 peer-not-placeholder-shown:text-xs peer-not-placeholder-shown:text-gray-400"
+        >
+            {label}
+        </label>
+        <div className="absolute bottom-0 left-0 w-0 h-px bg-pm-gold transition-all duration-500 group-hover:w-full peer-focus:w-full" />
+    </div>
+);
+
+const InfoCard: React.FC<{ icon: any, title: string, content: React.ReactNode, delay: number }> = ({ icon: Icon, title, content, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay, duration: 0.6 }}
+        className="bg-white/5 border border-white/10 p-6 rounded-xl backdrop-blur-sm hover:border-pm-gold/30 transition-colors group"
+    >
+        <div className="w-12 h-12 bg-pm-gold/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-pm-gold group-hover:text-black transition-colors text-pm-gold">
+            <Icon className="w-6 h-6" />
+        </div>
+        <h3 className="text-xl font-playfair text-white mb-2">{title}</h3>
+        <div className="text-gray-400 group-hover:text-gray-300 transition-colors">
+            {content}
+        </div>
+    </motion.div>
+);
+
+// --- Main Component ---
 
 const Contact: React.FC = () => {
-    const { data, saveData } = useData();
+    const { data, saveData, isInitialized } = useData();
     const location = useLocation();
-    const contactInfo = data?.contactInfo;
+
+    // Safety check
+    const contactInfo = data?.contactInfo || { address: "Libreville, Gabon", phone: "+241 00 00 00 00", email: "contact@example.com" };
     const socialLinks = data?.socialLinks;
-    
-    const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+
+    // Form State
+    const [requestType, setRequestType] = useState<'general' | 'booking' | 'partnership'>('general');
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        company: '',
+        requestedModels: '',
+        startDate: '',
+        endDate: '',
+        projectDetails: ''
+    });
+
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
-    
+
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const service = params.get('service');
         if (service) {
-            setFormData(prev => ({ ...prev, subject: `Demande de devis pour : ${service}` }));
+            setRequestType('booking');
+            setFormData(prev => ({ ...prev, subject: `Demande de devis pour : ${service}`, projectDetails: `Demande concernant le service : ${service}` }));
         }
     }, [location.search]);
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,141 +141,241 @@ const Contact: React.FC = () => {
 
         if (!data) {
             setStatus('error');
-            setStatusMessage('Erreur: Impossible de charger les données de l\'application.');
+            setStatusMessage('Erreur: Impossible de charger les données.');
             return;
         }
 
-        const newContactMessage: ContactMessage = {
-            id: `contact-${Date.now()}`,
-            submissionDate: new Date().toISOString(),
-            status: 'Nouveau',
-            name: formData.name,
-            email: formData.email,
-            subject: formData.subject,
-            message: formData.message,
-        };
-
         try {
-            const updatedMessages = [...(data.contactMessages || []), newContactMessage];
-            await saveData({ ...data, contactMessages: updatedMessages });
-            
+            if (requestType === 'booking') {
+                const newBooking: BookingRequest = {
+                    id: `booking-${Date.now()}`,
+                    submissionDate: new Date().toISOString(),
+                    status: 'Nouveau',
+                    clientName: formData.name,
+                    clientEmail: formData.email,
+                    clientCompany: formData.company,
+                    requestedModels: formData.requestedModels || 'Non spécifié',
+                    startDate: formData.startDate,
+                    endDate: formData.endDate,
+                    message: formData.message + (formData.projectDetails ? `\n\nDétails: ${formData.projectDetails}` : '')
+                };
+                const updatedBookings = [...(data.bookingRequests || []), newBooking];
+                await saveData({ ...data, bookingRequests: updatedBookings });
+            } else {
+                const newMessage: ContactMessage = {
+                    id: `contact-${Date.now()}`,
+                    submissionDate: new Date().toISOString(),
+                    status: 'Nouveau',
+                    name: formData.name,
+                    email: formData.email,
+                    subject: requestType === 'partnership' ? 'Demande de Partenariat' : formData.subject,
+                    message: formData.message
+                };
+                const updatedMessages = [...(data.contactMessages || []), newMessage];
+                await saveData({ ...data, contactMessages: updatedMessages });
+            }
+
             setStatus('success');
-            setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
-            setFormData({ name: '', email: '', subject: '', message: '' });
+            setStatusMessage('Votre demande a été envoyée avec succès !');
+            setFormData({
+                name: '', email: '', subject: '', message: '',
+                company: '', requestedModels: '', startDate: '', endDate: '', projectDetails: ''
+            });
         } catch (error) {
             setStatus('error');
-            setStatusMessage('Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer.');
-            console.error("Error saving contact message:", error);
+            setStatusMessage('Une erreur est survenue. Veuillez réessayer.');
+            console.error("Error saving message:", error);
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    return (
-        <div className="bg-pm-dark text-pm-off-white py-16 lg:py-24 min-h-screen">
-            <SEO 
-                title="Contact | Perfect Models Management"
-                description="Contactez-nous pour toute demande de booking, de partenariat ou d'information. L'équipe de Perfect Models Management est à votre disposition à Libreville, Gabon."
-                keywords="contacter agence mannequin, booking mannequin gabon, partenariat mode, pmm contact"
-                image={data?.siteImages.about}
-            />
-            <div className="container mx-auto px-6">
-                <div className="text-center">
-                    <h1 className="text-4xl sm:text-5xl font-playfair text-pm-gold mb-4">Contactez-nous</h1>
-                    <p className="max-w-2xl mx-auto text-pm-off-white/80">
-                        Une question, un projet de collaboration ou une demande de booking ? Notre équipe est à votre écoute.
-                    </p>
-                </div>
+    if (!isInitialized) return null;
 
-                <div className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-                    {/* Contact Info */}
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Nos Coordonnées</h2>
-                        {contactInfo && (
-                            <div className="space-y-4 text-lg">
-                                <InfoItem icon={MapPinIcon} text={contactInfo.address} />
-                                <InfoItem icon={PhoneIcon} text={contactInfo.phone} />
-                                <InfoItem icon={EnvelopeIcon} text={contactInfo.email} href={`mailto:${contactInfo.email}`} />
+    return (
+        <div className="bg-black min-h-screen text-white selection:bg-pm-gold selection:text-black">
+            <SEO
+                title="Contact | Perfect Models Management"
+                description="Contactez-nous pour toute demande de booking, de partenariat ou d'information."
+                keywords="contact, agence mannequin, booking, libreville"
+                image={data?.siteImages.contact}
+            />
+
+            <ContactHero image={data?.siteImages.contact || 'https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&q=80'} />
+
+            <div className="container mx-auto px-6 py-20">
+                <div className="flex flex-col lg:flex-row gap-16">
+
+                    {/* Left Column: Contact Info */}
+                    <div className="lg:w-1/3 space-y-8">
+                        <div>
+                            <h2 className="section-title text-left mb-6">Nos Coordonnées</h2>
+                            <p className="text-gray-400 mb-8">
+                                Une question ou un projet ? Choisissez le type de demande ci-contre et contactez-nous.
+                            </p>
+                        </div>
+                        <div className="grid gap-4">
+                            <InfoCard icon={MapPinIcon} title="Adresse" content={contactInfo.address} delay={0.1} />
+                            <InfoCard icon={PhoneIcon} title="Téléphone" content={contactInfo.phone} delay={0.2} />
+                            <InfoCard icon={EnvelopeIcon} title="Email" content={<a href={`mailto:${contactInfo.email}`} className="hover:text-pm-gold transition-colors">{contactInfo.email}</a>} delay={0.3} />
+                        </div>
+                        <div className="pt-8 border-t border-white/10">
+                            <h3 className="text-lg font-playfair text-white mb-4">Réseaux Sociaux</h3>
+                            <div className="flex gap-4">
+                                {socialLinks?.facebook && <a href={socialLinks.facebook} className="p-3 bg-white/5 rounded-full hover:bg-pm-gold hover:text-black transition-all hover:scale-110"><FacebookIcon className="w-5 h-5" /></a>}
+                                {socialLinks?.instagram && <a href={socialLinks.instagram} className="p-3 bg-white/5 rounded-full hover:bg-pm-gold hover:text-black transition-all hover:scale-110"><InstagramIcon className="w-5 h-5" /></a>}
+                                {socialLinks?.youtube && <a href={socialLinks.youtube} className="p-3 bg-white/5 rounded-full hover:bg-pm-gold hover:text-black transition-all hover:scale-110"><YoutubeIcon className="w-5 h-5" /></a>}
                             </div>
-                        )}
-                        <div className="mt-8 pt-6 border-t border-pm-gold/10">
-                            <h3 className="text-xl font-bold text-pm-off-white mb-4">Suivez-nous</h3>
-                            {socialLinks && (
-                                <div className="flex space-x-6">
-                                    {socialLinks.facebook && <SocialLink href={socialLinks.facebook} icon={FacebookIcon} />}
-                                    {socialLinks.instagram && <SocialLink href={socialLinks.instagram} icon={InstagramIcon} />}
-                                    {socialLinks.youtube && <SocialLink href={socialLinks.youtube} icon={YoutubeIcon} />}
-                                </div>
-                            )}
                         </div>
                     </div>
 
-                    {/* Contact Form */}
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6">Envoyez-nous un message</h2>
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <FormInput label="Votre Nom" name="name" value={formData.name} onChange={handleChange} required />
-                            <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-                            <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
-                            <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
-                            
-                            <div>
-                                <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
-                                    {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
+                    {/* Right Column: Unified Form */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        className="lg:w-2/3 bg-pm-dark/50 p-8 md:p-12 rounded-2xl border border-white/5 backdrop-blur-sm shadow-xl shadow-black/50"
+                    >
+                        <div className="flex items-center gap-3 mb-8">
+                            <ChatBubbleBottomCenterTextIcon className="w-6 h-6 text-pm-gold" />
+                            <h2 className="text-2xl font-playfair text-white">Nous écrire</h2>
+                        </div>
+
+                        {/* Request Type Selector */}
+                        <div className="flex flex-wrap gap-4 mb-8">
+                            {[
+                                { id: 'general', label: 'Renseignement' },
+                                { id: 'booking', label: 'Booking / Devis' },
+                                { id: 'partnership', label: 'Partenariat' }
+                            ].map((type) => (
+                                <button
+                                    key={type.id}
+                                    onClick={() => setRequestType(type.id as any)}
+                                    className={`px-6 py-2 rounded-full border transition-all duration-300 ${requestType === type.id
+                                            ? 'bg-pm-gold text-black border-pm-gold font-bold shadow-lg shadow-pm-gold/20'
+                                            : 'bg-transparent text-gray-400 border-white/20 hover:border-pm-gold hover:text-white'
+                                        }`}
+                                >
+                                    {type.label}
                                 </button>
+                            ))}
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            {/* Common Fields */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <ContactInput
+                                    label="Votre Nom Complet"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <ContactInput
+                                    label="Votre Email"
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
                             </div>
-                            
-                            {statusMessage && (
-                                <p className={`text-center text-sm p-3 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                                    {statusMessage}
-                                </p>
+
+                            {/* Booking Specific Fields */}
+                            {requestType === 'booking' && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    className="space-y-8 overflow-hidden"
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <ContactInput
+                                            label="Nom de la Société (Optionnel)"
+                                            name="company"
+                                            value={formData.company}
+                                            onChange={handleChange}
+                                        />
+                                        <ContactInput
+                                            label="Mannequin(s) souhaité(s)"
+                                            name="requestedModels"
+                                            value={formData.requestedModels}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="relative group">
+                                            <label className="block text-gray-400 text-sm mb-2">Date de début</label>
+                                            <input
+                                                type="date"
+                                                name="startDate"
+                                                value={formData.startDate}
+                                                onChange={handleChange}
+                                                className="w-full bg-white/5 border-b border-white/20 py-2 text-white focus:outline-none focus:border-pm-gold transition-colors"
+                                            />
+                                        </div>
+                                        <div className="relative group">
+                                            <label className="block text-gray-400 text-sm mb-2">Date de fin</label>
+                                            <input
+                                                type="date"
+                                                name="endDate"
+                                                value={formData.endDate}
+                                                onChange={handleChange}
+                                                className="w-full bg-white/5 border-b border-white/20 py-2 text-white focus:outline-none focus:border-pm-gold transition-colors"
+                                            />
+                                        </div>
+                                    </div>
+                                </motion.div>
                             )}
+
+                            {/* Subject Field */}
+                            {requestType === 'general' && (
+                                <ContactInput
+                                    label="Sujet"
+                                    name="subject"
+                                    value={formData.subject}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            )}
+
+                            <ContactTextArea
+                                label={requestType === 'booking' ? "Détails du projet" : "Votre Message"}
+                                name="message"
+                                value={formData.message}
+                                onChange={handleChange}
+                                required
+                            />
+
+                            <div className="pt-4 flex items-center justify-between">
+                                <Button
+                                    type="submit"
+                                    disabled={status === 'loading'}
+                                    isLoading={status === 'loading'}
+                                    icon={!status.startsWith('load') && <PaperAirplaneIcon className="w-5 h-5" />}
+                                    className="w-full md:w-auto min-w-[180px]"
+                                >
+                                    Envoyer
+                                </Button>
+
+                                {statusMessage && (
+                                    <motion.span
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className={`text-sm ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}
+                                    >
+                                        {statusMessage}
+                                    </motion.span>
+                                )}
+                            </div>
                         </form>
-                    </div>
+                    </motion.div>
                 </div>
-
-                <div className="mt-16 max-w-6xl mx-auto">
-                    <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg">
-                        <h2 className="text-3xl font-playfair text-pm-gold mb-6 text-center">Demande de Booking</h2>
-                        <p className="text-center text-pm-off-white/80 mb-8 -mt-4">
-                            Pour un ou plusieurs mannequins, ou pour tout autre projet.
-                        </p>
-                        <BookingForm />
-                    </div>
-                </div>
-
             </div>
         </div>
     );
 };
-
-const InfoItem: React.FC<{icon: React.ElementType, text: string, href?: string}> = ({ icon: Icon, text, href }) => (
-    <div className="flex items-start gap-4">
-        <Icon className="w-6 h-6 text-pm-gold mt-1 flex-shrink-0" />
-        {href ? <a href={href} className="hover:text-pm-gold transition-colors">{text}</a> : <span>{text}</span>}
-    </div>
-);
-
-const SocialLink: React.FC<{ href: string, icon: React.ElementType }> = ({ href, icon: Icon }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors">
-        <Icon className="w-8 h-8" />
-    </a>
-);
-
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <input {...props} id={props.name} className="admin-input" />
-    </div>
-);
-
-const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean}> = (props) => (
-    <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" />
-    </div>
-);
 
 export default Contact;

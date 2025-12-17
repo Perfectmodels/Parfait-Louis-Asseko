@@ -3,14 +3,19 @@ import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router
 import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
+import CloseIcon from './CloseIcon';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
 // FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
 
 const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ to, label, onClick, isMobile = false, isOpen = false, delay = 0 }) => {
   const mobileAnimationClasses = isMobile
-    ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
+    ? `transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
     : '';
+
+  const mobileLinkClasses = isMobile
+    ? "text-2xl font-playfair lowercase first-letter:uppercase py-3 border-b border-white/5 w-full block"
+    : "text-sm text-pm-off-white uppercase tracking-widest";
 
   return (
     <NavLink
@@ -18,18 +23,20 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
       onClick={onClick}
       end={to === '/'}
       className={({ isActive }) =>
-        `relative py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 group hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${mobileAnimationClasses} ` +
-        (isActive ? "text-pm-gold" : "")
+        `relative group transition-colors duration-300 hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${mobileLinkClasses} ${mobileAnimationClasses} ` +
+        (isActive ? "text-pm-gold" : "text-pm-off-white")
       }
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
       {({ isActive }) => (
         <>
-          {label}
-          <span
-            className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100'
-              }`}
-          />
+          <span className="relative z-10">{label}</span>
+          {!isMobile && (
+            <span
+              className={`absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ease-out ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100'
+                }`}
+            />
+          )}
         </>
       )}
     </NavLink>
@@ -48,34 +55,41 @@ const NavLinks: React.FC<{ onLinkClick?: () => void; navLinks: NavLinkType[]; is
           onClick={onLinkClick}
           isMobile={isMobile}
           isOpen={isOpen}
-          delay={isMobile ? 150 + index * 50 : 0}
+          delay={isMobile ? 100 + index * 50 : 0}
         />
       ))}
     </>
   );
 };
 
+// ... (LogoutButton remains similar but we can tweak it if needed, assuming it's fine for now or I'll include it to be safe)
+
 const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile?: boolean; isOpen?: boolean; delay?: number; }> = ({ onClick, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
   const mobileAnimationClasses = isMobile
-    ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
+    ? `transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
     : '';
+
+  const mobileButtonClasses = isMobile
+    ? "text-xl font-playfair lowercase first-letter:uppercase py-3 w-full border-b border-white/5 justify-start text-red-400 hover:text-red-300"
+    : "text-sm uppercase tracking-widest text-pm-off-white hover:text-pm-gold";
 
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 py-2 text-pm-off-white uppercase text-sm tracking-widest transition-colors duration-300 hover:text-pm-gold focus-style-self focus-visible:text-pm-gold ${className} ${mobileAnimationClasses}`}
+      className={`flex items-center gap-2 transition-colors duration-300 focus-style-self focus-visible:text-pm-gold ${className} ${mobileButtonClasses} ${mobileAnimationClasses}`}
       aria-label="Déconnexion"
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
-      <ArrowRightOnRectangleIcon className="w-5 h-5" />
+      <ArrowRightOnRectangleIcon className={isMobile ? "w-6 h-6" : "w-5 h-5"} />
       <span>Déconnexion</span>
     </button>
   );
 };
 
+// ... (SocialLinksComponent remains similar)
 const SocialLinksComponent: React.FC<{ socialLinks: SocialLinks | undefined; className?: string; isMobile?: boolean; isOpen?: boolean; delay?: number }> = ({ socialLinks, className = "", isMobile = false, isOpen = false, delay = 0 }) => {
   const mobileAnimationClasses = isMobile
-    ? `transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`
+    ? `transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`
     : '';
 
   if (!socialLinks || (!socialLinks.facebook && !socialLinks.instagram && !socialLinks.youtube)) {
@@ -84,15 +98,24 @@ const SocialLinksComponent: React.FC<{ socialLinks: SocialLinks | undefined; cla
 
   return (
     <div
-      className={`flex items-center gap-5 ${className} ${mobileAnimationClasses}`}
+      className={`flex items-center gap-8 ${className} ${mobileAnimationClasses}`}
       style={isMobile ? { transitionDelay: `${isOpen ? delay : 0}ms` } : {}}
     >
-      {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Facebook"><FacebookIcon className="w-6 h-6" /></a>}
-      {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="Instagram"><InstagramIcon className="w-6 h-6" /></a>}
-      {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors" aria-label="YouTube"><YoutubeIcon className="w-6 h-6" /></a>}
+      {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors transform hover:scale-110 duration-300" aria-label="Facebook"><FacebookIcon className="w-6 h-6" /></a>}
+      {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors transform hover:scale-110 duration-300" aria-label="Instagram"><InstagramIcon className="w-6 h-6" /></a>}
+      {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold transition-colors transform hover:scale-110 duration-300" aria-label="YouTube"><YoutubeIcon className="w-6 h-6" /></a>}
     </div>
   );
 };
+
+// ... (Breadcrumb remains same)
+// I will skip replacing Breadcrumb to avoid huge chunk, I will target Header specifically with replace_file_content if I can, but I need to replace Header component.
+// I'll grab the file content again and provide the replacement for Header component primarily.
+
+// Actually I need to be careful with replace_file_content rules. "Single contiguous block".
+// The changes are scattered in NavLinkItem, LogoutButton, and Header.
+// So I should use multi_replace_file_content.
+
 
 export const Breadcrumb: React.FC = () => {
   const location = useLocation();
@@ -217,7 +240,6 @@ const Header: React.FC = () => {
       const menu = mobileMenuRef.current;
       if (!menu) return;
 
-      // FIX: Proactively fix potential 'Untyped function calls may not accept type arguments' error by using type assertion instead of generic.
       const focusableElements = menu.querySelectorAll(focusableElementsQuery) as NodeListOf<HTMLElement>;
       if (focusableElements.length === 0) return;
 
@@ -305,20 +327,20 @@ const Header: React.FC = () => {
     }).filter((link): link is NavLinkType => link !== null);
   }, [navLinksFromData, userRole]);
 
-  const applyButtonDelay = 150 + processedNavLinks.length * 50;
-  const logoutButtonDelay = 150 + (processedNavLinks.length + 1) * 50;
-  const socialLinksDelay = 150 + (isLoggedIn ? processedNavLinks.length + 2 : processedNavLinks.length + 1) * 50;
+  const applyButtonDelay = 100 + processedNavLinks.length * 50;
+  const logoutButtonDelay = 100 + (processedNavLinks.length + 1) * 50;
+  const socialLinksDelay = 100 + (isLoggedIn ? processedNavLinks.length + 2 : processedNavLinks.length + 1) * 50;
 
 
   return (
     <>
       <header
-        className={`fixed top-8 left-0 right-0 z-40 transition-all duration-300 print-hide ${isScrolled ? 'bg-black/80 backdrop-blur-sm shadow-lg shadow-pm-gold/10' : 'bg-transparent'
+        className={`fixed top-0 lg:top-8 left-0 right-0 z-40 transition-all duration-300 print-hide ${isScrolled ? 'bg-black/80 backdrop-blur-md shadow-lg shadow-pm-gold/10' : 'bg-transparent'
           }`}
       >
-        <div className="container mx-auto px-6 h-16 lg:h-20 flex justify-between items-center transition-all duration-300">
+        <div className="container mx-auto px-6 h-20 lg:h-20 flex justify-between items-center transition-all duration-300">
           {siteConfig?.logo && (
-            <Link to="/" className="flex-shrink-0" onClick={() => setIsOpen(false)}>
+            <Link to="/" className="flex-shrink-0 relative z-50" onClick={() => setIsOpen(false)}>
               <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300 bg-black rounded-full border-2 border-pm-gold p-1" />
             </Link>
           )}
@@ -338,7 +360,13 @@ const Header: React.FC = () => {
           </nav>
 
           <div className="lg:hidden flex items-center">
-            <button ref={hamburgerButtonRef} onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">
+            <button ref={hamburgerButtonRef} onClick={() => setIsOpen(!isOpen)} className="text-pm-off-white z-50 p-2 -mr-2 relative" aria-label="Ouvrir le menu" aria-expanded={isOpen} aria-controls="mobile-menu-panel">
+              {/* Hide hamburger when open because we have a close button inside, or trigger animation. 
+                   Since we have a full drawer on right covering part of screen, keeping the hamburger might be confusing if it is covered. 
+                   But if header is transparent, we might see it? 
+                   Wait, the drawer has z-40. Header has z-40. 
+                   Actually, let's keep it simple. The drawer covers the right side. 
+                   So we rely on the close button inside. */}
               <AnimatedHamburgerIcon isOpen={isOpen} />
             </button>
           </div>
@@ -346,7 +374,7 @@ const Header: React.FC = () => {
       </header>
 
       <div
-        className={`lg:hidden fixed inset-0 z-30 transition-opacity duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
+        className={`lg:hidden fixed inset-0 z-40 transition-opacity duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
         aria-hidden={!isOpen}
       />
@@ -354,53 +382,57 @@ const Header: React.FC = () => {
       <div
         id="mobile-menu-panel"
         ref={mobileMenuRef}
-        className={`lg:hidden fixed top-0 right-0 w-4/5 max-w-sm h-full bg-pm-dark shadow-2xl shadow-pm-gold/10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] z-40 transform flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`lg:hidden fixed top-0 right-0 w-[85%] max-w-md h-full bg-black/95 backdrop-blur-2xl border-l border-pm-gold/10 shadow-2xl shadow-black/50 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] z-50 transform flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
         aria-hidden={!isOpen}
       >
-        <div className="flex justify-between items-center p-6 border-b border-pm-gold/20 h-24 flex-shrink-0">
-          <span id="mobile-menu-title" className="font-playfair text-xl text-pm-gold">Menu</span>
+        <div className="flex justify-between items-center p-6 border-b border-white/10 h-24 flex-shrink-0">
+          <span id="mobile-menu-title" className="font-playfair text-3xl text-pm-gold italic">Menu</span>
+          <button onClick={() => setIsOpen(false)} className="p-2 text-white/50 hover:text-white transition-colors">
+            <CloseIcon className="w-8 h-8" />
+          </button>
         </div>
-        <div className="flex-grow overflow-y-auto p-8">
-          <form onSubmit={handleMobileSearch} className="mb-8">
-            <div className="relative">
+
+        <div className="flex-grow overflow-y-auto p-8 scrollbar-hide">
+          <form onSubmit={handleMobileSearch} className="mb-10">
+            <div className="relative group">
               <input
                 type="search"
                 value={mobileSearch}
                 onChange={(e) => setMobileSearch(e.target.value)}
-                placeholder="Rechercher un mannequin..."
-                className="w-full bg-black border-2 border-pm-gold/50 rounded-full py-2 pl-10 pr-4 text-pm-off-white focus:outline-none focus:border-pm-gold transition-colors"
+                placeholder="Rechercher..."
+                className="w-full bg-white/5 border border-white/10 rounded-none border-b-2 border-b-pm-gold/50 py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-b-pm-gold focus:bg-white/10 transition-all text-lg font-playfair"
               />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="w-5 h-5 text-pm-gold/60" />
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <MagnifyingGlassIcon className="w-5 h-5 text-pm-gold/60 group-focus-within:text-pm-gold transition-colors" />
               </div>
             </div>
           </form>
 
-          <nav className="flex flex-col gap-6">
+          <nav className="flex flex-col gap-2">
             <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen} />
             <div
-              className={`text-center transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+              className={`pt-8 mt-4 text-center transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               style={{ transitionDelay: `${isOpen ? applyButtonDelay : 0}ms` }}
             >
               <Link
                 to="/casting-formulaire"
                 onClick={() => setIsOpen(false)}
-                className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white"
+                className="block w-full py-4 bg-pm-gold text-black font-bold uppercase tracking-widest text-sm transition-all duration-300 hover:bg-white shadow-lg shadow-pm-gold/20"
               >
-                Postuler
+                Postuler Maintenant
               </Link>
             </div>
             {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
           </nav>
         </div>
-        <div className="p-8 border-t border-pm-gold/20 flex-shrink-0">
+        <div className="p-8 border-t border-white/10 flex-shrink-0 bg-white/5">
           <SocialLinksComponent
             socialLinks={socialLinks}
-            className="justify-center"
+            className="justify-center gap-10"
             isMobile={true}
             isOpen={isOpen}
             delay={socialLinksDelay}

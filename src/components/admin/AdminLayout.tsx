@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { 
+import {
     HomeIcon, UsersIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
@@ -9,14 +9,15 @@ import {
     BookOpenIcon,
     PhotoIcon,
     MicrophoneIcon,
-    PaperAirplaneIcon
+    PaperAirplaneIcon,
+    GlobeAltIcon
 } from '@heroicons/react/24/outline';
 
 interface NavItemProps {
-  to: string;
-  icon: React.ElementType;
-  label: string;
-  onClick?: () => void;
+    to: string;
+    icon: React.ElementType;
+    label: string;
+    onClick?: () => void;
 }
 
 const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, onClick }) => (
@@ -25,10 +26,9 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, onClick }) => 
         end={to === '/admin'}
         onClick={onClick}
         className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-                isActive
-                    ? 'bg-pm-gold text-pm-dark'
-                    : 'text-pm-off-white/70 hover:bg-pm-gold/10 hover:text-pm-off-white'
+            `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${isActive
+                ? 'bg-pm-gold text-pm-dark'
+                : 'text-pm-off-white/70 hover:bg-pm-gold/10 hover:text-pm-off-white'
             }`
         }
     >
@@ -61,6 +61,7 @@ const navSections = [
             { to: '/admin/news', icon: PresentationChartLineIcon, label: 'Actualités' },
             { to: '/admin/agency', icon: BuildingStorefrontIcon, label: 'Page Agence' },
             { to: '/admin/fashion-day-events', icon: CalendarDaysIcon, label: 'Événements PFD' },
+            { to: '/admin/fashion-day-reservations', icon: ClipboardDocumentCheckIcon, label: 'Réservations PFD' },
             { to: '/admin/settings', icon: Cog6ToothIcon, label: 'Paramètres du Site' },
         ]
     },
@@ -78,12 +79,12 @@ const navSections = [
             { to: '/admin/classroom', icon: BookOpenIcon, label: 'Classroom Pro' },
             { to: '/admin/classroom-progress', icon: AcademicCapIcon, label: 'Suivi Pro' },
             { to: '/admin/model-access', icon: KeyIcon, label: 'Accès Pro' },
-            { to: '/admin/absences', icon: CalendarIcon, label: 'Suivi Absences'},
+            { to: '/admin/absences', icon: CalendarIcon, label: 'Suivi Absences' },
             { to: '/admin/payments', icon: CurrencyDollarIcon, label: 'Comptabilité' },
             { to: '/admin/artistic-direction', icon: PaintBrushIcon, label: 'Direction Artistique' },
         ]
     },
-     {
+    {
         title: 'Communication',
         links: [
             { to: '/admin/mailing', icon: PaperAirplaneIcon, label: 'Mailing' },
@@ -95,7 +96,18 @@ const navSections = [
 ];
 
 const Sidebar: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => (
-    <nav className="flex flex-col gap-y-6">
+    <nav className="flex flex-col gap-y-6 pb-10">
+        <div className="px-1">
+            <NavLink
+                to="/"
+                onClick={onLinkClick}
+                className="flex items-center justify-center gap-2 w-full bg-pm-gold/10 text-pm-gold hover:bg-pm-gold hover:text-black border border-pm-gold/20 hover:border-pm-gold py-3 rounded-md transition-all duration-300 group font-medium text-sm uppercase tracking-wide"
+            >
+                <GlobeAltIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span>Voir le Site</span>
+            </NavLink>
+        </div>
+
         {navSections.map(section => (
             <div key={section.title}>
                 <h3 className="px-3 text-xs font-semibold uppercase text-pm-off-white/50 tracking-wider mb-2">{section.title}</h3>
@@ -126,7 +138,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             {/* --- Mobile Sidebar --- */}
             <div className={`fixed inset-0 z-40 flex lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
-                 <div onClick={() => setSidebarOpen(false)} className={`fixed inset-0 bg-black/60 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`}/>
+                <div onClick={() => setSidebarOpen(false)} className={`fixed inset-0 bg-black/60 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} />
                 <div className={`relative flex-1 flex flex-col max-w-xs w-full bg-black border-r border-pm-gold/10 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="p-5 flex-grow overflow-y-auto">
                         <div className="flex items-center justify-between mb-8">
