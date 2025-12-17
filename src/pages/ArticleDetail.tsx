@@ -6,6 +6,7 @@ import { useData } from '../contexts/DataContext';
 import { ArticleContent, ArticleComment } from '../types';
 import { UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
+import ReadingProgress from '../components/ReadingProgress';
 
 const ArticleDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -136,6 +137,7 @@ const ArticleDetail: React.FC = () => {
   return (
     <>
       <SEO title={article.title} description={article.excerpt} image={article.imageUrl} schema={articleSchema} />
+      <ReadingProgress />
 
       <div className="bg-black text-white py-24 min-h-screen">
         <div className="container mx-auto px-4 max-w-4xl">
