@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, SiteConfig, FashionDayReservation } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, SiteConfig, FashionDayReservation, HeroSlide } from '../types';
 
 // Import initial data to seed the database if it's empty
 import {
@@ -47,6 +47,7 @@ export interface AppData {
     siteConfig: SiteConfig;
     navLinks: NavLink[];
     socialLinks: { facebook: string; instagram: string; youtube: string; };
+    heroSlides: HeroSlide[];
     agencyTimeline: { year: string; event: string; }[];
     agencyInfo: {
         about: { p1: string; p2: string; };
@@ -111,6 +112,52 @@ export const useDataStore = () => {
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,
         socialLinks: initialSocialLinks,
+        heroSlides: [
+            {
+                id: '1',
+                image: '/images/hero-1.jpg',
+                title: 'L\'Élégance',
+                subtitle: 'Redéfinie',
+                description: 'Agence de Mannequins & Événementiel',
+                cta: 'Devenir Mannequin',
+                ctaLink: '/casting-formulaire',
+                order: 1,
+                isActive: true
+            },
+            {
+                id: '2',
+                image: '/images/hero-2.jpg',
+                title: 'Votre Talent',
+                subtitle: 'Notre Passion',
+                description: 'Révélez votre potentiel avec Perfect Models',
+                cta: 'Découvrir',
+                ctaLink: '/agence',
+                order: 2,
+                isActive: true
+            },
+            {
+                id: '3',
+                image: '/images/hero-3.jpg',
+                title: 'Perfect Fashion',
+                subtitle: 'Day #2',
+                description: 'L\'événement mode incontournable de l\'année',
+                cta: 'Réserver',
+                ctaLink: '/fashion-day/reservation',
+                order: 3,
+                isActive: true
+            },
+            {
+                id: '4',
+                image: '/images/hero-4.jpg',
+                title: 'Excellence',
+                subtitle: 'Professionnelle',
+                description: 'Formation & Accompagnement sur mesure',
+                cta: 'En savoir plus',
+                ctaLink: '/services',
+                order: 4,
+                isActive: true
+            }
+        ],
         agencyTimeline: initialAgencyTimeline,
         agencyInfo: initialAgencyInfo,
         modelDistinctions: initialModelDistinctions,
@@ -145,6 +192,7 @@ export const useDataStore = () => {
                     testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
+                    heroSlides: (dbData.heroSlides && dbData.heroSlides.length > 0) ? dbData.heroSlides : initialData.heroSlides,
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
                 };
 
