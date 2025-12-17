@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { 
-    UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
-    ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
-    BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
-    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
+import {
+    UsersIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
+    ArrowRightOnRectangleIcon, PresentationChartLineIcon,
+    BuildingStorefrontIcon, BriefcaseIcon, EnvelopeIcon,
+    HomeIcon, CurrencyDollarIcon, PaintBrushIcon,
     SignalIcon, ArrowUpRightIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 import { motion } from 'framer-motion';
+import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 
 interface ActiveUser {
     name: string;
@@ -88,7 +89,7 @@ const Admin: React.FC = () => {
         const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
         const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
         const totalModels = data.models?.length || 0;
-        
+
         const recentCasting = (data.castingApplications || [])
             .filter(app => app.status === 'Nouveau')
             .map(app => ({ type: 'casting', text: `Nouvelle candidature de ${app.firstName} ${app.lastName}`, link: '/admin/casting-applications', date: new Date(app.submissionDate) }));
@@ -96,7 +97,7 @@ const Admin: React.FC = () => {
         const recentBookings = (data.bookingRequests || [])
             .filter(req => req.status === 'Nouveau')
             .map(req => ({ type: 'booking', text: `Demande de booking de ${req.clientName}`, link: '/admin/bookings', date: new Date(req.submissionDate) }));
-            
+
         const recentMessages = (data.contactMessages || [])
             .filter(msg => msg.status === 'Nouveau')
             .map(msg => ({ type: 'message', text: `Nouveau message de ${msg.name}`, link: '/admin/messages', date: new Date(msg.submissionDate) }));
@@ -104,10 +105,10 @@ const Admin: React.FC = () => {
         const allRecent = [...recentCasting, ...recentBookings, ...recentMessages]
             .sort((a, b) => b.date.getTime() - a.date.getTime())
             .slice(0, 5);
-            
+
         return { newCastingApps, newBookingRequests, newMessages, totalModels, recentActivities: allRecent };
     }, [data]);
-    
+
     const activityIconMap = {
         casting: ClipboardDocumentListIcon,
         booking: BriefcaseIcon,
@@ -137,27 +138,30 @@ const Admin: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <main className="lg:col-span-2 space-y-10">
+                        {/* Analytics Dashboard */}
+                        <AnalyticsDashboard className="mb-10" />
+
                         <Section title="Accès Rapides" icon={HomeIcon}>
-                            <DashboardCard title="Gérer les Mannequins" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou archiver des profils de mannequins."/>
+                            <DashboardCard title="Gérer les Mannequins" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou archiver des profils de mannequins." />
                             <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine." />
-                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo."/>
+                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo." />
                             <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels." />
                         </Section>
                         <Section title="Gestion du Site" icon={Cog6ToothIcon}>
-                           <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services et la chronologie." />
-                           <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
-                           <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier les actualités de la page d'accueil." />
-                           <DashboardCard title="Paramètres Généraux" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, logos et clés API." />
+                            <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services et la chronologie." />
+                            <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
+                            <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier les actualités de la page d'accueil." />
+                            <DashboardCard title="Paramètres Généraux" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, logos et clés API." />
                         </Section>
                     </main>
 
                     <aside className="lg:col-span-1 space-y-8">
                         <div className="admin-section-wrapper">
-                            <h2 className="admin-section-title flex items-center gap-2"><SignalIcon className="w-6 h-6"/>Activité en Direct</h2>
+                            <h2 className="admin-section-title flex items-center gap-2"><SignalIcon className="w-6 h-6" />Activité en Direct</h2>
                             {activeUsers.length > 0 ? (
                                 <ul className="space-y-3">
                                     {activeUsers.map(user => (
-                                        <li key={user.name} className="flex items-center gap-3 bg-pm-dark/50 p-2 rounded-md border-l-4" style={{borderColor: getRoleColor(user.role).match(/border-([a-z]+)-(\d+)/)?.[0].replace('border-','')}}>
+                                        <li key={user.name} className="flex items-center gap-3 bg-pm-dark/50 p-2 rounded-md border-l-4" style={{ borderColor: getRoleColor(user.role).match(/border-([a-z]+)-(\d+)/)?.[0].replace('border-', '') }}>
                                             <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 animate-pulse"></span>
                                             <div>
                                                 <p className="font-semibold text-sm truncate">{user.name}</p>
@@ -171,26 +175,27 @@ const Admin: React.FC = () => {
                             )}
                         </div>
                         <div className="admin-section-wrapper">
-                             <h2 className="admin-section-title flex items-center gap-2">Notifications Récentes</h2>
-                             {stats.recentActivities.length > 0 ? (
+                            <h2 className="admin-section-title flex items-center gap-2">Notifications Récentes</h2>
+                            {stats.recentActivities.length > 0 ? (
                                 <ul className="space-y-3">
                                     {stats.recentActivities.map((activity, index) => {
                                         const Icon = activityIconMap[activity.type as keyof typeof activityIconMap];
                                         return (
-                                        <li key={index}>
-                                            <Link to={activity.link} className="flex items-start gap-3 p-2 rounded-md hover:bg-pm-dark/50">
-                                                <Icon className="w-5 h-5 text-pm-gold/80 mt-1 flex-shrink-0" />
-                                                <div>
-                                                    <p className="text-sm leading-tight">{activity.text}</p>
-                                                    <p className="text-xs text-pm-off-white/60">{timeAgo(activity.date)}</p>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                    )})}
+                                            <li key={index}>
+                                                <Link to={activity.link} className="flex items-start gap-3 p-2 rounded-md hover:bg-pm-dark/50">
+                                                    <Icon className="w-5 h-5 text-pm-gold/80 mt-1 flex-shrink-0" />
+                                                    <div>
+                                                        <p className="text-sm leading-tight">{activity.text}</p>
+                                                        <p className="text-xs text-pm-off-white/60">{timeAgo(activity.date)}</p>
+                                                    </div>
+                                                </Link>
+                                            </li>
+                                        )
+                                    })}
                                 </ul>
-                             ) : (
+                            ) : (
                                 <p className="text-sm text-center py-4 text-pm-off-white/60">Aucune nouvelle notification.</p>
-                             )}
+                            )}
                         </div>
                     </aside>
                 </div>
@@ -201,7 +206,7 @@ const Admin: React.FC = () => {
 
 const Section: React.FC<{ title: string; icon: React.ElementType; children: React.ReactNode; }> = ({ title, icon: Icon, children }) => (
     <section>
-        <h2 className="admin-section-title flex items-center gap-3"><Icon className="w-6 h-6"/>{title}</h2>
+        <h2 className="admin-section-title flex items-center gap-3"><Icon className="w-6 h-6" />{title}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {children}
         </div>
@@ -220,11 +225,11 @@ const StatCard: React.FC<{ title: string; value: number; icon: React.ElementType
     </motion.div>
 );
 
-const DashboardCard: React.FC<{ title: string; icon: React.ElementType; link: string; description: string;}> = ({ title, icon: Icon, link, description }) => (
+const DashboardCard: React.FC<{ title: string; icon: React.ElementType; link: string; description: string; }> = ({ title, icon: Icon, link, description }) => (
     <Link to={link} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-1 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
         <div className="flex justify-between items-start">
             <Icon className="w-8 h-8 text-pm-gold mb-4 transition-transform group-hover:scale-110" />
-            <ArrowUpRightIcon className="w-5 h-5 text-pm-off-white/40 transition-all duration-300 group-hover:text-pm-gold group-hover:translate-x-1 group-hover:-translate-y-1"/>
+            <ArrowUpRightIcon className="w-5 h-5 text-pm-off-white/40 transition-all duration-300 group-hover:text-pm-gold group-hover:translate-x-1 group-hover:-translate-y-1" />
         </div>
         <h3 className="text-lg font-bold text-pm-off-white group-hover:text-pm-gold transition-colors mb-1">{title}</h3>
         <p className="text-xs text-pm-off-white/70 leading-relaxed">{description}</p>
