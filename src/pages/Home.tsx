@@ -58,56 +58,88 @@ const ParallaxHero: React.FC<{ image: string, event: any }> = ({ image, event })
           <Link to="/casting-formulaire">
             <Button className="min-w-[200px]">Devenir Mannequin</Button>
           </Link>
-          <Link to="/agence">
-            <Button variant="outline" className="min-w-[200px]">Découvrir l'Agence</Button>
-          </Link>
         </motion.div>
       </motion.div>
 
-      {/* Event Countdown Banner */}
-      {event && (
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="absolute bottom-0 w-full bg-gradient-to-t from-black to-transparent pt-20 pb-8 px-6"
-        >
-          <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/10 pt-6">
-            <div className="text-center md:text-left flex-1">
-              <h3 className="text-pm-gold font-playfair text-xl">Perfect Fashion Day</h3>
-              <p className="text-sm text-gray-400">Édition {event.edition} • {new Date(event.date).toLocaleDateString()}</p>
+      {/* Premium Event Card - Floating Glassmorphism Design */}
+      <motion.div
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.8, duration: 1, type: "spring", bounce: 0.2 }}
+        className="absolute bottom-0 left-0 right-0 z-20 px-4 pb-4 md:pb-8 pointer-events-none"
+      >
+        <div className="max-w-5xl mx-auto bg-black/60 backdrop-blur-xl border border-pm-gold/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-2xl shadow-black/50 pointer-events-auto relative overflow-hidden group">
+
+          {/* Animated Glow Effect */}
+          <div className="absolute top-0 left-[-100%] w-[150%] h-full bg-gradient-to-r from-transparent via-pm-gold/10 to-transparent transform skew-x-12 animate-shine" />
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 px-4 md:px-8 py-4">
+
+            {/* Left: Event Info */}
+            <div className="flex items-center gap-6 text-center md:text-left">
+              <div className="hidden md:flex flex-col items-center justify-center w-16 h-16 bg-pm-gold text-black rounded-full font-bold shadow-lg shadow-pm-gold/20">
+                <span className="text-xs uppercase tracking-tighter leading-none">JAN</span>
+                <span className="text-2xl font-playfair leading-none">31</span>
+              </div>
+
+              <div className="flex flex-col items-center md:items-start">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-pm-gold">Billetterie Ouverte</span>
+                </div>
+                <h3 className="text-white font-playfair text-2xl md:text-3xl">
+                  Perfect Fashion Day <span className="text-pm-gold italic">#2</span>
+                </h3>
+                <p className="text-gray-400 text-sm italic">"L'Art de se révéler" • Hôtel Restaurant Bar Casino</p>
+              </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <CountdownTimer targetDate={event.date} />
-              <Link to="/fashion-day/reservation">
+            {/* Right: Countdown & Action */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full md:w-auto">
+              <div className="hidden lg:block">
+                {event && <CountdownTimer targetDate={event.date || "2026-01-31T18:00:00"} />}
+              </div>
+
+              <Link to="/fashion-day/reservation" className="w-full sm:w-auto">
                 <Button
-                  className="animate-glow shadow-lg shadow-pm-gold/20"
+                  className="w-full sm:w-auto bg-pm-gold text-black hover:bg-white transition-all duration-300 shadow-lg shadow-pm-gold/20 rounded-full px-8"
                   icon={<TicketIcon className="w-5 h-5" />}
                 >
-                  Réserver ma Place
+                  Réserver
                 </Button>
               </Link>
             </div>
           </div>
-        </motion.div>
-      )}
+        </div>
+      </motion.div>
     </div>
   );
 };
 
 const Marquee: React.FC = () => {
+  // Services list for the marquee
+  const services = [
+    "Mannequinat", "Hôtessariat", "Organisation d'Événements", "Shooting Photo",
+    "Production Audiovisuelle", "Casting", "Formation", "Direction Artistique", "Conseil en Image"
+  ];
+
   return (
     <div className="bg-pm-gold py-4 overflow-hidden whitespace-nowrap relative z-20">
       <motion.div
         className="inline-block text-black font-bold text-lg tracking-widest uppercase"
         animate={{ x: [0, -1000] }}
-        transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+        transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
       >
-        <span className="mx-8">Fashion</span>•<span className="mx-8">Mode</span>•<span className="mx-8">Élégance</span>•<span className="mx-8">Style</span>•
-        <span className="mx-8">Casting</span>•<span className="mx-8">Events</span>•<span className="mx-8">Models</span>•<span className="mx-8">Luxury</span>•
-        <span className="mx-8">Fashion</span>•<span className="mx-8">Mode</span>•<span className="mx-8">Élégance</span>•<span className="mx-8">Style</span>•
-        <span className="mx-8">Casting</span>•<span className="mx-8">Events</span>•<span className="mx-8">Models</span>•<span className="mx-8">Luxury</span>•
+        {/* Repeat the list multiple times to ensure continuous scroll */}
+        {[...Array(4)].map((_, i) => (
+          <React.Fragment key={i}>
+            {services.map((service, index) => (
+              <span key={`${i}-${index}`} className="mx-8 flex-inline items-center">
+                {service} <span className="ml-8 text-black/40">•</span>
+              </span>
+            ))}
+          </React.Fragment>
+        ))}
       </motion.div>
     </div>
   );

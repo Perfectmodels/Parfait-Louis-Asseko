@@ -43,8 +43,10 @@ const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
 const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
 const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
 const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
+const AdminFashionDayReservations = lazy(() => import('./pages/admin/AdminFashionDayReservations'));
 // FIX: Corrected import paths for Admin pages to resolve module not found errors.
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
+const AdminContentEditor = lazy(() => import('./pages/admin/AdminContentEditor'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
 const AdminNews = lazy(() => import('./pages/AdminNews'));
@@ -148,6 +150,10 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
                     <Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
                     <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
+                    <Route path="/admin/magazine/create" element={<ProtectedRoute role="admin"><AdminContentEditor /></ProtectedRoute>} />
+                    <Route path="/admin/magazine/edit/:slug" element={<ProtectedRoute role="admin"><AdminContentEditor /></ProtectedRoute>} />
+                    <Route path="/admin/news/create" element={<ProtectedRoute role="admin"><AdminContentEditor /></ProtectedRoute>} />
+                    <Route path="/admin/news/edit/:slug" element={<ProtectedRoute role="admin"><AdminContentEditor /></ProtectedRoute>} />
                     <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
                     <Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
                     <Route path="/admin/agency" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />
@@ -155,6 +161,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/casting-results" element={<ProtectedRoute role="admin"><AdminCastingResults /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
+                    <Route path="/admin/fashion-day-reservations" element={<ProtectedRoute role="admin"><AdminFashionDayReservations /></ProtectedRoute>} />
                     <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                     <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />

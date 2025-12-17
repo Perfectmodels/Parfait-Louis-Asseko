@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, SiteConfig } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, SiteConfig, FashionDayReservation } from '../types';
 
 // Import initial data to seed the database if it's empty
 import {
@@ -66,6 +66,7 @@ export interface AppData {
     apiKeys: ApiKeys;
     castingApplications: CastingApplication[];
     fashionDayApplications: FashionDayApplication[];
+    fashionDayReservations: FashionDayReservation[];
     newsItems: NewsItem[];
     forumThreads: ForumThread[];
     forumReplies: ForumReply[];
@@ -95,6 +96,7 @@ export const useDataStore = () => {
         apiKeys: initialApiKeys,
         castingApplications: initialCastingApplications,
         fashionDayApplications: initialFashionDayApplications,
+        fashionDayReservations: [],
         forumThreads: initialForumThreads,
         forumReplies: initialForumReplies,
         articleComments: initialArticleComments,

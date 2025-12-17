@@ -7,7 +7,7 @@
 - **Thème:** "L'Art de se révéler"
 - **Lieu:** La Gare du Nord – Hôtel Restaurant Bar Casino, Carrefour Acaé
 
-### 👗 **Stylistes Participants (9)**
+### 👗 **Stylistes Participants (12)**
 
 1. **Evo Style Creations**
 2. **Rabibi**

@@ -648,3 +648,23 @@ export interface NavLink {
   inFooter: boolean;
   footerLabel?: string;
 }
+
+export type FashionDayTicketType = 'VIP' | 'Standard' | 'Table' | 'Autre';
+export type FashionDayReservationStatus = 'En attente' | 'Confirmée' | 'Payée' | 'Annulée';
+
+export interface FashionDayReservation {
+  id: string;
+  submissionDate: string;
+  name: string;
+  email: string;
+  phone: string;
+  ticketType: FashionDayTicketType;
+  numberOfTickets: number;
+  totalAmount: number;
+  status: FashionDayReservationStatus;
+  paymentMethod?: 'Mobile Money' | 'Virement' | 'Espèces' | 'Carte';
+  paymentReference?: string;
+  specialRequests?: string;
+  edition: number; // Fashion Day edition number
+}
+
