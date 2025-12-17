@@ -12,53 +12,149 @@ import Button from '../components/ui/Button';
 
 // --- Sub-components ---
 
-const ParallaxHero: React.FC<{ image: string, event: any }> = ({ image, event }) => {
+// Hero Slides Data
+const heroSlides = [
+  {
+    image: '/images/hero-1.jpg', // Remplacer par vos vraies images
+    title: 'L\'Élégance',
+    subtitle: 'Redéfinie',
+    description: 'Agence de Mannequins & Événementiel',
+    cta: 'Devenir Mannequin',
+    ctaLink: '/casting-formulaire'
+  },
+  {
+    image: '/images/hero-2.jpg',
+    title: 'Votre Talent',
+    subtitle: 'Notre Passion',
+    description: 'Révélez votre potentiel avec Perfect Models',
+    cta: 'Découvrir',
+    ctaLink: '/agence'
+  },
+  {
+    image: '/images/hero-3.jpg',
+    title: 'Perfect Fashion',
+    subtitle: 'Day #2',
+    description: 'L\'événement mode incontournable de l\'année',
+    cta: 'Réserver',
+    ctaLink: '/fashion-day/reservation'
+  },
+  {
+    image: '/images/hero-4.jpg',
+    title: 'Excellence',
+    subtitle: 'Professionnelle',
+    description: 'Formation & Accompagnement sur mesure',
+    cta: 'En savoir plus',
+    ctaLink: '/services'
+  }
+];
+
+const DynamicHero: React.FC<{ event: any }> = ({ event }) => {
+  const [currentSlide, setCurrentSlide] = React.useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = React.useState(true);
   const ref = useRef(null);
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"]
   });
+
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
+  // Auto-play slides
+  React.useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000); // Change every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
+    // Resume auto-play after 10 seconds
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const currentSlideData = heroSlides[currentSlide];
+
   return (
     <div ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
-      <motion.div
-        style={{ y, backgroundImage: `url('${image}')` }}
-        className="absolute inset-0 bg-cover bg-center"
-      />
+      {/* Background Images with Parallax */}
+      {heroSlides.map((slide, index) => (
+        <motion.div
+          key={index}
+          style={{
+            y: index === currentSlide ? y : 0,
+            backgroundImage: `url('${slide.image}')`
+          }}
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: index === currentSlide ? 1 : 0,
+            scale: index === currentSlide ? 1 : 1.1
+          }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+          className="absolute inset-0 bg-cover bg-center"
+        />
+      ))}
+
       <div className="absolute inset-0 bg-black/40" />
 
+      {/* Content */}
       <motion.div
         style={{ opacity }}
         className="relative z-10 text-center px-4 max-w-5xl mx-auto"
       >
         <motion.span
+          key={`desc-${currentSlide}`}
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           className="block text-pm-gold uppercase tracking-[0.3em] mb-4 text-sm md:text-base font-bold"
         >
-          Agence de Mannequins & Événementiel
+          {currentSlideData.description}
         </motion.span>
+
         <motion.h1
+          key={`title-${currentSlide}`}
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           className="text-6xl md:text-8xl lg:text-9xl font-playfair text-white mb-6 leading-tight"
         >
-          L'Élégance <br /><span className="italic text-pm-gold">Redéfinie</span>
+          {currentSlideData.title} <br />
+          <span className="italic text-pm-gold">{currentSlideData.subtitle}</span>
         </motion.h1>
+
         <motion.div
+          key={`cta-${currentSlide}`}
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10"
         >
-          <Link to="/casting-formulaire">
-            <Button className="min-w-[200px]">Devenir Mannequin</Button>
+          <Link to={currentSlideData.ctaLink}>
+            <Button className="min-w-[200px]">{currentSlideData.cta}</Button>
           </Link>
         </motion.div>
+
+        {/* Slide Indicators */}
+        <div className="flex items-center justify-center gap-3 mt-12">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`transition-all duration-300 ${index === currentSlide
+                ? 'w-12 h-2 bg-pm-gold'
+                : 'w-2 h-2 bg-white/40 hover:bg-white/60'
+                } rounded-full`}
+              aria-label={`Aller au slide ${index + 1}`}
+            />
+          ))}
+        </div>
       </motion.div>
 
       {/* Premium Event Card - Floating Glassmorphism Design */}
@@ -258,7 +354,7 @@ const Home: React.FC = () => {
         schema={organizationSchema}
       />
 
-      <ParallaxHero image={siteImages.hero} event={nextEvent} />
+      <DynamicHero event={nextEvent} />
       <Marquee />
 
       <EditorialSection
