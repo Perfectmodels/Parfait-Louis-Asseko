@@ -397,7 +397,8 @@ const Header: React.FC = () => {
         </div>
 
         <div className="flex-grow overflow-y-auto p-8 scrollbar-hide">
-          <form onSubmit={handleMobileSearch} className="mb-10">
+          {/* Search Bar */}
+          <form onSubmit={handleMobileSearch} className="mb-8">
             <div className="relative group">
               <input
                 type="search"
@@ -412,21 +413,87 @@ const Header: React.FC = () => {
             </div>
           </form>
 
+          {/* Main Navigation */}
           <nav className="flex flex-col gap-2">
             <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen} />
-            <div
-              className={`pt-8 mt-4 text-center transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-              style={{ transitionDelay: `${isOpen ? applyButtonDelay : 0}ms` }}
-            >
+
+            {/* Additional Pages Section */}
+            <div className={`mt-6 pt-6 border-t border-white/10 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+              style={{ transitionDelay: `${isOpen ? 100 + processedNavLinks.length * 50 : 0}ms` }}>
+              <p className="text-xs uppercase tracking-widest text-pm-gold/60 mb-4 font-bold">Plus</p>
+              <div className="flex flex-col gap-2">
+                <NavLinkItem
+                  to="/services"
+                  label="Nos Services"
+                  onClick={() => setIsOpen(false)}
+                  isMobile={true}
+                  isOpen={isOpen}
+                  delay={100 + (processedNavLinks.length + 1) * 50}
+                />
+                <NavLinkItem
+                  to="/casting"
+                  label="Casting"
+                  onClick={() => setIsOpen(false)}
+                  isMobile={true}
+                  isOpen={isOpen}
+                  delay={100 + (processedNavLinks.length + 2) * 50}
+                />
+                <NavLinkItem
+                  to="/fashion-day/reservation"
+                  label="Réserver PFD"
+                  onClick={() => setIsOpen(false)}
+                  isMobile={true}
+                  isOpen={isOpen}
+                  delay={100 + (processedNavLinks.length + 3) * 50}
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className={`mt-8 space-y-3 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+              style={{ transitionDelay: `${isOpen ? 100 + (processedNavLinks.length + 4) * 50 : 0}ms` }}>
               <Link
                 to="/casting-formulaire"
                 onClick={() => setIsOpen(false)}
-                className="block w-full py-4 bg-pm-gold text-black font-bold uppercase tracking-widest text-sm transition-all duration-300 hover:bg-white shadow-lg shadow-pm-gold/20"
+                className="block w-full py-4 bg-pm-gold text-black font-bold uppercase tracking-widest text-sm transition-all duration-300 hover:bg-white shadow-lg shadow-pm-gold/20 text-center"
               >
-                Postuler Maintenant
+                Devenir Mannequin
+              </Link>
+
+              <Link
+                to="/fashion-day/reservation"
+                onClick={() => setIsOpen(false)}
+                className="block w-full py-4 bg-transparent border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm transition-all duration-300 hover:bg-pm-gold hover:text-black text-center"
+              >
+                Réserver PFD
+              </Link>
+
+              <Link
+                to="/contact"
+                onClick={() => setIsOpen(false)}
+                className="block w-full py-4 bg-white/5 border border-white/20 text-white font-bold uppercase tracking-widest text-sm transition-all duration-300 hover:bg-white/10 text-center"
+              >
+                Nous Contacter
               </Link>
             </div>
-            {isLoggedIn && <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={logoutButtonDelay} />}
+
+            {/* Admin/Logout */}
+            {!isLoggedIn ? (
+              <div className={`mt-6 pt-6 border-t border-white/10 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                style={{ transitionDelay: `${isOpen ? 100 + (processedNavLinks.length + 7) * 50 : 0}ms` }}>
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full py-3 text-center text-pm-gold/70 border border-pm-gold/30 font-medium uppercase tracking-widest text-xs transition-all duration-300 hover:bg-pm-gold/10 hover:text-pm-gold"
+                >
+                  Admin Panel
+                </Link>
+              </div>
+            ) : (
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <LogoutButton onClick={handleLogout} isMobile={true} isOpen={isOpen} delay={100 + (processedNavLinks.length + 7) * 50} />
+              </div>
+            )}
           </nav>
         </div>
         <div className="p-8 border-t border-white/10 flex-shrink-0 bg-white/5">
@@ -435,7 +502,7 @@ const Header: React.FC = () => {
             className="justify-center gap-10"
             isMobile={true}
             isOpen={isOpen}
-            delay={socialLinksDelay}
+            delay={100 + (processedNavLinks.length + 8) * 50}
           />
         </div>
       </div>
