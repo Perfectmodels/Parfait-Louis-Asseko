@@ -40,7 +40,7 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
             transition={{ delay: 1, type: 'spring', stiffness: 260, damping: 20 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="fixed bottom-8 left-8 z-40 w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-shadow duration-300 group"
+            className="fixed bottom-8 left-8 z-30 w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-shadow duration-300 group"
             aria-label="Contacter sur WhatsApp"
         >
             {/* Icône WhatsApp */}
