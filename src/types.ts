@@ -113,6 +113,18 @@ export interface SocialLinks {
   youtube: string;
 }
 
+export interface HeroSlide {
+  id: string;
+  image: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  cta: string;
+  ctaLink: string;
+  order: number;
+  isActive: boolean;
+}
+
 export interface Service {
   slug: string;
   icon: string;

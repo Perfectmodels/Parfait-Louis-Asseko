@@ -12,43 +12,7 @@ import Button from '../components/ui/Button';
 
 // --- Sub-components ---
 
-// Hero Slides Data
-const heroSlides = [
-  {
-    image: '/images/hero-1.jpg', // Remplacer par vos vraies images
-    title: 'L\'Élégance',
-    subtitle: 'Redéfinie',
-    description: 'Agence de Mannequins & Événementiel',
-    cta: 'Devenir Mannequin',
-    ctaLink: '/casting-formulaire'
-  },
-  {
-    image: '/images/hero-2.jpg',
-    title: 'Votre Talent',
-    subtitle: 'Notre Passion',
-    description: 'Révélez votre potentiel avec Perfect Models',
-    cta: 'Découvrir',
-    ctaLink: '/agence'
-  },
-  {
-    image: '/images/hero-3.jpg',
-    title: 'Perfect Fashion',
-    subtitle: 'Day #2',
-    description: 'L\'événement mode incontournable de l\'année',
-    cta: 'Réserver',
-    ctaLink: '/fashion-day/reservation'
-  },
-  {
-    image: '/images/hero-4.jpg',
-    title: 'Excellence',
-    subtitle: 'Professionnelle',
-    description: 'Formation & Accompagnement sur mesure',
-    cta: 'En savoir plus',
-    ctaLink: '/services'
-  }
-];
-
-const DynamicHero: React.FC<{ event: any }> = ({ event }) => {
+const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides }) => {
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = React.useState(true);
   const ref = useRef(null);
@@ -61,16 +25,21 @@ const DynamicHero: React.FC<{ event: any }> = ({ event }) => {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
+  // Filter active slides and sort by order
+  const activeSlides = slides
+    .filter(slide => slide.isActive)
+    .sort((a, b) => a.order - b.order);
+
   // Auto-play slides
   React.useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || activeSlides.length === 0) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+      setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
     }, 5000); // Change every 5 seconds
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, activeSlides.length]);
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
@@ -79,12 +48,16 @@ const DynamicHero: React.FC<{ event: any }> = ({ event }) => {
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
-  const currentSlideData = heroSlides[currentSlide];
+  if (activeSlides.length === 0) {
+    return null;
+  }
+
+  const currentSlideData = activeSlides[currentSlide];
 
   return (
     <div ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Images with Parallax */}
-      {heroSlides.map((slide, index) => (
+      {activeSlides.map((slide, index) => (
         <motion.div
           key={index}
           style={{
@@ -143,7 +116,7 @@ const DynamicHero: React.FC<{ event: any }> = ({ event }) => {
 
         {/* Slide Indicators */}
         <div className="flex items-center justify-center gap-3 mt-12">
-          {heroSlides.map((_, index) => (
+          {activeSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
@@ -330,7 +303,7 @@ const Home: React.FC = () => {
     return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
   }
 
-  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices } = data;
+  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, heroSlides } = data;
   const publicModels = models.filter(m => m.isPublic).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
 
@@ -354,7 +327,7 @@ const Home: React.FC = () => {
         schema={organizationSchema}
       />
 
-      <DynamicHero event={nextEvent} />
+      <DynamicHero event={nextEvent} slides={heroSlides || []} />
       <Marquee />
 
       <EditorialSection
