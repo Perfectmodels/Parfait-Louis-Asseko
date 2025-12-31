@@ -20,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   
   // Sinon, on utilise le layout public standard.
   return (
-    <div className="bg-pm-dark min-h-screen flex flex-col font-montserrat">
+    <div className="bg-white min-h-screen flex flex-col font-montserrat text-gray-900">
       <Marquee />
       <Header />
       <main className="flex-grow pt-24 lg:pt-28">

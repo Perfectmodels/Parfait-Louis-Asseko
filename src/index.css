@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-pm-dark text-pm-off-white font-montserrat antialiased;
+    @apply bg-white text-gray-900 font-montserrat antialiased;
   }
 
   @media print {
@@ -24,7 +24,7 @@
 
 @layer components {
   .card-base {
-    @apply bg-black border border-pm-gold/20 transition-all duration-300;
+    @apply bg-white border border-pm-gold/20 shadow-lg transition-all duration-300 hover:shadow-xl;
   }
 
   .page-container {
@@ -36,7 +36,7 @@
   }
 
   .page-subtitle {
-    @apply text-center text-lg max-w-3xl mx-auto mb-12 text-pm-off-white/80;
+    @apply text-center text-lg max-w-3xl mx-auto mb-12 text-gray-600;
   }
 
   .section-title {
@@ -52,13 +52,13 @@
   }
 
   .admin-label {
-    @apply block text-sm font-bold text-pm-off-white/70 mb-2;
+    @apply block text-sm font-bold text-gray-600 mb-2;
   }
 
   .admin-input,
   .admin-textarea,
   .admin-select {
-    @apply w-full bg-pm-dark border border-pm-off-white/30 rounded-md py-2 px-3 text-pm-off-white transition-all duration-200;
+    @apply w-full bg-white border border-gray-300 rounded-md py-2 px-3 text-gray-900 transition-all duration-200;
   }
 
   .admin-input:focus,
@@ -80,7 +80,7 @@
   }
 
   .admin-page-subtitle {
-    @apply text-pm-off-white/70 mt-2;
+    @apply text-gray-600 mt-2;
   }
 
   .admin-section-title {
@@ -88,7 +88,7 @@
   }
 
   .admin-section-wrapper {
-    @apply bg-black border border-pm-gold/20 p-6 rounded-lg shadow-lg shadow-black/30;
+    @apply bg-white border border-pm-gold/20 p-6 rounded-lg shadow-md;
   }
 
   .admin-table {
@@ -96,11 +96,11 @@
   }
 
   .admin-table th {
-    @apply p-4 uppercase text-xs tracking-wider text-pm-off-white/70;
+    @apply p-4 uppercase text-xs tracking-wider text-gray-500 font-semibold;
   }
 
   .admin-table td {
-    @apply p-4 border-t border-pm-dark;
+    @apply p-4 border-t border-gray-100;
   }
 
   .action-btn {
@@ -108,7 +108,7 @@
   }
 
   .prose {
-    @apply text-pm-off-white/80 max-w-none;
+    @apply text-gray-700 max-w-none;
   }
 
   .prose h2,
