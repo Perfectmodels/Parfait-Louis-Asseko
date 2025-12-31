@@ -12,6 +12,14 @@ import Button from '../components/ui/Button';
 
 // --- Sub-components ---
 
+const ModelCardSkeleton: React.FC = () => (
+  <div className="animate-pulse">
+    <div className="aspect-[3/4] bg-white/5 rounded-xl mb-4" />
+    <div className="h-4 bg-white/5 rounded w-3/4 mb-2" />
+    <div className="h-3 bg-white/5 rounded w-1/2" />
+  </div>
+);
+
 const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides }) => {
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = React.useState(true);
@@ -330,25 +338,7 @@ const Home: React.FC = () => {
       <DynamicHero event={nextEvent} slides={heroSlides || []} />
       <Marquee />
 
-      <EditorialSection
-        title="Notre Vision"
-        content={agencyInfo.about.p1}
-        image={siteImages.about}
-      />
-
-      {/* Stats Section */}
-      <section className="py-20 border-y border-white/5 bg-pm-dark/50">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-            <StatItem icon={UsersIcon} value={models.length} label="Mannequins" />
-            <StatItem icon={CalendarDaysIcon} value={fashionDayEvents.length} label="Événements" />
-            <StatItem icon={StarIcon} value={agencyServices.length} label="Services" />
-            <StatItem icon={TrophyIcon} value={new Date().getFullYear() - 2021} label="Ans d'Excellence" />
-          </div>
-        </div>
-      </section>
-
-      {/* Models Section */}
+      {/* Models Section - Moved Up for Engagement */}
       <section className="py-24 bg-black relative">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
@@ -362,30 +352,45 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {publicModels.map((model, index) => (
-              <motion.div
-                key={model.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <ModelCard model={model} />
-              </motion.div>
-            ))}
+            {models.length === 0 ? (
+                // Skeleton Loading
+                [...Array(4)].map((_, i) => <ModelCardSkeleton key={i} />)
+            ) : (
+                publicModels.map((model, index) => (
+                    <motion.div
+                        key={model.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                    >
+                        <ModelCard model={model} />
+                    </motion.div>
+                ))
+            )}
           </div>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="py-24 bg-pm-dark">
-        <div className="container mx-auto px-6">
+      <EditorialSection
+        title="Notre Vision"
+        content={agencyInfo.about.p1}
+        image={siteImages.about}
+      />
+
+      {/* Services Grid - Redesigned Cards */}
+      <section className="py-24 bg-pm-dark relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-pm-gold/5 blur-[100px] rounded-full pointer-events-none" />
+
+        <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
             <h2 className="section-title">Nos Services</h2>
-            <p className="text-gray-400 mt-4">Une expertise complète pour les professionnels de la mode et de l'événementiel.</p>
+            <p className="text-gray-400 mt-4 max-w-2xl mx-auto">Une expertise complète pour les professionnels de la mode et de l'événementiel, alliant savoir-faire traditionnel et innovations modernes.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
             {featuredServices.map((service, index) => (
               <motion.div
                 key={service.slug}
@@ -407,10 +412,48 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="py-20 border-y border-white/5 bg-black">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+            <StatItem icon={UsersIcon} value={models.length} label="Mannequins" />
+            <StatItem icon={CalendarDaysIcon} value={fashionDayEvents.length} label="Événements" />
+            <StatItem icon={StarIcon} value={agencyServices.length} label="Services" />
+            <StatItem icon={TrophyIcon} value={new Date().getFullYear() - 2021} label="Ans d'Excellence" />
+          </div>
+        </div>
+      </section>
+
+       {/* Fashion Day Highlight (if event exists) */}
+       {nextEvent && (
+        <section className="py-32 relative bg-fixed bg-cover bg-center" style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}>
+             <div className="absolute inset-0 bg-black/80" />
+             <div className="container mx-auto px-6 relative z-10 text-center">
+                <span className="text-pm-gold font-bold tracking-[0.5em] uppercase text-sm mb-4 block">L'événement de l'année</span>
+                <h2 className="text-5xl md:text-7xl font-playfair text-white mb-8">
+                    Perfect Fashion Day <span className="text-pm-gold">#{nextEvent.edition}</span>
+                </h2>
+                <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
+                    Rejoignez-nous pour une célébration unique de la mode, de l'art et de la culture. Une expérience immersive inoubliable.
+                </p>
+
+                <div className="flex flex-col sm:flex-row justify-center gap-6">
+                    <Link to="/fashion-day/reservation">
+                        <Button className="w-full sm:w-auto px-12 py-4 text-lg">Réserver ma place</Button>
+                    </Link>
+                    <Link to="/fashion-day">
+                        <Button variant="outline" className="w-full sm:w-auto px-12 py-4 text-lg">En savoir plus</Button>
+                    </Link>
+                </div>
+             </div>
+        </section>
+       )}
+
+
       {/* Testimonials */}
       {testimonials && testimonials.length > 0 && (
-        <section className="py-24 bg-black overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-pm-gold/5 blur-3xl rounded-full translate-x-1/2" />
+        <section className="py-24 bg-pm-dark overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-1/2 h-full bg-pm-gold/5 blur-3xl rounded-full -translate-x-1/2" />
           <div className="container mx-auto px-6 relative z-10">
             <h2 className="section-title text-center mb-16">Ce qu'ils disent de nous</h2>
             <TestimonialCarousel />
@@ -420,15 +463,22 @@ const Home: React.FC = () => {
 
       {/* CTA Layer */}
       <section className="py-32 relative bg-cover bg-fixed bg-center" style={{ backgroundImage: `url('${siteImages.castingBg}')` }}>
-        <div className="absolute inset-0 bg-black/80" />
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <h2 className="text-4xl md:text-6xl font-playfair text-white mb-6">Révélez votre Potentiel</h2>
-          <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-            Vous avez le talent, nous avons l'expertise. Rejoignez l'agence qui transforme les rêves en carrières internationales.
-          </p>
-          <Link to="/casting-formulaire">
-            <Button className="px-10 py-5 text-lg shadow-lg shadow-pm-gold/20">Postuler Maintenant</Button>
-          </Link>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/50" />
+        <div className="container mx-auto px-6 relative z-10">
+            <div className="max-w-3xl">
+                <h2 className="text-4xl md:text-6xl font-playfair text-white mb-6">Révélez votre Potentiel</h2>
+                <p className="text-xl text-gray-300 mb-10 leading-relaxed">
+                    Vous avez le talent, nous avons l'expertise. Rejoignez l'agence qui transforme les rêves en carrières internationales. Casting ouvert toute l'année.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-6">
+                    <Link to="/casting-formulaire">
+                        <Button className="px-10 py-5 text-lg shadow-lg shadow-pm-gold/20">Postuler Maintenant</Button>
+                    </Link>
+                     <Link to="/contact">
+                        <Button variant="outline" className="px-10 py-5 text-lg">Nous Contacter</Button>
+                    </Link>
+                </div>
+            </div>
         </div>
       </section>
 
