@@ -160,48 +160,49 @@ const Admin: React.FC = () => {
     };
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white py-12 min-h-screen">
             <SEO title="Admin Dashboard" noIndex />
-            <div className="container mx-auto px-6 lg:px-8">
-                <header className="admin-page-header">
+            <div className="container mx-auto px-6 lg:px-8 max-w-7xl">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12 border-b border-pm-gold/10 pb-8">
                     <div>
-                        <h1 className="admin-page-title">Tableau de Bord Administratif</h1>
-                        <p className="admin-page-subtitle">Gestion complète de la plateforme Perfect Models Management.</p>
+                        <h1 className="text-4xl font-playfair text-pm-gold mb-2">Espace Administration</h1>
+                        <p className="text-pm-off-white/60">Bienvenue sur le panneau de contrôle de Perfect Models Management.</p>
                     </div>
-                    <button onClick={handleLogout} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
-                        <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
+                    <button onClick={handleLogout} className="group flex items-center gap-3 px-5 py-2.5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 hover:border-red-500/40 transition-all duration-300">
+                        <ArrowRightOnRectangleIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        <span className="font-medium">Déconnexion</span>
                     </button>
                 </header>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    <StatCard title="Nouvelles Candidatures" value={stats.newCastingApps} icon={ClipboardDocumentListIcon} link="/admin/casting-applications" />
-                    <StatCard title="Nouveaux Bookings" value={stats.newBookingRequests} icon={BriefcaseIcon} link="/admin/bookings" />
-                    <StatCard title="Nouveaux Messages" value={stats.newMessages} icon={EnvelopeIcon} link="/admin/messages" />
-                    <StatCard title="Total Mannequins" value={stats.totalModels} icon={UsersIcon} link="/admin/models" />
-                </div>
+                {/* Main Analytics Dashboard Component - Takes center stage */}
+                <AnalyticsDashboard className="mb-12" />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <main className="lg:col-span-2 space-y-10">
-                        {/* Analytics Dashboard */}
-                        <AnalyticsDashboard className="mb-10" />
-
-                        <Section title="Accès Rapides" icon={HomeIcon}>
-                            <DashboardCard title="Gérer les Mannequins" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou archiver des profils de mannequins." />
-                            <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine." />
-                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Créer et assigner des thèmes de séance photo." />
-                            <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Enregistrer et suivre les paiements mensuels." />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                    <main className="lg:col-span-2 space-y-12">
+                        <Section title="Gestion Principale" icon={HomeIcon}>
+                            <DashboardCard title="Mannequins" icon={UsersIcon} link="/admin/models" description="Gérer les profils et castings." highlight />
+                            <DashboardCard title="Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Articles et publications." />
+                            <DashboardCard title="Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Nouvelles candidatures." notificationCount={stats.newCastingApps} />
+                            <DashboardCard title="Bookings" icon={BriefcaseIcon} link="/admin/bookings" description="Demandes de clients." notificationCount={stats.newBookingRequests} />
                         </Section>
-                        <Section title="Gestion du Site" icon={Cog6ToothIcon}>
-                            <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services et la chronologie." />
-                            <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
-                            <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier les actualités de la page d'accueil." />
-                            <DashboardCard title="Paramètres Généraux" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, logos et clés API." />
+
+                        <Section title="Administration du Site" icon={Cog6ToothIcon}>
+                            <DashboardCard title="Agence & Services" icon={BuildingStorefrontIcon} link="/admin/agency" description="Contenu institutionnel." />
+                            <DashboardCard title="Perfect Fashion Day" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Événements et billetterie." />
+                            <DashboardCard title="Direction Artistique" icon={PaintBrushIcon} link="/admin/artistic-direction" description="Briefs créatifs." />
+                            <DashboardCard title="Comptabilité" icon={CurrencyDollarIcon} link="/admin/payments" description="Suivi financier." />
+                            <DashboardCard title="Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="News feed accueil." />
+                            <DashboardCard title="Paramètres" icon={Cog6ToothIcon} link="/admin/settings" description="Configuration globale." />
                         </Section>
                     </main>
 
                     <aside className="lg:col-span-1 space-y-8">
-                        <div className="admin-section-wrapper">
-                            <h2 className="admin-section-title flex items-center gap-2"><SignalIcon className="w-6 h-6" />Activité en Direct</h2>
+                        {/* Live Activity Feed */}
+                        <div className="bg-black/40 border border-pm-gold/20 rounded-xl p-6 shadow-lg backdrop-blur-sm sticky top-8">
+                            <h2 className="text-xl font-bold text-pm-gold mb-6 flex items-center gap-3 border-b border-pm-gold/10 pb-4">
+                                <SignalIcon className="w-6 h-6 animate-pulse" />
+                                En Direct
+                            </h2>
                             {activeUsers.length > 0 ? (
                                 <ul className="space-y-3">
                                     {activeUsers.map(user => (
@@ -218,19 +219,26 @@ const Admin: React.FC = () => {
                                 <p className="text-sm text-center py-4 text-pm-off-white/60">Aucun utilisateur actif.</p>
                             )}
                         </div>
-                        <div className="admin-section-wrapper">
-                            <h2 className="admin-section-title flex items-center gap-2">Notifications Récentes</h2>
+
+                        {/* Recent Notifications */}
+                        <div className="bg-black/40 border border-pm-gold/20 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+                            <h2 className="text-xl font-bold text-pm-gold mb-6 flex items-center gap-3 border-b border-pm-gold/10 pb-4">
+                                <EnvelopeIcon className="w-6 h-6" />
+                                Notifications
+                            </h2>
                             {stats.recentActivities.length > 0 ? (
-                                <ul className="space-y-3">
+                                <ul className="space-y-4">
                                     {stats.recentActivities.map((activity, index) => {
                                         const Icon = activityIconMap[activity.type as keyof typeof activityIconMap];
                                         return (
-                                            <li key={index}>
-                                                <Link to={activity.link} className="flex items-start gap-3 p-2 rounded-md hover:bg-pm-dark/50">
-                                                    <Icon className="w-5 h-5 text-pm-gold/80 mt-1 flex-shrink-0" />
+                                            <li key={index} className="group">
+                                                <Link to={activity.link} className="flex items-start gap-4 p-3 rounded-lg hover:bg-pm-gold/5 transition-colors border border-transparent hover:border-pm-gold/10">
+                                                    <div className={`p-2 rounded-full bg-pm-dark border border-pm-gold/20 group-hover:border-pm-gold/50 transition-colors`}>
+                                                        <Icon className="w-4 h-4 text-pm-gold" />
+                                                    </div>
                                                     <div>
-                                                        <p className="text-sm leading-tight">{activity.text}</p>
-                                                        <p className="text-xs text-pm-off-white/60">{timeAgo(activity.date)}</p>
+                                                        <p className="text-sm font-medium text-pm-off-white leading-snug group-hover:text-pm-gold transition-colors">{activity.text}</p>
+                                                        <p className="text-xs text-pm-off-white/50 mt-1">{timeAgo(activity.date)}</p>
                                                     </div>
                                                 </Link>
                                             </li>
@@ -238,7 +246,10 @@ const Admin: React.FC = () => {
                                     })}
                                 </ul>
                             ) : (
-                                <p className="text-sm text-center py-4 text-pm-off-white/60">Aucune nouvelle notification.</p>
+                                <div className="text-center py-8">
+                                    <EnvelopeIcon className="w-12 h-12 text-pm-gold/20 mx-auto mb-3" />
+                                    <p className="text-sm text-pm-off-white/60">Aucune nouvelle notification.</p>
+                                </div>
                             )}
                         </div>
                     </aside>
@@ -249,34 +260,41 @@ const Admin: React.FC = () => {
 };
 
 const Section: React.FC<{ title: string; icon: React.ElementType; children: React.ReactNode; }> = ({ title, icon: Icon, children }) => (
-    <section>
-        <h2 className="admin-section-title flex items-center gap-3"><Icon className="w-6 h-6" />{title}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <section className="bg-black/20 rounded-2xl p-8 border border-pm-gold/5">
+        <h2 className="text-2xl font-playfair text-pm-gold mb-8 flex items-center gap-3">
+            <Icon className="w-7 h-7 text-pm-gold/70" />
+            {title}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {children}
         </div>
     </section>
 );
 
-const StatCard: React.FC<{ title: string; value: number; icon: React.ElementType; link: string; }> = ({ title, value, icon: Icon, link }) => (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Link to={link} className="block p-4 bg-black border border-pm-gold/20 rounded-lg hover:bg-pm-dark/50 transition-colors">
-            <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold uppercase text-pm-off-white/70 tracking-wider">{title}</p>
-                <Icon className="w-6 h-6 text-pm-gold/50" />
-            </div>
-            <p className="text-4xl font-bold text-pm-gold mt-2">{value}</p>
-        </Link>
-    </motion.div>
-);
+interface DashboardCardProps {
+    title: string;
+    icon: React.ElementType;
+    link: string;
+    description: string;
+    highlight?: boolean;
+    notificationCount?: number;
+}
 
-const DashboardCard: React.FC<{ title: string; icon: React.ElementType; link: string; description: string; }> = ({ title, icon: Icon, link, description }) => (
-    <Link to={link} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-1 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
-        <div className="flex justify-between items-start">
-            <Icon className="w-8 h-8 text-pm-gold mb-4 transition-transform group-hover:scale-110" />
-            <ArrowUpRightIcon className="w-5 h-5 text-pm-off-white/40 transition-all duration-300 group-hover:text-pm-gold group-hover:translate-x-1 group-hover:-translate-y-1" />
+const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, description, highlight = false, notificationCount = 0 }) => (
+    <Link to={link} className={`group relative block bg-black p-6 border transition-all duration-300 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-1 ${highlight ? 'border-pm-gold/40 bg-gradient-to-br from-pm-gold/5 to-transparent' : 'border-pm-gold/10 hover:border-pm-gold/30'}`}>
+        {notificationCount > 0 && (
+            <span className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-bold flex items-center justify-center rounded-full shadow-md animate-bounce">
+                {notificationCount}
+            </span>
+        )}
+        <div className="flex justify-between items-start mb-4">
+            <div className={`p-3 rounded-lg transition-colors ${highlight ? 'bg-pm-gold text-black' : 'bg-pm-dark text-pm-gold group-hover:bg-pm-gold group-hover:text-black'}`}>
+                <Icon className="w-6 h-6" />
+            </div>
+            <ArrowUpRightIcon className="w-5 h-5 text-pm-gold/30 group-hover:text-pm-gold transition-colors" />
         </div>
-        <h3 className="text-lg font-bold text-pm-off-white group-hover:text-pm-gold transition-colors mb-1">{title}</h3>
-        <p className="text-xs text-pm-off-white/70 leading-relaxed">{description}</p>
+        <h3 className="text-lg font-bold text-pm-off-white group-hover:text-pm-gold transition-colors mb-2">{title}</h3>
+        <p className="text-sm text-pm-off-white/60 leading-relaxed">{description}</p>
     </Link>
 );
 

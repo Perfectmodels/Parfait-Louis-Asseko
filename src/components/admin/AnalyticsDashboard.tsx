@@ -127,8 +127,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
     return (
         <div className={className}>
             <div className="mb-8">
-                <h2 className="text-2xl font-bold text-pm-off-white mb-2">Statistiques en Temps Réel</h2>
-                <p className="text-pm-off-white/60">Vue d'ensemble des performances de l'agence</p>
+                <h2 className="text-2xl font-bold text-pm-off-white mb-2">Tableau de Bord</h2>
+                <p className="text-pm-off-white/60">Aperçu en temps réel des performances de l'agence.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -141,21 +141,21 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
                 />
                 <AnalyticsStatCard
                     title="Candidatures Casting"
-                    value={`${analytics.newCastingApps}/${analytics.totalCastingApps}`}
+                    value={`${analytics.newCastingApps} / ${analytics.totalCastingApps}`}
                     icon={ClipboardDocumentListIcon}
                     trend={analytics.castingTrend}
                     color="from-purple-500 to-pink-500"
                 />
                 <AnalyticsStatCard
                     title="Demandes Booking"
-                    value={`${analytics.newBookings}/${analytics.totalBookings}`}
+                    value={`${analytics.newBookings} / ${analytics.totalBookings}`}
                     icon={BriefcaseIcon}
                     trend={analytics.bookingTrend}
                     color="from-green-500 to-emerald-500"
                 />
                 <AnalyticsStatCard
                     title="Messages"
-                    value={`${analytics.newMessages}/${analytics.totalMessages}`}
+                    value={`${analytics.newMessages} / ${analytics.totalMessages}`}
                     icon={EnvelopeIcon}
                     trend={analytics.messageTrend}
                     color="from-orange-500 to-red-500"
@@ -163,34 +163,36 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ className = '' 
             </div>
 
             {/* Activity Chart */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-black border border-pm-gold/20 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-pm-off-white mb-4 flex items-center gap-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="bg-black border border-pm-gold/20 rounded-xl p-6 lg:col-span-2 shadow-lg shadow-pm-gold/5">
+                    <h3 className="text-lg font-bold text-pm-off-white mb-6 flex items-center gap-2 border-b border-pm-gold/10 pb-4">
                         <CalendarIcon className="w-5 h-5 text-pm-gold" />
                         Activité Récente
                     </h3>
-                    <div className="space-y-4">
-                        <ActivityBar label="Candidatures" value={analytics.newCastingApps} max={20} color="bg-purple-500" />
-                        <ActivityBar label="Bookings" value={analytics.newBookings} max={20} color="bg-green-500" />
-                        <ActivityBar label="Messages" value={analytics.newMessages} max={20} color="bg-orange-500" />
-                        <ActivityBar label="Mannequins Pro" value={analytics.proModels} max={analytics.totalModels} color="bg-pm-gold" />
+                    <div className="space-y-6">
+                        <ActivityBar label="Candidatures en attente" value={analytics.newCastingApps} max={20} color="bg-purple-500" />
+                        <ActivityBar label="Bookings en cours" value={analytics.newBookings} max={10} color="bg-green-500" />
+                        <ActivityBar label="Messages non lus" value={analytics.newMessages} max={50} color="bg-orange-500" />
+                        <ActivityBar label="Mannequins Pro" value={analytics.proModels} max={analytics.totalModels} color="bg-blue-500" />
                     </div>
                 </div>
 
-                <div className="bg-black border border-pm-gold/20 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-pm-off-white mb-4 flex items-center gap-2">
+                <div className="bg-black border border-pm-gold/20 rounded-xl p-6 shadow-lg shadow-pm-gold/5 flex flex-col justify-between">
+                    <h3 className="text-lg font-bold text-pm-off-white mb-4 flex items-center gap-2 border-b border-pm-gold/10 pb-4">
                         <CurrencyDollarIcon className="w-5 h-5 text-pm-gold" />
-                        Revenus du Mois
+                        Revenus Mensuels
                     </h3>
-                    <div className="flex items-end justify-center h-40">
-                        <div className="text-center">
-                            <p className="text-5xl font-bold text-pm-gold mb-2">
-                                {analytics.monthlyRevenue.toLocaleString()} FCFA
-                            </p>
-                            <p className="text-sm text-pm-off-white/60">
-                                {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                    <div className="flex flex-col items-center justify-center flex-grow py-8">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-pm-gold/20 blur-xl rounded-full"></div>
+                            <p className="relative text-5xl font-bold text-pm-gold mb-2 drop-shadow-md">
+                                {analytics.monthlyRevenue.toLocaleString()}
+                                <span className="text-xl text-pm-off-white/60 ml-2">FCFA</span>
                             </p>
                         </div>
+                        <p className="text-sm text-pm-off-white/60 mt-4 px-4 py-1 rounded-full bg-pm-dark/50 border border-pm-gold/20">
+                            {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                        </p>
                     </div>
                 </div>
             </div>

@@ -252,6 +252,7 @@ const ModelDetail: React.FC = () => {
         keywords={`${model.name}, mannequin ${model.gender}, modèle photo gabon, agence pmm, booker ${model.name}, mensurations mannequin`}
         image={model.imageUrl}
         schema={modelSchema}
+        type="profile"
       />
       <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
         <div className="container mx-auto px-6">
