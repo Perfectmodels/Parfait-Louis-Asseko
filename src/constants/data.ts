@@ -315,38 +315,40 @@ export const fashionDayEvents: FashionDayEvent[] = [
     edition: 2,
     date: "2026-01-31T18:00:00",
     theme: "L’Art de se révéler",
-    location: "La Gare du Nord – Hôtel Restaurant Bar Casino, Carrefour Acaé",
-    description: "La deuxième édition du Perfect Fashion Day s'annonce comme une révolution artistique. Sous le thème « L’Art de se révéler », nous invitons créateurs et mannequins à explorer l'essence même de l'identité individuelle à travers le prisme de la mode. Cet événement transcendera le simple défilé pour devenir une performance immersive où chaque passage racontera une histoire de métamorphose et d'affirmation de soi.",
+    location: "Gare du Nord (Hôtel Casino), Libreville",
+    promoter: "Perfect Models Management",
+    mc: "Lady Riaba",
+    description: "La deuxième édition du Perfect Fashion Day s'annonce comme une révolution artistique. Sous le thème « L’Art de se révéler », nous invitons créateurs et mannequins à explorer l'essence même de l'identité individuelle à travers le prisme de la mode. Cet événement transcendera le simple défilé pour devenir une performance immersive où chaque passage racontera une histoire de métamorphose et d'affirmation de soi. \n\nCouleurs Officielles : Noir & Or (Prestige et Luxe).\nDirection Artistique : Fave GLAO (Assisté par AJ Caramela & Sephora).\nEffectif Mannequins : Plateau de 20 professionnels.\nEffectif Stylistes : 12 maisons de couture.",
     stylists: [
-      { name: "Evo Style Creations", description: "Innovation et audace.", images: [] },
-      { name: "Rabibi", description: "L'élégance au naturel.", images: [] },
-      { name: "Miguel Fashion Style", description: "Couture fine et sur-mesure.", images: [] },
-      { name: "Rab's Collection", description: "Tradition revisitée.", images: [] },
-      { name: "Tito Style", description: "Le chic urbain gabonais.", images: [] },
-      { name: "Edele A", description: "Créatrice & Invitée d'honneur.", images: [] },
-      { name: "Nan's Ethnik", description: "Fusion culturelle.", images: [] },
-      { name: "Les Incompris", description: "Un style qui interpelle.", images: [] },
-      { name: "Le Pagne de Paris", description: "Le wax dans toute sa splendeur.", images: [] }
+      { name: "Rabibi", description: "Bloc 1 (L'Éveil) - L'élégance au naturel.", images: [] },
+      { name: "Najmi", description: "Bloc 1 (L'Éveil).", images: [] },
+      { name: "Pretty Little Hook", description: "Bloc 1 (L'Éveil).", images: [] },
+      { name: "Ventex", description: "Bloc 2 (L'Éclosion).", images: [] },
+      { name: "Racines", description: "Bloc 2 (L'Éclosion).", images: [] },
+      { name: "Maeva Creations", description: "Bloc 2 (L'Éclosion).", images: [] },
+      { name: "Miguel Fashion Style", description: "Bloc 3 (L'Expression) - Couture fine et sur-mesure.", images: [] },
+      { name: "Nan's Ethnik", description: "Bloc 3 (L'Expression) - Fusion culturelle.", images: [] },
+      { name: "Evo Style Creations", description: "Bloc 3 (L'Expression) - Innovation et audace.", images: [] },
+      { name: "BKD Empire", description: "Bloc 4 (L'Apothéose).", images: [] },
+      { name: "Tito Style", description: "Bloc 4 (L'Apothéose) - Le chic urbain gabonais.", images: [] },
+      { name: "Edele A", description: "Bloc 4 (L'Apothéose) - Créatrice & Invitée d'honneur.", images: [] }
     ],
     featuredModels: [
-      "Noemi Kim", "Yann Aubin", "AJ Caramela", "Juliana Jodelle", "Stecya", "Lyne", "Cassandra", "Merveille"
+      "Noemi Kim", "Yann Aubin", "AJ Caramela", "Juliana Jodelle", "Stecya", "Lyne", "Cassandra", "Merveille", "Donatien", "Pablo Zapatero", "Rosnel", "Moustapha", "Osée Jn"
     ],
     artists: [
       {
         name: 'Lady Riaba',
-        description: 'Slam introductif inédit sur le thème « L’Art de se révéler ».',
-        images: []
-      },
-      {
-        name: 'AfroGroove Band',
-        description: 'Performance live fusionnant jazz et rythmes traditionnels gabonais.',
+        description: 'Maîtresse de Cérémonie (Host) et Slam introductif inédit sur le thème « L’Art de se révéler ».',
         images: []
       }
     ],
     partners: [
       { type: "Sponsor Officiel", name: "La Gare du Nord" },
+      { type: "Partenaire Beauté (Coiffure)", name: "INDI HAIR" },
+      { type: "Partenaire Beauté (Maquillage)", name: 'Collectif "Beauté Révélée"' },
+      { type: "Partenaire Logistique (Hygiène)", name: "Vitri Clean" },
       { type: "Partenaire Média", name: "Gabon 24" },
-      { type: "Partenaire Beauté", name: "Indi Hair" },
       { type: "Support", name: "Darain Visuals" },
       { type: "Support", name: "Femmes Belles Ambitieuses et Dynamiques" }
     ],
