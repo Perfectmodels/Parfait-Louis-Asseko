@@ -104,7 +104,7 @@ const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides })
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-6xl md:text-8xl lg:text-9xl font-playfair text-white mb-6 leading-tight"
+          className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-playfair text-white mb-6 leading-tight"
         >
           {currentSlideData.title} <br />
           <span className="italic text-pm-gold">{currentSlideData.subtitle}</span>
@@ -227,9 +227,9 @@ const EditorialSection: React.FC<{ image: string, title: string, content: string
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
-    <section ref={ref} className="py-24 overflow-hidden bg-pm-dark">
+    <section ref={ref} className="py-16 md:py-24 overflow-hidden bg-pm-dark">
       <div className="container mx-auto px-6">
-        <div className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-16`}>
+        <div className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-10 md:gap-16`}>
           <motion.div
             className="w-full lg:w-1/2 relative"
             initial={{ opacity: 0, x: reverse ? 50 : -50 }}
@@ -292,13 +292,13 @@ const AnimatedCounter: React.FC<{ to: number }> = ({ to }) => {
 
 const StatItem: React.FC<{ icon: any, value: number, label: string }> = ({ icon: Icon, value, label }) => (
   <div className="flex flex-col items-center">
-    <div className="w-16 h-16 rounded-full bg-pm-gold/10 flex items-center justify-center mb-4 text-pm-gold border border-pm-gold/20">
-      <Icon className="w-8 h-8" />
+    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-pm-gold/10 flex items-center justify-center mb-3 md:mb-4 text-pm-gold border border-pm-gold/20">
+      <Icon className="w-6 h-6 md:w-8 md:h-8" />
     </div>
-    <div className="text-4xl font-playfair font-bold text-white mb-2">
+    <div className="text-3xl md:text-4xl font-playfair font-bold text-white mb-1 md:mb-2">
       +<AnimatedCounter to={value} />
     </div>
-    <p className="text-sm uppercase tracking-widest text-gray-500">{label}</p>
+    <p className="text-xs md:text-sm uppercase tracking-widest text-gray-500">{label}</p>
   </div>
 );
 
@@ -339,9 +339,9 @@ const Home: React.FC = () => {
       <Marquee />
 
       {/* Models Section - Moved Up for Engagement */}
-      <section className="py-24 bg-black relative">
+      <section className="py-16 md:py-24 bg-black relative">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-10 md:mb-16 gap-6">
             <div>
               <h2 className="section-title text-left mb-2">Nos Visages</h2>
               <p className="text-gray-400 max-w-md">Découvrez les talents qui font rayonner la mode africaine à travers le monde.</p>
@@ -379,13 +379,13 @@ const Home: React.FC = () => {
       />
 
       {/* Services Grid - Redesigned Cards */}
-      <section className="py-24 bg-pm-dark relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-pm-dark relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-pm-gold/5 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 md:mb-16">
             <h2 className="section-title">Nos Services</h2>
             <p className="text-gray-400 mt-4 max-w-2xl mx-auto">Une expertise complète pour les professionnels de la mode et de l'événementiel, alliant savoir-faire traditionnel et innovations modernes.</p>
           </div>
@@ -452,10 +452,10 @@ const Home: React.FC = () => {
 
       {/* Testimonials */}
       {testimonials && testimonials.length > 0 && (
-        <section className="py-24 bg-pm-dark overflow-hidden relative">
+        <section className="py-16 md:py-24 bg-pm-dark overflow-hidden relative">
           <div className="absolute top-0 left-0 w-1/2 h-full bg-pm-gold/5 blur-3xl rounded-full -translate-x-1/2" />
           <div className="container mx-auto px-6 relative z-10">
-            <h2 className="section-title text-center mb-16">Ce qu'ils disent de nous</h2>
+            <h2 className="section-title text-center mb-10 md:mb-16">Ce qu'ils disent de nous</h2>
             <TestimonialCarousel />
           </div>
         </section>

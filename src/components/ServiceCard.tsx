@@ -18,7 +18,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
     const Icon = iconMap[service.icon] || HeartIcon;
     return (
-        <div className="group relative p-8 flex flex-col h-full text-left bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-pm-gold/50 transition-all duration-500 hover:shadow-2xl hover:shadow-pm-gold/10 hover:-translate-y-1">
+        <div className="group relative p-6 md:p-8 flex flex-col h-full text-left bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-pm-gold/50 transition-all duration-500 hover:shadow-2xl hover:shadow-pm-gold/10 hover:-translate-y-1">
 
             {/* Background Glow */}
             <div className="absolute inset-0 bg-gradient-to-br from-pm-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />

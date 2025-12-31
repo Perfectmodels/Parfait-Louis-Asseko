@@ -15,7 +15,7 @@ const NavLinkItem: React.FC<{ to: string; label: string; onClick?: () => void; i
     : '';
 
   const mobileLinkClasses = isMobile
-    ? "text-2xl font-playfair lowercase first-letter:uppercase py-3 border-b border-white/5 w-full block"
+    ? "text-lg font-playfair lowercase first-letter:uppercase py-2.5 border-b border-white/5 w-full block"
     : "text-sm text-pm-off-white uppercase tracking-widest";
 
   return (
@@ -71,7 +71,7 @@ const LogoutButton: React.FC<{ onClick: () => void, className?: string, isMobile
     : '';
 
   const mobileButtonClasses = isMobile
-    ? "text-xl font-playfair lowercase first-letter:uppercase py-3 w-full border-b border-white/5 justify-start text-red-400 hover:text-red-300"
+    ? "text-lg font-playfair lowercase first-letter:uppercase py-2.5 w-full border-b border-white/5 justify-start text-red-400 hover:text-red-300"
     : "text-sm uppercase tracking-widest text-pm-off-white hover:text-pm-gold";
 
   return (
@@ -409,23 +409,23 @@ const Header: React.FC = () => {
       <div
         id="mobile-menu-panel"
         ref={mobileMenuRef}
-        className={`lg:hidden fixed top-0 right-0 w-[85%] max-w-md h-full bg-black/95 backdrop-blur-2xl border-l border-pm-gold/10 shadow-2xl shadow-black/50 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] z-50 transform flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`lg:hidden fixed top-0 right-0 w-[80%] max-w-sm h-full bg-black/95 backdrop-blur-2xl border-l border-pm-gold/10 shadow-2xl shadow-black/50 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] z-50 transform flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
         aria-hidden={!isOpen}
       >
-        <div className="flex justify-between items-center p-6 border-b border-white/10 h-24 flex-shrink-0">
-          <span id="mobile-menu-title" className="font-playfair text-3xl text-pm-gold italic">Menu</span>
+        <div className="flex justify-between items-center p-5 border-b border-white/10 h-16 flex-shrink-0">
+          <span id="mobile-menu-title" className="font-playfair text-2xl text-pm-gold italic">Menu</span>
           <button onClick={() => setIsOpen(false)} className="p-2 text-white/50 hover:text-white transition-colors">
-            <CloseIcon className="w-8 h-8" />
+            <CloseIcon className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="flex-grow overflow-y-auto p-8 scrollbar-hide">
+        <div className="flex-grow overflow-y-auto p-6 scrollbar-hide">
           {/* Search Bar */}
-          <form onSubmit={handleMobileSearch} className="mb-8">
+          <form onSubmit={handleMobileSearch} className="mb-6">
             <div className="relative group">
               <input
                 type="search"
@@ -445,10 +445,10 @@ const Header: React.FC = () => {
             <NavLinks navLinks={processedNavLinks} onLinkClick={() => setIsOpen(false)} isMobile={true} isOpen={isOpen} />
 
             {/* Additional Pages Section */}
-            <div className={`mt-6 pt-6 border-t border-white/10 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            <div className={`mt-4 pt-4 border-t border-white/10 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               style={{ transitionDelay: `${isOpen ? 100 + processedNavLinks.length * 50 : 0}ms` }}>
-              <p className="text-xs uppercase tracking-widest text-pm-gold/60 mb-4 font-bold">Plus</p>
-              <div className="flex flex-col gap-2">
+              <p className="text-xs uppercase tracking-widest text-pm-gold/60 mb-2 font-bold">Plus</p>
+              <div className="flex flex-col gap-1">
                 <NavLinkItem
                   to="/services"
                   label="Nos Services"
@@ -477,12 +477,12 @@ const Header: React.FC = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className={`mt-8 space-y-3 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            <div className={`mt-6 space-y-2 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               style={{ transitionDelay: `${isOpen ? 100 + (processedNavLinks.length + 4) * 50 : 0}ms` }}>
               <Link
                 to="/casting-formulaire"
                 onClick={() => setIsOpen(false)}
-                className="block w-full py-4 bg-pm-gold text-black font-bold uppercase tracking-widest text-sm transition-all duration-300 hover:bg-white shadow-lg shadow-pm-gold/20 text-center"
+                className="block w-full py-3 bg-pm-gold text-black font-bold uppercase tracking-widest text-xs transition-all duration-300 hover:bg-white shadow-lg shadow-pm-gold/20 text-center rounded-sm"
               >
                 Devenir Mannequin
               </Link>
@@ -490,7 +490,7 @@ const Header: React.FC = () => {
               <Link
                 to="/fashion-day/reservation"
                 onClick={() => setIsOpen(false)}
-                className="block w-full py-4 bg-transparent border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm transition-all duration-300 hover:bg-pm-gold hover:text-black text-center"
+                className="block w-full py-3 bg-transparent border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-xs transition-all duration-300 hover:bg-pm-gold hover:text-black text-center rounded-sm"
               >
                 Réserver PFD
               </Link>
@@ -498,7 +498,7 @@ const Header: React.FC = () => {
               <Link
                 to="/contact"
                 onClick={() => setIsOpen(false)}
-                className="block w-full py-4 bg-white/5 border border-white/20 text-white font-bold uppercase tracking-widest text-sm transition-all duration-300 hover:bg-white/10 text-center"
+                className="block w-full py-3 bg-white/5 border border-white/20 text-white font-bold uppercase tracking-widest text-xs transition-all duration-300 hover:bg-white/10 text-center rounded-sm"
               >
                 Nous Contacter
               </Link>
@@ -523,10 +523,10 @@ const Header: React.FC = () => {
             )}
           </nav>
         </div>
-        <div className="p-8 border-t border-white/10 flex-shrink-0 bg-white/5">
+        <div className="p-6 border-t border-white/10 flex-shrink-0 bg-white/5">
           <SocialLinksComponent
             socialLinks={socialLinks}
-            className="justify-center gap-10"
+            className="justify-center gap-8"
             isMobile={true}
             isOpen={isOpen}
             delay={100 + (processedNavLinks.length + 8) * 50}
