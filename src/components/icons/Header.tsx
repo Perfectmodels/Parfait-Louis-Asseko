@@ -4,6 +4,7 @@ import { useData } from '../../contexts/DataContext';
 import { ArrowRightOnRectangleIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import CloseIcon from './CloseIcon';
+import GlobalSearch from '../GlobalSearch';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
 // FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
@@ -220,6 +221,7 @@ export const Breadcrumb: React.FC = () => {
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const { data } = useData();
   const location = useLocation();
   const navigate = useNavigate();
@@ -229,6 +231,22 @@ const Header: React.FC = () => {
 
   const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Close search when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearch(false);
+      }
+    };
+    if (showSearch) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSearch]);
 
   // Focus management and body scroll lock for mobile menu
   useEffect(() => {
@@ -349,6 +367,15 @@ const Header: React.FC = () => {
             <NavLinks navLinks={processedNavLinks} />
 
             <div className="flex items-center gap-6 pl-6 border-l border-pm-gold/20">
+              <div ref={searchRef}>
+                 <button onClick={() => setShowSearch(!showSearch)} className="text-white hover:text-pm-gold transition-colors">
+                    <MagnifyingGlassIcon className="w-5 h-5" />
+                 </button>
+                 {showSearch && (
+                    <GlobalSearch onClose={() => setShowSearch(false)} className="absolute top-20 right-6 w-80" />
+                 )}
+              </div>
+
               {!isLoggedIn ? (
                 <Link to="/login" className="px-5 py-2 text-pm-gold border border-pm-gold font-bold uppercase text-xs tracking-widest rounded-full transition-all duration-300 hover:bg-pm-gold hover:text-black hover:shadow-lg hover:shadow-pm-gold/20">
                   Admin Panel
