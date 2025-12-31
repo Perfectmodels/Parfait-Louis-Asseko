@@ -143,10 +143,41 @@ const AdminCastingResults: React.FC = () => {
             return;
         }
         
-        const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
-        if (modelExists) {
-            alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
-            await handleUpdateStatus(app.id, 'Accepté');
+        const existingModelIndex = data.models.findIndex(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
+        if (existingModelIndex !== -1) {
+            if (window.confirm(`Un mannequin nommé "${app.firstName} ${app.lastName}" existe déjà. Voulez-vous mettre à jour ses données (taille, mensurations, contact) avec celles de cette candidature ?`)) {
+                const existingModel = data.models[existingModelIndex];
+                const updatedModel: Model = {
+                    ...existingModel,
+                    email: app.email || existingModel.email,
+                    phone: app.phone || existingModel.phone,
+                    height: `${app.height}cm`,
+                    measurements: {
+                        chest: `${app.chest || '0'}cm`,
+                        waist: `${app.waist || '0'}cm`,
+                        hips: `${app.hips || '0'}cm`,
+                        shoeSize: `${app.shoeSize || '0'}`,
+                    },
+                    location: app.city || existingModel.location,
+                    // Optionally update age if birthDate is provided
+                    age: app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : existingModel.age,
+                };
+
+                const updatedModels = [...data.models];
+                updatedModels[existingModelIndex] = updatedModel;
+
+                const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' as const } : localApp);
+
+                try {
+                    await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+                    alert(`Le profil de ${updatedModel.name} a été mis à jour avec succès.`);
+                } catch (error) {
+                    console.error("Erreur lors de la mise à jour du profil:", error);
+                    alert("Une erreur est survenue lors de la sauvegarde.");
+                }
+            } else {
+                await handleUpdateStatus(app.id, 'Accepté');
+            }
             return;
         }
 
