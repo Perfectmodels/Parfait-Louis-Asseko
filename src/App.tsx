@@ -8,6 +8,7 @@ import { PWAInstaller } from './components/PWAInstaller';
 import ScrollToTopButton from './components/ScrollToTop';
 import WhatsAppButton from './components/WhatsAppButton';
 import CookieConsent from './components/CookieConsent';
+import NewsletterPopup from './components/NewsletterPopup';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -241,6 +242,7 @@ const App: React.FC = () => {
                 <ScrollToTopButton />
                 <WhatsAppButton />
                 <CookieConsent />
+                <NewsletterPopup />
             </BrowserRouter>
         </DataProvider>
     );
