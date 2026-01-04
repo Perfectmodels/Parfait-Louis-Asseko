@@ -4,6 +4,7 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationRole } from '../types';
 import { Link } from 'react-router-dom';
+import { sendEmail } from '../services/emailService';
 
 const FashionDayApplicationForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -48,6 +49,30 @@ const FashionDayApplicationForm: React.FC = () => {
             const updatedApplications = [...(data.fashionDayApplications || []), newApplication];
             await saveData({ ...data, fashionDayApplications: updatedApplications });
 
+            // Send Email Notification
+            if (data.apiKeys?.brevoApiKey) {
+                const emailSubject = `Candidature PFD - ${formData.role} : ${formData.name}`;
+                const emailHtml = `
+                    <h1>Candidature Perfect Fashion Day</h1>
+                    <p><strong>Nom / Marque:</strong> ${formData.name}</p>
+                    <p><strong>Rôle:</strong> ${formData.role}</p>
+                    <p><strong>Email:</strong> ${formData.email}</p>
+                    <p><strong>Téléphone:</strong> ${formData.phone}</p>
+                    <h2>Message :</h2>
+                    <p>${formData.message}</p>
+                    <hr />
+                    <p>Connectez-vous à l'espace admin pour voir tous les détails.</p>
+                `;
+
+                await sendEmail({
+                    to: [{ email: data.contactInfo.notificationEmail || 'contact@perfectmodels.ga', name: 'Perfect Models Admin' }],
+                    subject: emailSubject,
+                    htmlContent: emailHtml,
+                    apiKey: data.apiKeys.brevoApiKey,
+                    sender: { email: 'notifications@perfectmodels.ga', name: 'Site Web PMM' }
+                });
+            }
+
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée ! L\'équipe du Perfect Fashion Day vous recontactera prochainement.');
             setFormData({ name: '', email: '', phone: '', role: 'Mannequin', message: '' });
@@ -58,7 +83,7 @@ const FashionDayApplicationForm: React.FC = () => {
             console.error(error);
         }
     };
-    
+
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Candidature Perfect Fashion Day" description="Postulez pour participer à la prochaine édition du Perfect Fashion Day. Mannequins, stylistes, photographes, partenaires, rejoignez l'aventure." noIndex />
@@ -90,7 +115,7 @@ const FashionDayApplicationForm: React.FC = () => {
                         placeholder="Présentez-vous, décrivez votre projet, ou laissez un lien vers votre portfolio..."
                         required
                     />
-                     <div className="pt-4">
+                    <div className="pt-4">
                         <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
                             {status === 'loading' ? 'Envoi en cours...' : 'Envoyer ma candidature'}
                         </button>
@@ -109,19 +134,19 @@ const FashionDayApplicationForm: React.FC = () => {
 };
 
 // FIX: Added missing helper components
-const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
+const FormInput: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
-const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode}> = (props) => (
+const FormSelect: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <select {...props} id={props.name} className="admin-input">{props.children}</select>
     </div>
 );
-const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, rows: number, required?: boolean, placeholder?: string}> = (props) => (
+const FormTextArea: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, rows: number, required?: boolean, placeholder?: string }> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <textarea {...props} id={props.name} className="admin-input admin-textarea" />

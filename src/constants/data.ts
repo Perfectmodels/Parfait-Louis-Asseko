@@ -48,14 +48,14 @@ export const siteImages: SiteImages = {
 };
 
 export const apiKeys: ApiKeys = {
-  resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
-  formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
+  resendApiKey: import.meta.env.VITE_RESEND_API_KEY || '',
+  formspreeEndpoint: import.meta.env.VITE_FORMSPREE_ENDPOINT || '',
   firebaseDynamicLinks: {
-    webApiKey: "AIzaSyBawZl4SJz7drhzIrG0dnazSglyF6vmKCg",
+    webApiKey: import.meta.env.VITE_GOOGLE_API_KEY || "",
     domainUriPrefix: 'https://perfectmodels.page.link'
   },
-  imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',
-  brevoApiKey: 'VOTRE_CLÉ_API_BREVO_ICI',
+  imgbbApiKey: import.meta.env.VITE_IMGBB_API_KEY || "",
+  brevoApiKey: import.meta.env.VITE_BREVO_API_KEY || "",
 };
 
 export const juryMembers: JuryMember[] = [

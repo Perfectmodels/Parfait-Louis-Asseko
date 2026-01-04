@@ -16,6 +16,7 @@ const Agency = lazy(() => import('./pages/Agency'));
 const Models = lazy(() => import('./pages/Models'));
 const ModelDetail = lazy(() => import('./pages/ModelDetail'));
 const FashionDay = lazy(() => import('./pages/FashionDay'));
+const FashionDayVote = lazy(() => import('./pages/FashionDayVote'));
 const FashionDayReservation = lazy(() => import('./pages/FashionDayReservation'));
 const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
@@ -33,9 +34,7 @@ const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 // FIX: Removed Beginner Classroom pages as the feature has been deprecated.
 const Chat = lazy(() => import('./pages/Chat'));
-const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
-const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
-const LiveChat = lazy(() => import('./pages/LiveChat'));
+// const LiveChat = lazy(() => import('./pages/LiveChat'));
 
 
 // Admin Pages
@@ -62,6 +61,7 @@ const AdminBookings = lazy(() => import('./pages/AdminBookings'));
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+// const AdminCastingLive = lazy(() => import('./pages/AdminCastingLive'));
 
 
 // Role-specific pages
@@ -100,8 +100,8 @@ const pageVariants = {
     }
 };
 
-const pageTransition = {
-    type: "tween" as const,
+const pageTransition: any = {
+    type: "tween",
     ease: "anticipate",
     duration: 0.5
 };
@@ -125,6 +125,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/mannequins" element={<Models />} />
                     <Route path="/mannequins/:id" element={<ModelDetail />} />
                     <Route path="/fashion-day" element={<FashionDay />} />
+                    <Route path="/fashion-day/vote" element={<FashionDayVote />} />
                     <Route path="/fashion-day/reservation" element={<FashionDayReservation />} />
                     <Route path="/magazine" element={<Magazine />} />
                     <Route path="/magazine/:slug" element={<ArticleDetail />} />
@@ -161,6 +162,8 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
                     <Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />
                     <Route path="/admin/agency" element={<ProtectedRoute role="admin"><AdminAgency /></ProtectedRoute>} />
+                    {/* <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} /> */}
+                    {/* <Route path="/admin/casting-live" element={<ProtectedRoute role="admin"><AdminCastingLive /></ProtectedRoute>} /> */}
                     <Route path="/admin/casting-applications" element={<ProtectedRoute role="admin"><AdminCasting /></ProtectedRoute>} />
                     <Route path="/admin/casting-results" element={<ProtectedRoute role="admin"><AdminCastingResults /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
@@ -176,9 +179,8 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/payments" element={<ProtectedRoute role="admin"><AdminPayments /></ProtectedRoute>} />
                     <Route path="/admin/absences" element={<ProtectedRoute role="admin"><AdminAbsences /></ProtectedRoute>} />
                     <Route path="/admin/artistic-direction" element={<ProtectedRoute role="admin"><AdminArtisticDirection /></ProtectedRoute>} />
-                    <Route path="/admin/generer-image" element={<ProtectedRoute role="admin"><ImageGeneration /></ProtectedRoute>} />
-                    <Route path="/admin/analyser-image" element={<ProtectedRoute role="admin"><ImageAnalysis /></ProtectedRoute>} />
-                    <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
+
+
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>

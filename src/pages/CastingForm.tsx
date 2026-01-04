@@ -5,6 +5,7 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import { Link } from 'react-router-dom';
 import { generateCastingPDF } from '../utils/pdfGenerator';
+import { sendEmail } from '../services/emailService';
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -44,6 +45,32 @@ const CastingForm: React.FC = () => {
         try {
             const updatedApplications = [...(data.castingApplications || []), newApplication];
             await saveData({ ...data, castingApplications: updatedApplications });
+
+            // Send Email Notification
+            if (data.apiKeys?.brevoApiKey) {
+                const emailSubject = `Nouvelle Candidature Casting : ${formData.firstName} ${formData.lastName}`;
+                const emailHtml = `
+                    <h1>Nouvelle Candidature Casting</h1>
+                    <p><strong>Nom:</strong> ${formData.firstName} ${formData.lastName}</p>
+                    <p><strong>Email:</strong> ${formData.email}</p>
+                    <p><strong>Téléphone:</strong> ${formData.phone}</p>
+                    <p><strong>Ville:</strong> ${formData.city}</p>
+                    <p><strong>Genre:</strong> ${formData.gender}</p>
+                    <p><strong>Taille:</strong> ${formData.height} cm</p>
+                    <p><strong>Expérience:</strong> ${formData.experience}</p>
+                    <p><strong>Instagram:</strong> ${formData.instagram || 'Non renseigné'}</p>
+                    <hr />
+                    <p>Connectez-vous à l'espace admin pour voir tous les détails.</p>
+                `;
+
+                await sendEmail({
+                    to: [{ email: data.contactInfo.notificationEmail || 'contact@perfectmodels.ga', name: 'Perfect Models Admin' }],
+                    subject: emailSubject,
+                    htmlContent: emailHtml,
+                    apiKey: data.apiKeys.brevoApiKey,
+                    sender: { email: 'notifications@perfectmodels.ga', name: 'Site Web PMM' }
+                });
+            }
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée avec succès ! Une fiche récapitulative PDF va être téléchargée. Nous vous contacterons si votre profil est retenu.');
