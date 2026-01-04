@@ -63,7 +63,7 @@ const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides })
   const currentSlideData = activeSlides[currentSlide];
 
   return (
-    <div ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
+    <div ref={ref} className="relative min-h-screen flex flex-col overflow-hidden">
       {/* Background Images with Parallax */}
       {activeSlides.map((slide, index) => (
         <motion.div
@@ -87,7 +87,7 @@ const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides })
       {/* Content */}
       <motion.div
         style={{ opacity }}
-        className="relative z-10 text-center px-4 max-w-5xl mx-auto"
+        className="relative z-10 text-center px-4 max-w-5xl mx-auto flex-grow flex flex-col justify-center w-full"
       >
         <motion.span
           key={`desc-${currentSlide}`}
@@ -110,17 +110,7 @@ const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides })
           <span className="italic text-pm-gold">{currentSlideData.subtitle}</span>
         </motion.h1>
 
-        <motion.div
-          key={`cta-${currentSlide}`}
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10"
-        >
-          <Link to={currentSlideData.ctaLink}>
-            <Button className="min-w-[200px]">{currentSlideData.cta}</Button>
-          </Link>
-        </motion.div>
+
 
         {/* Slide Indicators */}
         <div className="flex items-center justify-center gap-3 mt-12">
@@ -143,7 +133,7 @@ const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides })
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8, duration: 1, type: "spring", bounce: 0.2 }}
-        className="absolute bottom-0 left-0 right-0 z-20 px-4 pb-4 md:pb-8 pointer-events-none"
+        className="relative z-20 px-4 pb-4 md:pb-8 pointer-events-none w-full"
       >
         <div className="max-w-5xl mx-auto bg-black/60 backdrop-blur-xl border border-pm-gold/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-2xl shadow-black/50 pointer-events-auto relative overflow-hidden group">
 
@@ -353,20 +343,20 @@ const Home: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {models.length === 0 ? (
-                // Skeleton Loading
-                [...Array(4)].map((_, i) => <ModelCardSkeleton key={i} />)
+              // Skeleton Loading
+              [...Array(4)].map((_, i) => <ModelCardSkeleton key={i} />)
             ) : (
-                publicModels.map((model, index) => (
-                    <motion.div
-                        key={model.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                    >
-                        <ModelCard model={model} />
-                    </motion.div>
-                ))
+              publicModels.map((model, index) => (
+                <motion.div
+                  key={model.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <ModelCard model={model} />
+                </motion.div>
+              ))
             )}
           </div>
         </div>
@@ -424,30 +414,30 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-       {/* Fashion Day Highlight (if event exists) */}
-       {nextEvent && (
+      {/* Fashion Day Highlight (if event exists) */}
+      {nextEvent && (
         <section className="py-32 relative bg-fixed bg-cover bg-center" style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}>
-             <div className="absolute inset-0 bg-black/80" />
-             <div className="container mx-auto px-6 relative z-10 text-center">
-                <span className="text-pm-gold font-bold tracking-[0.5em] uppercase text-sm mb-4 block">L'événement de l'année</span>
-                <h2 className="text-5xl md:text-7xl font-playfair text-white mb-8">
-                    Perfect Fashion Day <span className="text-pm-gold">#{nextEvent.edition}</span>
-                </h2>
-                <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
-                    Rejoignez-nous pour une célébration unique de la mode, de l'art et de la culture. Une expérience immersive inoubliable.
-                </p>
+          <div className="absolute inset-0 bg-black/80" />
+          <div className="container mx-auto px-6 relative z-10 text-center">
+            <span className="text-pm-gold font-bold tracking-[0.5em] uppercase text-sm mb-4 block">L'événement de l'année</span>
+            <h2 className="text-5xl md:text-7xl font-playfair text-white mb-8">
+              Perfect Fashion Day <span className="text-pm-gold">#{nextEvent.edition}</span>
+            </h2>
+            <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
+              Rejoignez-nous pour une célébration unique de la mode, de l'art et de la culture. Une expérience immersive inoubliable.
+            </p>
 
-                <div className="flex flex-col sm:flex-row justify-center gap-6">
-                    <Link to="/fashion-day/reservation">
-                        <Button className="w-full sm:w-auto px-12 py-4 text-lg">Réserver ma place</Button>
-                    </Link>
-                    <Link to="/fashion-day">
-                        <Button variant="outline" className="w-full sm:w-auto px-12 py-4 text-lg">En savoir plus</Button>
-                    </Link>
-                </div>
-             </div>
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <Link to="/fashion-day/reservation">
+                <Button className="w-full sm:w-auto px-12 py-4 text-lg">Réserver ma place</Button>
+              </Link>
+              <Link to="/fashion-day">
+                <Button variant="outline" className="w-full sm:w-auto px-12 py-4 text-lg">En savoir plus</Button>
+              </Link>
+            </div>
+          </div>
         </section>
-       )}
+      )}
 
 
       {/* Testimonials */}
@@ -465,20 +455,20 @@ const Home: React.FC = () => {
       <section className="py-32 relative bg-cover bg-fixed bg-center" style={{ backgroundImage: `url('${siteImages.castingBg}')` }}>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/50" />
         <div className="container mx-auto px-6 relative z-10">
-            <div className="max-w-3xl">
-                <h2 className="text-4xl md:text-6xl font-playfair text-white mb-6">Révélez votre Potentiel</h2>
-                <p className="text-xl text-gray-300 mb-10 leading-relaxed">
-                    Vous avez le talent, nous avons l'expertise. Rejoignez l'agence qui transforme les rêves en carrières internationales. Casting ouvert toute l'année.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-6">
-                    <Link to="/casting-formulaire">
-                        <Button className="px-10 py-5 text-lg shadow-lg shadow-pm-gold/20">Postuler Maintenant</Button>
-                    </Link>
-                     <Link to="/contact">
-                        <Button variant="outline" className="px-10 py-5 text-lg">Nous Contacter</Button>
-                    </Link>
-                </div>
+          <div className="max-w-3xl">
+            <h2 className="text-4xl md:text-6xl font-playfair text-white mb-6">Révélez votre Potentiel</h2>
+            <p className="text-xl text-gray-300 mb-10 leading-relaxed">
+              Vous avez le talent, nous avons l'expertise. Rejoignez l'agence qui transforme les rêves en carrières internationales. Casting ouvert toute l'année.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6">
+              <Link to="/casting-formulaire">
+                <Button className="px-10 py-5 text-lg shadow-lg shadow-pm-gold/20">Postuler Maintenant</Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="outline" className="px-10 py-5 text-lg">Nous Contacter</Button>
+              </Link>
             </div>
+          </div>
         </div>
       </section>
 

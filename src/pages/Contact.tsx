@@ -7,6 +7,7 @@ import { useData } from '../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
 import { ContactMessage, BookingRequest } from '../types';
 import Button from '../components/ui/Button';
+import { sendEmail } from '../services/emailService';
 
 // --- Sub-components ---
 
@@ -146,6 +147,9 @@ const Contact: React.FC = () => {
         }
 
         try {
+            let emailSubject = '';
+            let emailContent = '';
+
             if (requestType === 'booking') {
                 const newBooking: BookingRequest = {
                     id: `booking-${Date.now()}`,
@@ -161,6 +165,19 @@ const Contact: React.FC = () => {
                 };
                 const updatedBookings = [...(data.bookingRequests || []), newBooking];
                 await saveData({ ...data, bookingRequests: updatedBookings });
+
+                emailSubject = `Nouvelle demande de Booking : ${formData.name}`;
+                emailContent = `
+                    <h1>Nouvelle demande de Booking</h1>
+                    <p><strong>Nom:</strong> ${formData.name}</p>
+                    <p><strong>Email:</strong> ${formData.email}</p>
+                    <p><strong>Société:</strong> ${formData.company || 'Non spécifié'}</p>
+                    <p><strong>Mannequins souhaités:</strong> ${formData.requestedModels}</p>
+                    <p><strong>Dates:</strong> ${formData.startDate} - ${formData.endDate}</p>
+                    <h2>Message / Détails :</h2>
+                    <p>${formData.message}</p>
+                    ${formData.projectDetails ? `<p><strong>Détails supplémentaires:</strong> ${formData.projectDetails}</p>` : ''}
+                `;
             } else {
                 const newMessage: ContactMessage = {
                     id: `contact-${Date.now()}`,
@@ -173,6 +190,27 @@ const Contact: React.FC = () => {
                 };
                 const updatedMessages = [...(data.contactMessages || []), newMessage];
                 await saveData({ ...data, contactMessages: updatedMessages });
+
+                emailSubject = `Nouveau message contact : ${newMessage.subject}`;
+                emailContent = `
+                    <h1>Nouveau message de contact</h1>
+                    <p><strong>Nom:</strong> ${formData.name}</p>
+                    <p><strong>Email:</strong> ${formData.email}</p>
+                    <p><strong>Sujet:</strong> ${newMessage.subject}</p>
+                    <h2>Message :</h2>
+                    <p>${formData.message}</p>
+                `;
+            }
+
+            // Send Email Notification
+            if (data.apiKeys?.brevoApiKey) {
+                await sendEmail({
+                    to: [{ email: data.contactInfo.notificationEmail || 'contact@perfectmodels.ga', name: 'Perfect Models Admin' }],
+                    subject: emailSubject,
+                    htmlContent: emailContent,
+                    apiKey: data.apiKeys.brevoApiKey,
+                    sender: { email: 'notifications@perfectmodels.ga', name: 'Site Web PMM' }
+                });
             }
 
             setStatus('success');
@@ -255,8 +293,8 @@ const Contact: React.FC = () => {
                                     key={type.id}
                                     onClick={() => setRequestType(type.id as any)}
                                     className={`px-6 py-2 rounded-full border transition-all duration-300 ${requestType === type.id
-                                            ? 'bg-pm-gold text-black border-pm-gold font-bold shadow-lg shadow-pm-gold/20'
-                                            : 'bg-transparent text-gray-400 border-white/20 hover:border-pm-gold hover:text-white'
+                                        ? 'bg-pm-gold text-black border-pm-gold font-bold shadow-lg shadow-pm-gold/20'
+                                        : 'bg-transparent text-gray-400 border-white/20 hover:border-pm-gold hover:text-white'
                                         }`}
                                 >
                                     {type.label}

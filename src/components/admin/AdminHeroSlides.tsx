@@ -12,7 +12,7 @@ import React, { useState } from 'react';
 import { useData } from '../../contexts/DataContext';
 import { HeroSlide } from '../../types';
 import { PlusIcon, PencilIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import ImageUploader from './ImageUploader';
+import ImageUploader from '../ImageUploader';
 
 const AdminHeroSlides: React.FC = () => {
     const { data, saveData } = useData();

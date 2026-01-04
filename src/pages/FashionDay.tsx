@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { CalendarDaysIcon, MapPinIcon, SparklesIcon, TicketIcon, XMarkIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, MapPinIcon, SparklesIcon, TicketIcon, XMarkIcon, UserGroupIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayEvent } from '../types';
 import Button from '../components/ui/Button';
+import { MODEL_IMAGES } from '../constants/modelImages';
 
 // --- Sub-Components ---
 
@@ -68,6 +69,18 @@ const FashionDay: React.FC = () => {
       setSelectedEdition(nextEdition || sortedEvents[0]);
     }
   }, [fashionDayEvents]);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   if (!isInitialized || !selectedEdition) {
     return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
@@ -165,9 +178,9 @@ const FashionDay: React.FC = () => {
           </div>
 
           {/* Designers / Artists Section */}
-          {(selectedEdition.stylists?.length || 0) > 0 && (
-            <div className="py-12 border-t border-white/10">
-              <h3 className="text-3xl font-playfair text-white mb-12 text-center">Les Créateurs</h3>
+          <div className="py-12 border-t border-white/10">
+            <h3 className="text-3xl font-playfair text-white mb-12 text-center">Les Créateurs</h3>
+            {(selectedEdition.stylists?.length || 0) > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {selectedEdition.stylists?.map((stylist, idx) => (
                   <div key={idx} className="group relative overflow-hidden bg-white/5 aspect-[4/5]">
@@ -190,6 +203,66 @@ const FashionDay: React.FC = () => {
                           Voir Galerie
                         </button>
                       )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 bg-white/5 border border-white/10 rounded-lg">
+                <SparklesIcon className="w-12 h-12 text-pm-gold mx-auto mb-6 opacity-50" />
+                <h4 className="text-2xl font-playfair text-white mb-2">Sélection en cours</h4>
+                <p className="text-gray-400">Les créateurs de cette édition seront révélés très prochainement.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Models Section (Edition 2) - Carousel */}
+          {selectedEdition.edition === 2 && (
+            <div className="py-12 border-t border-white/10 relative group/carousel">
+              <h3 className="text-3xl font-playfair text-white mb-12 text-center">Les Mannequins</h3>
+
+              {/* Controls */}
+              <button
+                aria-label="Previous slide"
+                onClick={() => scroll('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-pm-gold text-white hover:text-black p-3 rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100 -ml-4 md:ml-0"
+              >
+                <ChevronLeftIcon className="w-6 h-6" />
+              </button>
+
+              <button
+                aria-label="Next slide"
+                onClick={() => scroll('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-pm-gold text-white hover:text-black p-3 rounded-full backdrop-blur-sm transition-all opacity-0 group-hover/carousel:opacity-100 -mr-4 md:mr-0"
+              >
+                <ChevronRightIcon className="w-6 h-6" />
+              </button>
+
+              <div
+                ref={scrollContainerRef}
+                className="flex overflow-x-auto gap-6 snap-x snap-mandatory no-scrollbar pb-8 px-4"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {Object.entries(MODEL_IMAGES).map(([key, url], idx) => (
+                  <div
+                    key={key}
+                    className="flex-none h-64 md:h-96 w-auto snap-center group relative overflow-hidden cursor-pointer rounded-lg"
+                    onClick={() => setSelectedImage(url)}
+                  >
+                    <img
+                      src={url}
+                      alt={`Mannequin ${key}`}
+                      className="h-full w-auto block transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-pm-gold text-xs uppercase tracking-widest font-bold">
+                          Modèle {key}
+                        </span>
+                        <span className="text-white bg-pm-gold/20 p-2 rounded-full">
+                          <SparklesIcon className="w-4 h-4" />
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -258,9 +331,9 @@ const FashionDay: React.FC = () => {
           )}
 
           {/* Partners */}
-          {(selectedEdition.partners?.length || 0) > 0 && (
-            <div className="text-center py-12 border-t border-white/10">
-              <span className="text-gray-500 uppercase tracking-widest text-xs font-bold block mb-8">Partenaires Officiels</span>
+          <div className="text-center py-12 border-t border-white/10">
+            <span className="text-gray-500 uppercase tracking-widest text-xs font-bold block mb-8">Partenaires Officiels</span>
+            {(selectedEdition.partners?.length || 0) > 0 ? (
               <div className="flex flex-wrap justify-center items-center gap-12 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
                 {selectedEdition.partners?.map((partner, idx) => (
                   <div key={idx} className="text-center">
@@ -269,8 +342,16 @@ const FashionDay: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="py-12 bg-white/5 border border-white/10 rounded-lg max-w-3xl mx-auto">
+                <p className="text-xl font-playfair text-white mb-4">Devenez Partenaire</p>
+                <p className="text-gray-400 mb-6">Associez votre image à l'événement mode de l'année.</p>
+                <Link to="/contact">
+                  <Button variant="outline" className="px-6 py-2">Nous Contacter</Button>
+                </Link>
+              </div>
+            )}
+          </div>
 
         </motion.div>
       </div>
@@ -292,7 +373,7 @@ const FashionDay: React.FC = () => {
               src={selectedImage}
               className="max-h-[85vh] max-w-full object-contain rounded-sm shadow-2xl"
             />
-            <button className="absolute top-6 right-6 text-white hover:text-pm-gold transition-colors">
+            <button aria-label="Close lightbox" className="absolute top-6 right-6 text-white hover:text-pm-gold transition-colors">
               <XMarkIcon className="w-8 h-8" />
             </button>
           </motion.div>

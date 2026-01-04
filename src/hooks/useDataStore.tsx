@@ -115,7 +115,7 @@ export const useDataStore = () => {
         heroSlides: [
             {
                 id: '1',
-                image: '/images/hero-1.jpg',
+                image: 'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=2070&auto=format&fit=crop',
                 title: 'L\'Élégance',
                 subtitle: 'Redéfinie',
                 description: 'Agence de Mannequins & Événementiel',
@@ -126,7 +126,7 @@ export const useDataStore = () => {
             },
             {
                 id: '2',
-                image: '/images/hero-2.jpg',
+                image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=2550&auto=format&fit=crop',
                 title: 'Votre Talent',
                 subtitle: 'Notre Passion',
                 description: 'Révélez votre potentiel avec Perfect Models',
@@ -137,7 +137,7 @@ export const useDataStore = () => {
             },
             {
                 id: '3',
-                image: '/images/hero-3.jpg',
+                image: 'https://images.unsplash.com/photo-1566204773863-cf63e6d4ab88?q=80&w=2560&auto=format&fit=crop',
                 title: 'Perfect Fashion',
                 subtitle: 'Day #2',
                 description: 'L\'événement mode incontournable de l\'année',
@@ -148,7 +148,7 @@ export const useDataStore = () => {
             },
             {
                 id: '4',
-                image: '/images/hero-4.jpg',
+                image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=2560&auto=format&fit=crop',
                 title: 'Excellence',
                 subtitle: 'Professionnelle',
                 description: 'Formation & Accompagnement sur mesure',
