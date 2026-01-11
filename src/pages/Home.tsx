@@ -163,7 +163,7 @@ const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides })
 
             {/* Right: Countdown & Action */}
             <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full md:w-auto">
-              <div className="hidden lg:block">
+              <div>
                 {event && <CountdownTimer targetDate={event.date || "2026-01-31T18:00:00"} />}
               </div>
 
