@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
+import Logo from '../ui/Logo';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
 import { MapPinIcon, PhoneIcon, EnvelopeIcon, ArrowRightIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 
@@ -35,15 +36,13 @@ const Footer: React.FC = () => {
                 {/* Top Section: Logo & Newsletter */}
                 <div className="flex flex-col md:flex-row justify-between items-center mb-20 gap-10 border-b border-white/10 pb-12">
                     <div className="flex-shrink-0">
-                        {siteConfig?.logo && (
-                            <Link to="/" className="inline-block group">
-                                <img
-                                    src={siteConfig.logo}
-                                    alt="Perfect Models Management"
-                                    className="h-20 w-auto brightness-0 invert opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                                />
-                            </Link>
-                        )}
+                        <Link to="/" className="inline-block group">
+                            <Logo
+                                src={siteConfig?.logo}
+                                alt="Perfect Models Management"
+                                className="h-20 w-auto brightness-0 invert opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                            />
+                        </Link>
                     </div>
 
                     <div className="w-full max-w-md">
