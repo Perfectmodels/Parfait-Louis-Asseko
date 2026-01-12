@@ -142,25 +142,45 @@ const AdminCastingResults: React.FC = () => {
             alert("Ce candidat a déjà été accepté et un profil a été créé.");
             return;
         }
+
+        // Prepare portfolio images from casting photos
+        const castingPhotos = [app.photoPortraitUrl, app.photoFullBodyUrl, app.portfolioLink]
+            .filter(url => url && (url.startsWith('http') || url.startsWith('data:image'))) as string[];
         
         const existingModelIndex = data.models.findIndex(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
+
         if (existingModelIndex !== -1) {
-            if (window.confirm(`Un mannequin nommé "${app.firstName} ${app.lastName}" existe déjà. Voulez-vous mettre à jour ses données (taille, mensurations, contact) avec celles de cette candidature ?`)) {
+            if (window.confirm(`Un mannequin nommé "${app.firstName} ${app.lastName}" existe déjà. Voulez-vous ÉCRASER ses données existantes avec celles de ce casting (contact, mensurations, photos) ?`)) {
                 const existingModel = data.models[existingModelIndex];
+
+                // Merge portfolio images
+                const updatedPortfolioImages = [...(existingModel.portfolioImages || []), ...castingPhotos];
+                // Remove duplicates
+                const uniquePortfolioImages = Array.from(new Set(updatedPortfolioImages));
+
                 const updatedModel: Model = {
                     ...existingModel,
                     email: app.email || existingModel.email,
                     phone: app.phone || existingModel.phone,
-                    height: `${app.height}cm`,
+                    height: app.height ? `${app.height}cm` : existingModel.height,
+                    weight: app.weight ? `${app.weight}kg` : existingModel.weight,
+                    hairColor: app.hairColor || existingModel.hairColor,
+                    eyeColor: app.eyeColor || existingModel.eyeColor,
+                    instagram: app.instagram || existingModel.instagram,
                     measurements: {
-                        chest: `${app.chest || '0'}cm`,
-                        waist: `${app.waist || '0'}cm`,
-                        hips: `${app.hips || '0'}cm`,
-                        shoeSize: `${app.shoeSize || '0'}`,
+                        chest: app.chest ? `${app.chest}cm` : existingModel.measurements.chest,
+                        waist: app.waist ? `${app.waist}cm` : existingModel.measurements.waist,
+                        hips: app.hips ? `${app.hips}cm` : existingModel.measurements.hips,
+                        shoeSize: app.shoeSize || existingModel.measurements.shoeSize,
                     },
                     location: app.city || existingModel.location,
-                    // Optionally update age if birthDate is provided
                     age: app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : existingModel.age,
+                    portfolioImages: uniquePortfolioImages,
+                    // We don't overwrite experience/journey unless it's empty, or we append it?
+                    // Let's append casting experience info if useful, or leave as is.
+                    // User said "overwrite", so maybe we should set it if provided?
+                    // Casting app has 'experience' field.
+                    experience: app.experience ? `${existingModel.experience || ''}\n\n[Casting Update]: ${app.experience}`.trim() : existingModel.experience,
                 };
 
                 const updatedModels = [...data.models];
@@ -170,13 +190,18 @@ const AdminCastingResults: React.FC = () => {
 
                 try {
                     await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-                    alert(`Le profil de ${updatedModel.name} a été mis à jour avec succès.`);
+                    alert(`Le profil de ${updatedModel.name} a été mis à jour (écrasé) avec succès.`);
                 } catch (error) {
                     console.error("Erreur lors de la mise à jour du profil:", error);
                     alert("Une erreur est survenue lors de la sauvegarde.");
                 }
             } else {
-                await handleUpdateStatus(app.id, 'Accepté');
+                // If user cancels overwrite, we just mark as accepted without changing model data?
+                // Or we do nothing? Usually if they click validate, they expect action.
+                // Let's offer to just mark as accepted.
+                if(window.confirm("Voulez-vous marquer la candidature comme 'Accepté' SANS modifier le profil existant ?")) {
+                     await handleUpdateStatus(app.id, 'Accepté');
+                }
             }
             return;
         }
@@ -196,14 +221,22 @@ const AdminCastingResults: React.FC = () => {
 
         const newModel: Model = {
             id, name: `${app.firstName} ${app.lastName}`, username, password, level: 'Débutant',
-            email: app.email, phone: app.phone, age, height: `${app.height}cm`, gender: app.gender, location: app.city,
-            imageUrl: `https://i.ibb.co/fVBxPNTP/T-shirt.png`, // Placeholder image
-            isPublic: false, distinctions: [], portfolioImages: [],
+            email: app.email, phone: app.phone, age,
+            height: `${app.height}cm`,
+            weight: `${app.weight}kg`,
+            hairColor: app.hairColor,
+            eyeColor: app.eyeColor,
+            instagram: app.instagram,
+            gender: app.gender, location: app.city,
+            imageUrl: app.photoPortraitUrl || `https://i.ibb.co/fVBxPNTP/T-shirt.png`,
+            isPublic: false, distinctions: [],
+            portfolioImages: castingPhotos,
             measurements: {
                 chest: `${app.chest || '0'}cm`, waist: `${app.waist || '0'}cm`,
                 hips: `${app.hips || '0'}cm`, shoeSize: `${app.shoeSize || '0'}`,
             },
-            categories: [], experience: 'Nouveau mannequin issu du casting.',
+            categories: [],
+            experience: app.experience || 'Nouveau mannequin issu du casting.',
             journey: 'Profil créé automatiquement après validation du casting.', quizScores: {}
         };
         
