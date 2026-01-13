@@ -32,7 +32,7 @@
     <!-- Icons & PWA -->
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/NdrpzGpm/blob.jpg">
     <link rel="apple-touch-icon" href="https://i.ibb.co/fVBxPNTP/T-shirt.png">
-    <link rel="manifest" href="/manifest.json">
+    <!-- Manifest is injected by VitePWA -->
 
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,17 +48,6 @@
     <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
     <div id="root"></div>
     <script type="module" src="./src/index.tsx"></script>
-    <script>
-        // Désinscription des anciens service workers pour éviter les conflits de cache
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                for (let registration of registrations) {
-                    registration.unregister();
-                    console.log('Ancien Service Worker désinscrit:', registration.scope);
-                }
-            });
-        }
-    </script>
 </body>
 
 </html>
