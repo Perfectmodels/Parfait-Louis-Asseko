@@ -19,6 +19,8 @@ export default {
       colors: {
         'pm-dark': '#111111',
         'pm-gold': '#D4AF37',
+        'pm-gold-light': '#F3D068',
+        'pm-gold-dark': '#AA8C2C',
         'pm-off-white': '#f0f0f0',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
