@@ -284,8 +284,8 @@ const TermsOfUse: React.FC = () => {
                                         <li>Les résultats de formation ou de casting ne sont pas garantis</li>
                                     </ul>
 
-                                    <div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-lg">
-                                        <p className="text-yellow-300 text-sm">
+                                    <div className="bg-pm-gold/10 border border-pm-gold/30 p-4 rounded-lg">
+                                        <p className="text-pm-gold text-sm">
                                             <strong>Important :</strong> Notre responsabilité est limitée au montant payé pour le service concerné.
                                         </p>
                                     </div>

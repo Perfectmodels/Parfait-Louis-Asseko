@@ -170,7 +170,7 @@ const handleSendMessage = async (e: React.FormEvent) => {
   const getStatusColor = (status: string) => {
     const colors = {
       active: 'text-green-400',
-      pending: 'text-yellow-400',
+      pending: 'text-pm-gold',
       closed: 'text-gray-400',
       cancelled: 'text-red-400'
     };

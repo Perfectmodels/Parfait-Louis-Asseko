@@ -9,7 +9,7 @@ import { Model, Module } from '../../types';
 const getScoreColor = (score: number, total: number) => {
     const percentage = (score / total) * 100;
     if (percentage >= 80) return 'text-green-400';
-    if (percentage >= 50) return 'text-yellow-400';
+    if (percentage >= 50) return 'text-pm-gold';
     return 'text-red-400';
 };
 
@@ -108,7 +108,7 @@ const ProgressModal: React.FC<ProgressModalProps> = ({ model, onClose, courseDat
                                             )}
                                         </div>
                                         {result && result.timesLeft > 0 && (
-                                            <div className="flex items-center gap-1 text-yellow-400" title={`${result.timesLeft} sortie(s) de la page détectée(s) pendant le quiz`}>
+                                            <div className="flex items-center gap-1 text-pm-gold" title={`${result.timesLeft} sortie(s) de la page détectée(s) pendant le quiz`}>
                                                 <ExclamationTriangleIcon className="w-5 h-5" />
                                                 <span className="text-sm font-bold">{result.timesLeft}</span>
                                             </div>

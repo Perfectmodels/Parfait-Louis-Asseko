@@ -21,7 +21,7 @@ const ScoreInput: React.FC<ScoreInputProps> = ({ label, value, onChange }) => {
     
     const descriptionColor = useMemo(() => {
         if (value >= 9) return 'text-green-400';
-        if (value >= 7.5) return 'text-yellow-400';
+        if (value >= 7.5) return 'text-pm-gold';
         if (value >= 6) return 'text-orange-400';
         return 'text-red-400';
     }, [value]);
