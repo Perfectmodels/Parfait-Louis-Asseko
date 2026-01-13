@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon, QrCodeIcon } from '@heroicons/react/24/outline';
 import { Model, PhotoshootBrief } from '../types';
-// FIX: Corrected import path for ModelForm.
 import ModelForm from '../components/ModelForm';
+import { ModelQRCode } from '../components/ModelQRCode';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 
@@ -17,6 +17,7 @@ const ModelDashboard: React.FC = () => {
     const [editableModel, setEditableModel] = useState<Model | null>(null);
     const [activeTab, setActiveTab] = useState<ActiveTab>('profile');
     const [expandedBriefId, setExpandedBriefId] = useState<string | null>(null);
+    const [showQRCode, setShowQRCode] = useState(false);
 
     const originalModel = data?.models.find(m => m.id === userId);
     const courseModulesWithQuizzes = data?.courseData?.filter(m => m.quiz && m.quiz.length > 0) || [];
@@ -121,6 +122,10 @@ const ModelDashboard: React.FC = () => {
                                     <BookOpenIcon className="w-5 h-5" />
                                     Classroom
                                 </Link>
+                                <button onClick={() => setShowQRCode(true)} className="w-full py-3 px-4 bg-white/5 border border-white/10 text-white font-bold rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2">
+                                    <QrCodeIcon className="w-5 h-5" />
+                                    Mon QR Code
+                                </button>
                                 <Link to={`/mannequins/${editableModel.id}`} target="_blank" rel="noopener noreferrer" className="block w-full py-3 px-4 bg-transparent border border-pm-gold/30 text-pm-gold font-bold rounded-lg hover:bg-pm-gold/10 transition-all duration-300 flex items-center justify-center gap-2">
                                     <UserIcon className="w-5 h-5" />
                                     Portfolio Public
@@ -211,6 +216,13 @@ const ModelDashboard: React.FC = () => {
                     </main>
                 </div>
             </div>
+            {showQRCode && editableModel && (
+                <ModelQRCode
+                    modelId={editableModel.id}
+                    modelName={editableModel.name}
+                    onClose={() => setShowQRCode(false)}
+                />
+            )}
         </div>
     );
 };

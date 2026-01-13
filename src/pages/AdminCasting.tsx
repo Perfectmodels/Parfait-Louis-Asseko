@@ -2,15 +2,16 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon, Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
+import { CastingKanban } from '../components/admin/CastingKanban';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
+    const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
 
     useEffect(() => {
         if (data?.castingApplications) {
@@ -165,46 +166,68 @@ const AdminCasting: React.FC = () => {
                 </Link>
                 <h1 className="text-4xl font-playfair text-pm-gold mb-8">Candidatures Casting</h1>
 
-                <div className="flex flex-wrap items-center gap-4 mb-8">
-                    {statusOptions.map(f => (
-                        <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all ${filter === f ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
-                            {f}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <div className="flex flex-wrap items-center gap-4">
+                        {viewMode === 'list' && statusOptions.map(f => (
+                            <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all ${filter === f ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
+                                {f}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="flex bg-black border border-pm-gold/20 rounded-lg p-1">
+                        <button
+                            onClick={() => setViewMode('list')}
+                            className={`p-2 rounded transition-all ${viewMode === 'list' ? 'bg-pm-gold text-pm-dark' : 'text-pm-off-white hover:text-pm-gold'}`}
+                            title="Vue Liste"
+                        >
+                            <ListBulletIcon className="w-5 h-5" />
                         </button>
-                    ))}
-                </div>
-
-                <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-pm-dark/50">
-                                <tr className="border-b border-pm-gold/20">
-                                    <th className="p-4 uppercase text-xs tracking-wider">Nom</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Âge</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Taille</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider">Statut</th>
-                                    <th className="p-4 uppercase text-xs tracking-wider text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredApps.map(app => (
-                                    <tr key={app.id} className="border-b border-pm-dark hover:bg-pm-dark/50">
-                                        <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
-                                        <td className="p-4 hidden sm:table-cell">{app.birthDate ? `${new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans` : 'N/A'}</td>
-                                        <td className="p-4 hidden sm:table-cell">{app.height} cm</td>
-                                        <td className="p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
-                                        <td className="p-4">
-                                            <div className="flex items-center justify-end gap-4">
-                                                <button onClick={() => setSelectedApp(app)} className="text-pm-gold/70 hover:text-pm-gold"><EyeIcon className="w-5 h-5"/></button>
-                                                <button onClick={() => handleDelete(app.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        {filteredApps.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune candidature trouvée.</p>}
+                        <button
+                            onClick={() => setViewMode('kanban')}
+                            className={`p-2 rounded transition-all ${viewMode === 'kanban' ? 'bg-pm-gold text-pm-dark' : 'text-pm-off-white hover:text-pm-gold'}`}
+                            title="Vue Tableau (Kanban)"
+                        >
+                            <Squares2X2Icon className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
+
+                {viewMode === 'kanban' ? (
+                    <CastingKanban />
+                ) : (
+                    <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-pm-dark/50">
+                                    <tr className="border-b border-pm-gold/20">
+                                        <th className="p-4 uppercase text-xs tracking-wider">Nom</th>
+                                        <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Âge</th>
+                                        <th className="p-4 uppercase text-xs tracking-wider hidden sm:table-cell">Taille</th>
+                                        <th className="p-4 uppercase text-xs tracking-wider">Statut</th>
+                                        <th className="p-4 uppercase text-xs tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredApps.map(app => (
+                                        <tr key={app.id} className="border-b border-pm-dark hover:bg-pm-dark/50">
+                                            <td className="p-4 font-semibold">{app.firstName} {app.lastName}</td>
+                                            <td className="p-4 hidden sm:table-cell">{app.birthDate ? `${new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans` : 'N/A'}</td>
+                                            <td className="p-4 hidden sm:table-cell">{app.height} cm</td>
+                                            <td className="p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
+                                            <td className="p-4">
+                                                <div className="flex items-center justify-end gap-4">
+                                                    <button onClick={() => setSelectedApp(app)} className="text-pm-gold/70 hover:text-pm-gold"><EyeIcon className="w-5 h-5"/></button>
+                                                    <button onClick={() => handleDelete(app.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {filteredApps.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune candidature trouvée.</p>}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
         {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} />}

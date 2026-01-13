@@ -37,6 +37,7 @@ import {
 import { useData } from '../contexts/DataContext';
 import { motion } from 'framer-motion';
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
+import { DashboardCalendar } from '../components/admin/DashboardCalendar';
 
 /**
  * Interface pour un utilisateur actif
@@ -179,6 +180,9 @@ const Admin: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                     <main className="lg:col-span-2 space-y-12">
+                        {/* New Calendar Widget */}
+                        <DashboardCalendar />
+
                         <Section title="Gestion Principale" icon={HomeIcon}>
                             <DashboardCard title="Mannequins" icon={UsersIcon} link="/admin/models" description="Gérer les profils et castings." highlight />
                             <DashboardCard title="Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Articles et publications." />
