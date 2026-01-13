@@ -74,7 +74,7 @@ const quickActions: QuickAction[] = [
         description: 'Créer avec l\'IA',
         icon: SparklesIcon,
         link: '/admin/generer-image',
-        color: 'from-pm-gold to-yellow-500'
+        color: 'from-pm-gold to-pm-gold-dark'
     },
     {
         title: 'Envoyer un Email',

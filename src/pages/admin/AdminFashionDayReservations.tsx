@@ -96,7 +96,7 @@ const AdminFashionDayReservations: React.FC = () => {
         switch (status) {
             case 'Payée': return 'bg-green-500/20 text-green-400 border-green-500/30';
             case 'Confirmée': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-            case 'En attente': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+            case 'En attente': return 'bg-pm-gold/20 text-pm-gold border-pm-gold/30';
             case 'Annulée': return 'bg-red-500/20 text-red-400 border-red-500/30';
         }
     };

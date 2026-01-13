@@ -145,7 +145,7 @@ const AdminCasting: React.FC = () => {
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
-            case 'Présélectionné': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500';
+            case 'Présélectionné': return 'bg-pm-gold/20 text-pm-gold border-pm-gold';
             case 'Accepté': return 'bg-green-500/20 text-green-300 border-green-500';
             case 'Refusé': return 'bg-red-500/20 text-red-300 border-red-500';
             default: return 'bg-gray-500/20 text-gray-300';
