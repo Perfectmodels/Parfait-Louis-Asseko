@@ -1,9 +1,7 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
-import Logo from '../components/ui/Logo';
 import { useData } from '../contexts/DataContext';
 import { RecoveryRequest } from '../types';
 import { motion } from 'framer-motion';
@@ -79,6 +77,7 @@ const Login: React.FC = () => {
         navigate(foundUser.path);
         return;
     }
+    // FIX: Removed Beginner Student login logic as the feature is deprecated.
 
     setError('Identifiant ou mot de passe incorrect.');
     setPassword('');
@@ -111,11 +110,7 @@ const Login: React.FC = () => {
         >
           <div className="bg-black/50 border border-pm-gold/20 p-8 rounded-lg shadow-2xl shadow-black/50 text-center">
             <Link to="/">
-                <Logo
-                    src={data?.siteConfig.logo}
-                    alt="Logo"
-                    className="h-20 w-auto mx-auto mb-6 bg-black rounded-full border-2 border-pm-gold p-1"
-                />
+                <img src={data?.siteConfig.logo} alt="Logo" className="h-20 w-auto mx-auto mb-6 bg-black rounded-full border-2 border-pm-gold p-1" />
             </Link>
             <h1 className="text-3xl font-playfair text-pm-gold mb-2">Accès Privé</h1>
             <p className="text-pm-off-white/70 mb-8">

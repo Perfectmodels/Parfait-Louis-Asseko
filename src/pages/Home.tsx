@@ -1,474 +1,141 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useInView, animate } from 'framer-motion';
+
+import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
-import CountdownTimer from '../components/CountdownTimer';
-import { UsersIcon, CalendarDaysIcon, StarIcon, TrophyIcon, ArrowLongRightIcon, TicketIcon } from '@heroicons/react/24/outline';
-import Button from '../components/ui/Button';
-
-// --- Sub-components ---
-
-const ModelCardSkeleton: React.FC = () => (
-  <div className="animate-pulse">
-    <div className="aspect-[3/4] bg-white/5 rounded-xl mb-4" />
-    <div className="h-4 bg-white/5 rounded w-3/4 mb-2" />
-    <div className="h-3 bg-white/5 rounded w-1/2" />
-  </div>
-);
-
-const DynamicHero: React.FC<{ event: any; slides: any[] }> = ({ event, slides }) => {
-  const [currentSlide, setCurrentSlide] = React.useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = React.useState(true);
-  const ref = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"]
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
-  // Filter active slides and sort by order
-  const activeSlides = slides
-    .filter(slide => slide.isActive)
-    .sort((a, b) => a.order - b.order);
-
-  // Auto-play slides
-  React.useEffect(() => {
-    if (!isAutoPlaying || activeSlides.length === 0) return;
-
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
-    }, 5000); // Change every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, activeSlides.length]);
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-    setIsAutoPlaying(false);
-    // Resume auto-play after 10 seconds
-    setTimeout(() => setIsAutoPlaying(true), 10000);
-  };
-
-  if (activeSlides.length === 0) {
-    return null;
-  }
-
-  const currentSlideData = activeSlides[currentSlide];
-
-  return (
-    <div ref={ref} className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Background Images with Parallax */}
-      {activeSlides.map((slide, index) => (
-        <motion.div
-          key={index}
-          style={{
-            y: index === currentSlide ? y : 0,
-            backgroundImage: `url('${slide.image}')`
-          }}
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: index === currentSlide ? 1 : 0,
-            scale: index === currentSlide ? 1 : 1.1
-          }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-          className="absolute inset-0 bg-cover bg-center"
-        />
-      ))}
-
-      <div className="absolute inset-0 bg-black/40" />
-
-      {/* Content */}
-      <motion.div
-        style={{ opacity }}
-        className="relative z-10 text-center px-4 max-w-5xl mx-auto flex-grow flex flex-col justify-center w-full"
-      >
-        <motion.span
-          key={`desc-${currentSlide}`}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="block text-pm-gold uppercase tracking-[0.3em] mb-4 text-sm md:text-base font-bold"
-        >
-          {currentSlideData.description}
-        </motion.span>
-
-        <motion.h1
-          key={`title-${currentSlide}`}
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-6xl md:text-8xl lg:text-9xl font-playfair text-white mb-6 leading-tight"
-        >
-          {currentSlideData.title} <br />
-          <span className="italic text-pm-gold">{currentSlideData.subtitle}</span>
-        </motion.h1>
-
-
-
-        {/* Slide Indicators */}
-        <div className="flex items-center justify-center gap-3 mt-12">
-          {activeSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`transition-all duration-300 ${index === currentSlide
-                ? 'w-12 h-2 bg-pm-gold'
-                : 'w-2 h-2 bg-white/40 hover:bg-white/60'
-                } rounded-full`}
-              aria-label={`Aller au slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Premium Event Card - Floating Glassmorphism Design */}
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.8, duration: 1, type: "spring", bounce: 0.2 }}
-        className="relative z-20 px-4 pb-4 md:pb-8 pointer-events-none w-full"
-      >
-        <div className="max-w-5xl mx-auto bg-black/60 backdrop-blur-xl border border-pm-gold/30 rounded-2xl md:rounded-full p-2 md:p-3 shadow-2xl shadow-black/50 pointer-events-auto relative overflow-hidden group">
-
-          {/* Animated Glow Effect */}
-          <div className="absolute top-0 left-[-100%] w-[150%] h-full bg-gradient-to-r from-transparent via-pm-gold/10 to-transparent transform skew-x-12 animate-shine" />
-
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 px-4 md:px-8 py-4">
-
-            {/* Left: Event Info */}
-            <div className="flex items-center gap-6 text-center md:text-left">
-              <div className="hidden md:flex flex-col items-center justify-center w-16 h-16 bg-pm-gold text-black rounded-full font-bold shadow-lg shadow-pm-gold/20">
-                <span className="text-xs uppercase tracking-tighter leading-none">JAN</span>
-                <span className="text-2xl font-playfair leading-none">31</span>
-              </div>
-
-              <div className="flex flex-col items-center md:items-start">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-pm-gold">Billetterie Ouverte</span>
-                </div>
-                <h3 className="text-white font-playfair text-2xl md:text-3xl">
-                  Perfect Fashion Day <span className="text-pm-gold italic">#2</span>
-                </h3>
-                <p className="text-gray-400 text-sm italic">"L'Art de se révéler" • Hôtel Restaurant Bar Casino</p>
-              </div>
-            </div>
-
-            {/* Right: Countdown & Action */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full md:w-auto">
-              <div className="hidden lg:block">
-                {event && <CountdownTimer targetDate={event.date || "2026-01-31T18:00:00"} />}
-              </div>
-
-              <Link to="/fashion-day/reservation" className="w-full sm:w-auto">
-                <Button
-                  className="w-full sm:w-auto bg-pm-gold text-black hover:bg-white transition-all duration-300 shadow-lg shadow-pm-gold/20 rounded-full px-8"
-                  icon={<TicketIcon className="w-5 h-5" />}
-                >
-                  Réserver
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
-
-const Marquee: React.FC = () => {
-  // Services list for the marquee
-  const services = [
-    "Mannequinat", "Hôtessariat", "Organisation d'Événements", "Shooting Photo",
-    "Production Audiovisuelle", "Casting", "Formation", "Direction Artistique", "Conseil en Image"
-  ];
-
-  return (
-    <div className="bg-pm-gold py-4 overflow-hidden whitespace-nowrap relative z-20">
-      <motion.div
-        className="inline-block text-black font-bold text-lg tracking-widest uppercase"
-        animate={{ x: [0, -1000] }}
-        transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
-      >
-        {/* Repeat the list multiple times to ensure continuous scroll */}
-        {[...Array(4)].map((_, i) => (
-          <React.Fragment key={i}>
-            {services.map((service, index) => (
-              <span key={`${i}-${index}`} className="mx-8 flex-inline items-center">
-                {service} <span className="ml-8 text-black/40">•</span>
-              </span>
-            ))}
-          </React.Fragment>
-        ))}
-      </motion.div>
-    </div>
-  );
-};
-
-const EditorialSection: React.FC<{ image: string, title: string, content: string, reverse?: boolean }> = ({ image, title, content, reverse = false }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
-
-  return (
-    <section ref={ref} className="py-24 overflow-hidden bg-pm-dark">
-      <div className="container mx-auto px-6">
-        <div className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-16`}>
-          <motion.div
-            className="w-full lg:w-1/2 relative"
-            initial={{ opacity: 0, x: reverse ? 50 : -50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="absolute top-4 -left-4 w-full h-full border border-pm-gold/30 z-0" />
-            <div className="relative z-10 aspect-[3/4] overflow-hidden">
-              <motion.img
-                src={image}
-                alt={title}
-                className="w-full h-full object-cover"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.6 }}
-              />
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="w-full lg:w-1/2"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <h2 className="text-4xl md:text-5xl font-playfair text-white mb-8 border-l-4 border-pm-gold pl-6">
-              {title}
-            </h2>
-            <p className="text-lg text-gray-300 leading-relaxed mb-8">
-              {content}
-            </p>
-            <Link to="/agence" className="group inline-flex items-center text-pm-gold tracking-widest uppercase text-sm font-bold">
-              En savoir plus
-              <ArrowLongRightIcon className="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform" />
-            </Link>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const AnimatedCounter: React.FC<{ to: number }> = ({ to }) => {
-  const [count, setCount] = React.useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-
-  React.useEffect(() => {
-    if (isInView) {
-      const controls = animate(0, to, {
-        duration: 2,
-        onUpdate: (value) => setCount(Math.round(value)),
-        ease: "easeOut"
-      });
-      return () => controls.stop();
-    }
-  }, [isInView, to]);
-
-  return <span ref={ref}>{count}</span>;
-}
-
-const StatItem: React.FC<{ icon: any, value: number, label: string }> = ({ icon: Icon, value, label }) => (
-  <div className="flex flex-col items-center">
-    <div className="w-16 h-16 rounded-full bg-pm-gold/10 flex items-center justify-center mb-4 text-pm-gold border border-pm-gold/20">
-      <Icon className="w-8 h-8" />
-    </div>
-    <div className="text-4xl font-playfair font-bold text-white mb-2">
-      +<AnimatedCounter to={value} />
-    </div>
-    <p className="text-sm uppercase tracking-widest text-gray-500">{label}</p>
-  </div>
-);
-
-// --- Main Page Component ---
 
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
 
   if (!isInitialized || !data) {
-    return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
+    return (
+      <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-pm-gold border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-pm-gold text-xl font-playfair animate-pulse">Chargement...</p>
+        </div>
+      </div>
+    );
   }
 
-  const { agencyInfo, siteConfig, socialLinks, fashionDayEvents, models, siteImages, testimonials, agencyServices, heroSlides } = data;
+  const { agencyInfo, agencyPartners, fashionDayEvents, models, siteImages, testimonials, agencyServices } = data;
   const publicModels = models.filter(m => m.isPublic).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
 
-  const nextEvent = fashionDayEvents
-    .filter(e => new Date(e.date).getTime() > new Date().getTime())
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
-
-  const organizationSchema = {
-    "@context": "https://schema.org", "@type": "Organization", "name": "Perfect Models Management",
-    "url": siteConfig.url, "logo": siteConfig.logo,
-    "sameAs": [socialLinks.facebook, socialLinks.instagram, socialLinks.youtube].filter(Boolean)
-  };
-
   return (
-    <div className="bg-black text-white selection:bg-pm-gold selection:text-black">
-      <SEO
+    <div className="text-pm-off-white">
+
+      <SEO 
         title="Accueil | L'Élégance Redéfinie"
-        description={siteConfig.description}
-        keywords={siteConfig.keywords}
+        description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
+        keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
         image={siteImages.hero}
-        schema={organizationSchema}
       />
 
-      <DynamicHero event={nextEvent} slides={heroSlides || []} />
-      <Marquee />
-
-      {/* Models Section - Moved Up for Engagement */}
-      <section className="py-24 bg-black relative">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-            <div>
-              <h2 className="section-title text-left mb-2">Nos Visages</h2>
-              <p className="text-gray-400 max-w-md">Découvrez les talents qui font rayonner la mode africaine à travers le monde.</p>
-            </div>
-            <Link to="/mannequins">
-              <Button variant="outline">Voir tout le casting</Button>
+      {/* 1. Hero Section */}
+      <section 
+        className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed" 
+        style={{ backgroundImage: `url('${siteImages.hero}')` }}
+      >
+        <div className="absolute inset-0 bg-pm-dark/80"></div>
+        <div className="relative z-10 p-6">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
+            L'Élégance Redéfinie
+          </h1>
+          <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
+            Nous révélons les talents et valorisons la beauté africaine.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+              Découvrir nos mannequins
             </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {models.length === 0 ? (
-              // Skeleton Loading
-              [...Array(4)].map((_, i) => <ModelCardSkeleton key={i} />)
-            ) : (
-              publicModels.map((model, index) => (
-                <motion.div
-                  key={model.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <ModelCard model={model} />
-                </motion.div>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-
-      <EditorialSection
-        title="Notre Vision"
-        content={agencyInfo.about.p1}
-        image={siteImages.about}
-      />
-
-      {/* Services Grid - Redesigned Cards */}
-      <section className="py-24 bg-pm-dark relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-pm-gold/5 blur-[100px] rounded-full pointer-events-none" />
-
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="section-title">Nos Services</h2>
-            <p className="text-gray-400 mt-4 max-w-2xl mx-auto">Une expertise complète pour les professionnels de la mode et de l'événementiel, alliant savoir-faire traditionnel et innovations modernes.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {featuredServices.map((service, index) => (
-              <motion.div
-                key={service.slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <ServiceCard service={service} />
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link to="/services">
-              <Button variant="secondary">Explorer tous nos services</Button>
+            <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
+              Nous rejoindre
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 border-y border-white/5 bg-black">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-            <StatItem icon={UsersIcon} value={models.length} label="Mannequins" />
-            <StatItem icon={CalendarDaysIcon} value={fashionDayEvents.length} label="Événements" />
-            <StatItem icon={StarIcon} value={agencyServices.length} label="Services" />
-            <StatItem icon={TrophyIcon} value={new Date().getFullYear() - 2021} label="Ans d'Excellence" />
+      {/* 2. Agency Presentation */}
+      <section className="page-container bg-black">
+        <div className="flex flex-col md:flex-row items-center gap-12">
+          <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
+            <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
           </div>
-        </div>
-      </section>
-
-      {/* Fashion Day Highlight (if event exists) */}
-      {nextEvent && (
-        <section className="py-32 relative bg-fixed bg-cover bg-center" style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}>
-          <div className="absolute inset-0 bg-black/80" />
-          <div className="container mx-auto px-6 relative z-10 text-center">
-            <span className="text-pm-gold font-bold tracking-[0.5em] uppercase text-sm mb-4 block">L'événement de l'année</span>
-            <h2 className="text-5xl md:text-7xl font-playfair text-white mb-8">
-              Perfect Fashion Day <span className="text-pm-gold">#{nextEvent.edition}</span>
-            </h2>
-            <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
-              Rejoignez-nous pour une célébration unique de la mode, de l'art et de la culture. Une expérience immersive inoubliable.
+          <div className="md:w-1/2 text-center md:text-left">
+            <p className="text-pm-off-white/80 mb-6 leading-relaxed">
+              {agencyInfo.about.p1}
             </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <Link to="/fashion-day/reservation">
-                <Button className="w-full sm:w-auto px-12 py-4 text-lg">Réserver ma place</Button>
-              </Link>
-              <Link to="/fashion-day">
-                <Button variant="outline" className="w-full sm:w-auto px-12 py-4 text-lg">En savoir plus</Button>
-              </Link>
+            <div className="flex justify-center md:justify-start gap-6 font-bold text-pm-gold/90 mb-8">
+              <span>PROFESSIONNALISME</span><span>•</span><span>EXCELLENCE</span><span>•</span><span>ÉTHIQUE</span>
             </div>
+            <Link to="/agence" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+              Découvrir l'agence
+            </Link>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
+      {/* 3. Services */}
+      <section className="page-container bg-pm-dark">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {featuredServices.map(service => (
+            <ServiceCard key={service.title} service={service} />
+          ))}
+        </div>
+      </section>
 
-      {/* Testimonials */}
+      {/* 4. Models */}
+      <section className="page-container bg-black">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {publicModels.map(model => (
+            <ModelCard key={model.id} model={model} />
+          ))}
+        </div>
+        <div className="text-center mt-12">
+          <Link to="/mannequins" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+            Voir tous les mannequins
+          </Link>
+        </div>
+      </section>
+
+      {/* 5. Events */}
+      <section 
+        className="py-20 lg:py-28 bg-cover bg-center bg-fixed" 
+        style={{ backgroundImage: `url('${siteImages.fashionDayBg}')` }}
+      >
+        <div className="container mx-auto px-6 text-center bg-black/80 py-16 md:py-20 backdrop-blur-sm">
+          <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+            {fashionDayEvents.find(e => e.edition === 2)?.description || "Nous créons des moments inoubliables où la mode prend vie. Découvrez nos événements phares."}
+          </p>
+          <Link to="/fashion-day" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
+            Découvrir le Perfect Fashion Day
+          </Link>
+        </div>
+      </section>
+
+      {/* 7. Testimonials */}
       {testimonials && testimonials.length > 0 && (
-        <section className="py-24 bg-pm-dark overflow-hidden relative">
-          <div className="absolute top-0 left-0 w-1/2 h-full bg-pm-gold/5 blur-3xl rounded-full -translate-x-1/2" />
-          <div className="container mx-auto px-6 relative z-10">
-            <h2 className="section-title text-center mb-16">Ce qu'ils disent de nous</h2>
-            <TestimonialCarousel />
-          </div>
+        <section className="page-container bg-black">
+          <TestimonialCarousel />
         </section>
       )}
 
-      {/* CTA Layer */}
-      <section className="py-32 relative bg-cover bg-fixed bg-center" style={{ backgroundImage: `url('${siteImages.castingBg}')` }}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/50" />
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl">
-            <h2 className="text-4xl md:text-6xl font-playfair text-white mb-6">Révélez votre Potentiel</h2>
-            <p className="text-xl text-gray-300 mb-10 leading-relaxed">
-              Vous avez le talent, nous avons l'expertise. Rejoignez l'agence qui transforme les rêves en carrières internationales. Casting ouvert toute l'année.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6">
-              <Link to="/casting-formulaire">
-                <Button className="px-10 py-5 text-lg shadow-lg shadow-pm-gold/20">Postuler Maintenant</Button>
-              </Link>
-              <Link to="/contact">
-                <Button variant="outline" className="px-10 py-5 text-lg">Nous Contacter</Button>
-              </Link>
-            </div>
-          </div>
+      {/* 8. Call to Action */}
+      <section className="page-container bg-pm-dark text-center">
+        <p className="text-pm-off-white/80 max-w-3xl mx-auto mb-8">
+          Mannequin, styliste ou partenaire, rejoignez l'aventure Perfect Models Management dès aujourd'hui et façonnons ensemble l'avenir de la mode.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-pm-gold/20">
+            Postuler
+          </Link>
+          <Link to="/contact" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+            Nous Contacter
+          </Link>
         </div>
       </section>
 

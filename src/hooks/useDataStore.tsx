@@ -1,19 +1,18 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, SiteConfig, FashionDayReservation, HeroSlide } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 // Import initial data to seed the database if it's empty
-import {
-    models as initialModels,
-    siteConfig as initialSiteConfig,
-    contactInfo as initialContactInfo,
-    siteImages as initialSiteImages,
-    apiKeys as initialApiKeys,
-    castingApplications as initialCastingApplications,
-    fashionDayApplications as initialFashionDayApplications,
+import { 
+    models as initialModels, 
+    siteConfig as initialSiteConfig, 
+    contactInfo as initialContactInfo, 
+    siteImages as initialSiteImages, 
+    apiKeys as initialApiKeys, 
+    castingApplications as initialCastingApplications, 
+    fashionDayApplications as initialFashionDayApplications, 
     forumThreads as initialForumThreads,
     forumReplies as initialForumReplies,
     articleComments as initialArticleComments,
@@ -24,16 +23,16 @@ import {
     // FIX: Changed to import 'monthlyPayments' instead of non-existent 'transactions'.
     monthlyPayments as initialMonthlyPayments,
     photoshootBriefs as initialPhotoshootBriefs,
-    newsItems as initialNewsItems,
-    navLinks as initialNavLinks,
-    fashionDayEvents as initialFashionDayEvents,
-    socialLinks as initialSocialLinks,
-    agencyTimeline as initialAgencyTimeline,
-    agencyInfo as initialAgencyInfo,
-    modelDistinctions as initialModelDistinctions,
-    agencyServices as initialAgencyServices,
-    agencyAchievements as initialAgencyAchievements,
-    agencyPartners as initialAgencyPartners,
+    newsItems as initialNewsItems, 
+    navLinks as initialNavLinks, 
+    fashionDayEvents as initialFashionDayEvents, 
+    socialLinks as initialSocialLinks, 
+    agencyTimeline as initialAgencyTimeline, 
+    agencyInfo as initialAgencyInfo, 
+    modelDistinctions as initialModelDistinctions, 
+    agencyServices as initialAgencyServices, 
+    agencyAchievements as initialAgencyAchievements, 
+    agencyPartners as initialAgencyPartners, 
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
@@ -44,10 +43,9 @@ import { courseData as initialCourseData } from '../constants/courseData';
 // FIX: Removed import for beginnerCourseData as the file and feature are deprecated.
 
 export interface AppData {
-    siteConfig: SiteConfig;
+    siteConfig: { logo: string };
     navLinks: NavLink[];
     socialLinks: { facebook: string; instagram: string; youtube: string; };
-    heroSlides: HeroSlide[];
     agencyTimeline: { year: string; event: string; }[];
     agencyInfo: {
         about: { p1: string; p2: string; };
@@ -67,7 +65,6 @@ export interface AppData {
     apiKeys: ApiKeys;
     castingApplications: CastingApplication[];
     fashionDayApplications: FashionDayApplication[];
-    fashionDayReservations: FashionDayReservation[];
     newsItems: NewsItem[];
     forumThreads: ForumThread[];
     forumReplies: ForumReply[];
@@ -97,7 +94,6 @@ export const useDataStore = () => {
         apiKeys: initialApiKeys,
         castingApplications: initialCastingApplications,
         fashionDayApplications: initialFashionDayApplications,
-        fashionDayReservations: [],
         forumThreads: initialForumThreads,
         forumReplies: initialForumReplies,
         articleComments: initialArticleComments,
@@ -112,52 +108,6 @@ export const useDataStore = () => {
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,
         socialLinks: initialSocialLinks,
-        heroSlides: [
-            {
-                id: '1',
-                image: 'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=2070&auto=format&fit=crop',
-                title: 'L\'Élégance',
-                subtitle: 'Redéfinie',
-                description: 'Agence de Mannequins & Événementiel',
-                cta: 'Devenir Mannequin',
-                ctaLink: '/casting-formulaire',
-                order: 1,
-                isActive: true
-            },
-            {
-                id: '2',
-                image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=2550&auto=format&fit=crop',
-                title: 'Votre Talent',
-                subtitle: 'Notre Passion',
-                description: 'Révélez votre potentiel avec Perfect Models',
-                cta: 'Découvrir',
-                ctaLink: '/agence',
-                order: 2,
-                isActive: true
-            },
-            {
-                id: '3',
-                image: 'https://images.unsplash.com/photo-1566204773863-cf63e6d4ab88?q=80&w=2560&auto=format&fit=crop',
-                title: 'Perfect Fashion',
-                subtitle: 'Day #2',
-                description: 'L\'événement mode incontournable de l\'année',
-                cta: 'Réserver',
-                ctaLink: '/fashion-day/reservation',
-                order: 3,
-                isActive: true
-            },
-            {
-                id: '4',
-                image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=2560&auto=format&fit=crop',
-                title: 'Excellence',
-                subtitle: 'Professionnelle',
-                description: 'Formation & Accompagnement sur mesure',
-                cta: 'En savoir plus',
-                ctaLink: '/services',
-                order: 4,
-                isActive: true
-            }
-        ],
         agencyTimeline: initialAgencyTimeline,
         agencyInfo: initialAgencyInfo,
         modelDistinctions: initialModelDistinctions,
@@ -172,10 +122,10 @@ export const useDataStore = () => {
         // FIX: Removed beginner-related properties from initial data.
         faqData: initialFaqData,
     }), []);
-
+    
     useEffect(() => {
         const dbRef = ref(db, '/');
-
+        
         const unsubscribe = onValue(dbRef, (snapshot) => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
@@ -192,10 +142,9 @@ export const useDataStore = () => {
                     testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
-                    heroSlides: (dbData.heroSlides && dbData.heroSlides.length > 0) ? dbData.heroSlides : initialData.heroSlides,
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
                 };
-
+                
                 // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
                 setData(mergedData);

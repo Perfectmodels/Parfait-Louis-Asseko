@@ -5,7 +5,6 @@ import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { Model, PhotoshootBrief } from '../types';
-// FIX: Corrected import path for ModelForm.
 import ModelForm from '../components/ModelForm';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
@@ -82,63 +81,49 @@ const ModelDashboard: React.FC = () => {
     }
     
     const getScoreColor = (scorePercentage: number) => {
-        if (scorePercentage >= 80) return 'text-green-400 bg-green-400/10 border-green-400/20';
-        if (scorePercentage >= 50) return 'text-pm-gold bg-pm-gold/10 border-pm-gold/20';
-        return 'text-red-400 bg-red-400/10 border-red-400/20';
+        if (scorePercentage >= 80) return 'text-green-400';
+        if (scorePercentage >= 50) return 'text-yellow-400';
+        return 'text-red-400';
     };
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-12 min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title={`Profil de ${editableModel.name}`} noIndex />
             <div className="container mx-auto px-6 max-w-7xl">
-                <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 pb-8 border-b border-pm-gold/10">
+                <header className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
                     <div>
-                        <h1 className="text-4xl font-playfair text-pm-gold mb-2">Bienvenue, {editableModel.name.split(' ')[0]}</h1>
-                        <p className="text-pm-off-white/60">Gérez votre carrière et suivez votre progression professionnelle.</p>
+                        <h1 className="text-4xl font-playfair text-pm-gold">Bienvenue, {editableModel.name.split(' ')[0]}</h1>
+                        <p className="text-pm-off-white/80">Votre espace personnel pour gérer votre profil et suivre votre progression.</p>
                     </div>
-                     <button onClick={handleLogout} className="group flex items-center gap-3 px-5 py-2.5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 hover:border-red-500/40 transition-all duration-300">
-                        <ArrowRightOnRectangleIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        <span>Déconnexion</span>
+                     <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
+                        <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
                      </button>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    {/* Sidebar Profile Card */}
-                    <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-28 self-start">
-                         <div className="bg-black/40 p-8 border border-pm-gold/20 rounded-2xl text-center shadow-lg backdrop-blur-sm relative overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-b from-pm-gold/5 to-transparent pointer-events-none"></div>
-                            <div className="relative inline-block mb-6">
-                                <div className="absolute inset-0 bg-pm-gold rounded-full blur-md opacity-20 animate-pulse"></div>
-                                <img src={editableModel.imageUrl} alt={editableModel.name} className="relative w-32 h-32 rounded-full object-cover border-2 border-pm-gold shadow-xl" />
-                            </div>
-                            <h2 className="text-2xl font-playfair text-white mb-1">{editableModel.name}</h2>
-                            <span className="inline-block px-3 py-1 rounded-full bg-pm-gold/10 text-pm-gold text-xs font-bold uppercase tracking-wider mb-6 border border-pm-gold/20">
-                                {editableModel.level}
-                            </span>
-
-                            <div className="space-y-3">
-                                <Link to="/formations" className="block w-full py-3 px-4 bg-pm-gold text-black font-bold rounded-lg hover:bg-white transition-all duration-300 shadow-lg shadow-pm-gold/10 flex items-center justify-center gap-2">
-                                    <BookOpenIcon className="w-5 h-5" />
-                                    Classroom
-                                </Link>
-                                <Link to={`/mannequins/${editableModel.id}`} target="_blank" rel="noopener noreferrer" className="block w-full py-3 px-4 bg-transparent border border-pm-gold/30 text-pm-gold font-bold rounded-lg hover:bg-pm-gold/10 transition-all duration-300 flex items-center justify-center gap-2">
-                                    <UserIcon className="w-5 h-5" />
-                                    Portfolio Public
-                                </Link>
-                            </div>
-                         </div>
+                    <aside className="lg:col-span-1 space-y-4">
+                         <Link to="/formations" className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
+                             <BookOpenIcon className="w-8 h-8 text-pm-gold mb-3" />
+                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Accéder au Classroom</h2>
+                            <p className="text-sm text-pm-off-white/70">Continuez votre formation.</p>
+                        </Link>
+                        <Link to={`/mannequins/${editableModel.id}`} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold transition-all duration-300 rounded-lg">
+                             <UserIcon className="w-8 h-8 text-pm-gold mb-3" />
+                            <h2 className="text-xl font-playfair text-pm-gold mb-1">Voir mon Portfolio Public</h2>
+                            <p className="text-sm text-pm-off-white/70">Consultez votre profil public.</p>
+                        </Link>
                     </aside>
                     
-                    {/* Main Content Area */}
-                    <main className="lg:col-span-3 space-y-8">
-                        {/* Tab Navigation */}
-                        <div className="bg-black/20 p-1.5 rounded-xl inline-flex flex-wrap gap-2 border border-pm-gold/10 backdrop-blur-sm">
-                            <TabButton name="Mon Profil" icon={UserIcon} isActive={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
-                            <TabButton name="Performances" icon={PresentationChartLineIcon} isActive={activeTab === 'results'} onClick={() => setActiveTab('results')} />
-                            <TabButton name="Briefings" icon={EnvelopeIcon} isActive={activeTab === 'briefs'} onClick={() => setActiveTab('briefs')} notificationCount={newBriefsCount} />
+                    <main className="lg:col-span-3">
+                        <div className="border-b border-pm-gold/20 mb-6">
+                            <nav className="flex space-x-4" aria-label="Tabs">
+                                <TabButton name="Mon Profil" icon={UserIcon} isActive={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
+                                <TabButton name="Mes Résultats" icon={PresentationChartLineIcon} isActive={activeTab === 'results'} onClick={() => setActiveTab('results')} />
+                                <TabButton name="Briefings" icon={EnvelopeIcon} isActive={activeTab === 'briefs'} onClick={() => setActiveTab('briefs')} notificationCount={newBriefsCount} />
+                            </nav>
                         </div>
                         
-                        <div className="bg-black/40 border border-pm-gold/10 rounded-2xl p-6 md:p-8 shadow-xl min-h-[500px]">
+                        <div>
                             {activeTab === 'profile' && (
                                 <ModelForm 
                                     model={editableModel}
@@ -149,61 +134,41 @@ const ModelDashboard: React.FC = () => {
                                 />
                             )}
                             {activeTab === 'results' && (
-                                <div className="space-y-6">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <h2 className="text-2xl font-playfair text-pm-gold">Résultats des Formations</h2>
-                                        <div className="text-sm text-pm-off-white/50">Progression globale</div>
-                                    </div>
-
+                                <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30">
+                                    <h2 className="text-2xl font-playfair text-pm-gold mb-6">Résultats des Quiz</h2>
                                     {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <ul className="space-y-3">
                                             {courseModulesWithQuizzes.map(module => {
                                                 const scoreData = editableModel.quizScores?.[module.slug];
+                                                // FIX: Calculate percentage from the score object.
                                                 const percentage = scoreData ? Math.round((scoreData.score / scoreData.total) * 100) : null;
                                                 return (
-                                                    <div key={module.slug} className="group bg-pm-dark/50 border border-pm-gold/10 p-5 rounded-xl hover:border-pm-gold/30 transition-all duration-300">
-                                                        <h3 className="font-semibold text-pm-off-white mb-3 group-hover:text-pm-gold transition-colors">{module.title}</h3>
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-xs text-pm-off-white/50 uppercase tracking-wider">Score</span>
-                                                            {percentage !== null ? (
-                                                                <span className={`px-3 py-1 rounded-full text-sm font-bold border ${getScoreColor(percentage)}`}>
-                                                                    {percentage}%
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-xs italic text-pm-off-white/30">Non commencé</span>
-                                                            )}
-                                                        </div>
-                                                        {percentage !== null && (
-                                                            <div className="w-full bg-pm-dark h-1.5 rounded-full mt-4 overflow-hidden">
-                                                                <div className={`h-full rounded-full ${percentage >= 50 ? 'bg-pm-gold' : 'bg-red-500'}`} style={{ width: `${percentage}%` }}></div>
-                                                            </div>
+                                                    <li key={module.slug} className="flex justify-between items-center bg-pm-dark p-3 rounded-md text-sm">
+                                                        <span className="text-pm-off-white/80">{module.title}</span>
+                                                        {percentage !== null ? (
+                                                            // FIX: Use the calculated percentage for display and color coding.
+                                                            <span className={`font-bold text-lg ${getScoreColor(percentage)}`}>{percentage}%</span>
+                                                        ) : (
+                                                            <span className="text-xs text-pm-off-white/50">Non complété</span>
                                                         )}
-                                                    </div>
+                                                    </li>
                                                 );
                                             })}
-                                        </div>
+                                        </ul>
                                     ) : (
-                                        <div className="text-center py-12 border-2 border-dashed border-pm-gold/10 rounded-xl">
-                                            <p className="text-pm-off-white/50">Aucun quiz disponible pour le moment.</p>
-                                        </div>
+                                        <p className="text-pm-off-white/70 text-sm">Aucun quiz disponible pour le moment.</p>
                                     )}
                                 </div>
                             )}
                             {activeTab === 'briefs' && (
-                                <div className="space-y-6">
-                                    <h2 className="text-2xl font-playfair text-pm-gold mb-6">Briefings de Séances Photo</h2>
+                                <div className="bg-black p-6 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30 space-y-4">
+                                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">Briefings de Séances Photo</h2>
                                     {myBriefs.length > 0 ? (
-                                        <div className="space-y-4">
-                                            {myBriefs.map(brief => (
-                                                <BriefItem key={brief.id} brief={brief} expandedBriefId={expandedBriefId} onToggle={handleToggleBrief} />
-                                            ))}
-                                        </div>
+                                        myBriefs.map(brief => (
+                                            <BriefItem key={brief.id} brief={brief} expandedBriefId={expandedBriefId} onToggle={handleToggleBrief} />
+                                        ))
                                     ) : (
-                                        <div className="text-center py-16 flex flex-col items-center justify-center border-2 border-dashed border-pm-gold/10 rounded-xl">
-                                            <EnvelopeIcon className="w-12 h-12 text-pm-gold/20 mb-4" />
-                                            <p className="text-lg text-pm-off-white/70">Votre boîte de réception est vide</p>
-                                            <p className="text-sm text-pm-off-white/40 mt-2">Vous recevrez ici les détails de vos prochaines séances photo.</p>
-                                        </div>
+                                        <p className="text-center text-pm-off-white/70 py-8">Votre boîte de réception est vide.</p>
                                     )}
                                 </div>
                             )}
@@ -215,7 +180,6 @@ const ModelDashboard: React.FC = () => {
     );
 };
 
-// ... Les autres sous-composants (TabButton, BriefItem) restent les mêmes
 const TabButton: React.FC<{name: string, icon: React.ElementType, isActive: boolean, onClick: () => void, notificationCount?: number}> = ({ name, icon: Icon, isActive, onClick, notificationCount = 0 }) => (
     <button
         onClick={onClick}

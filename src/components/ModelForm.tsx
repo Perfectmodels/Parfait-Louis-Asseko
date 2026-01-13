@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Model, ModelDistinction } from '../types';
 import ImageUploader from './ImageUploader';
@@ -259,7 +258,7 @@ const ArrayEditor: React.FC<{
 }> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    const handleUpdateItem = (index: number, newItem: any) => {
+    const handleItemChange = (index: number, newItem: any) => {
         const newItems = [...items];
         newItems[index] = newItem;
         setItems(newItems);
@@ -286,7 +285,7 @@ const ArrayEditor: React.FC<{
                     </button>
                     {openIndex === index && (
                         <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
-                            {renderItem(item, (newItem) => handleUpdateItem(index, newItem), index)}
+                            {renderItem(item, (newItem) => handleItemChange(index, newItem), index)}
                             <div className="text-right pt-2">
                                 <button type="button" onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
                             </div>
