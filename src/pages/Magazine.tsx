@@ -7,6 +7,7 @@ import { Article } from '../types';
 import { useData } from '../contexts/DataContext';
 import Pagination from '../components/Pagination';
 import Button from '../components/ui/Button';
+import { ArticlesGridSkeleton } from '../components/Skeletons';
 
 // --- Sub-Components ---
 
@@ -108,9 +109,9 @@ const Magazine: React.FC = () => {
     }
   };
 
-  if (!isInitialized) {
-    return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
-  }
+  // if (!isInitialized) {
+  //   return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
+  // }
 
   return (
     <div className="bg-black text-white selection:bg-pm-gold selection:text-black min-h-screen">
@@ -197,7 +198,9 @@ const Magazine: React.FC = () => {
             </span>
           </div>
 
-          {currentArticles.length > 0 ? (
+          {!isInitialized ? (
+              <ArticlesGridSkeleton count={6} />
+          ) : currentArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
               {currentArticles.map((article) => (
                 <ArticleCard key={article.slug} article={article} />
@@ -210,7 +213,7 @@ const Magazine: React.FC = () => {
           )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {isInitialized && totalPages > 1 && (
             <div className="mt-20">
               <Pagination
                 currentPage={currentPage}

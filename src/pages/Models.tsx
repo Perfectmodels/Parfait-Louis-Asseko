@@ -6,6 +6,7 @@ import ModelCard from '../components/ModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import Button from '../components/ui/Button';
+import { ModelsGridSkeleton } from '../components/Skeletons';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
 
@@ -115,9 +116,9 @@ const Models: React.FC = () => {
     return `Découvrez le portfolio des mannequins de Perfect Models Management, incluant ${modelNames}. Agence de mannequins leader au Gabon.`;
   }, [publicModels]);
 
-  if (!isInitialized) {
-    return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
-  }
+  // if (!isInitialized) {
+  //   return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" /></div>;
+  // }
 
   return (
     <div className="bg-black text-white min-h-screen selection:bg-pm-gold selection:text-black">
@@ -165,27 +166,31 @@ const Models: React.FC = () => {
         </div>
 
         {/* Models Grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12 min-h-[500px]"
-        >
-          <AnimatePresence mode='popLayout'>
-            {paginatedModels.map((model) => (
-              <motion.div
-                layout
-                key={model.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
-              >
-                <ModelCard model={model} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {!isInitialized ? (
+          <ModelsGridSkeleton count={8} />
+        ) : (
+          <motion.div
+            layout
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12 min-h-[500px]"
+          >
+            <AnimatePresence mode='popLayout'>
+              {paginatedModels.map((model) => (
+                <motion.div
+                  layout
+                  key={model.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <ModelCard model={model} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
 
-        {filteredModels.length === 0 ? (
+        {isInitialized && filteredModels.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
