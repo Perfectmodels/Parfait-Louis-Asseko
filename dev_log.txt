@@ -10,3 +10,6 @@
 
 warn - The class `ease-[cubic-bezier(0.19,1,0.22,1)]` is ambiguous and matches multiple utilities.
 warn - If this is content and not a class, replace it with `ease-&lsqb;cubic-bezier(0.19,1,0.22,1)&rsqb;` to silence this warning.
+7:05:40 PM [vite] (client) hmr update /src/index.css, /src/contexts/DataContext.tsx
+7:06:10 PM [vite] (client) hmr update /src/index.css, /src/contexts/DataContext.tsx
+7:08:11 PM [vite] (client) hmr update /src/App.tsx, /src/index.css

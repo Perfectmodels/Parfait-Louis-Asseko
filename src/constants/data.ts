@@ -1,6 +1,6 @@
 
 // FIX: Removed BeginnerStudent from import as the type is deprecated.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, GalleryAlbum } from '../types';
 
 export const siteConfig = {
   name: 'Perfect Models Management',
@@ -18,6 +18,7 @@ export const navLinks: NavLink[] = [
   { path: '/', label: 'Accueil', inFooter: true },
   { path: '/agence', label: 'Agence', inFooter: true },
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
+  { path: '/galerie', label: 'Galerie', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
@@ -189,6 +190,61 @@ export const contactMessages: ContactMessage[] = [];
 export const absences: Absence[] = [];
 export const monthlyPayments: MonthlyPayment[] = [];
 export const photoshootBriefs: PhotoshootBrief[] = [];
+
+export const galleryAlbums: GalleryAlbum[] = [
+  {
+    id: 'album-1',
+    title: 'Perfect Fashion Day #1',
+    description: 'Les moments forts de la première édition de notre événement phare.',
+    category: 'événement',
+    coverImage: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg',
+    date: '2025-01-25T18:00:00',
+    location: 'La Gare du Nord',
+    isPublic: true,
+    tags: ['défilé', 'mode', 'event'],
+    createdAt: '2025-01-26T10:00:00',
+    updatedAt: '2025-01-26T10:00:00',
+    photos: [
+      { id: 'p1', url: 'https://i.ibb.co/C5rcPJHz/titostyle-53.jpg', caption: 'Défilé Tito Style', date: '2025-01-25', photographer: 'PMM Team', tags: [] },
+      { id: 'p2', url: 'https://i.ibb.co/jkztFFQV/brando-50.jpg', caption: 'Brand\'O Collection', date: '2025-01-25', photographer: 'PMM Team', tags: [] },
+      { id: 'p3', url: 'https://i.ibb.co/TM8ZvfwY/madameluc-35.jpg', caption: 'Madame Luc Élégance', date: '2025-01-25', photographer: 'PMM Team', tags: [] }
+    ]
+  },
+  {
+    id: 'album-2',
+    title: 'Backstage Shooting Été 2024',
+    description: 'Dans les coulisses de notre dernière campagne estivale.',
+    category: 'backstage',
+    coverImage: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
+    date: '2024-06-15T09:00:00',
+    location: 'Plage de la Sablière',
+    isPublic: true,
+    tags: ['summer', 'backstage', 'fun'],
+    createdAt: '2024-06-16T10:00:00',
+    updatedAt: '2024-06-16T10:00:00',
+    photos: [
+      { id: 'p4', url: 'https://i.ibb.co/3WfK9Xg/about-img.jpg', caption: 'Préparation maquillage', date: '2024-06-15', photographer: 'Darain Visuals', tags: [] },
+      { id: 'p5', url: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg', caption: 'L\'équipe au complet', date: '2024-06-15', photographer: 'Darain Visuals', tags: [] }
+    ]
+  },
+  {
+    id: 'album-3',
+    title: 'Shooting Collaboratif - Urban Style',
+    description: 'Collaboration avec les créateurs locaux pour une série urbaine.',
+    category: 'shooting',
+    coverImage: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg',
+    date: '2024-11-10T14:00:00',
+    location: 'Centre-ville Libreville',
+    isPublic: true,
+    tags: ['urban', 'streetwear'],
+    createdAt: '2024-11-11T10:00:00',
+    updatedAt: '2024-11-11T10:00:00',
+    photos: [
+      { id: 'p6', url: 'https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg', caption: 'Urban Chic', date: '2024-11-10', photographer: 'NR Picture', tags: [] },
+      { id: 'p7', url: 'https://i.postimg.cc/k5skXhC2/NR-09474.jpg', caption: 'Street Vibes', date: '2024-11-10', photographer: 'NR Picture', tags: [] }
+    ]
+  }
+];
 // FIX: Removed beginnerStudents array as the feature is deprecated.
 
 

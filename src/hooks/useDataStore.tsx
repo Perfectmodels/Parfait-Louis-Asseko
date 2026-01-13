@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, SiteConfig, FashionDayReservation, HeroSlide } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, SiteConfig, FashionDayReservation, HeroSlide, GalleryAlbum } from '../types';
 
 // Import initial data to seed the database if it's empty
 import {
@@ -24,6 +24,7 @@ import {
     // FIX: Changed to import 'monthlyPayments' instead of non-existent 'transactions'.
     monthlyPayments as initialMonthlyPayments,
     photoshootBriefs as initialPhotoshootBriefs,
+    galleryAlbums as initialGalleryAlbums,
     newsItems as initialNewsItems,
     navLinks as initialNavLinks,
     fashionDayEvents as initialFashionDayEvents,
@@ -83,6 +84,7 @@ export interface AppData {
     // FIX: Changed 'transactions' to 'monthlyPayments' and 'Transaction' to 'MonthlyPayment'.
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    galleryAlbums: GalleryAlbum[];
 }
 
 export const useDataStore = () => {
@@ -108,6 +110,7 @@ export const useDataStore = () => {
         // FIX: Changed to use 'monthlyPayments' and 'initialMonthlyPayments'.
         monthlyPayments: initialMonthlyPayments,
         photoshootBriefs: initialPhotoshootBriefs,
+        galleryAlbums: initialGalleryAlbums,
         newsItems: initialNewsItems,
         navLinks: initialNavLinks,
         fashionDayEvents: initialFashionDayEvents,
@@ -194,6 +197,7 @@ export const useDataStore = () => {
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                     heroSlides: (dbData.heroSlides && dbData.heroSlides.length > 0) ? dbData.heroSlides : initialData.heroSlides,
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
+                    galleryAlbums: (dbData.galleryAlbums && dbData.galleryAlbums.length > 0) ? dbData.galleryAlbums : initialData.galleryAlbums,
                 };
 
                 // Always use navLinks from code to ensure route integrity

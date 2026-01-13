@@ -47,6 +47,7 @@ const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress
 const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
 const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
 const AdminFashionDayReservations = lazy(() => import('./pages/admin/AdminFashionDayReservations'));
+const AdminGallery = lazy(() => import('./pages/admin/AdminGallery'));
 // FIX: Corrected import paths for Admin pages to resolve module not found errors.
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminContentEditor = lazy(() => import('./pages/admin/AdminContentEditor'));
@@ -124,6 +125,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/agence" element={<Agency />} />
                     <Route path="/mannequins" element={<Models />} />
                     <Route path="/mannequins/:id" element={<ModelDetail />} />
+                    <Route path="/galerie" element={<Gallery />} />
                     <Route path="/fashion-day" element={<FashionDay />} />
                     <Route path="/fashion-day/vote" element={<FashionDayVote />} />
                     <Route path="/fashion-day/reservation" element={<FashionDayReservation />} />
@@ -169,6 +171,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-reservations" element={<ProtectedRoute role="admin"><AdminFashionDayReservations /></ProtectedRoute>} />
+                    <Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
                     <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                     <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
