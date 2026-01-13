@@ -5,6 +5,7 @@ import { ArrowRightOnRectangleIcon, ChevronRightIcon, MagnifyingGlassIcon } from
 import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import CloseIcon from './CloseIcon';
 import GlobalSearch from '../GlobalSearch';
+import Logo from '../ui/Logo';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../SocialIcons';
 // FIX: Changed import for NavLinkType to use centralized types.ts file to resolve circular dependency.
 import { NavLink as NavLinkType, SocialLinks } from '../../types';
@@ -357,11 +358,13 @@ const Header: React.FC = () => {
           }`}
       >
         <div className="container mx-auto px-6 h-20 lg:h-20 flex justify-between items-center transition-all duration-300">
-          {siteConfig?.logo && (
-            <Link to="/" className="flex-shrink-0 relative z-50" onClick={() => setIsOpen(false)}>
-              <img src={siteConfig.logo} alt="Perfect Models Management Logo" className="h-12 lg:h-14 w-auto transition-all duration-300 bg-black rounded-full border-2 border-pm-gold p-1" />
-            </Link>
-          )}
+          <Link to="/" className="flex-shrink-0 relative z-50" onClick={() => setIsOpen(false)}>
+            <Logo
+              src={siteConfig?.logo}
+              alt="Perfect Models Management Logo"
+              className="h-12 lg:h-14 w-auto transition-all duration-300 bg-black rounded-full border-2 border-pm-gold p-1"
+            />
+          </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
             <NavLinks navLinks={processedNavLinks} />
