@@ -1,15 +1,13 @@
 
+
 import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import { Link } from 'react-router-dom';
-import { generateCastingPDF } from '../utils/pdfGenerator';
-import { sendEmail } from '../services/emailService';
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
-    // FIX: Simplified useState initialization to avoid potential issues with React.lazy type inference.
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
@@ -37,51 +35,14 @@ const CastingForm: React.FC = () => {
             id: `casting-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
-            photoFullBodyUrl: null,
-            photoPortraitUrl: null,
-            photoProfileUrl: null,
         };
 
         try {
             const updatedApplications = [...(data.castingApplications || []), newApplication];
             await saveData({ ...data, castingApplications: updatedApplications });
 
-            // Send Email Notification
-            if (data.apiKeys?.brevoApiKey) {
-                const emailSubject = `Nouvelle Candidature Casting : ${formData.firstName} ${formData.lastName}`;
-                const emailHtml = `
-                    <h1>Nouvelle Candidature Casting</h1>
-                    <p><strong>Nom:</strong> ${formData.firstName} ${formData.lastName}</p>
-                    <p><strong>Email:</strong> ${formData.email}</p>
-                    <p><strong>Téléphone:</strong> ${formData.phone}</p>
-                    <p><strong>Ville:</strong> ${formData.city}</p>
-                    <p><strong>Genre:</strong> ${formData.gender}</p>
-                    <p><strong>Taille:</strong> ${formData.height} cm</p>
-                    <p><strong>Expérience:</strong> ${formData.experience}</p>
-                    <p><strong>Instagram:</strong> ${formData.instagram || 'Non renseigné'}</p>
-                    <hr />
-                    <p>Connectez-vous à l'espace admin pour voir tous les détails.</p>
-                `;
-
-                await sendEmail({
-                    to: [{ email: data.contactInfo.notificationEmail || 'contact@perfectmodels.ga', name: 'Perfect Models Admin' }],
-                    subject: emailSubject,
-                    htmlContent: emailHtml,
-                    apiKey: data.apiKeys.brevoApiKey,
-                    sender: { email: 'notifications@perfectmodels.ga', name: 'Site Web PMM' }
-                });
-            }
-
             setStatus('success');
-            setStatusMessage('Votre candidature a été envoyée avec succès ! Une fiche récapitulative PDF va être téléchargée. Nous vous contacterons si votre profil est retenu.');
-
-            // Generate and download PDF
-            try {
-                generateCastingPDF(newApplication);
-            } catch (err) {
-                console.error("Erreur lors de la génération du PDF", err);
-            }
-
+            setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');
             setFormData({ // Reset form
                 firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
                 gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
@@ -94,7 +55,7 @@ const CastingForm: React.FC = () => {
             console.error(error);
         }
     };
-
+    
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Formulaire de Casting" description="Postulez en ligne pour rejoindre Perfect Models Management. Remplissez notre formulaire pour soumettre votre candidature." noIndex />
@@ -109,7 +70,7 @@ const CastingForm: React.FC = () => {
                             <FormInput label="Prénom" name="firstName" value={formData.firstName} onChange={handleChange} required />
                             <FormInput label="Nom" name="lastName" value={formData.lastName} onChange={handleChange} required />
                         </div>
-                        <div className="grid md:grid-cols-2 gap-6">
+                         <div className="grid md:grid-cols-2 gap-6">
                             <FormInput label="Date de Naissance" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} required />
                             <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange} required>
                                 <option value="Femme">Femme</option>
@@ -117,10 +78,10 @@ const CastingForm: React.FC = () => {
                             </FormSelect>
                         </div>
                         <div className="grid md:grid-cols-2 gap-6">
-                            <FormInput label="Nationalité" name="nationality" value={formData.nationality} onChange={handleChange} required />
-                            <FormInput label="Ville de résidence" name="city" value={formData.city} onChange={handleChange} required />
+                           <FormInput label="Nationalité" name="nationality" value={formData.nationality} onChange={handleChange} required />
+                           <FormInput label="Ville de résidence" name="city" value={formData.city} onChange={handleChange} required />
                         </div>
-                        <div className="grid md:grid-cols-2 gap-6">
+                         <div className="grid md:grid-cols-2 gap-6">
                             <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
                             <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
                         </div>
@@ -130,20 +91,20 @@ const CastingForm: React.FC = () => {
                         <div className="grid md:grid-cols-3 gap-6">
                             <FormInput label="Taille (cm)" name="height" type="number" value={formData.height} onChange={handleChange} required />
                             <FormInput label="Poids (kg)" name="weight" type="number" value={formData.weight} onChange={handleChange} required />
-                            <FormInput label="Pointure (EU)" name="shoeSize" type="number" value={formData.shoeSize} onChange={handleChange} required />
+                             <FormInput label="Pointure (EU)" name="shoeSize" type="number" value={formData.shoeSize} onChange={handleChange} required />
                         </div>
-                        <div className="grid md:grid-cols-3 gap-6">
+                         <div className="grid md:grid-cols-3 gap-6">
                             <FormInput label="Poitrine (cm)" name="chest" type="number" value={formData.chest} onChange={handleChange} />
                             <FormInput label="Taille (vêtement, cm)" name="waist" type="number" value={formData.waist} onChange={handleChange} />
                             <FormInput label="Hanches (cm)" name="hips" type="number" value={formData.hips} onChange={handleChange} />
                         </div>
-                        <div className="grid md:grid-cols-2 gap-6">
+                         <div className="grid md:grid-cols-2 gap-6">
                             <FormInput label="Couleur des yeux" name="eyeColor" value={formData.eyeColor} onChange={handleChange} />
                             <FormInput label="Couleur des cheveux" name="hairColor" value={formData.hairColor} onChange={handleChange} />
                         </div>
                     </Section>
-
-                    <Section title="Expérience & Portfolio">
+                    
+                     <Section title="Expérience & Portfolio">
                         <FormSelect label="Niveau d'expérience" name="experience" value={formData.experience} onChange={handleChange} required>
                             <option value="none">Aucune expérience</option>
                             <option value="beginner">Débutant(e) (shootings amateurs)</option>
@@ -178,19 +139,19 @@ const CastingForm: React.FC = () => {
 };
 
 // Reusable components
-const Section: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
+const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
     <div className="space-y-6 pt-6 border-t border-pm-gold/10 first:pt-0 first:border-none">
         <h2 className="text-xl font-playfair text-pm-gold">{title}</h2>
         <div className="space-y-6">{children}</div>
     </div>
 );
-const FormInput: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string }> = (props) => (
+const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input {...props} id={props.name} className="admin-input" />
     </div>
 );
-const FormSelect: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode }> = (props) => (
+const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <select {...props} id={props.name} className="admin-input">{props.children}</select>

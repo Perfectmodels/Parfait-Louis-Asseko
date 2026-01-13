@@ -1,16 +1,18 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
-// FIX: Corrected react-router-dom import statement to resolve module resolution errors.
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
     const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
+    const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     useEffect(() => {
         if (data?.castingApplications) {
@@ -43,39 +45,9 @@ const AdminCasting: React.FC = () => {
     const handleValidateAndCreateModel = async (app: CastingApplication) => {
         if (!data) return;
 
-        const existingModelIndex = data.models.findIndex(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
-        if (existingModelIndex !== -1) {
-             if (window.confirm(`Un mannequin nommé "${app.firstName} ${app.lastName}" existe déjà. Voulez-vous mettre à jour ses données (taille, mensurations, contact) avec celles de cette candidature ?`)) {
-                const existingModel = data.models[existingModelIndex];
-                const updatedModel: Model = {
-                    ...existingModel,
-                    email: app.email || existingModel.email,
-                    phone: app.phone || existingModel.phone,
-                    height: `${app.height}cm`,
-                    measurements: {
-                        chest: `${app.chest || '0'}cm`,
-                        waist: `${app.waist || '0'}cm`,
-                        hips: `${app.hips || '0'}cm`,
-                        shoeSize: `${app.shoeSize || '0'}`,
-                    },
-                    location: app.city || existingModel.location,
-                    age: app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : existingModel.age,
-                };
-
-                const updatedModels = [...data.models];
-                updatedModels[existingModelIndex] = updatedModel;
-
-                const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' as const } : localApp);
-
-                try {
-                    await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-                    alert(`Le profil de ${updatedModel.name} a été mis à jour avec succès.`);
-                    setSelectedApp(null);
-                } catch (error) {
-                    console.error("Erreur lors de la mise à jour du profil:", error);
-                    alert("Une erreur est survenue lors de la sauvegarde.");
-                }
-            }
+        const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
+        if (modelExists) {
+            alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
             return;
         }
 
@@ -145,7 +117,7 @@ const AdminCasting: React.FC = () => {
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
-            case 'Présélectionné': return 'bg-pm-gold/20 text-pm-gold border-pm-gold';
+            case 'Présélectionné': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500';
             case 'Accepté': return 'bg-green-500/20 text-green-300 border-green-500';
             case 'Refusé': return 'bg-red-500/20 text-red-300 border-red-500';
             default: return 'bg-gray-500/20 text-gray-300';
@@ -153,6 +125,10 @@ const AdminCasting: React.FC = () => {
     }
 
     const statusOptions: (CastingApplicationStatus | 'Toutes')[] = ['Toutes', 'Nouveau', 'Présélectionné', 'Accepté', 'Refusé'];
+
+    if (printingApp) {
+        return <PrintableCastingSheet app={printingApp} juryMembers={data?.juryMembers || []} onDonePrinting={() => setPrintingApp(null)} />;
+    }
 
     return (
         <>
@@ -212,22 +188,6 @@ const AdminCasting: React.FC = () => {
     );
 };
 
-const TabButton: React.FC<{ name: string, isActive: boolean, onClick: () => void }> = ({ name, isActive, onClick }) => (
-    <button
-        type="button"
-        onClick={onClick}
-        className={`relative px-1 py-2 font-medium text-sm transition-colors ${
-            isActive 
-            ? 'text-pm-gold' 
-            : 'text-pm-off-white/70 hover:text-pm-gold'
-        }`}
-    >
-        {name}
-        <span className={`absolute bottom-[-1px] left-0 w-full h-0.5 bg-pm-gold transform transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0'}`}/>
-    </button>
-);
-
-
 const ApplicationModal: React.FC<{
     app: CastingApplication, 
     onClose: () => void, 
@@ -235,9 +195,6 @@ const ApplicationModal: React.FC<{
     getStatusColor: (status: CastingApplicationStatus) => string,
     onValidateAndCreateModel: (app: CastingApplication) => void,
 }> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel }) => {
-    const [activeTab, setActiveTab] = useState<'personal' | 'measurements' | 'experience'>('personal');
-    const age = app.birthDate ? `${app.birthDate} (${new Date().getFullYear() - new Date(app.birthDate).getFullYear()} ans)` : 'N/A';
-
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
@@ -245,52 +202,34 @@ const ApplicationModal: React.FC<{
                     <h2 className="text-2xl font-playfair text-pm-gold">Candidature de {app.firstName} {app.lastName}</h2>
                     <button onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
                 </header>
-                <main className="p-6 overflow-y-auto flex-grow">
-                     {/* Tab Navigation */}
-                    <div className="border-b border-pm-gold/20 mb-6">
-                        <nav className="flex -mb-px space-x-6">
-                            <TabButton name="Infos Personnelles" isActive={activeTab === 'personal'} onClick={() => setActiveTab('personal')} />
-                            <TabButton name="Mensurations" isActive={activeTab === 'measurements'} onClick={() => setActiveTab('measurements')} />
-                            <TabButton name="Expérience" isActive={activeTab === 'experience'} onClick={() => setActiveTab('experience')} />
-                        </nav>
+                <main className="p-6 overflow-y-auto flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Section title="Informations Personnelles">
+                        <InfoItem label="Nom complet" value={`${app.firstName} ${app.lastName}`} />
+                        <InfoItem label="Date de naissance" value={app.birthDate} />
+                        <InfoItem label="Email" value={app.email} />
+                        <InfoItem label="Téléphone" value={app.phone} />
+                        <InfoItem label="Nationalité" value={app.nationality} />
+                        <InfoItem label="Ville" value={app.city} />
+                        <InfoItem label="Genre" value={app.gender} />
+                    </Section>
+                     <Section title="Mensurations & Physique">
+                        <InfoItem label="Taille" value={`${app.height} cm`} />
+                        <InfoItem label="Poids" value={`${app.weight} kg`} />
+                        <InfoItem label="Poitrine" value={`${app.chest} cm`} />
+                        <InfoItem label="Taille (vêtement)" value={`${app.waist} cm`} />
+                        <InfoItem label="Hanches" value={`${app.hips} cm`} />
+                        <InfoItem label="Pointure" value={app.shoeSize} />
+                        <InfoItem label="Couleur des yeux" value={app.eyeColor} />
+                        <InfoItem label="Couleur des cheveux" value={app.hairColor} />
+                    </Section>
+                    <div className="md:col-span-2">
+                        <Section title="Expérience & Portfolio">
+                            <InfoItem label="Niveau d'expérience" value={app.experience} />
+                            <InfoItem label="Instagram" value={app.instagram} />
+                            <InfoItem label="Portfolio" value={app.portfolioLink} />
+                        </Section>
                     </div>
-                    
-                    {/* Tab Panels */}
-                    <div className="animate-fade-in">
-                        {activeTab === 'personal' && (
-                             <Section title="Informations Personnelles">
-                                <InfoItem label="Nom complet" value={`${app.firstName} ${app.lastName}`} />
-                                <InfoItem label="Date de naissance" value={age} />
-                                <InfoItem label="Email" value={app.email} />
-                                <InfoItem label="Téléphone" value={app.phone} />
-                                <InfoItem label="Nationalité" value={app.nationality} />
-                                <InfoItem label="Ville" value={app.city} />
-                                <InfoItem label="Genre" value={app.gender} />
-                            </Section>
-                        )}
-                        {activeTab === 'measurements' && (
-                             <Section title="Mensurations & Physique">
-                                <InfoItem label="Taille" value={`${app.height} cm`} />
-                                <InfoItem label="Poids" value={`${app.weight} kg`} />
-                                <InfoItem label="Poitrine" value={`${app.chest || 'N/A'} cm`} />
-                                <InfoItem label="Taille (vêtement)" value={`${app.waist || 'N/A'} cm`} />
-                                <InfoItem label="Hanches" value={`${app.hips || 'N/A'} cm`} />
-                                <InfoItem label="Pointure" value={app.shoeSize || 'N/A'} />
-                                <InfoItem label="Couleur des yeux" value={app.eyeColor || 'N/A'} />
-                                <InfoItem label="Couleur des cheveux" value={app.hairColor || 'N/A'} />
-                            </Section>
-                        )}
-                         {activeTab === 'experience' && (
-                            <Section title="Expérience & Portfolio">
-                                <InfoItem label="Niveau d'expérience" value={app.experience} />
-                                <InfoItem label="Instagram" value={app.instagram ? <a href={`https://instagram.com/${app.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-pm-gold underline">{app.instagram}</a> : 'N/A'} />
-                                <InfoItem label="Portfolio" value={app.portfolioLink ? <a href={app.portfolioLink} target="_blank" rel="noopener noreferrer" className="text-pm-gold underline truncate block">{app.portfolioLink}</a> : 'N/A'} />
-                            </Section>
-                        )}
-                    </div>
-                    
-                    {/* Status section (always visible) */}
-                    <div className="mt-8">
+                     <div className="md:col-span-2">
                         <Section title="Statut">
                             <div className="flex items-center gap-2 flex-wrap">
                                 {(['Nouveau', 'Présélectionné', 'Accepté', 'Refusé'] as const).map(status => (
@@ -305,7 +244,7 @@ const ApplicationModal: React.FC<{
                  <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
                     {app.status === 'Présélectionné' && (
                         <button onClick={() => onValidateAndCreateModel(app)} className="px-4 py-2 text-sm bg-green-600 text-white font-bold rounded-full hover:bg-green-500">
-                            Valider & Créer Profil Débutant
+                            Valider & Créer Profil Mannequin
                         </button>
                     )}
                 </footer>
@@ -324,7 +263,7 @@ const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, c
 const InfoItem: React.FC<{label: string, value: React.ReactNode}> = ({label, value}) => (
     <div className="grid grid-cols-3 text-sm">
         <strong className="text-pm-off-white/70 col-span-1">{label}:</strong>
-        <div className="truncate col-span-2">{value}</div>
+        <span className="truncate col-span-2">{value}</span>
     </div>
 );
 
