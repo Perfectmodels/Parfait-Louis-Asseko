@@ -239,7 +239,7 @@ const AdminCastingResults: React.FC = () => {
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
-            case 'Présélectionné': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500';
+            case 'Présélectionné': return 'bg-pm-gold/20 text-pm-gold border-pm-gold';
             case 'Accepté': return 'bg-green-500/20 text-green-300 border-green-500';
             case 'Refusé': return 'bg-red-500/20 text-red-300 border-red-500';
             default: return 'bg-gray-500/20 text-gray-300';
@@ -248,7 +248,7 @@ const AdminCastingResults: React.FC = () => {
     
     const getScoreColor = (score: number) => {
         if (score >= 7.5) return 'text-green-400';
-        if (score >= 5) return 'text-yellow-400';
+        if (score >= 5) return 'text-pm-gold';
         return 'text-red-400';
     };
 
@@ -337,7 +337,7 @@ const AdminCastingResults: React.FC = () => {
                                                     <span className="text-xs text-green-400">Profil Créé</span>
                                                 )}
                                                 {app.status === 'Refusé' && (
-                                                    <button onClick={() => handleUpdateStatus(app.id, 'Présélectionné')} className="action-btn bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20" title="Annuler le refus">
+                                                    <button onClick={() => handleUpdateStatus(app.id, 'Présélectionné')} className="action-btn bg-pm-gold/10 text-pm-gold border-pm-gold/50 hover:bg-pm-gold/20" title="Annuler le refus">
                                                         <ArrowPathIcon className="w-5 h-5"/>
                                                     </button>
                                                 )}

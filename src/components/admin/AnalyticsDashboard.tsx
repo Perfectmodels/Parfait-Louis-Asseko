@@ -221,7 +221,7 @@ const ActivityBar: React.FC<ActivityBarProps> = ({ label, value, max }) => {
                     initial={{ width: 0 }}
                     animate={{ width: `${percentage}%` }}
                     transition={{ duration: 1, ease: 'easeOut' }}
-                    className="h-full bg-gradient-to-r from-pm-gold to-yellow-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-pm-gold to-pm-gold-dark rounded-full"
                 />
             </div>
         </div>
