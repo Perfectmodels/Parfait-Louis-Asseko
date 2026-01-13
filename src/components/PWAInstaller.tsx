@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowDownTrayIcon, XMarkIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
 // This event is not typed in standard TS libs yet
 interface BeforeInstallPromptEvent extends Event {
@@ -14,8 +15,19 @@ interface BeforeInstallPromptEvent extends Event {
 
 export const PWAInstaller: React.FC = () => {
     const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-    const [updateAvailable, setUpdateAvailable] = useState(false);
-    const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
+
+    // Use VitePWA's hook for handling SW updates
+    const {
+      needRefresh: [needRefresh, setNeedRefresh],
+      updateServiceWorker,
+    } = useRegisterSW({
+      onRegistered(r) {
+        console.log('SW Registered:', r);
+      },
+      onRegisterError(error) {
+        console.log('SW Registration error:', error);
+      },
+    });
 
     useEffect(() => {
         const handleInstallPrompt = (e: Event) => {
@@ -24,30 +36,6 @@ export const PWAInstaller: React.FC = () => {
         };
         
         window.addEventListener('beforeinstallprompt', handleInstallPrompt);
-
-        // Logic for service worker updates
-        const onUpdate = (registration: ServiceWorkerRegistration) => {
-            setWaitingWorker(registration.waiting);
-            setUpdateAvailable(true);
-        };
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.ready.then(registration => {
-                if (registration.waiting) {
-                    onUpdate(registration);
-                }
-                registration.addEventListener('updatefound', () => {
-                    const newWorker = registration.installing;
-                    if (newWorker) {
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                onUpdate(registration);
-                            }
-                        });
-                    }
-                });
-            });
-        }
 
         return () => {
             window.removeEventListener('beforeinstallprompt', handleInstallPrompt);
@@ -63,7 +51,7 @@ export const PWAInstaller: React.FC = () => {
     };
 
     const handleRefreshClick = () => {
-        waitingWorker?.postMessage({ type: 'SKIP_WAITING' });
+        updateServiceWorker(true);
     };
 
     const handleDismissInstall = () => {
@@ -77,7 +65,7 @@ export const PWAInstaller: React.FC = () => {
 
     return (
         <AnimatePresence>
-            {updateAvailable && (
+            {needRefresh && (
                 <motion.div
                     initial="hidden"
                     animate="visible"
@@ -100,7 +88,7 @@ export const PWAInstaller: React.FC = () => {
                     </div>
                 </motion.div>
             )}
-            {!updateAvailable && installPrompt && (
+            {!needRefresh && installPrompt && (
                 <motion.div
                     initial="hidden"
                     animate="visible"
