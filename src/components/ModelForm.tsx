@@ -82,7 +82,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
             <form onSubmit={handleSubmit} className="admin-section-wrapper space-y-8">
                 
                 <Section title="Informations de Base">
-                    <FormInput label="Nom Complet" name="name" value={formData.name} onChange={handleChange} disabled={!isAdmin} />
+                    <FormInput label="Nom Complet" name="name" value={formData.name} onChange={handleChange} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormInput label="Âge" name="age" type="number" value={formData.age || ''} onChange={handleChange} />
                         <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange}>
@@ -120,17 +120,23 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     </Section>
                 )}
 
-                <Section title="Contact">
+                <Section title="Contact & Réseaux">
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormInput label="Email" name="email" type="email" value={formData.email || ''} onChange={handleChange} />
                         <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone || ''} onChange={handleChange} />
+                        <FormInput label="Instagram (ex: @pseudo)" name="instagram" value={formData.instagram || ''} onChange={handleChange} />
                      </div>
                 </Section>
 
                 <Section title="Physique & Mensurations">
                     <ImageUploader label="Photo Principale" value={formData.imageUrl} onChange={handleImageChange} />
-                    <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
+                        <FormInput label="Poids (kg)" name="weight" value={formData.weight || ''} onChange={handleChange} />
+                        <FormInput label="Couleur des yeux" name="eyeColor" value={formData.eyeColor || ''} onChange={handleChange} />
+                        <FormInput label="Couleur des cheveux" name="hairColor" value={formData.hairColor || ''} onChange={handleChange} />
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
                         <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementChange} />
                         <FormInput label="Taille (cm)" name="waist" value={formData.measurements.waist} onChange={handleMeasurementChange} />
                         <FormInput label="Hanches (cm)" name="hips" value={formData.measurements.hips} onChange={handleMeasurementChange} />
@@ -178,12 +184,12 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                             </div>
                         </div>
                     )}
-                    <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
+                    <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} />
                     <FormTextArea 
-                        label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5}
+                        label="Expérience" name="experience" value={formData.experience} onChange={handleChange} rows={5}
                     />
                     <FormTextArea 
-                        label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} 
+                        label="Parcours" name="journey" value={formData.journey} onChange={handleChange} rows={5}
                     />
                 </Section>
                 
@@ -228,14 +234,14 @@ const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, c
 const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, disabled?: boolean}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <input type={props.type || "text"} {...props} className="admin-input" />
+        <input id={props.name} type={props.type || "text"} {...props} className="admin-input" />
     </div>
 );
 
 const FormSelect: React.FC<{label: string, name: string, value: any, onChange: any, children: React.ReactNode, disabled?: boolean}> = (props) => (
      <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <select {...props} className="admin-input">
+        <select id={props.name} {...props} className="admin-input">
             {props.children}
         </select>
     </div>
@@ -246,7 +252,7 @@ const FormTextArea: React.FC<{label: string, name: string, value: any, onChange:
         <div className="flex justify-between items-center mb-1">
             <label htmlFor={props.name} className="admin-label !mb-0">{props.label}</label>
         </div>
-        <textarea {...props} rows={props.rows || 3} className="admin-input admin-textarea" />
+        <textarea id={props.name} {...props} rows={props.rows || 3} className="admin-input admin-textarea" />
     </div>
 );
 

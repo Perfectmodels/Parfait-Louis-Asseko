@@ -19,8 +19,12 @@ export interface Model {
   phone?: string;
   age?: number;
   height: string;
+  weight?: string;
+  hairColor?: string;
+  eyeColor?: string;
   gender: 'Homme' | 'Femme';
   location?: string;
+  instagram?: string;
   imageUrl: string;
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
