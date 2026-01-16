@@ -80,6 +80,7 @@ const AdminGallery: React.FC = () => {
                             <input
                                 type="text"
                                 placeholder="Rechercher..."
+                                title="Rechercher dans la galerie"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full bg-black/30 border border-pm-gold/20 rounded-lg py-2 pl-10 pr-4 text-white focus:outline-none focus:border-pm-gold"
@@ -137,10 +138,10 @@ const AdminGallery: React.FC = () => {
                                         <td className="p-3 text-sm text-gray-400">{item.date}</td>
                                         <td className="p-3">
                                             <div className="flex gap-2">
-                                                <button onClick={() => handleEdit(item)} className="p-2 bg-blue-600/20 text-blue-400 rounded hover:bg-blue-600 hover:text-white transition-colors">
+                                                <button onClick={() => handleEdit(item)} title="Modifier" className="p-2 bg-blue-600/20 text-blue-400 rounded hover:bg-blue-600 hover:text-white transition-colors">
                                                     <PencilIcon className="w-4 h-4" />
                                                 </button>
-                                                <button onClick={() => handleDelete(item.id)} className="p-2 bg-red-600/20 text-red-400 rounded hover:bg-red-600 hover:text-white transition-colors">
+                                                <button onClick={() => handleDelete(item.id)} title="Supprimer" className="p-2 bg-red-600/20 text-red-400 rounded hover:bg-red-600 hover:text-white transition-colors">
                                                     <TrashIcon className="w-4 h-4" />
                                                 </button>
                                             </div>
@@ -170,6 +171,8 @@ const AdminGallery: React.FC = () => {
                                 <input
                                     type="text"
                                     required
+                                    placeholder="Titre de l'élément"
+                                    title="Titre de l'élément"
                                     value={currentItem.title}
                                     onChange={e => setCurrentItem({ ...currentItem, title: e.target.value })}
                                     className="w-full bg-black/30 border border-pm-gold/20 rounded p-2 text-white focus:border-pm-gold outline-none"
@@ -245,6 +248,7 @@ const AdminGallery: React.FC = () => {
                                     <input
                                         type="url"
                                         placeholder="https://youtube.com/..."
+                                        title="Lien Vidéo YouTube"
                                         value={currentItem.videoUrl || ''}
                                         onChange={e => setCurrentItem({ ...currentItem, videoUrl: e.target.value })}
                                         className="w-full bg-black/30 border border-pm-gold/20 rounded p-2 pl-10 text-white focus:border-pm-gold outline-none"

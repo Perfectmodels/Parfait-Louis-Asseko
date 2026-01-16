@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
-import { ref, set, get, push, update, remove } from 'firebase/database';
+import { ref, get, set, update, remove, push } from 'firebase/database';
 import { initialData } from '../constants/data';
 import logger from '../utils/logger';
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation, AdminProfile, GalleryItem } from '../types';
@@ -42,8 +42,6 @@ import {
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
-import { doc, setDoc } from 'firebase/firestore';
-import { updateDoc } from 'firebase/firestore/lite';
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -331,8 +329,8 @@ export const useFirestore = () => {
                 const collData = newData[collName as keyof AppData];
                 if (Array.isArray(collData)) {
                     for (const item of collData) {
-                        const docId = (item as any).id || (item as any).slug || `doc_${Date.now()} `;
-                        savePromises.push(setDoc(doc(db, collName, docId), item));
+                        const docId = (item as any).id || (item as any).slug || `doc_${Date.now()}`;
+                        savePromises.push(set(ref(db, `${collName}/${docId}`), item));
                     }
                 }
             }
@@ -340,14 +338,14 @@ export const useFirestore = () => {
             // Pour les configurations
             const configFields = ['siteConfig', 'contactInfo', 'siteImages', 'socialLinks', 'agencyInfo', 'apiKeys', 'adminProfile'];
             for (const configName of configFields) {
-                savePromises.push(setDoc(doc(db, 'config', configName), newData[configName as keyof AppData]));
+                savePromises.push(set(ref(db, `config/${configName}`), newData[configName as keyof AppData]));
             }
 
             await Promise.all(savePromises);
             setData(newData);
-            console.log("✅ Data saved to Firestore successfully");
+            logger.log("✅ Data saved to Database successfully");
         } catch (error) {
-            console.error("Error saving data to Firestore:", error);
+            logger.error("Error saving data to Database:", error);
             throw error;
         }
     }, []);
@@ -358,10 +356,10 @@ export const useFirestore = () => {
     const addDocument = useCallback(async (collectionName: string, item: any) => {
         try {
             // Générer un ID si non présent
-            const docId = item.id || item.slug || doc(collection(db, collectionName)).id;
+            const docId = item.id || item.slug || push(ref(db, collectionName)).key;
             const itemWithId = { ...item, id: docId };
 
-            await setDoc(doc(db, collectionName, docId), itemWithId);
+            await set(ref(db, `${collectionName}/${docId}`), itemWithId);
 
             // Mise à jour optimiste de l'état local
             setData(prevData => {
@@ -378,7 +376,7 @@ export const useFirestore = () => {
 
             return docId;
         } catch (error) {
-            console.error(`Error adding document to ${collectionName}: `, error);
+            logger.error(`Error adding document to ${collectionName}: `, error);
             throw error;
         }
     }, []);
@@ -386,7 +384,7 @@ export const useFirestore = () => {
     // Mettre à jour un document existant
     const updateDocument = useCallback(async (collectionName: string, id: string, updates: any) => {
         try {
-            await updateDoc(doc(db, collectionName, id), updates, { merge: true });
+            await update(ref(db, `${collectionName}/${id}`), updates);
 
             // Mise à jour optimiste
             setData(prevData => {
@@ -398,16 +396,10 @@ export const useFirestore = () => {
                         [collectionName]: prevCollection.map(item => item.id === id || item.slug === id ? { ...item, ...updates } : item)
                     };
                 }
-                // Cas spécial pour les configs (single docs)
-                if (collectionName === 'config') {
-                    // Difficile de gérer le "config" générique ici sans connaître la clé exacte dans AppData
-                    // On suppose que l'utilisateur recharge ou utilise saveData pour les configs pour l'instant
-                    return prevData;
-                }
                 return prevData;
             });
         } catch (error) {
-            console.error(`Error updating document ${id} in ${collectionName}: `, error);
+            logger.error(`Error updating document ${id} in ${collectionName}: `, error);
             throw error;
         }
     }, []);
@@ -415,7 +407,7 @@ export const useFirestore = () => {
     // Supprimer un document
     const deleteDocument = useCallback(async (collectionName: string, id: string) => {
         try {
-            await deleteDoc(doc(db, collectionName, id));
+            await remove(ref(db, `${collectionName}/${id}`));
 
             // Mise à jour optimiste
             setData(prevData => {
@@ -430,10 +422,11 @@ export const useFirestore = () => {
                 return prevData;
             });
         } catch (error) {
-            console.error(`Error deleting document ${id} from ${collectionName}: `, error);
+            logger.error(`Error deleting document ${id} from ${collectionName}: `, error);
             throw error;
         }
     }, []);
 
     return { data, saveData, isInitialized, addDocument, updateDocument, deleteDocument };
 };
+

@@ -142,6 +142,7 @@ const Gallery: React.FC = () => {
                         >
                             <button
                                 onClick={() => setSelectedItem(null)}
+                                title="Fermer"
                                 className="absolute -top-12 md:top-0 md:-right-16 text-white/50 hover:text-pm-gold transition-all duration-300 p-2 z-50 bg-white/5 md:bg-transparent rounded-full"
                             >
                                 <XMarkIcon className="w-10 h-10" />
