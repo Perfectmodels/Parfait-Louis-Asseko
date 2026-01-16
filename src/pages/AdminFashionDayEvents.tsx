@@ -1,0 +1,1 @@
+import React from 'react'; const AdminFashionDayEvents: React.FC = () => <div className='p-10 text-center text-pm-gold'>AdminFashionDayEvents - En construction</div>; export default AdminFashionDayEvents;
