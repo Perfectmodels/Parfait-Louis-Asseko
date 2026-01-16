@@ -56,7 +56,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
                 </header>
                 <img src="${article.imageUrl}" alt="${article.title}" class="main-image" />
                 <div class="content">${contentHtml}</div>
-                <footer class="footer">&copy; ${new Date().getFullYear()} Perfect Models Management - Focus Model 241</footer>
+                <footer class="footer">&copy; ${new Date().getFullYear()} Perfect Models Management - Focus Mode 241</footer>
             </div>
         </body>
         </html>

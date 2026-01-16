@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
 import { GalleryItem } from '../types';
 import ImageUploader from '../components/ImageUploader';
-import { PlusIcon, TrashIcon, PencilIcon, MagnifyingGlassIcon, PlayIcon, PhotoIcon } from '@heroicons/react/24/outline'; // Adjust import if needed
+import MultiImageUploader from '../components/MultiImageUploader';
+import { PlusIcon, TrashIcon, PencilIcon, MagnifyingGlassIcon, PlayIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
 const AdminGallery: React.FC = () => {
     const { data, addDocument, updateDocument, deleteDocument, isInitialized } = useData();
@@ -14,6 +15,7 @@ const AdminGallery: React.FC = () => {
         category: 'Show',
         date: new Date().toISOString().split('T')[0],
         imageUrl: '',
+        additionalImages: [],
         videoUrl: '',
         description: '',
         featured: false
@@ -42,6 +44,7 @@ const AdminGallery: React.FC = () => {
                 category: 'Show',
                 date: new Date().toISOString().split('T')[0],
                 imageUrl: '',
+                additionalImages: [],
                 videoUrl: '',
                 description: '',
                 featured: false
@@ -90,6 +93,7 @@ const AdminGallery: React.FC = () => {
                                     category: 'Show',
                                     date: new Date().toISOString().split('T')[0],
                                     imageUrl: '',
+                                    additionalImages: [],
                                     videoUrl: '',
                                     description: '',
                                     featured: false
@@ -124,8 +128,8 @@ const AdminGallery: React.FC = () => {
                                         <td className="p-3 font-medium text-white">{item.title}</td>
                                         <td className="p-3 text-sm">
                                             <span className={`px-2 py-1 rounded text-xs font-bold ${item.category === 'Show' ? 'bg-purple-900/50 text-purple-200' :
-                                                    item.category === 'Video' ? 'bg-red-900/50 text-red-200' :
-                                                        'bg-blue-900/50 text-blue-200'
+                                                item.category === 'Video' ? 'bg-red-900/50 text-red-200' :
+                                                    'bg-blue-900/50 text-blue-200'
                                                 }`}>
                                                 {item.category === 'Show' ? 'Défilé' : item.category === 'Video' ? 'Vidéo' : 'Shooting'}
                                             </span>
@@ -221,6 +225,17 @@ const AdminGallery: React.FC = () => {
                             value={currentItem.imageUrl || ''}
                             onChange={(url) => setCurrentItem({ ...currentItem, imageUrl: url })}
                         />
+
+                        {/* Photos supplémentaires */}
+                        <div className="border-t border-white/10 pt-6">
+                            <MultiImageUploader
+                                label="Photos supplémentaires (optionnel)"
+                                description="Ajoutez jusqu'à 10 photos supplémentaires pour créer une galerie complète"
+                                values={currentItem.additionalImages || []}
+                                onChange={(urls) => setCurrentItem({ ...currentItem, additionalImages: urls })}
+                                maxImages={10}
+                            />
+                        </div>
 
                         {currentItem.category === 'Video' && (
                             <div>

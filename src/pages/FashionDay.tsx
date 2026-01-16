@@ -6,11 +6,14 @@ import { useData } from '../contexts/DataContext';
 import ParallaxHero from '../components/ui/ParallaxHero';
 import FadeIn from '../components/ui/FadeIn';
 import Reveal from '../components/ui/Reveal';
+import { edition2ModelPosters } from '../constants/fashionDayImages';
+import { partnerLogos } from '../constants/partnerLogos';
 
 const FashionDay: React.FC = () => {
   const { data, addDocument, isInitialized } = useData();
   const [selectedEditionId, setSelectedEditionId] = useState<number>(2);
   const [showReservationForm, setShowReservationForm] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [reservationData, setReservationData] = useState({
     name: '', email: '', phone: '', tableType: 'Table 1 (4 pers) - Bières Locales', guestCount: 4, notes: ''
   });
@@ -219,14 +222,104 @@ const FashionDay: React.FC = () => {
               </FadeIn>
             </section>
 
-            {/* 5. PARTENAIRES */}
-            <FadeIn className="text-center pt-10 border-t border-white/5">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-pm-off-white/30 mb-8">Nos Partenaires de Confiance</h3>
-              <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-16 opacity-60 grayscale hover:grayscale-0 transition-grayscale duration-700">
-                {["Yarden Hotel", "Legrand TV", "Darain Visuals", "Symbiose", "Vitri Clean", "Indi Hair"].map((p, i) => (
-                  <span key={i} className="text-xl md:text-2xl font-playfair font-bold text-pm-off-white cursor-default hover:text-pm-gold transition-colors">{p}</span>
-                ))}
-              </div>
+            {/* 5. MANNEQUINS VEDETTES - Edition 2 */}
+            <FadeIn>
+              <section className="bg-gradient-to-br from-pm-dark-light to-black/40 p-8 md:p-12 rounded-2xl border border-pm-gold/20 scroll-mt-24" id="mannequins">
+                <div className="text-center mb-16">
+                  <Reveal>
+                    <h3 className="text-5xl md:text-7xl font-playfair text-white mb-6 italic">
+                      The Icons
+                    </h3>
+                  </Reveal>
+                  <div className="w-24 h-1 bg-pm-gold mx-auto mb-8"></div>
+                  <p className="text-pm-off-white/60 max-w-2xl mx-auto text-lg">
+                    L'excellence du mannequinat gabonais. Découvrez les visages qui illumineront le podium du Perfect Fashion Day.
+                  </p>
+                </div>
+
+                {/* Grid des affiches - Masonry style look */}
+                <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-6 space-y-6">
+                  {edition2ModelPosters.map((posterUrl, index) => (
+                    <FadeIn key={index} delay={index * 0.03} className="break-inside-avoid">
+                      <div
+                        className="group relative rounded-2xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-[1.02] shadow-xl hover:shadow-pm-gold/20 border border-white/5 hover:border-pm-gold/40"
+                        onClick={() => setLightboxImage(posterUrl)}
+                      >
+                        <img
+                          src={posterUrl}
+                          alt={`Mannequin ${index + 1}`}
+                          className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                        {/* Overlay au hover */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
+                          <Reveal>
+                            <span className="text-pm-gold font-bold text-lg mb-1 block">MANNEQUIN #{index + 1}</span>
+                          </Reveal>
+                          <span className="text-white/60 text-xs uppercase tracking-[0.2em]">Perfect Fashion Day • Edition 2</span>
+                          <div className="mt-4 w-10 h-10 rounded-full bg-pm-gold/20 border border-pm-gold/50 flex items-center justify-center backdrop-blur-md">
+                            <SparklesIcon className="w-5 h-5 text-pm-gold" />
+                          </div>
+                        </div>
+
+                        {/* Glassmorphism Badge */}
+                        <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-xl border border-white/10 text-white font-playfair font-bold text-sm px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          #{index + 1}
+                        </div>
+                      </div>
+                    </FadeIn>
+                  ))}
+                </div>
+
+                <div className="text-center mt-20 p-12 bg-pm-gold/5 rounded-3xl border border-pm-gold/10 backdrop-blur-sm">
+                  <Reveal>
+                    <h4 className="text-3xl font-playfair text-white mb-4 italic">Rejoignez l'Elite</h4>
+                  </Reveal>
+                  <p className="text-pm-off-white/70 mb-8 max-w-xl mx-auto">
+                    Vous souhaitez défiler pour les plus grands créateurs ? Les inscriptions pour la prochaine édition sont déjà ouvertes.
+                  </p>
+                  <Link to="/fashion-day-application" className="inline-flex items-center gap-2 text-pm-gold hover:text-white transition-colors uppercase tracking-[0.3em] font-bold text-sm group">
+                    Postuler maintenant <span className="group-hover:translate-x-2 transition-transform">→</span>
+                  </Link>
+                </div>
+              </section>
+            </FadeIn>
+
+            {/* 6. PARTENAIRES */}
+            <FadeIn>
+              <section className="bg-pm-dark-light/50 p-12 rounded-2xl border border-white/5 overflow-hidden">
+                <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16 px-4">
+                  <div className="max-w-xl">
+                    <h3 className="text-4xl md:text-5xl font-playfair text-white mb-4">
+                      Prestige <span className="text-pm-gold">&</span> Network
+                    </h3>
+                    <p className="text-pm-off-white/50 text-sm uppercase tracking-widest font-bold">
+                      Ils soutiennent l'émergence de la mode africaine
+                    </p>
+                  </div>
+                  <div className="hidden md:block w-32 h-px bg-pm-gold/30 mb-4"></div>
+                </div>
+
+                {/* Grid des logos partenaires - Moving Banner Effect or High-End Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 items-center">
+                  {partnerLogos.map((logoUrl, index) => (
+                    <FadeIn key={index} delay={index * 0.05}>
+                      <div
+                        className="group relative flex items-center justify-center p-8 bg-black/20 rounded-2xl border border-white/5 hover:border-pm-gold/30 hover:bg-black/40 transition-all duration-500 cursor-pointer h-32 shadow-xl hover:shadow-pm-gold/5"
+                        onClick={() => setLightboxImage(logoUrl)}
+                      >
+                        <img
+                          src={logoUrl}
+                          alt={`Partenaire ${index + 1}`}
+                          className="max-w-full max-h-full object-contain opacity-30 group-hover:opacity-100 filter grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-110"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 border-2 border-pm-gold/0 group-hover:border-pm-gold/20 rounded-2xl transition-all duration-500 scale-110 group-hover:scale-100"></div>
+                      </div>
+                    </FadeIn>
+                  ))}
+                </div>
+              </section>
             </FadeIn>
           </>
         ) : (
@@ -319,6 +412,28 @@ const FashionDay: React.FC = () => {
               </form>
             </div>
           </FadeIn>
+        </div>
+      )}
+
+      {/* Lightbox pour les affiches */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setLightboxImage(null)}
+        >
+          <button
+            onClick={() => setLightboxImage(null)}
+            className="absolute top-4 right-4 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors z-10"
+            aria-label="Fermer"
+          >
+            <XMarkIcon className="w-6 h-6 text-white" />
+          </button>
+          <img
+            src={lightboxImage}
+            alt="Affiche mannequin"
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </div>

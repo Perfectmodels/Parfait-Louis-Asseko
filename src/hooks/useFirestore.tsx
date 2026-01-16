@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../firestoreConfig';
-import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+import { ref, set, get, push, update, remove } from 'firebase/database';
+import { initialData } from '../constants/data';
+import logger from '../utils/logger';
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation, AdminProfile, GalleryItem } from '../types';
 
 // Import initial data to seed the database if it's empty
@@ -40,6 +42,8 @@ import {
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
+import { doc, setDoc } from 'firebase/firestore';
+import { updateDoc } from 'firebase/firestore/lite';
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -126,26 +130,46 @@ export const useFirestore = () => {
         gallery: []
     }), []);
 
-    // Fonction pour charger une collection
+    // Fonction pour charger une collection depuis Firebase Realtime Database
     const loadCollection = async <T,>(collectionName: string, fallback: T[]): Promise<T[]> => {
         try {
-            const querySnapshot = await getDocs(collection(db, collectionName));
-            if (querySnapshot.empty) return fallback;
-            return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+            const dbRef = ref(db, collectionName);
+            const snapshot = await get(dbRef);
+
+            if (!snapshot.exists()) {
+                return fallback;
+            }
+
+            const data = snapshot.val();
+
+            // Si c'est un objet, convertir en array
+            if (data && typeof data === 'object') {
+                return Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                } as T));
+            }
+
+            return fallback;
         } catch (error) {
-            console.error(`Error loading ${collectionName}:`, error);
+            logger.error(`Error loading ${collectionName}:`, error);
             return fallback;
         }
     };
 
-    // Fonction pour charger un document de configuration
+    // Fonction pour charger un document de configuration depuis Firebase Realtime Database
     const loadConfig = async <T,>(configName: string, fallback: T): Promise<T> => {
         try {
-            const docRef = doc(db, 'config', configName);
-            const docSnap = await getDoc(docRef);
-            return docSnap.exists() ? docSnap.data() as T : fallback;
+            const dbRef = ref(db, `config/${configName}`);
+            const snapshot = await get(dbRef);
+
+            if (!snapshot.exists()) {
+                return fallback;
+            }
+
+            return snapshot.val() as T;
         } catch (error) {
-            console.error(`Error loading config ${configName}:`, error);
+            logger.error(`Error loading config ${configName}:`, error);
             return fallback;
         }
     };
@@ -261,23 +285,23 @@ export const useFirestore = () => {
                     agencyTimeline,
                     navLinks: initialData.navLinks, // Always use code navLinks
                     heroSlides: heroSlides.length > 0 ? heroSlides : initialData.heroSlides,
-                    siteConfig,
-                    contactInfo,
-                    siteImages,
-                    socialLinks,
-                    agencyInfo,
+                    siteConfig: (siteConfig && Object.keys(siteConfig).length > 0) ? siteConfig : initialData.siteConfig,
+                    contactInfo: (contactInfo && Object.keys(contactInfo).length > 0) ? contactInfo : initialData.contactInfo,
+                    siteImages: (siteImages && Object.keys(siteImages).length > 0) ? siteImages : initialData.siteImages,
+                    socialLinks: (socialLinks && Object.keys(socialLinks).length > 0) ? socialLinks : initialData.socialLinks,
+                    agencyInfo: (agencyInfo && Object.keys(agencyInfo).length > 0) ? agencyInfo : initialData.agencyInfo,
 
-                    apiKeys,
+                    apiKeys: (apiKeys && Object.keys(apiKeys).length > 0) ? apiKeys : initialData.apiKeys,
                     fashionDayReservations,
-                    adminProfile,
+                    adminProfile: (adminProfile && Object.keys(adminProfile).length > 0) ? adminProfile : initialData.adminProfile,
                     gallery: gallery.length > 0 ? gallery : []
                 };
 
                 setData(loadedData);
                 setIsInitialized(true);
-                console.log("✅ Firestore data loaded successfully");
+                logger.log("✅ Firestore data loaded successfully");
             } catch (error) {
-                console.error("Firestore read failed:", error);
+                logger.error("Firestore read failed:", error);
                 // Fallback to local data if Firestore fails
                 setData(getInitialData());
                 setIsInitialized(true);
@@ -307,7 +331,7 @@ export const useFirestore = () => {
                 const collData = newData[collName as keyof AppData];
                 if (Array.isArray(collData)) {
                     for (const item of collData) {
-                        const docId = (item as any).id || (item as any).slug || `doc_${Date.now()}`;
+                        const docId = (item as any).id || (item as any).slug || `doc_${Date.now()} `;
                         savePromises.push(setDoc(doc(db, collName, docId), item));
                     }
                 }
@@ -354,7 +378,7 @@ export const useFirestore = () => {
 
             return docId;
         } catch (error) {
-            console.error(`Error adding document to ${collectionName}:`, error);
+            console.error(`Error adding document to ${collectionName}: `, error);
             throw error;
         }
     }, []);
@@ -362,7 +386,7 @@ export const useFirestore = () => {
     // Mettre à jour un document existant
     const updateDocument = useCallback(async (collectionName: string, id: string, updates: any) => {
         try {
-            await setDoc(doc(db, collectionName, id), updates, { merge: true });
+            await updateDoc(doc(db, collectionName, id), updates, { merge: true });
 
             // Mise à jour optimiste
             setData(prevData => {
@@ -383,7 +407,7 @@ export const useFirestore = () => {
                 return prevData;
             });
         } catch (error) {
-            console.error(`Error updating document ${id} in ${collectionName}:`, error);
+            console.error(`Error updating document ${id} in ${collectionName}: `, error);
             throw error;
         }
     }, []);
@@ -406,7 +430,7 @@ export const useFirestore = () => {
                 return prevData;
             });
         } catch (error) {
-            console.error(`Error deleting document ${id} from ${collectionName}:`, error);
+            console.error(`Error deleting document ${id} from ${collectionName}: `, error);
             throw error;
         }
     }, []);

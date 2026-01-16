@@ -1,61 +1,82 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { useLocation, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../components/SocialIcons';
-import { ContactMessage, BookingRequest } from '../types';
+import { CastingApplication, ContactMessage, FashionDayApplication, FashionDayApplicationRole } from '../types';
+import MultiImageUploader from '../components/MultiImageUploader';
 import ParallaxHero from '../components/ui/ParallaxHero';
 import FadeIn from '../components/ui/FadeIn';
 
+type InquiryType =
+    | 'general'
+    | 'booking'
+    | 'show'
+    | 'training'
+    | 'model-application'
+    | 'pfd-application';
+
+const INQUIRY_TYPES = {
+    'general': "Demande d'information générale",
+    'booking': "Booking Mannequins",
+    'show': "Organisation de défilé",
+    'training': "Formation de mannequin",
+    'model-application': "Candidature Spontanée (Mannequin)",
+    'pfd-application': "Candidature Perfect Fashion Day",
+};
+
 const Contact: React.FC = () => {
-    const { data, saveData, isInitialized } = useData();
+    const { data, saveData } = useData();
     const location = useLocation();
+    const navigate = useNavigate();
 
-    const contactInfo = data?.contactInfo || { address: '', phone: '', email: '' };
-    const socialLinks = data?.socialLinks;
-    const siteImages = data?.siteImages;
+    const getInquiryTypeFromQuery = (): InquiryType => {
+        const params = new URLSearchParams(location.search);
+        const service = params.get('service');
+        const subject = params.get('subject');
 
-    const [inquiryType, setInquiryType] = useState<'general' | 'booking'>('general');
+        if (subject === 'casting') return 'model-application';
+        if (subject === 'pfd') return 'pfd-application';
+        if (service === 'Booking Mannequins') return 'booking';
+        if (service === 'Organisation Défilés de Mode') return 'show';
+        if (service === 'Formation Mannequins') return 'training';
+        
+        return 'general';
+    };
+
+    const [inquiryType, setInquiryType] = useState<InquiryType>(getInquiryTypeFromQuery());
     
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-        company: '',
-        models: '',
-        startDate: '',
-        endDate: '',
+    // Form States
+    const [generalInfo, setGeneralInfo] = useState({ name: '', email: '', phone: '', message: '' });
+    const [modelAppData, setModelAppData] = useState({
+        firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
+        gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
+        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
     });
+    const [portfolioPhotos, setPortfolioPhotos] = useState<string[]>([]);
+    const [pfdAppData, setPfdAppData] = useState({ name: '', email: '', phone: '', role: 'Mannequin' as FashionDayApplicationRole, message: '' });
 
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
-
+    
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const service = params.get('service');
-        const booking = params.get('booking'); // for pre-selecting booking
-        const model = params.get('model'); // for pre-filling model name
-
-        if (service) {
-            setInquiryType('general');
-            setFormData(prev => ({ ...prev, subject: `Demande d'information pour : ${service}` }));
-        }
-        if (booking) {
-            setInquiryType('booking');
-        }
-        if (model) {
-            setInquiryType('booking');
-            setFormData(prev => ({ ...prev, models: model }));
-        }
+        setInquiryType(getInquiryTypeFromQuery());
     }, [location.search]);
 
-
+    const handleInquiryTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newType = e.target.value as InquiryType;
+        setInquiryType(newType);
+        // Reset status when changing form type
+        setStatus('idle');
+        setStatusMessage('');
+        // Update URL query parameter
+        const params = new URLSearchParams(location.search);
+        params.set('subject', newType);
+        navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    };
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStatus('loading');
-        setStatusMessage('');
 
         if (!data) {
             setStatus('error');
@@ -64,195 +85,257 @@ const Contact: React.FC = () => {
         }
 
         try {
-            if (inquiryType === 'general') {
-                const newContactMessage: ContactMessage = {
-                    id: `contact-${Date.now()}`,
-                    submissionDate: new Date().toISOString(),
-                    status: 'Nouveau',
-                    name: formData.name,
-                    email: formData.email,
-                    subject: formData.subject,
-                    message: formData.message,
-                };
-                const updatedMessages = [...(data.contactMessages || []), newContactMessage];
-                await saveData({ ...data, contactMessages: updatedMessages });
-            } else { // booking
-                const newBookingRequest: BookingRequest = {
-                    id: `booking-${Date.now()}`,
-                    submissionDate: new Date().toISOString(),
-                    status: 'Nouveau',
-                    clientName: formData.name,
-                    clientEmail: formData.email,
-                    clientCompany: formData.company,
-                    requestedModels: formData.models,
-                    startDate: formData.startDate,
-                    endDate: formData.endDate,
-                    message: formData.message,
-                };
-                const updatedRequests = [...(data.bookingRequests || []), newBookingRequest];
-                await saveData({ ...data, bookingRequests: updatedRequests });
+            let successMsg = "Votre message a bien été envoyé.";
+            switch (inquiryType) {
+                case 'model-application':
+                    const newModelApplication: CastingApplication = {
+                        ...modelAppData,
+                        id: `casting-${Date.now()}`,
+                        submissionDate: new Date().toISOString(),
+                        status: 'Nouveau',
+                        portfolioPhotos: portfolioPhotos,
+                    };
+                    const updatedCastingApplications = [...(data.castingApplications || []), newModelApplication];
+                    await saveData({ ...data, castingApplications: updatedCastingApplications });
+                    successMsg = 'Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.';
+                    // Reset form
+                    setModelAppData({
+                        firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
+                        gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
+                        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
+                    });
+                    setPortfolioPhotos([]);
+                    break;
+
+                case 'pfd-application':
+                    const newPfdApplication: FashionDayApplication = {
+                        ...pfdAppData,
+                        id: `pfd-${Date.now()}`,
+                        submissionDate: new Date().toISOString(),
+                        status: 'Nouveau',
+                    };
+                    const updatedPfdApplications = [...(data.fashionDayApplications || []), newPfdApplication];
+                    await saveData({ ...data, fashionDayApplications: updatedPfdApplications });
+                    successMsg = 'Votre candidature pour le PFD a été envoyée ! L\'équipe vous recontactera prochainement.';
+                    setPfdAppData({ name: '', email: '', phone: '', role: 'Mannequin', message: '' });
+                    break;
+                
+                default: // General, booking, show, training
+                    const newContactMessage: ContactMessage = {
+                        ...generalInfo,
+                        id: `msg-${Date.now()}`,
+                        date: new Date().toISOString(),
+                        subject: INQUIRY_TYPES[inquiryType],
+                        status: 'Nouveau',
+                    };
+                    const updatedMessages = [...(data.contactMessages || []), newContactMessage];
+                    await saveData({ ...data, contactMessages: updatedMessages });
+                    setGeneralInfo({ name: '', email: '', phone: '', message: '' });
+                    break;
             }
-
             setStatus('success');
-            setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
-            setFormData({ name: '', email: '', subject: '', message: '', company: '', models: '', startDate: '', endDate: '' });
-
+            setStatusMessage(successMsg);
         } catch (error) {
             setStatus('error');
-            setStatusMessage('Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer.');
-            console.error("Error saving contact/booking message:", error);
+            setStatusMessage("Une erreur est survenue lors de l\'envoi de votre formulaire.");
+            console.error(error);
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const renderFormFields = () => {
+        switch (inquiryType) {
+            case 'model-application':
+                return <ModelApplicationForm data={modelAppData} setData={setModelAppData} portfolioPhotos={portfolioPhotos} setPortfolioPhotos={setPortfolioPhotos} />;
+            case 'pfd-application':
+                return <PfdApplicationForm data={pfdAppData} setData={setPfdAppData} />;
+            default:
+                return <GeneralInquiryForm data={generalInfo} setData={setGeneralInfo} inquiryType={inquiryType} />;
+        }
     };
-
-    if (!isInitialized) return <div className="min-h-screen bg-pm-dark"></div>;
     
-    const isBooking = inquiryType === 'booking';
-
     return (
         <div className="bg-pm-dark text-pm-off-white min-h-screen">
-            <SEO
-                title="Contact | Perfect Models Management"
-                description="Contactez-nous pour toute demande de booking, de partenariat ou d\'information. L\'équipe de Perfect Models Management est à votre disposition à Libreville, Gabon."
-                keywords="contacter agence mannequin, booking mannequin gabon, partenariat mode, pmm contact"
-                image={siteImages?.about}
-            />
-
+            <SEO title="Contact & Candidatures" description="Contactez Perfect Models Management pour toute demande ou postulez directement à nos castings ou événements." />
+            
             <ParallaxHero
-                image={siteImages?.about || ''}
-                title="Contactez-nous"
-                subtitle="Une question, un projet de collaboration ou une demande de booking ? Notre équipe est à votre écoute."
-                height="h-[60vh]"
+                image={data?.siteImages?.contact || "https://i.ibb.co/bL36hG3/contact-hero.jpg"}
+                title="Contact & Candidatures"
+                subtitle="Une question ? Une ambition ? C'est ici que tout commence."
+                height="h-[50vh]"
             />
 
-            <div className="page-container -mt-20 relative z-20 space-y-16">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-                    {/* Contact Info */}
-                    <FadeIn delay={0.2} className="lg:col-span-1">
-                        <div className="bg-black/90 backdrop-blur-md p-8 lg:p-10 border border-white/10 rounded-xl shadow-2xl h-full flex flex-col justify-between">
-                            <div>
-                                <h2 className="text-3xl font-playfair text-white mb-8 border-b border-white/10 pb-4">Nos Coordonnées</h2>
-                                <div className="space-y-8">
-                                    <InfoItem icon={MapPinIcon} label="Adresse" text={contactInfo.address} />
-                                    <InfoItem icon={PhoneIcon} label="Téléphone" text={contactInfo.phone} />
-                                    <InfoItem icon={EnvelopeIcon} label="Email" text={contactInfo.email} href={`mailto:${contactInfo.email}`} />
-                                </div>
-                            </div>
-                            <div className="mt-12">
-                                <h3 className="text-lg font-bold text-pm-gold mb-6 uppercase tracking-widest">Suivez-nous</h3>
-                                {socialLinks && (
-                                    <div className="flex space-x-6">
-                                        {socialLinks.facebook && <SocialLink href={socialLinks.facebook} icon={FacebookIcon} />}
-                                        {socialLinks.instagram && <SocialLink href={socialLinks.instagram} icon={InstagramIcon} />}
-                                        {socialLinks.youtube && <SocialLink href={socialLinks.youtube} icon={YoutubeIcon} />}
-                                    </div>
-                                )}
-                            </div>
+            <div className="page-container -mt-20 relative z-20 max-w-4xl mx-auto">
+                <FadeIn>
+                     <form onSubmit={handleSubmit} className="bg-black/80 backdrop-blur-md p-8 md:p-12 border border-white/10 rounded-2xl shadow-2xl space-y-10">
+                        <Section title="Objet de votre demande">
+                            <FormSelect label="Quel est l'objet de votre message ?" name="inquiryType" value={inquiryType} onChange={handleInquiryTypeChange} required>
+                                {Object.entries(INQUIRY_TYPES).map(([key, value]) => (
+                                    <option key={key} value={key}>{value}</option>
+                                ))}
+                            </FormSelect>
+                        </Section>
+
+                        {renderFormFields()}
+
+                        <div className="pt-6">
+                            <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all hover:bg-white hover:scale-[1.01] shadow-[0_0_20px_rgba(212,175,55,0.4)] disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none">
+                                {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
+                            </button>
                         </div>
-                    </FadeIn>
 
-                    {/* Unified Form */}
-                    <FadeIn delay={0.4} className="lg:col-span-2">
-                        <div className="bg-pm-dark-light/90 backdrop-blur-md p-8 lg:p-10 border border-white/5 rounded-xl shadow-2xl">
-                            <h2 className="text-3xl font-playfair text-pm-gold mb-6">Formulaire de contact</h2>
-                            
-                            {/* Inquiry Type Selector */}
-                            <div className="mb-8 grid grid-cols-2 gap-2 bg-black/40 border border-white/10 rounded-lg p-1">
-                                <button onClick={() => setInquiryType('general')} className={`px-4 py-3 text-sm font-bold uppercase tracking-widest rounded-md transition-colors ${!isBooking ? 'bg-pm-gold text-pm-dark' : 'text-white/50 hover:bg-white/5'}`}>
-                                    Message Général
-                                </button>
-                                <button onClick={() => setInquiryType('booking')} className={`px-4 py-3 text-sm font-bold uppercase tracking-widest rounded-md transition-colors ${isBooking ? 'bg-pm-gold text-pm-dark' : 'text-white/50 hover:bg-white/5'}`}>
-                                    Demande de Booking
-                                </button>
+                        {statusMessage && (
+                            <div className={`text-center text-sm p-4 rounded-md border ${status === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-300' : 'bg-red-500/10 border-red-500/30 text-red-300'}`}>
+                                {statusMessage}
                             </div>
-
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <FormInput label="Votre Nom" name="name" value={formData.name} onChange={handleChange} required />
-                                    <FormInput label="Votre Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-                                </div>
-                                
-                                {!isBooking ? (
-                                    // Fields for General Contact
-                                    <>
-                                        <FormInput label="Sujet" name="subject" value={formData.subject} onChange={handleChange} required />
-                                        <FormTextArea label="Votre Message" name="message" value={formData.message} onChange={handleChange} required />
-                                    </>
-                                ) : (
-                                    // Fields for Booking
-                                    <>
-                                        <FormInput label="Société (optionnel)" name="company" value={formData.company} onChange={handleChange} />
-                                        <FormInput label="Mannequin(s) souhaité(s)" name="models" value={formData.models} onChange={handleChange} required />
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <FormInput label="Date de début" name="startDate" type="date" value={formData.startDate} onChange={handleChange} required />
-                                            <FormInput label="Date de fin" name="endDate" type="date" value={formData.endDate} onChange={handleChange} required />
-                                        </div>
-                                        <FormTextArea label="Détails du projet" name="message" value={formData.message} onChange={handleChange} required />
-                                    </>
-                                )}
-
-                                <div className="pt-4">
-                                    <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-md transition-all hover:bg-white hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] disabled:opacity-50 disabled:cursor-not-allowed">
-                                        {status === 'loading' ? 'Envoi en cours...' : (isBooking ? 'Envoyer la demande de booking' : 'Envoyer le message')}
-                                    </button>
-                                </div>
-
-                                {statusMessage && (
-                                    <div className={`text-center text-sm p-4 rounded-md border ${status === 'success' ? 'bg-green-900/20 border-green-500/30 text-green-300' : 'bg-red-900/20 border-red-500/30 text-red-300'}`}>
-                                        {statusMessage}
-                                    </div>
-                                )}
-                            </form>
-                        </div>
-                    </FadeIn>
-                </div>
+                        )}
+                    </form>
+                </FadeIn>
             </div>
         </div>
     );
 };
 
-// Re-usable components from original file, can be kept as is or moved to a separate file.
-const InfoItem: React.FC<{ icon: React.ElementType, label: string, text: string, href?: string }> = ({ icon: Icon, label, text, href }) => (
-    <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white/5 transition-colors group">
-        <div className="w-12 h-12 rounded-full bg-pm-gold/10 flex items-center justify-center group-hover:bg-pm-gold/20 transition-colors flex-shrink-0">
-            <Icon className="w-6 h-6 text-pm-gold" />
-        </div>
-        <div>
-            <span className="block text-xs uppercase tracking-widest text-pm-off-white/50 mb-1">{label}</span>
-            {href ? <a href={href} className="text-white font-medium hover:text-pm-gold transition-colors">{text}</a> : <span className="text-white font-medium">{text}</span>}
-        </div>
+
+// Form Section Components
+const GeneralInquiryForm: React.FC<{ data: any, setData: Function, inquiryType: InquiryType }> = ({ data, setData, inquiryType }) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setData({ ...data, [e.target.name]: e.target.value });
+    };
+    return (
+        <Section title="Vos Informations">
+             <div className="grid md:grid-cols-2 gap-6">
+                <FormInput label="Nom complet" name="name" value={data.name} onChange={handleChange} required />
+                <FormInput label="Email" name="email" type="email" value={data.email} onChange={handleChange} required />
+            </div>
+            <FormInput label="Téléphone" name="phone" type="tel" value={data.phone} onChange={handleChange} />
+            <FormTextArea label="Votre message" name="message" value={data.message} onChange={handleChange} rows={6} required 
+                placeholder={
+                    inquiryType === 'booking' ? "Précisez la nature de l'événement, les dates, le type de profil recherché..." :
+                    inquiryType === 'show' ? "Décrivez votre projet de défilé, la date envisagée, le lieu, le nombre de mannequins..." :
+                    inquiryType === 'training' ? "Indiquez vos motivations et vos questions concernant nos formations..." :
+                    "Comment pouvons-nous vous aider ?"
+                }
+            />
+        </Section>
+    );
+};
+
+const ModelApplicationForm: React.FC<{ data: any, setData: Function, portfolioPhotos: string[], setPortfolioPhotos: Function }> = ({ data, setData, portfolioPhotos, setPortfolioPhotos }) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setData({ ...data, [e.target.name]: e.target.value });
+    };
+    return (
+        <>
+            <Section title="Informations Personnelles">
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FormInput label="Prénom" name="firstName" value={data.firstName} onChange={handleChange} required />
+                    <FormInput label="Nom" name="lastName" value={data.lastName} onChange={handleChange} required />
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FormInput label="Date de Naissance" name="birthDate" type="date" value={data.birthDate} onChange={handleChange} required />
+                    <FormSelect label="Genre" name="gender" value={data.gender} onChange={handleChange} required>
+                        <option value="Femme">Femme</option>
+                        <option value="Homme">Homme</option>
+                    </FormSelect>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FormInput label="Nationalité" name="nationality" value={data.nationality} onChange={handleChange} required />
+                    <FormInput label="Ville de résidence" name="city" value={data.city} onChange={handleChange} required />
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FormInput label="Email" name="email" type="email" value={data.email} onChange={handleChange} required />
+                    <FormInput label="Téléphone" name="phone" type="tel" value={data.phone} onChange={handleChange} required />
+                </div>
+            </Section>
+
+            <Section title="Mensurations & Physique">
+                <div className="grid md:grid-cols-3 gap-6">
+                    <FormInput label="Taille (cm)" name="height" type="number" value={data.height} onChange={handleChange} required />
+                    <FormInput label="Poids (kg)" name="weight" type="number" value={data.weight} onChange={handleChange} required />
+                    <FormInput label="Pointure (EU)" name="shoeSize" type="number" value={data.shoeSize} onChange={handleChange} required />
+                </div>
+                <div className="grid md:grid-cols-3 gap-6">
+                    <FormInput label="Poitrine (cm)" name="chest" type="number" value={data.chest} onChange={handleChange} />
+                    <FormInput label="Taille (vêtement, cm)" name="waist" type="number" value={data.waist} onChange={handleChange} />
+                    <FormInput label="Hanches (cm)" name="hips" type="number" value={data.hips} onChange={handleChange} />
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FormInput label="Couleur des yeux" name="eyeColor" value={data.eyeColor} onChange={handleChange} />
+                    <FormInput label="Couleur des cheveux" name="hairColor" value={data.hairColor} onChange={handleChange} />
+                </div>
+            </Section>
+
+            <Section title="Expérience & Portfolio">
+                <FormSelect label="Niveau d'expérience" name="experience" value={data.experience} onChange={handleChange} required>
+                    <option value="none">Aucune expérience</option>
+                    <option value="beginner">Débutant(e) (shootings amateurs)</option>
+                    <option value="intermediate">Intermédiaire (agence locale, défilés)</option>
+                    <option value="professional">Professionnel(le)</option>
+                </FormSelect>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <FormInput label="Profil Instagram" name="instagram" value={data.instagram} onChange={handleChange} placeholder="@pseudo" />
+                    <FormInput label="Lien vers portfolio (optionnel)" name="portfolioLink" value={data.portfolioLink} onChange={handleChange} placeholder="https://..." />
+                </div>
+            </Section>
+
+            <Section title="Photos Portfolio">
+                <MultiImageUploader label="Vos Photos" description="Ajoutez jusqu'à 10 photos. Incluez au moins un portrait, une photo en pied et une de profil." maxImages={10} values={portfolioPhotos} onChange={setPortfolioPhotos} />
+            </Section>
+        </>
+    );
+};
+
+const PfdApplicationForm: React.FC<{ data: any, setData: Function }> = ({ data, setData }) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        setData({ ...data, [e.target.name]: e.target.value });
+    };
+    return (
+        <Section title="Votre Candidature PFD">
+            <FormInput label="Nom Complet ou Nom de la Marque" name="name" value={data.name} onChange={handleChange} required />
+            <div className="grid md:grid-cols-2 gap-6">
+                <FormInput label="Email" name="email" type="email" value={data.email} onChange={handleChange} required />
+                <FormInput label="Téléphone" name="phone" type="tel" value={data.phone} onChange={handleChange} required />
+            </div>
+            <FormSelect label="Je postule en tant que" name="role" value={data.role} onChange={handleChange} required>
+                <option value="Mannequin">Mannequin</option>
+                <option value="Styliste">Styliste / Créateur</option>
+                <option value="Partenaire">Partenaire / Sponsor</option>
+                <option value="Photographe">Photographe / Vidéaste</option>
+                <option value="MUA">Maquilleur(se) / Coiffeur(se) (MUA)</option>
+                <option value="Autre">Autre (précisez dans le message)</option>
+            </FormSelect>
+            <FormTextArea label="Message" name="message" value={data.message} onChange={handleChange} rows={6} required placeholder="Présentez-vous, décrivez votre projet, ou laissez un lien vers votre portfolio..." />
+        </Section>
+    );
+};
+
+
+// Reusable components
+const Section: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
+    <div className="space-y-6 pt-8 border-t border-white/5 first:pt-0 first:border-none">
+        <h2 className="text-2xl font-playfair text-pm-gold flex items-center gap-3">
+            <span className="w-8 h-[1px] bg-pm-gold/50 inline-block"></span>
+            {title}
+        </h2>
+        <div className="space-y-6">{children}</div>
     </div>
 );
-
-const SocialLink: React.FC<{ href: string, icon: React.ElementType }> = ({ href, icon: Icon }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="w-12 h-12 flex items-center justify-center border border-white/10 rounded-full hover:bg-pm-gold hover:border-pm-gold hover:text-pm-dark transition-all duration-300 group">
-        <Icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-    </a>
-);
-
-const FormInput: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean }> = (props) => (
-    <div className="group">
-        <label htmlFor={props.name} className="block text-xs font-bold uppercase tracking-widest text-pm-off-white/70 mb-2 group-focus-within:text-pm-gold transition-colors">{props.label}</label>
-        <input
-            {...props}
-            id={props.name}
-            className="w-full bg-black/40 border border-white/10 rounded-md py-3 px-4 text-white focus:outline-none focus:border-pm-gold focus:ring-1 focus:ring-pm-gold transition-all"
-        />
+const FormInput: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string }> = (props) => (
+    <div className='group'>
+        <label htmlFor={props.name} className="block text-xs font-bold uppercase tracking-widest text-pm-off-white/50 mb-2 group-focus-within:text-pm-gold transition-colors">{props.label} {props.required && <span className="text-red-500">*</span>}</label>
+        <input {...props} id={props.name} className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-pm-gold focus:ring-1 focus:ring-pm-gold outline-none transition-all placeholder:text-white/20" />
     </div>
 );
-
-const FormTextArea: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean }> = (props) => (
-    <div className="group">
-        <label htmlFor={props.name} className="block text-xs font-bold uppercase tracking-widest text-pm-off-white/70 mb-2 group-focus-within:text-pm-gold transition-colors">{props.label}</label>
-        <textarea
-            {...props}
-            id={props.name}
-            rows={5}
-            className="w-full bg-black/40 border border-white/10 rounded-md py-3 px-4 text-white focus:outline-none focus:border-pm-gold focus:ring-1 focus:ring-pm-gold transition-all resize-none"
-        />
+const FormSelect: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode }> = (props) => (
+    <div className='group'>
+        <label htmlFor={props.name} className="block text-xs font-bold uppercase tracking-widest text-pm-off-white/50 mb-2 group-focus-within:text-pm-gold transition-colors">{props.label} {props.required && <span className="text-red-500">*</span>}</label>
+        <select {...props} id={props.name} className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-pm-gold focus:ring-1 focus:ring-pm-gold outline-none transition-all">{props.children}</select>
+    </div>
+);
+const FormTextArea: React.FC<{ label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, rows: number, required?: boolean, placeholder?: string }> = (props) => (
+    <div className='group'>
+        <label htmlFor={props.name} className="block text-xs font-bold uppercase tracking-widest text-pm-off-white/50 mb-2 group-focus-within:text-pm-gold transition-colors">{props.label} {props.required && <span className="text-red-500">*</span>}</label>
+        <textarea {...props} id={props.name} className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-pm-gold focus:ring-1 focus:ring-pm-gold outline-none transition-all placeholder:text-white/20" />
     </div>
 );
 

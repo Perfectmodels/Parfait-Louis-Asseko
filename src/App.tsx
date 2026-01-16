@@ -1,7 +1,7 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
 import { Analytics } from "@vercel/analytics/react";
-import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { HashRouter, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
@@ -22,8 +22,6 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
-const CastingForm = lazy(() => import('./pages/CastingForm'));
-const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
 const Login = lazy(() => import('./pages/Login'));
 const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
@@ -36,6 +34,7 @@ const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
 const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
 const LiveChat = lazy(() => import('./pages/LiveChat'));
 const Gallery = lazy(() => import('./pages/Gallery'));
+import BackToTop from './components/ui/BackToTop';
 
 
 // Admin Pages
@@ -134,8 +133,8 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/services" element={<Services />} />
                     <Route path="/services/:slug" element={<ServiceDetail />} />
                     <Route path="/casting" element={<Casting />} />
-                    <Route path="/casting-formulaire" element={<CastingForm />} />
-                    <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
+                    <Route path="/casting-formulaire" element={<Navigate to="/contact?subject=model-application" replace />} />
+                    <Route path="/fashion-day-application" element={<Navigate to="/contact?subject=pfd-application" replace />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
@@ -229,6 +228,7 @@ const AppContent: React.FC = () => {
                 <AnimatedRoutes />
             </Suspense>
             <AIAssistantIcon />
+            <BackToTop />
         </Layout>
     );
 }
