@@ -6,7 +6,7 @@ import {
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
     ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
-    SignalIcon, ArrowUpRightIcon, StarIcon
+    SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon, MagnifyingGlassIcon, MicrophoneIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 import { motion } from 'framer-motion';
