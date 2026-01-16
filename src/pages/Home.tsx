@@ -114,7 +114,7 @@ const Home: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }}
         >
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-playfair text-pm-gold font-extrabold" style={{ textShadow: '0 0 20px rgba(212, 175, 55, 0.6)' }}>
+          <h1 className="text-5xl sm:text-7xl lg:text-9xl font-playfair text-pm-gold font-extrabold px-4" style={{ textShadow: '0 0 20px rgba(212, 175, 55, 0.6)' }}>
             L'Élégance Redéfinie
           </h1>
           <p className="text-lg md:text-xl max-w-3xl mx-auto text-pm-off-white/90">
