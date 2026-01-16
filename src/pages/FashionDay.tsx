@@ -117,7 +117,7 @@ const FashionDay: React.FC = () => {
   return (
     <>
       <div className="bg-pm-dark text-pm-off-white min-h-screen">
-        <SEO title={`Perfect Fashion Day - Édition ${selectedEdition.edition}`} description="L'événement mode incontournable." />
+        <SEO title="Perfect Fashion Day 2026 - Défilé Mode Libreville | Billetterie Officielle" description="L'événement mode incontournable." />
 
         {/* HERO GENERIC OR SPECIFIC */}
         <div className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
@@ -280,12 +280,10 @@ const FashionDay: React.FC = () => {
 
                 {/* 5. PARTENAIRES */}
                 <div className="text-center">
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-pm-off-white/50 mb-6">Nos Partenaires</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-pm-off-white/50 mb-6">Nos Partenaires de Confiance</h3>
                   <div className="flex flex-wrap justify-center items-center gap-8 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
-                    <span className="text-xl font-serif text-pm-gold font-bold border-b-2 border-pm-gold pb-1">Baj Trad (Golden)</span>
-                    <span className="text-lg font-medium">Yarden Hotel</span>
+                    <span className="text-lg font-medium border-b border-pm-gold/30 pb-1">Yarden Hotel</span>
                     <span className="text-lg font-medium">Legrand TV</span>
-                    <span className="text-lg font-medium">Infinix Gabon</span>
                     <span className="text-lg font-medium">Darain Visuals</span>
                     <span className="text-lg font-medium">Symbiose</span>
                     <span className="text-lg font-medium">Vitri Clean</span>
@@ -375,6 +373,10 @@ const FashionDay: React.FC = () => {
                   <label className="block text-sm text-pm-off-white/70 mb-1">Message / Demandes Spéciales</label>
                   <textarea className="w-full bg-black/50 border border-pm-gold/30 rounded p-3 text-pm-off-white focus:border-pm-gold focus:ring-1 focus:ring-pm-gold outline-none" rows={2}
                     value={reservationData.notes} onChange={e => setReservationData({ ...reservationData, notes: e.target.value })} placeholder="Allergies, anniversaire, etc."></textarea>
+                </div>
+
+                <div className="bg-pm-gold/10 p-3 rounded border border-pm-gold/30 mb-4 text-xs text-pm-off-white">
+                  <strong>💡 Conseil VIP :</strong> Pour garantir votre table, nous vous recommandons d'effectuer un dépôt via Airtel Money au 077 50 79 50 après validation de ce formulaire.
                 </div>
 
                 <button type="submit" className="w-full py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-lg hover:bg-white transition-all transform hover:scale-[1.02] shadow-lg shadow-pm-gold/20 mt-4">

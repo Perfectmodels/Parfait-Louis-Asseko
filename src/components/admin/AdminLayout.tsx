@@ -62,6 +62,7 @@ const navSections = [
             { to: '/admin/agency', icon: BuildingStorefrontIcon, label: 'Page Agence' },
             { to: '/admin/fashion-day-events', icon: CalendarDaysIcon, label: 'Événements PFD' },
             { to: '/admin/fashion-day-reservations', icon: UserGroupIcon, label: 'Réservations PFD' },
+            { to: '/admin/gallery', icon: PhotoIcon, label: 'Galerie' },
             { to: '/admin/settings', icon: Cog6ToothIcon, label: 'Paramètres du Site' },
         ]
     },

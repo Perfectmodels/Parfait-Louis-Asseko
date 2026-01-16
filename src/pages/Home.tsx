@@ -121,8 +121,8 @@ const Home: React.FC = () => {
             Au cœur de la mode africaine, nous sculptons les carrières et célébrons la beauté sous toutes ses formes.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/casting-formulaire" className="cta-btn-gold animate-glow">
-              Devenir Mannequin
+            <Link to="/fashion-day" className="cta-btn-gold animate-glow">
+              Réserver votre Table
             </Link>
             <Link to="/agence" className="cta-btn-outline">
               Découvrir l'Agence

@@ -129,4 +129,8 @@
   .focus-style-self {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-pm-gold focus-visible:ring-offset-pm-dark;
   }
+
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
 }

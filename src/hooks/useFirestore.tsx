@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firestoreConfig';
 import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation, AdminProfile } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation, AdminProfile, GalleryItem } from '../types';
 
 // Import initial data to seed the database if it's empty
 import {
@@ -80,6 +80,7 @@ export interface AppData {
     photoshootBriefs: PhotoshootBrief[];
     fashionDayReservations: FashionDayReservation[];
     adminProfile: AdminProfile;
+    gallery: GalleryItem[];
 }
 
 export const useFirestore = () => {
@@ -122,6 +123,7 @@ export const useFirestore = () => {
         faqData: initialFaqData,
         fashionDayReservations: initialFashionDayReservations,
         adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
+        gallery: []
     }), []);
 
     // Fonction pour charger une collection
@@ -189,7 +191,8 @@ export const useFirestore = () => {
                     agencyInfo,
                     apiKeys,
                     fashionDayReservations,
-                    adminProfile
+                    adminProfile,
+                    gallery
                 ] = await Promise.all([
                     loadCollection<Model>('models', initialData.models),
                     loadCollection<Article>('articles', initialData.articles),
@@ -226,7 +229,8 @@ export const useFirestore = () => {
 
                     loadConfig('apiKeys', initialData.apiKeys),
                     loadCollection<FashionDayReservation>('fashionDayReservations', initialData.fashionDayReservations),
-                    loadConfig('adminProfile', initialData.adminProfile)
+                    loadConfig('adminProfile', initialData.adminProfile),
+                    loadCollection<GalleryItem>('gallery', [])
                 ]);
 
                 const loadedData: AppData = {
@@ -265,7 +269,8 @@ export const useFirestore = () => {
 
                     apiKeys,
                     fashionDayReservations,
-                    adminProfile
+                    adminProfile,
+                    gallery: gallery.length > 0 ? gallery : []
                 };
 
                 setData(loadedData);
@@ -295,7 +300,7 @@ export const useFirestore = () => {
                 'bookingRequests', 'contactMessages', 'absences', 'monthlyPayments',
                 'photoshootBriefs', 'juryMembers', 'registrationStaff', 'faqData',
                 'modelDistinctions', 'agencyAchievements', 'agencyPartners', 'agencyTimeline',
-                'navLinks', 'heroSlides', 'fashionDayReservations'
+                'navLinks', 'heroSlides', 'fashionDayReservations', 'gallery'
             ];
 
             for (const collName of arrayCollections) {

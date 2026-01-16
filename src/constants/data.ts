@@ -10,6 +10,7 @@ export const navLinks: NavLink[] = [
   { path: '/', label: 'Accueil', inFooter: true },
   { path: '/agence', label: 'Agence', inFooter: true },
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
+  { path: '/galerie', label: 'Galerie', inFooter: true },
   { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
   { path: '/magazine', label: 'Magazine', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
@@ -222,20 +223,41 @@ export const fashionDayEvents: FashionDayEvent[] = [
   },
   {
     edition: 2,
-    date: "2026-01-31T18:00:00",
+    date: "2026-01-31T20:00:00",
     theme: "L’Art de se révéler",
-    location: "Complexe Hôtelier Le Nalys, Angondjé (à confirmer)",
-    description: "Après une première édition marquante, riche en émotions et en élégance, Perfect Models Management est fier d’annoncer le retour de la Perfect Fashion Day pour une deuxième édition inédite. Cette nouvelle rencontre mettra à l’honneur une mode profondément enracinée dans la culture, l’histoire personnelle et l’affirmation de soi.",
-    stylists: [],
+    location: "Gare du Nord, Libreville",
+    promoter: "Parfait Asseko",
+    description: "Cette édition symbolise le passage de la chrysalide au papillon. C'est le moment précis où l'on décide de laisser tomber les masques sociaux pour laisser transparaître son identité profonde. Une odyssée authentique célébrant l'audace créative et l'excellence.",
+    stylists: [
+      { name: "Rabibi", description: "Bloc 1 : L'Éveil", images: [] },
+      { name: "Najmi", description: "Bloc 1 : L'Éveil", images: [] },
+      { name: "Pretty Little Hook", description: "Bloc 1 : L'Éveil", images: [] },
+      { name: "Ventex", description: "Bloc 2 : L'Éclosion", images: [] },
+      { name: "Racines", description: "Bloc 2 : L'Éclosion", images: [] },
+      { name: "Maeva Creations", description: "Bloc 2 : L'Éclosion", images: [] },
+      { name: "Miguel Fashion Style", description: "Bloc 3 : L'Expression", images: [] },
+      { name: "Nan's Ethnik", description: "Bloc 3 : L'Expression", images: [] },
+      { name: "Cyrlie Fashion", description: "Bloc 3 : L'Expression", images: [] },
+      { name: "BKD Empire", description: "Bloc 4 : L'Apothéose", images: [] },
+      { name: "Tito Style", description: "Bloc 4 : L'Apothéose", images: [] },
+      { name: "Edele A", description: "Invitée d'Honneur", images: [] }
+    ],
     featuredModels: [],
     artists: [
       {
-        name: 'Lady Riaba (Poésie)',
-        description: 'Slam introductif sur le thème « L’Art de se révéler »',
+        name: 'Lady Riaba',
+        description: 'Maîtresse de Cérémonie & Performance Slam',
         images: []
       }
     ],
-    partners: []
+    partners: [
+      { type: "Partenaire Officiel", name: "Yarden Hotel" },
+      { type: "Partenaire Officiel", name: "Legrand TV" },
+      { type: "Partenaire Officiel", name: "Darain Visuals" },
+      { type: "Partenaire Officiel", name: "Symbiose" },
+      { type: "Partenaire Officiel", name: "Vitri Clean" },
+      { type: "Partenaire Officiel", name: "Indi Hair" }
+    ]
   }
 ];
 
