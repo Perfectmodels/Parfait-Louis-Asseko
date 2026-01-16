@@ -1,5 +1,6 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
+import { Analytics } from "@vercel/analytics/react";
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
@@ -34,6 +35,7 @@ const Chat = lazy(() => import('./pages/Chat'));
 const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
 const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
 const LiveChat = lazy(() => import('./pages/LiveChat'));
+const Gallery = lazy(() => import('./pages/Gallery'));
 
 
 // Admin Pages
@@ -62,6 +64,7 @@ const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
+const AdminGallery = lazy(() => import('./pages/AdminGallery'));
 
 
 // Role-specific pages
@@ -137,6 +140,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
                     <Route path="/chat" element={<Chat />} />
+                    <Route path="/galerie" element={<Gallery />} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -176,6 +180,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/analyser-image" element={<ProtectedRoute role="admin"><ImageAnalysis /></ProtectedRoute>} />
                     <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
                     <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
+                    <Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>
@@ -240,6 +245,7 @@ const App: React.FC = () => {
                 <ScrollToTop />
                 <AppContent />
                 <PWAInstaller />
+                <Analytics />
             </HashRouter>
         </DataProvider>
     );

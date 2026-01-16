@@ -41,6 +41,17 @@ export interface Model {
   lastActivity?: string;
 }
 
+export interface GalleryItem {
+  id: string;
+  title: string;
+  category: 'Show' | 'Shooting' | 'Video';
+  date: string;
+  imageUrl: string;
+  videoUrl?: string;
+  description?: string;
+  featured?: boolean;
+}
+
 export interface Stylist {
   name: string;
   description: string;
