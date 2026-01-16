@@ -3,9 +3,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import TestimonialCarousel from '../components/TestimonialCarousel';
+import HeroCarousel from '../components/HeroCarousel';
 import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
+import { HeroSlide } from '../types';
 
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
@@ -21,9 +23,24 @@ const Home: React.FC = () => {
     );
   }
 
-  const { agencyInfo, agencyPartners, fashionDayEvents, models, siteImages, testimonials, agencyServices } = data;
+  const { agencyInfo, agencyPartners, fashionDayEvents, models, siteImages, testimonials, agencyServices, heroSlides } = data;
   const publicModels = models.filter(m => m.isPublic).slice(0, 4);
   const featuredServices = agencyServices.slice(0, 4);
+
+  // Fallback if heroSlides is empty or undefined
+  const effectiveHeroSlides: HeroSlide[] = (heroSlides && heroSlides.length > 0) ? heroSlides : [
+    {
+      id: 'default',
+      image: siteImages.hero,
+      title: "L'Élégance Redéfinie",
+      subtitle: "Nous révélons les talents et valorisons la beauté africaine.",
+      buttonText: "Découvrir nos mannequins",
+      buttonLink: "/mannequins",
+      secondButtonText: "Nous rejoindre",
+      secondButtonLink: "/casting-formulaire",
+      order: 1
+    }
+  ];
 
   return (
     <div className="text-pm-off-white">
@@ -32,32 +49,11 @@ const Home: React.FC = () => {
         title="Accueil | L'Élégance Redéfinie"
         description="Perfect Models Management, l'agence de mannequins de référence à Libreville, Gabon. Découvrez nos talents, nos événements mode exclusifs et notre vision qui redéfinit l'élégance africaine."
         keywords="agence de mannequins gabon, mannequin libreville, perfect models management, mode africaine, casting mannequin gabon, défilé de mode, focus model 241"
-        image={siteImages.hero}
+        image={effectiveHeroSlides[0].image}
       />
 
       {/* 1. Hero Section */}
-      <section 
-        className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed" 
-        style={{ backgroundImage: `url('${siteImages.hero}')` }}
-      >
-        <div className="absolute inset-0 bg-pm-dark/80"></div>
-        <div className="relative z-10 p-6">
-          <h1 className="text-4xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
-            L'Élégance Redéfinie
-          </h1>
-          <p className="mt-4 text-base md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
-            Nous révélons les talents et valorisons la beauté africaine.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/mannequins" className="w-full sm:w-auto px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30 hover:scale-105 transform">
-              Découvrir nos mannequins
-            </Link>
-            <Link to="/casting-formulaire" className="w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark hover:scale-105 transform">
-              Nous rejoindre
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HeroCarousel slides={effectiveHeroSlides} />
 
       {/* 2. Agency Presentation */}
       <section className="page-container bg-black">

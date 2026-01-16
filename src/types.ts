@@ -378,3 +378,15 @@ export interface NavLink {
     inFooter: boolean;
     footerLabel?: string;
 }
+
+export interface HeroSlide {
+  id: string;
+  image: string;
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonLink: string;
+  secondButtonText?: string;
+  secondButtonLink?: string;
+  order: number;
+}
