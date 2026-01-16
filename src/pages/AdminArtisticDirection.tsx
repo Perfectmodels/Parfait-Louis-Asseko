@@ -1,0 +1,1 @@
+import React from 'react'; const AdminArtisticDirection: React.FC = () => <div className='p-10 text-center text-pm-gold'>AdminArtisticDirection - En construction</div>; export default AdminArtisticDirection;

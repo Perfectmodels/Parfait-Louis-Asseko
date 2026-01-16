@@ -1,0 +1,1 @@
+import React from 'react'; const AdminClassroomProgress: React.FC = () => <div className='p-10 text-center text-pm-gold'>AdminClassroomProgress - En construction</div>; export default AdminClassroomProgress;
