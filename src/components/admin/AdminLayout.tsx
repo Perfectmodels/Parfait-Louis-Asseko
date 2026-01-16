@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { 
+import {
     HomeIcon, UsersIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
@@ -9,14 +9,15 @@ import {
     BookOpenIcon,
     PhotoIcon,
     MicrophoneIcon,
-    PaperAirplaneIcon
+    PaperAirplaneIcon, // FIX: Added import for PaperAirplaneIcon
+    UserIcon
 } from '@heroicons/react/24/outline';
 
 interface NavItemProps {
-  to: string;
-  icon: React.ElementType;
-  label: string;
-  onClick?: () => void;
+    to: string;
+    icon: React.ElementType;
+    label: string;
+    onClick?: () => void;
 }
 
 const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, onClick }) => (
@@ -25,10 +26,9 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, onClick }) => 
         end={to === '/admin'}
         onClick={onClick}
         className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-                isActive
-                    ? 'bg-pm-gold text-pm-dark'
-                    : 'text-pm-off-white/70 hover:bg-pm-gold/10 hover:text-pm-off-white'
+            `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${isActive
+                ? 'bg-pm-gold text-pm-dark'
+                : 'text-pm-off-white/70 hover:bg-pm-gold/10 hover:text-pm-off-white'
             }`
         }
     >
@@ -61,6 +61,7 @@ const navSections = [
             { to: '/admin/news', icon: PresentationChartLineIcon, label: 'Actualités' },
             { to: '/admin/agency', icon: BuildingStorefrontIcon, label: 'Page Agence' },
             { to: '/admin/fashion-day-events', icon: CalendarDaysIcon, label: 'Événements PFD' },
+            { to: '/admin/fashion-day-reservations', icon: UserGroupIcon, label: 'Réservations PFD' },
             { to: '/admin/settings', icon: Cog6ToothIcon, label: 'Paramètres du Site' },
         ]
     },
@@ -78,18 +79,24 @@ const navSections = [
             { to: '/admin/classroom', icon: BookOpenIcon, label: 'Classroom Pro' },
             { to: '/admin/classroom-progress', icon: AcademicCapIcon, label: 'Suivi Pro' },
             { to: '/admin/model-access', icon: KeyIcon, label: 'Accès Pro' },
-            { to: '/admin/absences', icon: CalendarIcon, label: 'Suivi Absences'},
+            { to: '/admin/absences', icon: CalendarIcon, label: 'Suivi Absences' },
             { to: '/admin/payments', icon: CurrencyDollarIcon, label: 'Comptabilité' },
             { to: '/admin/artistic-direction', icon: PaintBrushIcon, label: 'Direction Artistique' },
         ]
     },
-     {
+    {
         title: 'Communication',
         links: [
             { to: '/admin/mailing', icon: PaperAirplaneIcon, label: 'Mailing' },
             { to: '/admin/messages', icon: EnvelopeIcon, label: 'Messages de Contact' },
             { to: '/admin/comments', icon: ChatBubbleLeftRightIcon, label: 'Commentaires' },
             { to: '/admin/recovery-requests', icon: ExclamationTriangleIcon, label: 'Demandes de Récupération' },
+        ]
+    },
+    {
+        title: 'Personnel',
+        links: [
+            { to: '/admin/profile', icon: UserIcon, label: 'Mon Profil Admin' },
         ]
     }
 ];
@@ -126,12 +133,12 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             {/* --- Mobile Sidebar --- */}
             <div className={`fixed inset-0 z-40 flex lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
-                 <div onClick={() => setSidebarOpen(false)} className={`fixed inset-0 bg-black/60 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`}/>
+                <div onClick={() => setSidebarOpen(false)} className={`fixed inset-0 bg-black/60 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} />
                 <div className={`relative flex-1 flex flex-col max-w-xs w-full bg-black border-r border-pm-gold/10 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="p-5 flex-grow overflow-y-auto">
                         <div className="flex items-center justify-between mb-8">
                             <h1 className="font-playfair text-xl text-pm-gold">Admin Panel</h1>
-                            <button onClick={() => setSidebarOpen(false)} className="text-pm-off-white/70 p-1"><XMarkIcon className="h-6 w-6" /></button>
+                            <button onClick={() => setSidebarOpen(false)} aria-label="Fermer le menu" className="text-pm-off-white/70 p-1"><XMarkIcon className="h-6 w-6" /></button>
                         </div>
                         <Sidebar onLinkClick={() => setSidebarOpen(false)} />
                     </div>
@@ -141,7 +148,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             {/* --- Main Content --- */}
             <div className="flex flex-col flex-1 lg:pl-64">
                 <header className="sticky top-0 z-30 lg:hidden flex h-16 items-center gap-x-6 border-b border-pm-gold/10 bg-black/80 backdrop-blur-sm px-4">
-                    <button onClick={() => setSidebarOpen(true)} className="p-2 text-pm-off-white/80">
+                    <button onClick={() => setSidebarOpen(true)} aria-label="Ouvrir le menu" className="p-2 text-pm-off-white/80">
                         <Bars3Icon className="h-6 w-6" />
                     </button>
                     <div className="flex-1 text-sm font-semibold leading-6 text-pm-gold">{location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Dashboard'}</div>

@@ -3,161 +3,42 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Configuration publique - Lecture seule pour tous, écriture pour admin
-    match /config/{document} {
-      allow read: true;
-      allow write: if request.auth != null && 
-                      (request.auth.token.admin == true || 
-                       request.auth.uid == 'admin');
-    }
+    // --- MODE DÉVELOPPEMENT / TEST (A changer pour la production avec Firebase Auth) ---
+    // Actuellement permissif car le Login Frontend n'utilise pas encore Firebase Auth.
     
-    // Collections publiques - Lecture pour tous
+    // Configurations
+    match /config/{document} {
+      allow read, write: if true;
+    }
+
+    // Collections principales (Utilisées par les nouvelles fonctions CRUD)
     match /models/{modelId} {
-      allow read: true;
-      allow write: if request.auth != null;
+      allow read, write: if true;
     }
     
     match /articles/{articleId} {
-      allow read: true;
-      allow write: if request.auth != null;
+      allow read, write: if true;
     }
     
     match /fashionDayEvents/{eventId} {
-      allow read: true;
-      allow write: if request.auth != null;
+      allow read, write: if true;
     }
-    
-    match /testimonials/{testimonialId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /newsItems/{newsId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /agencyServices/{serviceId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /courseData/{courseId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /faqData/{faqId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /heroSlides/{slideId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    // Collections de données agence
-    match /modelDistinctions/{distinctionId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /agencyAchievements/{achievementId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /agencyPartners/{partnerId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /agencyTimeline/{timelineId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /navLinks/{linkId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    // Applications et demandes - Lecture/écriture authentifiée
-    match /castingApplications/{applicationId} {
-      allow read: if request.auth != null;
-      allow create: true; // Permet aux visiteurs de postuler
-      allow update, delete: if request.auth != null;
-    }
-    
-    match /fashionDayApplications/{applicationId} {
-      allow read: if request.auth != null;
-      allow create: true; // Permet aux visiteurs de postuler
-      allow update, delete: if request.auth != null;
-    }
-    
+
     match /bookingRequests/{requestId} {
-      allow read: if request.auth != null;
-      allow create: true; // Permet aux clients de faire des demandes
-      allow update, delete: if request.auth != null;
+      allow read, write: if true;
     }
-    
-    match /contactMessages/{messageId} {
-      allow read: if request.auth != null;
-      allow create: true; // Permet aux visiteurs de contacter
-      allow update, delete: if request.auth != null;
+
+    match /castingApplications/{applicationId} {
+      allow read, write: if true;
     }
-    
-    match /recoveryRequests/{requestId} {
-      allow read: if request.auth != null;
-      allow create: true; // Permet la récupération de compte
-      allow update, delete: if request.auth != null;
+
+    match /fashionDayReservations/{reservationId} {
+      allow read, write: if true;
     }
-    
-    // Forum - Lecture publique, écriture authentifiée
-    match /forumThreads/{threadId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /forumReplies/{replyId} {
-      allow read: true;
-      allow write: if request.auth != null;
-    }
-    
-    match /articleComments/{commentId} {
-      allow read: true;
-      allow create: true; // Permet aux visiteurs de commenter
-      allow update, delete: if request.auth != null;
-    }
-    
-    // Données sensibles - Admin uniquement
-    match /juryMembers/{juryId} {
-      allow read, write: if request.auth != null && 
-                            request.auth.token.admin == true;
-    }
-    
-    match /registrationStaff/{staffId} {
-      allow read, write: if request.auth != null && 
-                            request.auth.token.admin == true;
-    }
-    
-    match /absences/{absenceId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    match /monthlyPayments/{paymentId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    match /photoshootBriefs/{briefId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Règle par défaut pour les nouvelles collections
+
+    // Règle par défaut pour le reste (Flexible pour le développement)
     match /{document=**} {
-      allow read: true;
-      allow write: if request.auth != null;
+      allow read, write: if true;
     }
   }
 }

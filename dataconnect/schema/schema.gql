@@ -1,0 +1,73 @@
+type User @table {
+  email: String!
+  passwordHash: String!
+  userType: String!
+  createdAt: Timestamp!
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  profilePictureUrl: String
+  bio: String
+}
+
+type ModelProfile @table {
+  user: User!
+  gender: String!
+  dateOfBirth: Date!
+  heightCm: Int!
+  bustCm: Int!
+  waistCm: Int!
+  hipsCm: Int!
+  country: String!
+  city: String!
+  eyeColor: String
+  hairColor: String
+  skinTone: String
+  shoeSizeEu: Int
+  dressSizeEu: Int
+  availabilityStatus: String
+}
+
+type PortfolioItem @table {
+  modelProfile: ModelProfile!
+  fileUrl: String!
+  itemType: String!
+  uploadDate: Timestamp!
+  description: String
+  category: String
+}
+
+type AgencyProfile @table {
+  user: User!
+  agencyName: String!
+  contactEmail: String!
+  country: String!
+  city: String!
+  createdAt: Timestamp!
+  websiteUrl: String
+  description: String
+  address: String
+}
+
+type JobPosting @table {
+  poster: User!
+  title: String!
+  description: String!
+  jobType: String!
+  location: String!
+  deadline: Timestamp!
+  createdAt: Timestamp!
+  payRate: String
+  requiredSkills: [String]
+  startDate: Timestamp
+  endDate: Timestamp
+}
+
+type Application @table(key: ["modelProfile", "jobPosting"]) {
+  modelProfile: ModelProfile!
+  jobPosting: JobPosting!
+  applicationDate: Timestamp!
+  status: String!
+  coverLetter: String
+  modelMessage: String
+}

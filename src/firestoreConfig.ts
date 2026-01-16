@@ -12,8 +12,13 @@ const firebaseConfig = {
     measurementId: "G-CSP65WPY89"
 };
 
+import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 // Get a reference to the Firestore service
 export const db = getFirestore(app);
+export const storage = getStorage(app);
+export const auth = getAuth(app);
