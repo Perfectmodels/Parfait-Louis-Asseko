@@ -108,7 +108,7 @@ const Admin: React.FC = () => {
 
         const allRecent = [...recentCasting, ...recentBookings, ...recentMessages, ...recentReservations]
             .sort((a, b) => b.date.getTime() - a.date.getTime())
-            .slice(0, 7);
+            .slice(0, 10);
 
         return { newCastingApps, newBookingRequests, newMessages, newReservations, totalModels, recentActivities: allRecent };
     }, [data]);
@@ -120,84 +120,151 @@ const Admin: React.FC = () => {
         reservation: StarIcon,
     };
 
+    const quickActions = [
+        { label: 'Ajouter Mannequin', icon: PlusIcon, link: '/admin/models', color: 'bg-pm-gold' },
+        { label: 'Publier Article', icon: NewspaperIcon, link: '/admin/magazine', color: 'bg-blue-600' },
+        { label: 'Mailing List', icon: PaperAirplaneIcon, link: '/admin/mailing', color: 'bg-purple-600' },
+        { label: 'Nouvelle Édition PFD', icon: SparklesIcon, link: '/admin/fashion-day-events', color: 'bg-pm-gold' },
+    ];
+
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white min-h-screen">
             <SEO title="Admin Dashboard" noIndex />
-            <div className="container mx-auto px-6 lg:px-8">
-                <header className="admin-page-header">
+
+            <div className="space-y-10">
+                {/* --- Welcome Header --- */}
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/5 p-8 rounded-3xl border border-white/5 backdrop-blur-xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-20 bg-pm-gold/5 blur-3xl rounded-full -z-10"></div>
                     <div>
-                        <h1 className="admin-page-title">Tableau de Bord Administratif</h1>
-                        <p className="admin-page-subtitle">Gestion complète de la plateforme Perfect Models Management.</p>
+                        <p className="text-pm-gold text-[10px] font-black uppercase tracking-[0.3em] mb-2">Centre de Contrôle</p>
+                        <h1 className="text-4xl md:text-5xl font-playfair font-bold text-white leading-tight">
+                            Bonjour, <span className="text-pm-gold">Parfait Asseko</span>
+                        </h1>
+                        <p className="text-pm-off-white/50 text-sm mt-2 flex items-center gap-2">
+                            <CalendarDaysIcon className="w-4 h-4" />
+                            {new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        </p>
                     </div>
-                    <button onClick={handleLogout} className="action-btn !flex !items-center !gap-2 !px-4 !py-2">
-                        <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <Link to="/" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
+                            Voir le Site
+                        </Link>
+                        <button onClick={handleLogout} className="px-6 py-3 bg-red-600/20 hover:bg-red-600 text-red-100 border border-red-600/30 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2">
+                            <ArrowRightOnRectangleIcon className="w-4 h-4" /> Déconnexion
+                        </button>
+                    </div>
                 </header>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    <StatCard title="Nouvelles Candidatures" value={stats.newCastingApps || 0} icon={ClipboardDocumentListIcon} link="/admin/casting-applications" />
-                    <StatCard title="Nouveaux Bookings" value={stats.newBookingRequests || 0} icon={BriefcaseIcon} link="/admin/bookings" />
-                    <StatCard title="Réservations PFD" value={stats.newReservations || 0} icon={StarIcon} link="/admin/fashion-day-reservations" />
-                    <StatCard title="Total Mannequins" value={stats.totalModels || 0} icon={UsersIcon} link="/admin/models" />
-                </div>
+                {/* --- Quick Actions Bar --- */}
+                <section>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {quickActions.map((action, idx) => (
+                            <Link key={idx} to={action.link} className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all group">
+                                <div className={`w-10 h-10 ${action.color} rounded-xl flex items-center justify-center text-white shadow-lg`}>
+                                    <action.icon className="w-5 h-5" />
+                                </div>
+                                <span className="text-xs font-bold uppercase tracking-widest group-hover:text-pm-gold transition-colors">{action.label}</span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+
+                {/* --- Stats Grid --- */}
+                <section>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <StatCard title="Candidatures Casting" value={stats.newCastingApps} icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={stats.newCastingApps > 0} color="gold" />
+                        <StatCard title="Demandes Booking" value={stats.newBookingRequests} icon={BriefcaseIcon} link="/admin/bookings" isNew={stats.newBookingRequests > 0} color="blue" />
+                        <StatCard title="Réservations PFD" value={stats.newReservations} icon={StarIcon} link="/admin/fashion-day-reservations" isNew={stats.newReservations > 0} color="purple" />
+                        <StatCard title="Board Mannequins" value={stats.totalModels} icon={UsersIcon} link="/admin/models" color="gray" />
+                    </div>
+                </section>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <main className="lg:col-span-2 space-y-10">
-                        <Section title="Accès Rapides" icon={HomeIcon}>
-                            <DashboardCard title="Gérer les Mannequins" icon={UsersIcon} link="/admin/models" description="Ajouter, modifier ou archiver des profils de mannequins." />
-                            <DashboardCard title="Réservations PFD" icon={StarIcon} link="/admin/fashion-day-reservations" description="Gérer les tables et invités du Fashion Day." />
-                            <DashboardCard title="Gérer le Magazine" icon={NewspaperIcon} link="/admin/magazine" description="Créer et administrer les articles du magazine." />
-                            <DashboardCard title="Candidatures Casting" icon={ClipboardDocumentListIcon} link="/admin/casting-applications" description="Examiner les nouvelles demandes de casting." />
-                        </Section>
-                        <Section title="Gestion du Site" icon={Cog6ToothIcon}>
-                            <DashboardCard title="Contenu de l'Agence" icon={BuildingStorefrontIcon} link="/admin/agency" description="Mettre à jour les services et la chronologie." />
-                            <DashboardCard title="Événements PFD" icon={CalendarDaysIcon} link="/admin/fashion-day-events" description="Configurer les éditions du Perfect Fashion Day." />
-                            <DashboardCard title="Gérer les Actualités" icon={PresentationChartLineIcon} link="/admin/news" description="Publier les actualités de la page d'accueil." />
-                            <DashboardCard title="Paramètres Généraux" icon={Cog6ToothIcon} link="/admin/settings" description="Modifier les informations de contact, logos et clés API." />
-                        </Section>
+                    {/* --- Recent Activity Feed --- */}
+                    <main className="lg:col-span-2">
+                        <div className="bg-white/5 border border-white/5 rounded-3xl overflow-hidden backdrop-blur-xl">
+                            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                                <h2 className="text-xl font-bold font-playfair text-white flex items-center gap-3">
+                                    <SignalIcon className="w-5 h-5 text-pm-gold" />
+                                    Activités Récentes
+                                </h2>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-pm-off-white/40">Dernières 24h</span>
+                            </div>
+                            <div className="divide-y divide-white/5">
+                                {stats.recentActivities.length > 0 ? (
+                                    stats.recentActivities.map((activity, index) => {
+                                        const Icon = activityIconMap[activity.type as keyof typeof activityIconMap];
+                                        return (
+                                            <Link key={index} to={activity.link} className="flex items-center gap-6 p-6 hover:bg-white/5 transition-colors group">
+                                                <div className="w-12 h-12 rounded-2xl bg-pm-dark/80 border border-white/10 flex items-center justify-center group-hover:border-pm-gold/50 transition-colors">
+                                                    <Icon className="w-6 h-6 text-pm-gold" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-white font-medium group-hover:text-pm-gold transition-colors">{activity.text}</p>
+                                                    <p className="text-xs text-pm-off-white/40 mt-1 uppercase tracking-widest font-black">{timeAgo(activity.date)}</p>
+                                                </div>
+                                                <ArrowUpRightIcon className="w-5 h-5 text-pm-off-white/20 group-hover:text-pm-gold group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+                                            </Link>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="p-12 text-center">
+                                        <p className="text-pm-off-white/40 italic">Aucune activité récente à signaler.</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="p-4 bg-pm-gold/5 text-center">
+                                <button className="text-[10px] font-black uppercase tracking-[0.2em] text-pm-gold hover:text-white transition-colors">
+                                    Voir tout l'historique d'activité
+                                </button>
+                            </div>
+                        </div>
                     </main>
 
-                    <aside className="lg:col-span-1 space-y-8">
-                        <div className="admin-section-wrapper">
-                            <h2 className="admin-section-title flex items-center gap-2"><SignalIcon className="w-6 h-6" />Activité en Direct</h2>
+                    {/* --- Live Users & System Status --- */}
+                    <aside className="space-y-8">
+                        <div className="bg-white/5 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
+                            <h2 className="text-lg font-bold font-playfair text-white flex items-center gap-3 mb-6">
+                                <UserGroupIcon className="w-5 h-5 text-pm-gold" />
+                                Utilisateurs Actifs
+                            </h2>
                             {activeUsers.length > 0 ? (
-                                <ul className="space-y-3">
+                                <ul className="space-y-4">
                                     {activeUsers.map(user => (
-                                        <li key={user.name} className="flex items-center gap-3 bg-pm-dark/50 p-2 rounded-md border-l-4" style={{ borderColor: getRoleColor(user.role).match(/border-([a-z]+)-(\d+)/)?.[0].replace('border-', '') }}>
-                                            <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 animate-pulse"></span>
-                                            <div>
-                                                <p className="font-semibold text-sm truncate">{user.name}</p>
-                                                <p className={`text-xs px-1.5 py-0.5 rounded-full inline-block ${getRoleColor(user.role)}`}>{getRoleDisplayName(user.role)}</p>
+                                        <li key={user.name} className="flex items-center gap-4 bg-black/40 p-3 rounded-2xl border border-white/5">
+                                            <div className="relative">
+                                                <div className="w-10 h-10 rounded-full bg-pm-gold/20 flex items-center justify-center text-pm-gold border border-pm-gold/20 font-black text-xs uppercase">
+                                                    {user.name.substring(0, 2)}
+                                                </div>
+                                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-pm-dark rounded-full animate-pulse"></div>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-white truncate">{user.name}</p>
+                                                <p className={`text-[10px] font-black uppercase tracking-widest mt-0.5 ${getRoleColor(user.role).split(' ')[1]}`}>
+                                                    {getRoleDisplayName(user.role)}
+                                                </p>
                                             </div>
                                         </li>
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-sm text-center py-4 text-pm-off-white/60">Aucun utilisateur actif.</p>
+                                <div className="text-center py-6 text-pm-off-white/30 text-xs italic">
+                                    Aucun autre utilisateur en ligne.
+                                </div>
                             )}
                         </div>
-                        <div className="admin-section-wrapper">
-                            <h2 className="admin-section-title flex items-center gap-2">Notifications Récentes</h2>
-                            {stats.recentActivities.length > 0 ? (
-                                <ul className="space-y-3">
-                                    {stats.recentActivities.map((activity, index) => {
-                                        const Icon = activityIconMap[activity.type as keyof typeof activityIconMap];
-                                        return (
-                                            <li key={index}>
-                                                <Link to={activity.link} className="flex items-start gap-3 p-2 rounded-md hover:bg-pm-dark/50">
-                                                    <Icon className="w-5 h-5 text-pm-gold/80 mt-1 flex-shrink-0" />
-                                                    <div>
-                                                        <p className="text-sm leading-tight">{activity.text}</p>
-                                                        <p className="text-xs text-pm-off-white/60">{timeAgo(activity.date)}</p>
-                                                    </div>
-                                                </Link>
-                                            </li>
-                                        )
-                                    })}
-                                </ul>
-                            ) : (
-                                <p className="text-sm text-center py-4 text-pm-off-white/60">Aucune nouvelle notification.</p>
-                            )}
+
+                        <div className="bg-gradient-to-br from-pm-gold/20 to-transparent border border-pm-gold/20 rounded-3xl p-8 relative overflow-hidden group">
+                            <SparklesIcon className="absolute -right-4 -bottom-4 w-24 h-24 text-pm-gold/5 group-hover:scale-110 transition-transform duration-1000" />
+                            <h3 className="text-xl font-playfair font-black text-pm-gold mb-2 uppercase tracking-tighter">Élite Agency</h3>
+                            <p className="text-xs text-pm-off-white/60 leading-relaxed font-light">
+                                Votre plateforme est à jour et fonctionne sur les serveurs de production.
+                                <span className="block mt-2 font-bold text-pm-gold">Version: 2.5.0-gold</span>
+                            </p>
+                            <div className="mt-6 flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-white">Tous les systèmes sont en ligne</span>
+                            </div>
                         </div>
                     </aside>
                 </div>
@@ -206,26 +273,38 @@ const Admin: React.FC = () => {
     );
 };
 
-const Section: React.FC<{ title: string; icon: React.ElementType; children: React.ReactNode; }> = ({ title, icon: Icon, children }) => (
-    <section>
-        <h2 className="admin-section-title flex items-center gap-3"><Icon className="w-6 h-6" />{title}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {children}
-        </div>
-    </section>
-);
+const StatCard: React.FC<{ title: string; value: number; icon: React.ElementType; link: string; isNew?: boolean; color: string; }> = ({ title, value, icon: Icon, link, isNew, color }) => {
+    const colorSchemes: Record<string, string> = {
+        gold: 'from-pm-gold/10 hover:from-pm-gold/20 border-pm-gold/20 text-pm-gold',
+        blue: 'from-blue-600/10 hover:from-blue-600/20 border-blue-600/20 text-blue-400',
+        purple: 'from-purple-600/10 hover:from-purple-600/20 border-purple-600/20 text-purple-400',
+        gray: 'from-white/5 hover:from-white/10 border-white/10 text-pm-off-white/60',
+    };
 
-const StatCard: React.FC<{ title: string; value: number; icon: React.ElementType; link: string; }> = ({ title, value, icon: Icon, link }) => (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Link to={link} className="block p-4 bg-black border border-pm-gold/20 rounded-lg hover:bg-pm-dark/50 transition-colors">
-            <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold uppercase text-pm-off-white/70 tracking-wider">{title}</p>
-                <Icon className="w-6 h-6 text-pm-gold/50" />
-            </div>
-            <p className="text-4xl font-bold text-pm-gold mt-2">{value}</p>
-        </Link>
-    </motion.div>
-);
+    return (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <Link to={link} className={`block p-6 bg-gradient-to-br ${colorSchemes[color]} border rounded-3xl transition-all duration-300 relative overflow-hidden group hover:-translate-y-1`}>
+                <div className="flex justify-between items-start mb-4">
+                    <div className="p-3 bg-black/40 rounded-2xl group-hover:bg-pm-dark transition-colors border border-white/5">
+                        <Icon className="w-6 h-6" />
+                    </div>
+                    {isNew && (
+                        <span className="px-3 py-1 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full animate-bounce shadow-xl">
+                            Nouveau
+                        </span>
+                    )}
+                </div>
+                <div>
+                    <p className="text-2xl md:text-3xl font-bold text-white mb-1">{value}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-pm-off-white/40">{title}</p>
+                </div>
+                <div className="absolute -right-4 -bottom-4 opacity-5 transform rotate-12 transition-transform group-hover:scale-110 duration-700">
+                    <Icon className="w-20 h-20" />
+                </div>
+            </Link>
+        </motion.div>
+    );
+};
 
 const DashboardCard: React.FC<{ title: string; icon: React.ElementType; link: string; description: string; }> = ({ title, icon: Icon, link, description }) => (
     <Link to={link} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-1 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">

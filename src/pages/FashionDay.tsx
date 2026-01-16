@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, ClockIcon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import ParallaxHero from '../components/ui/ParallaxHero';
