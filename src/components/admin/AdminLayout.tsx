@@ -10,7 +10,9 @@ import {
     PhotoIcon,
     MicrophoneIcon,
     PaperAirplaneIcon, // FIX: Added import for PaperAirplaneIcon
-    UserIcon
+    UserIcon,
+    SignalIcon,
+    MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
 
 interface NavItemProps {
