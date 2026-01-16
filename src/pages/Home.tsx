@@ -42,10 +42,10 @@ const Home: React.FC = () => {
       >
         <div className="absolute inset-0 bg-pm-dark/80"></div>
         <div className="relative z-10 p-6">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-playfair text-pm-gold font-extrabold leading-tight tracking-tighter" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
             L'Élégance Redéfinie
           </h1>
-          <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
+          <p className="mt-4 text-base md:text-xl max-w-2xl mx-auto text-pm-off-white/90">
             Nous révélons les talents et valorisons la beauté africaine.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -61,7 +61,7 @@ const Home: React.FC = () => {
 
       {/* 2. Agency Presentation */}
       <section className="page-container bg-black">
-        <div className="flex flex-col md:flex-row items-center gap-12">
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
           <div className="md:w-1/2 p-2 border-2 border-pm-gold/50 hover:border-pm-gold transition-all duration-300">
             <img src={siteImages.about} alt="Perfect Models Management" className="w-full h-full object-cover"/>
           </div>
@@ -69,10 +69,10 @@ const Home: React.FC = () => {
             <p className="text-pm-off-white/80 mb-6 leading-relaxed">
               {agencyInfo.about.p1}
             </p>
-            <div className="flex justify-center md:justify-start gap-6 font-bold text-pm-gold/90 mb-8">
-              <span>PROFESSIONNALISME</span><span>•</span><span>EXCELLENCE</span><span>•</span><span>ÉTHIQUE</span>
+            <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 font-bold text-pm-gold/90 mb-8 text-sm md:text-base">
+              <span>PROFESSIONNALISME</span><span className="hidden md:inline">•</span><span>EXCELLENCE</span><span className="hidden md:inline">•</span><span>ÉTHIQUE</span>
             </div>
-            <Link to="/agence" className="px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
+            <Link to="/agence" className="inline-block w-full sm:w-auto px-10 py-4 border-2 border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-pm-gold hover:text-pm-dark">
               Découvrir l'agence
             </Link>
           </div>
