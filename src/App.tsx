@@ -45,6 +45,8 @@ const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
 const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
 const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
 const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
+const AdminFashionDayReservations = lazy(() => import('./pages/AdminFashionDayReservations'));
+const AdminProfilePage = lazy(() => import('./pages/AdminProfile'));
 // FIX: Corrected import paths for Admin pages to resolve module not found errors.
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
@@ -73,11 +75,11 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 
 const ScrollToTop: React.FC = () => {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
+    const { pathname } = useLocation();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+    return null;
 };
 
 const LoadingFallback: React.FC = () => (
@@ -98,7 +100,7 @@ const pageVariants = {
     }
 };
 
-const pageTransition = {
+const pageTransition: any = {
     type: "tween",
     ease: "anticipate",
     duration: 0.5
@@ -142,12 +144,12 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                     <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
                     <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
-                    
+
                     {/* FIX: Removed Beginner Classroom routes as the feature has been deprecated. */}
-                    
+
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
-                    
+
                     <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
                     <Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
                     <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
@@ -158,6 +160,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/casting-results" element={<ProtectedRoute role="admin"><AdminCastingResults /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
+                    <Route path="/admin/fashion-day-reservations" element={<ProtectedRoute role="admin"><AdminFashionDayReservations /></ProtectedRoute>} />
                     <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                     <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
@@ -205,10 +208,10 @@ const AppContent: React.FC = () => {
         } else {
             // Restore title if not on an admin page (this will be handled by SEO component for other pages)
             if (document.title.startsWith('(') || document.title.startsWith('Admin |')) {
-                 document.title = originalTitle;
+                document.title = originalTitle;
             }
         }
-        
+
         return () => {
             document.title = originalTitle;
         };
@@ -227,19 +230,19 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
 
-  useEffect(() => {
-    registerServiceWorker();
-  }, []);
+    useEffect(() => {
+        registerServiceWorker();
+    }, []);
 
-  return (
-    <DataProvider>
-      <HashRouter>
-        <ScrollToTop />
-        <AppContent />
-        <PWAInstaller />
-      </HashRouter>
-    </DataProvider>
-  );
+    return (
+        <DataProvider>
+            <HashRouter>
+                <ScrollToTop />
+                <AppContent />
+                <PWAInstaller />
+            </HashRouter>
+        </DataProvider>
+    );
 };
 
 export default App;

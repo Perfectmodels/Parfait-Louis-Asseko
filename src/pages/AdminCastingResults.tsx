@@ -102,7 +102,7 @@ const generateCastingSheetHtml = (app: CastingApplication, juryMembers: JuryMemb
 
 
 const AdminCastingResults: React.FC = () => {
-    const { data, saveData } = useData();
+    const { data, addDocument, updateDocument } = useData();
     const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
 
     const applicantsWithScores = useMemo(() => {
@@ -128,11 +128,11 @@ const AdminCastingResults: React.FC = () => {
     }, [filter, applicantsWithScores]);
 
     const handleUpdateStatus = async (appId: string, newStatus: CastingApplicationStatus) => {
-        if (!data) return;
-        const updatedApps = data.castingApplications.map(app =>
-            app.id === appId ? { ...app, status: newStatus } : app
-        );
-        await saveData({ ...data, castingApplications: updatedApps });
+        try {
+            await updateDocument('castingApplications', appId, { status: newStatus });
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleValidateAndCreateModel = async (app: CastingApplication) => {
@@ -189,16 +189,14 @@ const AdminCastingResults: React.FC = () => {
                 const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' as const } : localApp);
 
                 try {
-                    await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-                    alert(`Le profil de ${updatedModel.name} a été mis à jour (écrasé) avec succçs.`);
+                    await updateDocument('models', existingModel.id, updatedModel);
+                    await updateDocument('castingApplications', app.id, { status: 'Accepté' });
+                    alert(`Le profil de ${updatedModel.name} a été mis à jour (écrasé) avec succès.`);
                 } catch (error) {
                     console.error("Erreur lors de la mise à jour du profil:", error);
                     alert("Une erreur est survenue lors de la sauvegarde.");
                 }
             } else {
-                // If user cancels overwrite, we just mark as accepted without changing model data?
-                // Or we do nothing? Usually if they click validate, they expect action.
-                // Let's offer to just mark as accepted.
                 if (window.confirm("Voulez-vous marquer la candidature comme 'Accepté' SANS modifier le profil existant ?")) {
                     await handleUpdateStatus(app.id, 'Accepté');
                 }
@@ -237,15 +235,13 @@ const AdminCastingResults: React.FC = () => {
             },
             categories: [],
             experience: app.experience || 'Nouveau mannequin issu du casting.',
-            journey: 'Profil créé automatiquement aprçs validation du casting.', quizScores: {}
+            journey: 'Profil créé automatiquement après validation du casting.', quizScores: {}
         };
 
-        const updatedModels = [...data.models, newModel];
-        const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' as const } : localApp);
-
         try {
-            await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-            alert(`Le profil débutant pour ${newModel.name} a été créé avec succçs (Identifiant: ${username}). La candidature a été marquée comme "Accepté".`);
+            await addDocument('models', newModel);
+            await updateDocument('castingApplications', app.id, { status: 'Accepté' });
+            alert(`Le profil débutant pour ${newModel.name} a été créé avec succès (Identifiant: ${username}). La candidature a été marquée comme "Accepté".`);
         } catch (error) {
             console.error("Erreur lors de la création du profil débutant:", error);
             alert("Une erreur est survenue lors de la sauvegarde.");
@@ -333,12 +329,13 @@ const AdminCastingResults: React.FC = () => {
         }
 
         try {
-            const updatedModels = [...data.models, ...newModels];
-            const updatedApps = data.castingApplications.map(localApp =>
-                updatedApplicationIds.includes(localApp.id) ? { ...localApp, status: 'Accepté' as const } : localApp
-            );
+            // Création des modèles en parallèle
+            const modelPromises = newModels.map(m => addDocument('models', m));
+            await Promise.all(modelPromises);
 
-            await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+            // Mise à jour des statuts en parallèle
+            const appPromises = updatedApplicationIds.map(id => updateDocument('castingApplications', id, { status: 'Accepté' }));
+            await Promise.all(appPromises);
 
             let message = `✅ ${newModels.length} profil(s) créé(s) avec succès !\n\n`;
             message += newModels.map(m => `- ${m.name} (${m.username})`).join('\n');
@@ -348,7 +345,7 @@ const AdminCastingResults: React.FC = () => {
             alert(message);
         } catch (error) {
             console.error("Erreur lors de la création en masse:", error);
-            alert("Une erreur est survenue lors de la sauvegarde.");
+            alert("Une erreur est survenue lors de la sauvegarde. Certains profils ont peut-être été créés partiellement.");
         }
     };
 

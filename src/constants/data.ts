@@ -1,6 +1,6 @@
 
 // FIX: Removed BeginnerStudent from import as the type is deprecated.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
@@ -639,3 +639,5 @@ export const heroSlides: HeroSlide[] = [
   }
 ];
 
+
+export const fashionDayReservations: FashionDayReservation[] = [];

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firestoreConfig';
-import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide } from '../types';
+import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation, AdminProfile } from '../types';
 
 // Import initial data to seed the database if it's empty
 import {
@@ -35,7 +35,8 @@ import {
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
-    faqData as initialFaqData
+    faqData as initialFaqData,
+    fashionDayReservations as initialFashionDayReservations
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -77,6 +78,8 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    fashionDayReservations: FashionDayReservation[];
+    adminProfile: AdminProfile;
 }
 
 export const useFirestore = () => {
@@ -117,6 +120,8 @@ export const useFirestore = () => {
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
         faqData: initialFaqData,
+        fashionDayReservations: initialFashionDayReservations,
+        adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
     }), []);
 
     // Fonction pour charger une collection
@@ -182,7 +187,9 @@ export const useFirestore = () => {
                     siteImages,
                     socialLinks,
                     agencyInfo,
-                    apiKeys
+                    apiKeys,
+                    fashionDayReservations,
+                    adminProfile
                 ] = await Promise.all([
                     loadCollection<Model>('models', initialData.models),
                     loadCollection<Article>('articles', initialData.articles),
@@ -216,7 +223,10 @@ export const useFirestore = () => {
                     loadConfig('siteImages', initialData.siteImages),
                     loadConfig('socialLinks', initialData.socialLinks),
                     loadConfig('agencyInfo', initialData.agencyInfo),
-                    loadConfig('apiKeys', initialData.apiKeys)
+
+                    loadConfig('apiKeys', initialData.apiKeys),
+                    loadCollection<FashionDayReservation>('fashionDayReservations', initialData.fashionDayReservations),
+                    loadConfig('adminProfile', initialData.adminProfile)
                 ]);
 
                 const loadedData: AppData = {
@@ -252,7 +262,10 @@ export const useFirestore = () => {
                     siteImages,
                     socialLinks,
                     agencyInfo,
-                    apiKeys
+
+                    apiKeys,
+                    fashionDayReservations,
+                    adminProfile
                 };
 
                 setData(loadedData);
@@ -282,7 +295,7 @@ export const useFirestore = () => {
                 'bookingRequests', 'contactMessages', 'absences', 'monthlyPayments',
                 'photoshootBriefs', 'juryMembers', 'registrationStaff', 'faqData',
                 'modelDistinctions', 'agencyAchievements', 'agencyPartners', 'agencyTimeline',
-                'navLinks', 'heroSlides'
+                'navLinks', 'heroSlides', 'fashionDayReservations'
             ];
 
             for (const collName of arrayCollections) {
@@ -296,7 +309,7 @@ export const useFirestore = () => {
             }
 
             // Pour les configurations
-            const configFields = ['siteConfig', 'contactInfo', 'siteImages', 'socialLinks', 'agencyInfo', 'apiKeys'];
+            const configFields = ['siteConfig', 'contactInfo', 'siteImages', 'socialLinks', 'agencyInfo', 'apiKeys', 'adminProfile'];
             for (const configName of configFields) {
                 savePromises.push(setDoc(doc(db, 'config', configName), newData[configName as keyof AppData]));
             }
@@ -310,5 +323,88 @@ export const useFirestore = () => {
         }
     }, []);
 
-    return { data, saveData, isInitialized };
+    // --- NOUVELLES FONCTIONS CRUD ATOMIQUES (Renforcement Backend) ---
+
+    // Ajouter un document à une collection
+    const addDocument = useCallback(async (collectionName: string, item: any) => {
+        try {
+            // Générer un ID si non présent
+            const docId = item.id || item.slug || doc(collection(db, collectionName)).id;
+            const itemWithId = { ...item, id: docId };
+
+            await setDoc(doc(db, collectionName, docId), itemWithId);
+
+            // Mise à jour optimiste de l'état local
+            setData(prevData => {
+                if (!prevData) return null;
+                const prevCollection = prevData[collectionName as keyof AppData] as any[];
+                if (Array.isArray(prevCollection)) {
+                    return {
+                        ...prevData,
+                        [collectionName]: [...prevCollection, itemWithId]
+                    };
+                }
+                return prevData;
+            });
+
+            return docId;
+        } catch (error) {
+            console.error(`Error adding document to ${collectionName}:`, error);
+            throw error;
+        }
+    }, []);
+
+    // Mettre à jour un document existant
+    const updateDocument = useCallback(async (collectionName: string, id: string, updates: any) => {
+        try {
+            await setDoc(doc(db, collectionName, id), updates, { merge: true });
+
+            // Mise à jour optimiste
+            setData(prevData => {
+                if (!prevData) return null;
+                const prevCollection = prevData[collectionName as keyof AppData] as any[];
+                if (Array.isArray(prevCollection)) {
+                    return {
+                        ...prevData,
+                        [collectionName]: prevCollection.map(item => item.id === id || item.slug === id ? { ...item, ...updates } : item)
+                    };
+                }
+                // Cas spécial pour les configs (single docs)
+                if (collectionName === 'config') {
+                    // Difficile de gérer le "config" générique ici sans connaître la clé exacte dans AppData
+                    // On suppose que l'utilisateur recharge ou utilise saveData pour les configs pour l'instant
+                    return prevData;
+                }
+                return prevData;
+            });
+        } catch (error) {
+            console.error(`Error updating document ${id} in ${collectionName}:`, error);
+            throw error;
+        }
+    }, []);
+
+    // Supprimer un document
+    const deleteDocument = useCallback(async (collectionName: string, id: string) => {
+        try {
+            await deleteDoc(doc(db, collectionName, id));
+
+            // Mise à jour optimiste
+            setData(prevData => {
+                if (!prevData) return null;
+                const prevCollection = prevData[collectionName as keyof AppData] as any[];
+                if (Array.isArray(prevCollection)) {
+                    return {
+                        ...prevData,
+                        [collectionName]: prevCollection.filter(item => item.id !== id && item.slug !== id)
+                    };
+                }
+                return prevData;
+            });
+        } catch (error) {
+            console.error(`Error deleting document ${id} from ${collectionName}:`, error);
+            throw error;
+        }
+    }, []);
+
+    return { data, saveData, isInitialized, addDocument, updateDocument, deleteDocument };
 };
