@@ -1,5 +1,5 @@
 // FIX: Corrected import to use MonthlyPayment as the Transaction type is deprecated.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide } from '../types';
 
 export const siteConfig = {
   logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
@@ -37,6 +37,20 @@ export const siteImages: SiteImages = {
     classroomBg: 'https://i.ibb.co/TBt9FBSv/AJC-4630.jpg',
     castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
 };
+
+export const heroSlides: HeroSlide[] = [
+  {
+    id: 'slide-1',
+    image: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+    title: "L'Élégance Redéfinie",
+    subtitle: "Nous révélons les talents et valorisons la beauté africaine.",
+    buttonText: "Découvrir nos mannequins",
+    buttonLink: "/mannequins",
+    secondButtonText: "Nous rejoindre",
+    secondButtonLink: "/casting-formulaire",
+    order: 1
+  }
+];
 
 export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
