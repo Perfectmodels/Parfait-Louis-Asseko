@@ -100,7 +100,7 @@ const Home: React.FC = () => {
           <div className="flex flex-col items-center justify-center space-y-6 -mt-20">
             <FadeIn delay={0.2}>
               <h1 className="text-5xl md:text-7xl lg:text-9xl font-playfair font-black text-transparent bg-clip-text bg-gradient-to-b from-pm-gold to-[#a38018] uppercase tracking-tighter" style={{ filter: 'drop-shadow(0 0 20px rgba(212, 175, 55, 0.3))' }}>
-                PMM Agency
+                Perfect Models
               </h1>
             </FadeIn>
             <FadeIn delay={0.4}>

@@ -46,7 +46,8 @@ export interface GalleryItem {
   title: string;
   category: 'Show' | 'Shooting' | 'Video';
   date: string;
-  imageUrl: string;
+  imageUrl: string; // Photo de couverture
+  additionalImages?: string[]; // Photos supplémentaires
   videoUrl?: string;
   description?: string;
   featured?: boolean;
