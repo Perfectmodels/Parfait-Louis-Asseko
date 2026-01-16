@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import TestimonialCarousel from '../components/TestimonialCarousel';
 
 const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
     const [openFAQ, setOpenFAQ] = useState<string | null>('0-0'); // Open the first question by default
@@ -139,14 +137,6 @@ const Agency: React.FC = () => {
                 <p key={index} className="text-lg font-normal text-pm-off-white/80">{partner.name}</p>
             ))}
           </div>
-        </section>
-
-        {/* Témoignages (Testimonials) */}
-        <section>
-            <h2 className="section-title">Ce qu'ils disent de nous</h2>
-            <div className="mt-8">
-                <TestimonialCarousel />
-            </div>
         </section>
         
         {/* FAQ Section */}
