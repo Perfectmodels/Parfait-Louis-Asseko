@@ -15,7 +15,7 @@ const generateCastingSheetHtml = (app: CastingApplication, juryMembers: JuryMemb
     const juryScores: [string, JuryScore][] = app.scores ? Object.entries(app.scores) : [];
     const overallScores = juryScores.map(([, score]) => score.overall);
     const averageScore = overallScores.length > 0 ? (overallScores.reduce((a, b) => a + b, 0) / overallScores.length) : 0;
-    const decision = averageScore >= 5 ? 'Présélectionné' : 'Recalé';
+    const decision = averageScore >= 5 ? 'Pr├®s├®lectionn├®' : 'Recal├®';
 
     const scoreRows = juryScores.map(([juryId, score]) => {
         const jury = juryMembers.find(j => j.id === juryId);
@@ -48,7 +48,7 @@ const generateCastingSheetHtml = (app: CastingApplication, juryMembers: JuryMemb
                 .passage-num { font-size: 80px; font-weight: bold; color: #D4AF37; line-height: 1; }
                 table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
                 th { background-color: #f2f2f2; padding: 10px 8px; border-bottom: 2px solid #ccc; }
-                .decision { font-weight: bold; font-size: 40px; ${decision === 'Présélectionné' ? 'color: green;' : 'color: red;'} }
+                .decision { font-weight: bold; font-size: 40px; ${decision === 'Pr├®s├®lectionn├®' ? 'color: green;' : 'color: red;'} }
             </style>
         </head>
         <body>
@@ -68,29 +68,29 @@ const generateCastingSheetHtml = (app: CastingApplication, juryMembers: JuryMemb
                             <p><strong>Genre:</strong> ${app.gender}</p>
                             <p><strong>Taille:</strong> ${app.height} cm</p>
                             <p><strong>Poids:</strong> ${app.weight} kg</p>
-                            <p><strong>Téléphone:</strong> ${app.phone}</p>
+                            <p><strong>T├®l├®phone:</strong> ${app.phone}</p>
                             <p><strong>Email:</strong> ${app.email}</p>
                         </div>
                     </div>
                     <div class="passage-box">
-                        <p style="font-size: 14px; text-transform: uppercase;">Numéro de Passage</p>
+                        <p style="font-size: 14px; text-transform: uppercase;">Num├®ro de Passage</p>
                         <p class="passage-num">#${String(app.passageNumber).padStart(3, '0')}</p>
                     </div>
                 </section>
                 <section style="margin-top: 24px;">
                     <h3>├ëvaluation du Jury</h3>
                     <table>
-                        <thead><tr><th>Jury</th><th>Physique</th><th>Présence</th><th>Photogénie</th><th>Potentiel</th><th>Globale</th></tr></thead>
+                        <thead><tr><th>Jury</th><th>Physique</th><th>Pr├®sence</th><th>Photog├®nie</th><th>Potentiel</th><th>Globale</th></tr></thead>
                         <tbody>${scoreRows}</tbody>
                     </table>
                 </section>
                 <section style="margin-top: 32px; padding-top: 16px; border-top: 2px solid #ccc; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <h3>Moyenne Générale</h3>
+                        <h3>Moyenne G├®n├®rale</h3>
                         <p style="font-size: 60px; font-weight: bold; color: #D4AF37; margin:0;">${averageScore.toFixed(2)} <span style="font-size: 30px; color: #333;">/ 10</span></p>
                     </div>
                     <div>
-                        <h3>Décision Provisoire</h3>
+                        <h3>D├®cision Provisoire</h3>
                         <p class="decision">${decision}</p>
                     </div>
                 </section>
@@ -138,8 +138,8 @@ const AdminCastingResults: React.FC = () => {
     const handleValidateAndCreateModel = async (app: CastingApplication) => {
         if (!data) return;
 
-        if (app.status === 'Accepté') {
-            alert("Ce candidat a déjà été accepté et un profil a été créé.");
+        if (app.status === 'Accept├®') {
+            alert("Ce candidat a d├®j├á ├®t├® accept├® et un profil a ├®t├® cr├®├®.");
             return;
         }
 
@@ -150,7 +150,7 @@ const AdminCastingResults: React.FC = () => {
         const existingModelIndex = data.models.findIndex(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
 
         if (existingModelIndex !== -1) {
-            if (window.confirm(`Un mannequin nommé "${app.firstName} ${app.lastName}" existe déjà. Voulez-vous ├ëCRASER ses données existantes avec celles de ce casting (contact, mensurations, photos) ?`)) {
+            if (window.confirm(`Un mannequin nomm├® "${app.firstName} ${app.lastName}" existe d├®j├á. Voulez-vous ├ëCRASER ses donn├®es existantes avec celles de ce casting (contact, mensurations, photos) ?`)) {
                 const existingModel = data.models[existingModelIndex];
 
                 // Merge portfolio images
@@ -186,21 +186,21 @@ const AdminCastingResults: React.FC = () => {
                 const updatedModels = [...data.models];
                 updatedModels[existingModelIndex] = updatedModel;
 
-                const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' as const } : localApp);
+                const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accept├®' as const } : localApp);
 
                 try {
                     await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-                    alert(`Le profil de ${updatedModel.name} a été mis à jour (écrasé) avec succçs.`);
+                    alert(`Le profil de ${updatedModel.name} a ├®t├® mis ├á jour (├®cras├®) avec succ├¿s.`);
                 } catch (error) {
-                    console.error("Erreur lors de la mise à jour du profil:", error);
+                    console.error("Erreur lors de la mise ├á jour du profil:", error);
                     alert("Une erreur est survenue lors de la sauvegarde.");
                 }
             } else {
                 // If user cancels overwrite, we just mark as accepted without changing model data?
                 // Or we do nothing? Usually if they click validate, they expect action.
                 // Let's offer to just mark as accepted.
-                if (window.confirm("Voulez-vous marquer la candidature comme 'Accepté' SANS modifier le profil existant ?")) {
-                    await handleUpdateStatus(app.id, 'Accepté');
+                if (window.confirm("Voulez-vous marquer la candidature comme 'Accept├®' SANS modifier le profil existant ?")) {
+                    await handleUpdateStatus(app.id, 'Accept├®');
                 }
             }
             return;
@@ -220,7 +220,7 @@ const AdminCastingResults: React.FC = () => {
         const age = app.birthDate ? new Date().getFullYear() - new Date(app.birthDate).getFullYear() : undefined;
 
         const newModel: Model = {
-            id, name: `${app.firstName} ${app.lastName}`, username, password, level: 'Débutant',
+            id, name: `${app.firstName} ${app.lastName}`, username, password, level: 'D├®butant',
             email: app.email, phone: app.phone, age,
             height: `${app.height}cm`,
             weight: `${app.weight}kg`,
@@ -237,17 +237,17 @@ const AdminCastingResults: React.FC = () => {
             },
             categories: [],
             experience: app.experience || 'Nouveau mannequin issu du casting.',
-            journey: 'Profil créé automatiquement aprçs validation du casting.', quizScores: {}
+            journey: 'Profil cr├®├® automatiquement apr├¿s validation du casting.', quizScores: {}
         };
 
         const updatedModels = [...data.models, newModel];
-        const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' as const } : localApp);
+        const updatedApps = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accept├®' as const } : localApp);
 
         try {
             await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-            alert(`Le profil débutant pour ${newModel.name} a été créé avec succçs (Identifiant: ${username}). La candidature a été marquée comme "Accepté".`);
+            alert(`Le profil d├®butant pour ${newModel.name} a ├®t├® cr├®├® avec succ├¿s (Identifiant: ${username}). La candidature a ├®t├® marqu├®e comme "Accept├®".`);
         } catch (error) {
-            console.error("Erreur lors de la création du profil débutant:", error);
+            console.error("Erreur lors de la cr├®ation du profil d├®butant:", error);
             alert("Une erreur est survenue lors de la sauvegarde.");
         }
     };
@@ -255,29 +255,14 @@ const AdminCastingResults: React.FC = () => {
     const handleBulkCreateModels = async () => {
         if (!data) return;
 
-        console.log('🔍 Debug - Total applicantsWithScores:', applicantsWithScores.length);
-        console.log('🔍 Debug - Premier candidat (si existe):', applicantsWithScores[0]);
-
-        // Filtrer tous les candidats qui ont au moins une note
-        // ET qui n'ont PAS encore de profil créé (même s'ils sont déjà marqués 'Accepté')
-        const eligibleCandidates = applicantsWithScores.filter(app => {
-            const hasVotes = app.juryVotes > 0;
-
-            // Vérifier si un modèle existe déjà avec ce nom
-            const modelExists = data.models.some(m =>
-                m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase()
-            );
-
-            console.log(`👤 ${app.firstName} ${app.lastName} -> Votes: ${app.juryVotes}, Existe déjà: ${modelExists}, Éligible: ${hasVotes && !modelExists}`);
-
-            // Éligible si a des votes ET n'a pas de profil existant
-            return hasVotes && !modelExists;
-        });
-
-        console.log('📊 Candidats éligibles:', eligibleCandidates.length);
+        const eligibleCandidates = applicantsWithScores.filter(app =>
+            app.status === 'Présélectionné' &&
+            app.averageScore >= 5 &&
+            app.isFullyScored
+        );
 
         if (eligibleCandidates.length === 0) {
-            alert(`Aucun candidat éligible.\n\nTotal analysé: ${applicantsWithScores.length}\n\nTous les candidats notés ont déjà un profil existant dans la base de données.`);
+            alert("Aucun candidat présélectionné éligible (moyenne >= 5 et toutes les notes enregistrées).");
             return;
         }
 
@@ -373,9 +358,9 @@ const AdminCastingResults: React.FC = () => {
     const getStatusColor = (status: CastingApplicationStatus) => {
         switch (status) {
             case 'Nouveau': return 'bg-blue-500/20 text-blue-300 border-blue-500';
-            case 'Présélectionné': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500';
-            case 'Accepté': return 'bg-green-500/20 text-green-300 border-green-500';
-            case 'Refusé': return 'bg-red-500/20 text-red-300 border-red-500';
+            case 'Pr├®s├®lectionn├®': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500';
+            case 'Accept├®': return 'bg-green-500/20 text-green-300 border-green-500';
+            case 'Refus├®': return 'bg-red-500/20 text-red-300 border-red-500';
             default: return 'bg-gray-500/20 text-gray-300';
         }
     };
@@ -387,41 +372,31 @@ const AdminCastingResults: React.FC = () => {
     };
 
     const filterOptions: { value: CastingApplicationStatus | 'AllScored', label: string }[] = [
-        { value: 'AllScored', label: 'Tous les Notés' },
-        { value: 'Présélectionné', label: 'Présélectionnés' },
-        { value: 'Accepté', label: 'Acceptés' },
-        { value: 'Refusé', label: 'Refusés' }
+        { value: 'AllScored', label: 'Tous les Not├®s' },
+        { value: 'Pr├®s├®lectionn├®', label: 'Pr├®s├®lectionn├®s' },
+        { value: 'Accept├®', label: 'Accept├®s' },
+        { value: 'Refus├®', label: 'Refus├®s' }
     ];
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Admin - Résultats & Validation Casting" noIndex />
+            <SEO title="Admin - R├®sultats & Validation Casting" noIndex />
             <div className="container mx-auto px-6">
                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
                     Retour au Tableau de Bord
                 </Link>
-                <h1 className="text-4xl font-playfair text-pm-gold">Résultats & Validation Casting</h1>
-                <p className="text-pm-off-white/70 mt-2 mb-4">
-                    Consultez les moyennes des candidats et validez leur entrée dans l'agence.
+                <h1 className="text-4xl font-playfair text-pm-gold">R├®sultats & Validation Casting</h1>
+                <p className="text-pm-off-white/70 mt-2 mb-8">
+                    Consultez les moyennes des candidats et validez leur entr├®e dans l'agence.
                 </p>
 
-                <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
-                    <div className="flex items-center gap-4 flex-wrap">
-                        {filterOptions.map(f => (
-                            <button key={f.value} onClick={() => setFilter(f.value)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all duration-300 ${filter === f.value ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
-                                {f.label}
-                            </button>
-                        ))}
-                    </div>
-                    <button
-                        onClick={handleBulkCreateModels}
-                        className="flex items-center gap-2 px-6 py-3 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-pm-gold/90 transition-all duration-300 shadow-lg shadow-pm-gold/20 hover:scale-105"
-                        title="Créer automatiquement des profils pour tous les candidats notés"
-                    >
-                        <UserPlusIcon className="w-5 h-5" />
-                        Créer tous les profils
-                    </button>
+                <div className="flex items-center gap-4 mb-8 flex-wrap">
+                    {filterOptions.map(f => (
+                        <button key={f.value} onClick={() => setFilter(f.value)} className={`px-4 py-1.5 text-sm uppercase tracking-wider rounded-full transition-all duration-300 ${filter === f.value ? 'bg-pm-gold text-pm-dark' : 'bg-black border border-pm-gold text-pm-gold hover:bg-pm-gold/20'}`}>
+                            {f.label}
+                        </button>
+                    ))}
                 </div>
 
                 <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden shadow-lg shadow-black/30">
@@ -441,7 +416,7 @@ const AdminCastingResults: React.FC = () => {
                                 {filteredApplicants.map(app => {
                                     const missingJuryNames = app.missingJuries.map(j => j.name).join(', ');
                                     const tooltip = app.isFullyScored
-                                        ? "Toutes les notes ont été enregistrées."
+                                        ? "Toutes les notes ont ├®t├® enregistr├®es."
                                         : `Notes manquantes: ${missingJuryNames}`;
                                     return (
                                         <tr key={app.id} className={`border-b border-pm-dark hover:bg-pm-dark/50 ${app.isFullyScored ? 'bg-pm-dark border-l-4 border-l-pm-gold' : ''}`}>
@@ -458,30 +433,30 @@ const AdminCastingResults: React.FC = () => {
                                                     <button
                                                         onClick={() => handlePrint(app)}
                                                         className="action-btn bg-blue-500/10 text-blue-300 border-blue-500/50 hover:bg-blue-500/20"
-                                                        title="Télécharger la fiche PDF"
+                                                        title="T├®l├®charger la fiche PDF"
                                                     >
                                                         <PrinterIcon className="w-5 h-5" />
                                                     </button>
-                                                    {app.status === 'Présélectionné' && (
+                                                    {app.status === 'Pr├®s├®lectionn├®' && (
                                                         <>
                                                             <button
                                                                 onClick={() => handleValidateAndCreateModel(app)}
                                                                 className="action-btn bg-green-500/10 text-green-300 border-green-500/50 hover:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                                title={app.isFullyScored ? "Accepter & Créer le profil" : "En attente de toutes les notes"}
+                                                                title={app.isFullyScored ? "Accepter & Cr├®er le profil" : "En attente de toutes les notes"}
                                                                 disabled={!app.isFullyScored}
                                                             >
                                                                 <CheckBadgeIcon className="w-5 h-5" />
                                                             </button>
-                                                            <button onClick={() => handleUpdateStatus(app.id, 'Refusé')} className="action-btn bg-red-500/10 text-red-300 border-red-500/50 hover:bg-red-500/20" title="Refuser">
+                                                            <button onClick={() => handleUpdateStatus(app.id, 'Refus├®')} className="action-btn bg-red-500/10 text-red-300 border-red-500/50 hover:bg-red-500/20" title="Refuser">
                                                                 <XCircleIcon className="w-5 h-5" />
                                                             </button>
                                                         </>
                                                     )}
-                                                    {app.status === 'Accepté' && (
-                                                        <span className="text-xs text-green-400">Profil Créé</span>
+                                                    {app.status === 'Accept├®' && (
+                                                        <span className="text-xs text-green-400">Profil Cr├®├®</span>
                                                     )}
-                                                    {app.status === 'Refusé' && (
-                                                        <button onClick={() => handleUpdateStatus(app.id, 'Présélectionné')} className="action-btn bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20" title="Annuler le refus">
+                                                    {app.status === 'Refus├®' && (
+                                                        <button onClick={() => handleUpdateStatus(app.id, 'Pr├®s├®lectionn├®')} className="action-btn bg-yellow-500/10 text-yellow-300 border-yellow-500/50 hover:bg-yellow-500/20" title="Annuler le refus">
                                                             <ArrowPathIcon className="w-5 h-5" />
                                                         </button>
                                                     )}
@@ -492,7 +467,7 @@ const AdminCastingResults: React.FC = () => {
                                 })}
                             </tbody>
                         </table>
-                        {filteredApplicants.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun candidat ne correspond à ce filtre.</p>}
+                        {filteredApplicants.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun candidat ne correspond ├á ce filtre.</p>}
                     </div>
                 </div>
             </div>

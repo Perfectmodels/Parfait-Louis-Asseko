@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { AIAssistantProps } from '../types';
 import CloseIcon from './icons/CloseIcon';
-import { SparklesIcon } from '@heroicons/react/24/solid';
+import { SparklesIcon, CpuChipIcon } from '@heroicons/react/24/solid';
 import { GoogleGenAI, Type } from '@google/genai';
 
 const getSuggestions = (fieldName: string): string[] => {
@@ -41,6 +40,13 @@ const getSuggestions = (fieldName: string): string[] => {
             "Génère un texte élogieux d'un client satisfait."
         ];
     }
+    if (lowerFieldName.includes('experience') || lowerFieldName.includes('parcours')) {
+        return [
+            "Rédige une biographie d'expérience pour un mannequin professionnel.",
+            "Écris un parcours inspirant pour un nouveau talent.",
+            "Décris l'expérience d'un mannequin spécialisé dans la haute couture."
+        ]
+    }
     return [];
 };
 
@@ -51,6 +57,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
     const [generatedContent, setGeneratedContent] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [isThinkingMode, setIsThinkingMode] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -87,31 +94,25 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
         };
 
         try {
-            if (!process.env.API_KEY) {
-                throw new Error("La clé API n'est pas configurée.");
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+            
+            const model = isThinkingMode ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
+            const config: any = {};
+
+            if (isThinkingMode) {
+                config.thinkingConfig = { thinkingBudget: 32768 };
             }
-            
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-            
-            let response;
-            const model = 'gemini-2.5-flash';
 
             if (jsonSchema) {
-                const typedSchema = convertSchema(jsonSchema);
-                response = await ai.models.generateContent({
-                    model,
-                    contents: prompt,
-                    config: {
-                        responseMimeType: "application/json",
-                        responseSchema: typedSchema
-                    }
-                });
-            } else {
-                 response = await ai.models.generateContent({
-                    model,
-                    contents: prompt
-                });
+                config.responseMimeType = "application/json";
+                config.responseSchema = convertSchema(jsonSchema);
             }
+            
+            const response = await ai.models.generateContent({
+                model,
+                contents: prompt,
+                config: Object.keys(config).length > 0 ? config : undefined
+            });
             
             const textResult = response.text;
             setGeneratedContent(textResult);
@@ -122,7 +123,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
         } finally {
             setIsLoading(false);
         }
-    }, [prompt, jsonSchema]);
+    }, [prompt, jsonSchema, isThinkingMode]);
 
     const handleInsert = () => {
         onInsertContent(generatedContent);
@@ -146,6 +147,18 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
                     </div>
 
                     <div className="space-y-4">
+                        <div className="flex justify-end">
+                            <label htmlFor="thinking-mode-toggle" className="flex items-center cursor-pointer">
+                                <span className="mr-3 text-sm font-medium text-pm-off-white/70">Mode Avancé</span>
+                                <div className="relative">
+                                    <input type="checkbox" id="thinking-mode-toggle" className="sr-only" checked={isThinkingMode} onChange={() => setIsThinkingMode(!isThinkingMode)} />
+                                    <div className="block bg-black w-14 h-8 rounded-full border border-pm-gold/50"></div>
+                                    <div className={`dot absolute left-1 top-1 bg-pm-gold w-6 h-6 rounded-full transition-transform flex items-center justify-center ${isThinkingMode ? 'transform translate-x-full' : ''}`}>
+                                        {isThinkingMode && <CpuChipIcon className="w-4 h-4 text-pm-dark" />}
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
                         <div>
                             <label htmlFor="ai-prompt" className="block text-sm font-bold text-pm-off-white/80 mb-2">Votre demande (Prompt) :</label>
                             <textarea

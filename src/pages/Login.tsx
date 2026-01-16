@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
@@ -77,7 +78,6 @@ const Login: React.FC = () => {
         navigate(foundUser.path);
         return;
     }
-    // FIX: Removed Beginner Student login logic as the feature is deprecated.
 
     setError('Identifiant ou mot de passe incorrect.');
     setPassword('');

@@ -34,8 +34,8 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
 
             <div className="container mx-auto px-4 sm:px-6 py-20">
                 <div className="lg:grid lg:grid-cols-12 lg:gap-12">
-                     {/* Sidebar - Desktop */}
-                    <aside className="hidden lg:block lg:col-span-3 lg:sticky lg:top-32 self-start mb-12 lg:mb-0">
+                     {/* Sidebar */}
+                    <aside className="lg:col-span-3 lg:sticky lg:top-32 self-start mb-12 lg:mb-0">
                         <div className="bg-black p-6 border border-pm-gold/20">
                           <h3 className="text-xl font-playfair text-pm-gold mb-4">Navigation du Cours</h3>
                           <nav>
@@ -58,29 +58,6 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                           </nav>
                         </div>
                     </aside>
-
-                    {/* Mobile Navigation Dropdown */}
-                    <div className="lg:hidden mb-8">
-                        <div className="bg-black p-4 border border-pm-gold/20 rounded-lg">
-                             <details className="group">
-                                <summary className="flex justify-between items-center font-playfair text-pm-gold cursor-pointer list-none">
-                                    <span>Navigation du Cours</span>
-                                    <span className="transition group-open:rotate-180">
-                                        <ChevronDownIcon className="w-5 h-5"/>
-                                    </span>
-                                </summary>
-                                <nav className="mt-4 max-h-64 overflow-y-auto">
-                                    {courseData.map((module, moduleIndex) => (
-                                    <div key={moduleIndex} className="mb-3">
-                                        <a href={`#module-${moduleIndex}`} onClick={(e) => { e.preventDefault(); toggleModule(moduleIndex); document.getElementById(`module-${moduleIndex}`)?.scrollIntoView(); }} className="font-bold text-pm-off-white mb-2 text-sm hover:text-pm-gold block">
-                                            {module.title}
-                                        </a>
-                                    </div>
-                                    ))}
-                                </nav>
-                             </details>
-                        </div>
-                    </div>
                     
                     {/* Main Content */}
                     <main className="lg:col-span-9">

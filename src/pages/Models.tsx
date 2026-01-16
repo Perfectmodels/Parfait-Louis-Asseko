@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import ModelCard from '../components/ModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
@@ -7,8 +8,17 @@ type GenderFilter = 'Tous' | 'Femme' | 'Homme';
 
 const Models: React.FC = () => {
   const { data, isInitialized } = useData();
+  const location = useLocation();
+  
+  const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const initialSearchTerm = queryParams.get('q') || '';
+
   const [filter, setFilter] = useState<GenderFilter>('Tous');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+
+  useEffect(() => {
+    setSearchTerm(initialSearchTerm);
+  }, [initialSearchTerm]);
 
   const models = data?.models || [];
   
@@ -48,14 +58,14 @@ const Models: React.FC = () => {
         image={publicModels[0]?.imageUrl || data?.siteImages.about}
       />
       <div className="page-container">
-        <h1 className="page-title text-3xl md:text-5xl">Nos Mannequins</h1>
-        <p className="page-subtitle text-base md:text-lg px-4">
+        <h1 className="page-title">Nos Mannequins</h1>
+        <p className="page-subtitle">
           Découvrez les visages qui définissent l'avenir de la mode. Des talents uniques, prêts à donner vie à vos créations.
         </p>
 
         {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 lg:mb-14 px-4">
-          <div className="flex items-center gap-2 md:gap-4 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 lg:mb-14">
+          <div className="flex items-center gap-4">
             <FilterButton gender="Tous" />
             <FilterButton gender="Femme" />
             <FilterButton gender="Homme" />
@@ -74,7 +84,7 @@ const Models: React.FC = () => {
         </div>
 
         {/* Models Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {filteredModels.map((model) => (
             <ModelCard key={model.id} model={model} />
           ))}
