@@ -21,6 +21,10 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
 
     const contentHtml = (Array.isArray(article.content) ? article.content : []).map(renderContentHtml).join('');
 
+    const articleDate = new Date(article.date);
+    const isValidDate = !isNaN(articleDate.getTime());
+    const formattedDate = isValidDate ? articleDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+
     return `
         <!DOCTYPE html>
         <html>
@@ -46,7 +50,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
                     <div>
                         <p class="category">${article.category}</p>
                         <h1>${article.title}</h1>
-                        <p class="meta">Par ${article.author} • ${new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        <p class="meta">Par ${article.author} ${formattedDate ? `• ${formattedDate}` : ''}</p>
                     </div>
                      ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
                 </header>
@@ -186,10 +190,14 @@ const ArticleDetail: React.FC = () => {
   
   const safeContent = Array.isArray(article.content) ? article.content : [];
   
+  const articleDate = new Date(article.date);
+  const isValidDate = !isNaN(articleDate.getTime());
+  const isoDate = isValidDate ? articleDate.toISOString() : new Date().toISOString();
+
   const articleSchema = {
       "@context": "https://schema.org", "@type": "NewsArticle", "headline": article.title,
       "image": [article.imageUrl, ...safeContent.filter(c => c.type === 'image').map(c => (c as { src: string }).src)],
-      "datePublished": new Date(article.date).toISOString(),
+      "datePublished": isoDate,
       "author": [{"@type": "Organization", "name": article.author, "url": window.location.origin}],
       "publisher": {"@type": "Organization", "name": "Perfect Models Management", "logo": {"@type": "ImageObject", "url": data?.siteConfig.logo}},
       "description": article.excerpt
@@ -227,7 +235,7 @@ const ArticleDetail: React.FC = () => {
               <h1 className="text-4xl lg:text-5xl font-playfair text-pm-off-white my-4 leading-tight">{article.title}</h1>
               <div className="text-sm text-pm-off-white/60 flex items-center gap-4 flex-wrap">
                 <span>Par {article.author}</span><span>•</span>
-                <span>{new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span><span>•</span>
+                <span>{isValidDate ? articleDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Date inconnue'}</span><span>•</span>
                 <span className="flex items-center gap-1.5"><EyeIcon className="w-4 h-4" /> {article.viewCount || 0} vues</span>
               </div>
             </header>

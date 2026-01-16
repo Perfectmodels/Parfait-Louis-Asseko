@@ -253,6 +253,7 @@ export interface CastingApplication {
   photoPortraitUrl?: string | null;
   photoFullBodyUrl?: string | null;
   photoProfileUrl?: string | null;
+  portfolioPhotos?: string[]; // Array of portfolio photo URLs
 
   scores?: {
     [juryId: string]: JuryScore;
