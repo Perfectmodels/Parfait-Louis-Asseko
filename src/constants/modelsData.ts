@@ -22,7 +22,7 @@ export const models: Model[] = [
     "gender": "Femme",
     "experience": "Nouveau mannequin issu du casting. Score: 5.08/10",
     "height": "1.67cm",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "isPublic": false,
     "portfolioImages": [],
     "categories": [],
@@ -49,9 +49,9 @@ export const models: Model[] = [
     "gender": "Femme",
     "journey": "AJ a rejoint PMM avec une passion pour la photographie. Son aisance devant l'objectif et sa capacité à se transformer lui ont rapidement ouvert les portes des projets les plus créatifs.",
     "portfolioImages": [
-      "https://i.postimg.cc/Xv24Dvp1/NR-09484.jpg",
-      "https://i.postimg.cc/59Qbnb1p/NR-09503-Modifier.jpg",
-      "https://i.postimg.cc/k5skXhC2/NR-09474.jpg"
+      "https://placehold.co/400x600/202020/D4AF37?text=Model",
+      "https://placehold.co/400x600/202020/D4AF37?text=Model",
+      "https://placehold.co/400x600/202020/D4AF37?text=Model"
     ],
     "measurements": {
       "waist": "60cm",
@@ -76,7 +76,7 @@ export const models: Model[] = [
       "Commercial",
       "Éditorial"
     ],
-    "imageUrl": "https://i.postimg.cc/k5skXhC2/NR-09474.jpg",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "password": "caramela2024",
     "level": "Pro"
   },
@@ -101,7 +101,7 @@ export const models: Model[] = [
       "shoeSize": "39",
       "chest": "82cm"
     },
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "experience": "Nouveau mannequin issu du casting. Score: 6.13/10",
     "gender": "Femme",
     "age": 25,
@@ -122,7 +122,7 @@ export const models: Model[] = [
     },
     "phone": "065983386",
     "gender": "Femme",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "name": "GNIOBO Arselia",
     "isPublic": false,
     "height": "1.67cm",
@@ -136,7 +136,7 @@ export const models: Model[] = [
   },
   {
     "location": "",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "age": 22,
     "name": "Olivia AUBIAN",
     "categories": [],
@@ -180,7 +180,7 @@ export const models: Model[] = [
       "hips": "100cm",
       "chest": "79cm"
     },
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "email": "",
     "username": "Man-PMMM02",
     "name": "Marisca BIVIGOU",
@@ -213,7 +213,7 @@ export const models: Model[] = [
     "distinctions": [],
     "id": "bouanga-lauretta-1018",
     "gender": "Femme",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png"
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model"
   },
   {
     "quizScores": {},
@@ -229,7 +229,7 @@ export const models: Model[] = [
     },
     "height": "1.72cm",
     "phone": "074647206",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "name": "Ursula BOUMSO",
     "email": "",
     "location": "",
@@ -256,7 +256,7 @@ export const models: Model[] = [
     "id": "diallo-mariam-9202",
     "distinctions": [],
     "height": "1.90cm",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "name": "Mariam DIALLO",
     "age": 20,
     "location": "",
@@ -280,7 +280,7 @@ export const models: Model[] = [
     "location": "",
     "distinctions": [],
     "quizScores": {},
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "portfolioImages": [],
     "id": "esapi-esther-4485",
     "measurements": {
@@ -309,7 +309,7 @@ export const models: Model[] = [
     "categories": [],
     "email": "",
     "age": 22,
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "quizScores": {},
     "height": "1.64cm",
     "level": "Débutant",
@@ -347,7 +347,7 @@ export const models: Model[] = [
     "height": "1.80cm",
     "location": "",
     "isPublic": false,
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "distinctions": []
   },
   {
@@ -368,7 +368,7 @@ export const models: Model[] = [
     "email": "",
     "name": "Aurore KONE",
     "gender": "Femme",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "distinctions": [],
     "height": "1.69cm",
     "phone": "077340628",
@@ -385,7 +385,7 @@ export const models: Model[] = [
     "categories": [],
     "phone": "074213542",
     "gender": "Homme",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "email": "",
     "height": "1.70cm",
     "id": "lloret-ismael-3910",
@@ -423,7 +423,7 @@ export const models: Model[] = [
     "categories": [],
     "username": "Man-PMMA07",
     "location": "",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "name": "AÏTCHEDJI Luciana",
     "journey": "Profil créé automatiquement après validation du casting.",
     "phone": "066622963",
@@ -445,7 +445,7 @@ export const models: Model[] = [
     "isPublic": false,
     "portfolioImages": [],
     "age": 21,
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "phone": "077830646",
     "level": "Débutant",
     "password": "nahoumie2026",
@@ -475,7 +475,7 @@ export const models: Model[] = [
     "journey": "Profil créé automatiquement après validation du casting.",
     "name": "Esther  MBINA",
     "id": "mbina-esther-2963",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "distinctions": [],
     "username": "Man-PMME02",
     "level": "Débutant",
@@ -486,7 +486,7 @@ export const models: Model[] = [
     "portfolioImages": []
   },
   {
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "quizScores": {},
     "isPublic": false,
     "distinctions": [],
@@ -514,7 +514,7 @@ export const models: Model[] = [
   },
   {
     "distinctions": [],
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "id": "mengue-alicia-2449",
     "measurements": {
       "chest": "77cm",
@@ -542,7 +542,7 @@ export const models: Model[] = [
   {
     "name": "Anna MICKALA",
     "categories": [],
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "level": "Débutant",
     "isPublic": false,
     "password": "anna2026",
@@ -574,7 +574,7 @@ export const models: Model[] = [
     "isPublic": false,
     "categories": [],
     "name": "Chancelle MOMOH",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "level": "Débutant",
     "id": "momoh-chancelle-0067",
     "distinctions": [],
@@ -600,7 +600,7 @@ export const models: Model[] = [
     "password": "raiva2026",
     "experience": "Nouveau mannequin issu du casting. Score: 7.25/10",
     "height": "1.72cm",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "isPublic": false,
     "id": "mondjo-raiva-3658",
     "location": "",
@@ -635,7 +635,7 @@ export const models: Model[] = [
     "password": "hawa2026",
     "email": "",
     "id": "moundeni-hawa-1718",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "experience": "Nouveau mannequin issu du casting. Score: 4.75/10",
     "measurements": {
       "waist": "64cm",
@@ -650,7 +650,7 @@ export const models: Model[] = [
   {
     "location": "",
     "height": "1.78cm",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "level": "Débutant",
     "phone": "077580358",
     "quizScores": {},
@@ -693,7 +693,7 @@ export const models: Model[] = [
     "journey": "Profil créé automatiquement après validation du casting.",
     "name": "Styna MOUTSINGA",
     "quizScores": {},
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "level": "Débutant",
     "age": 23,
     "username": "Man-PMMS04",
@@ -722,7 +722,7 @@ export const models: Model[] = [
     "quizScores": {},
     "age": 29,
     "distinctions": [],
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "location": "",
     "isPublic": false,
     "portfolioImages": [],
@@ -732,7 +732,7 @@ export const models: Model[] = [
     "categories": [],
     "height": "1.70cm",
     "location": "",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "password": "charis2026",
     "isPublic": false,
     "quizScores": {},
@@ -761,7 +761,7 @@ export const models: Model[] = [
     "phone": "074661174",
     "name": "Christy NGOUA",
     "username": "Man-PMMC04",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "distinctions": [],
     "gender": "Femme",
     "categories": [],
@@ -811,9 +811,9 @@ export const models: Model[] = [
     },
     "id": "noemi-kim",
     "portfolioImages": [
-      "https://i.ibb.co/z5TzL2M/casting-bg.jpg",
-      "https://i.ibb.co/K2wS0Pz/hero-bg.jpg",
-      "https://i.ibb.co/C5rcPJHz/titostyle-53.jpg"
+      "https://placehold.co/400x600/202020/D4AF37?text=Model",
+      "https://placehold.co/400x600/202020/D4AF37?text=Model",
+      "https://placehold.co/400x600/202020/D4AF37?text=Model"
     ],
     "distinctions": [
       {
@@ -858,7 +858,7 @@ export const models: Model[] = [
     "isPublic": false,
     "name": "Carine NSA",
     "location": "",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "email": "",
     "experience": "Nouveau mannequin issu du casting. Score: 7.75/10",
     "gender": "Femme",
@@ -875,7 +875,7 @@ export const models: Model[] = [
     "name": "Chancia NTOSANG",
     "gender": "Femme",
     "journey": "Profil créé automatiquement après validation du casting.",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "distinctions": [],
     "quizScores": {},
     "measurements": {
@@ -895,7 +895,7 @@ export const models: Model[] = [
   {
     "journey": "Parcours à renseigner par l'administrateur.",
     "experience": "A une expérience préalable en agence et a participé à des défilés ou des campagnes locales.",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "gender": "Femme",
     "location": "Libreville ",
     "age": 24,
@@ -941,7 +941,7 @@ export const models: Model[] = [
       "waist": "67cm",
       "chest": "83cm"
     },
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "experience": "Nouveau mannequin issu du casting. Score: 6.75/10",
     "age": 18,
     "distinctions": [],
@@ -964,7 +964,7 @@ export const models: Model[] = [
     "journey": "Profil créé automatiquement après validation du casting.",
     "name": "Chancelia OSSAGHA",
     "id": "ossagha-chancelia-5109",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "distinctions": [],
     "level": "Débutant",
     "username": "Man-PMMC02",
@@ -989,7 +989,7 @@ export const models: Model[] = [
     "portfolioImages": [],
     "age": 23,
     "phone": "066429254",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "level": "Débutant",
     "password": "anne2026",
     "distinctions": [],
@@ -1003,7 +1003,7 @@ export const models: Model[] = [
   },
   {
     "location": "",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "distinctions": [],
     "isPublic": false,
     "journey": "Profil créé automatiquement après validation du casting.",
@@ -1051,7 +1051,7 @@ export const models: Model[] = [
     "distinctions": [],
     "email": "",
     "level": "Débutant",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "phone": "066439461",
     "height": "1.77cm"
   },
@@ -1070,7 +1070,7 @@ export const models: Model[] = [
     "journey": "Profil créé automatiquement après validation du casting.",
     "gender": "Femme",
     "experience": "Nouveau mannequin issu du casting. Score: 5.75/10",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "measurements": {
       "hips": "84cm",
       "shoeSize": "37",
@@ -1093,7 +1093,7 @@ export const models: Model[] = [
     "name": "Diane TCHIBNDA",
     "phone": "074479062",
     "id": "tchibnda-diane-0842",
-    "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
+    "imageUrl": "https://placehold.co/400x600/202020/D4AF37?text=Model",
     "journey": "Profil créé automatiquement après validation du casting.",
     "measurements": {
       "shoeSize": "41",
@@ -1124,7 +1124,7 @@ export const models: Model[] = [
       "waist": "78cm"
     },
     "portfolioImages": [
-      "https://i.ibb.co/TBt9FBSv/AJC-4630.jpg"
+      "https://placehold.co/400x600/202020/D4AF37?text=Model"
     ],
     "distinctions": [
       {
