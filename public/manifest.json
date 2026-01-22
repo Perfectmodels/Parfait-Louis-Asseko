@@ -15,19 +15,19 @@
     ],
     "icons": [
         {
-            "src": "https://i.ibb.co/fVBxPNT/logo.png",
+            "src": "https://placehold.co/192x192/000000/D4AF37?text=PMM",
             "sizes": "144x144",
             "type": "image/png",
             "purpose": "any"
         },
         {
-            "src": "https://i.ibb.co/fVBxPNT/logo.png",
+            "src": "https://placehold.co/192x192/000000/D4AF37?text=PMM",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "https://i.ibb.co/fVBxPNT/logo.png",
+            "src": "https://placehold.co/192x192/000000/D4AF37?text=PMM",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
@@ -35,14 +35,14 @@
     ],
     "screenshots": [
         {
-            "src": "https://i.ibb.co/K2wS0Pz/hero-bg.jpg",
+            "src": "https://placehold.co/192x192/000000/D4AF37?text=PMM",
             "sizes": "1280x720",
             "type": "image/jpeg",
             "form_factor": "wide",
             "label": "Page d'accueil de PMM"
         },
         {
-            "src": "https://i.ibb.co/mCcD1Gfq/DSC-0272.jpg",
+            "src": "https://placehold.co/192x192/000000/D4AF37?text=PMM",
             "sizes": "720x1280",
             "type": "image/jpeg",
             "form_factor": "narrow",

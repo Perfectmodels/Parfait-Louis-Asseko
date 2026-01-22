@@ -110,7 +110,7 @@ export const PWAInstaller: React.FC = () => {
                     className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-pm-gold/20 p-4 shadow-lg print-hide"
                 >
                     <div className="container mx-auto flex justify-between items-center gap-4">
-                         <img src="https://i.ibb.co/fVBxPNTP/T-shirt.png" alt="Logo" className="h-10 w-10 hidden sm:block" />
+                         <img src="https://placehold.co/100x100/000000/D4AF37?text=PMM" alt="Logo" className="h-10 w-10 hidden sm:block" />
                         <div>
                             <h3 className="font-bold text-pm-gold">Installer l'Application</h3>
                             <p className="text-sm text-pm-off-white/80">Pour une expérience optimale, ajoutez PMM à votre écran d'accueil.</p>
