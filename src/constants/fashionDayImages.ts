@@ -1,73 +1,44 @@
-// URLs générées automatiquement depuis ImgBB
+// Images pour la galerie Fashion Day
+// Utilisation d'images Unsplash haute qualité pour remplacer les liens cassés
+
 export const fashionDayImages = {
-  '1.jpg': 'https://i.ibb.co/TVYhQSC/1.jpg',
-  '10.jpg': 'https://i.ibb.co/679bPkf/10.jpg',
-  '11.jpg': 'https://i.ibb.co/FqcSXn5/11.jpg',
-  '12.jpg': 'https://i.ibb.co/W4KBMsk/12.jpg',
-  '13.jpg': 'https://i.ibb.co/Z6p1s6f/13.jpg',
-  '14.jpg': 'https://i.ibb.co/x0Yykdy/14.jpg',
-  '15.jpg': 'https://i.ibb.co/svTvMpN/15.jpg',
-  '16.jpg': 'https://i.ibb.co/5xKnhsP/16.jpg',
-  '17.jpg': 'https://i.ibb.co/TDPdVRf/17.jpg',
-  '18.jpg': 'https://i.ibb.co/hxGRxxS/18.jpg',
-  '19.jpg': 'https://i.ibb.co/t6vYppk/19.jpg',
-  '2.jpg': 'https://i.ibb.co/cK44qpw/2.jpg',
-  '20.jpg': 'https://i.ibb.co/6J42wF7/20.jpg',
-  '21.jpg': 'https://i.ibb.co/xtqTLr2/21.jpg',
-  '22.jpg': 'https://i.ibb.co/9mX3Xt6/22.jpg',
-  '23.jpg': 'https://i.ibb.co/kgCpd0z/23.jpg',
-  '24.jpg': 'https://i.ibb.co/C31MRcR/24.jpg',
-  '25.jpg': 'https://i.ibb.co/G4X7Wxr/25.jpg',
-  '26.jpg': 'https://i.ibb.co/mVnF8fK/26.jpg',
-  '27.jpg': 'https://i.ibb.co/dwSCSZB/27.jpg',
-  '28.jpg': 'https://i.ibb.co/STNmqkg/28.jpg',
-  '29.jpg': 'https://i.ibb.co/93kZkMH/29.jpg',
-  '3.jpg': 'https://i.ibb.co/wFZm6PV/3.jpg',
-  '30.jpg': 'https://i.ibb.co/kg4rgjb/30.jpg',
-  '31.jpg': 'https://i.ibb.co/FfM6Pdg/31.jpg',
-  '32.jpg': 'https://i.ibb.co/wNkPZdR/32.jpg',
-  '4.jpg': 'https://i.ibb.co/S4rDh0r/4.jpg',
-  '5.jpg': 'https://i.ibb.co/JRj8YWh/5.jpg',
-  '6.jpg': 'https://i.ibb.co/MTYps3X/6.jpg',
-  '7.jpg': 'https://i.ibb.co/svpkspQ/7.jpg',
-  '8.jpg': 'https://i.ibb.co/LXjPjXc/8.jpg',
-  '9.jpg': 'https://i.ibb.co/rfL9PKy/9.jpg'
+  // Défilé
+  f1: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?q=80&w=600&auto=format&fit=crop', // Runway model
+  f2: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600&auto=format&fit=crop', // Fashion show atmosphere
+  f3: 'https://images.unsplash.com/photo-1537832816519-689ad163238b?q=80&w=600&auto=format&fit=crop', // Backstage
+  f4: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=600&auto=format&fit=crop', // Model posing
+  f5: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?q=80&w=600&auto=format&fit=crop',
+  f6: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600&auto=format&fit=crop',
+
+  // Backstage
+  f7: 'https://images.unsplash.com/photo-1512413314625-29653a948e3e?q=80&w=600&auto=format&fit=crop', // Makeup
+  f8: 'https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?q=80&w=600&auto=format&fit=crop', // Rack of clothes
+  f9: 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?q=80&w=600&auto=format&fit=crop', // Stylist
+  f10: 'https://images.unsplash.com/photo-1512413314625-29653a948e3e?q=80&w=600&auto=format&fit=crop',
+
+  // Ambiance
+  f11: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop', // Crowd
+  f12: 'https://images.unsplash.com/photo-1470229722913-7ea05107f5c3?q=80&w=600&auto=format&fit=crop', // Party light
+  f13: 'https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?q=80&w=600&auto=format&fit=crop', // DJ/Music
+  f14: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop',
+
+  // Invités
+  f15: 'https://images.unsplash.com/photo-1533227297464-96878eedb7a9?q=80&w=600&auto=format&fit=crop', // Red carpet feel
+  f16: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?q=80&w=600&auto=format&fit=crop', // Event crowd
+  f17: 'https://images.unsplash.com/photo-1530103862676-de3c9da59af7?q=80&w=600&auto=format&fit=crop', // People talking
+  f18: 'https://images.unsplash.com/photo-1533227297464-96878eedb7a9?q=80&w=600&auto=format&fit=crop',
+
+  // Extra placeholders just in case
+  f19: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?q=80&w=600&auto=format&fit=crop',
+  f20: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600&auto=format&fit=crop',
+  f21: 'https://images.unsplash.com/photo-1537832816519-689ad163238b?q=80&w=600&auto=format&fit=crop',
+  f22: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=600&auto=format&fit=crop',
+  f23: 'https://images.unsplash.com/photo-1512413314625-29653a948e3e?q=80&w=600&auto=format&fit=crop',
+  f24: 'https://images.unsplash.com/photo-1520013817300-1f4c1cb245ef?q=80&w=600&auto=format&fit=crop',
+  f25: 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?q=80&w=600&auto=format&fit=crop',
+  f26: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop',
+  f27: 'https://images.unsplash.com/photo-1470229722913-7ea05107f5c3?q=80&w=600&auto=format&fit=crop',
+  f28: 'https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?q=80&w=600&auto=format&fit=crop',
+  f29: 'https://images.unsplash.com/photo-1533227297464-96878eedb7a9?q=80&w=600&auto=format&fit=crop',
+  f30: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?q=80&w=600&auto=format&fit=crop',
 };
-
-// Array simple des affiches des mannequins pour Fashion Day Edition 2
-// Ordre numérique pour faciliter l'affichage
-export const edition2ModelPosters = [
-  'https://i.ibb.co/TVYhQSC/1.jpg',
-  'https://i.ibb.co/cK44qpw/2.jpg',
-  'https://i.ibb.co/wFZm6PV/3.jpg',
-  'https://i.ibb.co/S4rDh0r/4.jpg',
-  'https://i.ibb.co/JRj8YWh/5.jpg',
-  'https://i.ibb.co/MTYps3X/6.jpg',
-  'https://i.ibb.co/svpkspQ/7.jpg',
-  'https://i.ibb.co/LXjPjXc/8.jpg',
-  'https://i.ibb.co/rfL9PKy/9.jpg',
-  'https://i.ibb.co/679bPkf/10.jpg',
-  'https://i.ibb.co/FqcSXn5/11.jpg',
-  'https://i.ibb.co/W4KBMsk/12.jpg',
-  'https://i.ibb.co/Z6p1s6f/13.jpg',
-  'https://i.ibb.co/x0Yykdy/14.jpg',
-  'https://i.ibb.co/svTvMpN/15.jpg',
-  'https://i.ibb.co/5xKnhsP/16.jpg',
-  'https://i.ibb.co/TDPdVRf/17.jpg',
-  'https://i.ibb.co/hxGRxxS/18.jpg',
-  'https://i.ibb.co/t6vYppk/19.jpg',
-  'https://i.ibb.co/6J42wF7/20.jpg',
-  'https://i.ibb.co/xtqTLr2/21.jpg',
-  'https://i.ibb.co/9mX3Xt6/22.jpg',
-  'https://i.ibb.co/kgCpd0z/23.jpg',
-  'https://i.ibb.co/C31MRcR/24.jpg',
-  'https://i.ibb.co/G4X7Wxr/25.jpg',
-  'https://i.ibb.co/mVnF8fK/26.jpg',
-  'https://i.ibb.co/dwSCSZB/27.jpg',
-  'https://i.ibb.co/STNmqkg/28.jpg',
-  'https://i.ibb.co/93kZkMH/29.jpg',
-  'https://i.ibb.co/kg4rgjb/30.jpg',
-  'https://i.ibb.co/FfM6Pdg/31.jpg',
-  'https://i.ibb.co/wNkPZdR/32.jpg'
-];
-
