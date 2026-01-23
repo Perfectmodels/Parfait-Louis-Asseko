@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import {
     HomeIcon, UsersIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
@@ -135,7 +135,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <aside className="hidden lg:flex lg:flex-col lg:w-72 fixed top-0 left-0 h-full bg-black/40 backdrop-blur-3xl border-r border-white/5 p-6 z-50">
                 <div className="flex items-center gap-4 mb-10 px-2">
                     <div className="w-10 h-10 bg-pm-gold rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                        <img src="https://i.ibb.co/fVBxPNT/logo.png" alt="Logo" className="w-6 h-6 object-contain brightness-0" />
+                        <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain brightness-0" />
                     </div>
                     <div>
                         <h1 className="font-playfair text-lg text-white font-bold leading-none">Perfect Models</h1>
@@ -172,7 +172,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         <div className="flex items-center justify-between mb-10">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 bg-pm-gold rounded-lg flex items-center justify-center">
-                                    <img src="https://i.ibb.co/fVBxPNT/logo.png" alt="Logo" className="w-5 h-5 object-contain brightness-0" />
+                                    <img src="/logo.png" alt="Logo" className="w-5 h-5 object-contain brightness-0" />
                                 </div>
                                 <h1 className="font-playfair text-lg text-pm-gold">Admin Panel</h1>
                             </div>

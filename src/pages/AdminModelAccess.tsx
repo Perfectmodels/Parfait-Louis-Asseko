@@ -6,7 +6,11 @@ import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon, ArrowDownTrayIcon } 
 
 const AdminModelAccess: React.FC = () => {
     const { data } = useData();
-    const proModels = data?.models.filter(model => model.level !== 'Débutant').sort((a,b) => a.name.localeCompare(b.name)) || [];
+    const proModels = data?.models.filter(model => model.level !== 'Débutant').sort((a, b) => {
+        const nameA = a?.name || '';
+        const nameB = b?.name || '';
+        return nameA.localeCompare(nameB);
+    }) || [];
     const [copiedUsername, setCopiedUsername] = useState<string | null>(null);
 
     const handleCopy = (textToCopy: string, username: string) => {
@@ -14,7 +18,7 @@ const AdminModelAccess: React.FC = () => {
         setCopiedUsername(username);
         setTimeout(() => setCopiedUsername(null), 2000);
     };
-    
+
     const handleDownloadCSV = () => {
         if (!proModels || proModels.length === 0) {
             alert("Aucune donnée à télécharger.");
@@ -24,7 +28,7 @@ const AdminModelAccess: React.FC = () => {
         const headers = ["Nom du Mannequin", "Identifiant (Matricule)", "Mot de passe"];
         const csvContent = [
             headers.join(','),
-            ...proModels.map(model => 
+            ...proModels.map(model =>
                 [
                     `"${model.name.replace(/"/g, '""')}"`, // Escape double quotes
                     model.username,
@@ -62,8 +66,8 @@ const AdminModelAccess: React.FC = () => {
                             Tableau récapitulatif des identifiants de connexion pour chaque mannequin professionnel.
                         </p>
                     </div>
-                     <button onClick={handleDownloadCSV} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
-                        <ArrowDownTrayIcon className="w-5 h-5"/> Télécharger en CSV
+                    <button onClick={handleDownloadCSV} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark">
+                        <ArrowDownTrayIcon className="w-5 h-5" /> Télécharger en CSV
                     </button>
                 </div>
 
