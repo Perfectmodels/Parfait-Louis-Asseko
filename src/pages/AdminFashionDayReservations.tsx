@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { FashionDayReservation } from '../types';
-import { CheckIcon, XMarkIcon, FunnelIcon, MagnifyingGlassIcon, TableCellsIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, XMarkIcon, FunnelIcon, MagnifyingGlassIcon, TableCellsIcon, PlusIcon } from '@heroicons/react/24/outline';
+import AddReservationModal from '../components/admin/AddReservationModal';
 
 const AdminFashionDayReservations: React.FC = () => {
     const { data, updateDocument } = useData();
     const reservations = data?.fashionDayReservations || [];
+    const fashionDayEvents = data?.fashionDayEvents || [];
 
     const [filterStatus, setFilterStatus] = useState<'All' | 'Nouveau' | 'Confirmé' | 'Refusé'>('All');
     const [searchTerm, setSearchTerm] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const currentEdition = useMemo(() => {
+        if (fashionDayEvents.length === 0) return 1;
+        return Math.max(...fashionDayEvents.map(e => e.edition));
+    }, [fashionDayEvents]);
 
     const handleStatusChange = async (reservation: FashionDayReservation, newStatus: 'Confirmé' | 'Refusé') => {
         try {
@@ -33,12 +41,24 @@ const AdminFashionDayReservations: React.FC = () => {
 
     return (
         <div className="p-6">
+            <AddReservationModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                currentEdition={currentEdition} 
+            />
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-playfair text-pm-gold mb-2">Réservations Fashion Day</h1>
-                    <p className="text-gray-400">Gérez les demandes de tables pour l'événement.</p>
+                    <p className="text-gray-400">Gérez les demandes de tables pour l'événement (Édition {currentEdition}).</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex items-center gap-4">
+                    <button 
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark rounded hover:bg-yellow-400 transition-colors"
+                    >
+                        <PlusIcon className="w-5 h-5" />
+                        <span>Ajouter une réservation</span>
+                    </button>
                     <div className="bg-pm-dark-light p-4 rounded border border-pm-gold/20 text-center">
                         <span className="block text-2xl font-bold text-white">{totalReservations}</span>
                         <span className="text-xs text-gray-400 uppercase tracking-wide">Total</span>

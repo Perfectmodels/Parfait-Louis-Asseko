@@ -112,7 +112,7 @@ const AdminModels: React.FC = () => {
 
     useEffect(() => {
         if (data?.models) {
-            setLocalModels([...data.models].sort((a, b) => a.name.localeCompare(b.name)));
+            setLocalModels([...data.models].sort((a, b) => (a.name || '').localeCompare(b.name || '')));
         }
     }, [data?.models, isInitialized]);
 

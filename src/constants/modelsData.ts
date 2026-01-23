@@ -12,7 +12,7 @@ export const models: Model[] = [
     },
     "id": "abeme-ophelie-9400",
     "password": "ophelie2026",
-    "level": "Débutant",
+    "level": "Pro",
     "username": "Man-PMMO02",
     "name": "Ophélie  ABEME",
     "distinctions": [],
@@ -83,7 +83,7 @@ export const models: Model[] = [
   {
     "phone": "062627199",
     "name": "ABESSOLO Alix",
-    "level": "Débutant",
+    "level": "Pro",
     "isPublic": false,
     "quizScores": {},
     "username": "Man-PMMA05",
@@ -108,7 +108,7 @@ export const models: Model[] = [
     "password": "abessolo2026"
   },
   {
-    "level": "Débutant",
+    "level": "Pro",
     "age": 21,
     "experience": "Nouveau mannequin issu du casting. Score: 6.50/10",
     "journey": "Profil créé automatiquement après validation du casting.",
@@ -158,7 +158,7 @@ export const models: Model[] = [
       "hips": "89cm",
       "chest": "83cm"
     },
-    "level": "Débutant",
+    "level": "Pro",
     "email": ""
   },
   {
@@ -168,7 +168,7 @@ export const models: Model[] = [
     "age": 29,
     "location": "",
     "categories": [],
-    "level": "Débutant",
+    "level": "Pro",
     "password": "marisca2026",
     "portfolioImages": [],
     "distinctions": [],
@@ -194,7 +194,7 @@ export const models: Model[] = [
     "location": "",
     "age": 20,
     "quizScores": {},
-    "level": "Débutant",
+    "level": "Pro",
     "username": "Man-PMML04",
     "journey": "Profil créé automatiquement après validation du casting.",
     "password": "lauretta2026",
@@ -217,7 +217,7 @@ export const models: Model[] = [
   },
   {
     "quizScores": {},
-    "level": "Débutant",
+    "level": "Pro",
     "categories": [],
     "username": "Man-PMMU01",
     "age": 23,
@@ -247,7 +247,7 @@ export const models: Model[] = [
     "gender": "Femme",
     "username": "Man-PMMM01",
     "experience": "Nouveau mannequin issu du casting. Score: 7.00/10",
-    "level": "Débutant",
+    "level": "Pro",
     "isPublic": false,
     "password": "mariam2026",
     "phone": "076486746",
@@ -271,7 +271,7 @@ export const models: Model[] = [
   },
   {
     "gender": "Femme",
-    "level": "Débutant",
+    "level": "Pro",
     "isPublic": false,
     "age": 19,
     "journey": "Profil créé automatiquement après validation du casting.",
@@ -312,7 +312,7 @@ export const models: Model[] = [
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
     "quizScores": {},
     "height": "1.64cm",
-    "level": "Débutant",
+    "level": "Pro",
     "experience": "Nouveau mannequin issu du casting. Score: 6.00/10",
     "name": "Thyrelle EYUI",
     "measurements": {
@@ -337,7 +337,7 @@ export const models: Model[] = [
     "journey": "Profil créé automatiquement après validation du casting.",
     "password": "sarah2026",
     "name": "Sarah KLOMEGAN",
-    "level": "Débutant",
+    "level": "Pro",
     "email": "",
     "age": 20,
     "phone": "077102949",
@@ -353,7 +353,7 @@ export const models: Model[] = [
   {
     "id": "kone-aurore-3003",
     "username": "Man-PMMA02",
-    "level": "Débutant",
+    "level": "Pro",
     "isPublic": false,
     "portfolioImages": [],
     "measurements": {
@@ -378,7 +378,7 @@ export const models: Model[] = [
     "categories": []
   },
   {
-    "level": "Débutant",
+    "level": "Pro",
     "password": "ismael2026",
     "isPublic": false,
     "age": 18,
@@ -428,7 +428,7 @@ export const models: Model[] = [
     "journey": "Profil créé automatiquement après validation du casting.",
     "phone": "066622963",
     "age": 27,
-    "level": "Débutant",
+    "level": "Pro",
     "password": "aitchedji2026"
   },
   {
@@ -447,7 +447,7 @@ export const models: Model[] = [
     "age": 21,
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
     "phone": "077830646",
-    "level": "Débutant",
+    "level": "Pro",
     "password": "nahoumie2026",
     "distinctions": [],
     "name": "Nahoumie MABILA",
@@ -478,7 +478,7 @@ export const models: Model[] = [
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
     "distinctions": [],
     "username": "Man-PMME02",
-    "level": "Débutant",
+    "level": "Pro",
     "password": "esther2026",
     "experience": "Nouveau mannequin issu du casting. Score: 6.25/10",
     "categories": [],
@@ -505,7 +505,7 @@ export const models: Model[] = [
     "location": "",
     "name": "Sarah MBOUMBA",
     "age": 24,
-    "level": "Débutant",
+    "level": "Pro",
     "journey": "Profil créé automatiquement après validation du casting.",
     "experience": "Nouveau mannequin issu du casting. Score: 5.83/10",
     "categories": [],
@@ -533,7 +533,7 @@ export const models: Model[] = [
     "portfolioImages": [],
     "isPublic": false,
     "height": "1.60cm",
-    "level": "Débutant",
+    "level": "Pro",
     "phone": "065834453",
     "gender": "Femme",
     "location": "",
@@ -543,7 +543,7 @@ export const models: Model[] = [
     "name": "Anna MICKALA",
     "categories": [],
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
-    "level": "Débutant",
+    "level": "Pro",
     "isPublic": false,
     "password": "anna2026",
     "phone": "074033548",
@@ -575,7 +575,7 @@ export const models: Model[] = [
     "categories": [],
     "name": "Chancelle MOMOH",
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
-    "level": "Débutant",
+    "level": "Pro",
     "id": "momoh-chancelle-0067",
     "distinctions": [],
     "email": "",
@@ -610,7 +610,7 @@ export const models: Model[] = [
       "shoeSize": "38",
       "hips": "97cm"
     },
-    "level": "Débutant",
+    "level": "Pro",
     "categories": [],
     "name": "Raïva MONDJO",
     "journey": "Profil créé automatiquement après validation du casting.",
@@ -622,7 +622,7 @@ export const models: Model[] = [
   },
   {
     "portfolioImages": [],
-    "level": "Débutant",
+    "level": "Pro",
     "isPublic": false,
     "categories": [],
     "journey": "Profil créé automatiquement après validation du casting.",
@@ -651,7 +651,7 @@ export const models: Model[] = [
     "location": "",
     "height": "1.78cm",
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
-    "level": "Débutant",
+    "level": "Pro",
     "phone": "077580358",
     "quizScores": {},
     "journey": "Profil créé automatiquement après validation du casting.",
@@ -694,7 +694,7 @@ export const models: Model[] = [
     "name": "Styna MOUTSINGA",
     "quizScores": {},
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
-    "level": "Débutant",
+    "level": "Pro",
     "age": 23,
     "username": "Man-PMMS04",
     "distinctions": [],
@@ -714,7 +714,7 @@ export const models: Model[] = [
       "waist": "74cm"
     },
     "categories": [],
-    "level": "Débutant",
+    "level": "Pro",
     "name": "Stephie NDOMBI",
     "email": "",
     "phone": "062360492",
@@ -753,7 +753,7 @@ export const models: Model[] = [
     "id": "ngo-charis-3008",
     "experience": "Nouveau mannequin issu du casting. Score: 6.25/10",
     "name": "Charis NGO",
-    "level": "Débutant"
+    "level": "Pro"
   },
   {
     "age": 24,
@@ -780,7 +780,7 @@ export const models: Model[] = [
     "location": "",
     "portfolioImages": [],
     "email": "",
-    "level": "Débutant"
+    "level": "Pro"
   },
   {
     "email": "noemi.kim@example.com",
@@ -839,7 +839,7 @@ export const models: Model[] = [
     "level": "Pro"
   },
   {
-    "level": "Débutant",
+    "level": "Pro",
     "distinctions": [],
     "measurements": {
       "waist": "65cm",
@@ -890,7 +890,7 @@ export const models: Model[] = [
     "username": "Man-PMMC06",
     "id": "ntosang-chancia-1960",
     "email": "",
-    "level": "Débutant"
+    "level": "Pro"
   },
   {
     "journey": "Parcours à renseigner par l'administrateur.",
@@ -918,11 +918,13 @@ export const models: Model[] = [
     "categories": [
       "Défilé",
       "Commercial"
-    ]
+    ],
+    "level": "Pro",
+    "portfolioImages": []
   },
   {
     "portfolioImages": [],
-    "level": "Débutant",
+    "level": "Pro",
     "isPublic": false,
     "categories": [],
     "username": "Man-PMMD01",
@@ -966,7 +968,7 @@ export const models: Model[] = [
     "id": "ossagha-chancelia-5109",
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
     "distinctions": [],
-    "level": "Débutant",
+    "level": "Pro",
     "username": "Man-PMMC02",
     "password": "chancelia2026",
     "experience": "Nouveau mannequin issu du casting. Score: 6.75/10",
@@ -990,7 +992,7 @@ export const models: Model[] = [
     "age": 23,
     "phone": "066429254",
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
-    "level": "Débutant",
+    "level": "Pro",
     "password": "anne2026",
     "distinctions": [],
     "name": "Anne PADOU",
@@ -1017,7 +1019,7 @@ export const models: Model[] = [
     "gender": "Femme",
     "password": "dorcas2026",
     "id": "saphou-dorcas-8544",
-    "level": "Débutant",
+    "level": "Pro",
     "username": "Man-PMMD02",
     "name": "Dorcas SAPHOU",
     "categories": [],
@@ -1050,7 +1052,7 @@ export const models: Model[] = [
     },
     "distinctions": [],
     "email": "",
-    "level": "Débutant",
+    "level": "Pro",
     "imageUrl": "https://i.ibb.co/fVBxPNTP/T-shirt.png",
     "phone": "066439461",
     "height": "1.77cm"
@@ -1080,7 +1082,7 @@ export const models: Model[] = [
     "password": "lucresse2026",
     "username": "Man-PMML03",
     "distinctions": [],
-    "level": "Débutant"
+    "level": "Pro"
   },
   {
     "gender": "Femme",
@@ -1088,7 +1090,7 @@ export const models: Model[] = [
     "portfolioImages": [],
     "username": "Man-PMMD03",
     "location": "",
-    "level": "Débutant",
+    "level": "Pro",
     "isPublic": false,
     "name": "Diane TCHIBNDA",
     "phone": "074479062",

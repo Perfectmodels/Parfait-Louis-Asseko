@@ -3,7 +3,7 @@
 import { Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation } from '../types';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNT/logo.png',
+  logo: '/logo.png',
 };
 
 export const navLinks: NavLink[] = [
