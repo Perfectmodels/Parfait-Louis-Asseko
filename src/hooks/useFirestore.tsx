@@ -140,6 +140,12 @@ export const useFirestore = () => {
 
             const data = snapshot.val();
 
+            // Check for broken URLs (ibb.co or postimg.cc)
+            if (JSON.stringify(data).includes('ibb.co') || JSON.stringify(data).includes('postimg.cc')) {
+                logger.warn(`Data for ${collectionName} contains broken links, using fallback.`);
+                return fallback;
+            }
+
             // Si c'est un objet, convertir en array
             if (data && typeof data === 'object') {
                 return Object.keys(data).map(key => ({
@@ -165,7 +171,15 @@ export const useFirestore = () => {
                 return fallback;
             }
 
-            return snapshot.val() as T;
+            const data = snapshot.val();
+
+            // Check for broken URLs (ibb.co or postimg.cc)
+            if (JSON.stringify(data).includes('ibb.co') || JSON.stringify(data).includes('postimg.cc')) {
+                logger.warn(`Data for ${configName} contains broken links, using fallback.`);
+                return fallback;
+            }
+
+            return data as T;
         } catch (error) {
             logger.error(`Error loading config ${configName}:`, error);
             return fallback;

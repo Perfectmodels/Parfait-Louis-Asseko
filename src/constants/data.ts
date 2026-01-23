@@ -3,7 +3,7 @@
 import { Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation } from '../types';
 
 export const siteConfig = {
-  logo: '/logo.png',
+  logo: '/logo.jpg',
 };
 
 export const navLinks: NavLink[] = [
@@ -32,12 +32,12 @@ export const contactInfo: ContactInfo = {
 };
 
 export const siteImages: SiteImages = {
-  hero: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
-  about: 'https://i.ibb.co/3WfK9Xg/about-img.jpg',
-  fashionDayBg: 'https://i.ibb.co/C5rcPJH/titostyle-53.jpg',
-  agencyHistory: 'https://i.ibb.co/jH0YvJg/agency-history.jpg',
-  classroomBg: 'https://i.ibb.co/TBt9FBS/AJC-4630.jpg',
-  castingBg: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg',
+  hero: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1920&auto=format&fit=crop',
+  about: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop',
+  fashionDayBg: 'https://images.unsplash.com/photo-1509631179647-0177f4547d4c?q=80&w=1000&auto=format&fit=crop',
+  agencyHistory: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1000&auto=format&fit=crop',
+  classroomBg: 'https://images.unsplash.com/photo-1540206276207-3af25c08abc4?q=80&w=1000&auto=format&fit=crop',
+  castingBg: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop',
 };
 
 export const apiKeys: ApiKeys = {
@@ -72,19 +72,19 @@ export const testimonials: Testimonial[] = [
     name: 'Franck B.',
     role: 'Créateur de Mode',
     quote: "Collaborer avec Perfect Models Management est un gage de professionnalisme. Leurs mannequins sont non seulement magnifiques mais aussi incroyablement bien formés et ponctuels. Un vrai plaisir.",
-    imageUrl: 'https://i.ibb.co/s5zW7gZ/testimonial-1.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop',
   },
   {
     name: 'Nadia K.',
     role: 'Directrice Artistique',
     quote: "L'agence a un œil incroyable pour dénicher des talents uniques. Leur catalogue est diversifié et répond perfectly aux besoins créatifs de nos campagnes publicitaires.",
-    imageUrl: 'https://i.ibb.co/y4x9Y8X/testimonial-2.jpg',
+    imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop',
   },
   {
     name: 'Noemi Kim',
     role: 'Mannequin de l\'agence',
     quote: "PMM est bien plus qu'une agence, c'est une famille qui nous pousse à donner le meilleur de nous-mêmes. La formation et l'encadrement sont exceptionnels.",
-    imageUrl: 'https://i.ibb.co/C5rcPJH/DSC-0272.jpg',
+    imageUrl: 'https://placehold.co/400x600/101010/D4AF37?text=Noemi+Kim',
   },
 ];
 
@@ -104,9 +104,9 @@ export const photoshootBriefs: PhotoshootBrief[] = [];
 
 
 export const newsItems: NewsItem[] = [
-  { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://i.ibb.co/z5TzL2M/casting-bg.jpg', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
-  { id: '2', title: "Perfect Fashion Day Édition 2", date: '2025-02-08', imageUrl: 'https://i.ibb.co/C5rcPJH/titostyle-53.jpg', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
-  { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: 'https://i.ibb.co/3WfK9Xg/about-img.jpg', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
+  { id: '1', title: "Grand Casting Annuel", date: '2025-09-06', imageUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop', excerpt: "Nous recherchons les prochains visages de la mode. Préparez-vous pour notre grand casting national.", link: '/casting-formulaire' },
+  { id: '2', title: "Perfect Fashion Day Édition 2", date: '2025-02-08', imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177f4547d4c?q=80&w=1000&auto=format&fit=crop', excerpt: "La seconde édition de notre événement mode phare approche à grands pas. Découvrez le thème et les créateurs.", link: '/fashion-day' },
+  { id: '3', title: "Nouveaux Talents 2024", date: '2024-08-15', imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop', excerpt: "L'agence est fière d'accueillir trois nouveaux mannequins prometteurs dans ses rangs.", link: '/mannequins' },
 ];
 
 export const fashionDayEvents: FashionDayEvent[] = [
@@ -122,80 +122,80 @@ export const fashionDayEvents: FashionDayEvent[] = [
         name: "AG Style",
         description: "Un mélange parfait de tradition et de modernité.",
         images: [
-          "https://i.ibb.co/C5rcPJH/agstyle-42.jpg", "https://i.ibb.co/C5rcPJH/agstyle-41.jpg", "https://i.ibb.co/C5rcPJH/agstyle-36.jpg", "https://i.ibb.co/C5rcPJH/agstyle-33.jpg",
-          "https://i.ibb.co/C5rcPJH/agstyle-28.jpg", "https://i.ibb.co/C5rcPJH/agstyle-23.jpg", "https://i.ibb.co/C5rcPJH/agstyle-21.jpg", "https://i.ibb.co/C5rcPJH/agstyle-17.jpg",
-          "https://i.ibb.co/C5rcPJH/agstyle-13.jpg", "https://i.ibb.co/C5rcPJH/agstyle-15.jpg", "https://i.ibb.co/C5rcPJH/agstyle-7.jpg", "https://i.ibb.co/C5rcPJH/AG-Style.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       },
       {
         name: "Farel MD",
         description: "Élégance masculine & attitude.",
         images: [
-          "https://i.ibb.co/C5rcPJH/farelmd-31.jpg", "https://i.ibb.co/C5rcPJH/farelmd-37.jpg", "https://i.ibb.co/C5rcPJH/farelmd-33.jpg", "https://i.ibb.co/C5rcPJH/farelmd-28.jpg",
-          "https://i.ibb.co/bZWLkcw/farelmd-30.jpg", "https://i.ibb.co/C5rcPJH/farelmd-21.jpg", "https://i.ibb.co/C5rcPJH/farelmd-26.jpg", "https://i.ibb.co/C5rcPJH/farelmd-10.jpg",
-          "https://i.ibb.co/C5rcPJH/farelmd-16.jpg", "https://i.ibb.co/fTrvQht/farelmd-5.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       },
       {
         name: "Ventex Custom",
         description: "Une prestation haute en audace et en style.",
         images: [
-          "https://i.ibb.co/C5rcPJH/ventex-44.jpg", "https://i.ibb.co/C5rcPJH/ventex-43.jpg", "https://i.ibb.co/C5rcPJH/ventex-31.jpg", "https://i.ibb.co/C5rcPJH/ventex-36.jpg",
-          "https://i.ibb.co/C5rcPJH/ventex-21.jpg", "https://i.ibb.co/C5rcPJH/ventex-28.jpg", "https://i.ibb.co/C5rcPJH/ventex-18.jpg", "https://i.ibb.co/C5rcPJH/ventex-4.jpg",
-          "https://i.ibb.co/C5rcPJH/ventex-14.jpg", "https://i.ibb.co/C5rcPJH/ventex-7.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       },
       {
         name: "Miguel Fashion Style",
         description: "La finesse sur-mesure.",
         images: [
-          "https://i.ibb.co/C5rcPJH/miguel-25.jpg", "https://i.ibb.co/DF36zP1/miguel-24.jpg", "https://i.ibb.co/C5rcPJH/miguel-23.jpg", "https://i.ibb.co/C5rcPJH/miguel-21.jpg",
-          "https://i.ibb.co/C5rcPJH/miguel-19.jpg", "https://i.ibb.co/C5rcPJH/miguel-13.jpg", "https://i.ibb.co/C5rcPJH/miguel-12.jpg", "https://i.ibb.co/C5rcPJH/miguel-6.jpg",
-          "https://i.ibb.co/C5rcPJH/miguel-10.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       },
       {
         name: "Faran",
         description: "Parade des Miss du Gabon.",
         images: [
-          "https://i.ibb.co/C5rcPJH/faran-72.jpg", "https://i.ibb.co/C5rcPJH/faran-63.jpg", "https://i.ibb.co/C5rcPJH/faran-62.jpg", "https://i.ibb.co/C5rcPJH/faran-45.jpg",
-          "https://i.ibb.co/C5rcPJH/faran-31.jpg", "https://i.ibb.co/C5rcPJH/faran-7.jpg", "https://i.ibb.co/C5rcPJH/faran-18.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       },
       {
         name: "Madame Luc (Abiale)",
         description: "Une allure élégante et intemporelle.",
         images: [
-          "https://i.ibb.co/C5rcPJH/madameluc-35.jpg", "https://i.ibb.co/C5rcPJH/madameluc-27.jpg", "https://i.ibb.co/C5rcPJH/madameluc-23.jpg", "https://i.ibb.co/C5rcPJH/madameluc-14.jpg",
-          "https://i.ibb.co/Nk9JnK8/madameluc-10.jpg", "https://i.ibb.co/C5rcPJH/madameluc-1.jpg", "https://i.ibb.co/C5rcPJH/madameluc-4.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       },
       {
         name: "Brand’O",
         description: "Une énergie flamboyante au podium.",
         images: [
-          "https://i.ibb.co/C5rcPJH/brando-50.jpg", "https://i.ibb.co/C5rcPJH/brando-45.jpg", "https://i.ibb.co/C5rcPJH/brando-39.jpg", "https://i.ibb.co/C5rcPJH/brando-34.jpg",
-          "https://i.ibb.co/C5rcPJH/brando-28.jpg", "https://i.ibb.co/C5rcPJH/brando-26.jpg", "https://i.ibb.co/C5rcPJH/brando-25.jpg", "https://i.ibb.co/C5rcPJH/brando-24.jpg",
-          "https://i.ibb.co/C5rcPJH/brando-22.jpg", "https://i.ibb.co/C5rcPJH/brando-17.jpg", "https://i.ibb.co/C5rcPJH/brando-13.jpg", "https://i.ibb.co/C5rcPJH/brando-11.jpg",
-          "https://i.ibb.co/C5rcPJH/brando-10.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       },
       {
         name: "Tito Style",
         description: "Audace urbaine & inspiration afro.",
         images: [
-          "https://i.ibb.co/C5rcPJH/titostyle-53.jpg", "https://i.ibb.co/C5rcPJH/titostyle-51.jpg", "https://i.ibb.co/8Ty8sGT/titostyle-50.jpg", "https://i.ibb.co/C5rcPJH/titostyle-45.jpg",
-          "https://i.ibb.co/C5rcPJH/titostyle-43.jpg", "https://i.ibb.co/C5rcPJH/titostyle-41.jpg", "https://i.ibb.co/C5rcPJH/titostyle-36.jpg", "https://i.ibb.co/C5rcPJH/titostyle-33.jpg",
-          "https://i.ibb.co/C5rcPJH/titostyle-19.jpg", "https://i.ibb.co/C5rcPJH/titostyle-25.jpg", "https://i.ibb.co/C5rcPJH/titostyle-17.jpg", "https://i.ibb.co/C5rcPJH/titostyle-4.jpg",
-          "https://i.ibb.co/C5rcPJH/titostyle-12.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       },
       {
         name: "Edele A",
         description: "Le final tout en poésie.",
         images: [
-          "https://i.ibb.co/C5rcPJH/edelea-40.jpg", "https://i.ibb.co/C5rcPJH/edelea-38.jpg", "https://i.ibb.co/C5rcPJH/edelea-31.jpg", "https://i.ibb.co/C5rcPJH/edelea-24.jpg",
-          "https://i.ibb.co/C5rcPJH/edelea-22.jpg", "https://i.ibb.co/C5rcPJH/edelea-16.jpg", "https://i.ibb.co/C5rcPJH/edelea-3.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       }
     ],
@@ -208,9 +208,9 @@ export const fashionDayEvents: FashionDayEvent[] = [
         name: "Lady Riaba",
         description: "Slam poétique intitulé « Racines et Modernité » en ouverture de soirée.",
         images: [
-          "https://i.ibb.co/WCYYHQ1/ladyriaba-28.jpg", "https://i.ibb.co/C5rcPJH/ladyriaba-26.jpg", "https://i.ibb.co/C5rcPJH/ladyriaba-22.jpg",
-          "https://i.ibb.co/C5rcPJH/ladyriaba-20.jpg", "https://i.ibb.co/C5rcPJH/ladyriaba-14.jpg", "https://i.ibb.co/C5rcPJH/ladyriaba-10.jpg",
-          "https://i.ibb.co/C5rcPJH/ladyriaba-8.jpg", "https://i.ibb.co/C5rcPJH/ladyriaba-6.jpg", "https://i.ibb.co/C5rcPJH/ladyriaba-5.jpg", "https://i.ibb.co/C5rcPJH/ladyriaba-1.jpg"
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day",
+          "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day", "https://placehold.co/400x600/202020/D4AF37?text=Fashion+Day"
         ]
       }
     ],
@@ -650,7 +650,7 @@ export const faqData: FAQCategory[] = [
 export const heroSlides: HeroSlide[] = [
   {
     id: '1',
-    image: 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg',
+    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1920&auto=format&fit=crop',
     title: 'L\'Élégance Redéfinie',
     subtitle: 'Au cœur de la mode africaine, nous sculptons les carrières et célébrons la beauté sous toutes ses formes.',
     buttonText: 'Devenir Mannequin',
