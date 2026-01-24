@@ -1,4 +1,31 @@
 // sw.js
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC_5TsXHPLloX80SzN9GQaaDL4EPlL-WSc",
+  authDomain: "perfectmodels-4e5fa.firebaseapp.com",
+  databaseURL: "https://perfectmodels-4e5fa-default-rtdb.firebaseio.com",
+  projectId: "perfectmodels-4e5fa",
+  storageBucket: "perfectmodels-4e5fa.firebasestorage.app",
+  messagingSenderId: "1072431985374",
+  appId: "1:1072431985374:web:55f7a7899d05e68fe5484f",
+  measurementId: "G-CSP65WPY89"
+};
+
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/logo.jpg'
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
 
 const STATIC_CACHE_NAME = 'pmm-static-v3';
 const DYNAMIC_CACHE_NAME = 'pmm-dynamic-v3';
