@@ -50,3 +50,5 @@ firebase-backup/
 
 # Generated Data containing secrets
 src/constants/data.ts
+.vercel
+.env*.local
