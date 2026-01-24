@@ -36,3 +36,17 @@ credentials/
 *.njsproj
 *.sln
 *.sw?
+
+# Backups and Exports
+firebase-backup/
+*.json
+!package.json
+!tsconfig.json
+!tsconfig.node.json
+!public/manifest.json
+!manifest.json
+*_backup_*
+*export*
+
+# Generated Data containing secrets
+src/constants/data.ts
