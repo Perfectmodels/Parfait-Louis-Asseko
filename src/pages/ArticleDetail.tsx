@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
 import SEO from '../components/SEO';
@@ -19,7 +19,16 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
         }
     };
 
-    const contentHtml = (Array.isArray(article.content) ? article.content : []).map(renderContentHtml).join('');
+    const normalizedContent: ArticleContent[] = Array.isArray(article.content)
+        ? (article.content as ArticleContent[])
+        : (typeof (article as any).content === 'string'
+            ? (String((article as any).content)
+                .split(/\n\n+/)
+                .map((p: string) => ({ type: 'paragraph', text: p.trim() }))
+                .filter((b: any) => b.text))
+            : []);
+
+    const contentHtml = normalizedContent.map(renderContentHtml).join('');
 
     const articleDate = new Date(article.date);
     const isValidDate = !isNaN(articleDate.getTime());
@@ -188,7 +197,26 @@ const ArticleDetail: React.FC = () => {
   if (!isInitialized) return <div className="min-h-screen bg-pm-dark"></div>;
   if (!article) return <NotFound />;
   
-  const safeContent = Array.isArray(article.content) ? article.content : [];
+  const safeContent: ArticleContent[] = useMemo(() => {
+    const raw: any = article?.content as any;
+    if (Array.isArray(raw)) return raw as ArticleContent[];
+    if (typeof raw === 'string') {
+      return raw
+        .split(/\n\n+/)
+        .map((p: string) => ({ type: 'paragraph', text: p.trim() }))
+        .filter((b: any) => b.text);
+    }
+    if (raw && typeof raw === 'object') {
+      const sortedEntries = Object.entries(raw).sort(([a], [b]) => {
+        const na = Number(a);
+        const nb = Number(b);
+        if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+        return String(a).localeCompare(String(b));
+      });
+      return sortedEntries.map(([, v]) => v).filter(Boolean) as ArticleContent[];
+    }
+    return [] as ArticleContent[];
+  }, [article?.content]);
   
   const articleDate = new Date(article.date);
   const isValidDate = !isNaN(articleDate.getTime());
