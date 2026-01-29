@@ -24,17 +24,15 @@ const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
 const Login = lazy(() => import('./pages/Login'));
-const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
+const Activity = lazy(() => import('./pages/Activity'));
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
-const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
+const ModelDashboard = lazy(() => import('./pages/ModelDashboard'));
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
-// FIX: Removed Beginner Classroom pages as the feature has been deprecated.
 const Chat = lazy(() => import('./pages/Chat'));
 const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
 const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
 const LiveChat = lazy(() => import('./pages/LiveChat'));
-
 
 // Admin Pages
 const Admin = lazy(() => import('./pages/Admin'));
@@ -45,7 +43,6 @@ const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
 const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
 const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
 const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
-// FIX: Corrected import paths for Admin pages to resolve module not found errors.
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
 const AdminModels = lazy(() => import('./pages/AdminModels'));
@@ -55,12 +52,10 @@ const AdminSettings = lazy(() => import('./pages/AdminSettings'));
 const AdminComments = lazy(() => import('./pages/AdminComments'));
 const AdminBookings = lazy(() => import('./pages/AdminBookings'));
 const AdminMessages = lazy(() => import('./pages/AdminMessages'));
-// FIX: Removed AdminBeginnerStudents as the feature has been deprecated.
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
-
 
 // Role-specific pages
 const JuryCasting = lazy(() => import('./pages/JuryCasting'));
@@ -70,7 +65,6 @@ const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
 const NotFound = lazy(() => import('./pages/NotFound'));
-
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -87,15 +81,9 @@ const LoadingFallback: React.FC = () => (
 );
 
 const pageVariants = {
-    initial: {
-        opacity: 0,
-    },
-    in: {
-        opacity: 1,
-    },
-    out: {
-        opacity: 0,
-    }
+    initial: { opacity: 0 },
+    in: { opacity: 1 },
+    out: { opacity: 0 }
 };
 
 const pageTransition = {
@@ -103,7 +91,6 @@ const pageTransition = {
     ease: "anticipate",
     duration: 0.5
 };
-
 
 const AnimatedRoutes: React.FC = () => {
     const location = useLocation();
@@ -143,8 +130,6 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
                     <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
                     
-                    {/* FIX: Removed Beginner Classroom routes as the feature has been deprecated. */}
-                    
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
                     
@@ -161,7 +146,6 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                     <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
-                    {/* FIX: Removed AdminBeginnerStudents route as the feature has been deprecated. */}
                     <Route path="/admin/recovery-requests" element={<ProtectedRoute role="admin"><AdminRecovery /></ProtectedRoute>} />
                     <Route path="/admin/comments" element={<ProtectedRoute role="admin"><AdminComments /></ProtectedRoute>} />
                     <Route path="/admin/messages" element={<ProtectedRoute role="admin"><AdminMessages /></ProtectedRoute>} />
@@ -182,39 +166,6 @@ const AnimatedRoutes: React.FC = () => {
 };
 
 const AppContent: React.FC = () => {
-    const location = useLocation();
-    const { data } = useData();
-
-    // Notification logic for browser tab title
-    useEffect(() => {
-        const originalTitle = "Perfect Models Management";
-        if (data && location.pathname.startsWith('/admin')) {
-            const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
-            const newFashionDayApps = data.fashionDayApplications?.filter(app => app.status === 'Nouveau').length || 0;
-            const newRecoveryRequests = data.recoveryRequests?.filter(req => req.status === 'Nouveau').length || 0;
-            const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
-            const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
-
-            const totalNotifications = newCastingApps + newFashionDayApps + newRecoveryRequests + newBookingRequests + newMessages;
-
-            if (totalNotifications > 0) {
-                document.title = `(${totalNotifications}) Admin | ${originalTitle}`;
-            } else {
-                document.title = `Admin | ${originalTitle}`;
-            }
-        } else {
-            // Restore title if not on an admin page (this will be handled by SEO component for other pages)
-            if (document.title.startsWith('(') || document.title.startsWith('Admin |')) {
-                 document.title = originalTitle;
-            }
-        }
-        
-        return () => {
-            document.title = originalTitle;
-        };
-    }, [location.pathname, data]);
-
-
     return (
         <Layout>
             <Suspense fallback={<LoadingFallback />}>
@@ -226,7 +177,6 @@ const AppContent: React.FC = () => {
 }
 
 const App: React.FC = () => {
-
   useEffect(() => {
     registerServiceWorker();
   }, []);

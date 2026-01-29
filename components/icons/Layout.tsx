@@ -13,17 +13,16 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
 
-  // Si la route commence par /admin, on utilise le layout d'administration.
+  // On vérifie si on est dans l'administration pour changer de layout
   if (location.pathname.startsWith('/admin')) {
     return <AdminLayout>{children}</AdminLayout>;
   }
   
-  // Sinon, on utilise le layout public standard.
   return (
-    <div className="bg-pm-dark min-h-screen flex flex-col font-montserrat">
+    <div className="bg-pm-dark min-h-screen flex flex-col font-montserrat overflow-x-hidden">
       <Marquee />
       <Header />
-      <main className="flex-grow pt-24 lg:pt-28">
+      <main className="flex-grow pt-24 lg:pt-32">
         <Breadcrumb />
         {children}
       </main>

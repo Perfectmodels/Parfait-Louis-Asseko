@@ -1,235 +1,189 @@
-
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
+import React from 'react';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import TestimonialCarousel from '../components/TestimonialCarousel';
-
-const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
-    const [openFAQ, setOpenFAQ] = useState<string | null>('0-0'); // Open the first question by default
-
-    const toggleFAQ = (id: string) => {
-        setOpenFAQ(openFAQ === id ? null : id);
-    };
-
-    if (!faqData || faqData.length === 0) {
-        return null;
-    }
-
-    return (
-        <section>
-            <h2 className="section-title">Questions Fréquemment Posées</h2>
-            <div className="max-w-4xl mx-auto space-y-8">
-                {faqData.map((category, catIndex) => (
-                    <div key={catIndex}>
-                        <h3 className="text-2xl font-playfair text-pm-gold mb-4">{category.category}</h3>
-                        <div className="space-y-3">
-                            {category.items.map((item, itemIndex) => {
-                                const faqId = `${catIndex}-${itemIndex}`;
-                                const isOpen = openFAQ === faqId;
-                                return (
-                                    <div key={itemIndex} className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden">
-                                        <button
-                                            onClick={() => toggleFAQ(faqId)}
-                                            className="w-full flex justify-between items-center p-5 text-left"
-                                            aria-expanded={isOpen}
-                                            aria-controls={`faq-answer-${faqId}`}
-                                        >
-                                            <span className="font-bold text-lg text-pm-off-white">{item.question}</span>
-                                            <ChevronDownIcon className={`w-6 h-6 text-pm-gold flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-                                        </button>
-                                        <div
-                                            id={`faq-answer-${faqId}`}
-                                            className="grid transition-all duration-500 ease-in-out"
-                                            style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
-                                        >
-                                            <div className="overflow-hidden">
-                                                <div className="px-5 pb-5 text-pm-off-white/80">
-                                                    {item.answer}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-};
-
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { 
+    CheckBadgeIcon, 
+    ArrowLongRightIcon,
+    SparklesIcon,
+    GlobeAltIcon,
+    TrophyIcon,
+    ShieldCheckIcon,
+    AcademicCapIcon
+} from '@heroicons/react/24/outline';
 
 const Agency: React.FC = () => {
   const { data, isInitialized } = useData();
 
   if (!isInitialized || !data) {
-    return <div className="min-h-screen bg-pm-dark"></div>;
+    return <div className="h-screen bg-pm-dark flex items-center justify-center"><div className="w-12 h-px bg-pm-gold animate-pulse"></div></div>;
   }
   
-  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages, faqData } = data;
+  const { agencyInfo, modelDistinctions, agencyTimeline, siteImages } = data;
+
+  const commitments = [
+    {
+      title: "Intégrité Absolue",
+      description: "Nous garantissons une transparence totale dans la gestion des carrières et une éthique contractuelle stricte pour protéger nos talents.",
+      icon: ShieldCheckIcon
+    },
+    {
+      title: "Standard International",
+      description: "Notre mission est d'élever les visages du Gabon aux sommets des exigences de la mode mondiale, sans compromis sur la qualité.",
+      icon: GlobeAltIcon
+    },
+    {
+      title: "Accompagnement Elite",
+      description: "Plus qu'une agence, nous sommes un mentor. Nous investissons dans la formation continue et le bien-être psychologique de nos mannequins.",
+      icon: AcademicCapIcon
+    }
+  ];
 
   return (
-    <div className="bg-pm-dark text-pm-off-white">
-      <SEO 
-        title="L'Agence | Notre Histoire et Nos Valeurs"
-        description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence, et les services qui font de nous un leader de la mode au Gabon."
-        keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
-        image={siteImages.agencyHistory}
-      />
-      <div className="page-container space-y-20 lg:space-y-28">
+    <div className="bg-pm-dark overflow-x-hidden">
+      <SEO title="Our Heritage | PMM Agency" description="Elite modeling agency in Gabon." />
+      
+      {/* 1. EDITORIAL HEADER */}
+      <section className="relative pt-40 pb-20 px-6 sm:px-12 lg:px-20">
+        <motion.span 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="section-label"
+        >
+          Since 2021
+        </motion.span>
+        <motion.h1 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: "circOut" }}
+          className="text-7xl md:text-[14rem] font-playfair font-black text-white leading-[0.85] tracking-tighter"
+        >
+          Built on <br/><span className="italic gold-gradient-text">Excellence</span>
+        </motion.h1>
+      </section>
 
-        {/* À Propos */}
-        <section>
-          <h2 className="section-title">Notre Histoire</h2>
-          <div className="content-section flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2 p-2 border-2 border-pm-gold">
-              <img src={siteImages.agencyHistory} alt="L'équipe Perfect Models" className="w-full h-full object-cover"/>
+      {/* 2. CORE NARRATIVE */}
+      <section className="page-container flex flex-col lg:flex-row gap-32">
+        <div className="lg:w-1/2">
+           <div className="relative aspect-[3/4] overflow-hidden bg-pm-gray">
+              <img src={siteImages.agencyHistory} alt="Heritage" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" />
+              <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-transparent to-transparent opacity-60"></div>
+              <div className="absolute bottom-10 left-10 text-[10rem] font-playfair font-black text-white/5 pointer-events-none">PMM</div>
+           </div>
+        </div>
+        <div className="lg:w-1/2 space-y-16 lg:pt-32">
+            <div className="space-y-8">
+                <h2 className="text-4xl md:text-6xl font-playfair font-black italic">"Redefining the standards of African beauty."</h2>
+                <div className="h-px w-24 bg-pm-gold"></div>
             </div>
-            <div className="md:w-1/2 text-lg leading-relaxed text-pm-off-white/90">
-              <p className="mb-4">{agencyInfo.about.p1}</p>
-              <p>{agencyInfo.about.p2}</p>
+            <div className="space-y-12 text-xl font-light leading-relaxed text-white/60 italic">
+                <p>{agencyInfo.about.p1}</p>
+                <p>{agencyInfo.about.p2}</p>
             </div>
-          </div>
-        </section>
-
-        {/* Distinctions */}
-        <section>
-          <h2 className="section-title">Distinctions de nos Mannequins</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {modelDistinctions.map((distinction, index) => (
-              <DistinctionCard key={index} distinction={distinction} />
-            ))}
-          </div>
-        </section>
-
-        {/* Parcours (Timeline) */}
-        <section>
-          <h2 className="section-title">Notre Parcours</h2>
-           <div className="relative max-w-4xl mx-auto">
-                <div className="absolute left-1/2 h-full w-0.5 bg-pm-gold/30 transform -translate-x-1/2"></div>
-                {agencyTimeline.map((item, index) => (
-                    <div key={index} className={`relative flex items-center w-full my-8 ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}>
-                            <div className="bg-black p-4 border border-pm-gold/20 rounded-lg card-base">
-                                <h3 className="text-xl font-bold text-pm-gold">{item.year}</h3>
-                                <p className="text-pm-off-white/80 mt-1">{item.event}</p>
-                            </div>
-                        </div>
-                        <div className="absolute left-1/2 w-6 h-6 bg-pm-dark border-2 border-pm-gold rounded-full transform -translate-x-1/2 z-10"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 border-t border-white/5 pt-12">
+                {agencyInfo.values.map(val => (
+                    <div key={val.name} className="space-y-4">
+                        <h3 className="text-pm-gold font-black uppercase tracking-[0.3em] text-[10px]">{val.name}</h3>
+                        <p className="text-xs text-white/40 leading-relaxed uppercase tracking-widest">{val.description}</p>
                     </div>
                 ))}
             </div>
-        </section>
+        </div>
+      </section>
 
-         {/* Réalisations */}
-        <section>
-            <h2 className="section-title">Nos Réalisations</h2>
-            <AchievementsTabs achievements={agencyAchievements} />
-        </section>
-
-         {/* Partenaires */}
-        <section>
-          <h2 className="section-title">Nos Partenaires Clé</h2>
-          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
-            {agencyPartners.map((partner, index) => (
-                <p key={index} className="text-lg font-normal text-pm-off-white/80">{partner.name}</p>
+      {/* 3. NOS ENGAGEMENTS */}
+      <section className="bg-[#050505] py-40 border-y border-white/5">
+        <div className="max-w-[1800px] mx-auto px-6 lg:px-20">
+          <div className="text-center mb-24">
+            <span className="section-label">The Promise</span>
+            <h2 className="text-6xl md:text-8xl font-playfair font-black italic">Nos Engagements</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+            {commitments.map((item, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.2 }}
+                className="group p-12 border border-white/5 bg-pm-dark hover:bg-pm-gold/[0.02] transition-all duration-700"
+              >
+                <div className="mb-10 inline-block">
+                  <item.icon className="w-14 h-14 text-pm-gold/30 group-hover:text-pm-gold group-hover:scale-110 transition-all duration-700" strokeWidth={1} />
+                </div>
+                <h3 className="text-3xl font-playfair font-bold text-white mb-6 group-hover:text-pm-gold transition-colors">{item.title}</h3>
+                <p className="text-white/40 leading-relaxed font-light group-hover:text-white/60 transition-colors">
+                  {item.description}
+                </p>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Témoignages (Testimonials) */}
-        <section>
-            <h2 className="section-title">Ce qu'ils disent de nous</h2>
-            <div className="mt-8">
-                <TestimonialCarousel />
-            </div>
-        </section>
-        
-        {/* FAQ Section */}
-        <FAQ faqData={faqData} />
+      {/* 4. TIMELINE */}
+      <section className="py-40 overflow-hidden">
+        <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-24">
+            <span className="section-label">Chronology</span>
+            <h2 className="text-6xl font-playfair font-black">Our Journey</h2>
+        </div>
+        <div className="flex gap-8 overflow-x-auto px-6 lg:px-20 pb-12 no-scrollbar">
+            {agencyTimeline.map((item, idx) => (
+                <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="flex-shrink-0 w-[350px] p-10 glass-card"
+                >
+                    <span className="text-5xl font-playfair font-black text-pm-gold/20 block mb-6">{item.year}</span>
+                    <p className="text-lg font-bold text-white leading-snug">{item.event}</p>
+                    <div className="mt-8 flex justify-end">
+                        <div className="w-10 h-[2px] bg-pm-gold/20"></div>
+                    </div>
+                </motion.div>
+            ))}
+        </div>
+      </section>
 
-        {/* Contact CTA */}
-        <section className="text-center content-section">
-          <h3 className="text-2xl font-playfair text-pm-gold mb-4">Une question ? Un projet ?</h3>
-          <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
-              Nous serions ravis d'échanger avec vous. Visitez notre page de contact pour nous envoyer un message ou trouver nos coordonnées.
-          </p>
-          <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
-              Nous Contacter
-          </Link>
-        </section>
+      {/* 5. DISTINCTIONS */}
+      <section className="page-container">
+         <div className="text-center mb-32">
+            <span className="section-label">Accolades</span>
+            <h2 className="text-7xl font-playfair font-black italic">Distinctions</h2>
+         </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
+            {modelDistinctions.map((dist, idx) => (
+                <div key={idx} className="p-12 border border-white/5 hover:bg-pm-gold/5 transition-all duration-700 text-center group">
+                    <TrophyIcon className="w-12 h-12 text-pm-gold/20 mx-auto mb-10 group-hover:text-pm-gold group-hover:scale-110 transition-all duration-700" strokeWidth={1} />
+                    <h3 className="text-2xl font-playfair font-bold text-white mb-6 leading-tight">{dist.name}</h3>
+                    <ul className="space-y-2">
+                        {dist.titles.map((t, i) => (
+                            <li key={i} className="text-[10px] uppercase font-black tracking-[0.3em] text-white/30 group-hover:text-white/60 transition-colors">{t}</li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
+         </div>
+      </section>
 
-      </div>
+      {/* 6. FINAL CTA */}
+      <section className="relative h-[80vh] flex items-center justify-center border-t border-white/5 overflow-hidden">
+          <div className="absolute inset-0 bg-pm-dark">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] bg-pm-gold rounded-full opacity-[0.02] blur-[150px] animate-glow"></div>
+          </div>
+          <div className="relative z-10 text-center max-w-4xl px-6 space-y-16">
+              <h2 className="text-6xl md:text-9xl font-playfair font-black italic">Ready to leave <br/><span className="gold-gradient-text">your mark</span>?</h2>
+              <div className="flex flex-col sm:flex-row gap-12 justify-center">
+                  <Link to="/contact" className="btn-premium">Contact the Agency</Link>
+                  <Link to="/mannequins" className="btn-premium bg-white text-pm-dark border-none">View Talents</Link>
+              </div>
+          </div>
+      </section>
     </div>
   );
 };
-
-const DistinctionCard: React.FC<{ distinction: ModelDistinction }> = ({ distinction }) => (
-    <div className="card-base p-6 text-center h-full flex flex-col justify-center items-center">
-        <CheckBadgeIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" aria-hidden="true" />
-        <h3 className="text-xl font-playfair text-pm-gold">{distinction.name}</h3>
-        <ul className="mt-2 text-sm text-pm-off-white/80 space-y-1">
-            {distinction.titles.map((title, index) => <li key={index}>✦ {title}</li>)}
-        </ul>
-    </div>
-);
-
-const AchievementsTabs: React.FC<{ achievements: AchievementCategory[] }> = ({ achievements }) => {
-    const [activeTab, setActiveTab] = useState(0);
-
-    return (
-        <div>
-            <div role="tablist" aria-label="Nos réalisations" className="flex justify-center border-b border-pm-gold/20 mb-8">
-                {achievements.map((category, index) => (
-                    <button
-                        key={index}
-                        role="tab"
-                        id={`tab-${index}`}
-                        aria-controls={`tab-panel-${index}`}
-                        aria-selected={activeTab === index}
-                        onClick={() => setActiveTab(index)}
-                        className={`px-6 py-3 text-sm uppercase tracking-wider font-bold transition-colors relative ${activeTab === index ? 'text-pm-gold' : 'text-pm-off-white/70 hover:text-pm-gold'}`}
-                    >
-                        {category.name}
-                        {activeTab === index && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold"/>}
-                    </button>
-                ))}
-            </div>
-            {achievements.map((category, index) => (
-                 <div
-                    key={index}
-                    id={`tab-panel-${index}`}
-                    role="tabpanel"
-                    hidden={activeTab !== index}
-                    aria-labelledby={`tab-${index}`}
-                    className={`transition-opacity duration-300 ${activeTab === index ? 'opacity-100' : 'opacity-0'}`}
-                >
-                    {activeTab === index && (
-                        <div className="content-section animate-fade-in">
-                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-pm-off-white/90">
-                                {category.items.map((item, itemIndex) => (
-                                    <div key={itemIndex} className="bg-pm-dark/50 p-4 rounded-lg flex items-start gap-3 border border-pm-gold/10">
-                                        <CheckBadgeIcon className="w-6 h-6 text-pm-gold flex-shrink-0 mt-0.5" />
-                                        <span>{item}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            {category.name === "Défilés de Mode" && 
-                                <p className="text-center mt-10 text-pm-gold/90 italic text-sm md:text-base bg-pm-dark/50 p-4 rounded-md">
-                                    "Notre agence a participé à tous les événements de mode depuis 2021, son année de création."
-                                </p>
-                            }
-                        </div>
-                    )}
-                </div>
-            ))}
-        </div>
-    );
-};
-
 
 export default Agency;
