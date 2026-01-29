@@ -3,7 +3,7 @@
 
 export const articles = [
   {
-    "author": "Focus Model 241",
+    "author": "Focus Mode 241",
     "category": "Actualités ",
     "content": [
       {

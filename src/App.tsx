@@ -64,6 +64,7 @@ const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
 const AdminGallery = lazy(() => import('./pages/AdminGallery'));
+const AdminDropbox = lazy(() => import('./pages/AdminDropbox'));
 
 
 // Role-specific pages
@@ -180,6 +181,8 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
                     <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
                     <Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
+                    <Route path="/admin/dropbox" element={<ProtectedRoute role="admin"><AdminDropbox /></ProtectedRoute>} />
+                    <Route path="/admin/dropbox-callback" element={<ProtectedRoute role="admin"><AdminDropbox /></ProtectedRoute>} />
                     <Route path="/admin/profile" element={<ProtectedRoute role="admin"><AdminProfilePage /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
@@ -221,6 +224,15 @@ const AppContent: React.FC = () => {
             document.title = originalTitle;
         };
     }, [location.pathname, data]);
+
+    // Dropbox Dynamic Sync
+    useEffect(() => {
+        if (data?.apiKeys?.dropboxAccessToken) {
+            import('./utils/dropboxService').then(({ dropboxService }) => {
+                dropboxService.updateToken(data.apiKeys.dropboxAccessToken!);
+            });
+        }
+    }, [data?.apiKeys?.dropboxAccessToken]);
 
 
     return (

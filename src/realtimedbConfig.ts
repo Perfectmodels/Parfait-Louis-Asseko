@@ -1,7 +1,6 @@
+
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";
+import { getDatabase } from "firebase/database";
 import { getAnalytics } from "firebase/analytics";
 import { getPerformance } from "firebase/performance";
 import { getMessaging } from "firebase/messaging";
@@ -20,10 +19,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Get a reference to the Firestore service
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export const auth = getAuth(app);
+// Initialize services
+export const db = getDatabase(app);
 export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 export const performance = typeof window !== 'undefined' ? getPerformance(app) : null;
 export const messaging = typeof window !== 'undefined' ? getMessaging(app) : null;
+

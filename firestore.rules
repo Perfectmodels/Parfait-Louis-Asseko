@@ -3,15 +3,147 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // --- MODE DÉVELOPPEMENT / TEST (A changer pour la production avec Firebase Auth) ---
-    // Actuellement permissif car le Login Frontend n'utilise pas encore Firebase Auth.
+    // --- RÈGLES DE PRODUCTION (À activer après les tests) ---
+    // Décommentez ces règles et commentez les règles de développement ci-dessous
+    
+    /*
+    // Collections publiques en lecture, admin en écriture
+    match /models/{modelId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /fashionDayEvents/{eventId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /newsItems/{newsId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /agencyServices/{serviceId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Candidatures : lecture admin, écriture publique (création uniquement)
+    match /castingApplications/{applicationId} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow create: if true;
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /fashionDayApplications/{applicationId} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow create: if true;
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Réservations : lecture admin, écriture publique (création uniquement)
+    match /fashionDayReservations/{reservationId} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow create: if true;
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Messages de contact : lecture admin, écriture publique (création uniquement)
+    match /contactMessages/{messageId} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow create: if true;
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /bookingRequests/{requestId} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow create: if true;
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Configuration : lecture publique, écriture admin
+    match /config/{configId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Collections privées (admin seulement)
+    match /forumThreads/{threadId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    match /forumReplies/{replyId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    match /articleComments/{commentId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || request.auth.token.admin == true);
+    }
+    
+    match /courseData/{courseId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /absences/{absenceId} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /monthlyPayments/{paymentId} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /photoshootBriefs/{briefId} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /juryMembers/{memberId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /registrationStaff/{staffId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /recoveryRequests/{requestId} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    match /gallery/{itemId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Règle par défaut : deny all (sécurité maximale)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    */
+    
+    // --- RÈGLES DE DÉVELOPPEMENT (Actuellement actives) ---
+    // À DÉSACTIVER EN PRODUCTION !
     
     // Configurations
     match /config/{document} {
       allow read, write: if true;
     }
 
-    // Collections principales (Utilisées par les nouvelles fonctions CRUD)
+    // Collections principales
     match /models/{modelId} {
       allow read, write: if true;
     }

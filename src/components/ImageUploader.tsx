@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useData } from '../contexts/DataContext';
 import { ArrowUpTrayIcon, ArrowPathIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { dropboxService } from '../utils/dropboxService';
 
 interface ImageUploaderProps {
     label: string;
@@ -16,35 +17,42 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange })
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleUpload = useCallback(async (file: File) => {
-        const apiKey = data?.apiKeys?.imgbbApiKey;
-        if (!apiKey || apiKey === 'YOUR_IMGBB_API_KEY_HERE') {
-            setError("La clé API ImgBB n'est pas configurée dans les paramètres.");
-            return;
-        }
-
         setIsLoading(true);
         setError(null);
 
-        const formData = new FormData();
-        formData.append('image', file);
-
         try {
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                 const errorData = await response.json();
-                throw new Error(errorData?.error?.message || "L'upload a échoué. Vérifiez la clé API et le fichier.");
+            // First check if Dropbox is configured/authed
+            if (dropboxService.isAuthenticated()) {
+                // Upload to Dropbox
+                const result = await dropboxService.uploadFile(file, '/site_uploads');
+                if (result.sharing_url) {
+                    onChange(result.sharing_url);
+                    return;
+                }
             }
 
-            const result = await response.json();
-            if (result.data && result.data.url) {
-                onChange(result.data.url);
-            } else {
-                throw new Error("L'API ImgBB n'a pas retourné d'URL valide.");
+            // Fallback to ImgBB
+            const imgbbApiKey = data?.apiKeys?.imgbbApiKey;
+            if (imgbbApiKey && imgbbApiKey !== 'YOUR_IMGBB_API_KEY_HERE') {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.data && result.data.url) {
+                        onChange(result.data.url);
+                        return;
+                    }
+                }
             }
+
+            throw new Error("Aucun service de stockage (Dropbox ou ImgBB) n'est configuré.");
+
         } catch (err: any) {
             setError(err.message || "Une erreur est survenue lors de l'upload.");
             console.error(err);
@@ -59,7 +67,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange })
             handleUpload(file);
         }
     };
-    
+
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -81,7 +89,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange })
         <div>
             <label className="admin-label">{label}</label>
             <div className="flex items-start gap-4">
-                <div 
+                <div
                     className="w-28 h-28 flex-shrink-0 bg-black border-2 border-dashed border-pm-off-white/20 rounded-md flex items-center justify-center relative group"
                     onDrop={handleDrop}
                     onDragOver={(e) => e.preventDefault()}
@@ -96,7 +104,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange })
                             <ArrowPathIcon className="w-8 h-8 text-pm-gold animate-spin" />
                         </div>
                     )}
-                     <button
+                    <button
                         type="button"
                         onClick={triggerFileSelect}
                         className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md cursor-pointer"
@@ -121,7 +129,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange })
                         className="hidden"
                     />
                     <p className="text-xs text-pm-off-white/60 mt-2">
-                        Cliquez ou glissez-déposez une image, ou collez une URL.
+                        Utilise Dropbox par défaut, ImgBB en secours.
                     </p>
                     {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
                 </div>

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { AppData } from '../hooks/useDataStore';
+import { AppData } from '../hooks/useFirestore';
 import { FashionDayEvent, Stylist, Partner, Artist } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -35,7 +35,7 @@ const AdminFashionDayEvents: React.FC = () => {
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin - Gérer les Événements PFD" noIndex />
             <div className="container mx-auto px-6">
-                 <div className="admin-page-header">
+                <div className="admin-page-header">
                     <div>
                         <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                             <ChevronLeftIcon className="w-5 h-5" />
@@ -51,22 +51,22 @@ const AdminFashionDayEvents: React.FC = () => {
 
                 <div className="space-y-8">
                     <SectionWrapper title="Éditions du Perfect Fashion Day">
-                        <ArrayEditor 
+                        <ArrayEditor
                             items={localData.fashionDayEvents}
-                            setItems={newItems => setLocalData(p => ({...p!, fashionDayEvents: newItems}))}
+                            setItems={newItems => setLocalData(p => ({ ...p!, fashionDayEvents: newItems }))}
                             renderItem={(item: FashionDayEvent, updateItem) => (
                                 <div className="space-y-4">
-                                    <FormInput label="Édition (Numéro)" type="number" value={item.edition} onChange={e => updateItem({...item, edition: parseInt(e.target.value, 10)})} />
-                                    <FormInput label="Date (AAAA-MM-JJTHH:MM:SS)" value={item.date} onChange={e => updateItem({...item, date: e.target.value})} />
-                                    <FormInput label="Thème" value={item.theme} onChange={e => updateItem({...item, theme: e.target.value})} />
-                                    <FormTextArea label="Description" value={item.description} onChange={e => updateItem({...item, description: e.target.value})} />
-                                    <FormInput label="Lieu" value={item.location || ''} onChange={e => updateItem({...item, location: e.target.value})} />
-                                    <FormInput label="Promoteur" value={item.promoter || ''} onChange={e => updateItem({...item, promoter: e.target.value})} />
+                                    <FormInput label="Édition (Numéro)" type="number" value={item.edition} onChange={e => updateItem({ ...item, edition: parseInt(e.target.value, 10) })} />
+                                    <FormInput label="Date (AAAA-MM-JJTHH:MM:SS)" value={item.date} onChange={e => updateItem({ ...item, date: e.target.value })} />
+                                    <FormInput label="Thème" value={item.theme} onChange={e => updateItem({ ...item, theme: e.target.value })} />
+                                    <FormTextArea label="Description" value={item.description} onChange={e => updateItem({ ...item, description: e.target.value })} />
+                                    <FormInput label="Lieu" value={item.location || ''} onChange={e => updateItem({ ...item, location: e.target.value })} />
+                                    <FormInput label="Promoteur" value={item.promoter || ''} onChange={e => updateItem({ ...item, promoter: e.target.value })} />
 
                                     <SubArrayEditor
                                         title="Stylistes"
                                         items={item.stylists || []}
-                                        setItems={newStylists => updateItem({...item, stylists: newStylists})}
+                                        setItems={newStylists => updateItem({ ...item, stylists: newStylists })}
                                         getNewItem={() => ({ name: 'Nouveau Styliste', description: '', images: [] })}
                                         getItemTitle={stylist => stylist.name}
                                         renderItem={(stylist: Stylist, updateStylist) => (
@@ -86,13 +86,13 @@ const AdminFashionDayEvents: React.FC = () => {
                                             </>
                                         )}
                                     />
-                                    
-                                     <FormTextArea label="Mannequins Vedettes (séparés par des virgules)" value={(item.featuredModels || []).join(', ')} onChange={e => updateItem({...item, featuredModels: e.target.value.split(',').map((s: string) => s.trim())})} />
-                                     
-                                     <SubArrayEditor
+
+                                    <FormTextArea label="Mannequins Vedettes (séparés par des virgules)" value={(item.featuredModels || []).join(', ')} onChange={e => updateItem({ ...item, featuredModels: e.target.value.split(',').map((s: string) => s.trim()) })} />
+
+                                    <SubArrayEditor
                                         title="Artistes"
                                         items={item.artists || []}
-                                        setItems={newArtists => updateItem({...item, artists: newArtists})}
+                                        setItems={newArtists => updateItem({ ...item, artists: newArtists })}
                                         getNewItem={() => ({ name: 'Nouvel Artiste', description: '', images: [] })}
                                         getItemTitle={artist => artist.name}
                                         renderItem={(artist: Artist, updateArtist) => (
@@ -112,11 +112,11 @@ const AdminFashionDayEvents: React.FC = () => {
                                             </>
                                         )}
                                     />
-                                    
+
                                     <SubArrayEditor
                                         title="Partenaires"
                                         items={item.partners || []}
-                                        setItems={newPartners => updateItem({...item, partners: newPartners})}
+                                        setItems={newPartners => updateItem({ ...item, partners: newPartners })}
                                         getNewItem={() => ({ name: 'Nouveau Partenaire', type: 'Partenaire' })}
                                         getItemTitle={partner => partner.name}
                                         renderItem={(partner: Partner, updatePartner) => (
@@ -146,14 +146,14 @@ const SectionWrapper: React.FC<{ title: string, children: React.ReactNode }> = (
     </div>
 );
 
-const FormInput: React.FC<{label: string, value: any, onChange: any, type?: string}> = ({label, value, onChange, type = "text"}) => (
+const FormInput: React.FC<{ label: string, value: any, onChange: any, type?: string }> = ({ label, value, onChange, type = "text" }) => (
     <div>
         <label className="admin-label">{label}</label>
         <input type={type} value={value} onChange={onChange} className="admin-input" />
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormTextArea: React.FC<{ label: string, value: any, onChange: any }> = ({ label, value, onChange }) => (
     <div>
         <label className="admin-label">{label}</label>
         <textarea value={value} onChange={onChange} rows={4} className="admin-input admin-textarea" />
@@ -188,7 +188,7 @@ const ArrayEditor: React.FC<{
             setItems(items.filter((_, i) => i !== index));
         }
     };
-    
+
     return (
         <div className="space-y-3">
             {items.map((item, index) => (
@@ -209,7 +209,7 @@ const ArrayEditor: React.FC<{
                 </div>
             ))}
             <button type="button" onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
-                <PlusIcon className="w-4 h-4"/> Ajouter une Édition
+                <PlusIcon className="w-4 h-4" /> Ajouter une Édition
             </button>
         </div>
     );

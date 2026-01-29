@@ -2,11 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import {
-    UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
-    ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
-    BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
-    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
-    SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon, MagnifyingGlassIcon, MicrophoneIcon
+    UsersIcon, NewspaperIcon, CalendarDaysIcon, ClipboardDocumentListIcon,
+    ArrowRightOnRectangleIcon,
+    SparklesIcon, BriefcaseIcon, EnvelopeIcon,
+    UserGroupIcon,
+    SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon,
+    CloudIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 import { motion } from 'framer-motion';
@@ -125,6 +126,7 @@ const Admin: React.FC = () => {
     const quickActions = [
         { label: 'Ajouter Mannequin', icon: PlusIcon, link: '/admin/models', color: 'bg-pm-gold' },
         { label: 'Publier Article', icon: NewspaperIcon, link: '/admin/magazine', color: 'bg-blue-600' },
+        { label: 'Dropbox', icon: CloudIcon, link: '/admin/dropbox', color: 'bg-blue-500' },
         { label: 'Mailing List', icon: PaperAirplaneIcon, link: '/admin/mailing', color: 'bg-purple-600' },
         { label: 'Nouvelle Édition PFD', icon: SparklesIcon, link: '/admin/fashion-day-events', color: 'bg-pm-gold' },
     ];
@@ -180,7 +182,7 @@ const Admin: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <StatCard title="Candidatures Casting" value={stats.newCastingApps} icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={stats.newCastingApps > 0} color="gold" />
                         <StatCard title="Demandes Booking" value={stats.newBookingRequests} icon={BriefcaseIcon} link="/admin/bookings" isNew={stats.newBookingRequests > 0} color="blue" />
-                        <StatCard title="Réservations PFD" value={stats.newReservations} icon={StarIcon} link="/admin/fashion-day-reservations" isNew={stats.newReservations > 0} color="purple" />
+                        <StatCard title="Réservations PFD" value={stats.newReservations || 0} icon={StarIcon} link="/admin/fashion-day-reservations" isNew={(stats.newReservations || 0) > 0} color="purple" />
                         <StatCard title="Board Mannequins" value={stats.totalModels} icon={UsersIcon} link="/admin/models" color="gray" />
                     </div>
                 </section>
@@ -324,3 +326,4 @@ const DashboardCard: React.FC<{ title: string; icon: React.ElementType; link: st
 );
 
 export default Admin;
+

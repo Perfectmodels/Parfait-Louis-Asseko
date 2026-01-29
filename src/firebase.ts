@@ -1,2 +1,2 @@
-// Re-export from firebaseConfig for backward compatibility
-export { db } from './firebaseConfig';
+// Re-export from firestoreConfig for backward compatibility
+export { db, storage, auth } from './firestoreConfig';

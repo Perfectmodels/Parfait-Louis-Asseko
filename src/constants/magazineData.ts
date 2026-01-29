@@ -141,7 +141,7 @@ export const articles: Article[] = [
     ],
     date: "2025-10-15",
     excerpt: "L'heure est à la consécration pour Dorcas Moira SAPHOU (PMM) : son précieux sésame pour Top Models FIMA est officiellement validé. Cette étape décisive la propulse sous les feux des projecteurs internationaux, ouvrant la voie à une carrière fulgurante sur les plus grandes scènes de la mode.",
-    featuredImage: "https://i.ibb.co/Kz03gh4/Whats-App-Image-2025-10-09-18-24-47-177f792a.jpg",
+    featuredImage: "https://i.ibb.co/Kz03gh4F/Whats-App-Image-2025-10-09-18-24-47-177f792a.jpg",
     imageUrl: "https://i.ibb.co/Pzm6kdQ/559155589-797412703143073-47429732447466306-n.jpg",
     isFeatured: false,
     publishDate: "2025-10-14T22:00:00.000Z",

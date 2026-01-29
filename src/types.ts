@@ -199,6 +199,8 @@ export interface ApiKeys {
   };
   imgbbApiKey?: string;
   brevoApiKey?: string;
+  dropboxAppKey?: string;
+  dropboxAccessToken?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
