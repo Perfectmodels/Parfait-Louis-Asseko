@@ -1,4 +1,4 @@
-
+import React from 'react';
 
 export interface Model {
   id: string;
@@ -12,13 +12,9 @@ export interface Model {
   gender: 'Homme' | 'Femme';
   location?: string;
   imageUrl: string;
-  weight?: string;
-  hairColor?: string;
-  eyeColor?: string;
-  instagram?: string;
   portfolioImages?: string[];
   distinctions?: ModelDistinction[];
-  isPublic?: boolean;
+  isPublic?: boolean; 
   level?: 'Pro' | 'Débutant';
   measurements: {
     chest: string;
@@ -29,28 +25,16 @@ export interface Model {
   categories: string[];
   experience: string;
   journey: string;
-  quizScores: {
+  quizScores: { 
     [chapterSlug: string]: {
       score: number;
       total: number;
       timesLeft: number;
       timestamp: string;
-    }
+    } 
   };
   lastLogin?: string;
   lastActivity?: string;
-}
-
-export interface GalleryItem {
-  id: string;
-  title: string;
-  category: 'Show' | 'Shooting' | 'Video';
-  date: string;
-  imageUrl: string; // Photo de couverture
-  additionalImages?: string[]; // Photos supplémentaires
-  videoUrl?: string;
-  description?: string;
-  featured?: boolean;
 }
 
 export interface Stylist {
@@ -91,7 +75,7 @@ export interface Service {
   title: string;
   category: 'Services Mannequinat' | 'Services Mode et Stylisme' | 'Services Événementiels';
   description: string;
-  details?: {
+  details?: { 
     title: string;
     points: string[];
   };
@@ -106,11 +90,11 @@ export interface AchievementCategory {
 }
 
 export interface ModelDistinction {
-  name: string;
-  titles: string[];
+    name: string;
+    titles: string[];
 }
 
-export type ArticleContent =
+export type ArticleContent = 
   | { type: 'heading'; level: 2 | 3; text: string }
   | { type: 'paragraph'; text: string }
   | { type: 'quote'; text: string; author?: string }
@@ -230,7 +214,7 @@ export interface CastingApplication {
   id: string;
   submissionDate: string;
   status: CastingApplicationStatus;
-
+  
   firstName: string;
   lastName: string;
   birthDate: string;
@@ -254,12 +238,11 @@ export interface CastingApplication {
   photoPortraitUrl?: string | null;
   photoFullBodyUrl?: string | null;
   photoProfileUrl?: string | null;
-  portfolioPhotos?: string[]; // Array of portfolio photo URLs
 
   scores?: {
     [juryId: string]: JuryScore;
   };
-
+  
   passageNumber?: number;
 }
 
@@ -298,7 +281,7 @@ export interface ForumReply {
 export interface ArticleComment {
   id: string;
   articleSlug: string;
-  authorName: string;
+  authorName: string; 
   createdAt: string;
   content: string;
 }
@@ -335,12 +318,12 @@ export interface ContactMessage {
 }
 
 export interface AIAssistantProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onInsertContent: (content: string) => void;
-  fieldName: string;
-  initialPrompt: string;
-  jsonSchema?: any;
+    isOpen: boolean;
+    onClose: () => void;
+    onInsertContent: (content: string) => void;
+    fieldName: string;
+    initialPrompt: string;
+    jsonSchema?: any;
 }
 
 export interface FAQItem {
@@ -390,44 +373,8 @@ export interface PhotoshootBrief {
 }
 
 export interface NavLink {
-  path: string;
-  label: string;
-  inFooter: boolean;
-  footerLabel?: string;
-}
-
-export interface HeroSlide {
-  id: string;
-  image: string;
-  title: string;
-  subtitle: string;
-  buttonText: string;
-  buttonLink: string;
-  secondButtonText?: string;
-  secondButtonLink?: string;
-  order: number;
-}
-
-export interface FashionDayReservation {
-  id: string;
-  edition: number;
-  name: string;
-  email: string;
-  phone: string;
-  tableType: string; // 'Table 1 (4 pers)', 'Table 2 (6 pers)', etc.
-  guestCount: number;
-  totalPrice?: number;
-  status: 'Nouveau' | 'Confirmé' | 'Refusé';
-  submissionDate: string;
-  notes?: string;
-}
-
-export interface AdminProfile {
-  id: string; // usually 'admin'
-  name: string;
-  username: string;
-  password: string; // In a real app, this should be hashed, but we follow current pattern
-  email: string;
-  phone?: string;
-  avatarUrl?: string; // URL for profile picture
+    path: string;
+    label: string;
+    inFooter: boolean;
+    footerLabel?: string;
 }

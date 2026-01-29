@@ -12,20 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Environment variables - NEVER COMMIT THESE
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Sensitive data
-*.pem
-*.key
-*.cert
-secrets/
-credentials/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -36,19 +22,3 @@ credentials/
 *.njsproj
 *.sln
 *.sw?
-
-# Backups and Exports
-firebase-backup/
-*.json
-!package.json
-!tsconfig.json
-!tsconfig.node.json
-!public/manifest.json
-!manifest.json
-*_backup_*
-*export*
-
-# Generated Data containing secrets
-src/constants/data.ts
-.vercel
-.env*.local
