@@ -53,7 +53,7 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') {
     return;
   }
-  
+
   // Ignore chrome-extension requests
   if (url.protocol === 'chrome-extension:') {
     return;
@@ -92,9 +92,11 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       caches.match(request).then(response => {
         return response || fetch(request).then(networkResponse => {
-          if (networkResponse.type !== 'opaque') {
+          if (networkResponse.type !== 'opaque' && networkResponse.ok) {
+            // Clone BEFORE using the response
+            const responseToCache = networkResponse.clone();
             caches.open(DYNAMIC_CACHE_NAME).then(cache => {
-              cache.put(request, networkResponse.clone());
+              cache.put(request, responseToCache);
             });
           }
           return networkResponse;
@@ -105,7 +107,7 @@ self.addEventListener('fetch', event => {
 });
 
 self.addEventListener('message', event => {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
