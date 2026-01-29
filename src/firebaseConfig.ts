@@ -1,9 +1,6 @@
 
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
-import { getAnalytics } from "firebase/analytics";
-import { getPerformance } from "firebase/performance";
-import { getMessaging } from "firebase/messaging";
 
 const firebaseConfig = {
     apiKey: "AIzaSyC_5TsXHPLloX80SzN9GQaaDL4EPlL-WSc",
@@ -19,9 +16,5 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize services
+// Get a reference to the database service
 export const db = getDatabase(app);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
-export const performance = typeof window !== 'undefined' ? getPerformance(app) : null;
-export const messaging = typeof window !== 'undefined' ? getMessaging(app) : null;
-

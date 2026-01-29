@@ -2,50 +2,46 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Service } from '../types';
 import { 
-    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
-    MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
-    PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon, HeartIcon,
-    UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon
+    UsersIcon, BriefcaseIcon, CameraIcon, AcademicCapIcon, 
+    SparklesIcon, PresentationChartLineIcon, BuildingStorefrontIcon, 
+    HeartIcon
 } from '@heroicons/react/24/outline';
 
 const iconMap: { [key: string]: React.ElementType } = {
-  AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
-  MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
-  PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon,
-  UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon
+  "UsersIcon": UsersIcon,
+  "UserGroupIcon": UsersIcon,
+  "AcademicCapIcon": AcademicCapIcon,
+  "SparklesIcon": SparklesIcon,
+  "CameraIcon": CameraIcon,
+  "BuildingStorefrontIcon": BuildingStorefrontIcon,
 };
 
 const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
     const Icon = iconMap[service.icon] || HeartIcon;
+    
     return (
-        <div className="relative card-base p-8 flex flex-col h-full text-left">
-            {service.isComingSoon && (
-                <span className="absolute top-4 right-4 bg-pm-dark text-pm-gold text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-pm-gold/50">
-                    Bientôt disponible
-                </span>
-            )}
-            <div className="flex-shrink-0 mb-4">
-                <Icon className="w-12 h-12 text-pm-gold" aria-hidden="true" />
+        <Link 
+            to={service.buttonLink}
+            className="group relative flex flex-col h-[450px] p-12 bg-transparent hover:bg-pm-gold/5 transition-all duration-700 border border-white/5"
+        >
+            <div className="flex-shrink-0 mb-10">
+                <Icon className="w-14 h-14 text-pm-gold/30 group-hover:text-pm-gold group-hover:scale-110 transition-all duration-700" strokeWidth={1} />
             </div>
             <div className="flex-grow">
-                <h3 className="text-2xl font-playfair text-pm-gold mb-3">{service.title}</h3>
-                <p className="text-pm-off-white/80 mb-6">{service.description}</p>
+                <h3 className="text-3xl font-playfair font-bold text-white group-hover:text-pm-gold transition-colors duration-700 mb-8 leading-tight">{service.title}</h3>
+                <p className="text-sm text-white/30 leading-relaxed max-w-xs group-hover:text-white/60 transition-colors duration-700">{service.description}</p>
             </div>
-            <div className="mt-auto pt-6">
-                <Link 
-                    to={service.isComingSoon ? '#' : `/services/${service.slug}`}
-                    className={`inline-block px-8 py-3 font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 shadow-md ${
-                        service.isComingSoon 
-                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed border border-gray-600' 
-                        : 'bg-pm-gold text-pm-dark hover:bg-white hover:scale-105 shadow-pm-gold/20'
-                    }`}
-                    aria-disabled={service.isComingSoon}
-                    onClick={e => { if (service.isComingSoon) e.preventDefault(); }}
-                >
-                    {service.isComingSoon ? 'Bientôt' : 'Voir les détails'}
-                </Link>
+            <div className="mt-auto overflow-hidden">
+                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-pm-gold translate-y-0 group-hover:translate-x-4 transition-transform duration-700 block">
+                    Discovery
+                 </span>
             </div>
-        </div>
+            
+            {/* Background Aesthetic */}
+            <div className="absolute -bottom-10 -right-10 text-[15rem] font-playfair font-black opacity-[0.01] group-hover:opacity-[0.03] transition-opacity duration-1000 pointer-events-none italic select-none">
+                {service.title.charAt(0)}
+            </div>
+        </Link>
     );
 };
 

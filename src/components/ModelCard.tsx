@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Model } from '../types';
+import { motion } from 'framer-motion';
 
 interface ModelCardProps {
   model: Model;
@@ -8,56 +9,38 @@ interface ModelCardProps {
 
 const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   return (
-    <Link to={`/mannequins/${model.id}`} className="group block relative overflow-hidden rounded-2xl bg-black/40 border border-white/5 hover:border-pm-gold/30 transition-all duration-500 hover:shadow-2xl hover:shadow-pm-gold/10">
-      <div className="relative aspect-[3/4] overflow-hidden">
-        {/* Main Image */}
-        <img
-          src={model.imageUrl}
-          alt={model.name}
-          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-          loading="lazy"
+    <motion.div 
+      whileHover={{ y: -15 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="group relative h-[650px] overflow-hidden bg-pm-gray border border-white/5"
+    >
+      <Link to={`/mannequins/${model.id}`} className="block h-full">
+        <img 
+            src={model.imageUrl} 
+            alt={model.name} 
+            className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110" 
         />
-
-        {/* Dynamic Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
-
-        {/* Glassmorphism Badge */}
-        <div className="absolute top-4 left-4 z-20">
-          <span className="bg-black/30 backdrop-blur-xl border border-white/10 text-pm-gold text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full">
-            Elite Board
-          </span>
-        </div>
-
-        {/* Content Info */}
-        <div className="absolute bottom-0 left-0 p-6 w-full z-20">
-          <div className="space-y-1 transform group-hover:-translate-y-2 transition-transform duration-500">
-            <h3 className="text-2xl font-playfair font-bold text-white tracking-tight leading-tight group-hover:text-pm-gold transition-colors">
-              {model.name}
-            </h3>
-
-            <div className="flex items-center gap-3 pt-2">
-              <span className="text-xs text-pm-off-white/60 uppercase tracking-widest font-bold">
-                {model.height}
-              </span>
-              <span className="w-1 h-1 rounded-full bg-pm-gold"></span>
-              <span className="text-xs text-pm-off-white/60 uppercase tracking-widest font-bold">
-                {model.gender}
-              </span>
-            </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-transparent to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-700"></div>
+        
+        <div className="absolute bottom-0 left-0 p-10 w-full transform translate-y-6 group-hover:translate-y-0 transition-transform duration-700 ease-[0.16, 1, 0.3, 1]">
+          <div className="overflow-hidden">
+             <motion.h3 
+               className="text-4xl font-playfair font-black text-white tracking-tight"
+             >
+                {model.name}
+             </motion.h3>
           </div>
-
-          {/* Reveal on hover button look-alike */}
-          <div className="mt-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 flex items-center gap-2 text-pm-gold text-[10px] font-black uppercase tracking-[0.3em]">
-            Voir le book <span>→</span>
+          <div className="flex justify-between items-center mt-6 pt-6 border-t border-white/10">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">
+               {model.height} • {model.gender}
+            </span>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 group-hover:text-pm-gold transition-colors">
+                View Profile
+            </span>
           </div>
         </div>
-
-        {/* Shine Animation Effect */}
-        <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
-          <div className="absolute -inset-[100%] bg-gradient-to-tr from-transparent via-white/5 to-transparent top-0 left-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-        </div>
-      </div>
-    </Link>
+      </Link>
+    </motion.div>
   );
 };
 

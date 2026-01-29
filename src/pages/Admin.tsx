@@ -1,83 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import {
-    UsersIcon, NewspaperIcon, CalendarDaysIcon, ClipboardDocumentListIcon,
-    ArrowRightOnRectangleIcon,
-    SparklesIcon, BriefcaseIcon, EnvelopeIcon,
-    UserGroupIcon,
-    SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon,
-    CloudIcon
+    UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
+    ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
+    BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
+    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
+    SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon, MagnifyingGlassIcon, MicrophoneIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
-import { motion } from 'framer-motion';
-import NotificationTester from '../components/NotificationTester';
-
-interface ActiveUser {
-    name: string;
-    role: string;
-    loginTime: number;
-}
-
-
-const getRoleDisplayName = (role: string) => {
-    switch (role) {
-        case 'admin': return 'Administrateur';
-        case 'student': return 'Mannequin Pro';
-        // FIX: Removed 'beginner' role as feature is deprecated.
-        case 'jury': return 'Jury';
-        case 'registration': return 'Enregistrement';
-        default: return role;
-    }
-};
-
-const getRoleColor = (role: string) => {
-    switch (role) {
-        case 'admin': return 'bg-red-500/20 text-red-300 border-red-500/30';
-        case 'student': return 'bg-pm-gold/20 text-pm-gold border-pm-gold/30';
-        // FIX: Removed 'beginner' role color as feature is deprecated.
-        case 'jury': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-        case 'registration': return 'bg-teal-500/20 text-teal-300 border-teal-500/30';
-        default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
-    }
-}
-
-const timeAgo = (date: Date) => {
-    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-    let interval = seconds / 31536000;
-    if (interval > 1) return `il y a ${Math.floor(interval)} ans`;
-    interval = seconds / 2592000;
-    if (interval > 1) return `il y a ${Math.floor(interval)} mois`;
-    interval = seconds / 86400;
-    if (interval > 1) return `il y a ${Math.floor(interval)} jours`;
-    interval = seconds / 3600;
-    if (interval > 1) return `il y a ${Math.floor(interval)} heures`;
-    interval = seconds / 60;
-    if (interval > 1) return `il y a ${Math.floor(interval)} minutes`;
-    return "à l'instant";
-};
-
 
 const Admin: React.FC = () => {
     const navigate = useNavigate();
     const { data } = useData();
-    const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([]);
-
-    useEffect(() => {
-        const checkActivity = () => {
-            const now = Date.now();
-            const fifteenMinutes = 15 * 60 * 1000;
-            const currentActivityJSON = localStorage.getItem('pmm_active_users');
-            const allUsers: ActiveUser[] = currentActivityJSON ? JSON.parse(currentActivityJSON) : [];
-            const recentUsers = allUsers.filter(user => (now - user.loginTime) < fifteenMinutes);
-            setActiveUsers(recentUsers);
-        };
-
-        checkActivity();
-        const interval = setInterval(checkActivity, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
 
     const handleLogout = () => {
         sessionStorage.clear();
@@ -126,37 +61,22 @@ const Admin: React.FC = () => {
     const quickActions = [
         { label: 'Ajouter Mannequin', icon: PlusIcon, link: '/admin/models', color: 'bg-pm-gold' },
         { label: 'Publier Article', icon: NewspaperIcon, link: '/admin/magazine', color: 'bg-blue-600' },
-        { label: 'Dropbox', icon: CloudIcon, link: '/admin/dropbox', color: 'bg-blue-500' },
         { label: 'Mailing List', icon: PaperAirplaneIcon, link: '/admin/mailing', color: 'bg-purple-600' },
         { label: 'Nouvelle Édition PFD', icon: SparklesIcon, link: '/admin/fashion-day-events', color: 'bg-pm-gold' },
     ];
 
     return (
-        <div className="bg-pm-dark text-pm-off-white min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
             <SEO title="Admin Dashboard" noIndex />
-
-            <div className="space-y-10">
-                {/* --- Welcome Header --- */}
-                <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/5 p-8 rounded-3xl border border-white/5 backdrop-blur-xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-20 bg-pm-gold/5 blur-3xl rounded-full -z-10"></div>
+            <div className="container mx-auto px-6 lg:px-8">
+                <header className="admin-page-header">
                     <div>
-                        <p className="text-pm-gold text-[10px] font-black uppercase tracking-[0.3em] mb-2">Centre de Contrôle</p>
-                        <h1 className="text-4xl md:text-5xl font-playfair font-bold text-white leading-tight">
-                            Bonjour, <span className="text-pm-gold">Parfait Asseko</span>
-                        </h1>
-                        <p className="text-pm-off-white/50 text-sm mt-2 flex items-center gap-2">
-                            <CalendarDaysIcon className="w-4 h-4" />
-                            {new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                        </p>
+                        <h1 className="admin-page-title">Tableau de Bord</h1>
+                        <p className="admin-page-subtitle">Gestion complète de la plateforme Perfect Models Management.</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Link to="/" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
-                            Voir le Site
-                        </Link>
-                        <button onClick={handleLogout} className="px-6 py-3 bg-red-600/20 hover:bg-red-600 text-red-100 border border-red-600/30 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2">
-                            <ArrowRightOnRectangleIcon className="w-4 h-4" /> Déconnexion
-                        </button>
-                    </div>
+                    <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
+                        <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
+                    </button>
                 </header>
 
                 <div className="mb-8">
@@ -182,7 +102,7 @@ const Admin: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <StatCard title="Candidatures Casting" value={stats.newCastingApps} icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={stats.newCastingApps > 0} color="gold" />
                         <StatCard title="Demandes Booking" value={stats.newBookingRequests} icon={BriefcaseIcon} link="/admin/bookings" isNew={stats.newBookingRequests > 0} color="blue" />
-                        <StatCard title="Réservations PFD" value={stats.newReservations || 0} icon={StarIcon} link="/admin/fashion-day-reservations" isNew={(stats.newReservations || 0) > 0} color="purple" />
+                        <StatCard title="Réservations PFD" value={stats.newReservations} icon={StarIcon} link="/admin/fashion-day-reservations" isNew={stats.newReservations > 0} color="purple" />
                         <StatCard title="Board Mannequins" value={stats.totalModels} icon={UsersIcon} link="/admin/models" color="gray" />
                     </div>
                 </section>
@@ -281,47 +201,23 @@ const Admin: React.FC = () => {
     );
 };
 
-const StatCard: React.FC<{ title: string; value: number; icon: React.ElementType; link: string; isNew?: boolean; color: string; }> = ({ title, value, icon: Icon, link, isNew, color }) => {
-    const colorSchemes: Record<string, string> = {
-        gold: 'from-pm-gold/10 hover:from-pm-gold/20 border-pm-gold/20 text-pm-gold',
-        blue: 'from-blue-600/10 hover:from-blue-600/20 border-blue-600/20 text-blue-400',
-        purple: 'from-purple-600/10 hover:from-purple-600/20 border-purple-600/20 text-purple-400',
-        gray: 'from-white/5 hover:from-white/10 border-white/10 text-pm-off-white/60',
-    };
-
-    return (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Link to={link} className={`block p-6 bg-gradient-to-br ${colorSchemes[color]} border rounded-3xl transition-all duration-300 relative overflow-hidden group hover:-translate-y-1`}>
-                <div className="flex justify-between items-start mb-4">
-                    <div className="p-3 bg-black/40 rounded-2xl group-hover:bg-pm-dark transition-colors border border-white/5">
-                        <Icon className="w-6 h-6" />
-                    </div>
-                    {isNew && (
-                        <span className="px-3 py-1 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full animate-bounce shadow-xl">
-                            Nouveau
-                        </span>
-                    )}
-                </div>
-                <div>
-                    <p className="text-2xl md:text-3xl font-bold text-white mb-1">{value}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-pm-off-white/40">{title}</p>
-                </div>
-                <div className="absolute -right-4 -bottom-4 opacity-5 transform rotate-12 transition-transform group-hover:scale-110 duration-700">
-                    <Icon className="w-20 h-20" />
-                </div>
-            </Link>
-        </motion.div>
-    );
-};
-
-const DashboardCard: React.FC<{ title: string; icon: React.ElementType; link: string; description: string; }> = ({ title, icon: Icon, link, description }) => (
-    <Link to={link} className="group block bg-black p-6 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-1 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
-        <div className="flex justify-between items-start">
-            <Icon className="w-8 h-8 text-pm-gold mb-4 transition-transform group-hover:scale-110" />
-            <ArrowUpRightIcon className="w-5 h-5 text-pm-off-white/40 transition-all duration-300 group-hover:text-pm-gold group-hover:translate-x-1 group-hover:-translate-y-1" />
-        </div>
-        <h3 className="text-lg font-bold text-pm-off-white group-hover:text-pm-gold transition-colors mb-1">{title}</h3>
-        <p className="text-xs text-pm-off-white/70 leading-relaxed">{description}</p>
+interface DashboardCardProps {
+    title: string;
+    icon: React.ElementType;
+    link: string;
+    description: string;
+    notificationCount?: number;
+}
+const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, description, notificationCount }) => (
+    <Link to={link} className="relative group block bg-black p-8 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-2 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
+        {notificationCount && notificationCount > 0 && (
+            <span className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-pulse-slow">
+                {notificationCount}
+            </span>
+        )}
+        <Icon className="w-12 h-12 text-pm-gold mb-5" />
+        <h2 className="text-xl font-playfair text-pm-off-white group-hover:text-pm-gold transition-colors mb-2">{title}</h2>
+        <p className="text-sm text-pm-off-white/70 leading-relaxed">{description}</p>
     </Link>
 );
 

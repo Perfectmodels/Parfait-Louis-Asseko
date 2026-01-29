@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 interface TimeLeft {
@@ -34,13 +33,12 @@ const CountdownTimer: React.FC<{ targetDate: string }> = ({ targetDate }) => {
     return () => clearTimeout(timer);
   });
   
-  // FIX: Replaced JSX.Element with React.ReactElement to resolve "Cannot find namespace 'JSX'" error.
   const timerComponents: React.ReactElement[] = [];
   const frenchLabels: { [key: string]: string } = {
-    days: 'Jours',
-    hours: 'Heures',
-    minutes: 'Minutes',
-    seconds: 'Secondes',
+    days: 'j',
+    hours: 'h',
+    minutes: 'm',
+    seconds: 's',
   };
 
   Object.keys(frenchLabels).forEach((interval) => {
@@ -48,22 +46,24 @@ const CountdownTimer: React.FC<{ targetDate: string }> = ({ targetDate }) => {
     if (value === undefined) return;
 
     timerComponents.push(
-      <div key={interval} className="flex flex-col items-center bg-black p-4 w-24 rounded-lg border border-pm-gold/20">
-        <span className="text-4xl font-bold text-pm-gold">{String(value).padStart(2, '0')}</span>
-        <span className="text-xs uppercase tracking-wider text-pm-off-white/70">{frenchLabels[interval]}</span>
+      <div key={interval} className="flex items-baseline gap-1">
+        <span className="text-2xl lg:text-3xl font-playfair font-black text-pm-gold tabular-nums leading-none">
+            {String(value).padStart(2, '0')}
+        </span>
+        <span className="text-[8px] uppercase font-bold text-white/30">{frenchLabels[interval]}</span>
       </div>
     );
   });
 
   return (
-    <div>
+    <div className="flex items-center justify-center">
       {timerComponents.length ? (
-        <div className="flex justify-center gap-4 md:gap-8">
+        <div className="flex items-center gap-6 lg:gap-8">
           {timerComponents}
         </div>
       ) : (
         <div className="text-center">
-          <p className="text-2xl font-playfair text-pm-gold">L'événement a commencé !</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-pm-gold">Événement en cours</p>
         </div>
       )}
     </div>

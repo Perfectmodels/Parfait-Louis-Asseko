@@ -1,100 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://perfectmodels.ga/</loc>
+        <loc>https://www.perfectmodels.ga/#/</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/agence</loc>
+        <loc>https://www.perfectmodels.ga/#/agence</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/mannequins</loc>
+        <loc>https://www.perfectmodels.ga/#/mannequins</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/fashion-day</loc>
+        <loc>https://www.perfectmodels.ga/#/fashion-day</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/magazine</loc>
+        <loc>https://www.perfectmodels.ga/#/magazine</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/services</loc>
+        <loc>https://www.perfectmodels.ga/#/services</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/contact</loc>
+        <loc>https://www.perfectmodels.ga/#/contact</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/casting</loc>
+        <loc>https://www.perfectmodels.ga/#/casting</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/privacy-policy</loc>
+        <loc>https://www.perfectmodels.ga/#/privacy-policy</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
     <url>
-        <loc>https://perfectmodels.ga/terms-of-use</loc>
+        <loc>https://www.perfectmodels.ga/#/terms-of-use</loc>
         <lastmod>2024-07-25</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
-    </url>
-    <url>
-        <loc>https://perfectmodels.ga/galerie</loc>
-        <lastmod>2026-01-16</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
     </url>
     <!-- Mannequins -->
-    <url><loc>https://perfectmodels.ga/mannequins/noemi-kim</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://perfectmodels.ga/mannequins/aj-caramela</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://perfectmodels.ga/mannequins/yann-aubin</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/mannequins/noemi-kim</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/mannequins/aj-caramela</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/mannequins/yann-aubin</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
     <!-- Articles -->
-    <url><loc>https://perfectmodels.ga/magazine/noemi-kim-reine-des-podiums</loc><lastmod>2024-08-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://perfectmodels.ga/magazine/yann-aubin-la-force-tranquille</loc><lastmod>2024-09-02</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://perfectmodels.ga/magazine/aj-caramela-visage-de-lannee</loc><lastmod>2024-09-10</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://perfectmodels.ga/magazine/retour-sur-le-perfect-fashion-day</loc><lastmod>2025-02-10</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://perfectmodels.ga/magazine/l-audace-du-sur-mesure-masculin</loc><lastmod>2025-03-28</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://perfectmodels.ga/magazine/devenir-mannequin-les-cles-du-succes</loc><lastmod>2025-05-05</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/magazine/noemi-kim-reine-des-podiums</loc><lastmod>2024-08-12</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/magazine/yann-aubin-la-force-tranquille</loc><lastmod>2024-09-02</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/magazine/aj-caramela-visage-de-lannee</loc><lastmod>2024-09-10</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/magazine/retour-sur-le-perfect-fashion-day</loc><lastmod>2025-02-10</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/magazine/l-audace-du-sur-mesure-masculin</loc><lastmod>2025-03-28</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/magazine/devenir-mannequin-les-cles-du-succes</loc><lastmod>2025-05-05</lastmod><changefreq>yearly</changefreq><priority>0.8</priority></url>
     <!-- Services -->
-    <url><loc>https://perfectmodels.ga/services/casting-mannequins</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/booking-mannequins</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/mannequins-pour-defiles</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/mannequins-publicite-audiovisuel</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/mannequins-photo</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/mannequins-figurants</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/formation-mannequins</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/conseil-image-style</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/creation-tenues-sur-mesure</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/location-tenues-mode</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/styling-conseil-mode</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/organisation-defiles-mode</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/conseil-creatif-branding</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/shooting-mode-professionnel</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/accessoires-lookbook</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/animation-shows-defiles</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/presentateurs-hotes</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/promotion-communication</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://perfectmodels.ga/services/partenariat-marques</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/casting-mannequins</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/booking-mannequins</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/mannequins-pour-defiles</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/mannequins-publicite-audiovisuel</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/mannequins-photo</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/mannequins-figurants</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/formation-mannequins</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/conseil-image-style</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/creation-tenues-sur-mesure</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/location-tenues-mode</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/styling-conseil-mode</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/organisation-defiles-mode</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/conseil-creatif-branding</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/shooting-mode-professionnel</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/accessoires-lookbook</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/animation-shows-defiles</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/presentateurs-hotes</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/promotion-communication</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://www.perfectmodels.ga/#/services/partenariat-marques</loc><lastmod>2024-07-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>

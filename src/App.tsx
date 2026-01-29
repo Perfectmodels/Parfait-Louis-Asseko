@@ -1,7 +1,6 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
-import { Analytics } from "@vercel/analytics/react";
-import { HashRouter, Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
@@ -22,6 +21,8 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Services = lazy(() => import('./pages/Services'));
 const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
+const CastingForm = lazy(() => import('./pages/CastingForm'));
+const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
 const Login = lazy(() => import('./pages/Login'));
 const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
@@ -33,8 +34,6 @@ const Chat = lazy(() => import('./pages/Chat'));
 const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
 const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
 const LiveChat = lazy(() => import('./pages/LiveChat'));
-const Gallery = lazy(() => import('./pages/Gallery'));
-import BackToTop from './components/ui/BackToTop';
 
 
 // Admin Pages
@@ -46,8 +45,6 @@ const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
 const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
 const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
 const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
-const AdminFashionDayReservations = lazy(() => import('./pages/AdminFashionDayReservations'));
-const AdminProfilePage = lazy(() => import('./pages/AdminProfile'));
 // FIX: Corrected import paths for Admin pages to resolve module not found errors.
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
 const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
@@ -63,8 +60,6 @@ const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
-const AdminGallery = lazy(() => import('./pages/AdminGallery'));
-const AdminDropbox = lazy(() => import('./pages/AdminDropbox'));
 
 
 // Role-specific pages
@@ -103,7 +98,7 @@ const pageVariants = {
     }
 };
 
-const pageTransition: any = {
+const pageTransition = {
     type: "tween",
     ease: "anticipate",
     duration: 0.5
@@ -134,13 +129,12 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/services" element={<Services />} />
                     <Route path="/services/:slug" element={<ServiceDetail />} />
                     <Route path="/casting" element={<Casting />} />
-                    <Route path="/casting-formulaire" element={<Navigate to="/contact?subject=model-application" replace />} />
-                    <Route path="/fashion-day-application" element={<Navigate to="/contact?subject=pfd-application" replace />} />
+                    <Route path="/casting-formulaire" element={<CastingForm />} />
+                    <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
                     <Route path="/chat" element={<Chat />} />
-                    <Route path="/galerie" element={<Gallery />} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -164,7 +158,6 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/casting-results" element={<ProtectedRoute role="admin"><AdminCastingResults /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-applications" element={<ProtectedRoute role="admin"><AdminFashionDay /></ProtectedRoute>} />
                     <Route path="/admin/fashion-day-events" element={<ProtectedRoute role="admin"><AdminFashionDayEvents /></ProtectedRoute>} />
-                    <Route path="/admin/fashion-day-reservations" element={<ProtectedRoute role="admin"><AdminFashionDayReservations /></ProtectedRoute>} />
                     <Route path="/admin/news" element={<ProtectedRoute role="admin"><AdminNews /></ProtectedRoute>} />
                     <Route path="/admin/classroom-progress" element={<ProtectedRoute role="admin"><AdminClassroomProgress /></ProtectedRoute>} />
                     <Route path="/admin/model-access" element={<ProtectedRoute role="admin"><AdminModelAccess /></ProtectedRoute>} />
@@ -180,10 +173,6 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/analyser-image" element={<ProtectedRoute role="admin"><ImageAnalysis /></ProtectedRoute>} />
                     <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
                     <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
-                    <Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
-                    <Route path="/admin/dropbox" element={<ProtectedRoute role="admin"><AdminDropbox /></ProtectedRoute>} />
-                    <Route path="/admin/dropbox-callback" element={<ProtectedRoute role="admin"><AdminDropbox /></ProtectedRoute>} />
-                    <Route path="/admin/profile" element={<ProtectedRoute role="admin"><AdminProfilePage /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>
@@ -241,7 +230,6 @@ const AppContent: React.FC = () => {
                 <AnimatedRoutes />
             </Suspense>
             <AIAssistantIcon />
-            <BackToTop />
         </Layout>
     );
 }
@@ -258,7 +246,6 @@ const App: React.FC = () => {
                 <ScrollToTop />
                 <AppContent />
                 <PWAInstaller />
-                <Analytics />
             </HashRouter>
         </DataProvider>
     );

@@ -4,7 +4,7 @@ import { useRealtimeDB as useDataStore, AppData } from '../hooks/useRealtimeDB';
 
 interface DataContextType {
   data: AppData | null;
-  saveData: (newData: AppData) => Promise<void>;
+  saveData: (newData: AppData) => void;
   isInitialized: boolean;
   addDocument: (path: string, item: any) => Promise<string | null>;
   updateDocument: (path: string, id: string, updates: any) => Promise<void>;

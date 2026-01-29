@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
-import {
+import { NavLink, useLocation, Link } from 'react-router-dom';
+import { 
     HomeIcon, UsersIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
@@ -9,17 +9,15 @@ import {
     BookOpenIcon,
     PhotoIcon,
     MicrophoneIcon,
-    PaperAirplaneIcon, // FIX: Added import for PaperAirplaneIcon
-    UserIcon,
-    SignalIcon,
-    MagnifyingGlassIcon
+    PaperAirplaneIcon
 } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface NavItemProps {
-    to: string;
-    icon: React.ElementType;
-    label: string;
-    onClick?: () => void;
+  to: string;
+  icon: React.ElementType;
+  label: string;
+  onClick?: () => void;
 }
 
 const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, onClick }) => (
@@ -28,96 +26,68 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, onClick }) => 
         end={to === '/admin'}
         onClick={onClick}
         className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${isActive
-                ? 'bg-pm-gold text-pm-dark'
-                : 'text-pm-off-white/70 hover:bg-pm-gold/10 hover:text-pm-off-white'
+            `flex items-center gap-4 px-4 py-3 rounded-lg text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                isActive
+                    ? 'bg-pm-gold text-pm-dark shadow-xl shadow-pm-gold/10'
+                    : 'text-white/40 hover:bg-white/5 hover:text-white'
             }`
         }
     >
-        <Icon className="w-5 h-5" />
+        <Icon className="w-5 h-5 shrink-0" />
         <span className="truncate">{label}</span>
     </NavLink>
 );
 
 const navSections = [
     {
-        title: 'Principal',
-        icon: HomeIcon,
+        title: 'Core',
         links: [
-            { to: '/admin', icon: HomeIcon, label: 'Tableau de Bord' },
-            { to: '/admin/settings', icon: Cog6ToothIcon, label: 'Paramètres Généraux' },
-        ]
-    },
-    {
-        title: 'Gestion Board',
-        icon: UserGroupIcon,
-        links: [
-            { to: '/admin/models', icon: UsersIcon, label: 'Mannequins' },
+            { to: '/admin', icon: HomeIcon, label: 'Dashboard' },
+            { to: '/admin/models', icon: UsersIcon, label: 'Models' },
             { to: '/admin/magazine', icon: NewspaperIcon, label: 'Magazine' },
-            { to: '/admin/gallery', icon: PhotoIcon, label: 'Galerie Photos' },
-            { to: '/admin/news', icon: PresentationChartLineIcon, label: 'Actualités Site' },
+            { to: '/admin/bookings', icon: BriefcaseIcon, label: 'Bookings' },
         ]
     },
     {
-        title: 'Candidatures & Booking',
-        icon: ClipboardDocumentListIcon,
+        title: 'Recruitment',
         links: [
-            { to: '/admin/casting-applications', icon: ClipboardDocumentListIcon, label: 'Casting (Brut)' },
-            { to: '/admin/casting-results', icon: ClipboardDocumentCheckIcon, label: 'Sélections Casting' },
-            { to: '/admin/bookings', icon: BriefcaseIcon, label: 'Demandes Booking' },
+            { to: '/admin/casting-applications', icon: ClipboardDocumentListIcon, label: 'Casting Apps' },
+            { to: '/admin/casting-results', icon: ClipboardDocumentCheckIcon, label: 'Grading' },
+            { to: '/admin/fashion-day-applications', icon: SparklesIcon, label: 'PFD Apps' },
         ]
     },
     {
-        title: 'Perfect Fashion Day',
-        icon: SparklesIcon,
+        title: 'AI Lab',
         links: [
-            { to: '/admin/fashion-day-events', icon: CalendarDaysIcon, label: 'Éditions PFD' },
-            { to: '/admin/fashion-day-applications', icon: SparklesIcon, label: 'Candidatures PFD' },
-            { to: '/admin/fashion-day-reservations', icon: UserGroupIcon, label: 'Liste des Réservations' },
+            { to: '/admin/generer-image', icon: SparklesIcon, label: 'Image Gen' },
+            { to: '/admin/analyser-image', icon: PhotoIcon, label: 'Analysis' },
+            { to: '/admin/live-chat', icon: MicrophoneIcon, label: 'Voice AI' },
         ]
     },
     {
-        title: 'PMM Classroom',
-        icon: AcademicCapIcon,
+        title: 'Operations',
         links: [
-            { to: '/admin/classroom', icon: BookOpenIcon, label: 'Gestion Cours' },
-            { to: '/admin/classroom-progress', icon: AcademicCapIcon, label: 'Suivi Étudiants' },
-            { to: '/admin/model-access', icon: KeyIcon, label: 'Comptes & Accès' },
-            { to: '/admin/absences', icon: CalendarIcon, label: 'Registre Présence' },
-            { to: '/admin/payments', icon: CurrencyDollarIcon, label: 'Comptabilité' },
-            { to: '/admin/artistic-direction', icon: PaintBrushIcon, label: 'Direction Artistique' },
+            { to: '/admin/classroom', icon: BookOpenIcon, label: 'Classroom' },
+            { to: '/admin/absences', icon: CalendarIcon, label: 'Attendance'},
+            { to: '/admin/payments', icon: CurrencyDollarIcon, label: 'Finance' },
+            { to: '/admin/artistic-direction', icon: PaintBrushIcon, label: 'Creative' },
         ]
     },
     {
-        title: 'Communication',
-        icon: EnvelopeIcon,
+        title: 'System',
         links: [
-            { to: '/admin/messages', icon: EnvelopeIcon, label: 'Messages Contact' },
-            { to: '/admin/comments', icon: ChatBubbleLeftRightIcon, label: 'Modération Blog' },
-            { to: '/admin/mailing', icon: PaperAirplaneIcon, label: 'Mailing List' },
-            { to: '/admin/recovery-requests', icon: ExclamationTriangleIcon, label: 'Récupération' },
-        ]
-    },
-    {
-        title: 'Outils Smart AI',
-        icon: SignalIcon,
-        links: [
-            { to: '/admin/generer-image', icon: PaintBrushIcon, label: 'Générateur Image' },
-            { to: '/admin/analyser-image', icon: MagnifyingGlassIcon, label: 'Vision IA' },
-            { to: '/admin/live-chat', icon: MicrophoneIcon, label: 'Support Vocal IA' },
+            { to: '/admin/mailing', icon: PaperAirplaneIcon, label: 'Mailing' },
+            { to: '/admin/settings', icon: Cog6ToothIcon, label: 'Site Config' },
         ]
     }
 ];
 
 const Sidebar: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => (
-    <nav className="flex flex-col gap-y-8">
+    <nav className="flex flex-col gap-y-10">
         {navSections.map(section => (
-            <div key={section.title} className="group/section">
-                <div className="flex items-center gap-2 px-3 mb-3 opacity-40 group-hover/section:opacity-100 transition-opacity">
-                    <section.icon className="w-3 h-3 text-pm-gold" />
-                    <h3 className="text-[10px] font-black uppercase text-pm-off-white tracking-[0.2em]">{section.title}</h3>
-                </div>
-                <div className="space-y-0.5 ml-1 border-l border-white/5 pl-2">
+            <div key={section.title}>
+                <h3 className="px-4 text-[9px] font-black uppercase text-pm-gold/40 tracking-[0.4em] mb-4">{section.title}</h3>
+                <div className="space-y-1">
                     {section.links.map(link => <NavItem key={link.to} {...link} onClick={onLinkClick} />)}
                 </div>
             </div>
@@ -130,68 +100,61 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const location = useLocation();
 
     return (
-        <div className="min-h-screen bg-pm-dark text-pm-off-white flex">
-            {/* --- Sidebar for Desktop --- */}
-            <aside className="hidden lg:flex lg:flex-col lg:w-72 fixed top-0 left-0 h-full bg-black/40 backdrop-blur-3xl border-r border-white/5 p-6 z-50">
-                <div className="flex items-center gap-4 mb-10 px-2">
-                    <div className="w-10 h-10 bg-pm-gold rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                        <img src="/logo.jpg" alt="Logo" className="w-6 h-6 object-contain brightness-0" />
-                    </div>
-                    <div>
-                        <h1 className="font-playfair text-lg text-white font-bold leading-none">Perfect Models</h1>
-                        <p className="text-[10px] text-pm-gold uppercase tracking-[0.2em] font-black mt-1">Plateforme Admin</p>
-                    </div>
+        <div className="min-h-screen bg-[#050505] text-pm-off-white flex">
+            {/* Sidebar for Desktop */}
+            <aside className="hidden lg:flex lg:flex-col lg:w-72 fixed top-0 left-0 h-full bg-pm-dark border-r border-white/5 p-8 overflow-y-auto no-scrollbar">
+                <div className="flex items-center gap-4 mb-16 px-4">
+                    <img src="https://i.ibb.co/fVBxPNTP/T-shirt.png" alt="Logo" className="h-10 w-auto" />
+                    <h1 className="font-playfair text-xl font-black text-white italic">Elite Panel</h1>
                 </div>
-
-                <div className="overflow-y-auto flex-grow pr-2 -mr-2 scrollbar-hide">
-                    <Sidebar />
-                </div>
-
-                {/* Sidebar Footer - User Profile */}
-                <div className="mt-8 pt-6 border-t border-white/5">
-                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5">
-                        <div className="w-10 h-10 rounded-full bg-pm-gold/20 flex items-center justify-center text-pm-gold border border-pm-gold/20">
-                            <UserIcon className="w-5 h-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-white truncate">Administrateur</p>
-                            <p className="text-[10px] text-pm-off-white/40 uppercase tracking-widest font-black">Accès Total</p>
-                        </div>
-                        <Link to="/admin" className="p-2 hover:bg-white/10 rounded-lg text-pm-off-white/40 hover:text-pm-gold transition-all">
-                            <Cog6ToothIcon className="w-5 h-5" />
-                        </Link>
-                    </div>
-                </div>
+                <Sidebar />
             </aside>
 
-            {/* --- Mobile Sidebar --- */}
-            <div className={`fixed inset-0 z-[100] flex lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
-                <div onClick={() => setSidebarOpen(false)} className={`fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} />
-                <div className={`relative flex-1 flex flex-col max-w-xs w-full bg-pm-dark border-r border-pm-gold/10 transform transition-transform duration-500 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <div className="p-6 flex-grow overflow-y-auto">
-                        <div className="flex items-center justify-between mb-10">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-pm-gold rounded-lg flex items-center justify-center">
-                                    <img src="/logo.jpg" alt="Logo" className="w-5 h-5 object-contain brightness-0" />
-                                </div>
-                                <h1 className="font-playfair text-lg text-pm-gold">Admin Panel</h1>
+            {/* Mobile Sidebar */}
+            <AnimatePresence>
+                {sidebarOpen && (
+                    <>
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSidebarOpen(false)} 
+                            className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm lg:hidden"
+                        />
+                        <motion.div 
+                            initial={{ x: "-100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "-100%" }}
+                            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                            className="fixed inset-y-0 left-0 z-50 w-72 bg-pm-dark border-r border-white/5 p-8 overflow-y-auto lg:hidden"
+                        >
+                            <div className="flex items-center justify-between mb-16 px-4">
+                                <h1 className="font-playfair text-xl font-black italic">Elite Panel</h1>
+                                <button onClick={() => setSidebarOpen(false)} className="text-white/40 hover:text-white"><XMarkIcon className="w-6 h-6" /></button>
                             </div>
-                            <button onClick={() => setSidebarOpen(false)} aria-label="Fermer le menu" className="text-pm-off-white/70 p-1"><XMarkIcon className="h-6 w-6" /></button>
-                        </div>
-                        <Sidebar onLinkClick={() => setSidebarOpen(false)} />
-                    </div>
-                </div>
-            </div>
+                            <Sidebar onLinkClick={() => setSidebarOpen(false)} />
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
 
-            {/* --- Main Content --- */}
+            {/* Main Content */}
             <div className="flex flex-col flex-1 lg:pl-72">
-                <header className="sticky top-0 z-40 lg:hidden flex h-16 items-center gap-x-6 border-b border-white/5 bg-pm-dark/80 backdrop-blur-md px-4">
-                    <button onClick={() => setSidebarOpen(true)} aria-label="Ouvrir le menu" className="p-2 text-pm-off-white/80">
-                        <Bars3Icon className="h-6 w-6" />
-                    </button>
-                    <div className="flex-1 text-sm font-bold uppercase tracking-widest text-pm-gold">{location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Tableau de bord'}</div>
+                <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/5 bg-pm-dark/60 backdrop-blur-xl px-6 sm:px-10">
+                    <div className="flex items-center gap-6">
+                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-pm-off-white/80">
+                            <Bars3Icon className="w-6 h-6" />
+                        </button>
+                        <div className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">
+                            {location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Dashboard'}
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Link to="/" className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 hover:text-pm-gold transition-colors">Public Site</Link>
+                        <div className="w-8 h-8 rounded-full bg-pm-gold/20 border border-pm-gold/40 flex items-center justify-center text-pm-gold text-[10px] font-bold">AD</div>
+                    </div>
                 </header>
-                <main className="flex-1 p-4 lg:p-10">
+                <main className="p-6 sm:p-10 lg:p-16">
                     {children}
                 </main>
             </div>
