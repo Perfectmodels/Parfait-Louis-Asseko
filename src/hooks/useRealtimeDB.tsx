@@ -3,7 +3,7 @@ import { db } from '../realtimedbConfig'; // Changed to Realtime DB config
 import { ref, onValue, set, update, remove, push } from 'firebase/database'; // Changed for Realtime DB
 import { initialData } from '../constants/data';
 import logger from '../utils/logger';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation, AdminProfile, GalleryItem } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminProfile, GalleryItem } from '../types';
 
 // Initial data imports remain the same
 import {
@@ -11,7 +11,6 @@ import {
     siteConfig as initialSiteConfig,
     contactInfo as initialContactInfo,
     siteImages as initialSiteImages,
-    heroSlides as initialHeroSlides,
     apiKeys as initialApiKeys,
     castingApplications as initialCastingApplications,
     fashionDayApplications as initialFashionDayApplications,
@@ -37,8 +36,7 @@ import {
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
-    faqData as initialFaqData,
-    fashionDayReservations as initialFashionDayReservations
+    faqData as initialFaqData
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
@@ -63,7 +61,6 @@ export interface AppData {
     courseData: Module[];
     contactInfo: ContactInfo;
     siteImages: SiteImages;
-    heroSlides: HeroSlide[];
     apiKeys: ApiKeys;
     castingApplications: CastingApplication[];
     fashionDayApplications: FashionDayApplication[];
@@ -80,7 +77,6 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
-    fashionDayReservations: FashionDayReservation[];
     adminProfile: AdminProfile;
     gallery: GalleryItem[];
 }
@@ -96,7 +92,6 @@ export const useRealtimeDB = () => {
         siteConfig: initialSiteConfig,
         contactInfo: initialContactInfo,
         siteImages: initialSiteImages,
-        heroSlides: initialHeroSlides,
         apiKeys: initialApiKeys,
         castingApplications: initialCastingApplications,
         fashionDayApplications: initialFashionDayApplications,
@@ -125,7 +120,6 @@ export const useRealtimeDB = () => {
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
         faqData: initialFaqData,
-        fashionDayReservations: initialFashionDayReservations,
         adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
         gallery: []
     }), []);
@@ -160,15 +154,29 @@ export const useRealtimeDB = () => {
         });
     };
 
+    // Helper function to deduplicate fashionDayEvents by edition
+    const deduplicateFashionDayEvents = (arr: any[]): any[] => {
+        const seen = new Set();
+        return arr.filter(event => {
+            if (!event || typeof event.edition === 'undefined') return false;
+            if (seen.has(event.edition)) return false;
+            seen.add(event.edition);
+            return true;
+        });
+    };
+
     // Helper function to normalize data structure from Firebase
     const normalizeData = (dbData: any): AppData => {
         // Convert fashionDayEvents and normalize nested arrays
-        const fashionDayEvents = deduplicateById(convertToArray(dbData.fashionDayEvents).map((event: any) => ({
+        const fashionDayEventsArray = convertToArray(dbData.fashionDayEvents).map((event: any) => ({
             ...event,
             stylists: deduplicateById(convertToArray(event.stylists)),
             partners: deduplicateById(convertToArray(event.partners)),
             artists: deduplicateById(convertToArray(event.artists)),
-        })));
+        }));
+
+        // Deduplicate by edition number
+        const fashionDayEvents = deduplicateFashionDayEvents(fashionDayEventsArray);
 
         // Convert agencyAchievements and normalize nested items array
         const agencyAchievements = deduplicateById(convertToArray(dbData.agencyAchievements).map((achievement: any) => ({
@@ -176,10 +184,21 @@ export const useRealtimeDB = () => {
             items: convertToArray(achievement.items),
         })));
 
+        // Process navLinks and filter out Accueil and Fashion Day
+        const processedNavLinks = deduplicateNavLinks(convertToArray(dbData.navLinks));
+        const filteredNavLinks = processedNavLinks.filter(link => {
+            const shouldExclude = link && (link.path === '/' || link.path === '/fashion-day');
+            if (shouldExclude) {
+                console.log('🚫 Filtering out:', link.label, link.path);
+            }
+            return !shouldExclude;
+        });
+        console.log('✅ Final navLinks:', filteredNavLinks.map(l => l?.label).join(', '));
+
         return {
             ...dbData,
             models: deduplicateById(convertToArray(dbData.models)),
-            navLinks: deduplicateNavLinks(convertToArray(dbData.navLinks)),
+            navLinks: filteredNavLinks,
             fashionDayEvents,
             agencyPartners: deduplicateById(convertToArray(dbData.agencyPartners)),
             agencyServices: deduplicateById(convertToArray(dbData.agencyServices)),
@@ -188,7 +207,6 @@ export const useRealtimeDB = () => {
             testimonials: deduplicateById(convertToArray(dbData.testimonials)),
             articles: deduplicateById(convertToArray(dbData.articles)),
             courseData: deduplicateById(convertToArray(dbData.courseData)),
-            heroSlides: deduplicateById(convertToArray(dbData.heroSlides)),
             castingApplications: deduplicateById(convertToArray(dbData.castingApplications)),
             fashionDayApplications: deduplicateById(convertToArray(dbData.fashionDayApplications)),
             newsItems: deduplicateById(convertToArray(dbData.newsItems)),
@@ -204,7 +222,6 @@ export const useRealtimeDB = () => {
             absences: deduplicateById(convertToArray(dbData.absences)),
             monthlyPayments: deduplicateById(convertToArray(dbData.monthlyPayments)),
             photoshootBriefs: deduplicateById(convertToArray(dbData.photoshootBriefs)),
-            fashionDayReservations: deduplicateById(convertToArray(dbData.fashionDayReservations)),
             gallery: deduplicateById(convertToArray(dbData.gallery)),
             agencyTimeline: deduplicateById(convertToArray(dbData.agencyTimeline)),
             // Handle nested objects within agencyInfo

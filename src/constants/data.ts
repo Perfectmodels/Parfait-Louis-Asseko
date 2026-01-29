@@ -6,15 +6,15 @@ export const siteConfig = {
 };
 
 export const navLinks: NavLink[] = [
-  { path: '/', label: 'Accueil', inFooter: true },
+  { path: '/', label: 'Accueil', inFooter: true }, // Hidden from header, shown in footer
   { path: '/agence', label: 'Agence', inFooter: true },
   { path: '/mannequins', label: 'Mannequins', inFooter: true },
-  { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' },
+  { path: '/fashion-day', label: 'PFD', inFooter: true, footerLabel: 'Perfect Fashion Day' }, // Hidden from header
   { path: '/magazine', label: 'Magazine', inFooter: true },
   { path: '/services', label: 'Services', inFooter: true },
   { path: '/contact', label: 'Contact', inFooter: true },
   { path: '/formations', label: 'Classroom', inFooter: false },
-];
+].filter(link => !['/', '/fashion-day'].includes(link.path)); // Filter out Accueil and Fashion Day from header
 
 export const socialLinks: SocialLinks = {
   facebook: 'https://www.facebook.com/PerfectModels241',
