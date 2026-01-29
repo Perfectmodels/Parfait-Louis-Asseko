@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfect Models Management | Elite Agency</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/fVBxPNTP/T-shirt.png" />
-    
+
     <!-- Google Fonts: Luxury Pairing -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Montserrat:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Montserrat:wght@200;300;400;500;700;900&display=swap"
+        rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -46,40 +49,22 @@
             }
         }
     </script>
-    <style type="text/tailwindcss">
-        @layer base {
-            body {
-                @apply bg-pm-dark text-pm-off-white font-montserrat antialiased overflow-x-hidden;
-            }
-            h1, h2, h3 { @apply font-playfair; }
+    <style>
+        /* Custom scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 4px;
         }
-        @layer components {
-            .gold-gradient-text {
-                @apply bg-clip-text text-transparent bg-gradient-to-r from-pm-gold via-pm-gold-light to-pm-gold;
-            }
-            .btn-premium {
-                @apply relative overflow-hidden px-10 py-4 font-bold uppercase tracking-[0.3em] text-[10px] transition-all duration-700 border border-pm-gold/40 hover:border-pm-gold hover:text-pm-dark z-10;
-            }
-            .btn-premium::before {
-                content: '';
-                @apply absolute inset-0 bg-pm-gold translate-y-full transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] -z-10;
-            }
-            .btn-premium:hover::before {
-                @apply translate-y-0;
-            }
-            .section-label {
-                @apply text-pm-gold text-[10px] font-black tracking-[0.5em] uppercase mb-6 block;
-            }
-            .page-container {
-                @apply max-w-[1800px] mx-auto px-6 sm:px-12 lg:px-20 py-32;
-            }
+
+        ::-webkit-scrollbar-track {
+            background: #0A0A0A;
         }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #0A0A0A; }
-        ::-webkit-scrollbar-thumb { background: #D4AF37; }
+
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+        }
     </style>
 
-<script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",
@@ -97,8 +82,10 @@
 }
 </script>
 </head>
+
 <body>
     <div id="root"></div>
     <script type="module" src="index.tsx"></script>
 </body>
+
 </html>
