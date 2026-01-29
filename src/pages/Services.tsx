@@ -1,10 +1,56 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { Service } from '../types';
-import ServiceCard from '../components/ServiceCard';
-import ParallaxHero from '../components/ui/ParallaxHero';
-import FadeIn from '../components/ui/FadeIn';
+import { 
+    AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
+    MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
+    PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon, HeartIcon, 
+    UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon, ClipboardDocumentListIcon
+} from '@heroicons/react/24/outline';
+
+
+const iconMap: { [key: string]: React.ElementType } = {
+  AcademicCapIcon, CameraIcon, UserGroupIcon, SparklesIcon, ClipboardDocumentCheckIcon, 
+  MegaphoneIcon, IdentificationIcon, ScissorsIcon, PaintBrushIcon, CalendarDaysIcon, 
+  PresentationChartLineIcon, ChatBubbleLeftRightIcon, VideoCameraIcon, PhotoIcon, StarIcon,
+  UsersIcon, BriefcaseIcon, MicrophoneIcon, BuildingStorefrontIcon, ClipboardDocumentListIcon
+};
+
+const ServiceListItem: React.FC<{ service: Service }> = ({ service }) => {
+    const Icon = iconMap[service.icon] || HeartIcon;
+
+    return (
+        <div className="bg-black border border-pm-gold/20 rounded-lg p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start transform transition-all duration-300 hover:border-pm-gold hover:shadow-2xl hover:shadow-pm-gold/10">
+            <div className="flex-shrink-0 bg-pm-dark p-4 rounded-full border border-pm-gold/30 mt-1">
+                <Icon className="w-10 h-10 text-pm-gold" />
+            </div>
+            <div className="flex-grow">
+                <h3 className="text-3xl font-playfair text-pm-gold mb-3">{service.title}</h3>
+                <p className="text-pm-off-white/80 leading-relaxed mb-4">{service.description}</p>
+                
+                {service.details && (
+                    <div className="mb-6 mt-5 bg-pm-dark/50 p-4 rounded-md border-l-4 border-pm-gold">
+                        <h4 className="font-bold text-pm-off-white mb-2">{service.details.title}</h4>
+                        <ul className="list-disc list-inside space-y-1 text-pm-off-white/70">
+                            {service.details.points.map((point, index) => (
+                                <li key={index}>{point}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                
+                <Link 
+                    to={service.buttonLink}
+                    className="inline-block px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-lg shadow-pm-gold/20"
+                >
+                    {service.buttonText}
+                </Link>
+            </div>
+        </div>
+    );
+};
 
 const Services: React.FC = () => {
     const { data } = useData();
@@ -25,77 +71,33 @@ const Services: React.FC = () => {
         'Services Événementiels'
     ];
 
-    const [activeCategory, setActiveCategory] = useState<string>(categoryOrder[0]);
-
-    if (!data) return <div className="min-h-screen bg-pm-dark"></div>;
-
     return (
-        <div className="bg-pm-dark text-pm-off-white min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white">
             <SEO
                 title="Nos Services | Accompagnement & Production"
                 description="Découvrez l'ensemble des services conçus pour répondre aux besoins des créateurs, marques, et particuliers. Réservez directement depuis notre site."
                 image={data?.siteImages.about}
             />
-
-            <ParallaxHero
-                image={data.siteImages.about}
-                title="Nos Services"
-                subtitle="Une expertise complète pour tous vos projets de mode et d'événementiel."
-                height="h-[60vh]"
-            />
-
-            <div className="page-container -mt-20 relative z-20">
-                <FadeIn className="bg-black/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 lg:p-10 shadow-2xl">
-                    <div className="text-center mb-10">
-                        <p className="text-lg text-pm-off-white/80 max-w-3xl mx-auto">
-                            Découvrez l’ensemble de nos services conçus pour répondre aux besoins des créateurs, marques, entreprises et particuliers.
-                        </p>
-                    </div>
-
-                    {/* Tab Navigation */}
-                    <div role="tablist" aria-label="Catégories de services" className="flex justify-center flex-wrap gap-4 mb-12">
-                        {categoryOrder.map(category => (
-                            servicesByCategory[category] && (
-                                <button
-                                    key={category}
-                                    role="tab"
-                                    aria-selected={activeCategory === category}
-                                    id={`tab-${String(category).replace(/\s+/g, '-')}`}
-                                    onClick={() => setActiveCategory(category)}
-                                    className={`px-6 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all duration-300 ${activeCategory === category ? 'bg-pm-gold text-pm-dark shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'bg-white/5 text-pm-off-white/70 hover:bg-white/10 hover:text-white'}`}
-                                >
-                                    {category}
-                                </button>
-                            )
-                        ))}
-                    </div>
-
-                    {/* Tab Content */}
-                    <div>
-                        {categoryOrder.map(category => (
-                            servicesByCategory[category] && (
-                                <div
-                                    key={category}
-                                    id={`tabpanel-${String(category).replace(/\s+/g, '-')}`}
-                                    role="tabpanel"
-                                    aria-labelledby={`tab-${String(category).replace(/\s+/g, '-')}`}
-                                    hidden={activeCategory !== category}
-                                    className={`${activeCategory === category ? 'block' : 'hidden'}`}
-                                >
-                                    {activeCategory === category && (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                            {servicesByCategory[category].map((service, index) => (
-                                                <FadeIn key={index} delay={index * 0.1}>
-                                                    <ServiceCard service={service} />
-                                                </FadeIn>
-                                            ))}
-                                        </div>
-                                    )}
+            <div className="page-container">
+                <h1 className="page-title">Nos Services sur Mesure</h1>
+                <p className="page-subtitle">
+                    Découvrez l’ensemble de nos services conçus pour répondre aux besoins des créateurs, marques, entreprises et particuliers. Chaque service peut être réservé directement depuis notre site.
+                </p>
+                
+                <div className="space-y-16">
+                    {categoryOrder.map(category => (
+                        servicesByCategory[category] && (
+                             <section key={category}>
+                                <h2 className="section-title">{category}</h2>
+                                <div className="space-y-8">
+                                    {servicesByCategory[category].map((service, index) => (
+                                        <ServiceListItem key={index} service={service} />
+                                    ))}
                                 </div>
-                            )
-                        ))}
-                    </div>
-                </FadeIn>
+                            </section>
+                        )
+                    ))}
+                </div>
             </div>
         </div>
     );

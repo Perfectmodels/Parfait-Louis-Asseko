@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Model, ModelDistinction } from '../types';
 import ImageUploader from './ImageUploader';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ModelFormProps {
     model: Model;
@@ -75,157 +75,135 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
     const isAdmin = mode === 'admin';
 
     return (
-        <>
-            <h1 className="admin-page-title mb-8">
-                {isCreating ? 'Ajouter un Mannequin' : (isAdmin ? `Modifier le profil de ${model.name}` : `Mon Profil`)}
-            </h1>
-            <form onSubmit={handleSubmit} className="admin-section-wrapper space-y-8">
+        <div className="space-y-12">
+            <header className="flex justify-between items-end border-b border-white/5 pb-12">
+                <div>
+                   <span className="section-label">{isAdmin ? "Admin Console" : "Model Portal"}</span>
+                   <h1 className="text-6xl font-playfair font-black">
+                       {isCreating ? 'New Face' : 'Profile Edit'}
+                   </h1>
+                </div>
+                <div className="flex gap-6">
+                    <button onClick={onCancel} className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 hover:text-white transition-colors">Discard</button>
+                    <button onClick={handleSubmit} className="btn-premium !py-3 !px-12 text-[10px]">Save Changes</button>
+                </div>
+            </header>
+
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-24">
                 
-                <Section title="Informations de Base">
-                    <FormInput label="Nom Complet" name="name" value={formData.name} onChange={handleChange} disabled={!isAdmin} />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormInput label="Âge" name="age" type="number" value={formData.age || ''} onChange={handleChange} />
-                        <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange}>
-                            <option value="Femme">Femme</option>
-                            <option value="Homme">Homme</option>
-                        </FormSelect>
-                    </div>
-                    <FormInput label="Lieu de résidence" name="location" value={formData.location || ''} onChange={handleChange} />
-                </Section>
-                
-                {isAdmin && (
-                    <Section title="Accès, Niveau & Visibilité (Admin)">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormInput label="Identifiant (Matricule)" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
-                            <FormInput label="Mot de passe" name="password" value={formData.password} onChange={handleChange} />
+                {/* Main Column */}
+                <div className="lg:col-span-8 space-y-24">
+                    
+                    <Section title="Identity & Stats">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <FormInput label="Full Name" name="name" value={formData.name} onChange={handleChange} disabled={!isAdmin} placeholder="ex: Jane Doe" />
+                            <FormInput label="Current Location" name="location" value={formData.location || ''} onChange={handleChange} placeholder="ex: Libreville, Gabon" />
                         </div>
-                        <FormSelect label="Niveau" name="level" value={formData.level || 'Débutant'} onChange={handleChange}>
-                            <option value="Débutant">Débutant</option>
-                            <option value="Pro">Pro</option>
-                        </FormSelect>
-                        <div className="flex items-center gap-3 pt-2">
-                            <input 
-                                type="checkbox"
-                                id="isPublic"
-                                name="isPublic"
-                                checked={!!formData.isPublic}
-                                onChange={handleChange}
-                                className="h-5 w-5 rounded bg-pm-dark border-pm-gold text-pm-gold focus:ring-pm-gold"
-                            />
-                            <label htmlFor="isPublic" className="admin-label !mb-0">
-                                Rendre le profil public sur le site
-                            </label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                            <FormInput label="Age" name="age" type="number" value={formData.age || ''} onChange={handleChange} placeholder="Years" />
+                            <FormSelect label="Gender" name="gender" value={formData.gender} onChange={handleChange}>
+                                <option value="Femme">Femme</option>
+                                <option value="Homme">Homme</option>
+                            </FormSelect>
+                             <FormInput label="Height" name="height" value={formData.height} onChange={handleChange} placeholder="ex: 1m80" />
                         </div>
-                        <p className="text-xs text-pm-off-white/60">L'identifiant est généré automatiquement. La visibilité publique rend le mannequin visible dans la section `/mannequins`.</p>
                     </Section>
-                )}
-
-                <Section title="Contact">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormInput label="Email" name="email" type="email" value={formData.email || ''} onChange={handleChange} />
-                        <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone || ''} onChange={handleChange} />
-                     </div>
-                </Section>
-
-                <Section title="Physique & Mensurations">
-                    <ImageUploader label="Photo Principale" value={formData.imageUrl} onChange={handleImageChange} />
-                    <FormInput label="Taille (ex: 1m80)" name="height" value={formData.height} onChange={handleChange} />
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <FormInput label="Poitrine (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementChange} />
-                        <FormInput label="Taille (cm)" name="waist" value={formData.measurements.waist} onChange={handleMeasurementChange} />
-                        <FormInput label="Hanches (cm)" name="hips" value={formData.measurements.hips} onChange={handleMeasurementChange} />
-                        <FormInput label="Pointure (EU)" name="shoeSize" value={formData.measurements.shoeSize} onChange={handleMeasurementChange} />
-                    </div>
-                </Section>
-
-                <Section title="Carrière & Portfolio">
-                    {isAdmin && (
-                        <div>
-                            <label className="admin-label">Distinctions</label>
-                            <ArrayEditor
-                                items={formData.distinctions || []}
-                                setItems={newItems => setFormData(p => ({...p, distinctions: newItems}))}
-                                renderItem={(item: ModelDistinction, updateItem) => (
-                                    <>
-                                        <FormInput label="Nom de la distinction" name="name" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
-                                        <FormTextArea 
-                                            label="Titres (un par ligne)" 
-                                            name="titles"
-                                            value={(item.titles || []).join('\n')} 
-                                            onChange={e => updateItem({ ...item, titles: e.target.value.split('\n').filter(Boolean) })} 
-                                        />
-                                    </>
-                                )}
-                                getNewItem={() => ({ name: 'Nouveau Palmarès', titles: [] })}
-                                getItemTitle={item => item.name}
-                            />
+                    
+                    <Section title="Measurements">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+                            <FormInput label="Chest (cm)" name="chest" value={formData.measurements.chest} onChange={handleMeasurementChange} />
+                            <FormInput label="Waist (cm)" name="waist" value={formData.measurements.waist} onChange={handleMeasurementChange} />
+                            <FormInput label="Hips (cm)" name="hips" value={formData.measurements.hips} onChange={handleMeasurementChange} />
+                            <FormInput label="Shoe Size" name="shoeSize" value={formData.measurements.shoeSize} onChange={handleMeasurementChange} />
                         </div>
-                    )}
-                    {!isAdmin && formData.distinctions && formData.distinctions.length > 0 && (
-                        <div>
-                            <label className="admin-label">Distinctions (non modifiable)</label>
-                            <div className="p-4 bg-pm-dark rounded-md border border-pm-off-white/10 space-y-2">
-                                {formData.distinctions.map((d, i) => (
-                                    <div key={i}>
-                                        <p className="font-semibold">{d.name}</p>
-                                        {d.titles && d.titles.length > 0 && (
-                                            <ul className="list-disc list-inside text-sm text-pm-off-white/80 pl-2">
-                                                {d.titles.map((t, ti) => <li key={ti}>{t}</li>)}
-                                            </ul>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                    <FormTextArea label="Catégories (séparées par des virgules)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} disabled={!isAdmin} />
-                    <FormTextArea 
-                        label="Expérience" name="experience" value={formData.experience} onChange={handleChange} disabled={!isAdmin} rows={5}
-                    />
-                    <FormTextArea 
-                        label="Parcours" name="journey" value={formData.journey} onChange={handleChange} disabled={!isAdmin} rows={5} 
-                    />
-                </Section>
-                
-                <Section title="Photos du Portfolio">
-                    <div className="space-y-4">
-                        {(formData.portfolioImages || []).map((url, index) => (
-                            <div key={index} className="flex items-end gap-2">
-                                <div className="flex-grow">
+                    </Section>
+
+                    <Section title="The Editorial">
+                        <FormTextArea label="Professional Experience" name="experience" value={formData.experience} onChange={handleChange} rows={5} placeholder="Describe main campaigns, runway shows..." />
+                        <FormTextArea label="Career Journey" name="journey" value={formData.journey} onChange={handleChange} rows={5} placeholder="How did you start? What are your goals?" />
+                        <FormTextArea label="Categories (comma separated)" name="categories" value={(formData.categories || []).join(', ')} onChange={(e) => handleArrayChange('categories', e.target.value)} placeholder="Runway, Commercial, Beauty..." />
+                    </Section>
+
+                    <Section title="Portfolio Management">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            {(formData.portfolioImages || []).map((url, index) => (
+                                <div key={index} className="relative group">
                                     <ImageUploader 
-                                        label={`Photo ${index + 1}`} 
+                                        label={`Story ${index + 1}`} 
                                         value={url} 
                                         onChange={(value) => handlePortfolioImagesChange(index, value)} 
                                     />
+                                    <button type="button" onClick={() => handleRemovePortfolioImage(index)} className="absolute top-0 right-0 p-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <TrashIcon className="w-5 h-5" />
+                                    </button>
                                 </div>
-                                <button type="button" onClick={() => handleRemovePortfolioImage(index)} className="p-2 text-red-500/80 hover:text-red-500 bg-black rounded-md border border-pm-off-white/10 mb-2">
-                                    <TrashIcon className="w-5 h-5" />
-                                </button>
-                            </div>
-                        ))}
-                        <button type="button" onClick={handleAddPortfolioImage} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-2">
-                            <PlusIcon className="w-4 h-4" /> Ajouter une photo
-                        </button>
-                    </div>
-                </Section>
+                            ))}
+                            <button 
+                                type="button" 
+                                onClick={handleAddPortfolioImage} 
+                                className="aspect-[4/3] flex flex-col items-center justify-center border-2 border-dashed border-white/5 hover:border-pm-gold/40 hover:bg-pm-gold/5 transition-all group"
+                            >
+                                <PlusIcon className="w-12 h-12 text-white/10 group-hover:text-pm-gold transition-colors" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 group-hover:text-pm-gold mt-4">Add Editorial</span>
+                            </button>
+                        </div>
+                    </Section>
+                </div>
 
-                <div className="flex justify-end gap-4 pt-4">
-                    <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>
-                    <button type="submit" className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full hover:bg-white shadow-md shadow-pm-gold/30">Sauvegarder</button>
+                {/* Sidebar Column */}
+                <div className="lg:col-span-4 space-y-16">
+                    <div className="glass-card p-10 space-y-10">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold mb-8">Main Image</h3>
+                        <ImageUploader label="" value={formData.imageUrl} onChange={handleImageChange} />
+                        <p className="text-[10px] text-white/20 italic">This image will represent the model on the main directory page.</p>
+                    </div>
+
+                    <Section title="Connectivity">
+                        <FormInput label="Professional Email" name="email" type="email" value={formData.email || ''} onChange={handleChange} />
+                        <FormInput label="Phone Contact" name="phone" type="tel" value={formData.phone || ''} onChange={handleChange} />
+                    </Section>
+
+                    {isAdmin && (
+                        <div className="glass-card p-10 space-y-10 border-pm-gold/20">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">System Controls</h3>
+                            <div className="space-y-8">
+                                <FormInput label="System Username" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
+                                <FormInput label="System Password" name="password" value={formData.password} onChange={handleChange} />
+                                <FormSelect label="Tier Level" name="level" value={formData.level || 'Débutant'} onChange={handleChange}>
+                                    <option value="Débutant">New Talent</option>
+                                    <option value="Pro">Elite Pro</option>
+                                </FormSelect>
+                                <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+                                    <div className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-pm-gold focus:ring-offset-2 bg-pm-dark">
+                                        <input 
+                                            type="checkbox"
+                                            id="isPublic"
+                                            name="isPublic"
+                                            checked={!!formData.isPublic}
+                                            onChange={handleChange}
+                                            className="sr-only"
+                                        />
+                                        <label htmlFor="isPublic" className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${formData.isPublic ? 'translate-x-5 !bg-pm-gold' : 'translate-x-0'}`}></label>
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">Public Visibility</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </form>
-        </>
+        </div>
     );
 };
 
 const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
-    <div className="pt-8 first:pt-0">
-        <h2 className="admin-section-title">{title}</h2>
-        <div className="space-y-6">{children}</div>
+    <div className="space-y-10">
+        <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30 border-b border-white/5 pb-4">{title}</h2>
+        <div className="space-y-10">{children}</div>
     </div>
 );
 
-const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, disabled?: boolean}> = (props) => (
+const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, disabled?: boolean, placeholder?: string}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
         <input type={props.type || "text"} {...props} className="admin-input" />
@@ -235,70 +213,17 @@ const FormInput: React.FC<{label: string, name: string, value: any, onChange: an
 const FormSelect: React.FC<{label: string, name: string, value: any, onChange: any, children: React.ReactNode, disabled?: boolean}> = (props) => (
      <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <select {...props} className="admin-input">
+        <select {...props} className="admin-select">
             {props.children}
         </select>
     </div>
 );
 
-const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean}> = (props) => (
+const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean, placeholder?: string}> = (props) => (
     <div>
-        <div className="flex justify-between items-center mb-1">
-            <label htmlFor={props.name} className="admin-label !mb-0">{props.label}</label>
-        </div>
-        <textarea {...props} rows={props.rows || 3} className="admin-input admin-textarea" />
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <textarea {...props} rows={props.rows || 3} className="admin-textarea" />
     </div>
 );
-
-const ArrayEditor: React.FC<{
-    items: any[];
-    setItems: (items: any[]) => void;
-    renderItem: (item: any, updateItem: (newItem: any) => void, index: number) => React.ReactNode;
-    getNewItem: () => any;
-    getItemTitle: (item: any) => string;
-}> = ({ items, setItems, renderItem, getNewItem, getItemTitle }) => {
-    const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-    const handleUpdateItem = (index: number, newItem: any) => {
-        const newItems = [...items];
-        newItems[index] = newItem;
-        setItems(newItems);
-    };
-
-    const handleAddItem = () => {
-        setItems([...items, getNewItem()]);
-        setOpenIndex(items.length);
-    };
-
-    const handleDeleteItem = (index: number) => {
-        if (window.confirm(`Supprimer "${getItemTitle(items[index])}" ?`)) {
-            setItems(items.filter((_, i) => i !== index));
-        }
-    };
-    
-    return (
-        <div className="space-y-3">
-            {items.map((item, index) => (
-                <div key={index} className="bg-pm-dark/50 border border-pm-off-white/10 rounded-md overflow-hidden">
-                    <button type="button" onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full p-3 text-left font-bold flex justify-between items-center hover:bg-pm-gold/5">
-                        <span className="truncate pr-4">{getItemTitle(item)}</span>
-                        <ChevronDownIcon className={`w-5 h-5 transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`} />
-                    </button>
-                    {openIndex === index && (
-                        <div className="p-4 border-t border-pm-off-white/10 space-y-3 bg-pm-dark">
-                            {renderItem(item, (newItem) => handleUpdateItem(index, newItem), index)}
-                            <div className="text-right pt-2">
-                                <button type="button" onClick={() => handleDeleteItem(index)} className="text-red-500/80 hover:text-red-500 text-sm inline-flex items-center gap-1"><TrashIcon className="w-4 h-4" /> Supprimer</button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            ))}
-            <button type="button" onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
-                <PlusIcon className="w-4 h-4"/> Ajouter une distinction
-            </button>
-        </div>
-    );
-};
 
 export default ModelForm;
