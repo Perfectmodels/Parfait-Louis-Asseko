@@ -1,12 +1,11 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import ParallaxHero from '../components/ui/ParallaxHero';
-import FadeIn from '../components/ui/FadeIn';
-import Reveal from '../components/ui/Reveal';
+import TestimonialCarousel from '../components/TestimonialCarousel';
 
 const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
     const [openFAQ, setOpenFAQ] = useState<string | null>('0-0'); // Open the first question by default
@@ -15,34 +14,30 @@ const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
         setOpenFAQ(openFAQ === id ? null : id);
     };
 
-    if (!faqData || faqData.length === 0) return null;
+    if (!faqData || faqData.length === 0) {
+        return null;
+    }
 
     return (
         <section>
-            <FadeIn>
-                <div className="flex justify-center mb-8">
-                    <Reveal>
-                        <h2 className="section-title !mb-0">Questions Fréquemment Posées</h2>
-                    </Reveal>
-                </div>
-            </FadeIn>
+            <h2 className="section-title">Questions Fréquemment Posées</h2>
             <div className="max-w-4xl mx-auto space-y-8">
                 {faqData.map((category, catIndex) => (
-                    <FadeIn key={catIndex} delay={catIndex * 0.1}>
-                        <h3 className="text-2xl font-playfair text-pm-gold mb-4 relative pl-4 border-l-4 border-pm-gold">{category.category}</h3>
+                    <div key={catIndex}>
+                        <h3 className="text-2xl font-playfair text-pm-gold mb-4">{category.category}</h3>
                         <div className="space-y-3">
                             {category.items.map((item, itemIndex) => {
                                 const faqId = `${catIndex}-${itemIndex}`;
                                 const isOpen = openFAQ === faqId;
                                 return (
-                                    <div key={itemIndex} className="bg-black/50 border border-pm-gold/20 rounded-lg overflow-hidden transition-all duration-300 hover:border-pm-gold/50">
+                                    <div key={itemIndex} className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden">
                                         <button
                                             onClick={() => toggleFAQ(faqId)}
                                             className="w-full flex justify-between items-center p-5 text-left"
                                             aria-expanded={isOpen}
                                             aria-controls={`faq-answer-${faqId}`}
                                         >
-                                            <span className={`font-bold text-lg transition-colors ${isOpen ? 'text-pm-gold' : 'text-pm-off-white'}`}>{item.question}</span>
+                                            <span className="font-bold text-lg text-pm-off-white">{item.question}</span>
                                             <ChevronDownIcon className={`w-6 h-6 text-pm-gold flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                                         </button>
                                         <div
@@ -51,7 +46,7 @@ const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
                                             style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
                                         >
                                             <div className="overflow-hidden">
-                                                <div className="px-5 pb-5 text-pm-off-white/80 border-t border-pm-gold/10 pt-4">
+                                                <div className="px-5 pb-5 text-pm-off-white/80">
                                                     {item.answer}
                                                 </div>
                                             </div>
@@ -60,7 +55,7 @@ const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
                                 );
                             })}
                         </div>
-                    </FadeIn>
+                    </div>
                 ))}
             </div>
         </section>
@@ -69,161 +64,116 @@ const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
 
 
 const Agency: React.FC = () => {
-    const { data, isInitialized } = useData();
+  const { data, isInitialized } = useData();
 
-    if (!isInitialized || !data) {
-        return <div className="min-h-screen bg-pm-dark flex items-center justify-center text-pm-gold">Chargement...</div>;
-    }
+  if (!isInitialized || !data) {
+    return <div className="min-h-screen bg-pm-dark"></div>;
+  }
+  
+  const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages, faqData } = data;
 
-    const { agencyInfo, modelDistinctions, agencyTimeline, agencyAchievements, agencyPartners, siteImages, faqData } = data;
+  return (
+    <div className="bg-pm-dark text-pm-off-white">
+      <SEO 
+        title="L'Agence | Notre Histoire et Nos Valeurs"
+        description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence, et les services qui font de nous un leader de la mode au Gabon."
+        keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon, parfait asseko"
+        image={siteImages.agencyHistory}
+      />
+      <div className="page-container space-y-20 lg:space-y-28">
 
-    return (
-        <div className="bg-pm-dark text-pm-off-white overflow-hidden">
-            <SEO
-                title="L'Agence | Notre Histoire et Nos Valeurs"
-                description="Plongez au cœur de Perfect Models Management. Découvrez notre histoire, nos valeurs de professionnalisme et d'excellence."
-                keywords="histoire agence pmm, valeurs mannequinat, services agence de mannequins, agence de mode gabon"
-                image={siteImages.agencyHistory}
-            />
-
-            <ParallaxHero
-                image={siteImages.agencyHistory}
-                title="L'Agence"
-                subtitle="Plus qu'une agence, une vision de l'excellence africaine."
-                height="h-[60vh]"
-            />
-
-            <div className="page-container space-y-20 lg:space-y-32">
-
-                {/* À Propos */}
-                <section className="relative">
-                    {/* Decorative Blob */}
-                    <div className="absolute top-1/2 left-0 w-96 h-96 bg-pm-gold/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 -z-10 pointer-events-none"></div>
-
-                    <div className="content-section flex flex-col md:flex-row items-stretch gap-12 lg:gap-20">
-                        <FadeIn direction="right" className="md:w-1/2 relative group">
-                            <div className="absolute inset-0 border-2 border-pm-gold translate-x-4 translate-y-4 rounded-lg transition-transform duration-500 group-hover:translate-x-2 group-hover:translate-y-2"></div>
-                            <div className="relative h-full overflow-hidden rounded-lg">
-                                <img src={siteImages.about} alt="L'équipe Perfect Models" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            </div>
-                        </FadeIn>
-                        <div className="md:w-1/2 flex flex-col justify-center">
-                            <FadeIn direction="left">
-                                <Reveal>
-                                    <h2 className="text-4xl font-playfair text-white mb-6">Notre Histoire</h2>
-                                </Reveal>
-                            </FadeIn>
-                            <FadeIn direction="left" delay={0.2}>
-                                <div className="text-lg leading-relaxed text-pm-off-white/80 space-y-4">
-                                    <p>{agencyInfo.about.p1}</p>
-                                    <p>{agencyInfo.about.p2}</p>
-                                </div>
-                            </FadeIn>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Distinctions */}
-                <section>
-                    <FadeIn>
-                        <div className="text-center mb-12">
-                            <Reveal width="100%" className='flex justify-center'>
-                                <h2 className="section-title !mb-0">Distinctions</h2>
-                            </Reveal>
-                            <p className="text-pm-off-white/60 mt-4 max-w-2xl mx-auto">La reconnaissance de notre travail à travers les succès de nos talents.</p>
-                        </div>
-                    </FadeIn>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {modelDistinctions.map((distinction, index) => (
-                            <FadeIn key={index} delay={index * 0.1} viewportAmount={0.5} className="h-full">
-                                <DistinctionCard distinction={distinction} />
-                            </FadeIn>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Parcours (Timeline) */}
-                <section className="py-10">
-                    <FadeIn>
-                        <h2 className="section-title mb-16">Notre Parcours</h2>
-                    </FadeIn>
-                    <div className="relative max-w-4xl mx-auto">
-                        <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-pm-gold/50 to-transparent md:transform md:-translate-x-1/2"></div>
-                        {agencyTimeline.map((item, index) => (
-                            <FadeIn key={index} delay={index * 0.15} direction="up" viewportAmount={0.3}>
-                                <div className={`relative flex flex-col md:flex-row items-center w-full my-12 ${index % 2 === 0 ? 'md:justify-start' : 'md:justify-end'}`}>
-                                    {/* Card content */}
-                                    <div className={`w-full md:w-[45%] pl-12 md:pl-0 ${index % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12 md:text-left'}`}>
-                                        <div className="bg-white/5 backdrop-blur-sm p-6 border border-white/10 rounded-xl hover:border-pm-gold/50 transition-colors duration-300 shadow-lg">
-                                            <span className="text-5xl font-playfair font-bold text-pm-gold/20 absolute -top-4 right-4">{item.year}</span>
-                                            <h3 className="text-2xl font-bold text-pm-gold relative z-10">{item.year}</h3>
-                                            <p className="text-pm-off-white/90 mt-2 relative z-10 text-lg">{item.event}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Connector Dot */}
-                                    <div className="absolute left-4 md:left-1/2 w-4 h-4 bg-pm-dark border-4 border-pm-gold rounded-full transform -translate-x-1/2 z-10 shadow-[0_0_15px_rgba(212,175,55,0.8)]"></div>
-                                </div>
-                            </FadeIn>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Réalisations Tabs */}
-                <section>
-                    <FadeIn>
-                        <h2 className="section-title">Nos Réalisations</h2>
-                    </FadeIn>
-                    <AchievementsTabs achievements={agencyAchievements} />
-                </section>
-
-                {/* Partenaires */}
-                <section className="py-10 border-t border-white/5 border-b">
-                    <FadeIn>
-                        <h2 className="section-title">Ils nous font confiance</h2>
-                        <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-10 mt-12 opacity-70 grayscale hover:grayscale-0 transition-all duration-700">
-                            {agencyPartners.map((partner, index) => (
-                                <span key={index} className="text-xl md:text-2xl font-playfair font-bold text-pm-off-white hover:text-pm-gold transition-colors cursor-default">
-                                    {partner.name}
-                                </span>
-                            ))}
-                        </div>
-                    </FadeIn>
-                </section>
-
-                {/* FAQ Section */}
-                <FAQ faqData={faqData} />
-
-                {/* Contact CTA */}
-                <section className="text-center content-section relative overflow-hidden bg-white/5 rounded-2xl p-10 lg:p-16 border border-white/10">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-pm-gold/10 rounded-full blur-[80px] pointer-events-none"></div>
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-pm-gold/10 rounded-full blur-[80px] pointer-events-none"></div>
-
-                    <FadeIn>
-                        <h3 className="text-3xl md:text-4xl font-playfair text-white mb-6">Une question ? Un projet ?</h3>
-                        <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-10 text-lg">
-                            Nous sommes à l'écoute de vos ambitions. Contactez-nous pour discuter de votre prochain événement ou campagne.
-                        </p>
-                        <Link to="/contact" className="cta-btn-gold">
-                            Nous Contacter
-                        </Link>
-                    </FadeIn>
-                </section>
-
+        {/* À Propos */}
+        <section>
+          <h2 className="section-title">Notre Histoire</h2>
+          <div className="content-section flex flex-col md:flex-row items-center gap-12">
+            <div className="md:w-1/2 p-2 border-2 border-pm-gold">
+              <img src={siteImages.agencyHistory} alt="L'équipe Perfect Models" className="w-full h-full object-cover"/>
             </div>
-        </div>
-    );
+            <div className="md:w-1/2 text-lg leading-relaxed text-pm-off-white/90">
+              <p className="mb-4">{agencyInfo.about.p1}</p>
+              <p>{agencyInfo.about.p2}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Distinctions */}
+        <section>
+          <h2 className="section-title">Distinctions de nos Mannequins</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {modelDistinctions.map((distinction, index) => (
+              <DistinctionCard key={index} distinction={distinction} />
+            ))}
+          </div>
+        </section>
+
+        {/* Parcours (Timeline) */}
+        <section>
+          <h2 className="section-title">Notre Parcours</h2>
+           <div className="relative max-w-4xl mx-auto">
+                <div className="absolute left-1/2 h-full w-0.5 bg-pm-gold/30 transform -translate-x-1/2"></div>
+                {agencyTimeline.map((item, index) => (
+                    <div key={index} className={`relative flex items-center w-full my-8 ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+                        <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}>
+                            <div className="bg-black p-4 border border-pm-gold/20 rounded-lg card-base">
+                                <h3 className="text-xl font-bold text-pm-gold">{item.year}</h3>
+                                <p className="text-pm-off-white/80 mt-1">{item.event}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 w-6 h-6 bg-pm-dark border-2 border-pm-gold rounded-full transform -translate-x-1/2 z-10"></div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
+         {/* Réalisations */}
+        <section>
+            <h2 className="section-title">Nos Réalisations</h2>
+            <AchievementsTabs achievements={agencyAchievements} />
+        </section>
+
+         {/* Partenaires */}
+        <section>
+          <h2 className="section-title">Nos Partenaires Clé</h2>
+          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-6 text-center">
+            {agencyPartners.map((partner, index) => (
+                <p key={index} className="text-lg font-normal text-pm-off-white/80">{partner.name}</p>
+            ))}
+          </div>
+        </section>
+
+        {/* Témoignages (Testimonials) */}
+        <section>
+            <h2 className="section-title">Ce qu'ils disent de nous</h2>
+            <div className="mt-8">
+                <TestimonialCarousel />
+            </div>
+        </section>
+        
+        {/* FAQ Section */}
+        <FAQ faqData={faqData} />
+
+        {/* Contact CTA */}
+        <section className="text-center content-section">
+          <h3 className="text-2xl font-playfair text-pm-gold mb-4">Une question ? Un projet ?</h3>
+          <p className="text-pm-off-white/80 max-w-2xl mx-auto mb-8">
+              Nous serions ravis d'échanger avec vous. Visitez notre page de contact pour nous envoyer un message ou trouver nos coordonnées.
+          </p>
+          <Link to="/contact" className="px-10 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-full text-center transition-all duration-300 hover:bg-white hover:shadow-2xl hover:shadow-pm-gold/30">
+              Nous Contacter
+          </Link>
+        </section>
+
+      </div>
+    </div>
+  );
 };
 
 const DistinctionCard: React.FC<{ distinction: ModelDistinction }> = ({ distinction }) => (
-    <div className="bg-pm-dark-light border border-pm-gold/10 p-8 rounded-xl h-full flex flex-col items-center justify-center text-center hover:bg-white/5 hover:border-pm-gold/30 hover:-translate-y-2 transition-all duration-300 shadow-xl group relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-pm-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div className="w-16 h-16 bg-pm-gold/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-            <CheckBadgeIcon className="w-8 h-8 text-pm-gold" aria-hidden="true" />
-        </div>
-        <h3 className="text-xl font-playfair font-bold text-white mb-4 relative z-10">{distinction.name}</h3>
-        <ul className="text-pm-off-white/70 space-y-2 relative z-10">
-            {distinction.titles.map((title, index) => <li key={index} className="flex items-center justify-center gap-2"><span className="text-pm-gold text-xs">●</span> {title}</li>)}
+    <div className="card-base p-6 text-center h-full flex flex-col justify-center items-center">
+        <CheckBadgeIcon className="w-12 h-12 text-pm-gold mx-auto mb-4" aria-hidden="true" />
+        <h3 className="text-xl font-playfair text-pm-gold">{distinction.name}</h3>
+        <ul className="mt-2 text-sm text-pm-off-white/80 space-y-1">
+            {distinction.titles.map((title, index) => <li key={index}>✦ {title}</li>)}
         </ul>
     </div>
 );
@@ -232,46 +182,46 @@ const AchievementsTabs: React.FC<{ achievements: AchievementCategory[] }> = ({ a
     const [activeTab, setActiveTab] = useState(0);
 
     return (
-        <div className="max-w-5xl mx-auto">
-            <FadeIn>
-                <div role="tablist" aria-label="Nos réalisations" className="flex flex-wrap justify-center gap-4 mb-10">
-                    {achievements.map((category, index) => (
-                        <button
-                            key={index}
-                            role="tab"
-                            aria-selected={activeTab === index}
-                            onClick={() => setActiveTab(index)}
-                            className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === index ? 'bg-pm-gold text-pm-dark shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'bg-white/5 text-pm-off-white/70 hover:bg-white/10 hover:text-white'}`}
-                        >
-                            {category.name}
-                        </button>
-                    ))}
-                </div>
-            </FadeIn>
-
+        <div>
+            <div role="tablist" aria-label="Nos réalisations" className="flex justify-center border-b border-pm-gold/20 mb-8">
+                {achievements.map((category, index) => (
+                    <button
+                        key={index}
+                        role="tab"
+                        id={`tab-${index}`}
+                        aria-controls={`tab-panel-${index}`}
+                        aria-selected={activeTab === index}
+                        onClick={() => setActiveTab(index)}
+                        className={`px-6 py-3 text-sm uppercase tracking-wider font-bold transition-colors relative ${activeTab === index ? 'text-pm-gold' : 'text-pm-off-white/70 hover:text-pm-gold'}`}
+                    >
+                        {category.name}
+                        {activeTab === index && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-pm-gold"/>}
+                    </button>
+                ))}
+            </div>
             {achievements.map((category, index) => (
-                <div
+                 <div
                     key={index}
+                    id={`tab-panel-${index}`}
                     role="tabpanel"
                     hidden={activeTab !== index}
-                    className={`transition-all duration-500 transform ${activeTab === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 absolute top-0 -z-10'}`}
+                    aria-labelledby={`tab-${index}`}
+                    className={`transition-opacity duration-300 ${activeTab === index ? 'opacity-100' : 'opacity-0'}`}
                 >
                     {activeTab === index && (
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12 backdrop-blur-sm">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-pm-off-white/90">
+                        <div className="content-section animate-fade-in">
+                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-pm-off-white/90">
                                 {category.items.map((item, itemIndex) => (
-                                    <FadeIn key={itemIndex} delay={itemIndex * 0.05} className="bg-black/40 p-5 rounded-lg flex items-start gap-4 hover:border-l-2 hover:border-pm-gold transition-all">
+                                    <div key={itemIndex} className="bg-pm-dark/50 p-4 rounded-lg flex items-start gap-3 border border-pm-gold/10">
                                         <CheckBadgeIcon className="w-6 h-6 text-pm-gold flex-shrink-0 mt-0.5" />
-                                        <span className="font-medium">{item}</span>
-                                    </FadeIn>
+                                        <span>{item}</span>
+                                    </div>
                                 ))}
                             </div>
-                            {category.name === "Défilés de Mode" &&
-                                <FadeIn delay={0.5} className="mt-8 pt-6 border-t border-white/10 text-center">
-                                    <p className="text-pm-gold font-serif italic text-lg">
-                                        "Notre agence a participé à tous les événements de mode majeurs depuis sa création en 2021."
-                                    </p>
-                                </FadeIn>
+                            {category.name === "Défilés de Mode" && 
+                                <p className="text-center mt-10 text-pm-gold/90 italic text-sm md:text-base bg-pm-dark/50 p-4 rounded-md">
+                                    "Notre agence a participé à tous les événements de mode depuis 2021, son année de création."
+                                </p>
                             }
                         </div>
                     )}

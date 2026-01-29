@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
 // FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -10,7 +10,6 @@ import {
     siteConfig as initialSiteConfig, 
     contactInfo as initialContactInfo, 
     siteImages as initialSiteImages, 
-    heroSlides as initialHeroSlides,
     apiKeys as initialApiKeys, 
     castingApplications as initialCastingApplications, 
     fashionDayApplications as initialFashionDayApplications, 
@@ -63,7 +62,6 @@ export interface AppData {
     courseData: Module[];
     contactInfo: ContactInfo;
     siteImages: SiteImages;
-    heroSlides: HeroSlide[];
     apiKeys: ApiKeys;
     castingApplications: CastingApplication[];
     fashionDayApplications: FashionDayApplication[];
@@ -93,7 +91,6 @@ export const useDataStore = () => {
         siteConfig: initialSiteConfig,
         contactInfo: initialContactInfo,
         siteImages: initialSiteImages,
-        heroSlides: initialHeroSlides,
         apiKeys: initialApiKeys,
         castingApplications: initialCastingApplications,
         fashionDayApplications: initialFashionDayApplications,
@@ -146,7 +143,6 @@ export const useDataStore = () => {
                     agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
                     fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
                     faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
-                    heroSlides: (dbData.heroSlides && dbData.heroSlides.length > 0) ? dbData.heroSlides : initialData.heroSlides,
                 };
                 
                 // Always use navLinks from code to ensure route integrity
