@@ -44,11 +44,12 @@ const Login: React.FC = () => {
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
 
+    // Secure mapping of users with fallbacks for each array
     const users = [
         { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
-        ...data.models.map(m => ({ type: 'student', user: m, path: '/profil' })),
-        ...data.juryMembers.map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
-        ...data.registrationStaff.map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
+        ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
+        ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
+        ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
     const foundUser = users.find(u => 
@@ -61,7 +62,7 @@ const Login: React.FC = () => {
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
         sessionStorage.setItem('classroom_role', foundUser.type);
-        sessionStorage.setItem('userId', (foundUser.user as any).id);
+        sessionStorage.setItem('userId', (foundUser.user as any).id || 'admin-id');
         sessionStorage.setItem('userName', foundUser.user.name);
         
         updateUserActivity(foundUser.user.name, foundUser.type);
@@ -77,7 +78,6 @@ const Login: React.FC = () => {
         navigate(foundUser.path);
         return;
     }
-    // FIX: Removed Beginner Student login logic as the feature is deprecated.
 
     setError('Identifiant ou mot de passe incorrect.');
     setPassword('');
@@ -157,7 +157,6 @@ const Login: React.FC = () => {
   );
 };
 
-// ... RecoveryModal (pas de changement majeur nécessaire, mais on l'inclut pour la complétude)
 const RecoveryModal: React.FC<{onClose: () => void, onSubmit: (name: string, phone: string) => void}> = ({ onClose, onSubmit }) => {
   const [modelName, setModelName] = useState('');
   const [phone, setPhone] = useState('');

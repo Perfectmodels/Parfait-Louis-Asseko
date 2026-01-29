@@ -1,8 +1,6 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-// FIX: Removed BeginnerStudent and corrected financial type to MonthlyPayment.
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 // Import initial data to seed the database if it's empty
@@ -21,7 +19,6 @@ import {
     bookingRequests as initialBookingRequests,
     contactMessages as initialContactMessages,
     absences as initialAbsences,
-    // FIX: Changed to import 'monthlyPayments' instead of non-existent 'transactions'.
     monthlyPayments as initialMonthlyPayments,
     photoshootBriefs as initialPhotoshootBriefs,
     newsItems as initialNewsItems, 
@@ -41,7 +38,6 @@ import {
 } from '../constants/data';
 import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
-// FIX: Removed import for beginnerCourseData as the file and feature are deprecated.
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -75,13 +71,19 @@ export interface AppData {
     contactMessages: ContactMessage[];
     juryMembers: JuryMember[];
     registrationStaff: RegistrationStaff[];
-    // FIX: Removed beginner-related properties from AppData.
     faqData: FAQCategory[];
     absences: Absence[];
-    // FIX: Changed 'transactions' to 'monthlyPayments' and 'Transaction' to 'MonthlyPayment'.
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
 }
+
+// Utility to ensure data from Firebase (which might be an object) is always an array
+const ensureArray = <T,>(data: any, fallback: T[] = []): T[] => {
+    if (!data) return fallback;
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'object') return Object.values(data);
+    return fallback;
+};
 
 export const useDataStore = () => {
     const [data, setData] = useState<AppData | null>(null);
@@ -102,7 +104,6 @@ export const useDataStore = () => {
         bookingRequests: initialBookingRequests,
         contactMessages: initialContactMessages,
         absences: initialAbsences,
-        // FIX: Changed to use 'monthlyPayments' and 'initialMonthlyPayments'.
         monthlyPayments: initialMonthlyPayments,
         photoshootBriefs: initialPhotoshootBriefs,
         newsItems: initialNewsItems,
@@ -120,7 +121,6 @@ export const useDataStore = () => {
         courseData: initialCourseData,
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
-        // FIX: Removed beginner-related properties from initial data.
         faqData: initialFaqData,
     }), []);
     
@@ -131,26 +131,35 @@ export const useDataStore = () => {
             const dbData = snapshot.val();
             const initialData = getInitialData();
             if (dbData) {
-                // Defensive merge: prevent critical data arrays from being overwritten by empty/null values from DB
-                const mergedData = {
+                const mergedData: AppData = {
                     ...initialData,
                     ...dbData,
-                    models: (dbData.models && dbData.models.length > 0) ? dbData.models : initialData.models,
-                    articles: (dbData.articles && dbData.articles.length > 0) ? dbData.articles : initialData.articles,
-                    courseData: (dbData.courseData && dbData.courseData.length > 0) ? dbData.courseData : initialData.courseData,
-                    // FIX: Removed beginnerCourseData from merge logic.
-                    newsItems: (dbData.newsItems && dbData.newsItems.length > 0) ? dbData.newsItems : initialData.newsItems,
-                    testimonials: (dbData.testimonials && dbData.testimonials.length > 0) ? dbData.testimonials : initialData.testimonials,
-                    agencyServices: (dbData.agencyServices && dbData.agencyServices.length > 0) ? dbData.agencyServices : initialData.agencyServices,
-                    fashionDayEvents: (dbData.fashionDayEvents && dbData.fashionDayEvents.length > 0) ? dbData.fashionDayEvents : initialData.fashionDayEvents,
-                    faqData: (dbData.faqData && dbData.faqData.length > 0) ? dbData.faqData : initialData.faqData,
+                    models: ensureArray(dbData.models, initialData.models),
+                    articles: ensureArray(dbData.articles, initialData.articles),
+                    courseData: ensureArray(dbData.courseData, initialData.courseData),
+                    newsItems: ensureArray(dbData.newsItems, initialData.newsItems),
+                    testimonials: ensureArray(dbData.testimonials, initialData.testimonials),
+                    agencyServices: ensureArray(dbData.agencyServices, initialData.agencyServices),
+                    fashionDayEvents: ensureArray(dbData.fashionDayEvents, initialData.fashionDayEvents),
+                    faqData: ensureArray(dbData.faqData, initialData.faqData),
+                    juryMembers: ensureArray(dbData.juryMembers, initialData.juryMembers),
+                    registrationStaff: ensureArray(dbData.registrationStaff, initialData.registrationStaff),
+                    castingApplications: ensureArray(dbData.castingApplications, initialData.castingApplications),
+                    fashionDayApplications: ensureArray(dbData.fashionDayApplications, initialData.fashionDayApplications),
+                    forumThreads: ensureArray(dbData.forumThreads, initialData.forumThreads),
+                    forumReplies: ensureArray(dbData.forumReplies, initialData.forumReplies),
+                    articleComments: ensureArray(dbData.articleComments, initialData.articleComments),
+                    recoveryRequests: ensureArray(dbData.recoveryRequests, initialData.recoveryRequests),
+                    bookingRequests: ensureArray(dbData.bookingRequests, initialData.bookingRequests),
+                    contactMessages: ensureArray(dbData.contactMessages, initialData.contactMessages),
+                    absences: ensureArray(dbData.absences, initialData.absences),
+                    monthlyPayments: ensureArray(dbData.monthlyPayments, initialData.monthlyPayments),
+                    photoshootBriefs: ensureArray(dbData.photoshootBriefs, initialData.photoshootBriefs),
                 };
                 
-                // Always use navLinks from code to ensure route integrity
                 mergedData.navLinks = initialData.navLinks;
                 setData(mergedData);
             } else {
-                // If DB is empty, seed it with initial data
                 set(dbRef, initialData).then(() => {
                     setData(initialData);
                     console.log("Firebase database seeded with initial data.");
@@ -161,24 +170,20 @@ export const useDataStore = () => {
             setIsInitialized(true);
         }, (error) => {
             console.error("Firebase read failed: " + error.message);
-            // Fallback to local data if Firebase fails
             setData(getInitialData());
             setIsInitialized(true);
         });
 
-        // Detach the listener when the component unmounts
         return () => unsubscribe();
     }, [getInitialData]);
 
     const saveData = useCallback(async (newData: AppData) => {
         try {
             await set(ref(db, '/'), newData);
-            // The local state will be updated by the 'on' listener,
-            // but we can set it here for immediate UI feedback if desired.
             setData(newData);
         } catch (error) {
             console.error("Error saving data to Firebase:", error);
-            throw error; // Re-throw to be caught by the caller
+            throw error;
         }
     }, []);
 

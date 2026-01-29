@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
@@ -45,16 +44,17 @@ const Login: React.FC = () => {
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
 
+    // Use optional chaining and fallback to empty array to prevent .map crashes
     const users = [
         { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
-        ...data.models.map(m => ({ type: 'student', user: m, path: '/profil' })),
-        ...data.juryMembers.map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
-        ...data.registrationStaff.map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
+        ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
+        ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
+        ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
     const foundUser = users.find(u => 
         (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
+            ('username' in u.user && (u.user as any).username?.toLowerCase() === normalizedUsername) || 
             u.user.name.toLowerCase() === normalizedUsername
         ) && u.user.password === password
     );
@@ -62,7 +62,7 @@ const Login: React.FC = () => {
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
         sessionStorage.setItem('classroom_role', foundUser.type);
-        sessionStorage.setItem('userId', (foundUser.user as any).id);
+        sessionStorage.setItem('userId', (foundUser.user as any).id || 'admin-id');
         sessionStorage.setItem('userName', foundUser.user.name);
         
         updateUserActivity(foundUser.user.name, foundUser.type);
@@ -157,7 +157,6 @@ const Login: React.FC = () => {
   );
 };
 
-// ... RecoveryModal (pas de changement majeur nécessaire, mais on l'inclut pour la complétude)
 const RecoveryModal: React.FC<{onClose: () => void, onSubmit: (name: string, phone: string) => void}> = ({ onClose, onSubmit }) => {
   const [modelName, setModelName] = useState('');
   const [phone, setPhone] = useState('');
