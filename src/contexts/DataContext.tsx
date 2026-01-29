@@ -1,14 +1,14 @@
 
 import React, { createContext, useContext } from 'react';
-import { useFirestore as useDataStore, AppData } from '../hooks/useFirestore';
+import { useRealtimeDB as useDataStore, AppData } from '../hooks/useRealtimeDB';
 
 interface DataContextType {
   data: AppData | null;
   saveData: (newData: AppData) => Promise<void>;
   isInitialized: boolean;
-  addDocument: (collectionName: string, item: any) => Promise<string>;
-  updateDocument: (collectionName: string, id: string, updates: any) => Promise<void>;
-  deleteDocument: (collectionName: string, id: string) => Promise<void>;
+  addDocument: (path: string, item: any) => Promise<string | null>;
+  updateDocument: (path: string, id: string, updates: any) => Promise<void>;
+  deleteDocument: (path: string, id: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | null>(null);

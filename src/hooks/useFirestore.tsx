@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../firebase';
-import { ref, get, set, update, remove, push } from 'firebase/database';
+import { db } from '../firestoreConfig';
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query } from 'firebase/firestore';
 import { initialData } from '../constants/data';
 import logger from '../utils/logger';
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, HeroSlide, FashionDayReservation, AdminProfile, GalleryItem } from '../types';
@@ -128,56 +128,39 @@ export const useFirestore = () => {
         gallery: []
     }), []);
 
-    // Fonction pour charger une collection depuis Firebase Realtime Database
+    // Fonction pour charger une collection depuis Firestore
     const loadCollection = async <T,>(collectionName: string, fallback: T[]): Promise<T[]> => {
         try {
-            const dbRef = ref(db, collectionName);
-            const snapshot = await get(dbRef);
+            const collectionRef = collection(db, collectionName);
+            const snapshot = await getDocs(collectionRef);
 
-            if (!snapshot.exists()) {
+            if (snapshot.empty) {
                 return fallback;
             }
 
-            const data = snapshot.val();
+            const data = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as T));
 
-            // Check for broken URLs (ibb.co or postimg.cc)
-            if (JSON.stringify(data).includes('ibb.co') || JSON.stringify(data).includes('postimg.cc')) {
-                logger.warn(`Data for ${collectionName} contains broken links, using fallback.`);
-                return fallback;
-            }
-
-            // Si c'est un objet, convertir en array
-            if (data && typeof data === 'object') {
-                return Object.keys(data).map(key => ({
-                    id: key,
-                    ...data[key]
-                } as T));
-            }
-
-            return fallback;
+            return data;
         } catch (error) {
             logger.error(`Error loading ${collectionName}:`, error);
             return fallback;
         }
     };
 
-    // Fonction pour charger un document de configuration depuis Firebase Realtime Database
+    // Fonction pour charger un document de configuration depuis Firestore
     const loadConfig = async <T,>(configName: string, fallback: T): Promise<T> => {
         try {
-            const dbRef = ref(db, `config/${configName}`);
-            const snapshot = await get(dbRef);
+            const docRef = doc(db, 'config', configName);
+            const docSnap = await getDoc(docRef);
 
-            if (!snapshot.exists()) {
+            if (!docSnap.exists()) {
                 return fallback;
             }
 
-            const data = snapshot.val();
-
-            // Check for broken URLs (ibb.co or postimg.cc)
-            if (JSON.stringify(data).includes('ibb.co') || JSON.stringify(data).includes('postimg.cc')) {
-                logger.warn(`Data for ${configName} contains broken links, using fallback.`);
-                return fallback;
-            }
+            const data = docSnap.data();
 
             return data as T;
         } catch (error) {
@@ -343,8 +326,15 @@ export const useFirestore = () => {
                 const collData = newData[collName as keyof AppData];
                 if (Array.isArray(collData)) {
                     for (const item of collData) {
-                        const docId = (item as any).id || (item as any).slug || `doc_${Date.now()}`;
-                        savePromises.push(set(ref(db, `${collName}/${docId}`), item));
+                        if (!item) continue; // Tolérance pour les items nuls/indéfinis
+
+                        const docId = (item as any).id || (item as any).slug || `${collName}_${Date.now()}`;
+                        const docRef = doc(db, collName, docId);
+                        
+                        // S'assurer que l'ID est bien dans l'objet sauvegardé
+                        const itemToSave = { ...item, id: docId };
+
+                        savePromises.push(setDoc(docRef, itemToSave));
                     }
                 }
             }
@@ -352,14 +342,15 @@ export const useFirestore = () => {
             // Pour les configurations
             const configFields = ['siteConfig', 'contactInfo', 'siteImages', 'socialLinks', 'agencyInfo', 'apiKeys', 'adminProfile'];
             for (const configName of configFields) {
-                savePromises.push(set(ref(db, `config/${configName}`), newData[configName as keyof AppData]));
+                const docRef = doc(db, 'config', configName);
+                savePromises.push(setDoc(docRef, newData[configName as keyof AppData]));
             }
 
             await Promise.all(savePromises);
             setData(newData);
-            logger.log("✅ Data saved to Database successfully");
+            logger.log("✅ Data saved to Firestore successfully");
         } catch (error) {
-            logger.error("Error saving data to Database:", error);
+            logger.error("Error saving data to Firestore:", error);
             throw error;
         }
     }, []);
@@ -370,10 +361,11 @@ export const useFirestore = () => {
     const addDocument = useCallback(async (collectionName: string, item: any) => {
         try {
             // Générer un ID si non présent
-            const docId = item.id || item.slug || push(ref(db, collectionName)).key;
+            const docId = item.id || item.slug || `${collectionName}_${Date.now()}`;
             const itemWithId = { ...item, id: docId };
 
-            await set(ref(db, `${collectionName}/${docId}`), itemWithId);
+            const docRef = doc(db, collectionName, docId);
+            await setDoc(docRef, itemWithId);
 
             // Mise à jour optimiste de l'état local
             setData(prevData => {
@@ -398,7 +390,8 @@ export const useFirestore = () => {
     // Mettre à jour un document existant
     const updateDocument = useCallback(async (collectionName: string, id: string, updates: any) => {
         try {
-            await update(ref(db, `${collectionName}/${id}`), updates);
+            const docRef = doc(db, collectionName, id);
+            await updateDoc(docRef, updates);
 
             // Mise à jour optimiste
             setData(prevData => {
@@ -421,7 +414,8 @@ export const useFirestore = () => {
     // Supprimer un document
     const deleteDocument = useCallback(async (collectionName: string, id: string) => {
         try {
-            await remove(ref(db, `${collectionName}/${id}`));
+            const docRef = doc(db, collectionName, id);
+            await deleteDoc(docRef);
 
             // Mise à jour optimiste
             setData(prevData => {

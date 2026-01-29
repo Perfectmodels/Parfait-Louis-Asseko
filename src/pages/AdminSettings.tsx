@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { AppData } from '../hooks/useDataStore';
+import { AppData } from '../hooks/useFirestore';
 import { Testimonial, Partner, FAQCategory, FAQItem } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -16,20 +16,40 @@ const AdminSettings: React.FC = () => {
 
     useEffect(() => {
         if (isInitialized && data) {
-            const { 
-                contactInfo, siteConfig, siteImages, socialLinks, agencyPartners, 
+            const {
+                contactInfo, siteConfig, siteImages, socialLinks, agencyPartners,
                 testimonials, faqData, apiKeys
             } = data;
-            setLocalData(JSON.parse(JSON.stringify({ 
-                contactInfo, siteConfig, siteImages, socialLinks, agencyPartners, 
-                testimonials, faqData, apiKeys 
+            setLocalData(JSON.parse(JSON.stringify({
+                contactInfo, siteConfig, siteImages, socialLinks, agencyPartners,
+                testimonials, faqData, apiKeys
             })));
         }
     }, [isInitialized, data]);
-    
+
     const handleSave = () => {
         if (!data || !localData) return;
-        const newData: AppData = { ...data, ...localData };
+
+        // Create a deep copy to avoid modifying the current state directly
+        const dataToSave = JSON.parse(JSON.stringify(localData));
+
+        // Clean up arrays by removing any null/undefined entries that might have been introduced
+        if (dataToSave.agencyPartners) {
+            dataToSave.agencyPartners = dataToSave.agencyPartners.filter(Boolean);
+        }
+        if (dataToSave.testimonials) {
+            dataToSave.testimonials = dataToSave.testimonials.filter(Boolean);
+        }
+        if (dataToSave.faqData) {
+            dataToSave.faqData = dataToSave.faqData.filter(Boolean);
+            dataToSave.faqData.forEach((cat: FAQCategory) => {
+                if (cat.items) {
+                    cat.items = cat.items.filter(Boolean);
+                }
+            });
+        }
+
+        const newData: AppData = { ...data, ...dataToSave };
         saveData(newData);
         alert("Changements enregistrés avec succès dans la base de données.");
     };
@@ -51,7 +71,7 @@ const AdminSettings: React.FC = () => {
             return prev;
         });
     };
-    
+
     if (!localData || !data) {
         return <div className="min-h-screen flex items-center justify-center text-pm-gold">Chargement des paramètres...</div>;
     }
@@ -89,6 +109,7 @@ const AdminSettings: React.FC = () => {
                         <div className="space-y-4">
                             <FormInput label="Clé API Brevo (pour les emails)" value={localData.apiKeys.brevoApiKey || ''} onChange={e => handleSimpleChange('apiKeys', 'brevoApiKey', e.target.value)} />
                             <FormInput label="Clé API ImgBB (pour les images)" value={localData.apiKeys.imgbbApiKey || ''} onChange={e => handleSimpleChange('apiKeys', 'imgbbApiKey', e.target.value)} />
+                            <FormInput label="Dropbox Access Token (Storage)" value={localData.apiKeys.dropboxAccessToken || ''} onChange={e => handleSimpleChange('apiKeys', 'dropboxAccessToken', e.target.value)} />
                         </div>
                     </div>
 
@@ -104,8 +125,8 @@ const AdminSettings: React.FC = () => {
                             <ImageUploader label="Affiche 'Casting'" value={localData.siteImages.castingBg} onChange={value => handleSimpleChange('siteImages', 'castingBg', value)} />
                         </div>
                     </div>
-                    
-                     <div className="admin-section-wrapper">
+
+                    <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Réseaux Sociaux</h2>
                         <div className="space-y-4">
                             <FormInput label="URL Facebook" value={localData.socialLinks.facebook} onChange={e => handleSimpleChange('socialLinks', 'facebook', e.target.value)} />
@@ -113,13 +134,13 @@ const AdminSettings: React.FC = () => {
                             <FormInput label="URL YouTube" value={localData.socialLinks.youtube} onChange={e => handleSimpleChange('socialLinks', 'youtube', e.target.value)} />
                         </div>
                     </div>
-                    
+
                     <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Partenaires de l'Agence</h2>
                         <div className="space-y-4">
-                            <ArrayEditor 
+                            <ArrayEditor
                                 items={localData.agencyPartners}
-                                setItems={newItems => setLocalData(p => ({...p!, agencyPartners: newItems}))}
+                                setItems={newItems => setLocalData(p => ({ ...p!, agencyPartners: newItems }))}
                                 renderItem={(item: Partner, updateItem) => (
                                     <FormInput label="Nom du partenaire" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
                                 )}
@@ -128,26 +149,26 @@ const AdminSettings: React.FC = () => {
                             />
                         </div>
                     </div>
-                    
-                     <div className="admin-section-wrapper">
+
+                    <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">Témoignages</h2>
                         <div className="space-y-4">
-                            <ArrayEditor 
+                            <ArrayEditor
                                 items={localData.testimonials}
-                                setItems={newItems => setLocalData(p => ({...p!, testimonials: newItems}))}
+                                setItems={newItems => setLocalData(p => ({ ...p!, testimonials: newItems }))}
                                 renderItem={(item: Testimonial, updateItem) => (
                                     <>
                                         <FormInput label="Nom" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
                                         <FormInput label="Rôle" value={item.role} onChange={e => updateItem({ ...item, role: e.target.value })} />
                                         <ImageUploader label="Photo" value={item.imageUrl} onChange={value => updateItem({ ...item, imageUrl: value })} />
-                                        <FormTextArea 
-                                            label="Citation" 
-                                            value={item.quote} 
+                                        <FormTextArea
+                                            label="Citation"
+                                            value={item.quote}
                                             onChange={e => updateItem({ ...item, quote: e.target.value })}
                                         />
                                     </>
                                 )}
-                                getNewItem={() => ({ name: 'Nouveau Témoin', role: 'Rôle', quote: '', imageUrl: ''})}
+                                getNewItem={() => ({ name: 'Nouveau Témoin', role: 'Rôle', quote: '', imageUrl: '' })}
                                 getItemTitle={item => item.name}
                             />
                         </div>
@@ -155,9 +176,9 @@ const AdminSettings: React.FC = () => {
 
                     <div className="admin-section-wrapper">
                         <h2 className="admin-section-title">FAQ (Foire Aux Questions)</h2>
-                        <ArrayEditor 
+                        <ArrayEditor
                             items={localData.faqData}
-                            setItems={newItems => setLocalData(p => ({...p!, faqData: newItems}))}
+                            setItems={newItems => setLocalData(p => ({ ...p!, faqData: newItems }))}
                             renderItem={(item: FAQCategory, updateItem) => (
                                 <>
                                     <FormInput label="Catégorie" value={item.category} onChange={e => updateItem({ ...item, category: e.target.value })} />
@@ -186,13 +207,13 @@ const AdminSettings: React.FC = () => {
     );
 };
 
-const FormInput: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormInput: React.FC<{ label: string, value: any, onChange: any }> = ({ label, value, onChange }) => (
     <div>
         <label className="admin-label">{label}</label>
         <input type="text" value={value} onChange={onChange} className="admin-input" />
     </div>
 );
-const FormTextArea: React.FC<{label: string, value: any, onChange: any}> = ({label, value, onChange}) => (
+const FormTextArea: React.FC<{ label: string, value: any, onChange: any }> = ({ label, value, onChange }) => (
     <div>
         <label className="admin-label">{label}</label>
         <textarea value={value} onChange={onChange} rows={5} className="admin-input admin-textarea" />
@@ -224,7 +245,7 @@ const ArrayEditor: React.FC<{
             setItems(items.filter((_, i) => i !== index));
         }
     };
-    
+
     return (
         <div className="space-y-3">
             {items.map((item, index) => (
@@ -244,7 +265,7 @@ const ArrayEditor: React.FC<{
                 </div>
             ))}
             <button type="button" onClick={handleAddItem} className="inline-flex items-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold text-xs font-bold uppercase tracking-widest rounded-full hover:bg-pm-gold hover:text-pm-dark mt-4">
-                <PlusIcon className="w-4 h-4"/> Ajouter un élément
+                <PlusIcon className="w-4 h-4" /> Ajouter un élément
             </button>
         </div>
     );
