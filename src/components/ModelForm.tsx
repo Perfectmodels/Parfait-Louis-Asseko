@@ -206,14 +206,14 @@ const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, c
 const FormInput: React.FC<{label: string, name: string, value: any, onChange: any, type?: string, disabled?: boolean, placeholder?: string}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <input type={props.type || "text"} {...props} className="admin-input" />
+        <input type={props.type || "text"} id={props.name} {...props} className="admin-input" />
     </div>
 );
 
 const FormSelect: React.FC<{label: string, name: string, value: any, onChange: any, children: React.ReactNode, disabled?: boolean}> = (props) => (
      <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <select {...props} className="admin-select">
+        <select id={props.name} {...props} className="admin-select">
             {props.children}
         </select>
     </div>
@@ -222,7 +222,7 @@ const FormSelect: React.FC<{label: string, name: string, value: any, onChange: a
 const FormTextArea: React.FC<{label: string, name: string, value: any, onChange: any, rows?: number, disabled?: boolean, placeholder?: string}> = (props) => (
     <div>
         <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <textarea {...props} rows={props.rows || 3} className="admin-textarea" />
+        <textarea id={props.name} {...props} rows={props.rows || 3} className="admin-textarea" />
     </div>
 );
 
