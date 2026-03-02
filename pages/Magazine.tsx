@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
-import { Article } from '../types';
-import { useData } from '../contexts/DataContext';
-import Pagination from '../components/Pagination';
+import SEO from '../src/components/SEO';
+import { Article } from '../src/types';
+import { useData } from '../src/contexts/DataContext';
+import Pagination from '../src/components/Pagination';
 
 const Magazine: React.FC = () => {
   const { data, isInitialized } = useData();

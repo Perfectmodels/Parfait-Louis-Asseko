@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
 
 const NotFound: React.FC = () => {
   const { data } = useData();

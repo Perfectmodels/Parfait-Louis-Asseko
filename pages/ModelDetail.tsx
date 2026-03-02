@@ -4,11 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
 import { ChevronLeftIcon, XMarkIcon, ShareIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/solid';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
 // FIX: Corrected import path for BookingForm.
-import BookingForm from '../components/BookingForm';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
+import BookingForm from '../src/components/BookingForm';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../src/components/SocialIcons';
 
 // --- Helper & Modal Components for Sharing ---
 const generateShortLink = async (

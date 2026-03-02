@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import ModelCard from '../components/ModelCard';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
+import ModelCard from '../src/components/ModelCard';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
 

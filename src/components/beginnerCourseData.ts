@@ -1,5 +1,5 @@
 
-import { Module } from '../types';
+import { Module } from '../src/types';
 
 export const beginnerCourseData: Module[] = [
   {

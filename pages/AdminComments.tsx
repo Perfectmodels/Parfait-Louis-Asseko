@@ -1,7 +1,7 @@
 import React from 'react';
-import { useData } from '../contexts/DataContext';
-import { ArticleComment } from '../types';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { ArticleComment } from '../src/types';
+import SEO from '../src/components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 

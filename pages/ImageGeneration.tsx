@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import SEO from '../components/SEO';
+import SEO from '../src/components/SEO';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 
 const ImageGeneration: React.FC = () => {

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckBadgeIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { AchievementCategory, ModelDistinction, FAQCategory } from '../types';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
-import TestimonialCarousel from '../components/TestimonialCarousel';
+import { AchievementCategory, ModelDistinction, FAQCategory } from '../src/types';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import TestimonialCarousel from '../src/components/TestimonialCarousel';
 
 const FAQ: React.FC<{ faqData: FAQCategory[] }> = ({ faqData }) => {
     const [openFAQ, setOpenFAQ] = useState<string | null>('0-0');

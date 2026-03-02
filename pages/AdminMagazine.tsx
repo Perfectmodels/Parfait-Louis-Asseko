@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
-import { Article, ArticleContent } from '../types';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { Article, ArticleContent } from '../src/types';
+import SEO from '../src/components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, StarIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import ImageUploader from '../components/ImageUploader';
-import ArticleGenerator from '../components/ArticleGenerator';
-import AIAssistant from '../components/AIAssistant';
-import ArticlePreview from '../components/ArticlePreview';
+import ImageUploader from '../src/components/ImageUploader';
+import ArticleGenerator from '../src/components/ArticleGenerator';
+import AIAssistant from '../src/components/AIAssistant';
+import ArticlePreview from '../src/components/ArticlePreview';
 
 
 const AdminMagazine: React.FC = () => {

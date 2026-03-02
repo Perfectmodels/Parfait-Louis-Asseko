@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GoogleGenAI, LiveSession, LiveServerMessage, Modality, Blob as GenAIBlob } from '@google/genai';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
+import SEO from '../src/components/SEO';
 import { ArrowLeftIcon, MicrophoneIcon, StopCircleIcon } from '@heroicons/react/24/solid';
 
 // Helper functions for audio encoding/decoding, as per guidelines

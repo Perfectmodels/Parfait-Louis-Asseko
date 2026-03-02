@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
 import { CheckCircleIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 const ServiceDetail: React.FC = () => {

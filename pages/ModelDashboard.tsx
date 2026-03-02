@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import SEO from '../src/components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import { Model, PhotoshootBrief } from '../types';
+import { Model, PhotoshootBrief } from '../src/types';
 // FIX: Corrected import path for ModelForm.
-import ModelForm from '../components/ModelForm';
+import ModelForm from '../src/components/ModelForm';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 

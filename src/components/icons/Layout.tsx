@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import Header, { Breadcrumb } from './Header';
 import Footer from './Footer';
-import Marquee from './Marquee';
+import Marquee from '../Marquee';
 import AdminLayout from '../admin/AdminLayout';
 
 interface LayoutProps {

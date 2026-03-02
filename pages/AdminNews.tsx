@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
-import { NewsItem } from '../types';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { NewsItem } from '../src/types';
+import SEO from '../src/components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 // FIX: Corrected the import to use ImageUploader component for consistency and to fix the broken path.
-import ImageUploader from '../components/ImageUploader';
+import ImageUploader from '../src/components/ImageUploader';
 
 const AdminNews: React.FC = () => {
     const { data, saveData } = useData();

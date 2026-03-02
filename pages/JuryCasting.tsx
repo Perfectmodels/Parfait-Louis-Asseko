@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
-import { CastingApplication, JuryScore } from '../types';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { CastingApplication, JuryScore } from '../src/types';
+import SEO from '../src/components/SEO';
 import { XMarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import ScoreInput from '../components/ScoreInput';
+import ScoreInput from '../src/components/ScoreInput';
 
 const JuryCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
