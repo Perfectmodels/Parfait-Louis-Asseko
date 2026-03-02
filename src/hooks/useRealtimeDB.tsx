@@ -120,7 +120,7 @@ export const useRealtimeDB = () => {
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
         faqData: initialFaqData,
-        adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
+        adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: import.meta.env.VITE_ADMIN_PASSWORD || '', email: 'contact@perfectmodels.ga' },
         gallery: []
     }), []);
 
