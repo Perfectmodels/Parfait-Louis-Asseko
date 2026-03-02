@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
-import { CastingApplication } from '../types';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { CastingApplication } from '../src/types';
+import SEO from '../src/components/SEO';
 import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const generateRegistrationListHtml = (applicants: CastingApplication[], siteConfig: any): string => {

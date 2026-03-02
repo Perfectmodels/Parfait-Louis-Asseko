@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CountdownTimer from '../components/CountdownTimer';
+import CountdownTimer from '../src/components/CountdownTimer';
 import { CalendarDaysIcon, ClockIcon, MapPinIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
 
 const Casting: React.FC = () => {
   const { data, isInitialized } = useData();

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import SEO from '../components/SEO';
+import SEO from '../src/components/SEO';
 import { SparklesIcon, PhotoIcon, PaperAirplaneIcon, ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 
 const fileToBase64 = (file: File): Promise<string> =>

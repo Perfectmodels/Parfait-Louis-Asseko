@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
-import { AppData } from '../hooks/useFirestore';
-import { FashionDayEvent, Stylist, Partner, Artist } from '../types';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { AppData } from '../src/hooks/useFirestore';
+import { FashionDayEvent, Stylist, Partner, Artist } from '../src/types';
+import SEO from '../src/components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import ImageUploader from '../components/ImageUploader';
+import ImageUploader from '../src/components/ImageUploader';
 
 type EditableData = Pick<AppData, 'fashionDayEvents'>;
 

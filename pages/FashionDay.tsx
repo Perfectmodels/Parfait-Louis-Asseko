@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarDaysIcon, MapPinIcon, SparklesIcon, UserGroupIcon, MicrophoneIcon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
-import { FashionDayEvent, Artist } from '../types';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { FashionDayEvent, Artist } from '../src/types';
 
 interface AccordionItemProps {
     title: string;

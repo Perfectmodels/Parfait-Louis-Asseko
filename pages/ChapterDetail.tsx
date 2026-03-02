@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NotFound from './NotFound';
-import SEO from '../components/SEO';
+import SEO from '../src/components/SEO';
 import { ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { useData } from '../contexts/DataContext';
-import { QuizQuestion, Model, Chapter, Module } from '../types';
-import QuizComponent from '../components/QuizComponent';
+import { useData } from '../src/contexts/DataContext';
+import { QuizQuestion, Model, Chapter, Module } from '../src/types';
+import QuizComponent from '../src/components/QuizComponent';
 
 
 const generateChapterHtml = (chapter: Chapter, module: Module, siteConfig: any): string => {

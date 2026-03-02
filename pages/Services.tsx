@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
-import { Service } from '../types';
-import ServiceCard from '../components/ServiceCard';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { Service } from '../src/types';
+import ServiceCard from '../src/components/ServiceCard';
 
 const Services: React.FC = () => {
     const { data } = useData();

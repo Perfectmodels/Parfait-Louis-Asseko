@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import NotFound from './NotFound';
-import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
-import { ArticleContent, ArticleComment, Article } from '../types';
+import SEO from '../src/components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { ArticleContent, ArticleComment, Article } from '../src/types';
 import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, ArrowDownTrayIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
-import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/SocialIcons';
+import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../src/components/SocialIcons';
 import html2canvas from 'html2canvas';
 
 const generateArticleHtml = (article: Article, siteConfig: any): string => {

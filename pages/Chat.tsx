@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, Chat as GeminiChat, GenerateContentResponse } from '@google/genai';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, SparklesIcon, GlobeAltIcon } from '@heroicons/react/24/solid';
-import SEO from '../components/SEO';
+import SEO from '../src/components/SEO';
 import { motion } from 'framer-motion';
 
 interface Message {

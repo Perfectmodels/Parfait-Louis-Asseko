@@ -1,12 +1,12 @@
 import React from 'react';
 import { motion, useInView, useAnimation, animate } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
-import TestimonialCarousel from '../components/TestimonialCarousel';
-import { useData } from '../contexts/DataContext';
-import ModelCard from '../components/ModelCard';
-import ServiceCard from '../components/ServiceCard';
-import CountdownTimer from '../components/CountdownTimer';
+import SEO from '../src/components/SEO';
+import TestimonialCarousel from '../src/components/TestimonialCarousel';
+import { useData } from '../src/contexts/DataContext';
+import ModelCard from '../src/components/ModelCard';
+import ServiceCard from '../src/components/ServiceCard';
+import CountdownTimer from '../src/components/CountdownTimer';
 import { UsersIcon, CalendarDaysIcon, StarIcon, TrophyIcon } from '@heroicons/react/24/outline';
 
 // --- Sub-components for Home Page ---

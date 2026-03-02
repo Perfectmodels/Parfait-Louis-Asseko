@@ -1,8 +1,8 @@
 
 import React, { useState, useMemo } from 'react';
-import { useData } from '../contexts/DataContext';
-import { MonthlyPayment } from '../types';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { MonthlyPayment } from '../src/types';
+import SEO from '../src/components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useData } from '../contexts/DataContext';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import SEO from '../src/components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, ClipboardDocumentIcon, CheckIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 

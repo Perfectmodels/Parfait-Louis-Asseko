@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useData } from '../contexts/DataContext';
-import { AppData } from '../hooks/useFirestore';
-import { Service, AchievementCategory } from '../types';
-import SEO from '../components/SEO';
+import { useData } from '../src/contexts/DataContext';
+import { AppData } from '../src/hooks/useFirestore';
+import { Service, AchievementCategory } from '../src/types';
+import SEO from '../src/components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
