@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Model } from '../src/types';
+import { Model } from '../types';
 import { motion } from 'framer-motion';
 
 interface ModelCardProps {

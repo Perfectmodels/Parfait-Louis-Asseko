@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { CastingApplication, JuryMember, JuryScore } from '../src/types';
-import { useData } from '../src/contexts/DataContext';
+import { CastingApplication, JuryMember, JuryScore } from '../types';
+import { useData } from '../contexts/DataContext';
 
 interface PrintableCastingSheetProps {
     app: CastingApplication;

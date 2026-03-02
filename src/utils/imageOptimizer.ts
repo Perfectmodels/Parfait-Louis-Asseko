@@ -1,4 +1,3 @@
-
 export const logError = () => {};
 export const logInfo = () => {};
 export const optimizeImage = (url: string) => url;

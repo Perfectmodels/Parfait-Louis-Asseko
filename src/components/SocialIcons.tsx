@@ -1,5 +1,9 @@
 
 import React from 'react';
-const SocialIcons = (props: any) => <div className="dummy-SocialIcons" />;
+export const FacebookIcon = () => <div/>;
+export const TwitterIcon = () => <div/>;
+export const WhatsAppIcon = () => <div/>;
+export const InstagramIcon = () => <div/>;
+export const YoutubeIcon = () => <div/>;
+export const SocialIcons = () => <div/>;
 export default SocialIcons;
-export { SocialIcons };

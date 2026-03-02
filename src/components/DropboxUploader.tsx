@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { dropboxService, DropboxFile } from '../src/utils/dropboxService';
+import { dropboxService, DropboxFile } from '../utils/dropboxService';
 import { CloudArrowUpIcon, CheckCircleIcon, ExclamationCircleIcon, ArrowPathIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 
 interface DropboxUploaderProps {

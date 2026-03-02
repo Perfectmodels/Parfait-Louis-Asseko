@@ -108,3 +108,4 @@ perfectmodels-4e5fa-default-rtdb-export.json
 *.bak
 *.swp
 *~
+node_modules\n.Jules\nbuild.log\nbuild_output.log\nbuild_real_output.log

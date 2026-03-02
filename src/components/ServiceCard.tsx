@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Service } from '../src/types';
+import { Service } from '../types';
 import { 
     UsersIcon, BriefcaseIcon, CameraIcon, AcademicCapIcon, 
     SparklesIcon, PresentationChartLineIcon, BuildingStorefrontIcon, 

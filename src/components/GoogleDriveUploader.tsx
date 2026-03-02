@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { googleDriveService, GoogleDriveFile } from '../src/utils/googleDriveService';
+import { googleDriveService, GoogleDriveFile } from '../utils/googleDriveService';
 import { CloudArrowUpIcon, CheckCircleIcon, ExclamationCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 interface GoogleDriveUploaderProps {
