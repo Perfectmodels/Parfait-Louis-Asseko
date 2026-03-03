@@ -9,6 +9,7 @@ export default {
       colors: {
         'pm-dark': '#111111',
         'pm-gold': '#D4AF37',
+        'pm-gold-light': '#F2D388',
         'pm-off-white': '#f0f0f0',
       },
       fontFamily: {
