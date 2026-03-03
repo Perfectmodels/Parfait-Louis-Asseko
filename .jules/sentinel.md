@@ -1,0 +1,4 @@
+## 2025-03-03 - [CRITICAL] Hardcoded Admin Password
+**Vulnerability:** A hardcoded plaintext password (`admin2025`) was found in the `src/pages/Login.tsx` file for the default admin user.
+**Learning:** Hardcoding passwords directly into source code makes them visible to anyone with access to the code, and in a React app without server-side rendering, this means the password could be extracted from client-side bundles. This is a critical security risk because anyone could potentially compromise the application admin account.
+**Prevention:** Avoid embedding sensitive credentials or secrets within the codebase. Instead, manage configurations through environment variables or secure vault services. Even for fallback credentials, utilizing an environment variable (`import.meta.env.VITE_ADMIN_PASSWORD`) provides a safer mechanism, allowing deployments to override defaults without code changes.
