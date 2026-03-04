@@ -6,8 +6,6 @@ import { DataProvider, useData } from './contexts/DataContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
-import { PWAInstaller } from './components/PWAInstaller';
-import { registerServiceWorker } from './utils/pwa';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -237,7 +235,6 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
 
     useEffect(() => {
-        registerServiceWorker();
     }, []);
 
     return (
@@ -245,7 +242,6 @@ const App: React.FC = () => {
             <HashRouter>
                 <ScrollToTop />
                 <AppContent />
-                <PWAInstaller />
             </HashRouter>
         </DataProvider>
     );
