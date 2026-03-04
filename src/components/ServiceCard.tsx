@@ -45,4 +45,6 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
     );
 };
 
-export default ServiceCard;
+export default React.memo(ServiceCard, (prevProps, nextProps) => {
+    return prevProps.service.slug === nextProps.service.slug;
+});
