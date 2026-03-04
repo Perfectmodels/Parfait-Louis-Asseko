@@ -13,11 +13,13 @@ import { registerServiceWorker } from './utils/pwa';
 const Home = lazy(() => import('./pages/Home'));
 const Agency = lazy(() => import('./pages/Agency'));
 const Models = lazy(() => import('./pages/Models'));
+const ModelDetail = lazy(() => import('./pages/ModelDetail'));
 const FashionDay = lazy(() => import('./pages/FashionDay'));
 const Magazine = lazy(() => import('./pages/Magazine'));
 const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Services = lazy(() => import('./pages/Services'));
+const ServiceDetail = lazy(() => import('./pages/ServiceDetail'));
 const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
@@ -28,23 +30,46 @@ const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 // FIX: Removed Beginner Classroom pages as the feature has been deprecated.
+const Chat = lazy(() => import('./pages/Chat'));
+const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
+const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
+const LiveChat = lazy(() => import('./pages/LiveChat'));
 
 
 // Admin Pages
 const Admin = lazy(() => import('./pages/Admin'));
+const AdminAgency = lazy(() => import('./pages/AdminAgency'));
 const AdminCasting = lazy(() => import('./pages/AdminCasting'));
 const AdminCastingResults = lazy(() => import('./pages/AdminCastingResults'));
 const AdminClassroom = lazy(() => import('./pages/AdminClassroom'));
+const AdminClassroomProgress = lazy(() => import('./pages/AdminClassroomProgress'));
+const AdminFashionDay = lazy(() => import('./pages/AdminFashionDay'));
+const AdminFashionDayEvents = lazy(() => import('./pages/AdminFashionDayEvents'));
 // FIX: Corrected import paths for Admin pages to resolve module not found errors.
 const AdminMagazine = lazy(() => import('./pages/AdminMagazine'));
+const AdminModelAccess = lazy(() => import('./pages/AdminModelAccess'));
+const AdminModels = lazy(() => import('./pages/AdminModels'));
+const AdminNews = lazy(() => import('./pages/AdminNews'));
+const AdminRecovery = lazy(() => import('./pages/AdminRecovery'));
 const AdminSettings = lazy(() => import('./pages/AdminSettings'));
+const AdminComments = lazy(() => import('./pages/AdminComments'));
+const AdminBookings = lazy(() => import('./pages/AdminBookings'));
+const AdminMessages = lazy(() => import('./pages/AdminMessages'));
 // FIX: Removed AdminBeginnerStudents as the feature has been deprecated.
+const AdminPayments = lazy(() => import('./pages/AdminPayments'));
+const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
+const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+const AdminMailing = lazy(() => import('./pages/AdminMailing'));
 
 
 // Role-specific pages
+const JuryCasting = lazy(() => import('./pages/JuryCasting'));
 const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
 
 // Static Pages
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 
 const ScrollToTop: React.FC = () => {
@@ -96,6 +121,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/agence" element={<Agency />} />
                     <Route path="/mannequins" element={<Models />} />
+                    <Route path="/mannequins/:id" element={<ModelDetail />} />
                     <Route path="/fashion-day" element={<FashionDay />} />
                     <Route path="/magazine" element={<Magazine />} />
                     <Route path="/magazine/:slug" element={<ArticleDetail />} />
@@ -108,6 +134,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
+                    <Route path="/chat" element={<Chat />} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -147,6 +174,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
                     <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
 
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </motion.div>
         </AnimatePresence>
@@ -188,6 +216,12 @@ const AppContent: React.FC = () => {
 
     // Dropbox Dynamic Sync
     useEffect(() => {
+        if (data?.apiKeys?.dropboxAccessToken) {
+            import('./utils/dropboxService').then(({ dropboxService }) => {
+                dropboxService.updateToken(data.apiKeys.dropboxAccessToken!);
+            });
+        }
+    }, [data?.apiKeys?.dropboxAccessToken]);
 
 
     return (
@@ -203,6 +237,7 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
 
     useEffect(() => {
+        registerServiceWorker();
     }, []);
 
     return (
@@ -210,6 +245,7 @@ const App: React.FC = () => {
             <HashRouter>
                 <ScrollToTop />
                 <AppContent />
+                <PWAInstaller />
             </HashRouter>
         </DataProvider>
     );
