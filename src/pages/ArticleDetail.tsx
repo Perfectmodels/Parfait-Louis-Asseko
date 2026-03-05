@@ -248,7 +248,9 @@ const ArticleDetail: React.FC = () => {
     try {
         await saveData({ ...data, articles: updatedArticles });
         const reactions = JSON.parse(localStorage.getItem('article_reactions') || '{}');
-        reactions[slug] = reactionType;
+        if (slug) {
+            reactions[slug] = reactionType;
+        }
         localStorage.setItem('article_reactions', JSON.stringify(reactions));
         setUserReaction(reactionType);
     } catch (error) {
@@ -324,7 +326,7 @@ const ArticleDetail: React.FC = () => {
       case 'heading': return content.level === 2 ? <h2 className="text-3xl font-playfair text-pm-gold mt-8 mb-4">{content.text}</h2> : <h3 className="text-2xl font-playfair text-pm-gold mt-6 mb-3">{content.text}</h3>;
       case 'paragraph': return <p className="mb-4 leading-relaxed">{content.text}</p>;
       case 'quote': return <blockquote className="my-6 p-4 border-l-4 border-pm-gold bg-black/50 italic"><p className="text-xl">"{content.text}"</p>{content.author && <cite className="block text-right mt-2 not-italic text-pm-off-white/70">— {content.author}</cite>}</blockquote>;
-      case 'image': return <figure className="my-8"><img src={content.src} alt={content.alt} loading="lazy" className="w-full h-auto object-cover rounded-lg" />{content.caption && <figcaption className="mt-2 text-sm text-center text-pm-off-white/60">{content.caption}</figcaption>}</figure>;
+      case 'image': return <figure className="my-8">{/* Added lazy loading to defer loading off-screen images */}<img src={content.src} alt={content.alt} loading="lazy" className="w-full h-auto object-cover rounded-lg" />{content.caption && <figcaption className="mt-2 text-sm text-center text-pm-off-white/60">{content.caption}</figcaption>}</figure>;
       default: return null;
     }
   };
@@ -345,6 +347,7 @@ const ArticleDetail: React.FC = () => {
                 <span className="flex items-center gap-1.5"><EyeIcon className="w-4 h-4" /> {article.viewCount || 0} vues</span>
               </div>
             </header>
+            {/* Added fetchPriority="high" to prioritize Largest Contentful Paint (LCP) for the hero image */}
             <img src={article.imageUrl} alt={article.title} fetchPriority="high" className="w-full h-auto object-cover my-8" />
             <div className="prose prose-invert prose-lg max-w-none text-pm-off-white/80">{safeContent.map((contentBlock, index) => <div key={index}>{renderContent(contentBlock)}</div>)}</div>
             <div className="mt-12 pt-6 border-t border-pm-gold/20 flex flex-col sm:flex-row justify-between items-center gap-6">

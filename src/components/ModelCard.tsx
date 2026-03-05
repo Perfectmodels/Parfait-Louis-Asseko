@@ -15,6 +15,7 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       className="group relative h-[650px] overflow-hidden bg-pm-gray border border-white/5"
     >
       <Link to={`/mannequins/${model.id}`} className="block h-full">
+        {/* Added lazy loading to prevent below-the-fold image bottlenecks */}
         <img 
             src={model.imageUrl} 
             alt={model.name} 
