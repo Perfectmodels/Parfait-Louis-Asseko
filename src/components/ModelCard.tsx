@@ -18,6 +18,7 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
         <img 
             src={model.imageUrl} 
             alt={model.name} 
+            loading="lazy"
             className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110" 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-transparent to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-700"></div>
