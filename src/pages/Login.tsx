@@ -30,7 +30,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
   const navigate = useNavigate();
-  const { data, isInitialized, saveData } = useData();
+  const { data, isInitialized, saveData, addDocument } = useData();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,10 +86,9 @@ const Login: React.FC = () => {
   const handleSubmitRecovery = async (modelName: string, phone: string) => {
     if (!data) return;
     const newRequest: RecoveryRequest = {
-      id: Date.now().toString(), modelName, phone, timestamp: new Date().toISOString(), status: 'Nouveau',
+      modelName, phone, timestamp: new Date().toISOString(), status: 'Nouveau',
     };
-    const updatedRequests = [...(data.recoveryRequests || []), newRequest];
-    await saveData({ ...data, recoveryRequests: updatedRequests });
+    await addDocument('recoveryRequests', newRequest);
     setIsRecoveryModalOpen(false);
     alert('Votre demande a été envoyée. Vous serez contacté prochainement.');
   };

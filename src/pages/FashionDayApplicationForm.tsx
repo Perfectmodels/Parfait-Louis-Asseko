@@ -7,7 +7,7 @@ import { FashionDayApplication, FashionDayApplicationRole } from '../types';
 import { Link } from 'react-router-dom';
 
 const FashionDayApplicationForm: React.FC = () => {
-    const { data, saveData } = useData();
+    const { data, addDocument } = useData();
     const [formData, setFormData] = useState<{
         name: string;
         email: string;
@@ -40,14 +40,12 @@ const FashionDayApplicationForm: React.FC = () => {
 
         const newApplication: FashionDayApplication = {
             ...formData,
-            id: `pfd-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
         };
 
         try {
-            const updatedApplications = [...(data.fashionDayApplications || []), newApplication];
-            await saveData({ ...data, fashionDayApplications: updatedApplications });
+            await addDocument('fashionDayApplications', newApplication);
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée ! L\'équipe du Perfect Fashion Day vous recontactera prochainement.');

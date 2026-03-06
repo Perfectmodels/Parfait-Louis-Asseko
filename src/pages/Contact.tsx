@@ -9,7 +9,7 @@ import BookingForm from '../components/BookingForm';
 import { ContactMessage } from '../types';
 
 const Contact: React.FC = () => {
-    const { data, saveData } = useData();
+    const { data, addDocument } = useData();
     const location = useLocation();
     const contactInfo = data?.contactInfo;
     const socialLinks = data?.socialLinks;
@@ -39,7 +39,6 @@ const Contact: React.FC = () => {
         }
 
         const newContactMessage: ContactMessage = {
-            id: `contact-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
             name: formData.name,
@@ -49,8 +48,7 @@ const Contact: React.FC = () => {
         };
 
         try {
-            const updatedMessages = [...(data.contactMessages || []), newContactMessage];
-            await saveData({ ...data, contactMessages: updatedMessages });
+            await addDocument('contactMessages', newContactMessage);
             
             setStatus('success');
             setStatusMessage('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');

@@ -8,7 +8,7 @@ import { useData } from '../contexts/DataContext';
 import { ForumThread } from '../types';
 
 const ClassroomForum: React.FC = () => {
-    const { data, saveData, isInitialized } = useData();
+    const { data, saveData, addDocument, isInitialized } = useData();
     const [isCreating, setIsCreating] = useState(false);
     const [newThread, setNewThread] = useState({ title: '', initialPost: '' });
 
@@ -22,7 +22,6 @@ const ClassroomForum: React.FC = () => {
         if (!newThread.title.trim() || !newThread.initialPost.trim() || !user || !data) return;
 
         const threadData: ForumThread = {
-            id: Date.now().toString(),
             title: newThread.title,
             initialPost: newThread.initialPost,
             authorId: user.id,
@@ -30,9 +29,8 @@ const ClassroomForum: React.FC = () => {
             createdAt: new Date().toISOString()
         };
 
-        const updatedThreads = [...data.forumThreads, threadData];
         try {
-            await saveData({ ...data, forumThreads: updatedThreads });
+            await addDocument('forumThreads', threadData);
             setNewThread({ title: '', initialPost: '' });
             setIsCreating(false);
         } catch (error) {

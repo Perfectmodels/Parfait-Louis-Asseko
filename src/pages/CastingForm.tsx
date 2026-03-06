@@ -7,7 +7,7 @@ import { CastingApplication } from '../types';
 import { Link } from 'react-router-dom';
 
 const CastingForm: React.FC = () => {
-    const { data, saveData } = useData();
+    const { data, addDocument } = useData();
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
@@ -32,14 +32,12 @@ const CastingForm: React.FC = () => {
 
         const newApplication: CastingApplication = {
             ...formData,
-            id: `casting-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
         };
 
         try {
-            const updatedApplications = [...(data.castingApplications || []), newApplication];
-            await saveData({ ...data, castingApplications: updatedApplications });
+            await addDocument('castingApplications', newApplication);
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');

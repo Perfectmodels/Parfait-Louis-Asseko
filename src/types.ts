@@ -101,6 +101,7 @@ export type ArticleContent =
   | { type: 'image'; src: string; alt: string; caption?: string };
 
 export interface Article {
+  id: string;
   slug: string;
   title: string;
   category: string;

@@ -8,7 +8,7 @@ interface BookingFormProps {
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess }) => {
-    const { data, saveData } = useData();
+    const { data, addDocument } = useData();
     const [formData, setFormData] = useState({
         clientName: '',
         clientEmail: '',
@@ -43,15 +43,13 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
         }
 
         const newRequest: BookingRequest = {
-            id: `booking-${Date.now()}`,
             submissionDate: new Date().toISOString(),
             status: 'Nouveau',
             ...formData
         };
 
         try {
-            const updatedRequests = [...(data.bookingRequests || []), newRequest];
-            await saveData({ ...data, bookingRequests: updatedRequests });
+            await addDocument('bookingRequests', newRequest);
 
             setStatus('success');
             setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');
