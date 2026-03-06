@@ -7,7 +7,10 @@ interface ModelCardProps {
   model: Model;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
+// ⚡ Bolt Optimization:
+// 1. Wrapped ModelCard in React.memo() to prevent unnecessary re-renders when parent (Models directory) state updates (e.g. search input).
+// 2. Added loading="lazy" to native <img> tag to defer off-screen image loading, improving initial load time and bandwidth.
+const ModelCard: React.FC<ModelCardProps> = React.memo(({ model }) => {
   return (
     <motion.div 
       whileHover={{ y: -15 }}
@@ -18,6 +21,7 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
         <img 
             src={model.imageUrl} 
             alt={model.name} 
+            loading="lazy"
             className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110" 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-transparent to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-700"></div>
@@ -42,6 +46,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       </Link>
     </motion.div>
   );
-};
+});
 
 export default ModelCard;
