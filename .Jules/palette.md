@@ -1,0 +1,3 @@
+## 2024-03-06 - Missing ARIA Labels on Mobile Nav Toggles
+**Learning:** Found a recurring pattern in this codebase where mobile navigation toggle buttons (like the hamburger menu in `Header.tsx` and the sidebar toggle in `AdminLayout.tsx`) lack `aria-label`, `aria-expanded`, and `aria-controls` attributes. Additionally, they often lack explicit focus visible styles, making keyboard navigation difficult to track visually.
+**Action:** When adding or reviewing interactive icon-only elements or custom animated toggles in this app, always verify that proper ARIA labels and focus states (`focus-visible:ring-2`) are included for accessibility.
