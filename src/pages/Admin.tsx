@@ -201,6 +201,26 @@ const Admin: React.FC = () => {
     );
 };
 
+interface StatCardProps {
+    title: string;
+    value: number;
+    icon: React.ElementType;
+    link: string;
+    isNew?: boolean;
+    color: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon: Icon, link, isNew, color }) => (
+    <Link to={link} className="relative group block bg-white/5 border border-white/5 p-6 rounded-2xl hover:border-white/20 transition-all">
+        {isNew && <span className="absolute top-4 right-4 bg-pm-gold text-pm-dark text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Nouveau</span>}
+        <div className="flex items-start justify-between mb-4">
+            <Icon className="w-8 h-8 text-pm-off-white/40 group-hover:text-pm-gold transition-colors" />
+            <span className="text-3xl font-playfair font-black text-white">{value}</span>
+        </div>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-pm-off-white/60 group-hover:text-white transition-colors">{title}</h3>
+    </Link>
+);
+
 interface DashboardCardProps {
     title: string;
     icon: React.ElementType;
