@@ -9,7 +9,7 @@ import { ForumReply } from '../types';
 import NotFound from './NotFound';
 
 const ForumThread: React.FC = () => {
-    const { data, saveData, isInitialized } = useData();
+    const { data, saveData, addDocument, isInitialized } = useData();
     const { threadId } = useParams<{ threadId: string }>();
     const [newReply, setNewReply] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -29,7 +29,6 @@ const ForumThread: React.FC = () => {
         if (!newReply.trim() || !user || !data || !thread) return;
 
         const replyData: ForumReply = {
-            id: Date.now().toString(),
             threadId: thread.id,
             authorId: user.id,
             authorName: user.name,
@@ -37,9 +36,8 @@ const ForumThread: React.FC = () => {
             content: newReply
         };
 
-        const updatedReplies = [...data.forumReplies, replyData];
         try {
-            await saveData({ ...data, forumReplies: updatedReplies });
+            await addDocument('forumReplies', replyData);
             setNewReply('');
         } catch (error) {
             console.error("Erreur lors de l'envoi de la réponse:", error);

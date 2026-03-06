@@ -171,7 +171,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
 
 const ArticleDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { data, saveData, isInitialized } = useData();
+  const { data, saveData, addDocument, updateDocument, isInitialized } = useData();
   const [newComment, setNewComment] = useState('');
   const [commentAuthor, setCommentAuthor] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -193,16 +193,15 @@ const ArticleDetail: React.FC = () => {
 
     const incrementViewCount = async () => {
       const viewedArticles: string[] = JSON.parse(localStorage.getItem('viewed_articles') || '[]');
-      if (!viewedArticles.includes(slug)) {
-          const articleIndex = data.articles.findIndex(a => a.slug === slug);
-          if (articleIndex === -1) return;
-
-          const updatedArticle = { ...data.articles[articleIndex], viewCount: (data.articles[articleIndex].viewCount || 0) + 1 };
-          const updatedArticles = [...data.articles];
-          updatedArticles[articleIndex] = updatedArticle;
-          
-          await saveData({ ...data, articles: updatedArticles });
-          localStorage.setItem('viewed_articles', JSON.stringify([...viewedArticles, slug]));
+      if (!viewedArticles.includes(slug) && article) {
+          try {
+              await updateDocument('articles', article.id, {
+                  viewCount: (article.viewCount || 0) + 1
+              });
+              localStorage.setItem('viewed_articles', JSON.stringify([...viewedArticles, slug]));
+          } catch (error) {
+              console.error("Error incrementing view count:", error);
+          }
       }
     };
 
@@ -218,15 +217,13 @@ const ArticleDetail: React.FC = () => {
     if (!newComment.trim() || !data || !article) return;
     setIsSubmitting(true);
     const commentData: ArticleComment = {
-      id: Date.now().toString(),
       articleSlug: article.slug,
       authorName: commentAuthor.trim() || 'Anonyme',
       createdAt: new Date().toISOString(),
       content: newComment,
     };
-    const updatedComments = [...data.articleComments, commentData];
     try {
-      await saveData({ ...data, articleComments: updatedComments });
+      await addDocument('articleComments', commentData);
       setNewComment('');
       setCommentAuthor('');
     } catch (error) {
@@ -238,15 +235,14 @@ const ArticleDetail: React.FC = () => {
   
   const handleReaction = async (reactionType: 'like' | 'dislike') => {
     if (userReaction || !data || !article) return;
-    const articleIndex = data.articles.findIndex(a => a.slug === slug);
-    if (articleIndex === -1) return;
-    const currentReactions = data.articles[articleIndex].reactions || { likes: 0, dislikes: 0 };
-    const updatedReactions = { ...currentReactions, [reactionType === 'like' ? 'likes' : 'dislikes']: currentReactions[reactionType === 'like' ? 'likes' : 'dislikes'] + 1 };
-    const updatedArticle = { ...data.articles[articleIndex], reactions: updatedReactions };
-    const updatedArticles = [...data.articles];
-    updatedArticles[articleIndex] = updatedArticle;
+    const currentReactions = article.reactions || { likes: 0, dislikes: 0 };
+    const updatedReactions = {
+        ...currentReactions,
+        [reactionType === 'like' ? 'likes' : 'dislikes']: (currentReactions[reactionType === 'like' ? 'likes' : 'dislikes'] || 0) + 1
+    };
+
     try {
-        await saveData({ ...data, articles: updatedArticles });
+        await updateDocument('articles', article.id, { reactions: updatedReactions });
         const reactions = JSON.parse(localStorage.getItem('article_reactions') || '{}');
         reactions[slug] = reactionType;
         localStorage.setItem('article_reactions', JSON.stringify(reactions));

@@ -233,37 +233,30 @@ export const useRealtimeDB = () => {
     };
 
     useEffect(() => {
-        const dbRef = ref(db); // Ref to the root of the database
+        const initial = getInitialData();
+        setData(initial);
+        const nodes = Object.keys(initial);
+        const unsubscribes: (() => void)[] = [];
 
-        const unsubscribe = onValue(dbRef, (snapshot) => {
-            const dbData = snapshot.val();
-            if (dbData) {
-                // If data exists in DB, normalize it (convert objects to arrays)
-                const normalizedData = normalizeData(dbData);
-                setData(normalizedData);
-                logger.log("✅ Realtime DB data loaded successfully");
-            } else {
-                // If DB is empty, seed it with initial data
-                const initial = getInitialData();
-                set(dbRef, initial).then(() => {
-                    setData(initial);
-                    logger.log("✅ Realtime DB seeded with initial data.");
-                }).catch(error => {
-                    logger.error("Realtime DB seeding failed:", error);
-                    // Fallback to local data if seeding fails
-                    setData(initial);
-                });
-            }
-            setIsInitialized(true);
-        }, (error) => {
-            logger.error("Realtime DB read failed:", error);
-            // Fallback to local data if read fails
-            setData(getInitialData());
-            setIsInitialized(true);
+        nodes.forEach(node => {
+            const nodeRef = ref(db, node);
+            const unsub = onValue(nodeRef, (snapshot) => {
+                const val = snapshot.val();
+                if (val !== null) {
+                    setData(prev => {
+                        if (!prev) return prev;
+                        const newData = { ...prev, [node]: val };
+                        return normalizeData(newData);
+                    });
+                }
+            }, (error) => {
+                console.warn(`Permission denied or read failed for node: ${node}`, error);
+            });
+            unsubscribes.push(unsub);
         });
 
-        // Cleanup subscription on unmount
-        return () => unsubscribe();
+        setIsInitialized(true);
+        return () => unsubscribes.forEach(unsub => unsub());
     }, [getInitialData]);
 
     const saveData = useCallback(async (newData: AppData) => {

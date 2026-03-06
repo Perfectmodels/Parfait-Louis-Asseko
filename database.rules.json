@@ -1,10 +1,80 @@
-
 {
   "rules": {
-    ".read": true,
-    ".write": true,
+    ".read": false,
+    ".write": "auth != null",
+    "siteConfig": { ".read": true },
+    "navLinks": { ".read": true },
+    "socialLinks": { ".read": true },
+    "agencyTimeline": { ".read": true },
+    "agencyInfo": { ".read": true },
+    "modelDistinctions": { ".read": true },
+    "agencyServices": { ".read": true },
+    "agencyAchievements": { ".read": true },
+    "agencyPartners": { ".read": true },
+    "models": { ".read": true },
+    "fashionDayEvents": { ".read": true },
+    "testimonials": { ".read": true },
     "articles": {
-      ".indexOn": "slug"
+      ".read": true,
+      ".indexOn": "slug",
+      "$articleId": {
+        "viewCount": {
+          ".write": true
+        },
+        "reactions": {
+          ".write": true
+        }
+      }
+    },
+    "newsItems": { ".read": true },
+    "faqData": { ".read": true },
+    "gallery": { ".read": true },
+    "contactInfo": { ".read": true },
+    "siteImages": { ".read": true },
+    "juryMembers": { ".read": true },
+    "registrationStaff": { ".read": true },
+    "articleComments": {
+      ".read": true,
+      "$id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "forumThreads": {
+      ".read": true,
+      "$id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "forumReplies": {
+      ".read": true,
+      "$id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "castingApplications": {
+      "$id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "fashionDayApplications": {
+      "$id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "recoveryRequests": {
+      "$id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "bookingRequests": {
+      "$id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "contactMessages": {
+      "$id": {
+        ".write": "!data.exists()"
+      }
     }
   }
 }
