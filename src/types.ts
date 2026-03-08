@@ -380,3 +380,18 @@ export interface NavLink {
     inFooter: boolean;
     footerLabel?: string;
 }
+
+export interface AdminProfile {
+    id: string;
+    name: string;
+    username: string;
+    password?: string;
+    email: string;
+}
+
+export interface GalleryItem {
+    id: string;
+    imageUrl: string;
+    title?: string;
+    description?: string;
+}
