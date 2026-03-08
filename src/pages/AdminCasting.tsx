@@ -170,8 +170,8 @@ const AdminCasting: React.FC = () => {
                                         <td className="p-4"><span className={`px-2 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span></td>
                                         <td className="p-4">
                                             <div className="flex items-center justify-end gap-4">
-                                                <button onClick={() => setSelectedApp(app)} className="text-pm-gold/70 hover:text-pm-gold"><EyeIcon className="w-5 h-5"/></button>
-                                                <button onClick={() => handleDelete(app.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                                                <button onClick={() => setSelectedApp(app)} className="text-pm-gold/70 hover:text-pm-gold focus-visible:ring-2 focus-visible:ring-pm-gold rounded" aria-label="Voir la candidature" title="Voir"><EyeIcon className="w-5 h-5"/></button>
+                                                <button onClick={() => handleDelete(app.id)} className="text-red-500/70 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-red-500 rounded" aria-label="Supprimer la candidature" title="Supprimer"><TrashIcon className="w-5 h-5"/></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -200,7 +200,7 @@ const ApplicationModal: React.FC<{
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
                 <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
                     <h2 className="text-2xl font-playfair text-pm-gold">Candidature de {app.firstName} {app.lastName}</h2>
-                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
+                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white focus-visible:ring-2 focus-visible:ring-pm-gold rounded" aria-label="Fermer la modal" title="Fermer"><XMarkIcon className="w-6 h-6"/></button>
                 </header>
                 <main className="p-6 overflow-y-auto flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Section title="Informations Personnelles">
