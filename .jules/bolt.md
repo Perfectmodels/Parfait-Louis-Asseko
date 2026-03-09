@@ -1,3 +1,0 @@
-## 2024-05-18 - [Memoizing Repeated List Components]
-**Learning:** Using `React.memo()` on repeatedly rendered list components (like `ModelCard` inside `Models.tsx`) is an effective performance optimization pattern in this application to prevent unnecessary deep re-renders when parent states (like search or filter inputs) are updated.
-**Action:** Apply `React.memo()` proactively to complex card/list-item components that rely heavily on static props (`Model` object) and are rendered in large arrays, particularly when the parent component has frequent state updates (like filtering or searching).

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Model } from '../types';
 import { motion } from 'framer-motion';
@@ -9,7 +9,7 @@ interface ModelCardProps {
 
 // ⚡ Bolt: Memoized to prevent unnecessary re-renders in large grids (e.g., Models.tsx)
 // when parent states (like search or filter inputs) change.
-const ModelCard = memo(({ model }: ModelCardProps) => {
+const ModelCard = React.memo(({ model }: ModelCardProps) => {
   return (
     <motion.div 
       whileHover={{ y: -15 }}
