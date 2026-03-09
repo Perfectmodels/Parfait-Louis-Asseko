@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Model } from '../types';
 import { motion } from 'framer-motion';
@@ -7,7 +7,9 @@ interface ModelCardProps {
   model: Model;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
+// ⚡ Bolt: Memoized to prevent unnecessary re-renders in large grids (e.g., Models.tsx)
+// when parent states (like search or filter inputs) change.
+const ModelCard: React.FC<ModelCardProps> = memo(({ model }) => {
   return (
     <motion.div 
       whileHover={{ y: -15 }}
@@ -42,6 +44,9 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       </Link>
     </motion.div>
   );
-};
+});
+
+// For better debugging display name
+ModelCard.displayName = 'ModelCard';
 
 export default ModelCard;
