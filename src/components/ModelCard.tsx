@@ -9,7 +9,7 @@ interface ModelCardProps {
 
 // ⚡ Bolt: Memoized to prevent unnecessary re-renders in large grids (e.g., Models.tsx)
 // when parent states (like search or filter inputs) change.
-const ModelCard: React.FC<ModelCardProps> = memo(({ model }) => {
+const ModelCard = memo(({ model }: ModelCardProps) => {
   return (
     <motion.div 
       whileHover={{ y: -15 }}
