@@ -122,6 +122,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm lg:hidden"
                         />
                         <motion.div 
+                            id="admin-sidebar"
                             initial={{ x: "-100%" }}
                             animate={{ x: 0 }}
                             exit={{ x: "-100%" }}
@@ -130,7 +131,13 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         >
                             <div className="flex items-center justify-between mb-16 px-4">
                                 <h1 className="font-playfair text-xl font-black italic">Elite Panel</h1>
-                                <button onClick={() => setSidebarOpen(false)} className="text-white/40 hover:text-white"><XMarkIcon className="w-6 h-6" /></button>
+                                <button
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="text-white/40 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-sm"
+                                    aria-label="Close sidebar"
+                                >
+                                    <XMarkIcon className="w-6 h-6" />
+                                </button>
                             </div>
                             <Sidebar onLinkClick={() => setSidebarOpen(false)} />
                         </motion.div>
@@ -142,7 +149,13 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="flex flex-col flex-1 lg:pl-72">
                 <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/5 bg-pm-dark/60 backdrop-blur-xl px-6 sm:px-10">
                     <div className="flex items-center gap-6">
-                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-pm-off-white/80">
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="lg:hidden p-2 text-pm-off-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-sm"
+                            aria-label="Open sidebar"
+                            aria-expanded={sidebarOpen}
+                            aria-controls="admin-sidebar"
+                        >
                             <Bars3Icon className="w-6 h-6" />
                         </button>
                         <div className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">
