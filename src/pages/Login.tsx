@@ -46,7 +46,8 @@ const Login: React.FC = () => {
 
     // Secure mapping of users with fallbacks for each array
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        // 🛡️ Sentinel: Hardcoded admin password replaced with environment variable to prevent exposing credentials in source code.
+        { type: 'admin', user: { name: 'Admin', username: 'admin', password: import.meta.env.VITE_ADMIN_PASSWORD as string }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
