@@ -1,0 +1,3 @@
+## 2024-05-18 - React.memo() type conflict with React.FC
+**Learning:** When wrapping a React functional component with `React.memo()`, it returns a `React.NamedExoticComponent`. If the original component was explicitly typed as `React.FC` (e.g., `const MyComponent: React.FC<Props> = React.memo(...)`), TypeScript will throw an error and fail deployment checks (`tsc --noEmit`) due to a type mismatch.
+**Action:** When applying the `React.memo()` optimization, ensure to remove the explicit `React.FC` type annotation and type the props inline (e.g., `const MyComponent = React.memo(({ prop1 }: Props) => { ... })`).

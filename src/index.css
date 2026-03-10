@@ -43,7 +43,7 @@
   }
 
   .gold-gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-pm-gold via-pm-gold-light to-pm-gold;
+    @apply bg-gradient-to-r from-pm-gold via-pm-gold to-pm-gold bg-clip-text text-transparent;
   }
 
   .admin-label {
