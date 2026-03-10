@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ArrowLeftOnRectangleIcon, AcademicCapIcon, CheckCircleIcon, XCircleIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
-import BackToTopButton from '../components/BackToTopButton';
 import { QuizQuestion, Module, SiteImages } from '../types';
 import { useData } from '../contexts/DataContext';
 
@@ -121,7 +120,6 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
                     </main>
                 </div>
             </div>
-            <BackToTopButton />
         </>
     );
 };
