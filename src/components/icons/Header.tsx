@@ -142,7 +142,11 @@ const Header: React.FC = () => {
             </NavLink>
           ))}
           {isLoggedIn ? (
-            <button onClick={handleLogout} className="text-[10px] uppercase tracking-[0.4em] font-black text-pm-gold flex items-center gap-2 hover:text-white transition-colors">
+            <button
+              onClick={handleLogout}
+              className="text-[10px] uppercase tracking-[0.4em] font-black text-pm-gold flex items-center gap-2 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-sm px-2 py-1"
+              aria-label="Log out"
+            >
               <ArrowRightOnRectangleIcon className="w-4 h-4" />
               Logout
             </button>
@@ -159,7 +163,13 @@ const Header: React.FC = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden z-50 text-pm-gold focus:outline-none">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="lg:hidden z-50 text-pm-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-md"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu"
+        >
           <AnimatedHamburgerIcon isOpen={isOpen} />
         </button>
       </div>
@@ -168,6 +178,7 @@ const Header: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            id="mobile-menu"
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.1 }}
