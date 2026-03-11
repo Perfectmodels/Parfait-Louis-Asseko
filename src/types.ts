@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface Model {
   id: string;
   name: string;
