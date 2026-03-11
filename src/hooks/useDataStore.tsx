@@ -75,6 +75,9 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    adminProfile: any;
+    gallery: any[];
+    fashionDayReservations?: any[];
 }
 
 export const useDataStore = () => {
@@ -114,6 +117,8 @@ export const useDataStore = () => {
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
         faqData: initialFaqData,
+        adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
+        gallery: [],
     }), []);
     
     useEffect(() => {

@@ -79,6 +79,7 @@ export interface AppData {
     photoshootBriefs: PhotoshootBrief[];
     adminProfile: AdminProfile;
     gallery: GalleryItem[];
+    fashionDayReservations?: any[];
 }
 
 // Renamed hook to useRealtimeDB
