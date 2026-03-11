@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { AppData } from '../hooks/useRealtimeDB';
+import { AppData } from '../hooks/useDataStore';
 import { Testimonial, Partner, FAQCategory, FAQItem } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
