@@ -1,0 +1,3 @@
+## 2024-05-24 - Missing accessibility for icon-only interactive elements
+**Learning:** Icon-only interactive elements in the codebase, such as the mobile navigation toggle and log out buttons in the header, often lack required accessibility attributes (`aria-label`, `aria-expanded`, `aria-controls`) and focus-visible styling (`focus-visible:ring-2 focus-visible:ring-pm-gold`). This makes them unusable for screen reader users and difficult for keyboard navigation.
+**Action:** Always verify and enforce the inclusion of explicit ARIA attributes and focus styles when implementing or modifying icon-only buttons or toggles to adhere to accessibility standards.
