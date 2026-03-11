@@ -1,0 +1,4 @@
+## 2024-05-18 - Hardcoded Firebase Credentials in Configuration Files
+**Vulnerability:** The `src/firebaseConfig.ts` and `src/realtimedbConfig.ts` files contained hardcoded, plaintext API keys and configuration credentials for Firebase, which constitutes a critical security gap exposing backend access configurations directly in source code.
+**Learning:** In a Vite environment, developers occasionally hardcode `firebaseConfig` details directly because Vite handles environment variables via `import.meta.env.*` rather than `process.env.*`, and because the type of these variables can cause TypeScript compilation errors unless explicitly cast `as string`.
+**Prevention:** Always rely on environment variables (e.g., `import.meta.env.VITE_FIREBASE_*`) to populate configuration objects and ensure proper type casting (`as string`) to satisfy the compiler without compromising security, aligning with `.env.example` templates.
