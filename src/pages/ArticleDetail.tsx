@@ -258,7 +258,9 @@ const ArticleDetail: React.FC = () => {
     try {
         await saveData({ ...data, articles: updatedArticles });
         const reactions = JSON.parse(localStorage.getItem('article_reactions') || '{}');
-        reactions[slug] = reactionType;
+        if (slug) {
+             reactions[slug] = reactionType;
+        }
         localStorage.setItem('article_reactions', JSON.stringify(reactions));
         setUserReaction(reactionType);
     } catch (error) {
