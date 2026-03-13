@@ -46,4 +46,6 @@ const ModelCard = React.memo(({ model }: ModelCardProps) => {
   );
 });
 
+ModelCard.displayName = 'ModelCard';
+
 export default ModelCard;
