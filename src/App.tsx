@@ -245,7 +245,7 @@ const App: React.FC = () => {
             <HashRouter>
                 <ScrollToTop />
                 <AppContent />
-                <PWAInstaller />
+                {/* <PWAInstaller /> */}
             </HashRouter>
         </DataProvider>
     );
