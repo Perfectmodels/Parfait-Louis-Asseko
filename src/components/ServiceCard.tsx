@@ -16,7 +16,9 @@ const iconMap: { [key: string]: React.ElementType } = {
   "BuildingStorefrontIcon": BuildingStorefrontIcon,
 };
 
-const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
+// ⚡ Bolt: Wrapped with React.memo() to prevent unnecessary re-renders
+// when parent layout changes occur, preserving performance on high-frequency mounts.
+const ServiceCard = React.memo(({ service }: { service: Service }) => {
     const Icon = iconMap[service.icon] || HeartIcon;
     
     return (
@@ -43,6 +45,6 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
             </div>
         </Link>
     );
-};
+});
 
 export default ServiceCard;
