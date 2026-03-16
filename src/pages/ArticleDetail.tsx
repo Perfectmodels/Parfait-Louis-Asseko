@@ -247,7 +247,7 @@ const ArticleDetail: React.FC = () => {
   };
   
   const handleReaction = async (reactionType: 'like' | 'dislike') => {
-    if (userReaction || !data || !article) return;
+    if (userReaction || !data || !article || !slug) return;
     const articleIndex = data.articles.findIndex(a => a.slug === slug);
     if (articleIndex === -1) return;
     const currentReactions = data.articles[articleIndex].reactions || { likes: 0, dislikes: 0 };
