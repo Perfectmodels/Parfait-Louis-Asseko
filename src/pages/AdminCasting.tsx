@@ -1,14 +1,17 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, PrinterIcon } from '@heroicons/react/24/outline';
 import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
+import Modal from '../components/ui/Modal';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
+    const { notify } = useNotification();
     const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
@@ -47,7 +50,7 @@ const AdminCasting: React.FC = () => {
 
         const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
         if (modelExists) {
-            alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
+            notify("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.", "error");
             return;
         }
 
@@ -106,11 +109,11 @@ const AdminCasting: React.FC = () => {
 
         try {
             await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-            alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`);
+            notify(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`, "success");
             setSelectedApp(null); // Close modal on success
         } catch (error) {
             console.error("Erreur lors de la création du mannequin:", error);
-            alert("Une erreur est survenue lors de la sauvegarde.");
+            notify("Une erreur est survenue lors de la sauvegarde.", "error");
         }
     };
     
@@ -196,13 +199,14 @@ const ApplicationModal: React.FC<{
     onValidateAndCreateModel: (app: CastingApplication) => void,
 }> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel }) => {
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
-                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
-                    <h2 className="text-2xl font-playfair text-pm-gold">Candidature de {app.firstName} {app.lastName}</h2>
-                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white"><XMarkIcon className="w-6 h-6"/></button>
-                </header>
-                <main className="p-6 overflow-y-auto flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Modal
+            isOpen={true}
+            onClose={onClose}
+            title={`Candidature de ${app.firstName} ${app.lastName}`}
+            maxWidth="max-w-4xl"
+        >
+            <div className="space-y-8">
+                <main className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <Section title="Informations Personnelles">
                         <InfoItem label="Nom complet" value={`${app.firstName} ${app.lastName}`} />
                         <InfoItem label="Date de naissance" value={app.birthDate} />
@@ -212,7 +216,7 @@ const ApplicationModal: React.FC<{
                         <InfoItem label="Ville" value={app.city} />
                         <InfoItem label="Genre" value={app.gender} />
                     </Section>
-                     <Section title="Mensurations & Physique">
+                    <Section title="Mensurations & Physique">
                         <InfoItem label="Taille" value={`${app.height} cm`} />
                         <InfoItem label="Poids" value={`${app.weight} kg`} />
                         <InfoItem label="Poitrine" value={`${app.chest} cm`} />
@@ -229,11 +233,11 @@ const ApplicationModal: React.FC<{
                             <InfoItem label="Portfolio" value={app.portfolioLink} />
                         </Section>
                     </div>
-                     <div className="md:col-span-2">
+                    <div className="md:col-span-2">
                         <Section title="Statut">
                             <div className="flex items-center gap-2 flex-wrap">
                                 {(['Nouveau', 'Présélectionné', 'Accepté', 'Refusé'] as const).map(status => (
-                                    <button key={status} onClick={() => onUpdateStatus(app.id, status)} className={`px-2 py-0.5 text-xs font-bold rounded-full border transition-all ${app.status === status ? getStatusColor(status) : 'border-pm-off-white/50 text-pm-off-white/80 hover:bg-pm-dark'}`}>
+                                    <button key={status} onClick={() => onUpdateStatus(app.id, status)} className={`px-4 py-1 text-xs font-bold rounded-full border transition-all ${app.status === status ? getStatusColor(status) : 'border-pm-off-white/20 text-pm-off-white/60 hover:bg-white/5 hover:border-pm-off-white/40'}`}>
                                         {status}
                                     </button>
                                 ))}
@@ -241,15 +245,15 @@ const ApplicationModal: React.FC<{
                         </Section>
                     </div>
                 </main>
-                 <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
+                <div className="flex justify-end pt-6 border-t border-pm-gold/10">
                     {app.status === 'Présélectionné' && (
-                        <button onClick={() => onValidateAndCreateModel(app)} className="px-4 py-2 text-sm bg-green-600 text-white font-bold rounded-full hover:bg-green-500">
+                        <button onClick={() => onValidateAndCreateModel(app)} className="px-8 py-3 text-sm bg-green-600 text-white font-bold uppercase tracking-widest rounded-full hover:bg-green-500 transition-all shadow-lg shadow-green-500/20">
                             Valider & Créer Profil Mannequin
                         </button>
                     )}
-                </footer>
+                </div>
             </div>
-        </div>
+        </Modal>
     );
 };
 

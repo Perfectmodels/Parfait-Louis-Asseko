@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import {
@@ -9,6 +9,64 @@ import {
     SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon, MagnifyingGlassIcon, MicrophoneIcon
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
+
+const StatCard: React.FC<{ title: string; value: number; icon: React.ElementType; link: string; isNew?: boolean; color: string }> = ({ title, value, icon: Icon, link, isNew, color }) => {
+    const colorClasses: Record<string, string> = {
+        gold: 'text-pm-gold bg-pm-gold/10 border-pm-gold/20',
+        blue: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
+        purple: 'text-purple-400 bg-purple-400/10 border-purple-400/20',
+        gray: 'text-pm-off-white/60 bg-white/5 border-white/10'
+    };
+
+    return (
+        <Link to={link} className={`block p-6 rounded-3xl border transition-all hover:scale-[1.02] hover:shadow-2xl ${colorClasses[color] || colorClasses.gray}`}>
+            <div className="flex items-center justify-between mb-4">
+                <Icon className="w-8 h-8" />
+                {isNew && <span className="flex h-2 w-2 rounded-full bg-current animate-ping"></span>}
+            </div>
+            <p className="text-3xl font-black mb-1">{value}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">{title}</p>
+        </Link>
+    );
+};
+
+const timeAgo = (date: Date) => {
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return `il y a ${Math.floor(interval)} ans`;
+    interval = seconds / 2592000;
+    if (interval > 1) return `il y a ${Math.floor(interval)} mois`;
+    interval = seconds / 86400;
+    if (interval > 1) return `il y a ${Math.floor(interval)} jours`;
+    interval = seconds / 3600;
+    if (interval > 1) return `il y a ${Math.floor(interval)} heures`;
+    interval = seconds / 60;
+    if (interval > 1) return `il y a ${Math.floor(interval)} minutes`;
+    return "à l'instant";
+};
+
+const getRoleColor = (role: string) => {
+    switch (role) {
+        case 'admin': return 'bg-red-500/20 text-red-400 border-red-500/20';
+        case 'student': return 'bg-pm-gold/20 text-pm-gold border-pm-gold/20';
+        case 'jury': return 'bg-purple-500/20 text-purple-400 border-purple-500/20';
+        default: return 'bg-blue-500/20 text-blue-400 border-blue-500/20';
+    }
+};
+
+const getRoleDisplayName = (role: string) => {
+    switch (role) {
+        case 'admin': return 'Administrateur';
+        case 'student': return 'Mannequin';
+        case 'jury': return 'Membre du Jury';
+        case 'registration': return 'Enregistrement';
+        default: return role;
+    }
+};
+
+const activeUsers = JSON.parse(localStorage.getItem('pmm_active_users') || '[]');
+
+const NotificationTester: React.FC = () => null;
 
 const Admin: React.FC = () => {
     const navigate = useNavigate();
@@ -66,7 +124,7 @@ const Admin: React.FC = () => {
     ];
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <div className="bg-pm-dark text-pm-off-white pb-20 min-h-screen">
             <SEO title="Admin Dashboard" noIndex />
             <div className="container mx-auto px-6 lg:px-8">
                 <header className="admin-page-header">

@@ -3,8 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { RecoveryRequest } from '../types';
 import { motion } from 'framer-motion';
+import Modal from '../components/ui/Modal';
 
 interface ActiveUser {
   name: string;
@@ -31,6 +33,7 @@ const Login: React.FC = () => {
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
+  const { notify } = useNotification();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +94,7 @@ const Login: React.FC = () => {
     const updatedRequests = [...(data.recoveryRequests || []), newRequest];
     await saveData({ ...data, recoveryRequests: updatedRequests });
     setIsRecoveryModalOpen(false);
-    alert('Votre demande a été envoyée. Vous serez contacté prochainement.');
+    notify('Votre demande a été envoyée. Vous serez contacté prochainement.', 'success');
   };
 
   return (
@@ -167,40 +170,37 @@ const RecoveryModal: React.FC<{onClose: () => void, onSubmit: (name: string, pho
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
-      <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-playfair text-pm-gold">Demande de Coordonnées</h2>
-            <button onClick={onClose} className="text-pm-off-white/70 hover:text-white">
-              <XMarkIcon className="w-6 h-6" />
-            </button>
-          </div>
-          <p className="text-sm text-pm-off-white/70 mb-6">
+    <Modal
+        isOpen={true}
+        onClose={onClose}
+        title="Demande de Coordonnées"
+        maxWidth="max-w-md"
+    >
+        <div className="space-y-6">
+          <p className="text-sm text-pm-off-white/60">
             Entrez votre nom de mannequin et votre numéro de téléphone. L'administrateur vous contactera pour vous fournir vos accès.
           </p>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="modelName" className="sr-only">Nom de mannequin</label>
               <div className="relative">
-                <UserIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
+                <UserIcon className="h-5 w-5 text-pm-off-white/30 absolute top-1/2 left-4 transform -translate-y-1/2" />
                 <input id="modelName" type="text" value={modelName} onChange={e => setModelName(e.target.value)} placeholder="Votre nom complet" className="admin-input pl-12" required />
               </div>
             </div>
             <div>
               <label htmlFor="phone" className="sr-only">Numéro de téléphone</label>
               <div className="relative">
-                <PhoneIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
+                <PhoneIcon className="h-5 w-5 text-pm-off-white/30 absolute top-1/2 left-4 transform -translate-y-1/2" />
                 <input id="phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Votre numéro de téléphone" className="admin-input pl-12" required />
               </div>
             </div>
-            <button type="submit" className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white mt-4">
+            <button type="submit" className="w-full px-8 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full transition-all duration-300 hover:bg-white hover:scale-[1.02] shadow-xl shadow-pm-gold/20">
               Envoyer la demande
             </button>
           </form>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

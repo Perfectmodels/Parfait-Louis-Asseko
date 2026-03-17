@@ -10,9 +10,12 @@ import ArticleGenerator from '../components/ArticleGenerator';
 import AIAssistant from '../components/AIAssistant';
 import ArticlePreview from '../components/ArticlePreview';
 import { FacebookIcon } from '../components/icons/SocialIcons';
+import Modal from '../components/ui/Modal';
+import { useNotification } from '../contexts/NotificationContext';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
+  const { notify } = useNotification();
   const [localArticles, setLocalArticles] = useState<Article[]>([]);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -38,7 +41,7 @@ const AdminMagazine: React.FC = () => {
     }
     
     await saveData({ ...data, articles: updatedArticles });
-    alert("Article enregistré avec succès.");
+    notify("Article enregistré avec succès.", "success");
 
     setEditingArticle(null);
     setIsCreating(false);
@@ -49,7 +52,7 @@ const AdminMagazine: React.FC = () => {
       if (!data) return;
       const updatedArticles = localArticles.filter(a => a.slug !== slug);
       await saveData({ ...data, articles: updatedArticles });
-      alert("Article supprimé avec succès.");
+      notify("Article supprimé avec succès.", "success");
     }
   };
 
@@ -158,6 +161,7 @@ interface ArticleFormProps {
 }
 
 const ArticleForm: React.FC<ArticleFormProps> = ({ article, onSave, onCancel, isCreating }) => {
+    const { notify } = useNotification();
     const [formData, setFormData] = useState(article);
     const [contentJson, setContentJson] = useState(JSON.stringify(article.content, null, 2));
     const [isAIOpen, setIsAIOpen] = useState(false);
@@ -180,7 +184,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onSave, onCancel, is
             setFormData(currentArticleState); // Update formData to pass to preview
             setIsPreviewOpen(true);
         } catch (error) {
-            alert("Le format JSON du contenu est invalide. Impossible de prévisualiser.");
+            notify("Le format JSON du contenu est invalide. Impossible de prévisualiser.", "error");
         }
     };
 
@@ -190,7 +194,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onSave, onCancel, is
             const parsedContent = JSON.parse(contentJson);
             onSave({ ...formData, content: parsedContent });
         } catch (error) {
-            alert("Le format JSON du contenu est invalide.");
+            notify("Le format JSON du contenu est invalide.", "error");
         }
     };
     
@@ -263,22 +267,17 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onSave, onCancel, is
 };
 
 const ArticlePreviewModal: React.FC<{ isOpen: boolean, onClose: () => void, article: Article }> = ({ isOpen, onClose, article }) => {
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20 flex-shrink-0">
-                    <h2 className="text-2xl font-playfair text-pm-gold">Prévisualisation de l'Article</h2>
-                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer la prévisualisation"><XMarkIcon className="w-6 h-6"/></button>
-                </header>
-                <main className="overflow-y-auto flex-grow">
-                   <div className="p-4 sm:p-8">
-                      <ArticlePreview article={article} />
-                   </div>
-                </main>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Prévisualisation de l'Article"
+            maxWidth="max-w-4xl"
+        >
+            <div className="bg-black/20 p-4 sm:p-8 rounded-xl border border-white/5">
+                <ArticlePreview article={article} />
             </div>
-        </div>
+        </Modal>
     );
 };
 

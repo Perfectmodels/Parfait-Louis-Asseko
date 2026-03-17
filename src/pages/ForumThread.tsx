@@ -5,11 +5,13 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeftIcon, PaperAirplaneIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { ForumReply } from '../types';
 import NotFound from './NotFound';
 
 const ForumThread: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
+    const { notify } = useNotification();
     const { threadId } = useParams<{ threadId: string }>();
     const [newReply, setNewReply] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,7 @@ const ForumThread: React.FC = () => {
             setNewReply('');
         } catch (error) {
             console.error("Erreur lors de l'envoi de la réponse:", error);
-            alert("Impossible d'envoyer la réponse.");
+            notify("Impossible d'envoyer la réponse.", "error");
         }
     };
     

@@ -1,16 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import SEO from '../components/SEO';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon, PresentationChartLineIcon, UserIcon, ArrowRightOnRectangleIcon, EnvelopeIcon, CheckCircleIcon, CalendarDaysIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { Model, PhotoshootBrief } from '../types';
 import ModelForm from '../components/ModelForm';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type ActiveTab = 'profile' | 'results' | 'briefs';
 
 const ModelDashboard: React.FC = () => {
     const { data, saveData } = useData();
+    const { notify } = useNotification();
     const navigate = useNavigate();
     const userId = sessionStorage.getItem('userId');
     const [editableModel, setEditableModel] = useState<Model | null>(null);
@@ -37,13 +40,13 @@ const ModelDashboard: React.FC = () => {
         );
         
         await saveData({ ...data, models: updatedModels });
-        alert("Profil mis à jour avec succès.");
+        notify("Profil mis à jour avec succès.", "success");
     };
     
     const handleCancel = () => {
         if (originalModel) {
             setEditableModel(JSON.parse(JSON.stringify(originalModel)));
-            alert("Les modifications ont été annulées.");
+            notify("Les modifications ont été annulées.", "info");
         }
     };
 
@@ -123,55 +126,79 @@ const ModelDashboard: React.FC = () => {
                             </nav>
                         </div>
                         
-                        <div>
-                            {activeTab === 'profile' && (
-                                <ModelForm 
-                                    model={editableModel}
-                                    onSave={handleSave}
-                                    onCancel={handleCancel}
-                                    mode="model"
-                                    isCreating={false}
-                                />
-                            )}
-                            {activeTab === 'results' && (
-                                <div className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30">
-                                    <h2 className="text-2xl font-playfair text-pm-gold mb-6">Résultats des Quiz</h2>
-                                    {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
-                                        <ul className="space-y-3">
-                                            {courseModulesWithQuizzes.map(module => {
-                                                const scoreData = editableModel.quizScores?.[module.slug];
-                                                // FIX: Calculate percentage from the score object.
-                                                const percentage = scoreData ? Math.round((scoreData.score / scoreData.total) * 100) : null;
-                                                return (
-                                                    <li key={module.slug} className="flex justify-between items-center bg-pm-dark p-3 rounded-md text-sm">
-                                                        <span className="text-pm-off-white/80">{module.title}</span>
-                                                        {percentage !== null ? (
-                                                            // FIX: Use the calculated percentage for display and color coding.
-                                                            <span className={`font-bold text-lg ${getScoreColor(percentage)}`}>{percentage}%</span>
-                                                        ) : (
-                                                            <span className="text-xs text-pm-off-white/50">Non complété</span>
-                                                        )}
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    ) : (
-                                        <p className="text-pm-off-white/70 text-sm">Aucun quiz disponible pour le moment.</p>
-                                    )}
-                                </div>
-                            )}
-                            {activeTab === 'briefs' && (
-                                <div className="bg-black p-6 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30 space-y-4">
-                                    <h2 className="text-2xl font-playfair text-pm-gold mb-4">Briefings de Séances Photo</h2>
-                                    {myBriefs.length > 0 ? (
-                                        myBriefs.map(brief => (
-                                            <BriefItem key={brief.id} brief={brief} expandedBriefId={expandedBriefId} onToggle={handleToggleBrief} />
-                                        ))
-                                    ) : (
-                                        <p className="text-center text-pm-off-white/70 py-8">Votre boîte de réception est vide.</p>
-                                    )}
-                                </div>
-                            )}
+                        <div className="relative min-h-[400px]">
+                            <AnimatePresence mode="wait">
+                                {activeTab === 'profile' && (
+                                    <motion.div
+                                        key="profile"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <ModelForm
+                                            model={editableModel}
+                                            onSave={handleSave}
+                                            onCancel={handleCancel}
+                                            mode="model"
+                                            isCreating={false}
+                                        />
+                                    </motion.div>
+                                )}
+                                {activeTab === 'results' && (
+                                    <motion.div
+                                        key="results"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="bg-black p-8 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30"
+                                    >
+                                        <h2 className="text-2xl font-playfair text-pm-gold mb-6">Résultats des Quiz</h2>
+                                        {courseModulesWithQuizzes && courseModulesWithQuizzes.length > 0 ? (
+                                            <ul className="space-y-3">
+                                                {courseModulesWithQuizzes.map(module => {
+                                                    const scoreData = editableModel.quizScores?.[module.slug];
+                                                    // FIX: Calculate percentage from the score object.
+                                                    const percentage = scoreData ? Math.round((scoreData.score / scoreData.total) * 100) : null;
+                                                    return (
+                                                        <li key={module.slug} className="flex justify-between items-center bg-pm-dark p-3 rounded-md text-sm">
+                                                            <span className="text-pm-off-white/80">{module.title}</span>
+                                                            {percentage !== null ? (
+                                                                // FIX: Use the calculated percentage for display and color coding.
+                                                                <span className={`font-bold text-lg ${getScoreColor(percentage)}`}>{percentage}%</span>
+                                                            ) : (
+                                                                <span className="text-xs text-pm-off-white/50">Non complété</span>
+                                                            )}
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-pm-off-white/70 text-sm">Aucun quiz disponible pour le moment.</p>
+                                        )}
+                                    </motion.div>
+                                )}
+                                {activeTab === 'briefs' && (
+                                    <motion.div
+                                        key="briefs"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="bg-black p-6 border border-pm-gold/20 rounded-lg shadow-lg shadow-black/30 space-y-4"
+                                    >
+                                        <h2 className="text-2xl font-playfair text-pm-gold mb-4">Briefings de Séances Photo</h2>
+                                        {myBriefs.length > 0 ? (
+                                            myBriefs.map(brief => (
+                                                <BriefItem key={brief.id} brief={brief} expandedBriefId={expandedBriefId} onToggle={handleToggleBrief} />
+                                            ))
+                                        ) : (
+                                            <p className="text-center text-pm-off-white/70 py-8">Votre boîte de réception est vide.</p>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </main>
                 </div>

@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
 import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const RegistrationCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
+    const { notify } = useNotification();
     const initialFormState = {
         firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
@@ -51,9 +53,10 @@ const RegistrationCasting: React.FC = () => {
         try {
             await saveData({ ...data, castingApplications: updatedApplications });
             setFormData(initialFormState); // Reset form
+            notify("Postulant enregistré avec succès.", "success");
         } catch (error) {
             console.error(error);
-            alert("Erreur lors de l'enregistrement.");
+            notify("Erreur lors de l'enregistrement.", "error");
         } finally {
             setIsSubmitting(false);
         }

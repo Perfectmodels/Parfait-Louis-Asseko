@@ -8,6 +8,8 @@ import { ArticleContent, ArticleComment, Article } from '../types';
 import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 import html2canvas from 'html2canvas';
+import Modal from '../components/ui/Modal';
+import { useNotification } from '../contexts/NotificationContext';
 
 // --- Helper & Modal Components for Sharing ---
 const generateShortLink = async (
@@ -67,12 +69,7 @@ const ShareModal: React.FC<{
     useEffect(() => {
         if (!isOpen) return;
         setCopied(false);
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, url, onClose]);
+    }, [isOpen]);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(url);
@@ -80,41 +77,38 @@ const ShareModal: React.FC<{
         setTimeout(() => setCopied(false), 2000);
     };
 
-    if (!isOpen) return null;
-    
     const shareText = encodeURIComponent(title);
     const encodedUrl = encodeURIComponent(url);
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={onClose}>
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
-                <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
-                    <h2 className="text-xl font-playfair text-pm-gold">Partager l'Article</h2>
-                    <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer"><XMarkIcon className="w-6 h-6"/></button>
-                </header>
-                <main className="p-6 space-y-4">
-                    {isGenerating ? (
-                        <div className="flex items-center justify-center h-24">
-                            <p className="text-pm-gold animate-pulse">Génération du lien...</p>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Partager l'Article"
+            maxWidth="max-w-md"
+        >
+            <div className="space-y-6">
+                {isGenerating ? (
+                    <div className="flex items-center justify-center h-24">
+                        <p className="text-pm-gold animate-pulse">Génération du lien...</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="flex items-center gap-2">
+                            <input type="text" readOnly value={url} className="admin-input flex-grow !pr-10" />
+                            <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold transition-colors">
+                                {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
+                            </button>
                         </div>
-                    ) : (
-                        <>
-                            <div className="flex items-center gap-2">
-                                <input type="text" readOnly value={url} className="admin-input flex-grow !pr-10" />
-                                <button onClick={handleCopy} className="relative -ml-10 text-pm-off-white/70 hover:text-pm-gold">
-                                    {copied ? <CheckIcon className="w-5 h-5 text-green-500" /> : <ClipboardDocumentIcon className="w-5 h-5" />}
-                                </button>
-                            </div>
-                            <div className="flex justify-center gap-4 pt-2">
-                                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><FacebookIcon className="w-10 h-10" /></a>
-                                <a href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><TwitterIcon className="w-10 h-10 bg-white rounded-full p-1" /></a>
-                                <a href={`https://api.whatsapp.com/send?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/70 hover:text-pm-gold"><WhatsAppIcon className="w-10 h-10" /></a>
-                            </div>
-                        </>
-                    )}
-                </main>
+                        <div className="flex justify-center gap-6 pt-2">
+                            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/40 hover:text-pm-gold transition-all hover:scale-110"><FacebookIcon className="w-10 h-10" /></a>
+                            <a href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/40 hover:text-pm-gold transition-all hover:scale-110"><TwitterIcon className="w-10 h-10 bg-white rounded-full p-1" /></a>
+                            <a href={`https://api.whatsapp.com/send?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" className="text-pm-off-white/40 hover:text-pm-gold transition-all hover:scale-110"><WhatsAppIcon className="w-10 h-10" /></a>
+                        </div>
+                    </>
+                )}
             </div>
-        </div>
+        </Modal>
     );
 };
 
@@ -172,6 +166,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
 const ArticleDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data, saveData, isInitialized } = useData();
+  const { notify } = useNotification();
   const [newComment, setNewComment] = useState('');
   const [commentAuthor, setCommentAuthor] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -282,7 +277,7 @@ const ArticleDetail: React.FC = () => {
             setIsDownloading(null);
         }, 250);
     } else {
-        alert("Veuillez autoriser les pop-ups pour imprimer l'article.");
+        notify("Veuillez autoriser les pop-ups pour imprimer l'article.", "warning");
         setIsDownloading(null);
     }
   };
@@ -299,7 +294,7 @@ const ArticleDetail: React.FC = () => {
         link.click();
     } catch (error) {
         console.error("Erreur lors de la génération de l'image:", error);
-        alert("Une erreur est survenue lors de la création de l'image.");
+        notify("Une erreur est survenue lors de la création de l'image.", "error");
     } finally {
         setIsDownloading(null);
     }
