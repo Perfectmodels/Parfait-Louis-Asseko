@@ -1,0 +1,4 @@
+## 2024-05-24 - Cross-Site Scripting (XSS) via `document.write()` bypassing React's protections
+**Vulnerability:** XSS vulnerability in `ArticleDetail.tsx` when generating PDF download using `document.write()` containing unsanitized user inputs (`article.title`, `article.author`, `content.text`, etc.).
+**Learning:** Using React's built-in protections like JSX does not secure raw string concatenations passed to vanilla JS APIs like `window.open().document.write()`. Codebase must properly escape HTML for all inputs in such contexts.
+**Prevention:** Avoid `document.write()` with unsanitized dynamic strings. When raw HTML must be constructed and injected directly via DOM APIs or `dangerouslySetInnerHTML`, always implement an HTML escaping utility function (like `escapeHtml`) to sanitize any dynamic parameters or user inputs.
