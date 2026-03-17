@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom';
 import { ChatBubbleLeftRightIcon, PlusIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { ForumThread } from '../types';
 
 const ClassroomForum: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
+    const { notify } = useNotification();
     const [isCreating, setIsCreating] = useState(false);
     const [newThread, setNewThread] = useState({ title: '', initialPost: '' });
 
@@ -37,7 +39,7 @@ const ClassroomForum: React.FC = () => {
             setIsCreating(false);
         } catch (error) {
             console.error("Erreur lors de la création de la discussion:", error);
-            alert("Impossible de créer la discussion.");
+            notify("Impossible de créer la discussion.", "error");
         }
     };
     

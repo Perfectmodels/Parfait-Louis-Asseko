@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { AIAssistantProps } from '../types';
-import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 import { GoogleGenAI, Type } from '@google/genai';
+import Modal from './ui/Modal';
 
 const getSuggestions = (fieldName: string): string[] => {
     const lowerFieldName = fieldName.toLowerCase();
@@ -129,90 +129,81 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
         onClose();
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
-            <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl shadow-pm-gold/10 w-full max-w-2xl transform transition-all duration-300">
-                <div className="p-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-playfair text-pm-gold flex items-center gap-2">
-                            <SparklesIcon className="w-6 h-6" />
-                            Assistant IA pour "{fieldName}"
-                        </h2>
-                        <button onClick={onClose} className="text-pm-off-white/70 hover:text-white">
-                            <CloseIcon />
-                        </button>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={`Assistant IA pour "${fieldName}"`}
+            maxWidth="max-w-2xl"
+        >
+            <div className="space-y-6">
+                <div className="space-y-4">
+                    <div>
+                        <label htmlFor="ai-prompt" className="block text-sm font-bold text-pm-off-white/80 mb-2">Votre demande (Prompt) :</label>
+                        <textarea
+                            id="ai-prompt"
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            rows={4}
+                            className="admin-input admin-textarea"
+                            placeholder="Ex: Rédige un paragraphe sur l'importance de la posture..."
+                        />
                     </div>
 
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="ai-prompt" className="block text-sm font-bold text-pm-off-white/80 mb-2">Votre demande (Prompt) :</label>
+                    {suggestions.length > 0 && (
+                        <div className="pt-2">
+                            <p className="text-xs text-pm-off-white/60 mb-2">Suggestions :</p>
+                            <div className="flex flex-wrap gap-2">
+                                {suggestions.map((s, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setPrompt(s)}
+                                        className="px-3 py-1 bg-black border border-pm-gold/50 text-pm-gold/90 text-xs rounded-full hover:bg-pm-gold/10 transition-colors"
+                                    >
+                                        {s}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <button
+                        onClick={handleGenerate}
+                        disabled={isLoading}
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-xl hover:bg-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-pm-gold/10"
+                    >
+                        {isLoading ? 'Génération en cours...' : 'Générer le contenu'}
+                    </button>
+
+                    {error && <div className="p-4 bg-red-900/30 border border-red-500/50 text-red-400 text-sm rounded-xl">{error}</div>}
+
+                    {generatedContent && (
+                        <div className="animate-fade-in">
+                            <label className="block text-sm font-bold text-pm-off-white/80 mb-2">Résultat :</label>
                             <textarea
-                                id="ai-prompt"
-                                value={prompt}
-                                onChange={(e) => setPrompt(e.target.value)}
-                                rows={4}
-                                className="admin-input admin-textarea"
-                                placeholder="Ex: Rédige un paragraphe sur l'importance de la posture..."
+                                readOnly
+                                value={generatedContent}
+                                rows={8}
+                                className="admin-input admin-textarea bg-black/40 rounded-xl p-4 border-pm-off-white/10"
                             />
                         </div>
-                        
-                        {suggestions.length > 0 && (
-                            <div className="pt-2">
-                                <p className="text-xs text-pm-off-white/60 mb-2">Suggestions :</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {suggestions.map((s, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => setPrompt(s)}
-                                            className="px-3 py-1 bg-black border border-pm-gold/50 text-pm-gold/90 text-xs rounded-full hover:bg-pm-gold/10 transition-colors"
-                                        >
-                                            {s}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                    )}
+                </div>
 
-                        <button
-                            onClick={handleGenerate}
-                            disabled={isLoading}
-                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isLoading ? 'Génération en cours...' : 'Générer le contenu'}
-                        </button>
-
-                        {error && <div className="p-3 bg-red-900/50 border border-red-500 text-red-300 text-sm rounded-md">{error}</div>}
-
-                        {generatedContent && (
-                            <div>
-                                <label className="block text-sm font-bold text-pm-off-white/80 mb-2">Résultat :</label>
-                                <textarea
-                                    readOnly
-                                    value={generatedContent}
-                                    rows={8}
-                                    className="admin-input admin-textarea bg-black"
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex justify-end gap-4 mt-6">
-                        <button onClick={onClose} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-xs rounded-full hover:border-white">
-                            Annuler
-                        </button>
-                        <button
-                            onClick={handleInsert}
-                            disabled={!generatedContent || isLoading}
-                            className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white disabled:opacity-50"
-                        >
-                            Insérer le contenu
-                        </button>
-                    </div>
+                <div className="flex justify-end gap-4 pt-6 border-t border-pm-gold/10">
+                    <button onClick={onClose} className="px-6 py-2 bg-pm-dark border border-pm-off-white/20 text-pm-off-white/60 font-bold uppercase tracking-widest text-[10px] rounded-full hover:border-white hover:text-white transition-all">
+                        Annuler
+                    </button>
+                    <button
+                        onClick={handleInsert}
+                        disabled={!generatedContent || isLoading}
+                        className="px-6 py-2 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest text-[10px] rounded-full hover:bg-white disabled:opacity-50 transition-all shadow-lg shadow-pm-gold/20"
+                    >
+                        Insérer le contenu
+                    </button>
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 };
 

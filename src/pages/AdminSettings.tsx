@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { AppData } from '../hooks/useDataStore';
 import { Testimonial, Partner, FAQCategory, FAQItem } from '../types';
 import SEO from '../components/SEO';
@@ -12,6 +13,7 @@ type EditableData = Pick<AppData, 'contactInfo' | 'siteConfig' | 'siteImages' | 
 
 const AdminSettings: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
+    const { notify } = useNotification();
     const [localData, setLocalData] = useState<EditableData | null>(null);
 
     useEffect(() => {
@@ -51,7 +53,7 @@ const AdminSettings: React.FC = () => {
 
         const newData: AppData = { ...data, ...dataToSave };
         saveData(newData);
-        alert("Changements enregistrés avec succès dans la base de données.");
+        notify("Changements enregistrés avec succès dans la base de données.", "success");
     };
 
     const handleSimpleChange = (section: keyof EditableData, key: string, value: any) => {
@@ -143,7 +145,7 @@ const AdminSettings: React.FC = () => {
                                     items={localData.agencyPartners}
                                     setItems={newItems => setLocalData(p => ({ ...p!, agencyPartners: newItems }))}
                                     renderItem={(item: Partner, updateItem) => (
-                                        <FormInput label="Nom du partenaire" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
+                                        <FormInput label="Nom du partenaire" value={item.name} onChange={e => updateItem('name', e.target.value)} />
                                     )}
                                     getNewItem={() => ({ name: 'Nouveau Partenaire' })}
                                     getItemTitle={item => item.name}
@@ -159,13 +161,13 @@ const AdminSettings: React.FC = () => {
                                     setItems={newItems => setLocalData(p => ({ ...p!, testimonials: newItems }))}
                                     renderItem={(item: Testimonial, updateItem) => (
                                         <>
-                                            <FormInput label="Nom" value={item.name} onChange={e => updateItem({ ...item, name: e.target.value })} />
-                                            <FormInput label="Rôle" value={item.role} onChange={e => updateItem({ ...item, role: e.target.value })} />
-                                            <ImageUploader label="Photo" value={item.imageUrl} onChange={value => updateItem({ ...item, imageUrl: value })} />
+                                            <FormInput label="Nom" value={item.name} onChange={e => updateItem('name', e.target.value)} />
+                                            <FormInput label="Rôle" value={item.role} onChange={e => updateItem('role', e.target.value)} />
+                                            <ImageInput label="Photo" value={item.imageUrl} onChange={value => updateItem('imageUrl', value)} />
                                             <FormTextArea
                                                 label="Citation"
                                                 value={item.quote}
-                                                onChange={e => updateItem({ ...item, quote: e.target.value })}
+                                                onChange={e => updateItem('quote', e.target.value)}
                                             />
                                         </>
                                     )}
@@ -182,11 +184,11 @@ const AdminSettings: React.FC = () => {
                                 setItems={newItems => setLocalData(p => ({ ...p!, faqData: newItems }))}
                                 renderItem={(item: FAQCategory, updateItem) => (
                                     <>
-                                        <FormInput label="Catégorie" value={item.category} onChange={e => onChange('category', e.target.value)} />
+                                        <FormInput label="Catégorie" value={item.category} onChange={e => updateItem('category', e.target.value)} />
                                         <SubArrayEditor
                                             title="Questions"
                                             items={item.items || []}
-                                            setItems={newItems => onChange('items', newItems)}
+                                            setItems={newItems => updateItem('items', newItems)}
                                             getNewItem={() => ({ question: 'Nouvelle Question ?', answer: 'Réponse...' })}
                                             getItemTitle={item => item.question}
                                             renderItem={(faq: FAQItem, onFaqChange) => (

@@ -1,6 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { CastingApplication, CastingApplicationStatus, Model, JuryMember, JuryScore } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -9,6 +10,7 @@ import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
+    const { notify } = useNotification();
     const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
     const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
@@ -46,13 +48,13 @@ const AdminCastingResults: React.FC = () => {
         if (!data) return;
 
         if (app.status === 'Accepté') {
-            alert("Ce candidat a déjà été accepté et un profil a été créé.");
+            notify("Ce candidat a déjà été accepté et un profil a été créé.", "info");
             return;
         }
 
         const modelExists = data.models.some(m => m.name.toLowerCase() === `${app.firstName} ${app.lastName}`.toLowerCase());
         if (modelExists) {
-            alert("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.");
+            notify("Un mannequin avec ce nom existe déjà. Impossible de créer un duplicata.", "error");
             await handleUpdateStatus(app.id, 'Accepté'); // Mark as accepted anyway if name clash
             return;
         }
@@ -113,10 +115,10 @@ const AdminCastingResults: React.FC = () => {
 
         try {
             await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-            alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`);
+            notify(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`, "success");
         } catch (error) {
             console.error("Erreur lors de la création du mannequin:", error);
-            alert("Une erreur est survenue lors de la sauvegarde.");
+            notify("Une erreur est survenue lors de la sauvegarde.", "error");
         }
     };
     

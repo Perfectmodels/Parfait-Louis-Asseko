@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { Module, Chapter } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { ChevronLeftIcon, ChevronDownIcon, PlusIcon, TrashIcon, SparklesIcon } f
 
 const AdminClassroom: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
+    const { notify } = useNotification();
   const [course, setCourse] = useState<Module[] | null>(null);
   const [openModule, setOpenModule] = useState<number | null>(null);
 
@@ -91,7 +93,7 @@ const AdminClassroom: React.FC = () => {
   const handleSave = () => {
     if (!data || !course) return;
     saveData({ ...data, courseData: course });
-    alert("Changements enregistrés avec succès dans la base de données.");
+    notify("Changements enregistrés avec succès dans la base de données.", "success");
   };
 
   return (

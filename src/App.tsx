@@ -3,6 +3,7 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
@@ -242,11 +243,13 @@ const App: React.FC = () => {
 
     return (
         <DataProvider>
-            <HashRouter>
-                <ScrollToTop />
-                <AppContent />
-                <PWAInstaller />
-            </HashRouter>
+            <NotificationProvider>
+                <HashRouter>
+                    <ScrollToTop />
+                    <AppContent />
+                    <PWAInstaller />
+                </HashRouter>
+            </NotificationProvider>
         </DataProvider>
     );
 };
