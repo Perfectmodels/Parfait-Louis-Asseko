@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
 import { BookingRequest } from '../types';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { ref, update, remove } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 const STATUS_COLORS: Record<BookingRequest['status'], string> = {
   'Nouveau': 'bg-blue-500/20 text-blue-300 border-blue-500',
@@ -12,23 +14,28 @@ const STATUS_COLORS: Record<BookingRequest['status'], string> = {
 };
 
 const AdminBookings: React.FC = () => {
-  const { data, saveData } = useData();
-  const bookings = data?.bookingRequests ?? [];
+  const { items: bookings, isLoading, refresh } = useFirebaseCollection<BookingRequest>('bookingRequests', {
+    pageSize: 200,
+    orderBy: 'submissionDate',
+  });
   const [selected, setSelected] = useState<BookingRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<BookingRequest['status'] | 'Tous'>('Tous');
 
   const filtered = filterStatus === 'Tous' ? bookings : bookings.filter(b => b.status === filterStatus);
   const counts = { Nouveau: bookings.filter(b => b.status === 'Nouveau').length, total: bookings.length };
 
-  const handleStatus = (id: string, status: BookingRequest['status']) => {
-    if (!data) return;
-    saveData({ ...data, bookingRequests: data.bookingRequests.map(b => b.id === id ? { ...b, status } : b) });
+  const handleStatus = async (id: string, status: BookingRequest['status']) => {
+    await update(ref(db, `bookingRequests/${id}`), { status });
+    invalidateCache('bookingRequests');
+    refresh();
     if (selected?.id === id) setSelected(prev => prev ? { ...prev, status } : null);
   };
 
-  const handleDelete = (id: string) => {
-    if (!data || !window.confirm('Supprimer cette demande ?')) return;
-    saveData({ ...data, bookingRequests: data.bookingRequests.filter(b => b.id !== id) });
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Supprimer cette demande ?')) return;
+    await remove(ref(db, `bookingRequests/${id}`));
+    invalidateCache('bookingRequests');
+    refresh();
     if (selected?.id === id) setSelected(null);
   };
 
@@ -45,7 +52,6 @@ const AdminBookings: React.FC = () => {
           <p className="text-pm-off-white/40 text-sm mt-1">{counts.total} demande(s) — {counts.Nouveau} nouvelle(s)</p>
         </div>
 
-        {/* Filtres */}
         <div className="flex flex-wrap gap-2 mb-6">
           {(['Tous', 'Nouveau', 'Confirmé', 'Annulé'] as const).map(s => (
             <button key={s} onClick={() => setFilterStatus(s)}
@@ -98,12 +104,12 @@ const AdminBookings: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            {filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune demande.</p>}
+            {isLoading && <p className="text-center p-8 text-pm-off-white/40 animate-pulse">Chargement...</p>}
+            {!isLoading && filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune demande.</p>}
           </div>
         </div>
       </div>
 
-      {/* Modal détail */}
       {selected && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-pm-dark border border-pm-gold/30 rounded-lg w-full max-w-lg max-h-[90vh] flex flex-col">

@@ -2,13 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeftIcon, TrashIcon, XMarkIcon, PaperAirplaneIcon,
-  EnvelopeIcon, MagnifyingGlassIcon,
-  ArrowUturnLeftIcon, CheckCircleIcon,
+  EnvelopeIcon, MagnifyingGlassIcon, ArrowUturnLeftIcon, CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { ContactMessage } from '../types';
 import { sendReplyToContact } from '../utils/brevoService';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { ref, update, remove } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 const STATUS_STYLES: Record<ContactMessage['status'], string> = {
   Nouveau: 'bg-blue-500/15 text-blue-300 border-blue-500/40',
@@ -17,13 +19,11 @@ const STATUS_STYLES: Record<ContactMessage['status'], string> = {
 };
 
 const AdminMessages: React.FC = () => {
-  const { data, saveData } = useData();
-  const messages = useMemo(
-    () => [...(data?.contactMessages ?? [])].sort(
-      (a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()
-    ),
-    [data?.contactMessages]
-  );
+  const { data } = useData();
+  const { items: messages, isLoading, refresh } = useFirebaseCollection<ContactMessage>('contactMessages', {
+    pageSize: 200,
+    orderBy: 'submissionDate',
+  });
 
   const [selected, setSelected] = useState<ContactMessage | null>(null);
   const [search, setSearch] = useState('');
@@ -42,15 +42,18 @@ const AdminMessages: React.FC = () => {
 
   const newCount = messages.filter(m => m.status === 'Nouveau').length;
 
-  const updateStatus = (id: string, status: ContactMessage['status']) => {
-    if (!data) return;
-    saveData({ ...data, contactMessages: data.contactMessages.map(m => m.id === id ? { ...m, status } : m) });
+  const updateStatus = async (id: string, status: ContactMessage['status']) => {
+    await update(ref(db, `contactMessages/${id}`), { status });
+    invalidateCache('contactMessages');
+    refresh();
     if (selected?.id === id) setSelected(prev => prev ? { ...prev, status } : null);
   };
 
-  const deleteMsg = (id: string) => {
-    if (!data || !window.confirm('Supprimer ce message ?')) return;
-    saveData({ ...data, contactMessages: data.contactMessages.filter(m => m.id !== id) });
+  const deleteMsg = async (id: string) => {
+    if (!window.confirm('Supprimer ce message ?')) return;
+    await remove(ref(db, `contactMessages/${id}`));
+    invalidateCache('contactMessages');
+    refresh();
     if (selected?.id === id) setSelected(null);
   };
 
@@ -79,7 +82,7 @@ const AdminMessages: React.FC = () => {
       setReplyBody('');
       updateStatus(selected.id, 'Archivé');
     } catch (err: any) {
-      setReplyError(err.message || 'Erreur lors de l\'envoi');
+      setReplyError(err.message || "Erreur lors de l'envoi");
     } finally {
       setReplySending(false);
     }
@@ -91,34 +94,24 @@ const AdminMessages: React.FC = () => {
   return (
     <div className="bg-pm-dark min-h-screen text-pm-off-white">
       <SEO title="Admin — Messages" noIndex />
-
       <div className="container mx-auto px-6 py-12 max-w-7xl">
         <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold/60 hover:text-pm-gold text-xs uppercase tracking-widest font-black mb-10 transition-colors">
           <ChevronLeftIcon className="w-4 h-4" /> Tableau de bord
         </Link>
-
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div>
             <h1 className="text-4xl font-playfair font-black italic">Messages</h1>
-            {newCount > 0 && (
-              <p className="text-sm text-blue-300 mt-1">{newCount} nouveau{newCount > 1 ? 'x' : ''} message{newCount > 1 ? 's' : ''}</p>
-            )}
+            {newCount > 0 && <p className="text-sm text-blue-300 mt-1">{newCount} nouveau{newCount > 1 ? 'x' : ''} message{newCount > 1 ? 's' : ''}</p>}
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-220px)] min-h-[500px]">
-
-          {/* ── Sidebar liste ── */}
           <div className="lg:col-span-2 flex flex-col bg-black border border-pm-gold/20 rounded-2xl overflow-hidden">
-            {/* Filtres */}
             <div className="p-4 border-b border-pm-gold/10 space-y-3">
               <div className="relative">
                 <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-                <input
-                  value={search} onChange={e => setSearch(e.target.value)}
-                  placeholder="Rechercher…"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold"
-                />
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher…"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold" />
               </div>
               <div className="flex gap-2 flex-wrap">
                 {(['all', 'Nouveau', 'Lu', 'Archivé'] as const).map(s => (
@@ -129,12 +122,9 @@ const AdminMessages: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            {/* Liste */}
             <div className="flex-1 overflow-y-auto">
-              {filtered.length === 0 && (
-                <p className="text-center text-white/30 text-sm p-8">Aucun message</p>
-              )}
+              {isLoading && <p className="text-center text-white/30 text-sm p-8 animate-pulse">Chargement...</p>}
+              {!isLoading && filtered.length === 0 && <p className="text-center text-white/30 text-sm p-8">Aucun message</p>}
               {filtered.map(m => (
                 <button key={m.id} onClick={() => openMessage(m)}
                   className={`w-full text-left p-4 border-b border-white/5 transition-colors hover:bg-white/5 ${selected?.id === m.id ? 'bg-pm-gold/10 border-l-2 border-l-pm-gold' : ''}`}>
@@ -149,7 +139,6 @@ const AdminMessages: React.FC = () => {
             </div>
           </div>
 
-          {/* ── Panneau détail ── */}
           <div className="lg:col-span-3 flex flex-col bg-black border border-pm-gold/20 rounded-2xl overflow-hidden">
             {!selected ? (
               <div className="flex-1 flex flex-col items-center justify-center text-white/20 gap-3">
@@ -158,7 +147,6 @@ const AdminMessages: React.FC = () => {
               </div>
             ) : (
               <>
-                {/* Header */}
                 <div className="p-6 border-b border-pm-gold/10 flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <h2 className="text-lg font-bold text-white truncate">{selected.subject}</h2>
@@ -169,8 +157,7 @@ const AdminMessages: React.FC = () => {
                     <p className="text-xs text-white/25 mt-1">{fmt(selected.submissionDate)}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <select value={selected.status}
-                      onChange={e => updateStatus(selected.id, e.target.value as ContactMessage['status'])}
+                    <select value={selected.status} onChange={e => updateStatus(selected.id, e.target.value as ContactMessage['status'])}
                       className="text-xs bg-pm-dark border border-pm-gold/30 rounded-lg px-2 py-1.5 text-pm-off-white focus:outline-none focus:border-pm-gold">
                       <option value="Nouveau">Nouveau</option>
                       <option value="Lu">Lu</option>
@@ -184,20 +171,15 @@ const AdminMessages: React.FC = () => {
                     </button>
                   </div>
                 </div>
-
-                {/* Corps du message */}
                 <div className="flex-1 overflow-y-auto p-6">
                   <div className="bg-white/3 border border-white/5 rounded-xl p-5 text-pm-off-white/80 leading-relaxed whitespace-pre-wrap text-sm">
                     {selected.message}
                   </div>
-
-                  {/* Zone de réponse */}
                   <div className="mt-6">
                     <div className="flex items-center gap-2 mb-3">
                       <ArrowUturnLeftIcon className="w-4 h-4 text-pm-gold" />
                       <span className="text-xs font-black uppercase tracking-widest text-pm-gold">Répondre</span>
                     </div>
-
                     {replyDone ? (
                       <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/20 rounded-xl p-4">
                         <CheckCircleIcon className="w-5 h-5 text-green-400 shrink-0" />
@@ -209,15 +191,10 @@ const AdminMessages: React.FC = () => {
                           À : <span className="text-pm-gold">{selected.email}</span>
                           {' · '}Objet : <span className="text-white/50">Re: {selected.subject}</span>
                         </div>
-                        <textarea
-                          value={replyBody} onChange={e => setReplyBody(e.target.value)}
-                          required rows={5}
+                        <textarea value={replyBody} onChange={e => setReplyBody(e.target.value)} required rows={5}
                           placeholder="Rédigez votre réponse…"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold resize-none"
-                        />
-                        {replyError && (
-                          <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{replyError}</p>
-                        )}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold resize-none" />
+                        {replyError && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{replyError}</p>}
                         <button type="submit" disabled={replySending || !replyBody.trim()}
                           className="flex items-center gap-2 px-5 py-2.5 bg-pm-gold text-pm-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                           {replySending

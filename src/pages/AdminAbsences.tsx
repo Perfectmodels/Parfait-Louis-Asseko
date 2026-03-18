@@ -4,6 +4,9 @@ import { ChevronLeftIcon, TrashIcon, PlusIcon, FunnelIcon } from '@heroicons/rea
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { Absence } from '../types';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { ref, update, remove, push, set } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 const REASONS: Absence['reason'][] = ['Maladie', 'Personnel', 'Non justifié', 'Autre'];
 const EMPTY: Omit<Absence, 'id'> = { modelId: '', modelName: '', date: '', reason: 'Autre', notes: '', isExcused: false };
@@ -16,8 +19,11 @@ const REASON_COLORS: Record<Absence['reason'], string> = {
 };
 
 const AdminAbsences: React.FC = () => {
-  const { data, saveData } = useData();
-  const absences = data?.absences ?? [];
+  const { data } = useData();
+  const { items: absences, isLoading, refresh } = useFirebaseCollection<Absence>('absences', {
+    pageSize: 200,
+    orderBy: 'date',
+  });
   const models = data?.models ?? [];
   const [form, setForm] = useState(EMPTY);
   const [showForm, setShowForm] = useState(false);
@@ -30,33 +36,37 @@ const AdminAbsences: React.FC = () => {
     const matchModel = filterModel === 'Tous' || a.modelName === filterModel;
     const matchExcused = filterExcused === 'Tous' || (filterExcused === 'Justifiée' ? a.isExcused : !a.isExcused);
     return matchModel && matchExcused;
-  }).sort((a, b) => b.date.localeCompare(a.date));
+  });
 
-  // Stats par mannequin
   const stats = models.map(m => ({
     name: m.name,
     total: absences.filter(a => a.modelId === m.id).length,
     nonJustified: absences.filter(a => a.modelId === m.id && !a.isExcused).length,
   })).filter(s => s.total > 0).sort((a, b) => b.total - a.total);
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!data || !form.modelId || !form.date) return;
+    if (!form.modelId || !form.date) return;
     const model = models.find(m => m.id === form.modelId);
-    const newAbsence: Absence = { ...form, id: `abs-${Date.now()}`, modelName: model?.name ?? form.modelId };
-    saveData({ ...data, absences: [newAbsence, ...(data.absences ?? [])] });
+    const newRef = push(ref(db, 'absences'));
+    await set(newRef, { ...form, id: newRef.key, modelName: model?.name ?? form.modelId });
+    invalidateCache('absences');
+    refresh();
     setForm(EMPTY);
     setShowForm(false);
   };
 
-  const handleToggleExcused = (id: string) => {
-    if (!data) return;
-    saveData({ ...data, absences: data.absences.map(a => a.id === id ? { ...a, isExcused: !a.isExcused } : a) });
+  const handleToggleExcused = async (id: string, current: boolean) => {
+    await update(ref(db, `absences/${id}`), { isExcused: !current });
+    invalidateCache('absences');
+    refresh();
   };
 
-  const handleDelete = (id: string) => {
-    if (!data || !window.confirm('Supprimer cette absence ?')) return;
-    saveData({ ...data, absences: data.absences.filter(a => a.id !== id) });
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Supprimer cette absence ?')) return;
+    await remove(ref(db, `absences/${id}`));
+    invalidateCache('absences');
+    refresh();
   };
 
   return (
@@ -77,7 +87,6 @@ const AdminAbsences: React.FC = () => {
           </button>
         </div>
 
-        {/* Stats rapides */}
         {stats.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
             {stats.slice(0, 4).map(s => (
@@ -90,7 +99,6 @@ const AdminAbsences: React.FC = () => {
           </div>
         )}
 
-        {/* Formulaire */}
         {showForm && (
           <form onSubmit={handleAdd} className="bg-black border border-pm-gold/20 rounded-lg p-6 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -129,7 +137,6 @@ const AdminAbsences: React.FC = () => {
           </form>
         )}
 
-        {/* Filtres */}
         <div className="flex flex-wrap gap-3 mb-4 items-center">
           <FunnelIcon className="w-4 h-4 text-pm-off-white/30" />
           <select value={filterModel} onChange={e => setFilterModel(e.target.value)}
@@ -167,7 +174,7 @@ const AdminAbsences: React.FC = () => {
                     </td>
                     <td className="p-4 hidden lg:table-cell text-xs text-pm-off-white/40 max-w-[150px] truncate">{a.notes || '—'}</td>
                     <td className="p-4">
-                      <button onClick={() => handleToggleExcused(a.id)}
+                      <button onClick={() => handleToggleExcused(a.id, a.isExcused)}
                         className={`px-2 py-1 text-xs font-bold rounded-full border transition-all ${a.isExcused ? 'bg-green-500/20 text-green-300 border-green-500' : 'bg-red-500/20 text-red-300 border-red-500'}`}>
                         {a.isExcused ? 'Justifiée' : 'Non justifiée'}
                       </button>
@@ -179,7 +186,8 @@ const AdminAbsences: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            {filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune absence.</p>}
+            {isLoading && <p className="text-center p-8 text-pm-off-white/40 animate-pulse">Chargement...</p>}
+            {!isLoading && filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune absence.</p>}
           </div>
         </div>
       </div>

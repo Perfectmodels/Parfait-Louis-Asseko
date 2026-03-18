@@ -1,43 +1,56 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+
+const PAGE_SIZE = 15;
 
 const AdminCasting: React.FC = () => {
-    const { data, saveData, isInitialized } = useData();
-    const [localApps, setLocalApps] = useState<CastingApplication[]>([]);
+    const { data, saveData } = useData();
+    const {
+        items: pagedApps,
+        page, totalPages, nextPage, prevPage, isLoading, refresh,
+    } = useFirebaseCollection<CastingApplication>('castingApplications', {
+        pageSize: PAGE_SIZE,
+        orderBy: 'submissionDate',
+    });
+
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
     const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
-    useEffect(() => {
-        if (data?.castingApplications) {
-            setLocalApps([...data.castingApplications].sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime()));
-        }
-    }, [data?.castingApplications, isInitialized]);
-    
     const filteredApps = useMemo(() => {
-        if (filter === 'Toutes') return localApps;
-        return localApps.filter(app => app.status === filter);
-    }, [filter, localApps]);
+        if (filter === 'Toutes') return pagedApps;
+        return pagedApps.filter(app => app.status === filter);
+    }, [filter, pagedApps]);
 
     const handleDelete = async (appId: string) => {
-        if (window.confirm("Êtes-vous sûr de vouloir supprimer cette candidature ?")) {
-            if (!data) return;
-            const updatedApps = localApps.filter(app => app.id !== appId);
-            await saveData({ ...data, castingApplications: updatedApps });
+        if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette candidature ?")) return;
+        try {
+            const { remove, ref: fbRef } = await import('firebase/database');
+            const { db: fbDb } = await import('../realtimedbConfig');
+            await remove(fbRef(fbDb, `castingApplications/${appId}`));
+            invalidateCache('castingApplications');
+            refresh();
+        } catch (e) {
+            console.error(e);
         }
     };
 
     const handleUpdateStatus = async (appId: string, newStatus: CastingApplicationStatus) => {
-        if (!data) return;
-        const updatedApps: CastingApplication[] = localApps.map(app => app.id === appId ? { ...app, status: newStatus } : app);
-        await saveData({ ...data, castingApplications: updatedApps });
-        if (selectedApp?.id === appId) {
-            setSelectedApp({ ...selectedApp, status: newStatus });
+        try {
+            const { update, ref: fbRef } = await import('firebase/database');
+            const { db: fbDb } = await import('../realtimedbConfig');
+            await update(fbRef(fbDb, `castingApplications/${appId}`), { status: newStatus });
+            invalidateCache('castingApplications');
+            refresh();
+            if (selectedApp?.id === appId) setSelectedApp(prev => prev ? { ...prev, status: newStatus } : null);
+        } catch (e) {
+            console.error(e);
         }
     };
 
@@ -177,8 +190,34 @@ const AdminCasting: React.FC = () => {
                                 ))}
                             </tbody>
                         </table>
-                        {filteredApps.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune candidature trouvée.</p>}
+                        {filteredApps.length === 0 && !isLoading && <p className="text-center p-8 text-pm-off-white/60">Aucune candidature trouvée.</p>}
+                        {isLoading && <p className="text-center p-8 text-pm-off-white/40 animate-pulse">Chargement...</p>}
                     </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-between px-4 py-3 border-t border-pm-gold/10">
+                            <span className="text-xs text-pm-off-white/40">
+                                Page {page} / {totalPages}
+                            </span>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={prevPage}
+                                    disabled={page === 1}
+                                    className="p-1.5 border border-pm-gold/20 text-pm-gold/60 hover:text-pm-gold hover:border-pm-gold/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronLeftIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={nextPage}
+                                    disabled={page === totalPages}
+                                    className="p-1.5 border border-pm-gold/20 text-pm-gold/60 hover:text-pm-gold hover:border-pm-gold/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronRightIcon className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

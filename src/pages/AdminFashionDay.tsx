@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
-import { useData } from '../contexts/DataContext';
 import { FashionDayApplication } from '../types';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { ref, update, remove } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 const STATUS_COLORS: Record<FashionDayApplication['status'], string> = {
   'Nouveau': 'bg-blue-500/20 text-blue-300 border-blue-500',
@@ -22,8 +24,10 @@ const ROLE_COLORS: Record<string, string> = {
 };
 
 const AdminFashionDay: React.FC = () => {
-  const { data, saveData } = useData();
-  const applications = data?.fashionDayApplications ?? [];
+  const { items: applications, isLoading, refresh } = useFirebaseCollection<FashionDayApplication>('fashionDayApplications', {
+    pageSize: 200,
+    orderBy: 'submissionDate',
+  });
   const [selected, setSelected] = useState<FashionDayApplication | null>(null);
   const [filterStatus, setFilterStatus] = useState<FashionDayApplication['status'] | 'Tous'>('Tous');
   const [filterRole, setFilterRole] = useState<string>('Tous');
@@ -42,15 +46,18 @@ const AdminFashionDay: React.FC = () => {
     total: applications.length,
   };
 
-  const handleStatus = (id: string, status: FashionDayApplication['status']) => {
-    if (!data) return;
-    saveData({ ...data, fashionDayApplications: data.fashionDayApplications.map(a => a.id === id ? { ...a, status } : a) });
+  const handleStatus = async (id: string, status: FashionDayApplication['status']) => {
+    await update(ref(db, `fashionDayApplications/${id}`), { status });
+    invalidateCache('fashionDayApplications');
+    refresh();
     if (selected?.id === id) setSelected(prev => prev ? { ...prev, status } : null);
   };
 
-  const handleDelete = (id: string) => {
-    if (!data || !window.confirm('Supprimer cette candidature ?')) return;
-    saveData({ ...data, fashionDayApplications: data.fashionDayApplications.filter(a => a.id !== id) });
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Supprimer cette candidature ?')) return;
+    await remove(ref(db, `fashionDayApplications/${id}`));
+    invalidateCache('fashionDayApplications');
+    refresh();
     if (selected?.id === id) setSelected(null);
   };
 
@@ -69,7 +76,6 @@ const AdminFashionDay: React.FC = () => {
           </div>
         </div>
 
-        {/* Filtres */}
         <div className="flex flex-wrap gap-4 mb-6">
           <div className="flex flex-wrap gap-2">
             {statuses.map(s => (
@@ -132,12 +138,12 @@ const AdminFashionDay: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            {filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune candidature.</p>}
+            {isLoading && <p className="text-center p-8 text-pm-off-white/40 animate-pulse">Chargement...</p>}
+            {!isLoading && filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune candidature.</p>}
           </div>
         </div>
       </div>
 
-      {/* Modal détail */}
       {selected && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-pm-dark border border-pm-gold/30 rounded-lg w-full max-w-lg max-h-[90vh] flex flex-col">
