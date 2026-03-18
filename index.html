@@ -4,8 +4,47 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Perfect Models Management | Elite Agency</title>
-    <link rel="icon" type="image/png" href="https://i.ibb.co/fVBxPNTP/T-shirt.png" />
+    <title>Perfect Models Management | Agence de Mannequins à Libreville, Gabon</title>
+    <meta name="description" content="Agence de mannequins d'élite à Libreville, Gabon. Casting, booking, défilés et formation. Perfect Models Management — l'excellence de la mode en Afrique Centrale." />
+    <meta name="keywords" content="agence mannequin Libreville, mannequin Gabon, Perfect Models Management, PMM, casting mannequin Gabon, défilé mode Libreville, Perfect Fashion Day, agence mode Afrique Centrale" />
+    <meta name="author" content="Perfect Models Management" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="fr" />
+    <meta http-equiv="content-language" content="fr-GA" />
+
+    <!-- Geo / Local SEO -->
+    <meta name="geo.region" content="GA-1" />
+    <meta name="geo.placename" content="Libreville, Gabon" />
+    <meta name="geo.position" content="0.3924;9.4536" />
+    <meta name="ICBM" content="0.3924, 9.4536" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Perfect Models Management" />
+    <meta property="og:title" content="Perfect Models Management | Agence de Mannequins à Libreville, Gabon" />
+    <meta property="og:description" content="Agence de mannequins d'élite à Libreville, Gabon. Casting, booking, défilés et formation." />
+    <meta property="og:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
+    <meta property="og:url" content="https://www.perfectmodels.ga" />
+    <meta property="og:locale" content="fr_GA" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Perfect Models Management | Libreville, Gabon" />
+    <meta name="twitter:description" content="Agence de mannequins d'élite à Libreville, Gabon." />
+    <meta name="twitter:image" content="https://i.ibb.co/K2wS0Pz/hero-bg.jpg" />
+
+    <!-- PWA / Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#D4AF37" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="PMM" />
+
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+    <link rel="canonical" href="https://www.perfectmodels.ga" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
     <!-- Google Fonts: Luxury Pairing -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,41 +53,7 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Montserrat:wght@200;300;400;500;700;900&display=swap"
         rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'pm-dark': '#0A0A0A',
-                        'pm-gold': '#D4AF37',
-                        'pm-gold-light': '#F2D388',
-                        'pm-gray': '#1A1A1A',
-                        'pm-off-white': '#F5F5F5',
-                    },
-                    fontFamily: {
-                        'playfair': ['"Playfair Display"', 'serif'],
-                        'montserrat': ['"Montserrat"', 'sans-serif'],
-                    },
-                    animation: {
-                        'marquee': 'marquee 120s linear infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        marquee: {
-                            '0%': { transform: 'translateX(0%)' },
-                            '100%': { transform: 'translateX(-50%)' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                    }
-                }
-            }
-        }
-    </script>
+
     <style>
         /* Custom scrollbar styles */
         ::-webkit-scrollbar {
@@ -64,28 +69,12 @@
         }
     </style>
 
-    <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.5",
-    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/",
-    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1",
-    "firebase/": "https://aistudiocdn.com/firebase@^12.5.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0",
-    "vite": "https://aistudiocdn.com/vite@^7.1.12",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
-  }
-}
-</script>
+
 </head>
 
 <body>
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
+    <script type="module" src="/src/index.tsx"></script>
 </body>
 
 </html>

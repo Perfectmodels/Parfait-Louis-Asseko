@@ -1,8 +1,9 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
-import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
+import { ToastProvider } from './components/ui/Toast';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AIAssistantIcon from './components/AIAssistantIcon';
@@ -99,8 +100,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-    type: "tween",
-    ease: "anticipate",
+    type: "tween" as const,
+    ease: "anticipate" as const,
     duration: 0.5
 };
 
@@ -242,11 +243,13 @@ const App: React.FC = () => {
 
     return (
         <DataProvider>
-            <HashRouter>
-                <ScrollToTop />
-                <AppContent />
-                <PWAInstaller />
-            </HashRouter>
+            <ToastProvider>
+                <BrowserRouter>
+                    <ScrollToTop />
+                    <AppContent />
+                    <PWAInstaller />
+                </BrowserRouter>
+            </ToastProvider>
         </DataProvider>
     );
 };

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { FacebookIcon, InstagramIcon, YoutubeIcon } from '../icons/SocialIcons';
 import { MapPinIcon, PhoneIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
+import Marquee from './Marquee';
 
 const Footer: React.FC = () => {
     const { data } = useData();
@@ -10,6 +11,7 @@ const Footer: React.FC = () => {
     const navLinks = data?.navLinks || [];
     const socialLinks = data?.socialLinks;
     const contactInfo = data?.contactInfo;
+    const agencyPartners = data?.agencyPartners || [];
     
     const footerLinks = navLinks.filter(link => link.inFooter);
 
@@ -17,41 +19,24 @@ const Footer: React.FC = () => {
         <footer className="bg-[#050505] text-pm-off-white/40 border-t border-white/5">
             <div className="max-w-[1800px] mx-auto px-6 sm:px-12 py-32">
                 
-                {/* 1. BRAND MANIFESTO & NEWSLETTER */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 mb-32">
-                    <div className="space-y-12">
-                         <Link to="/" className="inline-block group">
-                            <img 
-                                src={siteConfig?.logo} 
-                                alt="PMM" 
-                                className="h-20 w-auto bg-black rounded-full border border-white/10 p-2 transition-transform duration-700 group-hover:rotate-12 group-hover:scale-110" 
-                            />
-                        </Link>
-                        <h2 className="text-5xl md:text-7xl font-playfair font-black text-white italic leading-[0.9] tracking-tighter">
-                            Defining the <br/>
-                            <span className="text-pm-gold">Future</span> of Elegance.
+                {/* 1. BRAND MANIFESTO */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-12 mb-20">
+                    <Link to="/" className="inline-block group shrink-0">
+                        <img 
+                            src={siteConfig?.logo} 
+                            alt="PMM" 
+                            className="h-16 w-auto bg-black rounded-full border border-white/10 p-2 transition-transform duration-700 group-hover:rotate-12 group-hover:scale-110" 
+                        />
+                    </Link>
+                    <div className="flex flex-col gap-6">
+                        <h2 className="text-3xl md:text-4xl font-playfair font-black text-white italic leading-tight tracking-tighter">
+                            Defining the <span className="text-pm-gold">Future</span> of Elegance.
                         </h2>
                         <div className="flex gap-8">
-                             {socialLinks?.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><FacebookIcon className="w-6 h-6" /></a>}
-                             {socialLinks?.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><InstagramIcon className="w-6 h-6" /></a>}
-                             {socialLinks?.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><YoutubeIcon className="w-6 h-6" /></a>}
+                            {socialLinks?.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><FacebookIcon className="w-5 h-5" /></a>}
+                            {socialLinks?.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><InstagramIcon className="w-5 h-5" /></a>}
+                            {socialLinks?.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><YoutubeIcon className="w-5 h-5" /></a>}
                         </div>
-                    </div>
-
-                    <div className="lg:pt-12">
-                        <span className="section-label">Newsletter</span>
-                        <h3 className="text-2xl font-playfair font-bold text-white mb-8">Join the inner circle for exclusive updates.</h3>
-                        <form className="relative max-w-md group" onSubmit={(e) => e.preventDefault()}>
-                            <input 
-                                type="email" 
-                                placeholder="Your professional email" 
-                                className="w-full bg-transparent border-b border-white/10 py-6 text-pm-off-white focus:outline-none focus:border-pm-gold transition-all duration-700 placeholder:text-white/10" 
-                                required 
-                            />
-                            <button type="submit" className="absolute right-0 top-1/2 -translate-y-1/2 text-pm-gold font-black uppercase tracking-widest text-[10px] hover:text-white transition-colors">
-                                Subscribe
-                            </button>
-                        </form>
                     </div>
                 </div>
 
@@ -105,7 +90,23 @@ const Footer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* 3. LEGAL & SYSTEM */}
+                {/* 3. AGENCY PARTNERS — bannière défilante */}
+                {agencyPartners.length > 0 && (
+                    <div className="mt-20 pt-12 border-t border-white/5">
+                        <p className="text-[9px] font-black uppercase tracking-[0.5em] text-pm-gold/50 mb-8 text-center">
+                            Ils nous font confiance
+                        </p>
+                        <Marquee
+                            items={agencyPartners.map(p => p.name)}
+                            duration={35}
+                            direction="right"
+                            itemClassName="text-sm font-black uppercase tracking-[0.3em] text-white/20 hover:text-white/60 transition-colors"
+                            separator={<span className="mx-10 text-pm-gold/20">◆</span>}
+                        />
+                    </div>
+                )}
+
+                {/* 4. LEGAL & SYSTEM */}
                 <div className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-black uppercase tracking-[0.5em] text-white/20">
                     <p>&copy; {new Date().getFullYear()} Perfect Models Management. All rights reserved.</p>
                     <div className="flex flex-wrap justify-center gap-x-12 gap-y-4">

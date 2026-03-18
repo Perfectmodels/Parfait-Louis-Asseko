@@ -67,7 +67,7 @@ const Admin: React.FC = () => {
 
     return (
         <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
-            <SEO title="Admin Dashboard" noIndex />
+            <SEO title="Tableau de Bord Admin" noIndex />
             <div className="container mx-auto px-6 lg:px-8">
                 <header className="admin-page-header">
                     <div>
@@ -103,7 +103,7 @@ const Admin: React.FC = () => {
                         <StatCard title="Candidatures Casting" value={stats.newCastingApps} icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={stats.newCastingApps > 0} color="gold" />
                         <StatCard title="Demandes Booking" value={stats.newBookingRequests} icon={BriefcaseIcon} link="/admin/bookings" isNew={stats.newBookingRequests > 0} color="blue" />
                         <StatCard title="Réservations PFD" value={stats.newReservations} icon={StarIcon} link="/admin/fashion-day-reservations" isNew={stats.newReservations > 0} color="purple" />
-                        <StatCard title="Board Mannequins" value={stats.totalModels} icon={UsersIcon} link="/admin/models" color="gray" />
+                        <StatCard title="Total Mannequins" value={stats.totalModels} icon={UsersIcon} link="/admin/models" color="gray" />
                     </div>
                 </section>
 

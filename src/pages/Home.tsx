@@ -24,7 +24,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="bg-pm-dark overflow-x-hidden">
-      <SEO title="Elite Talent Management" description="Redéfinir l'élégance gabonaise." image={siteImages.hero} />
+      <SEO title="Agence de Mannequins à Libreville, Gabon" description="Redéfinir l'élégance gabonaise." image={siteImages.hero} />
 
       {/* 1. CINEMATIC HERO */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -44,21 +44,21 @@ const Home: React.FC = () => {
             transition={{ delay: 0.5 }}
             className="section-label"
           >
-            Since 2021 • Libreville
+            Depuis 2021 • Libreville
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.5, delay: 0.7, ease: "circOut" }}
-            className="text-[15vw] md:text-[18rem] font-playfair font-black text-white leading-none tracking-tighter opacity-10 mix-blend-overlay select-none"
+            className="text-[18vw] md:text-[14rem] font-playfair font-black text-white leading-none tracking-tighter opacity-10 mix-blend-overlay select-none pointer-events-none"
           >
-            PERFECT
+            PMM
           </motion.h1>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            className="text-2xl md:text-5xl font-light tracking-[0.1em] uppercase mt-[-4rem] md:mt-[-8rem] text-pm-gold-light italic"
+            className="text-xl md:text-4xl font-light tracking-[0.1em] uppercase mt-4 text-pm-gold italic"
           >
             L'Excellence <span className="font-playfair font-black lowercase text-white tracking-normal">en</span> Mouvement
           </motion.h2>
@@ -69,9 +69,9 @@ const Home: React.FC = () => {
             transition={{ delay: 1.8 }}
             className="mt-16 flex flex-col sm:flex-row gap-8 justify-center items-center"
           >
-             <Link to="/mannequins" className="btn-premium">View The Board</Link>
+             <Link to="/mannequins" className="btn-premium">Voir nos Mannequins</Link>
              <Link to="/agence" className="text-[10px] uppercase tracking-[0.4em] font-black flex items-center gap-4 group text-white/60 hover:text-white transition-colors">
-                Agency Story 
+                Notre Histoire 
                 <ArrowLongRightIcon className="w-8 h-8 transition-transform group-hover:translate-x-3 text-pm-gold" />
              </Link>
           </motion.div>
@@ -99,7 +99,7 @@ const Home: React.FC = () => {
                         <CountdownTimer targetDate={nextEvent.date} />
                     </div>
                     <Link to="/fashion-day-application" className="btn-premium !py-3 !px-8 !text-[9px] bg-pm-gold text-pm-dark border-none shadow-[0_0_40px_rgba(212,175,55,0.15)]">
-                        Get Your Pass
+                        Obtenir mon Pass
                     </Link>
                 </div>
             </motion.div>
@@ -109,7 +109,7 @@ const Home: React.FC = () => {
       {/* 2. MANIFESTO (EDITORIAL STYLE) */}
       <section className="page-container flex flex-col lg:flex-row gap-32 items-center">
          <div className="lg:w-1/2 relative">
-            <span className="section-label">Manifesto</span>
+            <span className="section-label">Manifeste</span>
             <h2 className="text-6xl md:text-8xl font-playfair font-black leading-[1] italic">
               "Le futur n'est pas <br/> <span className="gold-gradient-text">attendu</span>,<br/> il est créé."
             </h2>
@@ -122,11 +122,11 @@ const Home: React.FC = () => {
             <div className="grid grid-cols-2 gap-16 pt-10 border-t border-white/5">
                 <div>
                    <span className="text-6xl font-playfair font-bold text-pm-gold">04</span>
-                   <p className="text-[10px] uppercase tracking-[0.3em] mt-4 font-black text-white/30">Years of Prestige</p>
+                   <p className="text-[10px] uppercase tracking-[0.3em] mt-4 font-black text-white/30">Ans de Prestige</p>
                 </div>
                 <div>
                    <span className="text-6xl font-playfair font-bold text-pm-gold">50+</span>
-                   <p className="text-[10px] uppercase tracking-[0.3em] mt-4 font-black text-white/30">Faces Scouted</p>
+                   <p className="text-[10px] uppercase tracking-[0.3em] mt-4 font-black text-white/30">Talents Découverts</p>
                 </div>
             </div>
          </div>
@@ -137,10 +137,10 @@ const Home: React.FC = () => {
         <div className="max-w-[1800px] mx-auto px-6">
             <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-8">
                 <div>
-                   <span className="section-label">The Board</span>
-                   <h2 className="text-7xl font-playfair font-black italic">New Faces</h2>
+                   <span className="section-label">Nos Talents</span>
+                   <h2 className="text-5xl md:text-7xl font-playfair font-black italic">Nouveaux Visages</h2>
                 </div>
-                <Link to="/mannequins" className="btn-premium">Explore All Talents</Link>
+                <Link to="/mannequins" className="btn-premium">Voir tous les Talents</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1">
               {publicModels.map((model, idx) => (
@@ -155,8 +155,8 @@ const Home: React.FC = () => {
       {/* 4. SERVICES (EDITORIAL BLOCKS) */}
       <section className="page-container">
          <div className="text-center mb-32">
-            <span className="section-label">Expertise</span>
-            <h2 className="text-7xl font-playfair font-black italic">Elite Services</h2>
+            <span className="section-label">Nos Compétences</span>
+            <h2 className="text-5xl md:text-7xl font-playfair font-black italic">Nos Services</h2>
          </div>
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
             {agencyServices.slice(0, 4).map(service => (
@@ -171,11 +171,11 @@ const Home: React.FC = () => {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-pm-gold rounded-full opacity-[0.03] blur-[120px] animate-glow"></div>
           </div>
           <div className="relative z-10 text-center max-w-5xl px-6 space-y-12">
-              <h2 className="text-7xl md:text-[10rem] font-playfair font-black italic leading-[0.8] text-white">Prêt à devenir <br/> <span className="gold-gradient-text">Inoubliable</span> ?</h2>
-              <p className="text-xl text-white/30 font-black tracking-[0.5em] uppercase">Applications Open • Season 2025</p>
+              <h2 className="text-5xl md:text-8xl font-playfair font-black italic leading-tight text-white">Prêt à devenir <br/> <span className="gold-gradient-text">Inoubliable</span> ?</h2>
+              <p className="text-xl text-white/30 font-black tracking-[0.5em] uppercase">Candidatures Ouvertes • Saison 2025</p>
               <div className="flex flex-col sm:flex-row gap-8 justify-center pt-8">
-                  <Link to="/casting-formulaire" className="btn-premium bg-white text-pm-dark border-none">Apply to Agency</Link>
-                  <Link to="/contact" className="btn-premium">Partner with Us</Link>
+                  <Link to="/casting-formulaire" className="btn-premium bg-white text-pm-dark border-none">Rejoindre l'Agence</Link>
+                  <Link to="/contact" className="btn-premium">Devenir Partenaire</Link>
               </div>
           </div>
       </section>

@@ -15,7 +15,7 @@ const Magazine: React.FC = () => {
 
   return (
     <div className="bg-pm-dark pt-20">
-      <SEO title="Focus Model 241 | Magazine" description="Editorial mode by PMM." />
+      <SEO title="Focus Model 241 | Magazine" description="Mode éditorial par PMM." />
       
       <header className="page-container !pb-12 text-center">
          <span className="section-label">Editorial</span>
