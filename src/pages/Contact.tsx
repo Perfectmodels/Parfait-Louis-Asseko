@@ -13,6 +13,7 @@ import {
   sendContactNotificationToAdmin,
   sendContactConfirmationToUser,
 } from '../utils/brevoService';
+import { notifyAdmin } from '../utils/adminNotify';
 
 const SUBJECTS = [
   'Demande de booking',
@@ -77,6 +78,7 @@ const Contact: React.FC = () => {
     try {
       // 1. Sauvegarde Firebase
       await saveData({ ...data, contactMessages: [...(data.contactMessages || []), newMessage] });
+      notifyAdmin('contact', `${formData.name} — ${finalSubject}`, '/admin/messages').catch(() => {});
 
       // 2. Emails Brevo en parallèle
       const notifEmail =

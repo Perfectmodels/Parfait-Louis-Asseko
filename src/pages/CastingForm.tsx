@@ -6,6 +6,7 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import { Link } from 'react-router-dom';
 import CloudinaryUploader from '../components/CloudinaryUploader';
+import { notifyAdmin } from '../utils/adminNotify';
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -42,6 +43,7 @@ const CastingForm: React.FC = () => {
         try {
             const updatedApplications = [...(data.castingApplications || []), newApplication];
             await saveData({ ...data, castingApplications: updatedApplications });
+            notifyAdmin('casting', `${formData.firstName} ${formData.lastName} — ${formData.city}`, '/admin/casting-applications').catch(() => {});
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');

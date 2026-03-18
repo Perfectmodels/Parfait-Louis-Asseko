@@ -61,6 +61,8 @@ export interface FashionDayEvent {
   artists?: Artist[];
   partners?: { type: string; name: string }[];
   description: string;
+  announcementVideoUrl?: string;
+  galleryImages?: string[];
 }
 
 export interface SocialLinks {

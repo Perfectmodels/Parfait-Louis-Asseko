@@ -1,6 +1,4 @@
-const BREVO_API_KEY = import.meta.env.VITE_BREVO_API_KEY;
-const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
-const SENDER = { name: 'Perfect Models Management', email: 'contact@perfectmodels.ga' };
+// Emails are sent via /api/send-email (Vercel serverless) — key stays server-side.
 
 // ─── Logo SVG inline (branding email) ────────────────────────────────────────
 const LOGO_URL = 'https://perfectmodels.ga/logo.svg';
@@ -68,18 +66,14 @@ interface SendOptions {
   subject: string;
   htmlContent: string;
   replyTo?: { email: string; name?: string };
-  apiKey?: string; // override (from Firebase settings)
+  apiKey?: string; // kept for backward compat, ignored — key is server-side
 }
 
 export const sendEmail = async (opts: SendOptions): Promise<void> => {
-  const key = opts.apiKey || BREVO_API_KEY;
-  if (!key) throw new Error('Clé API Brevo manquante.');
-
-  const res = await fetch(BREVO_API_URL, {
+  const res = await fetch('/api/send-email', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'api-key': key },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      sender: SENDER,
       to: opts.to,
       subject: opts.subject,
       htmlContent: opts.htmlContent,
@@ -89,7 +83,7 @@ export const sendEmail = async (opts: SendOptions): Promise<void> => {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Brevo error ${res.status}`);
+    throw new Error(err.error || `Erreur serveur ${res.status}`);
   }
 };
 

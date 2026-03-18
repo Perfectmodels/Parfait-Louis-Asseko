@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useData } from '../../contexts/DataContext';
 
 export const Breadcrumb: React.FC = () => {
   const location = useLocation();
@@ -45,8 +44,6 @@ const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const { data } = useData();
-  const logo = data?.siteConfig?.logo;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -68,11 +65,17 @@ const Header: React.FC = () => {
         <div className="max-w-[1800px] mx-auto px-6 sm:px-12 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group shrink-0">
-            {logo ? (
-              <img src={logo} alt="PMM" className="h-10 w-auto transition-transform duration-500 group-hover:scale-110" />
-            ) : (
-              <span className="font-playfair font-black text-2xl text-white tracking-tighter">PMM</span>
-            )}
+            <div className="relative">
+              {/* Contour doré animé */}
+              <span className="absolute inset-0 rounded-full border-2 border-pm-gold/60 scale-110 group-hover:scale-125 group-hover:border-pm-gold transition-all duration-500" />
+              <span className="absolute inset-0 rounded-full border border-pm-gold/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-700" />
+              <img
+                src="/logopmm.jpg"
+                alt="Perfect Models Management"
+                className="h-11 w-11 rounded-full object-cover border-2 border-pm-gold/40 shadow-lg shadow-pm-gold/10 transition-all duration-500 group-hover:border-pm-gold group-hover:shadow-pm-gold/30 group-hover:scale-105"
+              />
+            </div>
+            <span className="hidden sm:block font-playfair font-black text-sm tracking-widest text-white/70 group-hover:text-pm-gold transition-colors duration-300 uppercase">PMM</span>
           </Link>
 
           {/* Desktop nav */}

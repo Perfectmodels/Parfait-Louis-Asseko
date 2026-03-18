@@ -1,45 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../realtimedbConfig'; // Changed to Realtime DB config
-import { ref, onValue, set, update, remove, push } from 'firebase/database'; // Changed for Realtime DB
-import { initialData } from '../constants/data';
+import { db } from '../realtimedbConfig';
+import { ref, onValue, set, update, remove, push } from 'firebase/database';
 import logger from '../utils/logger';
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, Transaction, PhotoshootBrief, NavLink, AdminProfile, GalleryItem, MailingContact } from '../types';
 
-// Initial data imports remain the same
-import {
-    models as initialModels,
-    siteConfig as initialSiteConfig,
-    contactInfo as initialContactInfo,
-    siteImages as initialSiteImages,
-    apiKeys as initialApiKeys,
-    castingApplications as initialCastingApplications,
-    fashionDayApplications as initialFashionDayApplications,
-    forumThreads as initialForumThreads,
-    forumReplies as initialForumReplies,
-    articleComments as initialArticleComments,
-    recoveryRequests as initialRecoveryRequests,
-    bookingRequests as initialBookingRequests,
-    contactMessages as initialContactMessages,
-    absences as initialAbsences,
-    monthlyPayments as initialMonthlyPayments,
-    photoshootBriefs as initialPhotoshootBriefs,
-    newsItems as initialNewsItems,
-    navLinks as initialNavLinks,
-    fashionDayEvents as initialFashionDayEvents,
-    socialLinks as initialSocialLinks,
-    agencyTimeline as initialAgencyTimeline,
-    agencyInfo as initialAgencyInfo,
-    modelDistinctions as initialModelDistinctions,
-    agencyServices as initialAgencyServices,
-    agencyAchievements as initialAgencyAchievements,
-    agencyPartners as initialAgencyPartners,
-    testimonials as initialTestimonials,
-    juryMembers as initialJuryMembers,
-    registrationStaff as initialRegistrationStaff,
-    faqData as initialFaqData,
-    mailingContacts as initialMailingContacts,
-} from '../constants/data';import { articles as initialArticles } from '../constants/magazineData';
-import { courseData as initialCourseData } from '../constants/courseData';
+// Lazy-load initial seed data — only needed if Firebase DB is empty (first run)
+const loadInitialData = async () => {
+    const [{ articles }, { courseData }, data] = await Promise.all([
+        import('../constants/magazineData'),
+        import('../constants/courseData'),
+        import('../constants/data'),
+    ]);
+    return { ...data, articles, courseData };
+};
 
 export interface AppData {
     siteConfig: { logo: string };
@@ -88,46 +61,48 @@ export const useRealtimeDB = () => {
     const [data, setData] = useState<AppData | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
 
-    // getInitialData remains the same
-    const getInitialData = useCallback((): AppData => ({
-        models: initialModels,
-        siteConfig: initialSiteConfig,
-        contactInfo: initialContactInfo,
-        siteImages: initialSiteImages,
-        apiKeys: initialApiKeys,
-        castingApplications: initialCastingApplications,
-        fashionDayApplications: initialFashionDayApplications,
-        forumThreads: initialForumThreads,
-        forumReplies: initialForumReplies,
-        articleComments: initialArticleComments,
-        recoveryRequests: initialRecoveryRequests,
-        bookingRequests: initialBookingRequests,
-        contactMessages: initialContactMessages,
-        absences: initialAbsences,
-        monthlyPayments: initialMonthlyPayments,
-        photoshootBriefs: initialPhotoshootBriefs,
-        newsItems: initialNewsItems,
-        navLinks: initialNavLinks,
-        fashionDayEvents: initialFashionDayEvents,
-        socialLinks: initialSocialLinks,
-        agencyTimeline: initialAgencyTimeline,
-        agencyInfo: initialAgencyInfo,
-        modelDistinctions: initialModelDistinctions,
-        agencyServices: initialAgencyServices,
-        agencyAchievements: initialAgencyAchievements,
-        agencyPartners: initialAgencyPartners,
-        testimonials: initialTestimonials,
-        articles: initialArticles,
-        courseData: initialCourseData,
-        juryMembers: initialJuryMembers,
-        registrationStaff: initialRegistrationStaff,
-        faqData: initialFaqData,
-        adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
-        gallery: [],
-        transactions: [],
-        mailingContacts: initialMailingContacts,
-    }), []);
-
+    // Load initial seed data lazily — only called when Firebase DB is empty
+    const getInitialData = useCallback(async (): Promise<AppData> => {
+        const d = await loadInitialData();
+        return {
+            models: d.models,
+            siteConfig: d.siteConfig,
+            contactInfo: d.contactInfo,
+            siteImages: d.siteImages,
+            apiKeys: d.apiKeys,
+            castingApplications: d.castingApplications,
+            fashionDayApplications: d.fashionDayApplications,
+            forumThreads: d.forumThreads,
+            forumReplies: d.forumReplies,
+            articleComments: d.articleComments,
+            recoveryRequests: d.recoveryRequests,
+            bookingRequests: d.bookingRequests,
+            contactMessages: d.contactMessages,
+            absences: d.absences,
+            monthlyPayments: d.monthlyPayments,
+            photoshootBriefs: d.photoshootBriefs,
+            newsItems: d.newsItems,
+            navLinks: d.navLinks,
+            fashionDayEvents: d.fashionDayEvents,
+            socialLinks: d.socialLinks,
+            agencyTimeline: d.agencyTimeline,
+            agencyInfo: d.agencyInfo,
+            modelDistinctions: d.modelDistinctions,
+            agencyServices: d.agencyServices,
+            agencyAchievements: d.agencyAchievements,
+            agencyPartners: d.agencyPartners,
+            testimonials: d.testimonials,
+            articles: d.articles,
+            courseData: d.courseData,
+            juryMembers: d.juryMembers,
+            registrationStaff: d.registrationStaff,
+            faqData: d.faqData,
+            adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
+            gallery: [],
+            transactions: [],
+            mailingContacts: d.mailingContacts,
+        };
+    }, []);
     // Helper function to convert Firebase objects to arrays
     const convertToArray = (obj: any): any[] => {
         if (!obj) return [];
@@ -229,7 +204,7 @@ export const useRealtimeDB = () => {
             photoshootBriefs: deduplicateById(convertToArray(dbData.photoshootBriefs)),
             gallery: deduplicateById(convertToArray(dbData.gallery)),
             agencyTimeline: deduplicateById(convertToArray(dbData.agencyTimeline)),
-            mailingContacts: deduplicateById(convertToArray(dbData.mailingContacts ?? initialMailingContacts)),            // Handle nested objects within agencyInfo
+            mailingContacts: deduplicateById(convertToArray(dbData.mailingContacts ?? [])),            // Handle nested objects within agencyInfo
             agencyInfo: dbData.agencyInfo ? {
                 ...dbData.agencyInfo,
                 values: deduplicateById(convertToArray(dbData.agencyInfo.values))
@@ -238,33 +213,34 @@ export const useRealtimeDB = () => {
     };
 
     useEffect(() => {
-        const dbRef = ref(db); // Ref to the root of the database
+        const dbRef = ref(db);
 
         const unsubscribe = onValue(dbRef, (snapshot) => {
             const dbData = snapshot.val();
             if (dbData) {
-                // If data exists in DB, normalize it (convert objects to arrays)
                 const normalizedData = normalizeData(dbData);
                 setData(normalizedData);
                 logger.log("✅ Realtime DB data loaded successfully");
+                setIsInitialized(true);
             } else {
-                // If DB is empty, seed it with initial data
-                const initial = getInitialData();
-                set(dbRef, initial).then(() => {
-                    setData(initial);
-                    logger.log("✅ Realtime DB seeded with initial data.");
-                }).catch(error => {
-                    logger.error("Realtime DB seeding failed:", error);
-                    // Fallback to local data if seeding fails
-                    setData(initial);
+                // DB is empty — load seed data lazily then write it
+                getInitialData().then(initial => {
+                    set(dbRef, initial).then(() => {
+                        setData(initial);
+                        logger.log("✅ Realtime DB seeded with initial data.");
+                    }).catch(error => {
+                        logger.error("Realtime DB seeding failed:", error);
+                        setData(initial);
+                    }).finally(() => setIsInitialized(true));
                 });
             }
-            setIsInitialized(true);
         }, (error) => {
             logger.error("Realtime DB read failed:", error);
-            // Fallback to local data if read fails
-            setData(getInitialData());
-            setIsInitialized(true);
+            // Fallback: load seed data lazily
+            getInitialData().then(initial => {
+                setData(initial);
+                setIsInitialized(true);
+            });
         });
 
         // Cleanup subscription on unmount
