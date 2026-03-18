@@ -3,11 +3,8 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, EyeIcon, PrinterIcon, UserPlusIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
-import Modal from '../components/ui/Modal';
-import ConfirmDialog from '../components/ui/ConfirmDialog';
-import Badge from '../components/ui/Badge';
 
 const AdminCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -88,7 +85,7 @@ const AdminCasting: React.FC = () => {
             height: `${app.height}cm`,
             gender: app.gender,
             location: app.city,
-            imageUrl: `https://i.ibb.co/fVBxPNTP/T-shirt.png`, // Placeholder image
+            imageUrl: app.photoPortraitUrl || app.photoFullBodyUrl || `https://i.ibb.co/fVBxPNTP/T-shirt.png`, // Use uploaded photo if available
             isPublic: false, // Default to private
             distinctions: [],
             measurements: {
@@ -231,6 +228,32 @@ const ApplicationModal: React.FC<{
                             <InfoItem label="Portfolio" value={app.portfolioLink} />
                         </Section>
                     </div>
+                    {(app.photoPortraitUrl || app.photoFullBodyUrl || app.photoProfileUrl) && (
+                        <div className="md:col-span-2">
+                            <Section title="Photos de candidature">
+                                <div className="grid grid-cols-3 gap-4 mt-2">
+                                    {app.photoPortraitUrl && (
+                                        <div>
+                                            <p className="text-[10px] uppercase tracking-widest text-pm-off-white/40 mb-1">Portrait</p>
+                                            <img src={app.photoPortraitUrl} alt="Portrait" className="w-full aspect-[3/4] object-cover rounded border border-pm-gold/20" />
+                                        </div>
+                                    )}
+                                    {app.photoFullBodyUrl && (
+                                        <div>
+                                            <p className="text-[10px] uppercase tracking-widest text-pm-off-white/40 mb-1">Plein corps</p>
+                                            <img src={app.photoFullBodyUrl} alt="Plein corps" className="w-full aspect-[3/4] object-cover rounded border border-pm-gold/20" />
+                                        </div>
+                                    )}
+                                    {app.photoProfileUrl && (
+                                        <div>
+                                            <p className="text-[10px] uppercase tracking-widest text-pm-off-white/40 mb-1">Profil</p>
+                                            <img src={app.photoProfileUrl} alt="Profil" className="w-full aspect-[3/4] object-cover rounded border border-pm-gold/20" />
+                                        </div>
+                                    )}
+                                </div>
+                            </Section>
+                        </div>
+                    )}
                      <div className="md:col-span-2">
                         <Section title="Statut">
                             <div className="flex items-center gap-2 flex-wrap">

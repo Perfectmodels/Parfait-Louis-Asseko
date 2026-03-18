@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { NavLink, useLocation, Link } from 'react-router-dom';
 import { 
     HomeIcon, UsersIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
-    KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
-    BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
-    ClipboardDocumentCheckIcon, UserGroupIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
+    KeyIcon, PresentationChartLineIcon,
+    BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon,
+    ClipboardDocumentCheckIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
     Bars3Icon, XMarkIcon,
     BookOpenIcon,
-    PhotoIcon,
-    MicrophoneIcon,
-    PaperAirplaneIcon
+    PaperAirplaneIcon,
+    BellIcon,
+    BellSlashIcon,
 } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePushNotifications } from '../../hooks/usePushNotifications';
+import { useToast } from '../ui/Toast';
 
 interface NavItemProps {
   to: string;
@@ -46,6 +48,10 @@ const navSections = [
             { to: '/admin/models', icon: UsersIcon, label: 'Mannequins' },
             { to: '/admin/magazine', icon: NewspaperIcon, label: 'Magazine' },
             { to: '/admin/bookings', icon: BriefcaseIcon, label: 'Réservations' },
+            { to: '/admin/messages', icon: ChatBubbleLeftRightIcon, label: 'Messages' },
+            { to: '/admin/comments', icon: ClipboardDocumentListIcon, label: 'Commentaires' },
+            { to: '/admin/news', icon: NewspaperIcon, label: 'Actualités' },
+            { to: '/admin/agency', icon: BuildingStorefrontIcon, label: 'Agence' },
         ]
     },
     {
@@ -54,20 +60,16 @@ const navSections = [
             { to: '/admin/casting-applications', icon: ClipboardDocumentListIcon, label: 'Candidatures' },
             { to: '/admin/casting-results', icon: ClipboardDocumentCheckIcon, label: 'Notation' },
             { to: '/admin/fashion-day-applications', icon: SparklesIcon, label: 'Candidatures PFD' },
-        ]
-    },
-    {
-        title: 'Lab IA',
-        links: [
-            { to: '/admin/generer-image', icon: SparklesIcon, label: 'Génération Image' },
-            { to: '/admin/analyser-image', icon: PhotoIcon, label: 'Analyse' },
-            { to: '/admin/live-chat', icon: MicrophoneIcon, label: 'IA Vocale' },
+            { to: '/admin/fashion-day-events', icon: CalendarDaysIcon, label: 'Événements PFD' },
+            { to: '/admin/recovery-requests', icon: KeyIcon, label: 'Récupérations' },
         ]
     },
     {
         title: 'Opérations',
         links: [
             { to: '/admin/classroom', icon: BookOpenIcon, label: 'Classroom' },
+            { to: '/admin/classroom-progress', icon: PresentationChartLineIcon, label: 'Progression' },
+            { to: '/admin/model-access', icon: KeyIcon, label: 'Accès Modèles' },
             { to: '/admin/absences', icon: CalendarIcon, label: 'Présences'},
             { to: '/admin/payments', icon: CurrencyDollarIcon, label: 'Finances' },
             { to: '/admin/artistic-direction', icon: PaintBrushIcon, label: 'Direction Artistique' },
@@ -98,14 +100,31 @@ const Sidebar: React.FC<{ onLinkClick?: () => void }> = ({ onLinkClick }) => (
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const location = useLocation();
+    const { info } = useToast();
+
+    const handleNotification = useCallback((n: { title: string; body: string }) => {
+        info(`${n.title} — ${n.body}`);
+    }, [info]);
+
+    const { permission, isLoading, subscribe } = usePushNotifications(handleNotification);
+
+    const handleBellClick = async () => {
+        if (permission === 'granted') return;
+        await subscribe();
+    };
 
     return (
         <div className="min-h-screen bg-[#050505] text-pm-off-white flex">
             {/* Sidebar for Desktop */}
             <aside className="hidden lg:flex lg:flex-col lg:w-72 fixed top-0 left-0 h-full bg-pm-dark border-r border-white/5 p-8 overflow-y-auto no-scrollbar">
-                <div className="flex items-center gap-4 mb-16 px-4">
-                    <img src="https://i.ibb.co/fVBxPNTP/T-shirt.png" alt="Logo" className="h-10 w-auto" />
-                    <h1 className="font-playfair text-xl font-black text-white italic">Elite Panel</h1>
+                <div className="flex items-center gap-3 mb-16 px-4">
+                    <div className="w-9 h-9 rounded-lg bg-pm-gold/10 border border-pm-gold/30 flex items-center justify-center shrink-0">
+                        <span className="text-pm-gold font-playfair font-black text-[10px]">PMM</span>
+                    </div>
+                    <div>
+                        <h1 className="font-playfair text-sm font-black text-white italic leading-none">Admin Panel</h1>
+                        <p className="text-[8px] font-black uppercase tracking-[0.3em] text-pm-gold/40 mt-0.5">Perfect Models</p>
+                    </div>
                 </div>
                 <Sidebar />
             </aside>
@@ -129,7 +148,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             className="fixed inset-y-0 left-0 z-50 w-72 bg-pm-dark border-r border-white/5 p-8 overflow-y-auto lg:hidden"
                         >
                             <div className="flex items-center justify-between mb-16 px-4">
-                                <h1 className="font-playfair text-xl font-black italic">Elite Panel</h1>
+                                <h1 className="font-playfair text-xl font-black italic">Admin Panel</h1>
                                 <button onClick={() => setSidebarOpen(false)} className="text-white/40 hover:text-white"><XMarkIcon className="w-6 h-6" /></button>
                             </div>
                             <Sidebar onLinkClick={() => setSidebarOpen(false)} />
@@ -150,6 +169,29 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
+                        <button
+                            onClick={handleBellClick}
+                            disabled={isLoading || permission === 'denied'}
+                            title={
+                                permission === 'granted' ? 'Notifications activées'
+                                : permission === 'denied' ? 'Notifications bloquées (modifier dans le navigateur)'
+                                : 'Activer les notifications push'
+                            }
+                            className={`p-2 rounded-full transition-all duration-300 ${
+                                permission === 'granted'
+                                    ? 'text-pm-gold'
+                                    : permission === 'denied'
+                                    ? 'text-white/20 cursor-not-allowed'
+                                    : 'text-white/40 hover:text-pm-gold hover:bg-pm-gold/10'
+                            }`}
+                        >
+                            {isLoading
+                                ? <span className="w-5 h-5 border-2 border-pm-gold/40 border-t-pm-gold rounded-full animate-spin block" />
+                                : permission === 'granted'
+                                ? <BellIcon className="w-5 h-5" />
+                                : <BellSlashIcon className="w-5 h-5" />
+                            }
+                        </button>
                         <Link to="/" className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 hover:text-pm-gold transition-colors">Site Public</Link>
                         <div className="w-8 h-8 rounded-full bg-pm-gold/20 border border-pm-gold/40 flex items-center justify-center text-pm-gold text-[10px] font-bold">AD</div>
                     </div>

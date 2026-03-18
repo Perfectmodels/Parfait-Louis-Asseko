@@ -1,6 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import { getMessaging } from "firebase/messaging";
 
 const firebaseConfig = {
     apiKey: "AIzaSyC_5TsXHPLloX80SzN9GQaaDL4EPlL-WSc",
@@ -13,8 +14,7 @@ const firebaseConfig = {
     measurementId: "G-CSP65WPY89"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Get a reference to the database service
 export const db = getDatabase(app);
+export const messaging = getMessaging(app);

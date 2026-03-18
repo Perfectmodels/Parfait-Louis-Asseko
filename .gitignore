@@ -108,3 +108,4 @@ perfectmodels-4e5fa-default-rtdb-export.json
 *.bak
 *.swp
 *~
+.env*.local

@@ -1,5 +1,5 @@
 // FIX: Corrected import to use MonthlyPayment as the Transaction type is deprecated.
-import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, MailingContact } from '../types';
 
 export const siteConfig = {
   logo: '/logo.svg',
@@ -50,7 +50,14 @@ export const apiKeys: ApiKeys = {
   imgbbApiKey: import.meta.env.VITE_IMGBB_API_KEY || '',
   brevoApiKey: import.meta.env.VITE_BREVO_API_KEY || '',
   dropboxAppKey: import.meta.env.VITE_DROPBOX_APP_KEY || '',
-  dropboxAccessToken: import.meta.env.VITE_DROPBOX_ACCESS_TOKEN || ''
+  dropboxAccessToken: import.meta.env.VITE_DROPBOX_ACCESS_TOKEN || '',
+  cloudinaryCloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '',
+  cloudinaryApiKey: import.meta.env.VITE_CLOUDINARY_API_KEY || '',
+  cloudinaryApiSecret: import.meta.env.VITE_CLOUDINARY_API_SECRET || '',
+  geminiApiKey: import.meta.env.VITE_GEMINI_API_KEY || '',
+  vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY || '',
+  chatbotId: import.meta.env.VITE_CHATBOT_ID || import.meta.env.NEXT_PUBLIC_CHATBOT_ID || '',
+  defaultFromEmail: import.meta.env.DEFAULT_FROM_EMAIL || '',
 };
 
 export const juryMembers: JuryMember[] = [
@@ -184,6 +191,97 @@ export const contactMessages: ContactMessage[] = [];
 export const absences: Absence[] = [];
 export const monthlyPayments: MonthlyPayment[] = [];
 export const photoshootBriefs: PhotoshootBrief[] = [];
+
+export const mailingContacts: MailingContact[] = [
+  // Mode, Culture & Boutiques
+  { id: 'mc-01', name: 'Amazone Wear', email: 'amazonewear@gmail.com', category: 'Mode & Boutiques' },
+  { id: 'mc-02', name: 'Artemis Luxury Co', email: 'artemisluxury2020@gmail.com', category: 'Mode & Boutiques' },
+  { id: 'mc-03', name: 'Galerie Kay Anne', email: 'smariewilma@gmail.com', category: 'Mode & Boutiques' },
+  { id: 'mc-04', name: "Even'jet By Coco", email: 'evenjetbycoco@hotmail.com', category: 'Mode & Boutiques' },
+  { id: 'mc-05', name: 'MINI LOOK LBV', email: 'minilooklbv@gmail.com', category: 'Mode & Boutiques' },
+  { id: 'mc-06', name: 'Fashion Eyes Optic', email: 'fashioneyes123@gmail.com', category: 'Mode & Boutiques' },
+  // Hôtellerie, Loisirs & Restauration
+  { id: 'mc-07', name: 'Hôtel Radisson Blu', email: 'info.libreville@radissonblu.com', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-08', name: 'Hôtel Le Cristal', email: 'reservations@lecristal-hotel.com', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-09', name: 'Nomad Résidence Hôtelière', email: 'info@nomadlibreville.com', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-10', name: 'Résidence du Phare', email: 'residenceduphare@yahoo.fr', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-11', name: 'Hôtel Adagio', email: 'infoshoteladagio@gmail.com', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-12', name: 'Hôtel Akewa', email: 'hotelakewa@gmail.com', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-13', name: 'Roma Hotel', email: 'romalibreville@gmail.com', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-14', name: 'Hôtel Glass (SEHG)', email: 'sehg.hotellerie@yahoo.fr', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-15', name: "L'Émir Restaurant", email: 'emirestaurantlbv@gmail.com', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-16', name: 'Delicatess', email: 'contact.delicatess@gmail.com', category: 'Hôtellerie & Restauration' },
+  { id: 'mc-17', name: 'Chocolaterie Julie Nyangui', email: 'julie_nyangui@yahoo.fr', category: 'Hôtellerie & Restauration' },
+  // Agences Digitales, Tech & Communication
+  { id: 'mc-18', name: 'Agence Oolass', email: 'agenceoolass@gmail.com', category: 'Digital & Tech' },
+  { id: 'mc-19', name: 'Gabon Connect', email: 'contact@gabonconnect.com', category: 'Digital & Tech' },
+  { id: 'mc-20', name: 'Jeta Com', email: 'contact@jetacomm.com', category: 'Digital & Tech' },
+  { id: 'mc-21', name: 'B-COM', email: 'contact@b-com.pro', category: 'Digital & Tech' },
+  { id: 'mc-22', name: 'ADS Gabon', email: 'info@adsgabon.com', category: 'Digital & Tech' },
+  { id: 'mc-23', name: 'Agence BN Graph', email: 'agencebngraph@yahoo.fr', category: 'Digital & Tech' },
+  { id: 'mc-24', name: 'Globale Entreprise Services', email: 'contact@globale-services.com', category: 'Digital & Tech' },
+  { id: 'mc-25', name: 'GSI Gabon', email: 'contact@gsi-gabon.com', category: 'Digital & Tech' },
+  { id: 'mc-26', name: 'Dona Pen Design', email: 'design.dona.pen@gmail.com', category: 'Digital & Tech' },
+  // Logistique, BTP & Transport
+  { id: 'mc-27', name: 'AGS Déménagement', email: 'manager-gabon@agsmovers.com', category: 'Logistique & Transport' },
+  { id: 'mc-28', name: 'Bolloré Transport & Logistics', email: 'direction.lbv@bollore.com', category: 'Logistique & Transport' },
+  { id: 'mc-29', name: 'CMA CGM Gabon', email: 'gab.service@cma-cgm.com', category: 'Logistique & Transport' },
+  { id: 'mc-30', name: 'MSC Gabon', email: 'ga671-infogabon@msc.com', category: 'Logistique & Transport' },
+  { id: 'mc-31', name: 'Freinzy Transport', email: 'freinzytransport@gmail.com', category: 'Logistique & Transport' },
+  { id: 'mc-32', name: 'Gabon Shipping & Logistics', email: 'service.client@gsl-group.net', category: 'Logistique & Transport' },
+  { id: 'mc-33', name: 'Logistiga', email: 'info@logistiga.com', category: 'Logistique & Transport' },
+  { id: 'mc-34', name: 'Ozavino Logistics', email: 'ozavinologistics@gmail.com', category: 'Logistique & Transport' },
+  { id: 'mc-35', name: 'SLR Gabon', email: 'slrgabon@yahoo.fr', category: 'Logistique & Transport' },
+  { id: 'mc-36', name: 'STS Transit', email: 'ststransit2007@yahoo.fr', category: 'Logistique & Transport' },
+  { id: 'mc-37', name: 'TCH', email: 'tch.direction@gmail.com', category: 'Logistique & Transport' },
+  { id: 'mc-38', name: 'CIDT Gabon', email: 'cidtgabon@yahoo.fr', category: 'Logistique & Transport' },
+  { id: 'mc-39', name: 'GAPS Services', email: 'gaps2006@yahoo.fr', category: 'Logistique & Transport' },
+  { id: 'mc-40', name: 'OGTT Libreville', email: 'ogttlibreville@yahoo.fr', category: 'Logistique & Transport' },
+  { id: 'mc-41', name: 'Batis Gabon (BTP)', email: 'ebtpev@yahoo.fr', category: 'Logistique & Transport' },
+  // Droit, Consulting & Services B2B
+  { id: 'mc-42', name: 'CEMAC Consulting', email: 'cemacconsulting@yahoo.fr', category: 'Droit & Consulting' },
+  { id: 'mc-43', name: 'JMJ Africa', email: 'contact@jmjafrica.com', category: 'Droit & Consulting' },
+  { id: 'mc-44', name: 'Yenore Consulting', email: 'arbitrageiimac@gmail.com', category: 'Droit & Consulting' },
+  { id: 'mc-45', name: 'HNR Consulting', email: 'contact.hnrconsulting@gmail.com', category: 'Droit & Consulting' },
+  { id: 'mc-46', name: 'Project Lawyers', email: 'jpbozec@project-lawyers.com', category: 'Droit & Consulting' },
+  { id: 'mc-47', name: "Cabinet d'Almeida", email: 'regine_dalmeida@yahoo.fr', category: 'Droit & Consulting' },
+  { id: 'mc-48', name: 'Étude Me Taty', email: 'etudegerangah@yahoo.fr', category: 'Droit & Consulting' },
+  { id: 'mc-49', name: 'Me Lubin Ntoutoume', email: 'n_lubin@yahoo.fr', category: 'Droit & Consulting' },
+  { id: 'mc-50', name: 'Me Jean Paul Moumbembe', email: 'omchamb@yahoo.fr', category: 'Droit & Consulting' },
+  { id: 'mc-51', name: 'Cabinet Agbanrinche', email: 'agbanrinche@yahoo.fr', category: 'Droit & Consulting' },
+  // Santé & Polycliniques
+  { id: 'mc-52', name: 'SOS Médecins', email: 'sosmedecinslbv@yahoo.fr', category: 'Santé' },
+  { id: 'mc-53', name: 'Polyclinique Chambrier', email: 'alawoeeu@yahoo.fr', category: 'Santé' },
+  { id: 'mc-54', name: 'Polyclinique El Rapha', email: 'ibolejames@yahoo.fr', category: 'Santé' },
+  { id: 'mc-55', name: 'Cabinet Dentaire Les Frangipaniers', email: 'wazalydent@yahoo.fr', category: 'Santé' },
+  { id: 'mc-56', name: 'Cabinet Dentaire Centre-Ville', email: 'cabinetdentaire2013@yahoo.fr', category: 'Santé' },
+  { id: 'mc-57', name: 'Dr. Sophie Coniquet', email: 'sophieconiquet@yahoo.fr', category: 'Santé' },
+  { id: 'mc-58', name: 'Dr. Charafe', email: 'Charafe75@yahoo.fr', category: 'Santé' },
+  { id: 'mc-59', name: 'Dr. Gérard Valeri', email: 'gerardvaleri@yahoo.fr', category: 'Santé' },
+  { id: 'mc-60', name: 'Dr. Jean-Luc Caine', email: 'caine.jeanluc@yahoo.fr', category: 'Santé' },
+  { id: 'mc-61', name: 'Dr. Assengone Zeyi', email: 'assengonezeyi@yahoo.fr', category: 'Santé' },
+  { id: 'mc-62', name: 'Dr. Fatoumata Maiga', email: 'Famaiga2002@yahoo.fr', category: 'Santé' },
+  { id: 'mc-63', name: "Dr. Steeve Minto'o", email: 'steeve.mintoo@yahoo.fr', category: 'Santé' },
+  { id: 'mc-64', name: 'Cabinet Martel (Kiné)', email: 'Martelbertrand@yahoo.fr', category: 'Santé' },
+  // Institutions & Grandes Entreprises
+  { id: 'mc-65', name: 'FEG', email: 'info@lafeg.ga', category: 'Institution' },
+  { id: 'mc-66', name: 'CCI Gabon', email: 'contact@cci-gabon.com', category: 'Institution' },
+  { id: 'mc-67', name: 'CNMAG', email: 'cnmagabon@gmail.com', category: 'Institution' },
+  { id: 'mc-68', name: 'OGAPI', email: 'ogapiindustries241@gmail.com', category: 'Institution' },
+  { id: 'mc-69', name: 'OPRAG', email: 'info@oprag.ga', category: 'Institution' },
+  { id: 'mc-70', name: 'SGEPP', email: 'contact@sgepp.ga', category: 'Institution' },
+  { id: 'mc-71', name: 'SEEG', email: 'communication@seeg-gabon.com', category: 'Institution' },
+  { id: 'mc-72', name: 'SETRAG', email: 'c.communication@setrag.com', category: 'Institution' },
+  { id: 'mc-73', name: 'CFAO Motors Gabon', email: 'cfaomotorsgabon@cfao.com', category: 'Institution' },
+  { id: 'mc-74', name: 'Groupe Sogafric', email: 'sogafric.services@groupesogafric.com', category: 'Institution' },
+  { id: 'mc-75', name: 'Conseil National Climat', email: 'secretariatconseilclimat@gmail.com', category: 'Institution' },
+  { id: 'mc-76', name: 'Clean Africa', email: 'contact@cleanafrica.net', category: 'Institution' },
+  { id: 'mc-77', name: 'Invest in Gabon', email: 'contact@investingabon.ga', category: 'Institution' },
+  { id: 'mc-78', name: 'SICIG', email: 'admin@sicig.net', category: 'Institution' },
+  { id: 'mc-79', name: 'CNAMGS', email: 'info@cnamgs.ga', category: 'Institution' },
+  // Média
+  { id: 'mc-80', name: "Journal d'Émeraude", email: 'contact.journaldemeraude@gmail.com', category: 'Média' },
+];
 // FIX: Removed beginnerStudents array as the feature is deprecated.
 
 

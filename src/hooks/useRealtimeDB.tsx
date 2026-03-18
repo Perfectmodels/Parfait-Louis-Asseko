@@ -3,7 +3,7 @@ import { db } from '../realtimedbConfig'; // Changed to Realtime DB config
 import { ref, onValue, set, update, remove, push } from 'firebase/database'; // Changed for Realtime DB
 import { initialData } from '../constants/data';
 import logger from '../utils/logger';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, AdminProfile, GalleryItem } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, Transaction, PhotoshootBrief, NavLink, AdminProfile, GalleryItem, MailingContact } from '../types';
 
 // Initial data imports remain the same
 import {
@@ -36,9 +36,9 @@ import {
     testimonials as initialTestimonials,
     juryMembers as initialJuryMembers,
     registrationStaff as initialRegistrationStaff,
-    faqData as initialFaqData
-} from '../constants/data';
-import { articles as initialArticles } from '../constants/magazineData';
+    faqData as initialFaqData,
+    mailingContacts as initialMailingContacts,
+} from '../constants/data';import { articles as initialArticles } from '../constants/magazineData';
 import { courseData as initialCourseData } from '../constants/courseData';
 
 export interface AppData {
@@ -76,9 +76,11 @@ export interface AppData {
     faqData: FAQCategory[];
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
+    transactions: Transaction[];
     photoshootBriefs: PhotoshootBrief[];
     adminProfile: AdminProfile;
     gallery: GalleryItem[];
+    mailingContacts: MailingContact[];
 }
 
 // Renamed hook to useRealtimeDB
@@ -121,7 +123,9 @@ export const useRealtimeDB = () => {
         registrationStaff: initialRegistrationStaff,
         faqData: initialFaqData,
         adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
-        gallery: []
+        gallery: [],
+        transactions: [],
+        mailingContacts: initialMailingContacts,
     }), []);
 
     // Helper function to convert Firebase objects to arrays
@@ -221,10 +225,11 @@ export const useRealtimeDB = () => {
             faqData: deduplicateById(convertToArray(dbData.faqData)),
             absences: deduplicateById(convertToArray(dbData.absences)),
             monthlyPayments: deduplicateById(convertToArray(dbData.monthlyPayments)),
+            transactions: deduplicateById(convertToArray(dbData.transactions)),
             photoshootBriefs: deduplicateById(convertToArray(dbData.photoshootBriefs)),
             gallery: deduplicateById(convertToArray(dbData.gallery)),
             agencyTimeline: deduplicateById(convertToArray(dbData.agencyTimeline)),
-            // Handle nested objects within agencyInfo
+            mailingContacts: deduplicateById(convertToArray(dbData.mailingContacts ?? initialMailingContacts)),            // Handle nested objects within agencyInfo
             agencyInfo: dbData.agencyInfo ? {
                 ...dbData.agencyInfo,
                 values: deduplicateById(convertToArray(dbData.agencyInfo.values))

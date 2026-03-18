@@ -20,7 +20,7 @@ const Agency: React.FC = () => {
     return <div className="h-screen bg-pm-dark flex items-center justify-center"><div className="w-12 h-px bg-pm-gold animate-pulse"></div></div>;
   }
   
-  const { agencyInfo, modelDistinctions, agencyTimeline, siteImages } = data;
+  const { agencyInfo, modelDistinctions, agencyTimeline, siteImages, agencyAchievements } = data;
 
   const commitments = [
     {
@@ -129,47 +129,82 @@ const Agency: React.FC = () => {
             <span className="section-label">Notre Parcours</span>
             <h2 className="text-5xl md:text-6xl font-playfair font-black">Notre Histoire</h2>
         </div>
-        <div className="flex gap-8 overflow-x-auto px-6 lg:px-20 pb-12 no-scrollbar">
-            {agencyTimeline.map((item, idx) => (
-                <motion.div 
-                    key={idx}
-                    initial={{ opacity: 0, x: 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="flex-shrink-0 w-[350px] p-10 glass-card"
-                >
-                    <span className="text-5xl font-playfair font-black text-pm-gold/20 block mb-6">{item.year}</span>
-                    <p className="text-lg font-bold text-white leading-snug">{item.event}</p>
-                    <div className="mt-8 flex justify-end">
-                        <div className="w-10 h-[2px] bg-pm-gold/20"></div>
+        <div className="overflow-hidden" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)' }}>
+            <style>{`
+                @keyframes scroll-timeline { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+                .scroll-timeline:hover { animation-play-state: paused; }
+            `}</style>
+            <div className="scroll-timeline flex" style={{ width: 'max-content', animation: 'scroll-timeline 60s linear infinite' }}>
+                {[...agencyTimeline, ...agencyTimeline].map((item, i) => (
+                    <div key={i} className="flex-shrink-0 w-[340px] p-10 glass-card mx-4">
+                        <span className="text-5xl font-playfair font-black text-pm-gold/20 block mb-6">{item.year}</span>
+                        <p className="text-lg font-bold text-white leading-snug">{item.event}</p>
+                        <div className="mt-8 flex justify-end"><div className="w-10 h-[2px] bg-pm-gold/20"></div></div>
                     </div>
-                </motion.div>
-            ))}
+                ))}
+            </div>
         </div>
       </section>
 
       {/* 5. DISTINCTIONS */}
-      <section className="page-container">
-         <div className="text-center mb-32">
+      <section className="py-40 overflow-hidden">
+         <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-24 text-center">
             <span className="section-label">Nos Récompenses</span>
             <h2 className="text-7xl font-playfair font-black italic">Distinctions</h2>
          </div>
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
-            {modelDistinctions.map((dist, idx) => (
-                <div key={idx} className="p-12 border border-white/5 hover:bg-pm-gold/5 transition-all duration-700 text-center group">
-                    <TrophyIcon className="w-12 h-12 text-pm-gold/20 mx-auto mb-10 group-hover:text-pm-gold group-hover:scale-110 transition-all duration-700" strokeWidth={1} />
-                    <h3 className="text-2xl font-playfair font-bold text-white mb-6 leading-tight">{dist.name}</h3>
-                    <ul className="space-y-2">
-                        {dist.titles.map((t, i) => (
-                            <li key={i} className="text-[10px] uppercase font-black tracking-[0.3em] text-white/30 group-hover:text-white/60 transition-colors">{t}</li>
-                        ))}
-                    </ul>
-                </div>
-            ))}
+         <div className="overflow-hidden" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)' }}>
+            <style>{`
+                @keyframes scroll-distinctions { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+                .scroll-distinctions:hover { animation-play-state: paused; }
+            `}</style>
+            <div className="scroll-distinctions flex" style={{ width: 'max-content', animation: 'scroll-distinctions 50s linear infinite reverse' }}>
+                {[...modelDistinctions, ...modelDistinctions].map((dist, i) => (
+                    <div key={i} className="flex-shrink-0 w-[300px] p-12 border border-white/5 hover:bg-pm-gold/5 transition-all duration-700 text-center group mx-1">
+                        <TrophyIcon className="w-12 h-12 text-pm-gold/20 mx-auto mb-10 group-hover:text-pm-gold group-hover:scale-110 transition-all duration-700" strokeWidth={1} />
+                        <h3 className="text-2xl font-playfair font-bold text-white mb-6 leading-tight">{dist.name}</h3>
+                        <ul className="space-y-2">
+                            {dist.titles.map((t, j) => (
+                                <li key={j} className="text-[10px] uppercase font-black tracking-[0.3em] text-white/30 group-hover:text-white/60 transition-colors">{t}</li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
          </div>
       </section>
 
-      {/* 6. FINAL CTA */}
+      {/* 6. RÉALISATIONS */}
+      {agencyAchievements && agencyAchievements.length > 0 && (
+      <section className="py-40 overflow-hidden border-t border-white/5">
+         <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-24">
+            <span className="section-label">Notre Bilan</span>
+            <h2 className="text-5xl md:text-6xl font-playfair font-black">Réalisations</h2>
+         </div>
+         <div className="overflow-hidden" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)' }}>
+            <style>{`
+                @keyframes scroll-achievements { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+                .scroll-achievements:hover { animation-play-state: paused; }
+            `}</style>
+            <div className="scroll-achievements flex items-stretch gap-4 px-4" style={{ width: 'max-content', animation: 'scroll-achievements 120s linear infinite' }}>
+                {[...agencyAchievements, ...agencyAchievements].map((cat, i) => (
+                    <div key={i} className="flex-shrink-0 w-[320px] p-10 border border-white/5 hover:bg-pm-gold/5 transition-all duration-700 group">
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-pm-gold mb-8">{cat.name}</h3>
+                        <ul className="space-y-4">
+                            {cat.items.map((item, j) => (
+                                <li key={j} className="flex items-start gap-3">
+                                    <span className="text-pm-gold/30 mt-1 shrink-0">◆</span>
+                                    <span className="text-sm font-medium text-white/50 group-hover:text-white/70 transition-colors leading-snug">{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+         </div>
+      </section>
+      )}
+
+      {/* 7. FINAL CTA */}
       <section className="relative h-[80vh] flex items-center justify-center border-t border-white/5 overflow-hidden">
           <div className="absolute inset-0 bg-pm-dark">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] bg-pm-gold rounded-full opacity-[0.02] blur-[150px] animate-glow"></div>

@@ -5,13 +5,15 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import { Link } from 'react-router-dom';
+import CloudinaryUploader from '../components/CloudinaryUploader';
 
 const CastingForm: React.FC = () => {
     const { data, saveData } = useData();
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
         gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
-        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
+        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: '',
+        photoPortraitUrl: '', photoFullBodyUrl: '', photoProfileUrl: '',
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
@@ -46,7 +48,8 @@ const CastingForm: React.FC = () => {
             setFormData({ // Reset form
                 firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
                 gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
-                eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
+                eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: '',
+                photoPortraitUrl: '', photoFullBodyUrl: '', photoProfileUrl: '',
             });
 
         } catch (error) {
@@ -115,9 +118,38 @@ const CastingForm: React.FC = () => {
                             <FormInput label="Profil Instagram" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="@pseudo" />
                             <FormInput label="Lien vers portfolio (optionnel)" name="portfolioLink" value={formData.portfolioLink} onChange={handleChange} />
                         </div>
+                    </Section>
+
+                    <Section title="Photos de candidature">
                         <p className="text-sm text-pm-off-white/60 bg-pm-dark/50 p-3 rounded-md border border-pm-off-white/10">
-                            Note : Pour simplifier cette première étape, nous ne demandons pas de photos immédiatement. Si votre profil est présélectionné, nous vous contacterons par email pour vous demander de nous envoyer vos polas (photos naturelles).
+                            Envoyez vos polas directement ici. Ces photos nous aident à évaluer votre profil. Formats acceptés : JPG, PNG, WEBP (max 10 Mo chacune).
                         </p>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            <CloudinaryUploader
+                                label="Portrait (visage)"
+                                value={formData.photoPortraitUrl}
+                                onChange={url => setFormData(p => ({ ...p, photoPortraitUrl: url }))}
+                                resourceType="image"
+                                folder="casting/portraits"
+                                allowUrl={false}
+                            />
+                            <CloudinaryUploader
+                                label="Photo plein corps"
+                                value={formData.photoFullBodyUrl}
+                                onChange={url => setFormData(p => ({ ...p, photoFullBodyUrl: url }))}
+                                resourceType="image"
+                                folder="casting/full-body"
+                                allowUrl={false}
+                            />
+                            <CloudinaryUploader
+                                label="Photo de profil"
+                                value={formData.photoProfileUrl}
+                                onChange={url => setFormData(p => ({ ...p, photoProfileUrl: url }))}
+                                resourceType="image"
+                                folder="casting/profiles"
+                                allowUrl={false}
+                            />
+                        </div>
                     </Section>
 
                     <div className="pt-6">

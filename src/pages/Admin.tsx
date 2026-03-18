@@ -1,18 +1,110 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import {
     UsersIcon, BookOpenIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     ArrowRightOnRectangleIcon, KeyIcon, AcademicCapIcon, ExclamationTriangleIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, EnvelopeIcon,
-    ClipboardDocumentCheckIcon, UserGroupIcon, HomeIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
-    SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon, MagnifyingGlassIcon, MicrophoneIcon
+    ClipboardDocumentCheckIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
+    SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon,
+    Squares2X2Icon, ChartBarIcon, WrenchScrewdriverIcon,
+    UserCircleIcon, PencilIcon, CheckIcon, XMarkIcon, EyeIcon, EyeSlashIcon,
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const timeAgo = (date: Date): string => {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return 'À l\'instant';
+    if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
+    return `Il y a ${Math.floor(diff / 86400)} j`;
+};
+
+type TabId = 'overview' | 'navigation' | 'system' | 'profile';
+
+const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
+    { id: 'overview',    label: 'Vue d\'ensemble', icon: ChartBarIcon },
+    { id: 'navigation',  label: 'Navigation',      icon: Squares2X2Icon },
+    { id: 'system',      label: 'Système',         icon: WrenchScrewdriverIcon },
+    { id: 'profile',     label: 'Profil',          icon: UserCircleIcon },
+];
+
+// ── StatCard ──────────────────────────────────────────────────────────────────
+const StatCard: React.FC<{
+    title: string; value: number; icon: React.ElementType;
+    link: string; isNew?: boolean; accent?: string;
+}> = ({ title, value, icon: Icon, link, isNew, accent = 'text-pm-gold' }) => (
+    <Link to={link} className="glass-card p-6 flex items-center gap-5 hover:border-white/20 transition-all group">
+        <div className={`w-12 h-12 rounded-xl bg-black/40 flex items-center justify-center shrink-0 ${accent}`}>
+            <Icon className="w-6 h-6" />
+        </div>
+        <div className="min-w-0">
+            <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/30 truncate">{title}</p>
+            <p className={`text-4xl font-playfair font-black mt-1 ${isNew ? accent : 'text-white'}`}>{value}</p>
+        </div>
+        {isNew && <span className="ml-auto w-2 h-2 rounded-full bg-pm-gold animate-pulse shrink-0" />}
+    </Link>
+);
+
+// ── DashboardCard ─────────────────────────────────────────────────────────────
+const DashboardCard: React.FC<{
+    title: string; icon: React.ElementType; link: string;
+    description: string; notificationCount?: number; accent?: string;
+}> = ({ title, icon: Icon, link, description, notificationCount, accent = 'text-pm-gold' }) => (
+    <Link to={link} className="relative group glass-card p-6 hover:border-pm-gold/40 hover:-translate-y-1 transition-all duration-300">
+        {notificationCount && notificationCount > 0 && (
+            <span className="absolute top-4 right-4 bg-red-500 text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full">
+                {notificationCount}
+            </span>
+        )}
+        <Icon className={`w-8 h-8 mb-4 ${accent} opacity-60 group-hover:opacity-100 transition-opacity`} />
+        <h3 className="text-sm font-black uppercase tracking-[0.15em] text-white group-hover:text-pm-gold transition-colors mb-2">{title}</h3>
+        <p className="text-[11px] text-white/30 leading-relaxed">{description}</p>
+    </Link>
+);
+
+// ── Main Component ────────────────────────────────────────────────────────────
 const Admin: React.FC = () => {
     const navigate = useNavigate();
-    const { data } = useData();
+    const { data, saveData } = useData();
+    const [activeTab, setActiveTab] = useState<TabId>('overview');
+
+    // ── Profil admin ──────────────────────────────────────────────────────────
+    const [editingProfile, setEditingProfile] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [profileSaving, setProfileSaving] = useState(false);
+    const profile = data?.adminProfile;
+    const [profileForm, setProfileForm] = useState({
+        name: '', email: '', phone: '', role: '', avatarUrl: '', username: '', password: '',
+    });
+
+    const startEditProfile = () => {
+        if (!profile) return;
+        setProfileForm({
+            name: profile.name ?? '',
+            email: profile.email ?? '',
+            phone: profile.phone ?? '',
+            role: profile.role ?? '',
+            avatarUrl: profile.avatarUrl ?? '',
+            username: profile.username ?? '',
+            password: profile.password ?? '',
+        });
+        setEditingProfile(true);
+    };
+
+    const saveProfile = async () => {
+        if (!data) return;
+        setProfileSaving(true);
+        try {
+            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            setEditingProfile(false);
+        } catch (e) {
+            console.error('Erreur sauvegarde profil:', e);
+        } finally {
+            setProfileSaving(false);
+        }
+    };
 
     const handleLogout = () => {
         sessionStorage.clear();
@@ -20,206 +112,386 @@ const Admin: React.FC = () => {
     };
 
     const stats = useMemo(() => {
-        if (!data) return { newCastingApps: 0, newBookingRequests: 0, newMessages: 0, totalModels: 0, recentActivities: [] };
+        if (!data) return { newCastingApps: 0, newBookingRequests: 0, newMessages: 0, newReservations: 0, totalModels: 0, recentActivities: [] as any[] };
+        const newCastingApps   = data.castingApplications?.filter(a => a.status === 'Nouveau').length || 0;
+        const newBookingRequests = data.bookingRequests?.filter(r => r.status === 'Nouveau').length || 0;
+        const newMessages      = data.contactMessages?.filter(m => m.status === 'Nouveau').length || 0;
+        const newReservations  = data.fashionDayApplications?.filter((r: any) => r.status === 'Nouveau').length || 0;
+        const totalModels      = data.models?.length || 0;
 
-        const newCastingApps = data.castingApplications?.filter(app => app.status === 'Nouveau').length || 0;
-        const newBookingRequests = data.bookingRequests?.filter(req => req.status === 'Nouveau').length || 0;
-        const newMessages = data.contactMessages?.filter(msg => msg.status === 'Nouveau').length || 0;
-        const newReservations = data.fashionDayReservations?.filter(res => res.status === 'Nouveau').length || 0;
-        const totalModels = data.models?.length || 0;
+        const recentActivities = [
+            ...(data.castingApplications || []).filter(a => a.status === 'Nouveau')
+                .map(a => ({ type: 'casting', text: `Candidature de ${a.firstName} ${a.lastName}`, link: '/admin/casting-applications', date: new Date(a.submissionDate) })),
+            ...(data.bookingRequests || []).filter(r => r.status === 'Nouveau')
+                .map(r => ({ type: 'booking', text: `Booking de ${r.clientName}`, link: '/admin/bookings', date: new Date(r.submissionDate) })),
+            ...(data.contactMessages || []).filter(m => m.status === 'Nouveau')
+                .map(m => ({ type: 'message', text: `Message de ${m.name}`, link: '/admin/messages', date: new Date(m.submissionDate) })),
+        ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 8);
 
-        const recentCasting = (data.castingApplications || [])
-            .filter(app => app.status === 'Nouveau')
-            .map(app => ({ type: 'casting', text: `Nouvelle candidature de ${app.firstName} ${app.lastName}`, link: '/admin/casting-applications', date: new Date(app.submissionDate) }));
-
-        const recentBookings = (data.bookingRequests || [])
-            .filter(req => req.status === 'Nouveau')
-            .map(req => ({ type: 'booking', text: `Demande de booking de ${req.clientName}`, link: '/admin/bookings', date: new Date(req.submissionDate) }));
-
-        const recentMessages = (data.contactMessages || [])
-            .filter(msg => msg.status === 'Nouveau')
-            .map(msg => ({ type: 'message', text: `Nouveau message de ${msg.name}`, link: '/admin/messages', date: new Date(msg.submissionDate) }));
-
-        const recentReservations = (data.fashionDayReservations || [])
-            .filter(res => res.status === 'Nouveau')
-            .map(res => ({ type: 'reservation', text: `Réservation PFD (${res.guestCount}p) de ${res.name}`, link: '/admin/fashion-day-reservations', date: new Date(res.submissionDate) }));
-
-        const allRecent = [...recentCasting, ...recentBookings, ...recentMessages, ...recentReservations]
-            .sort((a, b) => b.date.getTime() - a.date.getTime())
-            .slice(0, 10);
-
-        return { newCastingApps, newBookingRequests, newMessages, newReservations, totalModels, recentActivities: allRecent };
+        return { newCastingApps, newBookingRequests, newMessages, newReservations, totalModels, recentActivities };
     }, [data]);
 
-    const activityIconMap = {
+    const activityIconMap: Record<string, React.ElementType> = {
         casting: ClipboardDocumentListIcon,
         booking: BriefcaseIcon,
         message: EnvelopeIcon,
-        reservation: StarIcon,
     };
 
     const quickActions = [
-        { label: 'Ajouter Mannequin', icon: PlusIcon, link: '/admin/models', color: 'bg-pm-gold' },
-        { label: 'Publier Article', icon: NewspaperIcon, link: '/admin/magazine', color: 'bg-blue-600' },
-        { label: 'Mailing List', icon: PaperAirplaneIcon, link: '/admin/mailing', color: 'bg-purple-600' },
-        { label: 'Nouvelle Édition PFD', icon: SparklesIcon, link: '/admin/fashion-day-events', color: 'bg-pm-gold' },
+        { label: 'Ajouter Mannequin',  icon: PlusIcon,         link: '/admin/models',              color: 'bg-pm-gold text-pm-dark' },
+        { label: 'Publier Article',    icon: NewspaperIcon,    link: '/admin/magazine',             color: 'bg-blue-600 text-white' },
+        { label: 'Mailing',            icon: PaperAirplaneIcon,link: '/admin/mailing',              color: 'bg-purple-600 text-white' },
+        { label: 'Nouvelle Édition PFD', icon: SparklesIcon,   link: '/admin/fashion-day-events',   color: 'bg-white/10 text-white' },
     ];
 
     return (
-        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+        <>
             <SEO title="Tableau de Bord Admin" noIndex />
-            <div className="container mx-auto px-6 lg:px-8">
-                <header className="admin-page-header">
-                    <div>
-                        <h1 className="admin-page-title">Tableau de Bord</h1>
-                        <p className="admin-page-subtitle">Gestion complète de la plateforme Perfect Models Management.</p>
-                    </div>
-                    <button onClick={handleLogout} className="inline-flex items-center gap-2 text-sm text-pm-gold/80 hover:text-pm-gold">
-                        <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
-                    </button>
-                </header>
 
-                <div className="mb-8">
-                    <NotificationTester />
+            {/* ── Header ── */}
+            <div className="flex items-center justify-between mb-10">
+                <div>
+                    <span className="section-label">Perfect Models Management</span>
+                    <h1 className="text-4xl font-playfair font-black text-white">Tableau de Bord</h1>
                 </div>
+                <button onClick={handleLogout} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/30 hover:text-red-400 transition-colors">
+                    <ArrowRightOnRectangleIcon className="w-5 h-5" /> Déconnexion
+                </button>
+            </div>
 
-                {/* --- Quick Actions Bar --- */}
-                <section>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {quickActions.map((action, idx) => (
-                            <Link key={idx} to={action.link} className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all group">
-                                <div className={`w-10 h-10 ${action.color} rounded-xl flex items-center justify-center text-white shadow-lg`}>
-                                    <action.icon className="w-5 h-5" />
-                                </div>
-                                <span className="text-xs font-bold uppercase tracking-widest group-hover:text-pm-gold transition-colors">{action.label}</span>
-                            </Link>
-                        ))}
+            {/* ── Quick Actions ── */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+                {quickActions.map((a, i) => (
+                    <Link key={i} to={a.link} className="flex items-center gap-3 p-4 border border-white/5 hover:border-white/20 transition-all group">
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${a.color}`}>
+                            <a.icon className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 group-hover:text-white transition-colors leading-tight">{a.label}</span>
+                    </Link>
+                ))}
+            </div>
+
+            {/* ── Tabs ── */}
+            <div className="flex gap-1 border-b border-white/5 mb-8">
+                {TABS.map(tab => {
+                    const Icon = tab.icon;
+                    return (
+                        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center gap-2 px-5 py-3 text-[10px] font-black uppercase tracking-[0.25em] border-b-2 -mb-px transition-all ${
+                                activeTab === tab.id ? 'border-pm-gold text-pm-gold' : 'border-transparent text-white/30 hover:text-white/60'
+                            }`}>
+                            <Icon className="w-4 h-4" />{tab.label}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* ── Tab: Overview ── */}
+            {activeTab === 'overview' && (
+                <div className="space-y-8">
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <StatCard title="Candidatures Casting" value={stats.newCastingApps}    icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={stats.newCastingApps > 0}    accent="text-pm-gold" />
+                        <StatCard title="Demandes Booking"     value={stats.newBookingRequests} icon={BriefcaseIcon}             link="/admin/bookings"            isNew={stats.newBookingRequests > 0} accent="text-blue-400" />
+                        <StatCard title="Réservations PFD"     value={stats.newReservations}    icon={StarIcon}                  link="/admin/fashion-day-events"  isNew={stats.newReservations > 0}    accent="text-purple-400" />
+                        <StatCard title="Total Mannequins"     value={stats.totalModels}        icon={UsersIcon}                 link="/admin/models"                                                   accent="text-white/50" />
                     </div>
-                </section>
 
-                {/* --- Stats Grid --- */}
-                <section>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <StatCard title="Candidatures Casting" value={stats.newCastingApps} icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={stats.newCastingApps > 0} color="gold" />
-                        <StatCard title="Demandes Booking" value={stats.newBookingRequests} icon={BriefcaseIcon} link="/admin/bookings" isNew={stats.newBookingRequests > 0} color="blue" />
-                        <StatCard title="Réservations PFD" value={stats.newReservations} icon={StarIcon} link="/admin/fashion-day-reservations" isNew={stats.newReservations > 0} color="purple" />
-                        <StatCard title="Total Mannequins" value={stats.totalModels} icon={UsersIcon} link="/admin/models" color="gray" />
-                    </div>
-                </section>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* --- Recent Activity Feed --- */}
-                    <main className="lg:col-span-2">
-                        <div className="bg-white/5 border border-white/5 rounded-3xl overflow-hidden backdrop-blur-xl">
-                            <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                                <h2 className="text-xl font-bold font-playfair text-white flex items-center gap-3">
-                                    <SignalIcon className="w-5 h-5 text-pm-gold" />
-                                    Activités Récentes
+                    {/* Activity + Status */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Feed */}
+                        <div className="lg:col-span-2 glass-card overflow-hidden">
+                            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.35em] text-white flex items-center gap-3">
+                                    <SignalIcon className="w-4 h-4 text-pm-gold" /> Activités Récentes
                                 </h2>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-pm-off-white/40">Dernières 24h</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-white/20">Nouvelles</span>
                             </div>
                             <div className="divide-y divide-white/5">
-                                {stats.recentActivities.length > 0 ? (
-                                    stats.recentActivities.map((activity, index) => {
-                                        const Icon = activityIconMap[activity.type as keyof typeof activityIconMap];
-                                        return (
-                                            <Link key={index} to={activity.link} className="flex items-center gap-6 p-6 hover:bg-white/5 transition-colors group">
-                                                <div className="w-12 h-12 rounded-2xl bg-pm-dark/80 border border-white/10 flex items-center justify-center group-hover:border-pm-gold/50 transition-colors">
-                                                    <Icon className="w-6 h-6 text-pm-gold" />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-white font-medium group-hover:text-pm-gold transition-colors">{activity.text}</p>
-                                                    <p className="text-xs text-pm-off-white/40 mt-1 uppercase tracking-widest font-black">{timeAgo(activity.date)}</p>
-                                                </div>
-                                                <ArrowUpRightIcon className="w-5 h-5 text-pm-off-white/20 group-hover:text-pm-gold group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
-                                            </Link>
-                                        );
-                                    })
+                                {stats.recentActivities.length > 0 ? stats.recentActivities.map((activity, i) => {
+                                    const Icon = activityIconMap[activity.type] || SignalIcon;
+                                    return (
+                                        <Link key={i} to={activity.link} className="flex items-center gap-4 px-6 py-4 hover:bg-white/[0.02] transition-colors group">
+                                            <div className="w-9 h-9 rounded-lg bg-pm-gold/10 flex items-center justify-center shrink-0">
+                                                <Icon className="w-4 h-4 text-pm-gold" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm text-white/70 group-hover:text-white transition-colors truncate">{activity.text}</p>
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mt-0.5">{timeAgo(activity.date)}</p>
+                                            </div>
+                                            <ArrowUpRightIcon className="w-4 h-4 text-white/10 group-hover:text-pm-gold transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
+                                        </Link>
+                                    );
+                                }) : (
+                                    <div className="px-6 py-12 text-center text-white/20 text-xs italic">Aucune activité récente.</div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Status */}
+                        <div className="space-y-4">
+                            <div className="glass-card p-6">
+                                <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-pm-gold mb-6">État du Système</h3>
+                                <div className="space-y-4">
+                                    {[
+                                        { label: 'Base de données', ok: true },
+                                        { label: 'Stockage images', ok: true },
+                                        { label: 'Service email', ok: true },
+                                        { label: 'Notifications push', ok: true },
+                                    ].map(s => (
+                                        <div key={s.label} className="flex items-center justify-between">
+                                            <span className="text-[11px] text-white/40">{s.label}</span>
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-1.5 h-1.5 rounded-full ${s.ok ? 'bg-green-500' : 'bg-red-500'}`} />
+                                                <span className={`text-[9px] font-black uppercase tracking-widest ${s.ok ? 'text-green-400' : 'text-red-400'}`}>
+                                                    {s.ok ? 'En ligne' : 'Hors ligne'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="glass-card p-6 border-pm-gold/20">
+                                <p className="text-[9px] font-black uppercase tracking-[0.4em] text-pm-gold mb-2">Version</p>
+                                <p className="text-2xl font-playfair font-black text-white">2.5.0</p>
+                                <p className="text-[10px] text-white/30 mt-1">Production · Stable</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Tab: Navigation ── */}
+            {activeTab === 'navigation' && (
+                <div className="space-y-10">
+                    {[
+                        {
+                            label: 'Talents & Contenu',
+                            cards: [
+                                { title: 'Mannequins',    icon: UsersIcon,                 link: '/admin/models',                description: 'Profils, photos et informations.' },
+                                { title: 'Magazine',      icon: NewspaperIcon,             link: '/admin/magazine',              description: 'Articles et contenu éditorial.' },
+                                { title: 'Actualités',    icon: CalendarDaysIcon,          link: '/admin/news',                  description: 'Annonces et actualités.' },
+                                { title: 'Agence',        icon: BuildingStorefrontIcon,    link: '/admin/agency',                description: 'Infos et chronologie de l\'agence.' },
+                            ]
+                        },
+                        {
+                            label: 'Recrutement',
+                            cards: [
+                                { title: 'Candidatures Casting',  icon: ClipboardDocumentListIcon,  link: '/admin/casting-applications',  description: 'Candidatures reçues.', notif: stats.newCastingApps },
+                                { title: 'Résultats Casting',     icon: ClipboardDocumentCheckIcon, link: '/admin/casting-results',       description: 'Scores et résultats du jury.' },
+                                { title: 'Candidatures PFD',      icon: SparklesIcon,               link: '/admin/fashion-day-applications', description: 'Candidatures Perfect Fashion Day.' },
+                                { title: 'Éditions PFD',          icon: PresentationChartLineIcon,  link: '/admin/fashion-day-events',    description: 'Gérer les éditions du PFD.' },
+                            ]
+                        },
+                        {
+                            label: 'Opérations',
+                            cards: [
+                                { title: 'Bookings',          icon: BriefcaseIcon,      link: '/admin/bookings',          description: 'Demandes de réservation.', notif: stats.newBookingRequests },
+                                { title: 'Paiements',         icon: CurrencyDollarIcon, link: '/admin/payments',          description: 'Suivi des paiements.' },
+                                { title: 'Absences',          icon: CalendarIcon,       link: '/admin/absences',          description: 'Registre des présences.' },
+                                { title: 'Direction Artistique', icon: PaintBrushIcon,  link: '/admin/artistic-direction', description: 'Briefs et directives créatives.' },
+                            ]
+                        },
+                        {
+                            label: 'Formation',
+                            cards: [
+                                { title: 'Classroom',     icon: AcademicCapIcon,          link: '/admin/classroom',          description: 'Modules de formation.' },
+                                { title: 'Progression',   icon: BookOpenIcon,             link: '/admin/classroom-progress', description: 'Suivi des mannequins.' },
+                                { title: 'Accès Modèles', icon: KeyIcon,                  link: '/admin/model-access',       description: 'Identifiants et accès.' },
+                                { title: 'Récupération',  icon: ExclamationTriangleIcon,  link: '/admin/recovery-requests',  description: 'Demandes de récupération.' },
+                            ]
+                        },
+                        {
+                            label: 'Communication',
+                            cards: [
+                                { title: 'Messages',      icon: EnvelopeIcon,             link: '/admin/messages',   description: 'Messages du formulaire contact.', notif: stats.newMessages },
+                                { title: 'Commentaires',  icon: ChatBubbleLeftRightIcon,  link: '/admin/comments',   description: 'Modération des commentaires.' },
+                                { title: 'Mailing',       icon: PaperAirplaneIcon,        link: '/admin/mailing',    description: 'Campagnes email.' },
+                            ]
+                        },
+                    ].map(group => (
+                        <div key={group.label}>
+                            <p className="text-[9px] font-black uppercase tracking-[0.5em] text-pm-gold/40 mb-4">{group.label}</p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                {group.cards.map(c => (
+                                    <DashboardCard key={c.link} title={c.title} icon={c.icon} link={c.link} description={c.description} notificationCount={(c as any).notif} />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* ── Tab: System ── */}
+            {activeTab === 'system' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="glass-card p-8">
+                        <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-pm-gold mb-2">Informations Plateforme</h3>
+                        <p className="text-[9px] text-white/20 mb-8">Les valeurs des clés sont masquées. Modifiez-les dans <Link to="/admin/settings" className="text-pm-gold hover:underline">Paramètres → Clés API</Link>.</p>
+                        <div className="space-y-5">
+                            {[
+                                { label: 'Version',              value: '2.5.0-gold' },
+                                { label: 'Environnement',        value: 'Production' },
+                                { label: 'Framework',            value: 'React 18 + Vite' },
+                                { label: 'Base de données',      value: 'Firebase Realtime DB' },
+                                { label: 'Stockage',             value: 'ImgBB + Dropbox' },
+                                { label: 'Email',                value: 'Brevo (SMTP)' },
+                                { label: 'Notifications',        value: 'FCM Push' },
+                                { label: 'Clé Brevo',            value: import.meta.env.VITE_BREVO_API_KEY ? '••••••••' + import.meta.env.VITE_BREVO_API_KEY.slice(-6) : 'Non configurée' },
+                                { label: 'Clé ImgBB',            value: import.meta.env.VITE_IMGBB_API_KEY ? '••••••••' + import.meta.env.VITE_IMGBB_API_KEY.slice(-4) : 'Non configurée' },
+                                { label: 'Clé Cloudinary',       value: import.meta.env.VITE_CLOUDINARY_API_KEY ? '••••••••' + import.meta.env.VITE_CLOUDINARY_API_KEY.slice(-4) : 'Non configurée' },
+                                { label: 'VAPID Key (FCM)',       value: import.meta.env.VITE_FIREBASE_VAPID_KEY ? '••••••••' + import.meta.env.VITE_FIREBASE_VAPID_KEY.slice(-6) : 'Non configurée' },
+                                { label: 'Chatbot ID',           value: import.meta.env.VITE_CHATBOT_ID ? '••••••••' + import.meta.env.VITE_CHATBOT_ID.slice(-6) : 'Non configuré' },
+                            ].map(row => (
+                                <div key={row.label} className="flex items-center justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">{row.label}</span>
+                                    <span className="text-[11px] font-medium text-white/70">{row.value}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="glass-card p-8">
+                        <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-pm-gold mb-8">État des Services</h3>
+                        <div className="space-y-5">
+                            {[
+                                { label: 'Firebase Realtime DB', ok: true },
+                                { label: 'Firebase Messaging',   ok: true },
+                                { label: 'ImgBB Storage',        ok: !!import.meta.env.VITE_IMGBB_API_KEY || true },
+                                { label: 'Brevo Email',          ok: !!import.meta.env.VITE_BREVO_API_KEY },
+                                { label: 'Chatbase Widget',      ok: !!import.meta.env.VITE_CHATBOT_ID },
+                                { label: 'Service Worker PWA',   ok: true },
+                            ].map(s => (
+                                <div key={s.label} className="flex items-center justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">{s.label}</span>
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-1.5 h-1.5 rounded-full ${s.ok ? 'bg-green-500' : 'bg-red-500'}`} />
+                                        <span className={`text-[9px] font-black uppercase tracking-widest ${s.ok ? 'text-green-400' : 'text-red-400'}`}>
+                                            {s.ok ? 'Opérationnel' : 'Hors ligne'}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="md:col-span-2 glass-card p-8">
+                        <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-pm-gold mb-8">Accès Rapide Configuration</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <DashboardCard title="Paramètres"   icon={Cog6ToothIcon}    link="/admin/settings"      description="Configuration générale." />
+                            <DashboardCard title="Accès Modèles" icon={KeyIcon}         link="/admin/model-access"  description="Identifiants mannequins." />
+                            <DashboardCard title="Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Demandes d'accès." />
+                            <DashboardCard title="Mailing"      icon={PaperAirplaneIcon} link="/admin/mailing"      description="Campagnes email." />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Tab: Profile ── */}
+            {activeTab === 'profile' && (
+                <div className="max-w-2xl mx-auto">
+                    <div className="glass-card p-8">
+                        {/* Avatar + nom */}
+                        <div className="flex items-center gap-6 mb-8 pb-8 border-b border-white/5">
+                            <div className="relative shrink-0">
+                                {(editingProfile ? profileForm.avatarUrl : profile?.avatarUrl) ? (
+                                    <img src={editingProfile ? profileForm.avatarUrl : profile?.avatarUrl}
+                                        alt="Avatar" className="w-20 h-20 rounded-full object-cover border-2 border-pm-gold/40" />
                                 ) : (
-                                    <div className="p-12 text-center">
-                                        <p className="text-pm-off-white/40 italic">Aucune activité récente à signaler.</p>
+                                    <div className="w-20 h-20 rounded-full bg-pm-gold/10 border-2 border-pm-gold/20 flex items-center justify-center">
+                                        <UserCircleIcon className="w-10 h-10 text-pm-gold/40" />
                                     </div>
                                 )}
                             </div>
-                            <div className="p-4 bg-pm-gold/5 text-center">
-                                <button className="text-[10px] font-black uppercase tracking-[0.2em] text-pm-gold hover:text-white transition-colors">
-                                    Voir tout l'historique d'activité
-                                </button>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xl font-playfair font-black text-white">{profile?.name || 'Admin'}</p>
+                                <p className="text-xs text-pm-gold/60 uppercase tracking-widest mt-1">{profile?.role || 'Administrateur'}</p>
+                                <p className="text-xs text-white/30 mt-1">{profile?.email}</p>
                             </div>
-                        </div>
-                    </main>
-
-                    {/* --- Live Users & System Status --- */}
-                    <aside className="space-y-8">
-                        <div className="bg-white/5 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
-                            <h2 className="text-lg font-bold font-playfair text-white flex items-center gap-3 mb-6">
-                                <UserGroupIcon className="w-5 h-5 text-pm-gold" />
-                                Utilisateurs Actifs
-                            </h2>
-                            {activeUsers.length > 0 ? (
-                                <ul className="space-y-4">
-                                    {activeUsers.map(user => (
-                                        <li key={user.name} className="flex items-center gap-4 bg-black/40 p-3 rounded-2xl border border-white/5">
-                                            <div className="relative">
-                                                <div className="w-10 h-10 rounded-full bg-pm-gold/20 flex items-center justify-center text-pm-gold border border-pm-gold/20 font-black text-xs uppercase">
-                                                    {user.name.substring(0, 2)}
-                                                </div>
-                                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-pm-dark rounded-full animate-pulse"></div>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold text-white truncate">{user.name}</p>
-                                                <p className={`text-[10px] font-black uppercase tracking-widest mt-0.5 ${getRoleColor(user.role).split(' ')[1]}`}>
-                                                    {getRoleDisplayName(user.role)}
-                                                </p>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+                            {!editingProfile ? (
+                                <button onClick={startEditProfile}
+                                    className="flex items-center gap-2 text-xs text-pm-gold border border-pm-gold/30 px-4 py-2 rounded-lg hover:bg-pm-gold/10 transition-colors shrink-0">
+                                    <PencilIcon className="w-3.5 h-3.5" /> Modifier
+                                </button>
                             ) : (
-                                <div className="text-center py-6 text-pm-off-white/30 text-xs italic">
-                                    Aucun autre utilisateur en ligne.
+                                <div className="flex gap-2 shrink-0">
+                                    <button onClick={saveProfile} disabled={profileSaving}
+                                        className="flex items-center gap-1.5 text-xs text-green-400 border border-green-400/30 px-3 py-2 rounded-lg hover:bg-green-400/10 transition-colors disabled:opacity-50">
+                                        {profileSaving
+                                            ? <span className="w-3 h-3 border border-green-400/30 border-t-green-400 rounded-full animate-spin" />
+                                            : <CheckIcon className="w-3.5 h-3.5" />
+                                        } Sauvegarder
+                                    </button>
+                                    <button onClick={() => setEditingProfile(false)}
+                                        className="flex items-center gap-1.5 text-xs text-white/40 border border-white/10 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors">
+                                        <XMarkIcon className="w-3.5 h-3.5" /> Annuler
+                                    </button>
                                 </div>
                             )}
                         </div>
 
-                        <div className="bg-gradient-to-br from-pm-gold/20 to-transparent border border-pm-gold/20 rounded-3xl p-8 relative overflow-hidden group">
-                            <SparklesIcon className="absolute -right-4 -bottom-4 w-24 h-24 text-pm-gold/5 group-hover:scale-110 transition-transform duration-1000" />
-                            <h3 className="text-xl font-playfair font-black text-pm-gold mb-2 uppercase tracking-tighter">Élite Agency</h3>
-                            <p className="text-xs text-pm-off-white/60 leading-relaxed font-light">
-                                Votre plateforme est à jour et fonctionne sur les serveurs de production.
-                                <span className="block mt-2 font-bold text-pm-gold">Version: 2.5.0-gold</span>
-                            </p>
-                            <div className="mt-6 flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-white">Tous les systèmes sont en ligne</span>
+                        {/* Champs */}
+                        <div className="space-y-5">
+                            {[
+                                { label: 'Nom complet',   field: 'name',      type: 'text',  placeholder: 'Ex: Parfait Louis Asseko' },
+                                { label: 'Email',         field: 'email',     type: 'email', placeholder: 'contact@perfectmodels.ga' },
+                                { label: 'Téléphone',     field: 'phone',     type: 'tel',   placeholder: '+241 077 00 00 00' },
+                                { label: 'Rôle / Titre',  field: 'role',      type: 'text',  placeholder: 'Ex: Directeur Artistique' },
+                                { label: "URL de l'avatar", field: 'avatarUrl', type: 'url', placeholder: 'https://...' },
+                            ].map(({ label, field, type, placeholder }) => (
+                                <div key={field}>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-2 block">{label}</label>
+                                    {editingProfile ? (
+                                        <input type={type} value={profileForm[field as keyof typeof profileForm]}
+                                            onChange={e => setProfileForm(f => ({ ...f, [field]: e.target.value }))}
+                                            placeholder={placeholder}
+                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold transition-colors" />
+                                    ) : (
+                                        <p className="text-sm text-white/70 py-2.5 border-b border-white/5">
+                                            {(profile as any)?.[field] || <span className="text-white/20 italic">Non renseigné</span>}
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+
+                            {/* Identifiants */}
+                            <div className="pt-4 border-t border-white/5">
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-pm-gold/60 mb-4">Identifiants de connexion</p>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-2 block">Nom d'utilisateur</label>
+                                        {editingProfile ? (
+                                            <input type="text" value={profileForm.username}
+                                                onChange={e => setProfileForm(f => ({ ...f, username: e.target.value }))}
+                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-pm-off-white font-mono focus:outline-none focus:border-pm-gold transition-colors" />
+                                        ) : (
+                                            <p className="text-sm font-mono text-pm-gold/80 py-2.5 border-b border-white/5">{profile?.username}</p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-2 block">Mot de passe</label>
+                                        {editingProfile ? (
+                                            <div className="relative">
+                                                <input type={showPassword ? 'text' : 'password'} value={profileForm.password}
+                                                    onChange={e => setProfileForm(f => ({ ...f, password: e.target.value }))}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 pr-10 text-sm text-pm-off-white font-mono focus:outline-none focus:border-pm-gold transition-colors" />
+                                                <button type="button" onClick={() => setShowPassword(v => !v)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                                                    {showPassword ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm font-mono text-white/30 py-2.5 border-b border-white/5">••••••••••</p>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </aside>
+                    </div>
                 </div>
-            </div>
-        </div>
+            )}
+        </>
     );
 };
 
-interface DashboardCardProps {
-    title: string;
-    icon: React.ElementType;
-    link: string;
-    description: string;
-    notificationCount?: number;
-}
-const DashboardCard: React.FC<DashboardCardProps> = ({ title, icon: Icon, link, description, notificationCount }) => (
-    <Link to={link} className="relative group block bg-black p-8 border border-pm-gold/20 hover:border-pm-gold hover:-translate-y-2 transition-all duration-300 rounded-lg shadow-lg hover:shadow-pm-gold/10">
-        {notificationCount && notificationCount > 0 && (
-            <span className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full animate-pulse-slow">
-                {notificationCount}
-            </span>
-        )}
-        <Icon className="w-12 h-12 text-pm-gold mb-5" />
-        <h2 className="text-xl font-playfair text-pm-off-white group-hover:text-pm-gold transition-colors mb-2">{title}</h2>
-        <p className="text-sm text-pm-off-white/70 leading-relaxed">{description}</p>
-    </Link>
-);
-
 export default Admin;
-
