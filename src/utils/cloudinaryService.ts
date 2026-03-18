@@ -1,9 +1,12 @@
 /**
- * Cloudinary upload service — signed uploads via /api/cloudinary-sign.
- * API secret stays server-side, only cloud_name is needed client-side.
+ * Cloudinary upload service — unsigned uploads via upload preset.
+ * Pas besoin de backend. Configurez un preset "unsigned" dans Cloudinary Console.
+ * Settings → Upload → Upload presets → Add upload preset → Signing mode: Unsigned
  */
 
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string;
+// Créez un preset "unsigned" dans Cloudinary Console et mettez son nom ici
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string || 'pmm_unsigned';
 
 export type CloudinaryResourceType = 'image' | 'video' | 'auto';
 
@@ -18,23 +21,6 @@ export interface CloudinaryUploadResult {
   bytes: number;
 }
 
-interface SignatureResponse {
-  signature: string;
-  timestamp: number;
-  apiKey: string;
-  cloudName: string;
-}
-
-async function getSignature(folder?: string, public_id?: string): Promise<SignatureResponse> {
-  const res = await fetch('/api/cloudinary-sign', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ folder, public_id }),
-  });
-  if (!res.ok) throw new Error('Impossible d\'obtenir la signature Cloudinary');
-  return res.json();
-}
-
 export async function uploadToCloudinary(
   file: File,
   resourceType: CloudinaryResourceType = 'auto',
@@ -45,15 +31,9 @@ export async function uploadToCloudinary(
     throw new Error('Cloudinary non configuré. Vérifiez VITE_CLOUDINARY_CLOUD_NAME dans .env');
   }
 
-  const publicId = file.name.replace(/\.[^/.]+$/, '');
-  const { signature, timestamp, apiKey } = await getSignature(folder, publicId);
-
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('api_key', apiKey);
-  formData.append('timestamp', String(timestamp));
-  formData.append('signature', signature);
-  formData.append('public_id', publicId);
+  formData.append('upload_preset', UPLOAD_PRESET);
   if (folder) formData.append('folder', folder);
 
   return new Promise((resolve, reject) => {

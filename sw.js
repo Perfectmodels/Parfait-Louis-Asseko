@@ -1,23 +1,15 @@
 // sw.js
 
-const STATIC_CACHE_NAME = 'pmm-static-v3';
-const DYNAMIC_CACHE_NAME = 'pmm-dynamic-v3';
+const STATIC_CACHE_NAME = 'pmm-static-v4';
+const DYNAMIC_CACHE_NAME = 'pmm-dynamic-v4';
 
-// Assets to pre-cache on install
+// Assets to pre-cache on install — uniquement les ressources locales fiables
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  // Key JS modules from importmap
-  'https://aistudiocdn.com/react@^19.1.1',
-  'https://aistudiocdn.com/react-dom@^19.1.1/client',
-  'https://aistudiocdn.com/react-router-dom@^6.23.1',
-  'https://aistudiocdn.com/framer-motion@^12.23.12',
-  'https://aistudiocdn.com/firebase@^12.2.1/app',
-  'https://aistudiocdn.com/firebase@^12.2.1/database',
-  // Core app image
-  'https://i.ibb.co/fVBxPNTP/T-shirt.png', // Logo
-  // Google Fonts CSS
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap'
+  '/logopmm.jpg',
+  '/logo.svg',
+  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700;1,800&family=Montserrat:wght@300;400;500;700&display=swap'
 ];
 
 self.addEventListener('install', event => {
