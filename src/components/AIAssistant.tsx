@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { AIAssistantProps } from '../types';
 import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
-import { GoogleGenAI, Type } from '@google/genai';
 
 const getSuggestions = (fieldName: string): string[] => {
     const lowerFieldName = fieldName.toLowerCase();
@@ -91,6 +90,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
                 throw new Error("La clé API n'est pas configurée.");
             }
             
+            const { GoogleGenAI, Type } = await import('@google/genai');
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             let response;

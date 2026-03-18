@@ -8,6 +8,7 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayEvent, Stylist, Artist } from '../types';
 import CloudinaryUploader from '../components/CloudinaryUploader';
+import CloudinaryMultiUploader from '../components/CloudinaryMultiUploader';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -43,17 +44,6 @@ function PersonEditor<T extends Stylist | Artist>({ title, items, onChange, empt
     onChange(next);
   };
 
-  const addImage = (i: number, url: string) => {
-    if (!url.trim()) return;
-    const next = items.map((it, idx) => idx === i ? { ...it, images: [...(it.images ?? []), url.trim()] } : it);
-    onChange(next);
-  };
-
-  const removeImage = (i: number, imgIdx: number) => {
-    const next = items.map((it, idx) => idx === i ? { ...it, images: (it.images ?? []).filter((_, ii) => ii !== imgIdx) } : it);
-    onChange(next);
-  };
-
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -83,24 +73,12 @@ function PersonEditor<T extends Stylist | Artist>({ title, items, onChange, empt
                   <Textarea value={item.description} onChange={e => update(i, { description: e.target.value } as Partial<T>)} rows={2} placeholder="Courte biographie..." />
                 </Field>
                 <Field label="Photos du passage">
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {(item.images ?? []).map((img, ii) => (
-                      <div key={ii} className="relative group">
-                        <img src={img} alt="" className="w-20 h-20 object-cover rounded border border-pm-gold/20" />
-                        <button type="button" onClick={() => removeImage(i, ii)}
-                          className="absolute top-0.5 right-0.5 bg-black/70 rounded-full p-0.5 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <XMarkIcon className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <CloudinaryUploader
-                    value=""
-                    onChange={url => { if (url) addImage(i, url); }}
+                  <CloudinaryMultiUploader
+                    values={item.images ?? []}
+                    onChange={images => update(i, { images } as Partial<T>)}
                     resourceType="image"
                     folder="fashion-day/passages"
-                    allowUrl
-                    compact
+                    maxFiles={30}
                   />
                 </Field>
               </div>
@@ -240,6 +218,34 @@ const EventEditor: React.FC<{
 
       <hr className="border-pm-gold/10" />
 
+      {/* Vidéo spot d'annonce */}
+      <div>
+        <h4 className="text-sm font-bold text-pm-gold uppercase tracking-widest mb-3">Spot d'Annonce (Vidéo)</h4>
+        <CloudinaryUploader
+          value={ev.announcementVideoUrl ?? ''}
+          onChange={url => set({ announcementVideoUrl: url })}
+          resourceType="video"
+          folder="fashion-day/announcements"
+          allowUrl
+        />
+      </div>
+
+      <hr className="border-pm-gold/10" />
+
+      {/* Galerie photos de l'édition */}
+      <div>
+        <h4 className="text-sm font-bold text-pm-gold uppercase tracking-widest mb-3">Galerie Photos de l'Édition</h4>
+        <CloudinaryMultiUploader
+          values={ev.galleryImages ?? []}
+          onChange={galleryImages => set({ galleryImages })}
+          resourceType="image"
+          folder="fashion-day/gallery"
+          maxFiles={50}
+        />
+      </div>
+
+      <hr className="border-pm-gold/10" />
+
       {/* Stylistes */}
       <PersonEditor<Stylist>
         title="Stylistes"
@@ -295,6 +301,7 @@ const EventEditor: React.FC<{
 const EMPTY_EVENT: Omit<FashionDayEvent, 'edition'> = {
   date: '', theme: '', location: '', description: '',
   mc: '', promoter: '', stylists: [], artists: [], featuredModels: [], partners: [],
+  announcementVideoUrl: '', galleryImages: [],
 };
 
 const AdminFashionDayEvents: React.FC = () => {
@@ -370,6 +377,17 @@ const AdminFashionDayEvents: React.FC = () => {
                 <Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} placeholder="Description..." />
               </Field>
             </div>
+            <div className="sm:col-span-2">
+              <Field label="Spot d'Annonce (Vidéo)">
+                <CloudinaryUploader
+                  value={form.announcementVideoUrl ?? ''}
+                  onChange={url => setForm(f => ({ ...f, announcementVideoUrl: url }))}
+                  resourceType="video"
+                  folder="fashion-day/announcements"
+                  allowUrl
+                />
+              </Field>
+            </div>
             <div className="sm:col-span-2 flex gap-3">
               <button type="submit" className="px-4 py-2 bg-pm-gold text-pm-dark text-sm font-bold rounded-full">Créer l'édition</button>
               <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 border border-pm-gold/30 text-pm-off-white text-sm rounded-full">Annuler</button>
@@ -428,6 +446,26 @@ const AdminFashionDayEvents: React.FC = () => {
                         </div>
                       )}
                     </div>
+
+                    {/* Vidéo spot d'annonce */}
+                    {ev.announcementVideoUrl && (
+                      <div>
+                        <h4 className="text-xs uppercase tracking-widest text-pm-gold/60 mb-2">Spot d'Annonce</h4>
+                        <video src={ev.announcementVideoUrl} controls className="w-full max-h-56 rounded border border-pm-gold/20 object-cover" />
+                      </div>
+                    )}
+
+                    {/* Galerie photos */}
+                    {(ev.galleryImages?.length ?? 0) > 0 && (
+                      <div>
+                        <h4 className="text-xs uppercase tracking-widest text-pm-gold/60 mb-2">Galerie ({ev.galleryImages!.length} photos)</h4>
+                        <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+                          {ev.galleryImages!.map((img, i) => (
+                            <img key={i} src={img} alt="" className="aspect-square w-full object-cover rounded border border-pm-gold/10" />
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Stylistes */}
                     {(ev.stylists?.length ?? 0) > 0 && (

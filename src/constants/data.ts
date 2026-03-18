@@ -221,6 +221,7 @@ export const mailingContacts: MailingContact[] = [
   { id: 'mc-23', name: 'Agence BN Graph', email: 'agencebngraph@yahoo.fr', category: 'Digital & Tech' },
   { id: 'mc-24', name: 'Globale Entreprise Services', email: 'contact@globale-services.com', category: 'Digital & Tech' },
   { id: 'mc-25', name: 'GSI Gabon', email: 'contact@gsi-gabon.com', category: 'Digital & Tech' },
+  { id: 'mc-25b', name: 'GSI Gabon (alt)', email: 'rockysyann@gmail.com', category: 'Digital & Tech' },
   { id: 'mc-26', name: 'Dona Pen Design', email: 'design.dona.pen@gmail.com', category: 'Digital & Tech' },
   // Logistique, BTP & Transport
   { id: 'mc-27', name: 'AGS Déménagement', email: 'manager-gabon@agsmovers.com', category: 'Logistique & Transport' },

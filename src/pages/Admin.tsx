@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import {
@@ -9,8 +9,10 @@ import {
     SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon,
     Squares2X2Icon, ChartBarIcon, WrenchScrewdriverIcon,
     UserCircleIcon, PencilIcon, CheckIcon, XMarkIcon, EyeIcon, EyeSlashIcon,
+    BellIcon, BellSlashIcon,
 } from '@heroicons/react/24/outline';
 import { useData } from '../contexts/DataContext';
+import { requestNotificationPermission, getCachedFcmToken } from '../utils/fcmService';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const timeAgo = (date: Date): string => {
@@ -104,6 +106,24 @@ const Admin: React.FC = () => {
         } finally {
             setProfileSaving(false);
         }
+    };
+
+    // ── Notifications push ────────────────────────────────────────────────────
+    const [pushStatus, setPushStatus] = useState<'idle' | 'loading' | 'granted' | 'denied'>('idle');
+
+    useEffect(() => {
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'granted' && getCachedFcmToken()) {
+            setPushStatus('granted');
+        } else if (Notification.permission === 'denied') {
+            setPushStatus('denied');
+        }
+    }, []);
+
+    const subscribePush = async () => {
+        setPushStatus('loading');
+        const token = await requestNotificationPermission();
+        setPushStatus(token ? 'granted' : 'denied');
     };
 
     const handleLogout = () => {
@@ -486,12 +506,51 @@ const Admin: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
+                            {/* Notifications push */}
+                            <div className="pt-4 border-t border-white/5">
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-pm-gold/60 mb-4">Notifications Push</p>
+                                <div className="flex items-center justify-between p-4 bg-white/3 rounded-xl border border-white/5">
+                                    <div className="flex items-center gap-3">
+                                        {pushStatus === 'granted'
+                                            ? <BellIcon className="w-5 h-5 text-green-400" />
+                                            : <BellSlashIcon className="w-5 h-5 text-white/30" />
+                                        }
+                                        <div>
+                                            <p className="text-xs font-bold text-white/70">
+                                                {pushStatus === 'granted' ? 'Notifications activées' :
+                                                 pushStatus === 'denied'  ? 'Notifications bloquées' :
+                                                 'Recevoir les alertes sur cet appareil'}
+                                            </p>
+                                            <p className="text-[10px] text-white/30 mt-0.5">
+                                                {pushStatus === 'granted' ? 'Visites, soumissions et messages en temps réel.' :
+                                                 pushStatus === 'denied'  ? 'Autorisez les notifications dans les paramètres du navigateur.' :
+                                                 'Visites, castings, bookings, messages.'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {pushStatus !== 'denied' && pushStatus !== 'granted' && (
+                                        <button onClick={subscribePush} disabled={pushStatus === 'loading'}
+                                            className="shrink-0 flex items-center gap-2 text-xs font-black uppercase tracking-widest bg-pm-gold text-pm-dark px-4 py-2 rounded-lg hover:bg-white transition-colors disabled:opacity-50">
+                                            {pushStatus === 'loading'
+                                                ? <span className="w-3.5 h-3.5 border-2 border-pm-dark/30 border-t-pm-dark rounded-full animate-spin" />
+                                                : <BellIcon className="w-3.5 h-3.5" />
+                                            }
+                                            Activer
+                                        </button>
+                                    )}
+                                    {pushStatus === 'granted' && (
+                                        <span className="shrink-0 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-green-400">
+                                            <CheckIcon className="w-3.5 h-3.5" /> Actif
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
         </>
     );
-};
+}
 
 export default Admin;

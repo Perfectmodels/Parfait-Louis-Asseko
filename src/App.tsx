@@ -1,5 +1,5 @@
 
-import React, { useEffect, lazy, Suspense } from 'react';
+import React, { useEffect, useRef, lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
@@ -8,6 +8,8 @@ import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { PWAInstaller } from './components/PWAInstaller';
 import { registerServiceWorker } from './utils/pwa';
+import { restoreFcmSession } from './utils/fcmService';
+import { notifyAdmin } from './utils/adminNotify';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -181,9 +183,24 @@ const AnimatedRoutes: React.FC = () => {
     );
 };
 
+// Pages publiques qui déclenchent une notif de visite
+const PUBLIC_PATHS = ['/', '/agence', '/mannequins', '/fashion-day', '/magazine', '/services', '/casting', '/contact'];
+
 const AppContent: React.FC = () => {
     const location = useLocation();
     const { data } = useData();
+    const notifiedPaths = useRef<Set<string>>(new Set());
+
+    // Notif visite — une seule fois par chemin par session
+    useEffect(() => {
+        const path = location.pathname;
+        if (!PUBLIC_PATHS.some(p => path === p || path.startsWith(p + '/')) ) return;
+        if (notifiedPaths.current.has(path)) return;
+        notifiedPaths.current.add(path);
+
+        const pageName = path === '/' ? 'Accueil' : path.replace('/', '').replace(/-/g, ' ');
+        notifyAdmin('visit', `Page visitée : ${pageName}`).catch(() => {});
+    }, [location.pathname]);
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -237,6 +254,8 @@ const App: React.FC = () => {
 
     useEffect(() => {
         registerServiceWorker();
+        // Restaure la session FCM silencieusement si permission déjà accordée
+        restoreFcmSession().catch(() => {});
     }, []);
 
     return (

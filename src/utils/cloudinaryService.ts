@@ -1,11 +1,9 @@
 /**
- * Cloudinary upload service — unsigned upload preset required.
- * Create an unsigned preset in Cloudinary Dashboard > Settings > Upload > Upload Presets.
- * Set VITE_CLOUDINARY_UPLOAD_PRESET in .env
+ * Cloudinary upload service — signed uploads via /api/cloudinary-sign.
+ * API secret stays server-side, only cloud_name is needed client-side.
  */
 
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string;
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string;
 
 export type CloudinaryResourceType = 'image' | 'video' | 'auto';
 
@@ -14,34 +12,48 @@ export interface CloudinaryUploadResult {
   public_id: string;
   resource_type: string;
   format: string;
-  duration?: number; // seconds, for video
+  duration?: number;
   width?: number;
   height?: number;
   bytes: number;
 }
 
-/**
- * Upload a file to Cloudinary using an unsigned upload preset.
- * @param file - The File object to upload
- * @param resourceType - 'image' | 'video' | 'auto'
- * @param folder - Optional Cloudinary folder path (e.g. 'models/portfolio')
- * @param onProgress - Optional progress callback (0–100)
- */
+interface SignatureResponse {
+  signature: string;
+  timestamp: number;
+  apiKey: string;
+  cloudName: string;
+}
+
+async function getSignature(folder?: string, public_id?: string): Promise<SignatureResponse> {
+  const res = await fetch('/api/cloudinary-sign', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ folder, public_id }),
+  });
+  if (!res.ok) throw new Error('Impossible d\'obtenir la signature Cloudinary');
+  return res.json();
+}
+
 export async function uploadToCloudinary(
   file: File,
   resourceType: CloudinaryResourceType = 'auto',
   folder?: string,
   onProgress?: (pct: number) => void
 ): Promise<CloudinaryUploadResult> {
-  if (!CLOUD_NAME || !UPLOAD_PRESET) {
-    throw new Error('Cloudinary non configuré. Vérifiez VITE_CLOUDINARY_CLOUD_NAME et VITE_CLOUDINARY_UPLOAD_PRESET dans .env');
+  if (!CLOUD_NAME) {
+    throw new Error('Cloudinary non configuré. Vérifiez VITE_CLOUDINARY_CLOUD_NAME dans .env');
   }
+
+  const publicId = file.name.replace(/\.[^/.]+$/, '');
+  const { signature, timestamp, apiKey } = await getSignature(folder, publicId);
 
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', UPLOAD_PRESET);
-  // Pass original filename as public_id display name (preset: use_filename_as_display_name=true)
-  formData.append('public_id', file.name.replace(/\.[^/.]+$/, '')); // strip extension
+  formData.append('api_key', apiKey);
+  formData.append('timestamp', String(timestamp));
+  formData.append('signature', signature);
+  formData.append('public_id', publicId);
   if (folder) formData.append('folder', folder);
 
   return new Promise((resolve, reject) => {
@@ -68,12 +80,10 @@ export async function uploadToCloudinary(
   });
 }
 
-/** Accepted MIME types */
 export const ACCEPTED_IMAGE_TYPES = 'image/jpeg,image/png,image/webp,image/gif,image/avif';
 export const ACCEPTED_VIDEO_TYPES = 'video/mp4,video/webm,video/quicktime,video/x-msvideo';
 export const ACCEPTED_MEDIA_TYPES = `${ACCEPTED_IMAGE_TYPES},${ACCEPTED_VIDEO_TYPES}`;
 
-/** Max sizes */
 export const MAX_IMAGE_SIZE_MB = 10;
 export const MAX_VIDEO_SIZE_MB = 100;
 

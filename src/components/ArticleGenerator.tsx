@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { GoogleGenAI, Type } from '@google/genai';
 import { Article } from '../types';
 import CloseIcon from './icons/CloseIcon';
 import { SparklesIcon } from '@heroicons/react/24/solid';
@@ -99,6 +98,7 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
                 throw new Error("La clé API Gemini n'est pas configurée.");
             }
             
+            const { GoogleGenAI } = await import('@google/genai');
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             const response = await ai.models.generateContent({

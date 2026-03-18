@@ -7,7 +7,6 @@ import { useData } from '../contexts/DataContext';
 import { ArticleContent, ArticleComment, Article } from '../types';
 import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
-import html2canvas from 'html2canvas';
 
 // --- Helper & Modal Components for Sharing ---
 const generateShortLink = async (
@@ -292,6 +291,7 @@ const ArticleDetail: React.FC = () => {
     if (!element || !article) return;
     setIsDownloading('image');
     try {
+        const { default: html2canvas } = await import('html2canvas');
         const canvas = await html2canvas(element, { useCORS: true, backgroundColor: '#000000', scale: 2 });
         const link = document.createElement('a');
         link.download = `${article.slug}.png`;
