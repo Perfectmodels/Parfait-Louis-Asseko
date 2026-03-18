@@ -1,7 +1,7 @@
 // sw.js
 
-const STATIC_CACHE_NAME = 'pmm-static-v2';
-const DYNAMIC_CACHE_NAME = 'pmm-dynamic-v2';
+const STATIC_CACHE_NAME = 'pmm-static-v3';
+const DYNAMIC_CACHE_NAME = 'pmm-dynamic-v3';
 
 // Assets to pre-cache on install
 const STATIC_ASSETS = [
@@ -88,6 +88,12 @@ self.addEventListener('fetch', event => {
     );
   }
   // Strategy 3: Cache-first for everything else (App Shell & static assets)
+  // Navigation requests (HTML) → always network-first to get fresh index.html
+  else if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).catch(() => caches.match('/index.html').then(r => r || new Response(null, { status: 503 })))
+    );
+  }
   else {
     event.respondWith(
       caches.match(request).then(response => {

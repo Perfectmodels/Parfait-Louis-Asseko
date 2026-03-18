@@ -185,6 +185,13 @@ export interface ApiKeys {
   brevoApiKey?: string;
   dropboxAppKey?: string;
   dropboxAccessToken?: string;
+  cloudinaryCloudName?: string;
+  cloudinaryApiKey?: string;
+  cloudinaryApiSecret?: string;
+  geminiApiKey?: string;
+  vapidKey?: string;
+  chatbotId?: string;
+  defaultFromEmail?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -361,6 +368,34 @@ export interface MonthlyPayment {
   notes?: string;
 }
 
+export type TransactionType = 'Revenu' | 'Dépense';
+export type TransactionCategory =
+  | 'Paiement Mannequin'
+  | 'Booking Client'
+  | 'Fashion Day'
+  | 'Casting'
+  | 'Formation'
+  | 'Loyer'
+  | 'Équipement'
+  | 'Marketing'
+  | 'Salaires'
+  | 'Fournitures'
+  | 'Transport'
+  | 'Autre';
+
+export interface Transaction {
+  id: string;
+  date: string; // YYYY-MM-DD
+  type: TransactionType;
+  category: TransactionCategory;
+  label: string;
+  amount: number;
+  method: 'Virement' | 'Espèces' | 'Mobile Money' | 'Chèque' | 'Autre';
+  reference?: string;
+  notes?: string;
+  createdAt: string;
+}
+
 export interface PhotoshootBrief {
   id: string;
   modelId: string;
@@ -379,4 +414,29 @@ export interface NavLink {
     label: string;
     inFooter: boolean;
     footerLabel?: string;
+}
+
+export interface MailingContact {
+  id: string;
+  name: string;
+  email: string;
+  category?: string;
+}
+
+export interface AdminProfile {
+  id: string;
+  name: string;
+  username: string;
+  password: string;
+  email: string;
+  phone?: string;
+  role?: string;
+  avatarUrl?: string;
+}
+
+export interface GalleryItem {
+  id: string;
+  url: string;
+  caption?: string;
+  createdAt: string;
 }
