@@ -31,11 +31,6 @@ const AdminArtisticDirection: React.FC = () => {
 
   const filtered = filterStatus === 'Tous' ? briefs : briefs.filter(b => b.status === filterStatus);
 
-  const handleModelChange = (id: string) => {
-    const model = models.find(m => m.id === id);
-    setForm(f => ({ ...f, modelId: id, modelName: model?.name ?? '' }));
-  };
-
   const handleSubmit = async () => {
     if (!form.modelId || !form.theme || !form.dateTime) return;
     const newRef = push(ref(db, 'photoshootBriefs'));
@@ -60,6 +55,8 @@ const AdminArtisticDirection: React.FC = () => {
     if (selected?.id === id) setSelected(null);
   };
 
+  const inputCls = "w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold";
+
   return (
     <div className="bg-pm-dark min-h-screen text-pm-off-white py-20">
       <SEO title="Admin — Direction Artistique" noIndex />
@@ -78,30 +75,32 @@ const AdminArtisticDirection: React.FC = () => {
           <div className="bg-black/40 border border-pm-gold/30 rounded-lg p-6 mb-8">
             <h2 className="text-lg font-bold text-pm-gold mb-4">Nouveau Brief Photoshoot</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                { label: 'Mannequin *', type: 'select' },
-                { label: 'Thème *', field: 'theme', placeholder: 'Ex: Élégance Urbaine' },
-                { label: 'Style vestimentaire', field: 'clothingStyle', placeholder: 'Ex: Robe longue noire' },
-                { label: 'Accessoires', field: 'accessories', placeholder: 'Ex: Collier doré' },
-                { label: 'Lieu', field: 'location', placeholder: 'Ex: Studio PMM' },
-              ].map(item => item.type === 'select' ? (
-                <div key="model">
-                  <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Mannequin *</label>
-                  <select value={form.modelId} onChange={e => handleModelChange(e.target.value)} className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold">
-                    <option value="">Sélectionner...</option>
-                    {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                  </select>
-                </div>
-              ) : (
-                <div key={item.field}>
-                  <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">{item.label}</label>
-                  <input type="text" value={(form as any)[item.field!]} onChange={e => setForm(f => ({ ...f, [item.field!]: e.target.value }))}
-                    placeholder={item.placeholder} className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
-                </div>
-              ))}
+              <div>
+                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Mannequin *</label>
+                <select value={form.modelId} onChange={e => { const m = models.find(x => x.id === e.target.value); setForm(f => ({ ...f, modelId: e.target.value, modelName: m?.name ?? '' })); }} className={inputCls}>
+                  <option value="">Sélectionner...</option>
+                  {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Thème *</label>
+                <input type="text" value={form.theme} onChange={e => setForm(f => ({ ...f, theme: e.target.value }))} placeholder="Ex: Élégance Urbaine" className={inputCls} />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Style vestimentaire</label>
+                <input type="text" value={form.clothingStyle} onChange={e => setForm(f => ({ ...f, clothingStyle: e.target.value }))} placeholder="Ex: Robe longue noire" className={inputCls} />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Accessoires</label>
+                <input type="text" value={form.accessories} onChange={e => setForm(f => ({ ...f, accessories: e.target.value }))} placeholder="Ex: Collier doré" className={inputCls} />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Lieu</label>
+                <input type="text" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="Ex: Studio PMM" className={inputCls} />
+              </div>
               <div>
                 <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Date & Heure *</label>
-                <input type="datetime-local" value={form.dateTime} onChange={e => setForm(f => ({ ...f, dateTime: e.target.value }))} className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
+                <input type="datetime-local" value={form.dateTime} onChange={e => setForm(f => ({ ...f, dateTime: e.target.value }))} className={inputCls} />
               </div>
             </div>
             <div className="flex gap-3 mt-4">
@@ -170,16 +169,12 @@ const AdminArtisticDirection: React.FC = () => {
                 ['Lieu', selected.location],
                 ['Date & Heure', selected.dateTime ? new Date(selected.dateTime).toLocaleString('fr-FR') : '—'],
                 ['Créé le', new Date(selected.createdAt).toLocaleDateString('fr-FR')],
-              ].ma&& (
-          <div className="mt-6 bg-black/40 border border-pm-gold/30 rounded-lg p-6">
-            <h3 className="text-lg font-bold text-pm-gold mb-4">Détail — {selected.modelName}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-              <div><span className="text-pm-off-white/40 uppercase text-xs tracking-widest block mb-1">Thème</span>{selected.theme || '—'}</div>
-              <div><span className="text-pm-off-white/40 uppercase text-xs tracking-widest block mb-1">Style vestimentaire</span>{selected.clothingStyle || '—'}</div>
-              <div><span className="text-pm-off-white/40 uppercase text-xs tracking-widest block mb-1">Accessoires</span>{selected.accessories || '—'}</div>
-              <div><span className="text-pm-off-white/40 uppercase text-xs tracking-widest block mb-1">Lieu</span>{selected.location || '—'}</div>
-              <div><span className="text-pm-off-white/40 uppercase text-xs tracking-widest block mb-1">Date & Heure</span>{selected.dateTime ? new Date(selected.dateTime).toLocaleString('fr-FR') : '—'}</div>
-              <div><span className="text-pm-off-white/40 uppercase text-xs tracking-widest block mb-1">Créé le</span>{new Date(selected.createdAt).toLocaleDateString('fr-FR')}</div>
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <span className="text-pm-off-white/40 uppercase text-xs tracking-widest block mb-1">{label}</span>
+                  <span>{value || '—'}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}

@@ -8,6 +8,9 @@ import {
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { Transaction, TransactionType, TransactionCategory, MonthlyPayment } from '../types';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { ref, update, remove, push, set } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 const CATEGORIES_REVENU: TransactionCategory[] = ['Booking Client', 'Fashion Day', 'Casting', 'Formation', 'Paiement Mannequin', 'Autre'];
 const CATEGORIES_DEPENSE: TransactionCategory[] = ['Loyer', 'Équipement', 'Marketing', 'Salaires', 'Fournitures', 'Transport', 'Autre'];
@@ -43,9 +46,9 @@ const EMPTY_PAY: Omit<MonthlyPayment, 'id'> = {
 type Tab = 'overview' | 'transactions' | 'payments';
 
 const AdminPayments: React.FC = () => {
-  const { data, saveData } = useData();
-  const transactions = data?.transactions ?? [];
-  const payments = data?.monthlyPayments ?? [];
+  const { data } = useData();
+  const { items: transactions, refresh: refreshTx } = useFirebaseCollection<Transaction>('transactions', { pageSize: 500, orderBy: 'date' });
+  const { items: payments, refresh: refreshPay } = useFirebaseCollection<MonthlyPayment>('monthlyPayments', { pageSize: 500, orderBy: 'month' });
   const models = data?.models ?? [];
 
   const [tab, setTab] = useState<Tab>('overview');
@@ -111,17 +114,17 @@ const AdminPayments: React.FC = () => {
   const modelOptions = ['Tous', ...Array.from(new Set(payments.map(p => p.modelName))).sort()];
 
   // --- Handlers ---
-  const handleSaveTx = (e: React.FormEvent) => {
+  const handleSaveTx = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!data || !txForm.label || !txForm.amount) return;
-    let updated: Transaction[];
+    if (!txForm.label || !txForm.amount) return;
     if (editingTx) {
-      updated = transactions.map(t => t.id === editingTx.id ? { ...txForm, id: editingTx.id, createdAt: editingTx.createdAt } : t);
+      await update(ref(db, `transactions/${editingTx.id}`), { ...txForm });
     } else {
-      const newTx: Transaction = { ...txForm, id: `tx-${Date.now()}`, createdAt: new Date().toISOString() };
-      updated = [newTx, ...transactions];
+      const newRef = push(ref(db, 'transactions'));
+      await set(newRef, { ...txForm, id: newRef.key, createdAt: new Date().toISOString() });
     }
-    saveData({ ...data, transactions: updated });
+    invalidateCache('transactions');
+    refreshTx();
     setTxForm(EMPTY_TX);
     setShowTxForm(false);
     setEditingTx(null);
@@ -134,29 +137,36 @@ const AdminPayments: React.FC = () => {
     setTab('transactions');
   };
 
-  const handleDeleteTx = (id: string) => {
-    if (!data || !window.confirm('Supprimer cette transaction ?')) return;
-    saveData({ ...data, transactions: transactions.filter(t => t.id !== id) });
+  const handleDeleteTx = async (id: string) => {
+    if (!window.confirm('Supprimer cette transaction ?')) return;
+    await remove(ref(db, `transactions/${id}`));
+    invalidateCache('transactions');
+    refreshTx();
   };
 
-  const handleSavePay = (e: React.FormEvent) => {
+  const handleSavePay = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!data || !payForm.modelId || !payForm.month) return;
+    if (!payForm.modelId || !payForm.month) return;
     const model = models.find(m => m.id === payForm.modelId);
-    const newPay: MonthlyPayment = { ...payForm, id: `pay-${Date.now()}`, modelName: model?.name ?? payForm.modelId };
-    saveData({ ...data, monthlyPayments: [newPay, ...(data.monthlyPayments ?? [])] });
+    const newRef = push(ref(db, 'monthlyPayments'));
+    await set(newRef, { ...payForm, id: newRef.key, modelName: model?.name ?? payForm.modelId });
+    invalidateCache('monthlyPayments');
+    refreshPay();
     setPayForm(EMPTY_PAY);
     setShowPayForm(false);
   };
 
-  const handlePayStatus = (id: string, status: MonthlyPayment['status']) => {
-    if (!data) return;
-    saveData({ ...data, monthlyPayments: data.monthlyPayments.map(p => p.id === id ? { ...p, status } : p) });
+  const handlePayStatus = async (id: string, status: MonthlyPayment['status']) => {
+    await update(ref(db, `monthlyPayments/${id}`), { status });
+    invalidateCache('monthlyPayments');
+    refreshPay();
   };
 
-  const handleDeletePay = (id: string) => {
-    if (!data || !window.confirm('Supprimer ce paiement ?')) return;
-    saveData({ ...data, monthlyPayments: data.monthlyPayments.filter(p => p.id !== id) });
+  const handleDeletePay = async (id: string) => {
+    if (!window.confirm('Supprimer ce paiement ?')) return;
+    await remove(ref(db, `monthlyPayments/${id}`));
+    invalidateCache('monthlyPayments');
+    refreshPay();
   };
 
   const inputCls = "w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold";

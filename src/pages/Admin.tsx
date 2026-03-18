@@ -10,8 +10,11 @@ import {
     Squares2X2Icon, ChartBarIcon, WrenchScrewdriverIcon,
     UserCircleIcon, PencilIcon, CheckIcon, XMarkIcon, EyeIcon, EyeSlashIcon,
     BellIcon, BellSlashIcon, PhotoIcon,
-} from '@heroicons/react/24/outline';import { useData } from '../contexts/DataContext';
+} from '@heroicons/react/24/outline';
+import { useData } from '../contexts/DataContext';
 import { requestNotificationPermission, getCachedFcmToken } from '../utils/fcmService';
+import { ref, get } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const timeAgo = (date: Date): string => {
@@ -130,24 +133,40 @@ const Admin: React.FC = () => {
         navigate('/login');
     };
 
+    // Stats des collections lazy — chargées via get() léger
+    const [lazyStats, setLazyStats] = useState({ newCastingApps: 0, newBookingRequests: 0, newMessages: 0, newReservations: 0 });
+
+    useEffect(() => {
+        const fetchCounts = async () => {
+            try {
+                const [castingSnap, bookingSnap, msgSnap, fdSnap] = await Promise.all([
+                    get(ref(db, 'castingApplications')),
+                    get(ref(db, 'bookingRequests')),
+                    get(ref(db, 'contactMessages')),
+                    get(ref(db, 'fashionDayApplications')),
+                ]);
+                const toArr = (snap: any) => snap.exists() ? Object.values(snap.val()) : [];
+                const castings = toArr(castingSnap) as any[];
+                const bookings = toArr(bookingSnap) as any[];
+                const msgs = toArr(msgSnap) as any[];
+                const fds = toArr(fdSnap) as any[];
+                setLazyStats({
+                    newCastingApps: castings.filter(a => a.status === 'Nouveau').length,
+                    newBookingRequests: bookings.filter(b => b.status === 'Nouveau').length,
+                    newMessages: msgs.filter(m => m.status === 'Nouveau').length,
+                    newReservations: fds.filter(f => f.status === 'Nouveau').length,
+                });
+            } catch (e) {
+                console.error('Stats fetch error:', e);
+            }
+        };
+        fetchCounts();
+    }, []);
+
     const stats = useMemo(() => {
-        if (!data) return { newCastingApps: 0, newBookingRequests: 0, newMessages: 0, newReservations: 0, totalModels: 0, recentActivities: [] as any[] };
-        const newCastingApps   = data.castingApplications?.filter(a => a.status === 'Nouveau').length || 0;
-        const newBookingRequests = data.bookingRequests?.filter(r => r.status === 'Nouveau').length || 0;
-        const newMessages      = data.contactMessages?.filter(m => m.status === 'Nouveau').length || 0;
-        const newReservations  = data.fashionDayApplications?.filter((r: any) => r.status === 'Nouveau').length || 0;
-        const totalModels      = data.models?.length || 0;
-
-        const recentActivities = [
-            ...(data.castingApplications || []).filter(a => a.status === 'Nouveau')
-                .map(a => ({ type: 'casting', text: `Candidature de ${a.firstName} ${a.lastName}`, link: '/admin/casting-applications', date: new Date(a.submissionDate) })),
-            ...(data.bookingRequests || []).filter(r => r.status === 'Nouveau')
-                .map(r => ({ type: 'booking', text: `Booking de ${r.clientName}`, link: '/admin/bookings', date: new Date(r.submissionDate) })),
-            ...(data.contactMessages || []).filter(m => m.status === 'Nouveau')
-                .map(m => ({ type: 'message', text: `Message de ${m.name}`, link: '/admin/messages', date: new Date(m.submissionDate) })),
-        ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 8);
-
-        return { newCastingApps, newBookingRequests, newMessages, newReservations, totalModels, recentActivities };
+        if (!data) return { totalModels: 0, recentActivities: [] as any[] };
+        const totalModels = data.models?.length || 0;
+        return { totalModels, recentActivities: [] as any[] };
     }, [data]);
 
     const activityIconMap: Record<string, React.ElementType> = {
@@ -210,10 +229,10 @@ const Admin: React.FC = () => {
                 <div className="space-y-8">
                     {/* Stats */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <StatCard title="Candidatures Casting" value={stats.newCastingApps}    icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={stats.newCastingApps > 0}    accent="text-pm-gold" />
-                        <StatCard title="Demandes Booking"     value={stats.newBookingRequests} icon={BriefcaseIcon}             link="/admin/bookings"            isNew={stats.newBookingRequests > 0} accent="text-blue-400" />
-                        <StatCard title="Réservations PFD"     value={stats.newReservations}    icon={StarIcon}                  link="/admin/fashion-day-events"  isNew={stats.newReservations > 0}    accent="text-purple-400" />
-                        <StatCard title="Total Mannequins"     value={stats.totalModels}        icon={UsersIcon}                 link="/admin/models"                                                   accent="text-white/50" />
+                        <StatCard title="Candidatures Casting" value={lazyStats.newCastingApps}    icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={lazyStats.newCastingApps > 0}    accent="text-pm-gold" />
+                        <StatCard title="Demandes Booking"     value={lazyStats.newBookingRequests} icon={BriefcaseIcon}             link="/admin/bookings"            isNew={lazyStats.newBookingRequests > 0} accent="text-blue-400" />
+                        <StatCard title="Réservations PFD"     value={lazyStats.newReservations}    icon={StarIcon}                  link="/admin/fashion-day-events"  isNew={lazyStats.newReservations > 0}    accent="text-purple-400" />
+                        <StatCard title="Total Mannequins"     value={stats.totalModels}            icon={UsersIcon}                 link="/admin/models"                                                       accent="text-white/50" />
                     </div>
 
                     {/* Activity + Status */}
@@ -227,23 +246,7 @@ const Admin: React.FC = () => {
                                 <span className="text-[9px] font-black uppercase tracking-widest text-white/20">Nouvelles</span>
                             </div>
                             <div className="divide-y divide-white/5">
-                                {stats.recentActivities.length > 0 ? stats.recentActivities.map((activity, i) => {
-                                    const Icon = activityIconMap[activity.type] || SignalIcon;
-                                    return (
-                                        <Link key={i} to={activity.link} className="flex items-center gap-4 px-6 py-4 hover:bg-white/[0.02] transition-colors group">
-                                            <div className="w-9 h-9 rounded-lg bg-pm-gold/10 flex items-center justify-center shrink-0">
-                                                <Icon className="w-4 h-4 text-pm-gold" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm text-white/70 group-hover:text-white transition-colors truncate">{activity.text}</p>
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-white/20 mt-0.5">{timeAgo(activity.date)}</p>
-                                            </div>
-                                            <ArrowUpRightIcon className="w-4 h-4 text-white/10 group-hover:text-pm-gold transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
-                                        </Link>
-                                    );
-                                }) : (
-                                    <div className="px-6 py-12 text-center text-white/20 text-xs italic">Aucune activité récente.</div>
-                                )}
+                                <div className="px-6 py-12 text-center text-white/20 text-xs italic">Consultez les sections dédiées pour les détails.</div>
                             </div>
                         </div>
 
@@ -297,7 +300,7 @@ const Admin: React.FC = () => {
                         {
                             label: 'Recrutement',
                             cards: [
-                                { title: 'Candidatures Casting',  icon: ClipboardDocumentListIcon,  link: '/admin/casting-applications',  description: 'Candidatures reçues.', notif: stats.newCastingApps },
+                                { title: 'Candidatures Casting',  icon: ClipboardDocumentListIcon,  link: '/admin/casting-applications',  description: 'Candidatures reçues.', notif: lazyStats.newCastingApps },
                                 { title: 'Résultats Casting',     icon: ClipboardDocumentCheckIcon, link: '/admin/casting-results',       description: 'Scores et résultats du jury.' },
                                 { title: 'Candidatures PFD',      icon: SparklesIcon,               link: '/admin/fashion-day-applications', description: 'Candidatures Perfect Fashion Day.' },
                                 { title: 'Éditions PFD',          icon: PresentationChartLineIcon,  link: '/admin/fashion-day-events',    description: 'Gérer les éditions du PFD.' },
@@ -306,7 +309,7 @@ const Admin: React.FC = () => {
                         {
                             label: 'Opérations',
                             cards: [
-                                { title: 'Bookings',          icon: BriefcaseIcon,      link: '/admin/bookings',          description: 'Demandes de réservation.', notif: stats.newBookingRequests },
+                                { title: 'Bookings',          icon: BriefcaseIcon,      link: '/admin/bookings',          description: 'Demandes de réservation.', notif: lazyStats.newBookingRequests },
                                 { title: 'Paiements',         icon: CurrencyDollarIcon, link: '/admin/payments',          description: 'Suivi des paiements.' },
                                 { title: 'Absences',          icon: CalendarIcon,       link: '/admin/absences',          description: 'Registre des présences.' },
                                 { title: 'Direction Artistique', icon: PaintBrushIcon,  link: '/admin/artistic-direction', description: 'Briefs et directives créatives.' },
@@ -324,7 +327,7 @@ const Admin: React.FC = () => {
                         {
                             label: 'Communication',
                             cards: [
-                                { title: 'Messages',      icon: EnvelopeIcon,             link: '/admin/messages',   description: 'Messages du formulaire contact.', notif: stats.newMessages },
+                                { title: 'Messages',      icon: EnvelopeIcon,             link: '/admin/messages',   description: 'Messages du formulaire contact.', notif: lazyStats.newMessages },
                                 { title: 'Commentaires',  icon: ChatBubbleLeftRightIcon,  link: '/admin/comments',   description: 'Modération des commentaires.' },
                                 { title: 'Mailing',       icon: PaperAirplaneIcon,        link: '/admin/mailing',    description: 'Campagnes email.' },
                             ]
