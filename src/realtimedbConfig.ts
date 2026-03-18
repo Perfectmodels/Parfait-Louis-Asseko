@@ -1,27 +1,2 @@
-
-import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
-import { getAnalytics } from "firebase/analytics";
-import { getPerformance } from "firebase/performance";
-import { getMessaging } from "firebase/messaging";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyC_5TsXHPLloX80SzN9GQaaDL4EPlL-WSc",
-    authDomain: "perfectmodels-4e5fa.firebaseapp.com",
-    databaseURL: "https://perfectmodels-4e5fa-default-rtdb.firebaseio.com",
-    projectId: "perfectmodels-4e5fa",
-    storageBucket: "perfectmodels-4e5fa.firebasestorage.app",
-    messagingSenderId: "1072431985374",
-    appId: "1:1072431985374:web:55f7a7899d05e68fe5484f",
-    measurementId: "G-CSP65WPY89"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize services
-export const db = getDatabase(app);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
-export const performance = typeof window !== 'undefined' ? getPerformance(app) : null;
-export const messaging = typeof window !== 'undefined' ? getMessaging(app) : null;
-
+// Re-export db from firebaseConfig for backward compatibility
+export { db } from './firebaseConfig';

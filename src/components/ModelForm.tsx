@@ -165,12 +165,12 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
 
                     {isAdmin && (
                         <div className="glass-card p-10 space-y-10 border-pm-gold/20">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">System Controls</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">Contrôles Système</h3>
                             <div className="space-y-8">
-                                <FormInput label="System Username" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
-                                <FormInput label="System Password" name="password" value={formData.password} onChange={handleChange} />
-                                <FormSelect label="Tier Level" name="level" value={formData.level || 'Débutant'} onChange={handleChange}>
-                                    <option value="Débutant">New Talent</option>
+                                <FormInput label="Identifiant Système" name="username" value={formData.username} onChange={handleChange} disabled={!isCreating} />
+                                <FormInput label="Mot de Passe Système" name="password" value={formData.password} onChange={handleChange} />
+                                <FormSelect label="Niveau" name="level" value={formData.level || 'Débutant'} onChange={handleChange}>
+                                    <option value="Débutant">Nouveau Talent</option>
                                     <option value="Pro">Elite Pro</option>
                                 </FormSelect>
                                 <div className="flex items-center gap-4 pt-4 border-t border-white/5">

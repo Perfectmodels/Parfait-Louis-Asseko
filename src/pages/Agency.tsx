@@ -42,7 +42,7 @@ const Agency: React.FC = () => {
 
   return (
     <div className="bg-pm-dark overflow-x-hidden">
-      <SEO title="Our Heritage | PMM Agency" description="Elite modeling agency in Gabon." />
+      <SEO title="Notre Histoire | Agence PMM" description="Agence de mannequins d'élite à Libreville, Gabon." />
       
       {/* 1. EDITORIAL HEADER */}
       <section className="relative pt-40 pb-20 px-6 sm:px-12 lg:px-20">
@@ -51,15 +51,15 @@ const Agency: React.FC = () => {
           animate={{ opacity: 1 }}
           className="section-label"
         >
-          Since 2021
+          Depuis 2021
         </motion.span>
         <motion.h1 
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: "circOut" }}
-          className="text-7xl md:text-[14rem] font-playfair font-black text-white leading-[0.85] tracking-tighter"
+          className="text-5xl md:text-9xl font-playfair font-black text-white leading-tight tracking-tighter"
         >
-          Built on <br/><span className="italic gold-gradient-text">Excellence</span>
+          Fondée sur <br/><span className="italic gold-gradient-text">l'Excellence</span>
         </motion.h1>
       </section>
 
@@ -74,7 +74,7 @@ const Agency: React.FC = () => {
         </div>
         <div className="lg:w-1/2 space-y-16 lg:pt-32">
             <div className="space-y-8">
-                <h2 className="text-4xl md:text-6xl font-playfair font-black italic">"Redefining the standards of African beauty."</h2>
+                <h2 className="text-4xl md:text-6xl font-playfair font-black italic">"Redéfinir les standards de la beauté africaine."</h2>
                 <div className="h-px w-24 bg-pm-gold"></div>
             </div>
             <div className="space-y-12 text-xl font-light leading-relaxed text-white/60 italic">
@@ -96,7 +96,7 @@ const Agency: React.FC = () => {
       <section className="bg-[#050505] py-40 border-y border-white/5">
         <div className="max-w-[1800px] mx-auto px-6 lg:px-20">
           <div className="text-center mb-24">
-            <span className="section-label">The Promise</span>
+            <span className="section-label">Notre Promesse</span>
             <h2 className="text-6xl md:text-8xl font-playfair font-black italic">Nos Engagements</h2>
           </div>
           
@@ -126,8 +126,8 @@ const Agency: React.FC = () => {
       {/* 4. TIMELINE */}
       <section className="py-40 overflow-hidden">
         <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-24">
-            <span className="section-label">Chronology</span>
-            <h2 className="text-6xl font-playfair font-black">Our Journey</h2>
+            <span className="section-label">Notre Parcours</span>
+            <h2 className="text-5xl md:text-6xl font-playfair font-black">Notre Histoire</h2>
         </div>
         <div className="flex gap-8 overflow-x-auto px-6 lg:px-20 pb-12 no-scrollbar">
             {agencyTimeline.map((item, idx) => (
@@ -151,7 +151,7 @@ const Agency: React.FC = () => {
       {/* 5. DISTINCTIONS */}
       <section className="page-container">
          <div className="text-center mb-32">
-            <span className="section-label">Accolades</span>
+            <span className="section-label">Nos Récompenses</span>
             <h2 className="text-7xl font-playfair font-black italic">Distinctions</h2>
          </div>
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
@@ -175,10 +175,10 @@ const Agency: React.FC = () => {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] bg-pm-gold rounded-full opacity-[0.02] blur-[150px] animate-glow"></div>
           </div>
           <div className="relative z-10 text-center max-w-4xl px-6 space-y-16">
-              <h2 className="text-6xl md:text-9xl font-playfair font-black italic">Ready to leave <br/><span className="gold-gradient-text">your mark</span>?</h2>
+              <h2 className="text-5xl md:text-8xl font-playfair font-black italic">Prêt à laisser <br/><span className="gold-gradient-text">votre empreinte</span> ?</h2>
               <div className="flex flex-col sm:flex-row gap-12 justify-center">
-                  <Link to="/contact" className="btn-premium">Contact the Agency</Link>
-                  <Link to="/mannequins" className="btn-premium bg-white text-pm-dark border-none">View Talents</Link>
+                  <Link to="/contact" className="btn-premium">Contacter l'Agence</Link>
+                  <Link to="/mannequins" className="btn-premium bg-white text-pm-dark border-none">Voir les Talents</Link>
               </div>
           </div>
       </section>

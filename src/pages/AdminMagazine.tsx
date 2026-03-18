@@ -4,12 +4,11 @@ import { useData } from '../contexts/DataContext';
 import { Article } from '../types';
 import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, ArrowUpIcon, ArrowDownIcon, StarIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, TrashIcon, PencilIcon, PlusIcon, StarIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import ImageUploader from '../components/ImageUploader';
 import ArticleGenerator from '../components/ArticleGenerator';
 import AIAssistant from '../components/AIAssistant';
 import ArticlePreview from '../components/ArticlePreview';
-import { FacebookIcon } from '../components/icons/SocialIcons';
 
 const AdminMagazine: React.FC = () => {
   const { data, saveData, isInitialized } = useData();
@@ -105,7 +104,7 @@ const AdminMagazine: React.FC = () => {
             <div>
                  <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
-                    Retour au Dashboard
+                    Retour au Tableau de Bord
                 </Link>
                 <h1 className="admin-page-title">Gérer le Magazine</h1>
                 <p className="admin-page-subtitle">Gérez les articles du magazine en ligne Focus Model 241.</p>
@@ -233,8 +232,8 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ article, onSave, onCancel, is
                         <option>Interview</option><option>Événement</option><option>Tendance</option><option>Conseils</option><option>Portrait</option>
                     </FormSelect>
                     <FormTextArea label="Extrait (résumé)" name="excerpt" value={formData.excerpt} onChange={handleChange} rows={3} onAIAssist={() => openAIAssistant('excerpt', `Rédige un résumé de 2 phrases pour un article intitulé "${formData.title}".`)} />
-                    <FormTextArea label="Contenu (JSON)" name="content" value={contentJson} onChange={(e) => setContentJson(e.target.value)} rows={15} onAIAssist={() => openAIAssistant('content', `Rédige un article complet sur "${formData.title}" en respectant le format JSON.`, { type: 'array', items: { type: 'object' }})} />
-                    <FormInput label="Tags (séparés par des virgules)" name="tags" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : ''} onChange={(e) => setFormData(p => ({...p, tags: e.target.value.split(',').map(tag => tag.trim())}))} onAIAssist={() => openAIAssistant('tags', `Génère 5 tags SEO pertinents pour un article sur "${formData.title}". Sépare-les par des virgules.`)} />
+                    <FormTextArea label="Contenu (JSON)" name="content" value={contentJson} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContentJson(e.target.value)} rows={15} onAIAssist={() => openAIAssistant('content', `Rédige un article complet sur "${formData.title}" en respectant le format JSON.`, { type: 'array', items: { type: 'object' }})} />
+                    <FormInput label="Tags (séparés par des virgules)" name="tags" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(p => ({...p, tags: e.target.value.split(',').map((tag: string) => tag.trim())}))} onAIAssist={() => openAIAssistant('tags', `Génère 5 tags SEO pertinents pour un article sur "${formData.title}". Sépare-les par des virgules.`)} />
 
                     <div className="flex justify-end gap-4 pt-4">
                         <button type="button" onClick={onCancel} className="px-6 py-2 bg-pm-dark border border-pm-off-white/50 text-pm-off-white/80 font-bold uppercase tracking-widest text-sm rounded-full hover:border-white">Annuler</button>

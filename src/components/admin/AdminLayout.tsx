@@ -40,44 +40,44 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, onClick }) => 
 
 const navSections = [
     {
-        title: 'Core',
+        title: 'Principal',
         links: [
-            { to: '/admin', icon: HomeIcon, label: 'Dashboard' },
-            { to: '/admin/models', icon: UsersIcon, label: 'Models' },
+            { to: '/admin', icon: HomeIcon, label: 'Tableau de Bord' },
+            { to: '/admin/models', icon: UsersIcon, label: 'Mannequins' },
             { to: '/admin/magazine', icon: NewspaperIcon, label: 'Magazine' },
-            { to: '/admin/bookings', icon: BriefcaseIcon, label: 'Bookings' },
+            { to: '/admin/bookings', icon: BriefcaseIcon, label: 'Réservations' },
         ]
     },
     {
-        title: 'Recruitment',
+        title: 'Recrutement',
         links: [
-            { to: '/admin/casting-applications', icon: ClipboardDocumentListIcon, label: 'Casting Apps' },
-            { to: '/admin/casting-results', icon: ClipboardDocumentCheckIcon, label: 'Grading' },
-            { to: '/admin/fashion-day-applications', icon: SparklesIcon, label: 'PFD Apps' },
+            { to: '/admin/casting-applications', icon: ClipboardDocumentListIcon, label: 'Candidatures' },
+            { to: '/admin/casting-results', icon: ClipboardDocumentCheckIcon, label: 'Notation' },
+            { to: '/admin/fashion-day-applications', icon: SparklesIcon, label: 'Candidatures PFD' },
         ]
     },
     {
-        title: 'AI Lab',
+        title: 'Lab IA',
         links: [
-            { to: '/admin/generer-image', icon: SparklesIcon, label: 'Image Gen' },
-            { to: '/admin/analyser-image', icon: PhotoIcon, label: 'Analysis' },
-            { to: '/admin/live-chat', icon: MicrophoneIcon, label: 'Voice AI' },
+            { to: '/admin/generer-image', icon: SparklesIcon, label: 'Génération Image' },
+            { to: '/admin/analyser-image', icon: PhotoIcon, label: 'Analyse' },
+            { to: '/admin/live-chat', icon: MicrophoneIcon, label: 'IA Vocale' },
         ]
     },
     {
-        title: 'Operations',
+        title: 'Opérations',
         links: [
             { to: '/admin/classroom', icon: BookOpenIcon, label: 'Classroom' },
-            { to: '/admin/absences', icon: CalendarIcon, label: 'Attendance'},
-            { to: '/admin/payments', icon: CurrencyDollarIcon, label: 'Finance' },
-            { to: '/admin/artistic-direction', icon: PaintBrushIcon, label: 'Creative' },
+            { to: '/admin/absences', icon: CalendarIcon, label: 'Présences'},
+            { to: '/admin/payments', icon: CurrencyDollarIcon, label: 'Finances' },
+            { to: '/admin/artistic-direction', icon: PaintBrushIcon, label: 'Direction Artistique' },
         ]
     },
     {
-        title: 'System',
+        title: 'Système',
         links: [
             { to: '/admin/mailing', icon: PaperAirplaneIcon, label: 'Mailing' },
-            { to: '/admin/settings', icon: Cog6ToothIcon, label: 'Site Config' },
+            { to: '/admin/settings', icon: Cog6ToothIcon, label: 'Configuration' },
         ]
     }
 ];
@@ -146,11 +146,11 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             <Bars3Icon className="w-6 h-6" />
                         </button>
                         <div className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">
-                            {location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Dashboard'}
+                            {location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Tableau de Bord'}
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link to="/" className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 hover:text-pm-gold transition-colors">Public Site</Link>
+                        <Link to="/" className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 hover:text-pm-gold transition-colors">Site Public</Link>
                         <div className="w-8 h-8 rounded-full bg-pm-gold/20 border border-pm-gold/40 flex items-center justify-center text-pm-gold text-[10px] font-bold">AD</div>
                     </div>
                 </header>

@@ -2,7 +2,7 @@
 import { Model, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, FashionDayEvent, ForumThread, ForumReply, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, SocialLinks, Artist, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
 
 export const siteConfig = {
-  logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
+  logo: '/logo.svg',
 };
 
 export const navLinks: NavLink[] = [
@@ -400,7 +400,7 @@ export const agencyServices: Service[] = [
     },
     icon: "AcademicCapIcon",
     buttonText: "Réserver ce service",
-    buttonLink: "/contact?service=Mannequins+pour+D%C3%A9fil%C3%A9s",
+    buttonLink: "/contact?service=Mannequins+pour+Defiles",
     category: "Services Mannequinat"
   },
   {
@@ -417,7 +417,7 @@ export const agencyServices: Service[] = [
     },
     icon: "VideoCameraIcon",
     buttonText: "Réserver ce service",
-    buttonLink: "/contact?service=Mannequins+Publicit%C3%A9+%2F+Audiovisuel",
+    buttonLink: "/contact?service=Mannequins+Publicite+Audiovisuel",
     category: "Services Mannequinat"
   },
   {
@@ -500,7 +500,7 @@ export const agencyServices: Service[] = [
     },
     icon: "ScissorsIcon",
     buttonText: "Réserver ce service",
-    buttonLink: "/contact?service=Cr%C3%A9ation+de+Tenues+Sur-Mesure",
+    buttonLink: "/contact?service=Creation+de+Tenues+Sur-Mesure",
     category: "Services Mode et Stylisme"
   },
   {
@@ -532,7 +532,7 @@ export const agencyServices: Service[] = [
     },
     icon: "PaintBrushIcon",
     buttonText: "Réserver ce service",
-    buttonLink: "/contact?service=Styling+%26+Conseil+Mode",
+    buttonLink: "/contact?service=Styling+et+Conseil+Mode",
     category: "Services Mode et Stylisme"
   },
   {
@@ -549,7 +549,7 @@ export const agencyServices: Service[] = [
     },
     icon: "PresentationChartLineIcon",
     buttonText: "Réserver ce service",
-    buttonLink: "/contact?service=Organisation+D%C3%A9fil%C3%A9s+de+Mode",
+    buttonLink: "/contact?service=Organisation+Defiles+de+Mode",
     category: "Services Mode et Stylisme"
   },
   {
@@ -566,7 +566,7 @@ export const agencyServices: Service[] = [
     },
     icon: "SparklesIcon",
     buttonText: "Réserver ce service",
-    buttonLink: "/contact?service=Conseil+Cr%C3%A9atif+et+Branding",
+    buttonLink: "/contact?service=Conseil+Creatif+et+Branding",
     category: "Services Mode et Stylisme"
   },
   {
@@ -615,7 +615,7 @@ export const agencyServices: Service[] = [
     },
     icon: "MegaphoneIcon",
     buttonText: "Réserver ce service",
-    buttonLink: "/contact?service=Animation+de+Shows+%2F+D%C3%A9fil%C3%A9s",
+    buttonLink: "/contact?service=Animation+de+Shows+Defiles",
     category: "Services Événementiels"
   },
   {
@@ -624,7 +624,7 @@ export const agencyServices: Service[] = [
     description: "Hôtes professionnels pour introduire vos défilés et événements.",
     icon: "MicrophoneIcon",
     buttonText: "Réserver ce service",
-    buttonLink: "/contact?service=Pr%C3%A9sentateurs+%2F+H%C3%B4tes+de+C%C3%A9r%C3%A9monie",
+    buttonLink: "/contact?service=Presentateurs+Hotes+de+Ceremonie",
     category: "Services Événementiels"
   },
   {

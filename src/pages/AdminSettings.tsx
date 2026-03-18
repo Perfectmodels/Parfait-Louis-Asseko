@@ -85,7 +85,7 @@ const AdminSettings: React.FC = () => {
                         <div>
                             <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                                 <ChevronLeftIcon className="w-5 h-5" />
-                                Retour au Dashboard
+                                Retour au Tableau de Bord
                             </Link>
                             <h1 className="admin-page-title">Paramètres du Site</h1>
                             <p className="admin-page-subtitle">Modifiez les informations globales, les images et les configurations.</p>
