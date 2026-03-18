@@ -23,10 +23,11 @@ export const LAZY_COLLECTIONS = [
   'photoshootBriefs',
   'mailingContacts',
   'gallery',
+  'galleryAlbums',
 ] as const;
 
 export type LazyCollection = typeof LAZY_COLLECTIONS[number];
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, Transaction, PhotoshootBrief, NavLink, AdminProfile, GalleryItem, MailingContact } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, Transaction, PhotoshootBrief, NavLink, AdminProfile, GalleryItem, GalleryAlbum, MailingContact } from '../types';
 
 // Lazy-load initial seed data — only needed if Firebase DB is empty (first run)
 const loadInitialData = async () => {
@@ -77,6 +78,7 @@ export interface AppData {
     photoshootBriefs: PhotoshootBrief[];
     adminProfile: AdminProfile;
     gallery: GalleryItem[];
+    galleryAlbums: GalleryAlbum[];
     mailingContacts: MailingContact[];
 }
 
@@ -123,6 +125,7 @@ export const useRealtimeDB = () => {
             faqData: d.faqData,
             adminProfile: { id: 'admin', name: 'Admin Principal', username: 'admin', password: 'admin2025', email: 'contact@perfectmodels.ga' },
             gallery: [],
+            galleryAlbums: [],
             transactions: [],
             mailingContacts: d.mailingContacts,
         };
@@ -227,6 +230,7 @@ export const useRealtimeDB = () => {
             transactions: deduplicateById(convertToArray(dbData.transactions)),
             photoshootBriefs: deduplicateById(convertToArray(dbData.photoshootBriefs)),
             gallery: deduplicateById(convertToArray(dbData.gallery)),
+            galleryAlbums: deduplicateById(convertToArray(dbData.galleryAlbums ?? [])),
             agencyTimeline: deduplicateById(convertToArray(dbData.agencyTimeline)),
             mailingContacts: deduplicateById(convertToArray(dbData.mailingContacts ?? [])),            // Handle nested objects within agencyInfo
             agencyInfo: dbData.agencyInfo ? {
@@ -284,7 +288,9 @@ export const useRealtimeDB = () => {
     const saveData = useCallback(async (newData: AppData) => {
         try {
             const dbRef = ref(db);
-            await set(dbRef, newData);
+            // Firebase rejette les valeurs undefined — on les nettoie avant l'écriture
+            const clean = JSON.parse(JSON.stringify(newData));
+            await set(dbRef, clean);
             setData(newData); // Optimistic update
             // Invalider le cache des collections lazy qui ont pu changer
             LAZY_COLLECTIONS.forEach(col => invalidateCache(col));

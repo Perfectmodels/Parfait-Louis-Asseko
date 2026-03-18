@@ -287,24 +287,24 @@ const FashionDay: React.FC = () => {
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/40 to-transparent" />
 
-        <div className="relative z-10 w-full px-6 lg:px-20 pb-16">
+        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-20 pb-12 sm:pb-16">
           <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="section-label">
             Runway • Culture • Art
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-7xl md:text-[12rem] font-playfair font-black italic leading-none mt-2 mb-10"
+            className="text-6xl sm:text-7xl md:text-[12rem] font-playfair font-black italic leading-none mt-2 mb-8 sm:mb-10"
           >
             PFD
           </motion.h1>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             {fashionDayEvents.map(event => (
               <button
                 key={event.edition}
                 onClick={() => setSelectedEdition(event)}
-                className={`relative px-6 py-3 text-[10px] font-black uppercase tracking-[0.4em] border transition-all duration-500 ${
+                className={`relative px-4 sm:px-6 py-2.5 sm:py-3 text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] border transition-all duration-500 ${
                   selectedEdition?.edition === event.edition
                     ? 'bg-pm-gold text-pm-dark border-pm-gold'
                     : 'bg-transparent text-white/50 border-white/10 hover:border-white/40 hover:text-white'
@@ -312,7 +312,7 @@ const FashionDay: React.FC = () => {
               >
                 Édition {String(event.edition).padStart(2, '0')}
                 {selectedEdition?.edition === event.edition && (
-                  <span className="ml-3 text-pm-dark/60 italic font-normal normal-case tracking-normal">
+                  <span className="hidden sm:inline ml-3 text-pm-dark/60 italic font-normal normal-case tracking-normal">
                     {event.theme}
                   </span>
                 )}
@@ -333,21 +333,21 @@ const FashionDay: React.FC = () => {
             transition={{ duration: 0.6, ease: 'circOut' }}
           >
             {/* 1. INFO ÉDITION */}
-            <section className="page-container grid grid-cols-1 lg:grid-cols-3 gap-16 border-b border-white/5 pb-24">
-              <div className="lg:col-span-2 space-y-8">
+            <section className="page-container grid grid-cols-1 lg:grid-cols-3 gap-10 sm:gap-16 border-b border-white/5 pb-16 sm:pb-24">
+              <div className="lg:col-span-2 space-y-6 sm:space-y-8">
                 <div>
                   <span className="section-label">
                     Édition {String(selectedEdition.edition).padStart(2, '0')}
                   </span>
-                  <h2 className="text-5xl md:text-7xl font-playfair font-black italic mt-2 leading-tight">
+                  <h2 className="text-4xl sm:text-5xl md:text-7xl font-playfair font-black italic mt-2 leading-tight">
                     "{selectedEdition.theme}"
                   </h2>
                 </div>
-                <p className="text-lg text-white/50 font-light leading-relaxed max-w-2xl">
+                <p className="text-base sm:text-lg text-white/50 font-light leading-relaxed max-w-2xl">
                   {selectedEdition.description}
                 </p>
               </div>
-              <div className="space-y-8 lg:pt-16">
+              <div className="space-y-6 sm:space-y-8 lg:pt-16">
                 <InfoBlock
                   icon={CalendarDaysIcon}
                   label="Date"
@@ -370,11 +370,11 @@ const FashionDay: React.FC = () => {
 
             {/* 2. VIDÉO D'INTRO */}
             {selectedEdition.announcementVideoUrl && (
-              <section className="bg-[#050505] py-20">
-                <div className="max-w-[1200px] mx-auto px-6 lg:px-20">
-                  <div className="mb-10">
+              <section className="bg-[#050505] py-12 sm:py-20">
+                <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-20">
+                  <div className="mb-8 sm:mb-10">
                     <span className="section-label">Teaser</span>
-                    <h3 className="text-4xl font-playfair font-black">Le Spot de l'Édition</h3>
+                    <h3 className="text-3xl sm:text-4xl font-playfair font-black">Le Spot de l'Édition</h3>
                   </div>
                   <VideoIntro url={selectedEdition.announcementVideoUrl} />
                 </div>
@@ -383,16 +383,16 @@ const FashionDay: React.FC = () => {
 
             {/* 3. ARTISTES */}
             {selectedEdition.artists && selectedEdition.artists.length > 0 && (
-              <section className="page-container py-20 border-b border-white/5">
-                <div className="mb-12">
+              <section className="page-container py-12 sm:py-20 border-b border-white/5">
+                <div className="mb-8 sm:mb-12">
                   <span className="section-label">Performances</span>
-                  <h3 className="text-5xl font-playfair font-black">Les Artistes</h3>
+                  <h3 className="text-4xl sm:text-5xl font-playfair font-black">Les Artistes</h3>
                   <p className="text-white/30 text-sm mt-3">
                     {selectedEdition.artists.length} artiste
                     {selectedEdition.artists.length > 1 ? 's' : ''} — cliquez pour voir les photos
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
                   {selectedEdition.artists.map((artist, idx) => (
                     <PersonCarousel key={idx} person={artist} onImageClick={setSelectedImage} />
                   ))}
@@ -402,17 +402,17 @@ const FashionDay: React.FC = () => {
 
             {/* 4. STYLISTES */}
             {selectedEdition.stylists && selectedEdition.stylists.length > 0 && (
-              <section className="bg-[#080808] py-20">
-                <div className="max-w-[1800px] mx-auto px-6 lg:px-20">
-                  <div className="mb-12">
+              <section className="bg-[#080808] py-12 sm:py-20">
+                <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-20">
+                  <div className="mb-8 sm:mb-12">
                     <span className="section-label">Showcase</span>
-                    <h3 className="text-5xl font-playfair font-black">Les Créateurs</h3>
+                    <h3 className="text-4xl sm:text-5xl font-playfair font-black">Les Créateurs</h3>
                     <p className="text-white/30 text-sm mt-3">
                       {selectedEdition.stylists.length} styliste
                       {selectedEdition.stylists.length > 1 ? 's' : ''} — cliquez pour déplier le carrousel
                     </p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3">
                     {selectedEdition.stylists.map((stylist, idx) => (
                       <PersonCarousel key={idx} person={stylist} onImageClick={setSelectedImage} />
                     ))}
@@ -421,18 +421,18 @@ const FashionDay: React.FC = () => {
               </section>
             )}
 
-            {/* 5. MANNEQUINS VEDETTES — défilement lent */}
+            {/* 5. MANNEQUINS VEDETTES */}
             {selectedEdition.featuredModels && selectedEdition.featuredModels.length > 0 && (
-              <section className="py-14 border-y border-white/5 overflow-hidden">
-                <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-8">
+              <section className="py-10 sm:py-14 border-y border-white/5 overflow-hidden">
+                <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-20 mb-6 sm:mb-8">
                   <span className="section-label">On the Runway</span>
-                  <h3 className="text-3xl font-playfair font-black">Les Mannequins Vedettes</h3>
+                  <h3 className="text-2xl sm:text-3xl font-playfair font-black">Les Mannequins Vedettes</h3>
                 </div>
                 <MarqueeTrack duration={Math.max(20, selectedEdition.featuredModels.length * 4)}>
                   {selectedEdition.featuredModels.map((name, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center px-4 py-1.5 border border-pm-gold/20 text-white/70 font-playfair text-sm italic hover:border-pm-gold hover:text-pm-gold transition-colors cursor-default flex-shrink-0 mx-1.5"
+                      className="inline-flex items-center px-3 sm:px-4 py-1.5 border border-pm-gold/20 text-white/70 font-playfair text-sm italic hover:border-pm-gold hover:text-pm-gold transition-colors cursor-default flex-shrink-0 mx-1 sm:mx-1.5"
                     >
                       {name}
                     </span>
@@ -441,18 +441,18 @@ const FashionDay: React.FC = () => {
               </section>
             )}
 
-            {/* 6. PARTENAIRES — défilement lent */}
+            {/* 6. PARTENAIRES */}
             {selectedEdition.partners && selectedEdition.partners.length > 0 && (
-              <section className="py-14 border-b border-white/5 bg-[#080808] overflow-hidden">
-                <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-8">
+              <section className="py-10 sm:py-14 border-b border-white/5 bg-[#080808] overflow-hidden">
+                <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-20 mb-6 sm:mb-8">
                   <span className="section-label">They Believe in Us</span>
-                  <h3 className="text-3xl font-playfair font-black">Partenaires</h3>
+                  <h3 className="text-2xl sm:text-3xl font-playfair font-black">Partenaires</h3>
                 </div>
                 <MarqueeTrack duration={Math.max(20, selectedEdition.partners.length * 5)}>
                   {selectedEdition.partners.map((p, i) => (
                     <span
                       key={i}
-                      className="inline-flex flex-col flex-shrink-0 px-5 py-2 border border-pm-gold/15 hover:border-pm-gold/40 transition-colors cursor-default mx-2"
+                      className="inline-flex flex-col flex-shrink-0 px-4 sm:px-5 py-2 border border-pm-gold/15 hover:border-pm-gold/40 transition-colors cursor-default mx-1.5 sm:mx-2"
                     >
                       {p.type && (
                         <span className="text-[9px] uppercase tracking-[0.4em] font-black text-pm-gold/40">
@@ -470,8 +470,8 @@ const FashionDay: React.FC = () => {
 
             {/* 7. CTA si édition à venir */}
             {new Date(selectedEdition.date) > new Date() && (
-              <section className="relative py-40 overflow-hidden bg-pm-gold text-pm-dark">
-                <div className="relative z-10 max-w-4xl mx-auto text-center px-6 space-y-10">
+              <section className="relative py-24 sm:py-40 overflow-hidden bg-pm-gold text-pm-dark">
+                <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 space-y-8 sm:space-y-10">
                   <span className="text-[10px] font-black uppercase tracking-[0.5em] opacity-50">
                     {new Date(selectedEdition.date).toLocaleDateString('fr-FR', {
                       day: 'numeric',
@@ -479,28 +479,28 @@ const FashionDay: React.FC = () => {
                       year: 'numeric',
                     })}
                   </span>
-                  <h3 className="text-5xl md:text-8xl font-playfair font-black italic leading-tight">
+                  <h3 className="text-4xl sm:text-5xl md:text-8xl font-playfair font-black italic leading-tight">
                     Incarnez la Révélation.
                   </h3>
-                  <p className="text-xl font-light max-w-xl mx-auto opacity-70 italic">
+                  <p className="text-lg sm:text-xl font-light max-w-xl mx-auto opacity-70 italic">
                     "{selectedEdition.theme}" — rejoignez l'aventure.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-6 justify-center pt-4">
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center pt-4">
                     <Link
                       to="/fashion-day-application"
-                      className="px-12 py-5 bg-pm-dark text-pm-gold font-black uppercase tracking-widest text-sm hover:bg-white hover:text-pm-dark transition-all"
+                      className="px-8 sm:px-12 py-4 sm:py-5 bg-pm-dark text-pm-gold font-black uppercase tracking-widest text-sm hover:bg-white hover:text-pm-dark transition-all"
                     >
                       Candidature Talent
                     </Link>
                     <Link
                       to="/contact"
-                      className="px-12 py-5 border-2 border-pm-dark font-black uppercase tracking-widest text-sm hover:bg-pm-dark hover:text-pm-gold transition-all"
+                      className="px-8 sm:px-12 py-4 sm:py-5 border-2 border-pm-dark font-black uppercase tracking-widest text-sm hover:bg-pm-dark hover:text-pm-gold transition-all"
                     >
                       Devenir Partenaire
                     </Link>
                   </div>
                 </div>
-                <div className="absolute -bottom-20 -right-10 text-[30rem] font-playfair font-black opacity-[0.04] select-none pointer-events-none leading-none">
+                <div className="absolute -bottom-20 -right-10 text-[15rem] sm:text-[30rem] font-playfair font-black opacity-[0.04] select-none pointer-events-none leading-none">
                   {selectedEdition.edition}
                 </div>
               </section>

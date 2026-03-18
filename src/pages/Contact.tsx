@@ -132,28 +132,28 @@ const Contact: React.FC = () => {
       />
 
       {/* Hero */}
-      <div className="relative py-24 lg:py-36 overflow-hidden">
+      <div className="relative py-16 sm:py-24 lg:py-36 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-pm-dark to-pm-dark" />
-        <div className="relative container mx-auto px-6 text-center">
+        <div className="relative container mx-auto px-4 sm:px-6 text-center">
           <span className="section-label">Parlons-nous</span>
-          <h1 className="text-5xl sm:text-7xl font-playfair font-black text-white italic leading-tight mt-4">
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-playfair font-black text-white italic leading-tight mt-4">
             Contactez-<span className="text-pm-gold">nous</span>
           </h1>
-          <p className="mt-6 max-w-xl mx-auto text-pm-off-white/60 text-lg">
+          <p className="mt-4 sm:mt-6 max-w-xl mx-auto text-pm-off-white/60 text-base sm:text-lg">
             Une question, un projet ou une demande de booking ? Notre équipe vous répond sous 24h.
           </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 pb-24 max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <div className="container mx-auto px-4 sm:px-6 pb-16 sm:pb-24 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8">
 
           {/* Colonne gauche — infos */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-black border border-pm-gold/20 rounded-2xl p-8 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="bg-black border border-pm-gold/20 rounded-2xl p-6 sm:p-8 space-y-5 sm:space-y-6">
               <h2 className="text-xl font-playfair text-pm-gold">Nos coordonnées</h2>
               {contactInfo && (
-                <div className="space-y-5">
+                <div className="space-y-4 sm:space-y-5">
                   <InfoItem icon={MapPinIcon} label="Adresse" text={contactInfo.address} />
                   <InfoItem icon={PhoneIcon} label="Téléphone" text={contactInfo.phone} href={`tel:${contactInfo.phone}`} />
                   <InfoItem icon={EnvelopeIcon} label="Email" text={contactInfo.email} href={`mailto:${contactInfo.email}`} />
@@ -161,10 +161,10 @@ const Contact: React.FC = () => {
               )}
             </div>
 
-            <div className="bg-black border border-pm-gold/20 rounded-2xl p-8">
-              <h2 className="text-xl font-playfair text-pm-gold mb-6">Suivez-nous</h2>
+            <div className="bg-black border border-pm-gold/20 rounded-2xl p-6 sm:p-8">
+              <h2 className="text-xl font-playfair text-pm-gold mb-5 sm:mb-6">Suivez-nous</h2>
               {socialLinks && (
-                <div className="flex gap-5">
+                <div className="flex gap-4 sm:gap-5">
                   {socialLinks.facebook && <SocialLink href={socialLinks.facebook} icon={FacebookIcon} label="Facebook" />}
                   {socialLinks.instagram && <SocialLink href={socialLinks.instagram} icon={InstagramIcon} label="Instagram" />}
                   {socialLinks.youtube && <SocialLink href={socialLinks.youtube} icon={YoutubeIcon} label="YouTube" />}
@@ -172,7 +172,7 @@ const Contact: React.FC = () => {
               )}
             </div>
 
-            <div className="bg-pm-gold/5 border border-pm-gold/20 rounded-2xl p-6 flex gap-4 items-start">
+            <div className="bg-pm-gold/5 border border-pm-gold/20 rounded-2xl p-5 sm:p-6 flex gap-4 items-start">
               <ClockIcon className="w-6 h-6 text-pm-gold shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-bold text-pm-gold uppercase tracking-widest mb-1">Délai de réponse</p>
@@ -189,13 +189,13 @@ const Contact: React.FC = () => {
                 onReset={() => setStatus('idle')}
               />
             ) : (
-              <div className="bg-black border border-pm-gold/20 rounded-2xl p-8 lg:p-10">
+              <div className="bg-black border border-pm-gold/20 rounded-2xl p-5 sm:p-8 lg:p-10">
 
                 {/* Toggle */}
-                <div className="flex gap-1 bg-white/5 p-1 rounded-xl mb-8">
+                <div className="flex gap-1 bg-white/5 p-1 rounded-xl mb-6 sm:mb-8">
                   {([
-                    { key: 'message', label: 'Message général' },
-                    { key: 'booking', label: 'Demande de booking' },
+                    { key: 'message', label: 'Message' },
+                    { key: 'booking', label: 'Booking' },
                   ] as { key: FormType; label: string }[]).map(({ key, label }) => (
                     <button key={key} type="button" onClick={() => { setFormType(key); setStatus('idle'); setStatusMessage(''); }}
                       className={`flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${formType === key ? 'bg-pm-gold text-pm-dark' : 'text-white/40 hover:text-white'}`}>

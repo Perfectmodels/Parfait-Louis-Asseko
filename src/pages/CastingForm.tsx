@@ -75,19 +75,19 @@ const CastingForm: React.FC = () => {
   return (
     <div className="bg-pm-dark min-h-screen text-pm-off-white">
       <SEO title="Formulaire de Candidature — Casting" />
-      <div className="container mx-auto px-6 py-16 max-w-2xl">
-        <button onClick={() => navigate('/casting')} className="inline-flex items-center gap-2 text-pm-gold/60 hover:text-pm-gold text-xs uppercase tracking-widest font-black mb-10 transition-colors">
+      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-2xl">
+        <button onClick={() => navigate('/casting')} className="inline-flex items-center gap-2 text-pm-gold/60 hover:text-pm-gold text-xs uppercase tracking-widest font-black mb-8 sm:mb-10 transition-colors">
           <ChevronLeftIcon className="w-4 h-4" /> Retour
         </button>
 
-        <h1 className="text-4xl font-playfair font-black italic mb-2">Candidature Casting</h1>
-        <p className="text-pm-off-white/40 text-sm mb-10">Étape {step + 1} sur {STEPS.length} — {STEPS[step]}</p>
+        <h1 className="text-3xl sm:text-4xl font-playfair font-black italic mb-2">Candidature Casting</h1>
+        <p className="text-pm-off-white/40 text-sm mb-8 sm:mb-10">Étape {step + 1} sur {STEPS.length} — {STEPS[step]}</p>
 
         {/* Stepper */}
-        <div className="flex items-center gap-2 mb-10">
+        <div className="flex items-center gap-1.5 sm:gap-2 mb-8 sm:mb-10">
           {STEPS.map((s, i) => (
             <React.Fragment key={i}>
-              <div className={`flex items-center gap-2 ${i <= step ? 'text-pm-gold' : 'text-white/20'}`}>
+              <div className={`flex items-center gap-1.5 sm:gap-2 ${i <= step ? 'text-pm-gold' : 'text-white/20'}`}>
                 <div className={`w-7 h-7 rounded-full border flex items-center justify-center text-xs font-black transition-all ${i < step ? 'bg-pm-gold border-pm-gold text-pm-dark' : i === step ? 'border-pm-gold text-pm-gold' : 'border-white/10 text-white/20'}`}>
                   {i < step ? <CheckIcon className="w-3.5 h-3.5" /> : i + 1}
                 </div>
@@ -98,10 +98,10 @@ const CastingForm: React.FC = () => {
           ))}
         </div>
 
-        <div className="bg-black/30 border border-pm-gold/10 rounded-2xl p-8">
+        <div className="bg-black/30 border border-pm-gold/10 rounded-2xl p-5 sm:p-8">
           {/* Étape 1 */}
           {step === 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
               <div>
                 <label className={labelCls}>Prénom *</label>
                 <input value={form.firstName} onChange={e => update('firstName', e.target.value)} placeholder="Prénom" className={inputCls} />
@@ -143,7 +143,7 @@ const CastingForm: React.FC = () => {
 
           {/* Étape 2 */}
           {step === 1 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
               {[
                 { label: 'Taille (cm) *', field: 'height', placeholder: '175' },
                 { label: 'Poids (kg)', field: 'weight', placeholder: '60' },
@@ -173,7 +173,7 @@ const CastingForm: React.FC = () => {
             <div className="space-y-5">
               <div>
                 <label className={labelCls}>Niveau d'expérience *</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
                     { value: 'none', label: 'Débutant(e)', desc: 'Aucune expérience' },
                     { value: 'beginner', label: 'Novice', desc: 'Quelques shootings' },
@@ -223,20 +223,20 @@ const CastingForm: React.FC = () => {
         {error && <p className="mt-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">{error}</p>}
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-8">
+        <div className="flex items-center justify-between mt-6 sm:mt-8">
           <button onClick={() => setStep(s => s - 1)} disabled={step === 0}
-            className="flex items-center gap-2 px-5 py-2.5 border border-pm-gold/20 text-pm-off-white/60 text-xs uppercase tracking-widest rounded-full hover:border-pm-gold/50 hover:text-pm-off-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+            className="flex items-center gap-2 px-4 sm:px-5 py-2.5 border border-pm-gold/20 text-pm-off-white/60 text-xs uppercase tracking-widest rounded-full hover:border-pm-gold/50 hover:text-pm-off-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
             <ChevronLeftIcon className="w-4 h-4" /> Précédent
           </button>
 
           {step < STEPS.length - 1 ? (
             <button onClick={() => setStep(s => s + 1)}
-              className="flex items-center gap-2 px-6 py-2.5 bg-pm-gold text-pm-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white transition-colors">
+              className="flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-pm-gold text-pm-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white transition-colors">
               Suivant <ChevronRightIcon className="w-4 h-4" />
             </button>
           ) : (
             <button onClick={handleSubmit} disabled={submitting}
-              className="flex items-center gap-2 px-6 py-2.5 bg-pm-gold text-pm-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              className="flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-pm-gold text-pm-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {submitting
                 ? <><span className="w-3.5 h-3.5 border-2 border-pm-dark/30 border-t-pm-dark rounded-full animate-spin" />Envoi…</>
                 : <><CheckIcon className="w-4 h-4" />Soumettre ma candidature</>}

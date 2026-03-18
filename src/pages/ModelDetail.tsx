@@ -17,33 +17,33 @@ const ModelDetail: React.FC = () => {
     <div className="bg-pm-dark min-h-screen text-pm-off-white">
       <SEO title={model.name} description={model.experience || `Profil de ${model.name} — Perfect Models Management`} image={model.imageUrl} />
       <div className="page-container">
-        <Link to="/mannequins" className="inline-flex items-center gap-2 text-pm-gold/60 hover:text-pm-gold text-xs uppercase tracking-widest font-black mb-16 transition-colors">
+        <Link to="/mannequins" className="inline-flex items-center gap-2 text-pm-gold/60 hover:text-pm-gold text-xs uppercase tracking-widest font-black mb-10 sm:mb-16 transition-colors">
           <ArrowLeftIcon className="w-4 h-4" /> Tous les mannequins
         </Link>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-20">
           <div className="aspect-[3/4] overflow-hidden bg-pm-gray">
             <img src={model.imageUrl} alt={model.name} className="w-full h-full object-cover" />
           </div>
-          <div className="space-y-10 lg:pt-10">
+          <div className="space-y-8 sm:space-y-10 lg:pt-10">
             <div>
               <span className="section-label">{model.level}</span>
-              <h1 className="text-6xl font-playfair font-black italic mt-2">{model.name}</h1>
+              <h1 className="text-4xl sm:text-6xl font-playfair font-black italic mt-2">{model.name}</h1>
             </div>
-            <div className="grid grid-cols-3 gap-8 border-y border-white/5 py-10">
+            <div className="grid grid-cols-3 gap-4 sm:gap-8 border-y border-white/5 py-8 sm:py-10">
               {model.height && <Stat label="Taille" value={model.height} />}
               {model.gender && <Stat label="Genre" value={model.gender} />}
               {model.location && <Stat label="Ville" value={model.location} />}
             </div>
             {model.categories && model.categories.length > 0 && (
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 {model.categories.map(c => (
-                  <span key={c} className="px-4 py-1 border border-pm-gold/20 text-[10px] uppercase tracking-widest font-black text-pm-gold/60">{c}</span>
+                  <span key={c} className="px-3 sm:px-4 py-1 border border-pm-gold/20 text-[10px] uppercase tracking-widest font-black text-pm-gold/60">{c}</span>
                 ))}
               </div>
             )}
             {model.experience && <p className="text-white/50 leading-relaxed font-light">{model.experience}</p>}
             {model.portfolioImages && model.portfolioImages.length > 0 && (
-              <div className="grid grid-cols-3 gap-2 pt-4">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-4">
                 {model.portfolioImages.map((img, i) => (
                   <div key={i} className="aspect-square overflow-hidden bg-pm-gray">
                     <img src={img} alt={`${model.name} ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
