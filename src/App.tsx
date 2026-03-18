@@ -32,7 +32,7 @@ const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 // FIX: Removed Beginner Classroom pages as the feature has been deprecated.
-const Chat = lazy(() => import('./pages/Chat'));
+const Gallery = lazy(() => import('./pages/Gallery'));
 const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
 const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
 const LiveChat = lazy(() => import('./pages/LiveChat'));
@@ -61,6 +61,7 @@ const AdminMessages = lazy(() => import('./pages/AdminMessages'));
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
+const AdminGallery = lazy(() => import('./pages/AdminGallery'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
 
 
@@ -136,7 +137,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
-                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/galerie" element={<Gallery />} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -174,6 +175,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/generer-image" element={<ProtectedRoute role="admin"><ImageGeneration /></ProtectedRoute>} />
                     <Route path="/admin/analyser-image" element={<ProtectedRoute role="admin"><ImageAnalysis /></ProtectedRoute>} />
                     <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
+                    <Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
                     <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />

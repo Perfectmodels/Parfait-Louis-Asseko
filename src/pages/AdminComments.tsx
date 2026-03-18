@@ -4,10 +4,16 @@ import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { ArticleComment } from '../types';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { ref, remove } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 const AdminComments: React.FC = () => {
-  const { data, saveData } = useData();
-  const comments = data?.articleComments ?? [];
+  const { data } = useData();
+  const { items: comments, isLoading, refresh } = useFirebaseCollection<ArticleComment>('articleComments', {
+    pageSize: 200,
+    orderBy: 'createdAt',
+  });
   const articles = data?.articles ?? [];
   const [selected, setSelected] = useState<ArticleComment | null>(null);
   const [filterSlug, setFilterSlug] = useState('Tous');
@@ -19,19 +25,24 @@ const AdminComments: React.FC = () => {
     const matchSlug = filterSlug === 'Tous' || c.articleSlug === filterSlug;
     const matchSearch = !search || c.authorName.toLowerCase().includes(search.toLowerCase()) || c.content.toLowerCase().includes(search.toLowerCase());
     return matchSlug && matchSearch;
-  }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  });
 
   const getArticleTitle = (slug: string) => articles.find(a => a.slug === slug)?.title ?? slug;
 
-  const handleDelete = (id: string) => {
-    if (!data || !window.confirm('Supprimer ce commentaire ?')) return;
-    saveData({ ...data, articleComments: data.articleComments.filter(c => c.id !== id) });
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Supprimer ce commentaire ?')) return;
+    await remove(ref(db, `articleComments/${id}`));
+    invalidateCache('articleComments');
+    refresh();
     if (selected?.id === id) setSelected(null);
   };
 
-  const handleDeleteAll = (slug: string) => {
-    if (!data || !window.confirm(`Supprimer tous les commentaires de cet article ?`)) return;
-    saveData({ ...data, articleComments: data.articleComments.filter(c => c.articleSlug !== slug) });
+  const handleDeleteAll = async (slug: string) => {
+    if (!window.confirm('Supprimer tous les commentaires de cet article ?')) return;
+    const toDelete = comments.filter(c => c.articleSlug === slug);
+    await Promise.all(toDelete.map(c => remove(ref(db, `articleComments/${c.id}`))));
+    invalidateCache('articleComments');
+    refresh();
   };
 
   return (
@@ -47,15 +58,10 @@ const AdminComments: React.FC = () => {
           <p className="text-pm-off-white/40 text-sm mt-1">{comments.length} commentaire(s)</p>
         </div>
 
-        {/* Filtres */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+          <input type="text" value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Rechercher auteur ou contenu..."
-            className="flex-1 bg-black border border-pm-gold/20 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold"
-          />
+            className="flex-1 bg-black border border-pm-gold/20 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
           <select value={filterSlug} onChange={e => setFilterSlug(e.target.value)}
             className="bg-black border border-pm-gold/20 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold">
             {slugs.map(s => <option key={s} value={s}>{s === 'Tous' ? 'Tous les articles' : getArticleTitle(s)}</option>)}
@@ -96,12 +102,12 @@ const AdminComments: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            {filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun commentaire.</p>}
+            {isLoading && <p className="text-center p-8 text-pm-off-white/40 animate-pulse">Chargement...</p>}
+            {!isLoading && filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucun commentaire.</p>}
           </div>
         </div>
       </div>
 
-      {/* Modal détail */}
       {selected && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-pm-dark border border-pm-gold/30 rounded-lg w-full max-w-lg">

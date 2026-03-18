@@ -9,9 +9,8 @@ import {
     SignalIcon, ArrowUpRightIcon, StarIcon, PlusIcon, PaperAirplaneIcon,
     Squares2X2Icon, ChartBarIcon, WrenchScrewdriverIcon,
     UserCircleIcon, PencilIcon, CheckIcon, XMarkIcon, EyeIcon, EyeSlashIcon,
-    BellIcon, BellSlashIcon,
-} from '@heroicons/react/24/outline';
-import { useData } from '../contexts/DataContext';
+    BellIcon, BellSlashIcon, PhotoIcon,
+} from '@heroicons/react/24/outline';import { useData } from '../contexts/DataContext';
 import { requestNotificationPermission, getCachedFcmToken } from '../utils/fcmService';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -288,6 +287,7 @@ const Admin: React.FC = () => {
                         {
                             label: 'Talents & Contenu',
                             cards: [
+                                { title: 'Galerie',       icon: PhotoIcon,                 link: '/admin/gallery',               description: 'Photos et vidéos des prestations.' },
                                 { title: 'Mannequins',    icon: UsersIcon,                 link: '/admin/models',                description: 'Profils, photos et informations.' },
                                 { title: 'Magazine',      icon: NewspaperIcon,             link: '/admin/magazine',              description: 'Articles et contenu éditorial.' },
                                 { title: 'Actualités',    icon: CalendarDaysIcon,          link: '/admin/news',                  description: 'Annonces et actualités.' },

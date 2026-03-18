@@ -4,10 +4,16 @@ import { ChevronLeftIcon, TrashIcon, CheckCircleIcon, EyeIcon, XMarkIcon } from 
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { RecoveryRequest } from '../types';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { ref, update, remove } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 const AdminRecovery: React.FC = () => {
-  const { data, saveData } = useData();
-  const requests = data?.recoveryRequests ?? [];
+  const { data } = useData();
+  const { items: requests, isLoading, refresh } = useFirebaseCollection<RecoveryRequest>('recoveryRequests', {
+    pageSize: 200,
+    orderBy: 'timestamp',
+  });
   const models = data?.models ?? [];
   const [selected, setSelected] = useState<RecoveryRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<'Tous' | 'Nouveau' | 'Traité'>('Nouveau');
@@ -15,23 +21,24 @@ const AdminRecovery: React.FC = () => {
   const filtered = filterStatus === 'Tous' ? requests : requests.filter(r => r.status === filterStatus);
   const newCount = requests.filter(r => r.status === 'Nouveau').length;
 
-  const handleMarkTreated = (id: string) => {
-    if (!data) return;
-    saveData({ ...data, recoveryRequests: data.recoveryRequests.map(r => r.id === id ? { ...r, status: 'Traité' } : r) });
+  const handleMarkTreated = async (id: string) => {
+    await update(ref(db, `recoveryRequests/${id}`), { status: 'Traité' });
+    invalidateCache('recoveryRequests');
+    refresh();
     if (selected?.id === id) setSelected(prev => prev ? { ...prev, status: 'Traité' } : null);
   };
 
-  const handleDelete = (id: string) => {
-    if (!data || !window.confirm('Supprimer cette demande ?')) return;
-    saveData({ ...data, recoveryRequests: data.recoveryRequests.filter(r => r.id !== id) });
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Supprimer cette demande ?')) return;
+    await remove(ref(db, `recoveryRequests/${id}`));
+    invalidateCache('recoveryRequests');
+    refresh();
     if (selected?.id === id) setSelected(null);
   };
 
-  // Trouver les identifiants du mannequin correspondant
   const findModelCredentials = (req: RecoveryRequest) => {
     const model = models.find(m =>
-      m.name.toLowerCase().includes(req.modelName.toLowerCase()) ||
-      m.phone === req.phone
+      m.name.toLowerCase().includes(req.modelName.toLowerCase()) || m.phone === req.phone
     );
     return model ? { username: model.username, password: model.password, found: true } : { username: '—', password: '—', found: false };
   };
@@ -49,7 +56,6 @@ const AdminRecovery: React.FC = () => {
           <p className="text-pm-off-white/40 text-sm mt-1">{requests.length} demande(s) — {newCount} nouvelle(s)</p>
         </div>
 
-        {/* Filtres */}
         <div className="flex gap-2 mb-6">
           {(['Tous', 'Nouveau', 'Traité'] as const).map(s => (
             <button key={s} onClick={() => setFilterStatus(s)}
@@ -91,7 +97,7 @@ const AdminRecovery: React.FC = () => {
                         <div className="flex items-center justify-end gap-2">
                           <button onClick={() => setSelected(r)} className="text-pm-gold/60 hover:text-pm-gold"><EyeIcon className="w-5 h-5" /></button>
                           {r.status === 'Nouveau' && (
-                            <button onClick={() => handleMarkTreated(r.id)} title="Marquer comme traité" className="text-green-400/70 hover:text-green-400">
+                            <button onClick={() => handleMarkTreated(r.id)} className="text-green-400/70 hover:text-green-400">
                               <CheckCircleIcon className="w-5 h-5" />
                             </button>
                           )}
@@ -103,12 +109,12 @@ const AdminRecovery: React.FC = () => {
                 })}
               </tbody>
             </table>
-            {filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune demande.</p>}
+            {isLoading && <p className="text-center p-8 text-pm-off-white/40 animate-pulse">Chargement...</p>}
+            {!isLoading && filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/60">Aucune demande.</p>}
           </div>
         </div>
       </div>
 
-      {/* Modal détail avec identifiants */}
       {selected && (() => {
         const creds = findModelCredentials(selected);
         return (
@@ -122,7 +128,6 @@ const AdminRecovery: React.FC = () => {
                 <Row label="Mannequin" value={selected.modelName} />
                 <Row label="Téléphone" value={selected.phone} />
                 <Row label="Date" value={new Date(selected.timestamp).toLocaleString('fr-FR')} />
-
                 {creds.found ? (
                   <div className="bg-pm-gold/10 border border-pm-gold/30 rounded-lg p-4 space-y-2">
                     <p className="text-xs uppercase tracking-widest text-pm-gold mb-2">Identifiants trouvés</p>
@@ -131,7 +136,7 @@ const AdminRecovery: React.FC = () => {
                   </div>
                 ) : (
                   <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-                    <p className="text-sm text-red-300">Aucun mannequin correspondant trouvé dans la base de données.</p>
+                    <p className="text-sm text-red-300">Aucun mannequin correspondant trouvé.</p>
                   </div>
                 )}
               </div>

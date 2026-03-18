@@ -436,9 +436,27 @@ export interface AdminProfile {
   avatarUrl?: string;
 }
 
+export type GalleryCategory =
+  | 'Défilés'
+  | 'Shootings Photo'
+  | 'Campagnes Publicitaires'
+  | 'Fashion Day'
+  | 'Collaborations'
+  | 'Entraînements'
+  | 'Backstage'
+  | 'Lookbook'
+  | 'Événements'
+  | 'Presse & Médias'
+  | 'Autres';
+export type GalleryMediaType = 'image' | 'video';
+
 export interface GalleryItem {
   id: string;
   url: string;
+  publicId?: string;
+  mediaType: GalleryMediaType;
+  category: GalleryCategory;
   caption?: string;
+  thumbnailUrl?: string;
   createdAt: string;
 }

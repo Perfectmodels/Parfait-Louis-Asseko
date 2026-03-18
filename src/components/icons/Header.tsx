@@ -36,7 +36,7 @@ const NAV_LINKS = [
   { path: '/casting', label: 'Casting' },
   { path: '/services', label: 'Services' },
   { path: '/magazine', label: 'Magazine' },
-  { path: '/chat', label: 'AI Chat' },
+  { path: '/galerie', label: 'Galerie' },
   { path: '/contact', label: 'Contact' },
 ];
 

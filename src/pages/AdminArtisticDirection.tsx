@@ -4,6 +4,9 @@ import { ChevronLeftIcon, TrashIcon, PlusIcon, EyeIcon } from '@heroicons/react/
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { PhotoshootBrief } from '../types';
+import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { ref, update, remove, push, set } from 'firebase/database';
+import { db } from '../realtimedbConfig';
 
 const STATUS_COLORS: Record<PhotoshootBrief['status'], string> = {
   'Nouveau': 'bg-blue-500/20 text-blue-300 border-blue-500',
@@ -11,19 +14,14 @@ const STATUS_COLORS: Record<PhotoshootBrief['status'], string> = {
   'Archivé': 'bg-white/10 text-white/40 border-white/20',
 };
 
-const EMPTY_FORM = {
-  modelId: '',
-  modelName: '',
-  theme: '',
-  clothingStyle: '',
-  accessories: '',
-  location: '',
-  dateTime: '',
-};
+const EMPTY_FORM = { modelId: '', modelName: '', theme: '', clothingStyle: '', accessories: '', location: '', dateTime: '' };
 
 const AdminArtisticDirection: React.FC = () => {
-  const { data, saveData } = useData();
-  const briefs = data?.photoshootBriefs ?? [];
+  const { data } = useData();
+  const { items: briefs, isLoading, refresh } = useFirebaseCollection<PhotoshootBrief>('photoshootBriefs', {
+    pageSize: 200,
+    orderBy: 'createdAt',
+  });
   const models = data?.models ?? [];
 
   const [showForm, setShowForm] = useState(false);
@@ -38,31 +36,29 @@ const AdminArtisticDirection: React.FC = () => {
     setForm(f => ({ ...f, modelId: id, modelName: model?.name ?? '' }));
   };
 
-  const handleSubmit = () => {
-    if (!data || !form.modelId || !form.theme || !form.dateTime) return;
-    const newBrief: PhotoshootBrief = {
-      ...form,
-      id: `brief-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      status: 'Nouveau',
-    };
-    saveData({ ...data, photoshootBriefs: [newBrief, ...data.photoshootBriefs] });
+  const handleSubmit = async () => {
+    if (!form.modelId || !form.theme || !form.dateTime) return;
+    const newRef = push(ref(db, 'photoshootBriefs'));
+    await set(newRef, { ...form, id: newRef.key, createdAt: new Date().toISOString(), status: 'Nouveau' });
+    invalidateCache('photoshootBriefs');
+    refresh();
     setForm(EMPTY_FORM);
     setShowForm(false);
   };
 
-  const handleStatus = (id: string, status: PhotoshootBrief['status']) => {
-    if (!data) return;
-    saveData({ ...data, photoshootBriefs: data.photoshootBriefs.map(b => b.id === id ? { ...b, status } : b) });
+  const handleStatus = async (id: string, status: PhotoshootBrief['status']) => {
+    await update(ref(db, `photoshootBriefs/${id}`), { status });
+    invalidateCache('photoshootBriefs');
+    refresh();
   };
 
-  const handleDelete = (id: string) => {
-    if (!data || !window.confirm('Supprimer ce brief ?')) return;
-    saveData({ ...data, photoshootBriefs: data.photoshootBriefs.filter(b => b.id !== id) });
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Supprimer ce brief ?')) return;
+    await remove(ref(db, `photoshootBriefs/${id}`));
+    invalidateCache('photoshootBriefs');
+    refresh();
     if (selected?.id === id) setSelected(null);
   };
-
-  if (!data) return <div className="bg-pm-dark min-h-screen flex items-center justify-center text-pm-off-white">Chargement...</div>;
 
   return (
     <div className="bg-pm-dark min-h-screen text-pm-off-white py-20">
@@ -72,40 +68,37 @@ const AdminArtisticDirection: React.FC = () => {
           <ChevronLeftIcon className="w-4 h-4" /> Tableau de Bord
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <h1 className="text-4xl font-playfair font-black italic">Admin — Direction Artistique</h1>
+          <h1 className="text-4xl font-playfair font-black italic">Direction Artistique</h1>
           <button onClick={() => setShowForm(v => !v)} className="flex items-center gap-2 bg-pm-gold text-pm-dark px-4 py-2 rounded text-sm font-bold hover:bg-pm-gold/80">
             <PlusIcon className="w-4 h-4" /> Nouveau Brief
           </button>
         </div>
 
-        {/* Formulaire nouveau brief */}
         {showForm && (
           <div className="bg-black/40 border border-pm-gold/30 rounded-lg p-6 mb-8">
             <h2 className="text-lg font-bold text-pm-gold mb-4">Nouveau Brief Photoshoot</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Mannequin *</label>
-                <select value={form.modelId} onChange={e => handleModelChange(e.target.value)} className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold">
-                  <option value="">Sélectionner...</option>
-                  {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Thème *</label>
-                <input type="text" value={form.theme} onChange={e => setForm(f => ({ ...f, theme: e.target.value }))} placeholder="Ex: Élégance Urbaine" className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
-              </div>
-              <div>
-                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Style vestimentaire</label>
-                <input type="text" value={form.clothingStyle} onChange={e => setForm(f => ({ ...f, clothingStyle: e.target.value }))} placeholder="Ex: Robe longue noire" className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
-              </div>
-              <div>
-                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Accessoires</label>
-                <input type="text" value={form.accessories} onChange={e => setForm(f => ({ ...f, accessories: e.target.value }))} placeholder="Ex: Collier doré, sac clutch" className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
-              </div>
-              <div>
-                <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Lieu</label>
-                <input type="text" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="Ex: Studio PMM, Libreville" className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
-              </div>
+              {[
+                { label: 'Mannequin *', type: 'select' },
+                { label: 'Thème *', field: 'theme', placeholder: 'Ex: Élégance Urbaine' },
+                { label: 'Style vestimentaire', field: 'clothingStyle', placeholder: 'Ex: Robe longue noire' },
+                { label: 'Accessoires', field: 'accessories', placeholder: 'Ex: Collier doré' },
+                { label: 'Lieu', field: 'location', placeholder: 'Ex: Studio PMM' },
+              ].map(item => item.type === 'select' ? (
+                <div key="model">
+                  <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Mannequin *</label>
+                  <select value={form.modelId} onChange={e => handleModelChange(e.target.value)} className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold">
+                    <option value="">Sélectionner...</option>
+                    {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                  </select>
+                </div>
+              ) : (
+                <div key={item.field}>
+                  <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">{item.label}</label>
+                  <input type="text" value={(form as any)[item.field!]} onChange={e => setForm(f => ({ ...f, [item.field!]: e.target.value }))}
+                    placeholder={item.placeholder} className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
+                </div>
+              ))}
               <div>
                 <label className="text-xs uppercase tracking-widest text-pm-off-white/50 mb-1 block">Date & Heure *</label>
                 <input type="datetime-local" value={form.dateTime} onChange={e => setForm(f => ({ ...f, dateTime: e.target.value }))} className="w-full bg-pm-dark border border-pm-gold/30 rounded px-3 py-2 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
@@ -118,7 +111,6 @@ const AdminArtisticDirection: React.FC = () => {
           </div>
         )}
 
-        {/* Filtres */}
         <div className="flex gap-2 mb-4 flex-wrap">
           {(['Tous', 'Nouveau', 'Lu', 'Archivé'] as const).map(s => (
             <button key={s} onClick={() => setFilterStatus(s)} className={`text-xs px-3 py-1 rounded-full border transition-colors ${filterStatus === s ? 'bg-pm-gold text-pm-dark border-pm-gold font-bold' : 'border-pm-gold/30 text-pm-off-white/60 hover:border-pm-gold/60'}`}>
@@ -127,7 +119,6 @@ const AdminArtisticDirection: React.FC = () => {
           ))}
         </div>
 
-        {/* Tableau */}
         <div className="bg-black border border-pm-gold/20 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -153,24 +144,33 @@ const AdminArtisticDirection: React.FC = () => {
                         {(['Nouveau', 'Lu', 'Archivé'] as const).map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </td>
-                    <td className="p-4 text-right flex items-center justify-end gap-2">
-                      <button onClick={() => setSelected(selected?.id === b.id ? null : b)} className="text-pm-gold/60 hover:text-pm-gold">
-                        <EyeIcon className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => handleDelete(b.id)} className="text-red-500/70 hover:text-red-500">
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
+                    <td className="p-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => setSelected(selected?.id === b.id ? null : b)} className="text-pm-gold/60 hover:text-pm-gold"><EyeIcon className="w-4 h-4" /></button>
+                        <button onClick={() => handleDelete(b.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-4 h-4" /></button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/40">Aucun brief.</p>}
+            {isLoading && <p className="text-center p-8 text-pm-off-white/40 animate-pulse">Chargement...</p>}
+            {!isLoading && filtered.length === 0 && <p className="text-center p-8 text-pm-off-white/40">Aucun brief.</p>}
           </div>
         </div>
 
-        {/* Détail brief sélectionné */}
         {selected && (
+          <div className="mt-6 bg-black/40 border border-pm-gold/30 rounded-lg p-6">
+            <h3 className="text-lg font-bold text-pm-gold mb-4">Détail — {selected.modelName}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              {[
+                ['Thème', selected.theme],
+                ['Style vestimentaire', selected.clothingStyle],
+                ['Accessoires', selected.accessories],
+                ['Lieu', selected.location],
+                ['Date & Heure', selected.dateTime ? new Date(selected.dateTime).toLocaleString('fr-FR') : '—'],
+                ['Créé le', new Date(selected.createdAt).toLocaleDateString('fr-FR')],
+              ].ma&& (
           <div className="mt-6 bg-black/40 border border-pm-gold/30 rounded-lg p-6">
             <h3 className="text-lg font-bold text-pm-gold mb-4">Détail — {selected.modelName}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">

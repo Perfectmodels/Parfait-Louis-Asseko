@@ -1,7 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../realtimedbConfig';
-import { ref, onValue, set, update, remove, push } from 'firebase/database';
+import { ref, onValue, set, get, update, remove, push } from 'firebase/database';
 import logger from '../utils/logger';
+import { invalidateCache } from './useFirebaseCollection';
+
+/**
+ * Collections lourdes exclues du listener global.
+ * Elles sont chargées à la demande via useFirebaseCollection.
+ * Cela réduit drastiquement les lectures Realtime DB au démarrage.
+ */
+export const LAZY_COLLECTIONS = [
+  'castingApplications',
+  'fashionDayApplications',
+  'contactMessages',
+  'bookingRequests',
+  'recoveryRequests',
+  'articleComments',
+  'forumReplies',
+  'absences',
+  'monthlyPayments',
+  'transactions',
+  'photoshootBriefs',
+  'mailingContacts',
+  'gallery',
+] as const;
+
+export type LazyCollection = typeof LAZY_COLLECTIONS[number];
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, Transaction, PhotoshootBrief, NavLink, AdminProfile, GalleryItem, MailingContact } from '../types';
 
 // Lazy-load initial seed data — only needed if Firebase DB is empty (first run)
@@ -213,12 +237,22 @@ export const useRealtimeDB = () => {
     };
 
     useEffect(() => {
+        // On écoute uniquement le nœud racine SANS les collections lourdes.
+        // Les collections lourdes sont chargées à la demande via useFirebaseCollection.
         const dbRef = ref(db);
 
         const unsubscribe = onValue(dbRef, (snapshot) => {
             const dbData = snapshot.val();
             if (dbData) {
-                const normalizedData = normalizeData(dbData);
+                // Injecter des tableaux vides pour les collections lazy
+                // afin que le reste de l'app ne casse pas
+                const withLazyPlaceholders = { ...dbData };
+                LAZY_COLLECTIONS.forEach(col => {
+                    if (!(col in withLazyPlaceholders)) {
+                        withLazyPlaceholders[col] = [];
+                    }
+                });
+                const normalizedData = normalizeData(withLazyPlaceholders);
                 setData(normalizedData);
                 logger.log("✅ Realtime DB data loaded successfully");
                 setIsInitialized(true);
@@ -252,6 +286,8 @@ export const useRealtimeDB = () => {
             const dbRef = ref(db);
             await set(dbRef, newData);
             setData(newData); // Optimistic update
+            // Invalider le cache des collections lazy qui ont pu changer
+            LAZY_COLLECTIONS.forEach(col => invalidateCache(col));
             logger.log("✅ Data saved to Realtime DB successfully");
         } catch (error) {
             logger.error("Error saving data to Realtime DB:", error);
@@ -266,6 +302,7 @@ export const useRealtimeDB = () => {
             const pathRef = ref(db, path);
             const newDocRef = push(pathRef); // Generate a unique key
             await set(newDocRef, { ...item, id: newDocRef.key });
+            invalidateCache(path); // Invalider le cache de cette collection
             return newDocRef.key;
         } catch (error) {
             logger.error(`Error adding document to ${path}: `, error);
@@ -277,6 +314,7 @@ export const useRealtimeDB = () => {
         try {
             const docRef = ref(db, `${path}/${id}`);
             await update(docRef, updates);
+            invalidateCache(path); // Invalider le cache de cette collection
         } catch (error) {
             logger.error(`Error updating document ${id} in ${path}: `, error);
             throw error;
@@ -287,6 +325,7 @@ export const useRealtimeDB = () => {
         try {
             const docRef = ref(db, `${path}/${id}`);
             await remove(docRef);
+            invalidateCache(path); // Invalider le cache de cette collection
         } catch (error) {
             logger.error(`Error deleting document ${id} from ${path}: `, error);
             throw error;

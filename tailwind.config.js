@@ -17,6 +17,7 @@ export default {
       },
       animation: {
           'marquee': 'marquee 180s linear infinite',
+          'marquee-slow': 'marquee var(--marquee-duration, 30s) linear infinite',
           'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           'fade-in': 'fadeIn 0.5s ease-in-out',
           'glow': 'glow 2s ease-in-out infinite',
