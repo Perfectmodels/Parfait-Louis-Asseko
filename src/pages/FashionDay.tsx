@@ -190,19 +190,23 @@ const FashionDay: React.FC = () => {
               </section>
             )}
 
-            {/* ── MANNEQUINS — bannière défilante ── */}
+            {/* ── MANNEQUINS — grille + bannière ── */}
             {selectedEdition.featuredModels && selectedEdition.featuredModels.length > 0 && (
-              <section className="py-20 border-y border-white/5 overflow-hidden">
-                <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-10">
+              <section className="py-24 border-y border-white/5 overflow-hidden">
+                <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-12">
                   <span className="section-label">On the Runway</span>
-                  <h3 className="text-4xl font-playfair font-black">Les Mannequins</h3>
+                  <h3 className="text-5xl font-playfair font-black">Les Mannequins Vedettes</h3>
                 </div>
-                <Marquee
-                  items={selectedEdition.featuredModels}
-                  duration={28}
-                  itemClassName="text-3xl md:text-4xl font-playfair font-black italic text-white/50 hover:text-white transition-colors cursor-default"
-                  separator={<span className="mx-10 text-pm-gold">◆</span>}
-                />
+                <div className="max-w-[1800px] mx-auto px-6 lg:px-20">
+                  <div className="flex flex-wrap gap-3">
+                    {selectedEdition.featuredModels.map((name, i) => (
+                      <span key={i}
+                        className="px-6 py-3 border border-pm-gold/20 text-white font-playfair font-bold text-lg italic hover:border-pm-gold hover:text-pm-gold transition-colors cursor-default">
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </section>
             )}
 
@@ -213,17 +217,21 @@ const FashionDay: React.FC = () => {
                   <span className="section-label">Performances</span>
                   <h3 className="text-5xl font-playfair font-black">Les Artistes</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                <div className="space-y-2">
                   {selectedEdition.artists.map((artist, idx) => (
-                    <div key={idx} className="group border border-white/5 p-10 hover:bg-white/[0.02] transition-all duration-500">
-                      <h4 className="text-2xl font-playfair font-bold text-white mb-3 group-hover:text-pm-gold transition-colors">{artist.name}</h4>
-                      <p className="text-white/40 font-light leading-relaxed">{artist.description}</p>
+                    <div key={idx} className="group border border-white/5 hover:border-pm-gold/30 transition-all duration-500">
+                      <div className="p-10 pb-6">
+                        <h4 className="text-3xl md:text-4xl font-playfair font-black italic text-white mb-3 group-hover:text-pm-gold transition-colors">
+                          {artist.name}
+                        </h4>
+                        <p className="text-white/50 font-light leading-relaxed text-lg max-w-2xl">{artist.description}</p>
+                      </div>
                       {artist.images && artist.images.length > 0 && (
-                        <div className="flex gap-2 mt-6 overflow-x-auto no-scrollbar">
-                          {artist.images.slice(0, 5).map((img, i) => (
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 px-1 pb-1">
+                          {artist.images.map((img, i) => (
                             <button key={i} onClick={() => setSelectedImage(img)}
-                              className="w-14 h-14 rounded-full overflow-hidden border border-white/10 hover:border-pm-gold transition-colors flex-shrink-0">
-                              <img src={img} className="w-full h-full object-cover" alt={artist.name} />
+                              className={`overflow-hidden bg-pm-gray group/img ${i === 0 ? 'col-span-2 row-span-2 aspect-square' : 'aspect-square'}`}>
+                              <img src={img} className="w-full h-full object-cover transition-all duration-500 group-hover/img:scale-105 grayscale-[0.2] hover:grayscale-0" alt={artist.name} />
                             </button>
                           ))}
                         </div>
@@ -234,27 +242,23 @@ const FashionDay: React.FC = () => {
               </section>
             )}
 
-            {/* ── PARTENAIRES — bannière défilante ── */}
+            {/* ── PARTENAIRES ── */}
             {selectedEdition.partners && selectedEdition.partners.length > 0 && (
-              <section className="py-20 border-y border-white/5 overflow-hidden bg-[#080808]">
-                <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-10">
+              <section className="py-24 border-y border-white/5 bg-[#080808]">
+                <div className="max-w-[1800px] mx-auto px-6 lg:px-20 mb-14">
                   <span className="section-label">They Believe in Us</span>
-                  <h3 className="text-4xl font-playfair font-black">Partenaires</h3>
+                  <h3 className="text-5xl font-playfair font-black">Partenaires</h3>
                 </div>
-                <Marquee
-                  items={selectedEdition.partners.map(p => p.name)}
-                  renderItem={(name, i) => {
-                    const p = selectedEdition.partners![i % selectedEdition.partners!.length];
-                    return (
-                      <span className="flex flex-col items-center gap-1.5 px-4">
-                        <span className="text-[8px] uppercase tracking-[0.5em] font-black text-pm-gold/40">{p?.type}</span>
-                        <span className="text-xl md:text-2xl font-playfair font-black text-white/60 hover:text-white transition-colors">{name}</span>
-                      </span>
-                    );
-                  }}
-                  duration={22}
-                  separator={<span className="mx-12 text-white/10 text-2xl font-thin">|</span>}
-                />
+                <div className="max-w-[1800px] mx-auto px-6 lg:px-20">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5">
+                    {selectedEdition.partners.map((p, i) => (
+                      <div key={i} className="bg-[#080808] p-10 hover:bg-white/[0.03] transition-colors group">
+                        <span className="text-[9px] uppercase tracking-[0.5em] font-black text-pm-gold/50 block mb-3">{p.type}</span>
+                        <span className="text-2xl md:text-3xl font-playfair font-black text-white group-hover:text-pm-gold transition-colors">{p.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </section>
             )}
 
