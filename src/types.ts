@@ -1,4 +1,3 @@
-import React from 'react';
 
 export interface Model {
   id: string;
@@ -450,12 +449,22 @@ export type GalleryCategory =
   | 'Autres';
 export type GalleryMediaType = 'image' | 'video';
 
+export interface GalleryAlbum {
+  id: string;
+  name: string;
+  description?: string;
+  category: GalleryCategory;
+  coverUrl?: string;
+  createdAt: string;
+}
+
 export interface GalleryItem {
   id: string;
   url: string;
   publicId?: string;
   mediaType: GalleryMediaType;
   category: GalleryCategory;
+  albumId?: string;
   caption?: string;
   thumbnailUrl?: string;
   createdAt: string;

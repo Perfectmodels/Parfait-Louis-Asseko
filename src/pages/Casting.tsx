@@ -52,24 +52,25 @@ const Casting: React.FC = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/50 to-transparent" />
 
-        {/* Texte centré */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-8">
+        {/* Texte centré */};l
+        k
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 gap-5 sm:gap-8">
           <motion.span {...fadeUp(0.2)} className="section-label">
             Tournée Nationale de Scouting 2025
           </motion.span>
           <motion.h1
             {...fadeUp(0.5)}
-            className="text-6xl md:text-[9rem] font-playfair font-black italic leading-none tracking-tighter"
+            className="text-5xl sm:text-6xl md:text-[9rem] font-playfair font-black italic leading-none tracking-tighter"
           >
             Trouve ton<br />
             <span className="gold-gradient-text">Moment.</span>
           </motion.h1>
-          <motion.p {...fadeUp(0.9)} className="max-w-xl text-lg font-light text-white/40 italic">
+          <motion.p {...fadeUp(0.9)} className="max-w-xl text-base sm:text-lg font-light text-white/40 italic px-4">
             "Nous ne cherchons pas la beauté, nous cherchons la présence."
           </motion.p>
           {isUpcoming && (
             <motion.div {...fadeUp(1.1)}>
-              <Link to="/casting-formulaire" className="btn-premium mt-4">
+              <Link to="/casting-formulaire" className="btn-premium mt-2 sm:mt-4">
                 Postuler maintenant <ArrowRightIcon className="w-4 h-4 inline ml-2" />
               </Link>
             </motion.div>
@@ -77,13 +78,13 @@ const Casting: React.FC = () => {
         </div>
 
         {/* Infos bas de page */}
-        <div className="relative z-10 w-full px-8 lg:px-20 pb-12 flex flex-col md:flex-row justify-between items-end gap-8">
-          <div className="flex gap-10 border-l border-pm-gold/30 pl-10">
+        <div className="relative z-10 w-full px-4 sm:px-8 lg:px-20 pb-8 sm:pb-12 flex flex-col sm:flex-row justify-between items-end gap-4 sm:gap-8">
+          <div className="flex gap-6 sm:gap-10 border-l border-pm-gold/30 pl-5 sm:pl-10">
             <InfoItem icon={CalendarDaysIcon} label="Date" value="6 Sept 2025" />
             <InfoItem icon={MapPinIcon} label="Lieu" value="Libreville, Gabon" />
           </div>
           {isUpcoming && (
-            <div className="scale-90 origin-right">
+            <div className="scale-90 sm:scale-100 origin-right">
               <CountdownTimer targetDate={CASTING_DATE} />
             </div>
           )}
@@ -92,11 +93,11 @@ const Casting: React.FC = () => {
 
       {/* ── PROCESSUS ── */}
       <section className="page-container border-b border-white/5">
-        <div className="mb-16">
+        <div className="mb-10 sm:mb-16">
           <span className="section-label">Comment ça marche</span>
-          <h2 className="text-5xl font-playfair font-black mt-2">Le Processus</h2>
+          <h2 className="text-4xl sm:text-5xl font-playfair font-black mt-2">Le Processus</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-px bg-white/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5">
           {STEPS.map((step, i) => (
             <motion.div
               key={i}
@@ -104,7 +105,7 @@ const Casting: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="bg-pm-dark p-10 space-y-6 group hover:bg-white/[0.02] transition-colors"
+              className="bg-pm-dark p-6 sm:p-10 space-y-4 sm:space-y-6 group hover:bg-white/[0.02] transition-colors"
             >
               <div className="flex items-center gap-4">
                 <span className="text-[10px] font-black text-pm-gold/40 uppercase tracking-[0.4em]">
@@ -112,7 +113,7 @@ const Casting: React.FC = () => {
                 </span>
                 <step.icon className="w-5 h-5 text-pm-gold/60 group-hover:text-pm-gold transition-colors" />
               </div>
-              <h3 className="text-xl font-playfair font-black">{step.title}</h3>
+              <h3 className="text-lg sm:text-xl font-playfair font-black">{step.title}</h3>
               <p className="text-sm text-white/40 leading-relaxed">{step.desc}</p>
             </motion.div>
           ))}
@@ -120,19 +121,19 @@ const Casting: React.FC = () => {
       </section>
 
       {/* ── CRITÈRES ── */}
-      <section className="page-container grid grid-cols-1 lg:grid-cols-2 gap-20 border-b border-white/5">
-        <div className="space-y-12">
+      <section className="page-container grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-20 border-b border-white/5">
+        <div className="space-y-8 sm:space-y-12">
           <div>
             <span className="section-label">Profils recherchés</span>
-            <h2 className="text-5xl font-playfair font-black italic mt-2 leading-tight">
+            <h2 className="text-4xl sm:text-5xl font-playfair font-black italic mt-2 leading-tight">
               Qui recherchons-nous ?
             </h2>
-            <p className="text-white/40 mt-6 leading-relaxed">
+            <p className="text-white/40 mt-4 sm:mt-6 leading-relaxed">
               La diversité est notre force. Nous recrutons des talents pour le défilé, l'éditorial et la publicité.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-12">
+          <div className="grid grid-cols-2 gap-8 sm:gap-12">
             <CriteriaBlock
               title="Femme"
               items={['16 – 28 ans', 'Min. 170 cm', 'Tour de taille 60–66 cm', 'Tour de hanches 90–96 cm']}
@@ -145,15 +146,15 @@ const Casting: React.FC = () => {
         </div>
 
         {/* Code vestimentaire */}
-        <div className="glass-card p-12 space-y-10 self-start lg:mt-20">
+        <div className="glass-card p-8 sm:p-12 space-y-8 sm:space-y-10 self-start lg:mt-20">
           <div>
             <span className="section-label">Dress code</span>
-            <h3 className="text-3xl font-playfair font-black italic mt-2">Le Code Vestimentaire</h3>
+            <h3 className="text-2xl sm:text-3xl font-playfair font-black italic mt-2">Le Code Vestimentaire</h3>
             <p className="text-sm text-white/40 mt-3 leading-relaxed">
               Venez prêt(e) à travailler. Sans maquillage, coiffure simple.
             </p>
           </div>
-          <div className="space-y-5">
+          <div className="space-y-4 sm:space-y-5">
             {DRESSCODE.map((item, i) => (
               <div key={i} className="flex items-center gap-4">
                 <div className="w-6 h-6 rounded-full border border-pm-gold/30 flex items-center justify-center shrink-0">
@@ -163,7 +164,7 @@ const Casting: React.FC = () => {
               </div>
             ))}
           </div>
-          <Link to="/casting-formulaire" className="btn-premium w-full !py-5 block text-center">
+          <Link to="/casting-formulaire" className="btn-premium w-full !py-4 sm:!py-5 block text-center">
             Commencer la Pré-sélection
           </Link>
         </div>
@@ -171,13 +172,13 @@ const Casting: React.FC = () => {
 
       {/* ── FAQ RAPIDE ── */}
       <section className="page-container border-b border-white/5">
-        <div className="mb-14">
+        <div className="mb-10 sm:mb-14">
           <span className="section-label">Questions fréquentes</span>
-          <h2 className="text-5xl font-playfair font-black mt-2">FAQ</h2>
+          <h2 className="text-4xl sm:text-5xl font-playfair font-black mt-2">FAQ</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5">
           {FAQ.map((item, i) => (
-            <div key={i} className="bg-pm-dark p-10 hover:bg-white/[0.02] transition-colors">
+            <div key={i} className="bg-pm-dark p-6 sm:p-10 hover:bg-white/[0.02] transition-colors">
               <p className="text-pm-gold font-bold mb-3 text-sm uppercase tracking-widest">{item.q}</p>
               <p className="text-white/50 text-sm leading-relaxed">{item.a}</p>
             </div>
@@ -186,22 +187,22 @@ const Casting: React.FC = () => {
       </section>
 
       {/* ── CTA FINAL ── */}
-      <section className="relative py-40 bg-pm-gold text-pm-dark overflow-hidden">
-        <div className="relative z-10 max-w-4xl mx-auto text-center px-6 space-y-10">
-          <h2 className="text-5xl md:text-8xl font-playfair font-black italic leading-tight">
+      <section className="relative py-24 sm:py-40 bg-pm-gold text-pm-dark overflow-hidden">
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 space-y-8 sm:space-y-10">
+          <h2 className="text-4xl sm:text-5xl md:text-8xl font-playfair font-black italic leading-tight">
             C'est ton moment de briller.
           </h2>
-          <p className="text-xl font-bold uppercase tracking-[0.3em] opacity-40">
+          <p className="text-base sm:text-xl font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-40">
             Postule aujourd'hui et rejoins l'élite.
           </p>
           <Link
             to="/casting-formulaire"
-            className="inline-block px-16 py-6 bg-pm-dark text-pm-gold font-black uppercase tracking-widest text-sm hover:bg-white hover:text-pm-dark transition-all"
+            className="inline-block px-10 sm:px-16 py-5 sm:py-6 bg-pm-dark text-pm-gold font-black uppercase tracking-widest text-sm hover:bg-white hover:text-pm-dark transition-all"
           >
             Postuler Maintenant
           </Link>
         </div>
-        <div className="absolute -bottom-16 -right-8 text-[22rem] font-playfair font-black opacity-[0.04] select-none pointer-events-none leading-none">
+        <div className="absolute -bottom-16 -right-8 text-[12rem] sm:text-[22rem] font-playfair font-black opacity-[0.04] select-none pointer-events-none leading-none">
           2025
         </div>
       </section>

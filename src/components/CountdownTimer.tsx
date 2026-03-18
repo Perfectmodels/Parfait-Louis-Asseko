@@ -46,8 +46,8 @@ const CountdownTimer: React.FC<{ targetDate: string }> = ({ targetDate }) => {
     if (value === undefined) return;
 
     timerComponents.push(
-      <div key={interval} className="flex items-baseline gap-1">
-        <span className="text-2xl lg:text-3xl font-playfair font-black text-pm-gold tabular-nums leading-none">
+      <div key={interval} className="flex items-baseline gap-0.5 sm:gap-1">
+        <span className="text-xl sm:text-2xl lg:text-3xl font-playfair font-black text-pm-gold tabular-nums leading-none">
             {String(value).padStart(2, '0')}
         </span>
         <span className="text-[8px] uppercase font-bold text-white/30">{frenchLabels[interval]}</span>

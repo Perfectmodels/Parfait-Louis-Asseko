@@ -22,16 +22,16 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
     return (
         <Link 
             to={service.buttonLink}
-            className="group relative flex flex-col h-[450px] p-12 bg-transparent hover:bg-pm-gold/5 transition-all duration-700 border border-white/5"
+            className="group relative flex flex-col h-auto min-h-[280px] sm:h-[380px] lg:h-[450px] p-6 sm:p-8 lg:p-12 bg-transparent hover:bg-pm-gold/5 transition-all duration-700 border border-white/5"
         >
-            <div className="flex-shrink-0 mb-10">
-                <Icon className="w-14 h-14 text-pm-gold/30 group-hover:text-pm-gold group-hover:scale-110 transition-all duration-700" strokeWidth={1} />
+            <div className="flex-shrink-0 mb-6 sm:mb-10">
+                <Icon className="w-10 h-10 sm:w-14 sm:h-14 text-pm-gold/30 group-hover:text-pm-gold group-hover:scale-110 transition-all duration-700" strokeWidth={1} />
             </div>
             <div className="flex-grow">
-                <h3 className="text-3xl font-playfair font-bold text-white group-hover:text-pm-gold transition-colors duration-700 mb-8 leading-tight">{service.title}</h3>
+                <h3 className="text-2xl sm:text-3xl font-playfair font-bold text-white group-hover:text-pm-gold transition-colors duration-700 mb-4 sm:mb-8 leading-tight">{service.title}</h3>
                 <p className="text-sm text-white/30 leading-relaxed max-w-xs group-hover:text-white/60 transition-colors duration-700">{service.description}</p>
             </div>
-            <div className="mt-auto overflow-hidden">
+            <div className="mt-auto overflow-hidden pt-4">
                  <span className="text-[10px] font-black uppercase tracking-[0.5em] text-pm-gold translate-y-0 group-hover:translate-x-4 transition-transform duration-700 block">
                     Discovery
                  </span>
