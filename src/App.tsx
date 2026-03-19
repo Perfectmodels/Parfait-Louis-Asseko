@@ -1,15 +1,13 @@
 
-import React, { useEffect, useRef, lazy, Suspense } from 'react';
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import React, { useEffect, lazy, Suspense } from 'react';
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
-import { ToastProvider } from './components/ui/Toast';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import AIAssistantIcon from './components/AIAssistantIcon';
 import { PWAInstaller } from './components/PWAInstaller';
 import { registerServiceWorker } from './utils/pwa';
-import { restoreFcmSession } from './utils/fcmService';
-import { notifyAdmin } from './utils/adminNotify';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -32,7 +30,7 @@ const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
 const ClassroomForum = lazy(() => import('./pages/ClassroomForum'));
 const ForumThread = lazy(() => import('./pages/ForumThread'));
 // FIX: Removed Beginner Classroom pages as the feature has been deprecated.
-const Gallery = lazy(() => import('./pages/Gallery'));
+const Chat = lazy(() => import('./pages/Chat'));
 const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
 const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
 const LiveChat = lazy(() => import('./pages/LiveChat'));
@@ -61,7 +59,6 @@ const AdminMessages = lazy(() => import('./pages/AdminMessages'));
 const AdminPayments = lazy(() => import('./pages/AdminPayments'));
 const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
-const AdminGallery = lazy(() => import('./pages/AdminGallery'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
 
 
@@ -76,11 +73,11 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 
 const ScrollToTop: React.FC = () => {
-    const { pathname } = useLocation();
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [pathname]);
-    return null;
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
 };
 
 const LoadingFallback: React.FC = () => (
@@ -102,8 +99,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-    type: "tween" as const,
-    ease: "anticipate" as const,
+    type: "tween",
+    ease: "anticipate",
     duration: 0.5
 };
 
@@ -137,7 +134,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
-                    <Route path="/galerie" element={<Gallery />} />
+                    <Route path="/chat" element={<Chat />} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -145,12 +142,12 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/formations/forum/:threadId" element={<ProtectedRoute role="student"><ForumThread /></ProtectedRoute>} />
                     <Route path="/formations/:moduleSlug/:chapterSlug" element={<ProtectedRoute role="student"><ChapterDetail /></ProtectedRoute>} />
                     <Route path="/profil" element={<ProtectedRoute role="student"><ModelDashboard /></ProtectedRoute>} />
-
+                    
                     {/* FIX: Removed Beginner Classroom routes as the feature has been deprecated. */}
-
+                    
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
-
+                    
                     <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
                     <Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
                     <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
@@ -175,7 +172,6 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/generer-image" element={<ProtectedRoute role="admin"><ImageGeneration /></ProtectedRoute>} />
                     <Route path="/admin/analyser-image" element={<ProtectedRoute role="admin"><ImageAnalysis /></ProtectedRoute>} />
                     <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
-                    <Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
                     <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
@@ -185,24 +181,9 @@ const AnimatedRoutes: React.FC = () => {
     );
 };
 
-// Pages publiques qui déclenchent une notif de visite
-const PUBLIC_PATHS = ['/', '/agence', '/mannequins', '/fashion-day', '/magazine', '/services', '/casting', '/contact'];
-
 const AppContent: React.FC = () => {
     const location = useLocation();
     const { data } = useData();
-    const notifiedPaths = useRef<Set<string>>(new Set());
-
-    // Notif visite — une seule fois par chemin par session
-    useEffect(() => {
-        const path = location.pathname;
-        if (!PUBLIC_PATHS.some(p => path === p || path.startsWith(p + '/')) ) return;
-        if (notifiedPaths.current.has(path)) return;
-        notifiedPaths.current.add(path);
-
-        const pageName = path === '/' ? 'Accueil' : path.replace('/', '').replace(/-/g, ' ');
-        notifyAdmin('visit', `Page visitée : ${pageName}`).catch(() => {});
-    }, [location.pathname]);
 
     // Notification logic for browser tab title
     useEffect(() => {
@@ -224,23 +205,14 @@ const AppContent: React.FC = () => {
         } else {
             // Restore title if not on an admin page (this will be handled by SEO component for other pages)
             if (document.title.startsWith('(') || document.title.startsWith('Admin |')) {
-                document.title = originalTitle;
+                 document.title = originalTitle;
             }
         }
-
+        
         return () => {
             document.title = originalTitle;
         };
     }, [location.pathname, data]);
-
-    // Dropbox Dynamic Sync
-    useEffect(() => {
-        if (data?.apiKeys?.dropboxAccessToken) {
-            import('./utils/dropboxService').then(({ dropboxService }) => {
-                dropboxService.updateToken(data.apiKeys.dropboxAccessToken!);
-            });
-        }
-    }, [data?.apiKeys?.dropboxAccessToken]);
 
 
     return (
@@ -248,29 +220,26 @@ const AppContent: React.FC = () => {
             <Suspense fallback={<LoadingFallback />}>
                 <AnimatedRoutes />
             </Suspense>
+            <AIAssistantIcon />
         </Layout>
     );
 }
 
 const App: React.FC = () => {
 
-    useEffect(() => {
-        registerServiceWorker();
-        // Restaure la session FCM silencieusement si permission déjà accordée
-        restoreFcmSession().catch(() => {});
-    }, []);
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
 
-    return (
-        <DataProvider>
-            <ToastProvider>
-                <BrowserRouter>
-                    <ScrollToTop />
-                    <AppContent />
-                    <PWAInstaller />
-                </BrowserRouter>
-            </ToastProvider>
-        </DataProvider>
-    );
+  return (
+    <DataProvider>
+      <HashRouter>
+        <ScrollToTop />
+        <AppContent />
+        <PWAInstaller />
+      </HashRouter>
+    </DataProvider>
+  );
 };
 
 export default App;

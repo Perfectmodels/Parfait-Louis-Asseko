@@ -26,7 +26,7 @@ const Models: React.FC = () => {
 
   return (
     <div className="bg-pm-dark min-h-screen pt-20">
-      <SEO title="Nos Mannequins | PMM" description="Découvrez les visages de l'agence PMM." />
+      <SEO title="Elite Models | Runway & Editorial" description="Découvrez les visages de l'agence PMM." />
       
       <div className="page-container">
         <header className="mb-32 text-center">
@@ -35,13 +35,13 @@ const Models: React.FC = () => {
                 animate={{ opacity: 1 }}
                 className="section-label"
             >
-                Nos Talents
+                The Talent Board
             </motion.span>
             <motion.h1 
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-5xl md:text-8xl font-playfair font-black italic tracking-tighter"
+                className="text-7xl md:text-[10rem] font-playfair font-black italic tracking-tighter"
             >
                 Nos <span className="gold-gradient-text">Talents</span>
             </motion.h1>

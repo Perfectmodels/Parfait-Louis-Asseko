@@ -18,15 +18,15 @@
 
 @layer components {
   .page-container {
-    @apply max-w-[1800px] mx-auto px-4 sm:px-8 lg:px-20 py-16 sm:py-24 lg:py-32;
+    @apply max-w-[1800px] mx-auto px-6 sm:px-12 lg:px-20 py-32;
   }
 
   .section-label {
-    @apply text-pm-gold text-[10px] font-black tracking-[0.4em] sm:tracking-[0.5em] uppercase mb-4 sm:mb-8 block;
+    @apply text-pm-gold text-[10px] font-black tracking-[0.5em] uppercase mb-8 block;
   }
 
   .btn-premium {
-    @apply relative overflow-hidden px-6 sm:px-10 lg:px-12 py-4 sm:py-5 font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[10px] sm:text-[11px] transition-all duration-700 border border-pm-gold/40 hover:border-pm-gold hover:text-pm-dark z-10 inline-block text-center cursor-pointer;
+    @apply relative overflow-hidden px-12 py-5 font-bold uppercase tracking-[0.3em] text-[11px] transition-all duration-700 border border-pm-gold/40 hover:border-pm-gold hover:text-pm-dark z-10 inline-block text-center cursor-pointer;
   }
 
   .btn-premium::before {
@@ -43,7 +43,7 @@
   }
 
   .gold-gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-pm-gold via-pm-gold to-pm-gold;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-pm-gold via-pm-gold-light to-pm-gold;
   }
 
   .admin-label {
@@ -56,14 +56,6 @@
   
   .admin-textarea {
     @apply min-h-[100px] resize-none;
-  }
-
-  .contact-input {
-    @apply w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-pm-off-white placeholder:text-white/20 transition-all duration-300 focus:outline-none focus:border-pm-gold focus:bg-white/10;
-  }
-
-  .contact-input option {
-    @apply bg-pm-dark text-pm-off-white;
   }
 }
 

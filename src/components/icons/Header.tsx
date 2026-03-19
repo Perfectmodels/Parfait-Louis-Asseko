@@ -1,154 +1,207 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useData } from '../../contexts/DataContext';
+import { ArrowRightOnRectangleIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import AnimatedHamburgerIcon from './AnimatedHamburgerIcon';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Breadcrumb: React.FC = () => {
-  const location = useLocation();
-  const segments = location.pathname.split('/').filter(Boolean);
-  if (segments.length === 0) return null;
+    const location = useLocation();
+    const params = useParams();
+    const { data } = useData();
 
-  const crumbs = segments.map((seg, i) => ({
-    label: seg.replace(/-/g, ' '),
-    path: '/' + segments.slice(0, i + 1).join('/'),
-  }));
+    const crumbs = useMemo(() => {
+        const breadcrumbNameMap: { [key: string]: string } = {
+            '/agence': 'Agence', '/mannequins': 'Nos Mannequins', '/fashion-day': 'PFD',
+            '/magazine': 'Magazine', '/contact': 'Contact', '/services': 'Services',
+            '/casting': 'Casting', '/casting-formulaire': 'Postuler',
+            '/fashion-day-application': 'Candidature PFD', '/profil': 'Mon Profil',
+            '/formations': 'Classroom', '/formations/forum': 'Forum',
+        };
 
-  return (
-    <nav className="max-w-[1800px] mx-auto px-6 sm:px-12 lg:px-20 py-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/20">
-      <Link to="/" className="hover:text-pm-gold transition-colors">Accueil</Link>
-      {crumbs.map((crumb, i) => (
-        <React.Fragment key={crumb.path}>
-          <span className="text-white/10">›</span>
-          {i === crumbs.length - 1 ? (
-            <span className="text-pm-gold">{crumb.label}</span>
-          ) : (
-            <Link to={crumb.path} className="hover:text-pm-gold transition-colors capitalize">{crumb.label}</Link>
-          )}
-        </React.Fragment>
-      ))}
-    </nav>
-  );
+        const pathnames = location.pathname.split('/').filter(Boolean);
+        let currentCrumbs: { label: string; path: string }[] = [];
+        let currentPath = '';
+
+        pathnames.forEach(segment => {
+            currentPath += `/${segment}`;
+            if (breadcrumbNameMap[currentPath]) {
+                currentCrumbs.push({ label: breadcrumbNameMap[currentPath], path: currentPath });
+            } else if (params.id && currentPath.startsWith('/mannequins/')) {
+                const model = data?.models.find(m => m.id === params.id);
+                if (model) currentCrumbs.push({ label: model.name, path: currentPath });
+            } else if (params.slug && currentPath.startsWith('/magazine/')) {
+                const article = data?.articles.find(a => a.slug === params.slug);
+                if (article) currentCrumbs.push({ label: article.title, path: currentPath });
+            }
+        });
+        return currentCrumbs;
+    }, [location.pathname, params, data]);
+
+    if (crumbs.length <= 1 || location.pathname.startsWith('/login') || location.pathname.startsWith('/admin')) {
+        return null;
+    }
+
+    return (
+        <div className="bg-black/20 border-b border-white/5 py-4 mb-8 print-hide">
+            <div className="max-w-[1800px] mx-auto px-6 sm:px-12">
+                <nav aria-label="Breadcrumb">
+                    <ol className="flex items-center space-x-3 text-[10px] uppercase tracking-[0.3em] font-black text-white/30">
+                        <li><Link to="/" className="hover:text-pm-gold transition-colors">Home</Link></li>
+                        {crumbs.map((crumb, index) => (
+                            <li key={crumb.path} className="flex items-center gap-3">
+                                <span className="opacity-30">/</span>
+                                {index === crumbs.length - 1 ? (
+                                    <span className="text-pm-gold">{crumb.label}</span>
+                                ) : (
+                                    <Link to={crumb.path} className="hover:text-pm-gold transition-colors">{crumb.label}</Link>
+                                )}
+                            </li>
+                        ))}
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    );
 };
 
-const NAV_LINKS = [
-  { path: '/agence', label: 'Agence' },
-  { path: '/mannequins', label: 'Mannequins' },
-  { path: '/fashion-day', label: 'Fashion Day' },
-  { path: '/casting', label: 'Casting' },
-  { path: '/services', label: 'Services' },
-  { path: '/magazine', label: 'Magazine' },
-  { path: '/galerie', label: 'Galerie' },
-  { path: '/contact', label: 'Contact' },
-];
-
 const Header: React.FC = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { data } = useData();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    setIsLoggedIn(sessionStorage.getItem('classroom_access') === 'granted');
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [location]);
 
   useEffect(() => {
-    setMenuOpen(false);
+    setIsOpen(false);
   }, [location.pathname]);
 
+  const handleLogout = () => {
+    sessionStorage.clear();
+    setIsLoggedIn(false);
+    navigate('/login');
+  };
+
+  // Filtrer pour retirer "Accueil" de la navigation textuelle puisque le logo remplit ce rôle
+  const navLinks = (data?.navLinks || []).filter(link => link.path !== '/');
+
   return (
-    <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-          scrolled ? 'bg-pm-dark/95 backdrop-blur-xl border-b border-white/5 py-3' : 'py-4 sm:py-6'
-        }`}
-      >
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink-0">
-            <div className="relative">
-              <span className="absolute inset-0 rounded-full border-2 border-pm-gold/60 scale-110 group-hover:scale-125 group-hover:border-pm-gold transition-all duration-500" />
-              <span className="absolute inset-0 rounded-full border border-pm-gold/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-700" />
-              <img
-                src="/logopmm.jpg"
-                alt="Perfect Models Management"
-                className="h-9 w-9 sm:h-11 sm:w-11 rounded-full object-cover border-2 border-pm-gold/40 shadow-lg shadow-pm-gold/10 transition-all duration-500 group-hover:border-pm-gold group-hover:shadow-pm-gold/30 group-hover:scale-105"
-              />
-            </div>
-            <span className="font-playfair font-black text-xs sm:text-sm tracking-widest text-white/70 group-hover:text-pm-gold transition-colors duration-300 uppercase">PMM</span>
-          </Link>
+    <header 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-1000 ${
+        isScrolled ? 'bg-pm-dark/60 backdrop-blur-2xl py-4 border-b border-white/5 shadow-2xl' : 'bg-transparent py-10'
+      }`}
+    >
+      <div className="max-w-[1800px] mx-auto px-6 sm:px-12 flex justify-between items-center">
+        {/* Logo configuré comme bouton Accueil avec bordure dorée */}
+        <Link to="/" className="z-50 group">
+           <motion.div
+              className="p-1.5 rounded-full border border-pm-gold/30 group-hover:border-pm-gold transition-colors duration-500 bg-black/20"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+           >
+             <img 
+                src={data?.siteConfig.logo} 
+                alt="PMM Logo Home" 
+                className="h-10 w-10 object-contain"
+             />
+           </motion.div>
+        </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-            {NAV_LINKS.map(link => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`text-[10px] font-black uppercase tracking-[0.25em] xl:tracking-[0.3em] transition-colors duration-300 relative group ${
-                  location.pathname === link.path ? 'text-pm-gold' : 'text-white/50 hover:text-white'
-                }`}
-              >
-                {link.label}
-                <span className={`absolute -bottom-1 left-0 h-px bg-pm-gold transition-all duration-500 ${
-                  location.pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
-                }`} />
-              </Link>
-            ))}
-          </nav>
-
-          {/* CTA + burger */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <Link to="/casting-formulaire" className="hidden sm:inline-block btn-premium text-white !text-[9px] !py-2.5 !px-5">
-              Rejoindre
-            </Link>
-            <button
-              onClick={() => setMenuOpen(v => !v)}
-              className="lg:hidden flex flex-col gap-1.5 p-2 -mr-1 group"
-              aria-label="Menu"
+        {/* Desktop Nav - "Accueil" est retiré ici via le filtrage au-dessus */}
+        <nav className="hidden lg:flex items-center gap-12">
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.path}
+              to={link.path}
+              className={({ isActive }) =>
+                `relative text-[10px] uppercase tracking-[0.4em] font-black transition-all duration-500 hover:text-pm-gold ${
+                  isActive ? 'text-pm-gold' : 'text-white/40'
+                }`
+              }
             >
-              <span className={`block h-px w-6 bg-white transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-              <span className={`block h-px w-6 bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block h-px w-6 bg-white transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-            </button>
-          </div>
-        </div>
-      </header>
+              {link.label}
+              {location.pathname === link.path && (
+                <motion.div layoutId="nav-underline" className="absolute -bottom-2 left-0 right-0 h-px bg-pm-gold" />
+              )}
+            </NavLink>
+          ))}
+          {isLoggedIn ? (
+             <button onClick={handleLogout} className="text-[10px] uppercase tracking-[0.4em] font-black text-pm-gold flex items-center gap-2 hover:text-white transition-colors">
+               <ArrowRightOnRectangleIcon className="w-4 h-4" />
+               Logout
+             </button>
+          ) : (
+             <Link to="/login" className="text-[10px] uppercase tracking-[0.4em] font-black text-white/40 hover:text-pm-gold">Client Space</Link>
+          )}
+        </nav>
 
-      {/* Mobile menu */}
+        {/* CTA */}
+        <div className="hidden lg:block">
+           <Link to="/casting-formulaire" className="btn-premium !py-3 !px-8 text-[9px]">
+              Apply Now
+           </Link>
+        </div>
+
+        {/* Mobile Toggle */}
+        <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden z-50 text-pm-gold focus:outline-none">
+          <AnimatedHamburgerIcon isOpen={isOpen} />
+        </button>
+      </div>
+
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-pm-dark/98 backdrop-blur-2xl flex flex-col items-center justify-center gap-6 lg:hidden overflow-y-auto py-20"
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 bg-pm-dark z-40 flex flex-col items-center justify-center p-12"
           >
-            {NAV_LINKS.map((link, i) => (
-              <motion.div
-                key={link.path}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <Link
-                  to={link.path}
-                  className={`text-xl sm:text-2xl font-playfair font-black tracking-tight transition-colors ${
-                    location.pathname === link.path ? 'text-pm-gold' : 'text-white/60 hover:text-white'
-                  }`}
-                >
-                  {link.label}
+              <div className="flex flex-col items-center gap-8">
+                {/* Logo dans le menu mobile également */}
+                <Link to="/" onClick={() => setIsOpen(false)} className="mb-8 p-3 rounded-full border border-pm-gold/30">
+                   <img src={data?.siteConfig.logo} alt="PMM" className="h-16 w-16" />
                 </Link>
-              </motion.div>
-            ))}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-4">
-              <Link to="/casting-formulaire" className="btn-premium text-white">
-                Rejoindre l'agence
-              </Link>
-            </motion.div>
+
+                {navLinks.map((link, idx) => (
+                  <motion.div
+                    key={link.path}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                  >
+                    <Link
+                      to={link.path}
+                      onClick={() => setIsOpen(false)}
+                      className="text-5xl font-playfair font-black text-pm-off-white hover:text-pm-gold transition-colors italic"
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="mt-12 flex flex-col items-center gap-6"
+                >
+                  <Link to="/casting-formulaire" onClick={() => setIsOpen(false)} className="btn-premium !px-16 !py-6 text-sm">Join the Elite</Link>
+                  {isLoggedIn && <button onClick={handleLogout} className="text-xs font-black text-pm-gold uppercase tracking-[0.4em]">Sign Out</button>}
+                </motion.div>
+              </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </header>
   );
 };
 

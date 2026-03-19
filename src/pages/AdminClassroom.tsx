@@ -103,7 +103,7 @@ const AdminClassroom: React.FC = () => {
             <div>
                 <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
                     <ChevronLeftIcon className="w-5 h-5" />
-                    Retour au Tableau de Bord
+                    Retour au Dashboard
                 </Link>
                 <h1 className="admin-page-title">Gérer le Classroom Pro</h1>
                 <p className="admin-page-subtitle">Modifier les modules, chapitres et quiz de la formation professionnelle.</p>

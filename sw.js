@@ -1,15 +1,23 @@
 // sw.js
 
-const STATIC_CACHE_NAME = 'pmm-static-v4';
-const DYNAMIC_CACHE_NAME = 'pmm-dynamic-v4';
+const STATIC_CACHE_NAME = 'pmm-static-v2';
+const DYNAMIC_CACHE_NAME = 'pmm-dynamic-v2';
 
-// Assets to pre-cache on install — uniquement les ressources locales fiables
+// Assets to pre-cache on install
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/logopmm.jpg',
-  '/logo.svg',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700;1,800&family=Montserrat:wght@300;400;500;700&display=swap'
+  // Key JS modules from importmap
+  'https://aistudiocdn.com/react@^19.1.1',
+  'https://aistudiocdn.com/react-dom@^19.1.1/client',
+  'https://aistudiocdn.com/react-router-dom@^6.23.1',
+  'https://aistudiocdn.com/framer-motion@^12.23.12',
+  'https://aistudiocdn.com/firebase@^12.2.1/app',
+  'https://aistudiocdn.com/firebase@^12.2.1/database',
+  // Core app image
+  'https://i.ibb.co/fVBxPNTP/T-shirt.png', // Logo
+  // Google Fonts CSS
+  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@300;400;500;700&display=swap'
 ];
 
 self.addEventListener('install', event => {
@@ -45,7 +53,7 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') {
     return;
   }
-
+  
   // Ignore chrome-extension requests
   if (url.protocol === 'chrome-extension:') {
     return;
@@ -56,12 +64,10 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          if (response.ok && response.type !== 'opaque') {
-            const clonedResponse = response.clone();
-            caches.open(DYNAMIC_CACHE_NAME).then(cache => {
-              cache.put(request, clonedResponse);
-            });
-          }
+          const clonedResponse = response.clone();
+          caches.open(DYNAMIC_CACHE_NAME).then(cache => {
+            cache.put(request, clonedResponse);
+          });
           return response;
         })
         .catch(() => caches.match(request).then(res => res || new Response(null, { status: 503, statusText: "Service Unavailable" })))
@@ -82,21 +88,13 @@ self.addEventListener('fetch', event => {
     );
   }
   // Strategy 3: Cache-first for everything else (App Shell & static assets)
-  // Navigation requests (HTML) → always network-first to get fresh index.html
-  else if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html').then(r => r || new Response(null, { status: 503 })))
-    );
-  }
   else {
     event.respondWith(
       caches.match(request).then(response => {
         return response || fetch(request).then(networkResponse => {
-          if (networkResponse.type !== 'opaque' && networkResponse.ok) {
-            // Clone BEFORE using the response
-            const responseToCache = networkResponse.clone();
+          if (networkResponse.type !== 'opaque') {
             caches.open(DYNAMIC_CACHE_NAME).then(cache => {
-              cache.put(request, responseToCache);
+              cache.put(request, networkResponse.clone());
             });
           }
           return networkResponse;
@@ -107,7 +105,7 @@ self.addEventListener('fetch', event => {
 });
 
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });

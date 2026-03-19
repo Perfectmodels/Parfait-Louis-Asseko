@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { BookingRequest } from '../types';
-import { notifyAdmin } from '../utils/adminNotify';
 
 interface BookingFormProps {
     prefilledModelName?: string;
@@ -53,7 +52,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
         try {
             const updatedRequests = [...(data.bookingRequests || []), newRequest];
             await saveData({ ...data, bookingRequests: updatedRequests });
-            notifyAdmin('booking', `${formData.clientName} — ${formData.requestedModels}`, '/admin/bookings').catch(() => {});
 
             setStatus('success');
             setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');

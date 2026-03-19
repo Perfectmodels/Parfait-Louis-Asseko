@@ -6,22 +6,15 @@ import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, CheckBadgeIcon, XCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
 import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
-import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
-import { ref, update } from 'firebase/database';
-import { db } from '../realtimedbConfig';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
-    const { items: castingApplications, refresh } = useFirebaseCollection<CastingApplication>('castingApplications', {
-        pageSize: 500,
-        orderBy: 'submissionDate',
-    });
     const [filter, setFilter] = useState<CastingApplicationStatus | 'AllScored'>('AllScored');
     const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
 
     const applicantsWithScores = useMemo(() => {
         const juryMembers: JuryMember[] = data?.juryMembers || [];
-        return castingApplications
+        return (data?.castingApplications || [])
             .filter(app => app.scores && Object.keys(app.scores).length > 0)
             .map(app => {
                 const scores = Object.values(app.scores!);
@@ -34,7 +27,7 @@ const AdminCastingResults: React.FC = () => {
                 return { ...app, averageScore, juryVotes: scores.length, missingJuries, isFullyScored };
             })
             .sort((a, b) => b.averageScore - a.averageScore);
-    }, [castingApplications, data?.juryMembers]);
+    }, [data?.castingApplications, data?.juryMembers]);
 
     const filteredApplicants = useMemo(() => {
         if (filter === 'AllScored') return applicantsWithScores;
@@ -42,9 +35,11 @@ const AdminCastingResults: React.FC = () => {
     }, [filter, applicantsWithScores]);
 
     const handleUpdateStatus = async (appId: string, newStatus: CastingApplicationStatus) => {
-        await update(ref(db, `castingApplications/${appId}`), { status: newStatus });
-        invalidateCache('castingApplications');
-        refresh();
+        if (!data) return;
+        const updatedApps = data.castingApplications.map(app =>
+            app.id === appId ? { ...app, status: newStatus } : app
+        );
+        await saveData({ ...data, castingApplications: updatedApps });
     };
     
     const handleValidateAndCreateModel = async (app: CastingApplication) => {

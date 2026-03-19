@@ -1,3 +1,4 @@
+import React from 'react';
 
 export interface Model {
   id: string;
@@ -60,8 +61,6 @@ export interface FashionDayEvent {
   artists?: Artist[];
   partners?: { type: string; name: string }[];
   description: string;
-  announcementVideoUrl?: string;
-  galleryImages?: string[];
 }
 
 export interface SocialLinks {
@@ -99,8 +98,7 @@ export type ArticleContent =
   | { type: 'heading'; level: 2 | 3; text: string }
   | { type: 'paragraph'; text: string }
   | { type: 'quote'; text: string; author?: string }
-  | { type: 'image'; src: string; alt: string; caption?: string }
-  | { type: 'youtube'; url: string; caption?: string };
+  | { type: 'image'; src: string; alt: string; caption?: string };
 
 export interface Article {
   slug: string;
@@ -113,9 +111,6 @@ export interface Article {
   content: ArticleContent[];
   tags?: string[];
   isFeatured?: boolean;
-  status?: 'draft' | 'published';
-  photographer?: string;
-  brands?: string[];
   viewCount?: number;
   reactions?: {
     likes: number;
@@ -188,15 +183,6 @@ export interface ApiKeys {
   };
   imgbbApiKey?: string;
   brevoApiKey?: string;
-  dropboxAppKey?: string;
-  dropboxAccessToken?: string;
-  cloudinaryCloudName?: string;
-  cloudinaryApiKey?: string;
-  cloudinaryApiSecret?: string;
-  geminiApiKey?: string;
-  vapidKey?: string;
-  chatbotId?: string;
-  defaultFromEmail?: string;
 }
 
 export type CastingApplicationStatus = 'Nouveau' | 'Présélectionné' | 'Accepté' | 'Refusé';
@@ -329,10 +315,6 @@ export interface ContactMessage {
   email: string;
   subject: string;
   message: string;
-  label?: 'Partenariat' | 'Casting' | 'Presse' | 'Booking' | 'Autre';
-  folder?: 'inbox' | 'sent' | 'drafts';
-  replyTo?: string;
-  mediaLinks?: { name: string; url: string }[];
 }
 
 export interface AIAssistantProps {
@@ -377,34 +359,6 @@ export interface MonthlyPayment {
   notes?: string;
 }
 
-export type TransactionType = 'Revenu' | 'Dépense';
-export type TransactionCategory =
-  | 'Paiement Mannequin'
-  | 'Booking Client'
-  | 'Fashion Day'
-  | 'Casting'
-  | 'Formation'
-  | 'Loyer'
-  | 'Équipement'
-  | 'Marketing'
-  | 'Salaires'
-  | 'Fournitures'
-  | 'Transport'
-  | 'Autre';
-
-export interface Transaction {
-  id: string;
-  date: string; // YYYY-MM-DD
-  type: TransactionType;
-  category: TransactionCategory;
-  label: string;
-  amount: number;
-  method: 'Virement' | 'Espèces' | 'Mobile Money' | 'Chèque' | 'Autre';
-  reference?: string;
-  notes?: string;
-  createdAt: string;
-}
-
 export interface PhotoshootBrief {
   id: string;
   modelId: string;
@@ -423,57 +377,4 @@ export interface NavLink {
     label: string;
     inFooter: boolean;
     footerLabel?: string;
-}
-
-export interface MailingContact {
-  id: string;
-  name: string;
-  email: string;
-  category?: string;
-}
-
-export interface AdminProfile {
-  id: string;
-  name: string;
-  username: string;
-  password: string;
-  email: string;
-  phone?: string;
-  role?: string;
-  avatarUrl?: string;
-}
-
-export type GalleryCategory =
-  | 'Défilés'
-  | 'Shootings Photo'
-  | 'Campagnes Publicitaires'
-  | 'Fashion Day'
-  | 'Collaborations'
-  | 'Entraînements'
-  | 'Backstage'
-  | 'Lookbook'
-  | 'Événements'
-  | 'Presse & Médias'
-  | 'Autres';
-export type GalleryMediaType = 'image' | 'video';
-
-export interface GalleryAlbum {
-  id: string;
-  name: string;
-  description?: string;
-  category: GalleryCategory;
-  coverUrl?: string;
-  createdAt: string;
-}
-
-export interface GalleryItem {
-  id: string;
-  url: string;
-  publicId?: string;
-  mediaType: GalleryMediaType;
-  category: GalleryCategory;
-  albumId?: string;
-  caption?: string;
-  thumbnailUrl?: string;
-  createdAt: string;
 }
