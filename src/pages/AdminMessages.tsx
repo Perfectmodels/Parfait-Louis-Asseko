@@ -32,8 +32,8 @@ const STATUS_STYLES: Record<ContactMessage['status'], string> = {
 };
 
 // Auto-tag basé sur le sujet
-const autoLabel = (subject: string): ContactMessage['label'] => {
-  const s = subject.toLowerCase();
+const autoLabel = (subject?: string): ContactMessage['label'] => {
+  const s = (subject ?? '').toLowerCase();
   if (s.includes('partenariat') || s.includes('sponsor') || s.includes('collaboration')) return 'Partenariat';
   if (s.includes('casting') || s.includes('mannequin') || s.includes('modèle')) return 'Casting';
   if (s.includes('presse') || s.includes('média') || s.includes('interview')) return 'Presse';

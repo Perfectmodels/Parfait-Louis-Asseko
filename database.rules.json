@@ -1,16 +1,6 @@
-
 {
   "rules": {
     ".read": true,
-    ".write": true,
-    "articles": {
-      ".indexOn": "slug"
-    },
-    "gallery": {
-      ".indexOn": "createdAt"
-    },
-    "galleryAlbums": {
-      ".indexOn": "createdAt"
-    }
+    ".write": true
   }
 }

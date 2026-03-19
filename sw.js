@@ -56,10 +56,12 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          const clonedResponse = response.clone();
-          caches.open(DYNAMIC_CACHE_NAME).then(cache => {
-            cache.put(request, clonedResponse);
-          });
+          if (response.ok && response.type !== 'opaque') {
+            const clonedResponse = response.clone();
+            caches.open(DYNAMIC_CACHE_NAME).then(cache => {
+              cache.put(request, clonedResponse);
+            });
+          }
           return response;
         })
         .catch(() => caches.match(request).then(res => res || new Response(null, { status: 503, statusText: "Service Unavailable" })))
