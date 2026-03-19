@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dataconnect/generated": "file:src/dataconnect-generated",
     "@google/genai": "^1.17.0",
     "@heroicons/react": "^2.1.3",
     "@vercel/analytics": "^1.6.1",
