@@ -1,32 +1,71 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
-  base: '/',
-  plugins: [react()],
-  build: {
-    chunkSizeWarningLimit: 600,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          // React core — always needed first
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
 
-          // Framer Motion — heavy animation lib
-          'vendor-motion': ['framer-motion'],
-
-          // Firebase — split by service
-          'vendor-firebase-app': ['firebase/app'],
-          'vendor-firebase-auth': ['firebase/auth'],
-          'vendor-firebase-db': ['firebase/database'],
-          'vendor-firebase-messaging': ['firebase/messaging'],
-
-          // @google/genai and html2canvas are loaded dynamically — no manual chunk needed
+  return {
+    base: '/',
+    plugins: [
+      react(),
+      // ── Émulation locale des Vercel API functions ──────────────────────────
+      {
+        name: 'local-api',
+        configureServer(server) {
+          server.middlewares.use('/api/send-email', async (req, res) => {
+            if (req.method !== 'POST') {
+              res.writeHead(405); res.end(JSON.stringify({ error: 'Method not allowed' })); return;
+            }
+            const chunks: Buffer[] = [];
+            req.on('data', (c: Buffer) => chunks.push(c));
+            req.on('end', async () => {
+              try {
+                const body = JSON.parse(Buffer.concat(chunks).toString());
+                const { to, subject, htmlContent, replyTo } = body;
+                if (!to?.length || !subject || !htmlContent) {
+                  res.writeHead(400); res.end(JSON.stringify({ error: 'Missing fields' })); return;
+                }
+                const apiKey = env.BREVO_API_KEY;
+                if (!apiKey) {
+                  res.writeHead(500); res.end(JSON.stringify({ error: 'BREVO_API_KEY not set' })); return;
+                }
+                const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
+                  body: JSON.stringify({
+                    sender: { name: 'Perfect Models Management', email: env.DEFAULT_FROM_EMAIL || 'contact@perfectmodels.ga' },
+                    to, subject, htmlContent,
+                    ...(replyTo ? { replyTo } : {}),
+                  }),
+                });
+                const data = await brevoRes.json().catch(() => ({}));
+                res.writeHead(brevoRes.ok ? 200 : brevoRes.status, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(brevoRes.ok ? { success: true } : { error: (data as any).message || 'Brevo error' }));
+              } catch (e: any) {
+                res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+              }
+            });
+          });
+        },
+      },
+    ],
+    build: {
+      chunkSizeWarningLimit: 600,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+            'vendor-motion': ['framer-motion'],
+            'vendor-firebase-app': ['firebase/app'],
+            'vendor-firebase-auth': ['firebase/auth'],
+            'vendor-firebase-db': ['firebase/database'],
+            'vendor-firebase-messaging': ['firebase/messaging'],
+          },
         },
       },
     },
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
-  },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+    },
+  }
 })

@@ -6,7 +6,7 @@ import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
 import CountdownTimer from '../components/CountdownTimer';
-import { ArrowLongRightIcon, TicketIcon, ChevronLeftIcon, ChevronRightIcon, PhotoIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { ArrowLongRightIcon, TicketIcon, ChevronLeftIcon, ChevronRightIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { GalleryAlbum, GalleryItem } from '../types';
 import { useFirebaseCollection } from '../hooks/useFirebaseCollection';
 
@@ -176,7 +176,117 @@ const Home: React.FC = () => {
          </div>
       </section>
 
-      {/* 5. IMMERSIVE CALL TO ACTION */}
+      {/* 5. GALERIE — albums en défilement */}
+      {albums.length > 0 && (
+        <section className="py-20 sm:py-32 border-t border-white/5 overflow-hidden">
+          <div className="max-w-[1800px] mx-auto px-4 sm:px-6">
+            <div className="flex justify-between items-end mb-10 sm:mb-16">
+              <div>
+                <span className="section-label">Notre Univers</span>
+                <h2 className="text-4xl sm:text-5xl md:text-7xl font-playfair font-black italic">Galerie</h2>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="hidden sm:flex gap-1">
+                  <button onClick={() => scrollGallery('left')} aria-label="Précédent"
+                    className="w-9 h-9 rounded-full bg-white/5 hover:bg-pm-gold/20 border border-white/10 hover:border-pm-gold/40 flex items-center justify-center transition-all">
+                    <ChevronLeftIcon className="w-4 h-4 text-white/60" />
+                  </button>
+                  <button onClick={() => scrollGallery('right')} aria-label="Suivant"
+                    className="w-9 h-9 rounded-full bg-white/5 hover:bg-pm-gold/20 border border-white/10 hover:border-pm-gold/40 flex items-center justify-center transition-all">
+                    <ChevronRightIcon className="w-4 h-4 text-white/60" />
+                  </button>
+                </div>
+                <Link to="/galerie" className="text-[10px] uppercase tracking-[0.3em] font-black flex items-center gap-2 text-white/40 hover:text-pm-gold transition-colors">
+                  Tout voir <ArrowLongRightIcon className="w-6 h-6 text-pm-gold" />
+                </Link>
+              </div>
+            </div>
+
+            <div ref={galleryTrackRef} className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory -mx-4 sm:-mx-6 px-4 sm:px-6">
+              {albums.map(album => {
+                const cover = galleryItems.find(i => i.albumId === album.id);
+                const count = galleryItems.filter(i => i.albumId === album.id).length;
+                return (
+                  <Link key={album.id} to="/galerie"
+                    className="flex-shrink-0 w-56 sm:w-72 snap-start group cursor-pointer">
+                    <div className="relative h-44 sm:h-56 mb-3">
+                      <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-2xl bg-white/5 border border-white/5" />
+                      <div className="absolute inset-0 translate-x-1 translate-y-1 rounded-2xl bg-white/5 border border-white/5" />
+                      <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 group-hover:border-pm-gold/40 transition-all duration-300 bg-black/60">
+                        {cover ? (
+                          cover.mediaType === 'video' && cover.thumbnailUrl
+                            ? <img src={cover.thumbnailUrl} alt={album.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                            : cover.mediaType === 'image'
+                              ? <img src={cover.url} alt={album.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                              : <div className="w-full h-full flex items-center justify-center"><PhotoIcon className="w-10 h-10 text-white/10" /></div>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center"><PhotoIcon className="w-10 h-10 text-white/10" /></div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <div className="absolute top-2 right-2 bg-black/70 text-pm-gold text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-pm-gold/20">
+                          {count} média{count !== 1 ? 's' : ''}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm font-bold text-white group-hover:text-pm-gold transition-colors truncate px-1">{album.name}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-pm-gold/40 mt-0.5 px-1">{album.category}</p>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 6. ARTICLES — défilement horizontal */}
+      {data.articles.length > 0 && (
+        <section className="py-20 sm:py-32 bg-white/[0.02] border-t border-white/5 overflow-hidden">
+          <div className="max-w-[1800px] mx-auto px-4 sm:px-6">
+            <div className="flex justify-between items-end mb-10 sm:mb-16">
+              <div>
+                <span className="section-label">Magazine</span>
+                <h2 className="text-4xl sm:text-5xl md:text-7xl font-playfair font-black italic">Derniers Articles</h2>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="hidden sm:flex gap-1">
+                  <button onClick={() => scrollArticles('left')} aria-label="Précédent"
+                    className="w-9 h-9 rounded-full bg-white/5 hover:bg-pm-gold/20 border border-white/10 hover:border-pm-gold/40 flex items-center justify-center transition-all">
+                    <ChevronLeftIcon className="w-4 h-4 text-white/60" />
+                  </button>
+                  <button onClick={() => scrollArticles('right')} aria-label="Suivant"
+                    className="w-9 h-9 rounded-full bg-white/5 hover:bg-pm-gold/20 border border-white/10 hover:border-pm-gold/40 flex items-center justify-center transition-all">
+                    <ChevronRightIcon className="w-4 h-4 text-white/60" />
+                  </button>
+                </div>
+                <Link to="/magazine" className="text-[10px] uppercase tracking-[0.3em] font-black flex items-center gap-2 text-white/40 hover:text-pm-gold transition-colors">
+                  Tout voir <ArrowLongRightIcon className="w-6 h-6 text-pm-gold" />
+                </Link>
+              </div>
+            </div>
+
+            <div ref={articlesTrackRef} className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory -mx-4 sm:-mx-6 px-4 sm:px-6">
+              {data.articles.slice(0, 10).map(article => (
+                <Link key={article.slug} to={`/magazine/${article.slug}`}
+                  className="flex-shrink-0 w-64 sm:w-80 snap-start group">
+                  <div className="relative h-44 sm:h-52 rounded-2xl overflow-hidden mb-4 border border-white/5 group-hover:border-pm-gold/30 transition-all duration-300">
+                    <img src={article.imageUrl} alt={article.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                    <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-widest bg-pm-gold text-pm-dark px-2.5 py-1 rounded-full">
+                      {article.category}
+                    </span>
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1.5">{article.author} · {new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                  <h3 className="text-sm font-bold text-white group-hover:text-pm-gold transition-colors leading-snug line-clamp-2">{article.title}</h3>
+                  <p className="text-xs text-white/30 mt-1.5 line-clamp-2 leading-relaxed">{article.excerpt}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 7. IMMERSIVE CALL TO ACTION */}
       <section className="relative min-h-[60vh] sm:h-[90vh] flex items-center justify-center overflow-hidden border-t border-white/5">
           <div className="absolute inset-0 bg-pm-dark">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-pm-gold rounded-full opacity-[0.03] blur-[120px] animate-glow"></div>

@@ -182,7 +182,7 @@ const ArticleDetail: React.FC = () => {
   const articleRef = useRef<HTMLElement>(null);
 
 
-  const article = data?.articles.find(a => a.slug === slug);
+  const article = data?.articles.find(a => a.slug === slug && a.status !== 'draft');
   
   useEffect(() => {
     if (!slug || !data || !article) return;
@@ -325,6 +325,17 @@ const ArticleDetail: React.FC = () => {
       case 'paragraph': return <p className="mb-4 leading-relaxed">{content.text}</p>;
       case 'quote': return <blockquote className="my-6 p-4 border-l-4 border-pm-gold bg-black/50 italic"><p className="text-xl">"{content.text}"</p>{content.author && <cite className="block text-right mt-2 not-italic text-pm-off-white/70">— {content.author}</cite>}</blockquote>;
       case 'image': return <figure className="my-8"><img src={content.src} alt={content.alt} className="w-full h-auto object-cover rounded-lg" />{content.caption && <figcaption className="mt-2 text-sm text-center text-pm-off-white/60">{content.caption}</figcaption>}</figure>;
+      case 'youtube': {
+        const vid = content.url.match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{11})/)?.[1];
+        return vid ? (
+          <figure className="my-8">
+            <div className="aspect-video rounded-lg overflow-hidden">
+              <iframe src={`https://www.youtube.com/embed/${vid}`} className="w-full h-full" allowFullScreen title={content.caption ?? 'Vidéo'} />
+            </div>
+            {content.caption && <figcaption className="mt-2 text-sm text-center text-pm-off-white/60">{content.caption}</figcaption>}
+          </figure>
+        ) : null;
+      }
       default: return null;
     }
   };
@@ -361,6 +372,14 @@ const ArticleDetail: React.FC = () => {
             {article.tags && article.tags.length > 0 && (
               <footer className="mt-8 pt-6 border-t border-pm-gold/20">
                 <p className="font-bold text-pm-off-white mb-2">Tags :</p><div className="flex flex-wrap gap-2">{article.tags.map(tag => <span key={tag} className="px-3 py-1 bg-pm-dark border border-pm-off-white/20 text-xs rounded-full">{tag}</span>)}</div>
+              </footer>
+            )}
+            {(article.photographer || (article.brands && article.brands.length > 0)) && (
+              <footer className="mt-4 pt-4 border-t border-white/5 flex flex-wrap gap-6 text-xs text-pm-off-white/40">
+                {article.photographer && <span>📷 {article.photographer}</span>}
+                {article.brands && article.brands.length > 0 && (
+                  <span>Marques : {article.brands.join(', ')}</span>
+                )}
               </footer>
             )}
           </article>

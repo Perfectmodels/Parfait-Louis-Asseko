@@ -99,7 +99,8 @@ export type ArticleContent =
   | { type: 'heading'; level: 2 | 3; text: string }
   | { type: 'paragraph'; text: string }
   | { type: 'quote'; text: string; author?: string }
-  | { type: 'image'; src: string; alt: string; caption?: string };
+  | { type: 'image'; src: string; alt: string; caption?: string }
+  | { type: 'youtube'; url: string; caption?: string };
 
 export interface Article {
   slug: string;
@@ -112,6 +113,9 @@ export interface Article {
   content: ArticleContent[];
   tags?: string[];
   isFeatured?: boolean;
+  status?: 'draft' | 'published';
+  photographer?: string;
+  brands?: string[];
   viewCount?: number;
   reactions?: {
     likes: number;
@@ -325,6 +329,10 @@ export interface ContactMessage {
   email: string;
   subject: string;
   message: string;
+  label?: 'Partenariat' | 'Casting' | 'Presse' | 'Booking' | 'Autre';
+  folder?: 'inbox' | 'sent' | 'drafts';
+  replyTo?: string;
+  mediaLinks?: { name: string; url: string }[];
 }
 
 export interface AIAssistantProps {
