@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -6,10 +6,21 @@ import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
 import CountdownTimer from '../components/CountdownTimer';
-import { ArrowLongRightIcon, TicketIcon } from '@heroicons/react/24/outline';
+import { ArrowLongRightIcon, TicketIcon, ChevronLeftIcon, ChevronRightIcon, PhotoIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { GalleryAlbum, GalleryItem } from '../types';
+import { useFirebaseCollection } from '../hooks/useFirebaseCollection';
 
 const Home: React.FC = () => {
   const { data, isInitialized } = useData();
+  const { items: albums } = useFirebaseCollection<GalleryAlbum>('galleryAlbums', { orderBy: 'createdAt' });
+  const { items: galleryItems } = useFirebaseCollection<GalleryItem>('gallery', { orderBy: 'createdAt' });
+  const galleryTrackRef = useRef<HTMLDivElement>(null);
+  const articlesTrackRef = useRef<HTMLDivElement>(null);
+
+  const scrollGallery = (dir: 'left' | 'right') =>
+    galleryTrackRef.current?.scrollBy({ left: dir === 'right' ? 320 : -320, behavior: 'smooth' });
+  const scrollArticles = (dir: 'left' | 'right') =>
+    articlesTrackRef.current?.scrollBy({ left: dir === 'right' ? 320 : -320, behavior: 'smooth' });
 
   if (!isInitialized || !data) {
     return <div className="h-screen bg-pm-dark flex items-center justify-center"><div className="w-12 h-px bg-pm-gold animate-pulse"></div></div>;
