@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 const Magazine: React.FC = () => {
   const { data, isInitialized } = useData();
-  const articles = data?.articles || [];
+  const articles = (data?.articles || []).filter(a => a.status !== 'draft');
 
   if (!isInitialized) return <div className="h-screen bg-pm-dark"></div>;
 
