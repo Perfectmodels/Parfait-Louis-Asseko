@@ -149,7 +149,13 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         >
                             <div className="flex items-center justify-between mb-16 px-4">
                                 <h1 className="font-playfair text-xl font-black italic">Admin Panel</h1>
-                                <button onClick={() => setSidebarOpen(false)} className="text-white/40 hover:text-white"><XMarkIcon className="w-6 h-6" /></button>
+                                <button
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="text-white/40 hover:text-white rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold"
+                                    aria-label="Fermer le menu"
+                                >
+                                    <XMarkIcon className="w-6 h-6" />
+                                </button>
                             </div>
                             <Sidebar onLinkClick={() => setSidebarOpen(false)} />
                         </motion.div>
@@ -161,7 +167,12 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="flex flex-col flex-1 lg:pl-72">
                 <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/5 bg-pm-dark/60 backdrop-blur-xl px-6 sm:px-10">
                     <div className="flex items-center gap-6">
-                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-pm-off-white/80">
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="lg:hidden p-2 text-pm-off-white/80 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold"
+                            aria-label="Ouvrir le menu"
+                            aria-expanded={sidebarOpen}
+                        >
                             <Bars3Icon className="w-6 h-6" />
                         </button>
                         <div className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">
