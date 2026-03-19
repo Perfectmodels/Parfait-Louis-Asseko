@@ -32,8 +32,11 @@ const CategoryRow: React.FC<{
   const catAlbums = albums.filter(a => a.category === category);
   // Compter les items par album
   const countFor = (albumId: string) => items.filter(i => i.albumId === albumId).length;
-  // Cover d'un album = premier item de l'album
-  const coverFor = (albumId: string) => items.find(i => i.albumId === albumId);
+  // Cover d'un album = coverUrl de l'album, sinon premier item de l'album
+  const coverFor = (album: GalleryAlbum) => {
+    if (album.coverUrl) return { mediaType: 'image' as const, url: album.coverUrl, thumbnailUrl: undefined };
+    return items.find(i => i.albumId === album.id);
+  };
 
   const total = catAlbums.length + orphans.length;
   if (total === 0) return null;
@@ -66,7 +69,7 @@ const CategoryRow: React.FC<{
 
         {/* Cartes d'albums */}
         {catAlbums.map(album => {
-          const cover = coverFor(album.id);
+          const cover = coverFor(album);
           const count = countFor(album.id);
           return (
             <motion.div
