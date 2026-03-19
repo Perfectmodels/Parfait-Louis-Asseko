@@ -1,14 +1,11 @@
 
 import React, { createContext, useContext } from 'react';
-import { useRealtimeDB as useDataStore, AppData } from '../hooks/useRealtimeDB';
+import { useDataStore, AppData } from '../hooks/useDataStore';
 
 interface DataContextType {
   data: AppData | null;
-  saveData: (newData: AppData) => Promise<void>;
+  saveData: (newData: AppData) => void;
   isInitialized: boolean;
-  addDocument: (path: string, item: any) => Promise<string | null>;
-  updateDocument: (path: string, id: string, updates: any) => Promise<void>;
-  deleteDocument: (path: string, id: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | null>(null);

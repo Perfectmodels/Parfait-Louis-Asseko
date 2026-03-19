@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 const Magazine: React.FC = () => {
   const { data, isInitialized } = useData();
-  const articles = (data?.articles || []).filter(a => a.status !== 'draft');
+  const articles = data?.articles || [];
 
   if (!isInitialized) return <div className="h-screen bg-pm-dark"></div>;
 
@@ -15,7 +15,7 @@ const Magazine: React.FC = () => {
 
   return (
     <div className="bg-pm-dark pt-20">
-      <SEO title="Focus Model 241 | Magazine" description="Mode éditorial par PMM." />
+      <SEO title="Focus Model 241 | Magazine" description="Editorial mode by PMM." />
       
       <header className="page-container !pb-12 text-center">
          <span className="section-label">Editorial</span>

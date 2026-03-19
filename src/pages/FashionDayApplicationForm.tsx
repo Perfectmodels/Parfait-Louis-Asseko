@@ -5,7 +5,6 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationRole } from '../types';
 import { Link } from 'react-router-dom';
-import { notifyAdmin } from '../utils/adminNotify';
 
 const FashionDayApplicationForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -49,7 +48,6 @@ const FashionDayApplicationForm: React.FC = () => {
         try {
             const updatedApplications = [...(data.fashionDayApplications || []), newApplication];
             await saveData({ ...data, fashionDayApplications: updatedApplications });
-            notifyAdmin('fashionday', `${formData.name} — ${formData.role}`, '/admin/fashion-day-applications').catch(() => {});
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée ! L\'équipe du Perfect Fashion Day vous recontactera prochainement.');

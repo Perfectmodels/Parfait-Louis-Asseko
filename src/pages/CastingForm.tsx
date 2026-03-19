@@ -1,252 +1,161 @@
+
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeftIcon, ChevronRightIcon, CheckIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { invalidateCache } from '../hooks/useFirebaseCollection';
-import CloudinaryUploader from '../components/CloudinaryUploader';
-
-const STEPS = ['Infos personnelles', 'Mensurations', 'Expérience', 'Photos'];
-
-const EMPTY = {
-  // Étape 1
-  firstName: '', lastName: '', birthDate: '', gender: 'Femme', nationality: '', city: '', email: '', phone: '',
-  // Étape 2
-  height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '', eyeColor: '', hairColor: '',
-  // Étape 3
-  experience: 'none', instagram: '', portfolioLink: '',
-  // Étape 4
-  photoPortraitUrl: '', photoFullBodyUrl: '', photoProfileUrl: '',
-};
-
-type FormData = typeof EMPTY;
-
-const inputCls = "w-full bg-black/40 border border-pm-gold/20 rounded-lg px-4 py-3 text-sm text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold transition-colors";
-const labelCls = "text-xs uppercase tracking-widest text-pm-off-white/40 mb-1.5 block";
+import { CastingApplication } from '../types';
+import { Link } from 'react-router-dom';
 
 const CastingForm: React.FC = () => {
-  const navigate = useNavigate();
-  const { addDocument } = useData();
-  const [step, setStep] = useState(0);
-  const [form, setForm] = useState<FormData>(EMPTY);
-  const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState('');
+    const { data, saveData } = useData();
+    const [formData, setFormData] = useState({
+        firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
+        gender: 'Femme' as 'Homme' | 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
+        eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
+    });
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [statusMessage, setStatusMessage] = useState('');
 
-  const update = (field: keyof FormData, value: string) =>
-    setForm(f => ({ ...f, [field]: value }));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-  const handleSubmit = async () => {
-    setSubmitting(true);
-    setError('');
-    try {
-      await addDocument('castingApplications', {
-        ...form,
-        status: 'Nouveau',
-        submissionDate: new Date().toISOString(),
-        passageNumber: Math.floor(Math.random() * 9000) + 1000,
-      });
-      invalidateCache('castingApplications');
-      setDone(true);
-    } catch (e: any) {
-      setError(e.message || 'Erreur lors de la soumission');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setStatus('loading');
 
-  if (done) {
+        if (!data) {
+            setStatus('error');
+            setStatusMessage('Erreur: Impossible de charger les données de l\'application.');
+            return;
+        }
+
+        const newApplication: CastingApplication = {
+            ...formData,
+            id: `casting-${Date.now()}`,
+            submissionDate: new Date().toISOString(),
+            status: 'Nouveau',
+        };
+
+        try {
+            const updatedApplications = [...(data.castingApplications || []), newApplication];
+            await saveData({ ...data, castingApplications: updatedApplications });
+
+            setStatus('success');
+            setStatusMessage('Votre candidature a été envoyée avec succès ! Nous vous contacterons si votre profil est retenu.');
+            setFormData({ // Reset form
+                firstName: '', lastName: '', birthDate: '', email: '', phone: '', nationality: '', city: '',
+                gender: 'Femme', height: '', weight: '', chest: '', waist: '', hips: '', shoeSize: '',
+                eyeColor: '', hairColor: '', experience: 'none', instagram: '', portfolioLink: ''
+            });
+
+        } catch (error) {
+            setStatus('error');
+            setStatusMessage("Une erreur est survenue lors de l'envoi de votre candidature.");
+            console.error(error);
+        }
+    };
+    
     return (
-      <div className="bg-pm-dark min-h-screen flex items-center justify-center px-6">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-full bg-pm-gold/10 border border-pm-gold/30 flex items-center justify-center mx-auto mb-6">
-            <CheckIcon className="w-8 h-8 text-pm-gold" />
-          </div>
-          <h2 className="text-3xl font-playfair font-black text-white mb-3">Candidature envoyée</h2>
-          <p className="text-pm-off-white/50 text-sm mb-8">Nous avons bien reçu votre dossier. Notre équipe vous contactera sous 48h.</p>
-          <button onClick={() => navigate('/casting')} className="px-6 py-3 bg-pm-gold text-pm-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white transition-colors">
-            Retour au casting
-          </button>
+        <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
+            <SEO title="Formulaire de Casting" description="Postulez en ligne pour rejoindre Perfect Models Management. Remplissez notre formulaire pour soumettre votre candidature." noIndex />
+            <div className="container mx-auto px-6 max-w-4xl">
+                <h1 className="text-5xl font-playfair text-pm-gold text-center mb-4">Postuler au Casting</h1>
+                <p className="text-center max-w-2xl mx-auto text-pm-off-white/80 mb-12">
+                    Remplissez ce formulaire avec attention. C'est votre première étape pour peut-être nous rejoindre.
+                </p>
+                <form onSubmit={handleSubmit} className="bg-black p-8 border border-pm-gold/20 space-y-8 rounded-lg shadow-lg">
+                    <Section title="Informations Personnelles">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <FormInput label="Prénom" name="firstName" value={formData.firstName} onChange={handleChange} required />
+                            <FormInput label="Nom" name="lastName" value={formData.lastName} onChange={handleChange} required />
+                        </div>
+                         <div className="grid md:grid-cols-2 gap-6">
+                            <FormInput label="Date de Naissance" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} required />
+                            <FormSelect label="Genre" name="gender" value={formData.gender} onChange={handleChange} required>
+                                <option value="Femme">Femme</option>
+                                <option value="Homme">Homme</option>
+                            </FormSelect>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                           <FormInput label="Nationalité" name="nationality" value={formData.nationality} onChange={handleChange} required />
+                           <FormInput label="Ville de résidence" name="city" value={formData.city} onChange={handleChange} required />
+                        </div>
+                         <div className="grid md:grid-cols-2 gap-6">
+                            <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                            <FormInput label="Téléphone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
+                        </div>
+                    </Section>
+
+                    <Section title="Mensurations & Physique">
+                        <div className="grid md:grid-cols-3 gap-6">
+                            <FormInput label="Taille (cm)" name="height" type="number" value={formData.height} onChange={handleChange} required />
+                            <FormInput label="Poids (kg)" name="weight" type="number" value={formData.weight} onChange={handleChange} required />
+                             <FormInput label="Pointure (EU)" name="shoeSize" type="number" value={formData.shoeSize} onChange={handleChange} required />
+                        </div>
+                         <div className="grid md:grid-cols-3 gap-6">
+                            <FormInput label="Poitrine (cm)" name="chest" type="number" value={formData.chest} onChange={handleChange} />
+                            <FormInput label="Taille (vêtement, cm)" name="waist" type="number" value={formData.waist} onChange={handleChange} />
+                            <FormInput label="Hanches (cm)" name="hips" type="number" value={formData.hips} onChange={handleChange} />
+                        </div>
+                         <div className="grid md:grid-cols-2 gap-6">
+                            <FormInput label="Couleur des yeux" name="eyeColor" value={formData.eyeColor} onChange={handleChange} />
+                            <FormInput label="Couleur des cheveux" name="hairColor" value={formData.hairColor} onChange={handleChange} />
+                        </div>
+                    </Section>
+                    
+                     <Section title="Expérience & Portfolio">
+                        <FormSelect label="Niveau d'expérience" name="experience" value={formData.experience} onChange={handleChange} required>
+                            <option value="none">Aucune expérience</option>
+                            <option value="beginner">Débutant(e) (shootings amateurs)</option>
+                            <option value="intermediate">Intermédiaire (agence locale, défilés)</option>
+                            <option value="professional">Professionnel(le)</option>
+                        </FormSelect>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <FormInput label="Profil Instagram" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="@pseudo" />
+                            <FormInput label="Lien vers portfolio (optionnel)" name="portfolioLink" value={formData.portfolioLink} onChange={handleChange} />
+                        </div>
+                        <p className="text-sm text-pm-off-white/60 bg-pm-dark/50 p-3 rounded-md border border-pm-off-white/10">
+                            Note : Pour simplifier cette première étape, nous ne demandons pas de photos immédiatement. Si votre profil est présélectionné, nous vous contacterons par email pour vous demander de nous envoyer vos polas (photos naturelles).
+                        </p>
+                    </Section>
+
+                    <div className="pt-6">
+                        <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-4 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
+                            {status === 'loading' ? 'Envoi...' : 'Soumettre ma candidature'}
+                        </button>
+                    </div>
+
+                    {statusMessage && (
+                        <p className={`text-center text-sm p-4 rounded-md ${status === 'success' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
+                            {statusMessage}
+                            {status === 'success' && <Link to="/" className="underline ml-2">Retour à l'accueil</Link>}
+                        </p>
+                    )}
+                </form>
+            </div>
         </div>
-      </div>
     );
-  }
-
-  return (
-    <div className="bg-pm-dark min-h-screen text-pm-off-white">
-      <SEO title="Formulaire de Candidature — Casting" />
-      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 max-w-2xl">
-        <button onClick={() => navigate('/casting')} className="inline-flex items-center gap-2 text-pm-gold/60 hover:text-pm-gold text-xs uppercase tracking-widest font-black mb-8 sm:mb-10 transition-colors">
-          <ChevronLeftIcon className="w-4 h-4" /> Retour
-        </button>
-
-        <h1 className="text-3xl sm:text-4xl font-playfair font-black italic mb-2">Candidature Casting</h1>
-        <p className="text-pm-off-white/40 text-sm mb-8 sm:mb-10">Étape {step + 1} sur {STEPS.length} — {STEPS[step]}</p>
-
-        {/* Stepper */}
-        <div className="flex items-center gap-1.5 sm:gap-2 mb-8 sm:mb-10">
-          {STEPS.map((s, i) => (
-            <React.Fragment key={i}>
-              <div className={`flex items-center gap-1.5 sm:gap-2 ${i <= step ? 'text-pm-gold' : 'text-white/20'}`}>
-                <div className={`w-7 h-7 rounded-full border flex items-center justify-center text-xs font-black transition-all ${i < step ? 'bg-pm-gold border-pm-gold text-pm-dark' : i === step ? 'border-pm-gold text-pm-gold' : 'border-white/10 text-white/20'}`}>
-                  {i < step ? <CheckIcon className="w-3.5 h-3.5" /> : i + 1}
-                </div>
-                <span className="text-[10px] uppercase tracking-widest hidden sm:block">{s}</span>
-              </div>
-              {i < STEPS.length - 1 && <div className={`flex-1 h-px ${i < step ? 'bg-pm-gold/40' : 'bg-white/10'}`} />}
-            </React.Fragment>
-          ))}
-        </div>
-
-        <div className="bg-black/30 border border-pm-gold/10 rounded-2xl p-5 sm:p-8">
-          {/* Étape 1 */}
-          {step === 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-              <div>
-                <label className={labelCls}>Prénom *</label>
-                <input value={form.firstName} onChange={e => update('firstName', e.target.value)} placeholder="Prénom" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Nom *</label>
-                <input value={form.lastName} onChange={e => update('lastName', e.target.value)} placeholder="Nom de famille" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Date de naissance *</label>
-                <input type="date" value={form.birthDate} onChange={e => update('birthDate', e.target.value)} className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Genre *</label>
-                <select value={form.gender} onChange={e => update('gender', e.target.value)} className={inputCls}>
-                  <option value="Femme">Femme</option>
-                  <option value="Homme">Homme</option>
-                  <option value="Non-binaire">Non-binaire</option>
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Nationalité</label>
-                <input value={form.nationality} onChange={e => update('nationality', e.target.value)} placeholder="Ex: Gabonaise" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Ville *</label>
-                <input value={form.city} onChange={e => update('city', e.target.value)} placeholder="Ex: Libreville" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Email *</label>
-                <input type="email" value={form.email} onChange={e => update('email', e.target.value)} placeholder="votre@email.com" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Téléphone *</label>
-                <input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="+241 077 00 00 00" className={inputCls} />
-              </div>
-            </div>
-          )}
-
-          {/* Étape 2 */}
-          {step === 1 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
-              {[
-                { label: 'Taille (cm) *', field: 'height', placeholder: '175' },
-                { label: 'Poids (kg)', field: 'weight', placeholder: '60' },
-                { label: 'Poitrine (cm)', field: 'chest', placeholder: '90' },
-                { label: 'Taille vêtement (cm)', field: 'waist', placeholder: '65' },
-                { label: 'Hanches (cm)', field: 'hips', placeholder: '95' },
-                { label: 'Pointure', field: 'shoeSize', placeholder: '39' },
-              ].map(({ label, field, placeholder }) => (
-                <div key={field}>
-                  <label className={labelCls}>{label}</label>
-                  <input type="number" value={(form as any)[field]} onChange={e => update(field as keyof FormData, e.target.value)} placeholder={placeholder} className={inputCls} />
-                </div>
-              ))}
-              <div>
-                <label className={labelCls}>Couleur des yeux</label>
-                <input value={form.eyeColor} onChange={e => update('eyeColor', e.target.value)} placeholder="Ex: Marron" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Couleur des cheveux</label>
-                <input value={form.hairColor} onChange={e => update('hairColor', e.target.value)} placeholder="Ex: Noir" className={inputCls} />
-              </div>
-            </div>
-          )}
-
-          {/* Étape 3 */}
-          {step === 2 && (
-            <div className="space-y-5">
-              <div>
-                <label className={labelCls}>Niveau d'expérience *</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    { value: 'none', label: 'Débutant(e)', desc: 'Aucune expérience' },
-                    { value: 'beginner', label: 'Novice', desc: 'Quelques shootings' },
-                    { value: 'intermediate', label: 'Intermédiaire', desc: 'Défilés locaux' },
-                    { value: 'professional', label: 'Professionnel(le)', desc: 'Portfolio solide' },
-                  ].map(opt => (
-                    <button key={opt.value} type="button" onClick={() => update('experience', opt.value)}
-                      className={`p-4 rounded-xl border text-left transition-all ${form.experience === opt.value ? 'border-pm-gold bg-pm-gold/10' : 'border-white/10 hover:border-pm-gold/30'}`}>
-                      <p className={`text-sm font-bold ${form.experience === opt.value ? 'text-pm-gold' : 'text-white/70'}`}>{opt.label}</p>
-                      <p className="text-xs text-white/30 mt-0.5">{opt.desc}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className={labelCls}>Instagram</label>
-                <input value={form.instagram} onChange={e => update('instagram', e.target.value)} placeholder="@votre_compte" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Lien portfolio</label>
-                <input type="url" value={form.portfolioLink} onChange={e => update('portfolioLink', e.target.value)} placeholder="https://..." className={inputCls} />
-              </div>
-            </div>
-          )}
-
-          {/* Étape 4 */}
-          {step === 3 && (
-            <div className="space-y-6">
-              <p className="text-sm text-pm-off-white/50">Ajoutez au moins une photo. Fond neutre recommandé.</p>
-              {[
-                { label: 'Portrait (visage)', field: 'photoPortraitUrl' },
-                { label: 'Plein corps', field: 'photoFullBodyUrl' },
-                { label: 'Profil (de côté)', field: 'photoProfileUrl' },
-              ].map(({ label, field }) => (
-                <div key={field}>
-                  <label className={labelCls}>{label}</label>
-                  <CloudinaryUploader
-                    value={(form as any)[field]}
-                    onChange={(url: string) => update(field as keyof FormData, url)}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {error && <p className="mt-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">{error}</p>}
-
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-6 sm:mt-8">
-          <button onClick={() => setStep(s => s - 1)} disabled={step === 0}
-            className="flex items-center gap-2 px-4 sm:px-5 py-2.5 border border-pm-gold/20 text-pm-off-white/60 text-xs uppercase tracking-widest rounded-full hover:border-pm-gold/50 hover:text-pm-off-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-            <ChevronLeftIcon className="w-4 h-4" /> Précédent
-          </button>
-
-          {step < STEPS.length - 1 ? (
-            <button onClick={() => setStep(s => s + 1)}
-              className="flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-pm-gold text-pm-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white transition-colors">
-              Suivant <ChevronRightIcon className="w-4 h-4" />
-            </button>
-          ) : (
-            <button onClick={handleSubmit} disabled={submitting}
-              className="flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-pm-gold text-pm-dark font-black text-xs uppercase tracking-widest rounded-full hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              {submitting
-                ? <><span className="w-3.5 h-3.5 border-2 border-pm-dark/30 border-t-pm-dark rounded-full animate-spin" />Envoi…</>
-                : <><CheckIcon className="w-4 h-4" />Soumettre ma candidature</>}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
 };
 
-export default CastingForm;
+// Reusable components
+const Section: React.FC<{title: string, children: React.ReactNode}> = ({title, children}) => (
+    <div className="space-y-6 pt-6 border-t border-pm-gold/10 first:pt-0 first:border-none">
+        <h2 className="text-xl font-playfair text-pm-gold">{title}</h2>
+        <div className="space-y-6">{children}</div>
+    </div>
+);
+const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, placeholder?: string}> = (props) => (
+    <div>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <input {...props} id={props.name} className="admin-input" />
+    </div>
+);
+const FormSelect: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, required?: boolean, children: React.ReactNode}> = (props) => (
+    <div>
+        <label htmlFor={props.name} className="admin-label">{props.label}</label>
+        <select {...props} id={props.name} className="admin-input">{props.children}</select>
+    </div>
+);
 
+export default CastingForm;
