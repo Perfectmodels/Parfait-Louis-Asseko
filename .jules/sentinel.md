@@ -1,0 +1,4 @@
+## 2024-05-24 - Fix XSS Vulnerability in HTML Generation
+**Vulnerability:** A cross-site scripting (XSS) vulnerability was found in `src/pages/ArticleDetail.tsx` where user-controlled article content (title, text, image alt texts, author, category) was being injected directly into raw HTML strings (via template literals) and rendered via `window.open().document.write()`.
+**Learning:** React's built-in XSS protection does not apply when manually constructing HTML strings and writing them directly to a new window's document.
+**Prevention:** Always use a dedicated escaping utility (like the newly added `src/utils/escapeHtml.ts`) to sanitize all dynamic user data before injecting it into raw HTML strings.
