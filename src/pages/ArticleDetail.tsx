@@ -159,7 +159,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
                         <h1>${escapeHtml(article.title)}</h1>
                         <p class="meta">Par ${escapeHtml(article.author)} • ${new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                     </div>
-                     ${siteConfig?.logo ? `<img src="${escapeHtml(siteConfig.logo)}" alt="Logo" />` : ''}
+                     ${siteConfig?.logo ? `<img src="${escapeHtml(String(siteConfig.logo))}" alt="Logo" />` : ''}
                 </header>
                 <img src="${escapeHtml(article.imageUrl)}" alt="${escapeHtml(article.title)}" class="main-image" />
                 <div class="content">${contentHtml}</div>
