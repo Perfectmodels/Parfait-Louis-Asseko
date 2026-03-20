@@ -1,0 +1,3 @@
+## 2024-05-17 - Accessible Icon-Only Mobile Toggle
+**Learning:** Found an accessibility issue pattern in the app's components: icon-only interactive elements (like the mobile navigation toggle) were missing explicit ARIA attributes and focus styles, making them inaccessible to screen readers and difficult to navigate via keyboard.
+**Action:** Always add explicit ARIA attributes (`aria-label`, `aria-expanded`, `aria-controls`) and focus-visible styling (`focus-visible:ring-2`, `focus-visible:ring-pm-gold`) to icon-only interactive elements to adhere to accessibility and keyboard navigation standards.
