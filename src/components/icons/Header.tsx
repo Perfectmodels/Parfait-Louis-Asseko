@@ -151,7 +151,13 @@ const Header: React.FC = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden z-50 text-pm-gold focus:outline-none">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="lg:hidden z-50 text-pm-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded"
+          aria-label="Toggle menu"
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu"
+        >
           <AnimatedHamburgerIcon isOpen={isOpen} />
         </button>
       </div>
@@ -160,6 +166,7 @@ const Header: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
+            id="mobile-menu"
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.1 }}
