@@ -47,6 +47,9 @@
         }
     </script>
     <style type="text/tailwindcss">
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
         @layer base {
             body {
                 @apply bg-pm-dark text-pm-off-white font-montserrat antialiased overflow-x-hidden;
@@ -55,7 +58,7 @@
         }
         @layer components {
             .gold-gradient-text {
-                @apply bg-clip-text text-transparent bg-gradient-to-r from-pm-gold via-pm-gold-light to-pm-gold;
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-pm-gold via-pm-gold to-pm-gold;
             }
             .btn-premium {
                 @apply relative overflow-hidden px-10 py-4 font-bold uppercase tracking-[0.3em] text-[10px] transition-all duration-700 border border-pm-gold/40 hover:border-pm-gold hover:text-pm-dark z-10;
