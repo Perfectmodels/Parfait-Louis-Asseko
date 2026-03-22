@@ -1,0 +1,47 @@
+import{x as d,y as C,z as e}from"./index-k_5DjuHr.js";import{S}from"./SEO-Bq5wotb9.js";import{F as k}from"./PrinterIcon-LGif3-aZ.js";function D({title:t,titleId:i,...c},o){return d.createElement("svg",Object.assign({xmlns:"http://www.w3.org/2000/svg",fill:"none",viewBox:"0 0 24 24",strokeWidth:1.5,stroke:"currentColor","aria-hidden":"true","data-slot":"icon",ref:o,"aria-labelledby":i},c),t?d.createElement("title",{id:i},t):null,d.createElement("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"}))}const F=d.forwardRef(D),A=(t,i)=>{const c=t.map(o=>`
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 8px; font-weight: bold; color: #D4AF37;">#${String(o.passageNumber).padStart(3,"0")}</td>
+            <td style="padding: 8px;">${o.firstName} ${o.lastName}</td>
+            <td style="padding: 8px;">${o.phone||"N/A"}</td>
+            <td style="padding: 8px; font-size: 12px;">${new Date(o.submissionDate).toLocaleTimeString("fr-FR")}</td>
+        </tr>
+    `).join("");return`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; }
+                .sheet { padding: 40px; }
+                .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ccc; padding-bottom: 16px; }
+                .header h1 { font-size: 32px; margin: 0; }
+                .header img { height: 60px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                th, td { text-align: left; }
+                th { background-color: #f7f7f7; padding: 12px 8px; border-bottom: 2px solid #ccc; text-transform: uppercase; font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            <div class="sheet">
+                <header class="header">
+                    <div>
+                        <h1>Liste de Passage - Casting</h1>
+                        <p>${new Date().toLocaleDateString("fr-FR",{dateStyle:"full"})}</p>
+                    </div>
+                     ${i!=null&&i.logo?`<img src="${i.logo}" alt="Logo" />`:""}
+                </header>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Passage #</th>
+                            <th>Nom Complet</th>
+                            <th>Téléphone</th>
+                            <th>Heure</th>
+                        </tr>
+                    </thead>
+                    <tbody>${c}</tbody>
+                </table>
+            </div>
+        </body>
+        </html>
+    `},L=()=>{const{data:t,saveData:i,isInitialized:c}=C(),o={firstName:"",lastName:"",birthDate:"",email:"",phone:"",nationality:"",city:"",gender:"Femme",height:"",weight:"",chest:"",waist:"",hips:"",shoeSize:"",eyeColor:"",hairColor:"",experience:"none",instagram:"",portfolioLink:""},[s,x]=d.useState(o),[g,u]=d.useState(!1),b=sessionStorage.getItem("userName"),h=d.useMemo(()=>(t==null?void 0:t.castingApplications.filter(a=>a.passageNumber).sort((a,l)=>a.passageNumber-l.passageNumber))||[],[t==null?void 0:t.castingApplications]),n=a=>{x({...s,[a.target.name]:a.target.value})},j=async a=>{if(a.preventDefault(),!t||!s.firstName.trim()||!s.lastName.trim())return;u(!0);const l=t.castingApplications.map(m=>m.passageNumber).filter(m=>m!=null),v=l.length>0?Math.max(...l)+1:1,w={...s,id:`reg-${Date.now()}`,submissionDate:new Date().toISOString(),status:"Présélectionné",passageNumber:v},y=[...t.castingApplications||[],w];try{await i({...t,castingApplications:y}),x(o)}catch(m){console.error(m),alert("Erreur lors de l'enregistrement.")}finally{u(!1)}},N=()=>{if(!(t!=null&&t.siteConfig))return;const a=A(h,t.siteConfig),l=window.open("","_blank");l?(l.document.write(a),l.document.close(),l.focus(),setTimeout(()=>{l.print(),l.close()},250)):alert("Veuillez autoriser les pop-ups pour imprimer la liste.")};return c?e.jsxs(e.Fragment,{children:[e.jsx(S,{title:`Enregistrement Casting - ${b}`,noIndex:!0}),e.jsx("div",{className:"bg-pm-dark text-pm-off-white py-20 min-h-screen",children:e.jsxs("div",{className:"container mx-auto px-6",children:[e.jsx("div",{className:"admin-page-header",children:e.jsxs("div",{children:[e.jsx("h1",{className:"admin-page-title",children:"Enregistrement Casting"}),e.jsxs("p",{className:"admin-page-subtitle",children:["Connecté en tant que ",b,"."]})]})}),e.jsxs("div",{className:"grid grid-cols-1 lg:grid-cols-3 gap-8",children:[e.jsx("div",{className:"lg:col-span-1",children:e.jsxs("form",{onSubmit:j,className:"admin-section-wrapper",children:[e.jsxs("h2",{className:"admin-section-title flex items-center gap-2",children:[e.jsx(F,{className:"w-6 h-6"}),"Ajouter un Postulant"]}),e.jsxs(p,{title:"Informations Personnelles",children:[e.jsx(r,{label:"Prénom",name:"firstName",value:s.firstName,onChange:n,required:!0}),e.jsx(r,{label:"Nom",name:"lastName",value:s.lastName,onChange:n,required:!0}),e.jsx(r,{label:"Date de Naissance",name:"birthDate",type:"date",value:s.birthDate,onChange:n}),e.jsxs(f,{label:"Genre",name:"gender",value:s.gender,onChange:n,children:[e.jsx("option",{value:"Femme",children:"Femme"}),e.jsx("option",{value:"Homme",children:"Homme"})]}),e.jsx(r,{label:"Téléphone",name:"phone",value:s.phone,onChange:n}),e.jsx(r,{label:"Email",name:"email",type:"email",value:s.email,onChange:n})]}),e.jsxs(p,{title:"Mensurations",children:[e.jsx(r,{label:"Taille (cm)",name:"height",type:"number",value:s.height,onChange:n}),e.jsx(r,{label:"Poids (kg)",name:"weight",type:"number",value:s.weight,onChange:n}),e.jsx(r,{label:"Pointure (EU)",name:"shoeSize",type:"number",value:s.shoeSize,onChange:n}),e.jsx(r,{label:"Poitrine (cm)",name:"chest",type:"number",value:s.chest,onChange:n}),e.jsx(r,{label:"Taille (vêtement, cm)",name:"waist",type:"number",value:s.waist,onChange:n}),e.jsx(r,{label:"Hanches (cm)",name:"hips",type:"number",value:s.hips,onChange:n})]}),e.jsx(p,{title:"Expérience",children:e.jsxs(f,{label:"Niveau d'expérience",name:"experience",value:s.experience,onChange:n,children:[e.jsx("option",{value:"none",children:"Aucune expérience"}),e.jsx("option",{value:"beginner",children:"Débutant(e)"}),e.jsx("option",{value:"intermediate",children:"Intermédiaire"}),e.jsx("option",{value:"professional",children:"Professionnel(le)"})]})}),e.jsx("button",{type:"submit",disabled:g,className:"w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50 mt-6",children:g?"Enregistrement...":"Enregistrer et Attribuer Numéro"})]})}),e.jsxs("div",{className:"lg:col-span-2",children:[e.jsxs("div",{className:"flex justify-between items-center mb-6",children:[e.jsx("h2",{className:"admin-page-title !text-3xl",children:"Liste des Passages"}),e.jsxs("button",{onClick:N,className:"print-hide inline-flex items-center justify-center gap-2 px-4 py-2 bg-pm-dark border border-pm-gold text-pm-gold font-bold uppercase tracking-widest text-sm rounded-full hover:bg-pm-gold hover:text-pm-dark",children:[e.jsx(k,{className:"w-5 h-5"})," Imprimer la Liste"]})]}),e.jsx("div",{className:"admin-section-wrapper printable-content",children:e.jsxs("div",{className:"overflow-x-auto",children:[e.jsxs("table",{className:"w-full text-left",children:[e.jsx("thead",{className:"bg-pm-dark/50",children:e.jsxs("tr",{className:"border-b border-pm-gold/20",children:[e.jsx("th",{className:"p-3 uppercase text-xs tracking-wider",children:"Passage #"}),e.jsx("th",{className:"p-3 uppercase text-xs tracking-wider",children:"Nom Complet"}),e.jsx("th",{className:"p-3 uppercase text-xs tracking-wider hidden sm:table-cell",children:"Téléphone"}),e.jsx("th",{className:"p-3 uppercase text-xs tracking-wider hidden sm:table-cell",children:"Heure"})]})}),e.jsx("tbody",{children:h.map(a=>e.jsxs("tr",{className:"border-b border-pm-dark hover:bg-pm-dark/50",children:[e.jsxs("td",{className:"p-3 font-bold text-pm-gold",children:["#$",String(a.passageNumber).padStart(3,"0")]}),e.jsxs("td",{className:"p-3 font-semibold",children:[a.firstName," $",a.lastName]}),e.jsx("td",{className:"p-3 text-sm hidden sm:table-cell",children:a.phone||"N/A"}),e.jsx("td",{className:"p-3 text-xs hidden sm:table-cell",children:new Date(a.submissionDate).toLocaleTimeString("fr-FR")})]},a.id))})]}),h.length===0&&e.jsx("p",{className:"text-center p-8 text-pm-off-white/60",children:"Aucun postulant enregistré pour le moment."})]})})]})]})]})})]}):e.jsx("div",{className:"min-h-screen flex items-center justify-center bg-pm-dark text-pm-gold",children:"Chargement..."})},p=({title:t,children:i})=>e.jsxs("div",{className:"pt-6 border-t border-pm-gold/20 first:pt-0 first:border-none",children:[e.jsx("h2",{className:"text-2xl font-playfair text-pm-gold mb-4",children:t}),e.jsx("div",{className:"space-y-4",children:i})]}),r=t=>e.jsxs("div",{children:[e.jsx("label",{htmlFor:t.name,className:"admin-label",children:t.label}),e.jsx("input",{...t,id:t.name,className:"admin-input"})]}),f=t=>e.jsxs("div",{children:[e.jsx("label",{htmlFor:t.name,className:"admin-label",children:t.label}),e.jsx("select",{...t,id:t.name,className:"admin-input",children:t.children})]});export{L as default};
