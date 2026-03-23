@@ -1,0 +1,4 @@
+
+## 2024-03-12 - Wrapping List Components in React.memo
+**Learning:** Using `React.memo()` on repeatedly rendered list components (like `ModelCard` inside `Models.tsx`) is an effective performance optimization pattern in this application to prevent unnecessary deep re-renders when parent states (like search or filter inputs) are updated. However, you must remember to remove the explicit `React.FC` type annotation because `React.memo()` returns a `React.NamedExoticComponent`, which conflicts with `React.FC` and can cause TypeScript compilation and CI deployment checks (`tsc --noEmit`) to fail.
+**Action:** When applying `React.memo()` to a functional component typed with `React.FC`, always remove the `React.FC` type and pass the props type directly to the arguments, e.g., `const MyComponent = React.memo(({ prop }: PropType) => { ... });`.

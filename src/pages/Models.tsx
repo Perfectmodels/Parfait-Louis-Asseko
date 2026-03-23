@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import ModelCard from '../components/ModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
 
