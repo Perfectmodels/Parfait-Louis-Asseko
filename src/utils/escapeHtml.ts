@@ -1,5 +1,6 @@
-export function escapeHtml(unsafe: string): string {
-    return unsafe
+export function escapeHtml(unsafe: any): string {
+    if (!unsafe) return '';
+    return String(unsafe)
          .replace(/&/g, "&amp;")
          .replace(/</g, "&lt;")
          .replace(/>/g, "&gt;")
