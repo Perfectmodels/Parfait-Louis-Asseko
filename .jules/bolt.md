@@ -1,0 +1,3 @@
+## 2024-05-24 - ModelCard React.memo Optimization
+**Learning:** Using `React.memo` on list item components like `ModelCard` is critical when parent components (like `Models.tsx`) manage state that updates frequently (e.g. search or filter state). Without it, every item re-renders deeply. Additionally, removing the `React.FC` wrapper when using `React.memo` is necessary to prevent TypeScript compile/CI deployment errors.
+**Action:** When creating or observing frequently re-rendered list items, apply `React.memo` to the child component and ensure `React.FC` is replaced with inline prop typing. Also, avoid committing dynamically generated `node_modules` or `pnpm-lock.yaml` when resolving issues locally unless fully intended.
