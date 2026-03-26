@@ -1,0 +1,3 @@
+## 2024-05-24 - Icon-Only Navigation Toggles
+**Learning:** In this project's custom animated mobile navigation toggle component (`AnimatedHamburgerIcon`), the wrapper button lacked explicit ARIA attributes (`aria-label`, `aria-expanded`, `aria-controls`), making it completely invisible or uninformative to screen readers. Additionally, without `focus-visible` styling, keyboard navigation (tabbing) failed to provide visual feedback.
+**Action:** Always add `aria-label`, `aria-expanded={state}`, and `aria-controls="target-id"` to icon-only toggles, and ensure keyboard focus states are explicitly styled using `focus-visible:ring-2 focus-visible:ring-pm-gold rounded`.
