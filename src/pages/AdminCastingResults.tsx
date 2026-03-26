@@ -65,7 +65,7 @@ const AdminCastingResults: React.FC = () => {
         // ⚡ Bolt: Replaced chained array allocations (filter/map/Math.max) with a single-pass loop
         const prefix = `Man-PMM${initial}`;
         let maxNumber = 0;
-        for (const m of data.models) {
+        for (const m of (data.models || [])) {
             if (m.username && m.username.startsWith(prefix)) {
                 const numPart = m.username.slice(prefix.length);
                 const parsedNum = parseInt(numPart, 10);

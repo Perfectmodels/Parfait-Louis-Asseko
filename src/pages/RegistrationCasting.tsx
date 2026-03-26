@@ -34,9 +34,10 @@ const RegistrationCasting: React.FC = () => {
 
         // ⚡ Bolt: Replaced chained array allocations (map/filter/Math.max) with a single-pass loop
         let maxPassageNumber = 0;
-        for (const app of data.castingApplications) {
-            if (app.passageNumber !== undefined && app.passageNumber !== null && app.passageNumber > maxPassageNumber) {
-                maxPassageNumber = app.passageNumber;
+        for (const app of (data.castingApplications || [])) {
+            const num = app.passageNumber;
+            if (typeof num === 'number' && num > maxPassageNumber) {
+                maxPassageNumber = num;
             }
         }
         const nextPassageNumber = maxPassageNumber + 1;
