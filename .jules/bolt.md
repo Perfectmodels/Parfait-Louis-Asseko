@@ -1,0 +1,3 @@
+## 2026-03-26 - Single-Pass Loop vs Chained Array Operations for ID Calculation
+**Learning:** This codebase frequently calculates incremental IDs or numeric suffixes (e.g., model usernames like `Man-PMM[Initial][Number]`, passage numbers) by chaining `.filter().map()` followed by `Math.max(...array)`. On large data arrays (like the `models` array or `castingApplications`), this causes multiple intermediate array allocations and redundant iterations, which is a significant performance anti-pattern.
+**Action:** Replace these chained array allocations with a single-pass `for...of` loop (keeping track of the maximum value encountered). This limits iterations to `O(N)` with `O(1)` memory overhead instead of creating intermediate arrays.
