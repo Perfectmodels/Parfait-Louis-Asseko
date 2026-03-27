@@ -32,9 +32,9 @@ const Footer: React.FC = () => {
                             <span className="text-pm-gold">Future</span> of Elegance.
                         </h2>
                         <div className="flex gap-8">
-                             {socialLinks?.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><FacebookIcon className="w-6 h-6" /></a>}
-                             {socialLinks?.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><InstagramIcon className="w-6 h-6" /></a>}
-                             {socialLinks?.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1"><YoutubeIcon className="w-6 h-6" /></a>}
+                             {socialLinks?.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1" aria-label="Visit our Facebook page"><FacebookIcon className="w-6 h-6" /></a>}
+                             {socialLinks?.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1" aria-label="Visit our Instagram page"><InstagramIcon className="w-6 h-6" /></a>}
+                             {socialLinks?.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-pm-gold transition-all duration-500 hover:-translate-y-1" aria-label="Visit our YouTube channel"><YoutubeIcon className="w-6 h-6" /></a>}
                         </div>
                     </div>
 
@@ -44,6 +44,7 @@ const Footer: React.FC = () => {
                         <form className="relative max-w-md group" onSubmit={(e) => e.preventDefault()}>
                             <input 
                                 type="email" 
+                                aria-label="Your professional email for newsletter"
                                 placeholder="Your professional email" 
                                 className="w-full bg-transparent border-b border-white/10 py-6 text-pm-off-white focus:outline-none focus:border-pm-gold transition-all duration-700 placeholder:text-white/10" 
                                 required 
