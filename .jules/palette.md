@@ -1,0 +1,1 @@
+## 2026-03-27 - Mobile Menu Accessibility\n**Learning:** Added aria-label, aria-expanded, and aria-controls attributes to mobile menu toggle for screen reader support. Added focus-visible for keyboard nav.\n**Action:** Use these attributes consistently on custom interactive toggles.
