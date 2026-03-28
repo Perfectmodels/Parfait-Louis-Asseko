@@ -1,0 +1,3 @@
+## 2024-03-29 - [Accessibility] Missing ARIA attributes on icon-only interactive elements
+**Learning:** Icon-only interactive elements (like the mobile hamburger menu toggle in this app) frequently omit essential ARIA attributes (`aria-label`, `aria-expanded`, `aria-controls`) and visible focus states, leading to poor keyboard navigation accessibility and screen reader support.
+**Action:** When implementing or reviewing icon-only interactive components, systematically verify the presence of descriptive `aria-label`, state indicators like `aria-expanded` when applicable, and distinct `focus-visible` styles to ensure full accessibility.
