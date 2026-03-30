@@ -1,0 +1,3 @@
+## 2024-03-30 - Added ARIA Attributes to Mobile Navigation Toggle
+**Learning:** Found that the animated mobile menu toggle `<AnimatedHamburgerIcon />` lacked all necessary ARIA mappings for screen readers and visible focus indicators for keyboard users.
+**Action:** When implementing mobile navigation overlays, always ensure the toggle button receives `aria-label`, `aria-expanded`, and `aria-controls` referencing an explicit `id` on the menu overlay container, combined with explicit `focus-visible` styling using existing Tailwind utility classes.
