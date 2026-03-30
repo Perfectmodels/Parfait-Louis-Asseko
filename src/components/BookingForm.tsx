@@ -89,7 +89,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
             <FormTextArea label="Message / Détails du projet" name="message" value={formData.message} onChange={handleChange} required />
 
             <div>
-                <button type="submit" disabled={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
+                <button type="submit" disabled={status === 'loading'} aria-busy={status === 'loading'} className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50">
                     {status === 'loading' ? 'Envoi...' : 'Envoyer la demande'}
                 </button>
             </div>
@@ -104,15 +104,21 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
 
 const FormInput: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string, required?: boolean, disabled?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <input {...props} id={props.name} className="admin-input" />
+        <label htmlFor={props.name} className="admin-label">
+            {props.label}
+            {props.required && <span className="text-red-500 ml-1" aria-hidden="true">*</span>}
+        </label>
+        <input {...props} id={props.name} className="admin-input" aria-required={props.required} aria-disabled={props.disabled} />
     </div>
 );
 
 const FormTextArea: React.FC<{label: string, name: string, value: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, required?: boolean}> = (props) => (
     <div>
-        <label htmlFor={props.name} className="admin-label">{props.label}</label>
-        <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" />
+        <label htmlFor={props.name} className="admin-label">
+            {props.label}
+            {props.required && <span className="text-red-500 ml-1" aria-hidden="true">*</span>}
+        </label>
+        <textarea {...props} id={props.name} rows={5} className="admin-input admin-textarea" aria-required={props.required} />
     </div>
 );
 
