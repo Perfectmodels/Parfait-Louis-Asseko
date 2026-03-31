@@ -1,0 +1,3 @@
+## 2024-05-24 - Accessible Mobile Menu Toggles
+**Learning:** Found a specific accessibility pattern where mobile navigation toggles (icon-only buttons) lack explicit ARIA attributes (`aria-label`, `aria-expanded`, `aria-controls`) and visual focus states for keyboard navigation, making them invisible or unclear to screen reader users and difficult to operate via keyboard.
+**Action:** When creating or modifying icon-only interactive elements like mobile toggles, ensure explicit ARIA attributes (`aria-label`, `aria-expanded`, `aria-controls` linked to a target ID) and `focus-visible` styling (`focus-visible:ring-2 focus-visible:ring-pm-gold rounded-sm`) are included by default.
