@@ -5,6 +5,7 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { RecoveryRequest } from '../types';
 import { motion } from 'framer-motion';
+import { notifyAdmin } from '../utils/adminNotify';
 
 interface ActiveUser {
   name: string;
@@ -67,6 +68,15 @@ const Login: React.FC = () => {
         
         updateUserActivity(foundUser.user.name, foundUser.type);
 
+        // Notification de connexion pour l'admin
+        const roleLabels: Record<string, string> = {
+            admin: 'Admin',
+            student: 'Mannequin',
+            jury: 'Jury',
+            registration: 'Staff'
+        };
+        notifyAdmin('visit', `Connexion: ${foundUser.user.name} (${roleLabels[foundUser.type]})`, foundUser.path).catch(() => {});
+
         if (foundUser.type === 'student') {
             const listKey = 'models';
             const updatedList = (data as any)[listKey].map((item: any) => 
@@ -90,6 +100,10 @@ const Login: React.FC = () => {
     };
     const updatedRequests = [...(data.recoveryRequests || []), newRequest];
     await saveData({ ...data, recoveryRequests: updatedRequests });
+    
+    // Notification admin
+    notifyAdmin('contact', `Récupération accès: ${modelName}`, '/admin/recovery-requests').catch(() => {});
+    
     setIsRecoveryModalOpen(false);
     alert('Votre demande a été envoyée. Vous serez contacté prochainement.');
   };

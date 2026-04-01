@@ -16,6 +16,11 @@ import { requestNotificationPermission, getCachedFcmToken } from '../utils/fcmSe
 import { ref, get } from 'firebase/database';
 import { db } from '../realtimedbConfig';
 
+// Import test utilities in development
+if (import.meta.env.DEV) {
+    import('../utils/testNotifications');
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const timeAgo = (date: Date): string => {
     const diff = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -39,13 +44,13 @@ const StatCard: React.FC<{
     title: string; value: number; icon: React.ElementType;
     link: string; isNew?: boolean; accent?: string;
 }> = ({ title, value, icon: Icon, link, isNew, accent = 'text-pm-gold' }) => (
-    <Link to={link} className="glass-card p-6 flex items-center gap-5 hover:border-white/20 transition-all group">
-        <div className={`w-12 h-12 rounded-xl bg-black/40 flex items-center justify-center shrink-0 ${accent}`}>
-            <Icon className="w-6 h-6" />
+    <Link to={link} className="glass-card p-4 sm:p-6 flex items-center gap-3 sm:gap-5 hover:border-white/20 transition-all group">
+        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-black/40 flex items-center justify-center shrink-0 ${accent}`}>
+            <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
-        <div className="min-w-0">
-            <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/30 truncate">{title}</p>
-            <p className={`text-4xl font-playfair font-black mt-1 ${isNew ? accent : 'text-white'}`}>{value}</p>
+        <div className="min-w-0 flex-1">
+            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] sm:tracking-[0.35em] text-white/30 truncate">{title}</p>
+            <p className={`text-2xl sm:text-4xl font-playfair font-black mt-1 ${isNew ? accent : 'text-white'}`}>{value}</p>
         </div>
         {isNew && <span className="ml-auto w-2 h-2 rounded-full bg-pm-gold animate-pulse shrink-0" />}
     </Link>
@@ -198,27 +203,27 @@ const Admin: React.FC = () => {
             </div>
 
             {/* ── Quick Actions ── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
                 {quickActions.map((a, i) => (
                     <Link key={i} to={a.link} className="flex items-center gap-3 p-4 border border-white/5 hover:border-white/20 transition-all group">
                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${a.color}`}>
                             <a.icon className="w-4 h-4" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 group-hover:text-white transition-colors leading-tight">{a.label}</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white/50 group-hover:text-white transition-colors leading-tight break-words">{a.label}</span>
                     </Link>
                 ))}
             </div>
 
             {/* ── Tabs ── */}
-            <div className="flex gap-1 border-b border-white/5 mb-8">
+            <div className="flex gap-1 border-b border-white/5 mb-8 overflow-x-auto no-scrollbar">
                 {TABS.map(tab => {
                     const Icon = tab.icon;
                     return (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 px-5 py-3 text-[10px] font-black uppercase tracking-[0.25em] border-b-2 -mb-px transition-all ${
+                            className={`flex items-center gap-2 px-3 sm:px-5 py-3 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] border-b-2 -mb-px transition-all whitespace-nowrap ${
                                 activeTab === tab.id ? 'border-pm-gold text-pm-gold' : 'border-transparent text-white/30 hover:text-white/60'
                             }`}>
-                            <Icon className="w-4 h-4" />{tab.label}
+                            <Icon className="w-4 h-4" /><span className="hidden sm:inline">{tab.label}</span>
                         </button>
                     );
                 })}
@@ -228,7 +233,7 @@ const Admin: React.FC = () => {
             {activeTab === 'overview' && (
                 <div className="space-y-8">
                     {/* Stats */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <StatCard title="Candidatures Casting" value={lazyStats.newCastingApps}    icon={ClipboardDocumentListIcon} link="/admin/casting-applications" isNew={lazyStats.newCastingApps > 0}    accent="text-pm-gold" />
                         <StatCard title="Demandes Booking"     value={lazyStats.newBookingRequests} icon={BriefcaseIcon}             link="/admin/bookings"            isNew={lazyStats.newBookingRequests > 0} accent="text-blue-400" />
                         <StatCard title="Réservations PFD"     value={lazyStats.newReservations}    icon={StarIcon}                  link="/admin/fashion-day-events"  isNew={lazyStats.newReservations > 0}    accent="text-purple-400" />
@@ -334,8 +339,8 @@ const Admin: React.FC = () => {
                         },
                     ].map(group => (
                         <div key={group.label}>
-                            <p className="text-[9px] font-black uppercase tracking-[0.5em] text-pm-gold/40 mb-4">{group.label}</p>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-pm-gold/40 mb-4">{group.label}</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                                 {group.cards.map(c => (
                                     <DashboardCard key={c.link} title={c.title} icon={c.icon} link={c.link} description={c.description} notificationCount={(c as any).notif} />
                                 ))}
@@ -399,8 +404,8 @@ const Admin: React.FC = () => {
                     </div>
 
                     <div className="md:col-span-2 glass-card p-8">
-                        <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-pm-gold mb-8">Accès Rapide Configuration</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <h3 className="text-[9px] font-black uppercase tracking-[0.3em] text-pm-gold mb-8">Accès Rapide Configuration</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <DashboardCard title="Paramètres"   icon={Cog6ToothIcon}    link="/admin/settings"      description="Configuration générale." />
                             <DashboardCard title="Accès Modèles" icon={KeyIcon}         link="/admin/model-access"  description="Identifiants mannequins." />
                             <DashboardCard title="Récupération" icon={ExclamationTriangleIcon} link="/admin/recovery-requests" description="Demandes d'accès." />
