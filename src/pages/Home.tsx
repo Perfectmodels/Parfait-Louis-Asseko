@@ -46,7 +46,7 @@ const Home: React.FC = () => {
             className="absolute inset-0 bg-cover bg-center grayscale-[0.5]"
             style={{ backgroundImage: `url('${siteImages.hero}')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-pm-dark/60 via-transparent to-pm-dark"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-pm-dark/80 via-pm-dark/50 to-pm-dark"></div>
         
         <div className="relative z-10 text-center px-6">
           <motion.span 
@@ -118,7 +118,13 @@ const Home: React.FC = () => {
       </section>
 
       {/* 2. MANIFESTO (EDITORIAL STYLE) */}
-      <section className="page-container flex flex-col lg:flex-row gap-12 sm:gap-20 lg:gap-32 items-center">
+      <section className="page-container flex flex-col lg:flex-row gap-12 sm:gap-20 lg:gap-32 items-center relative">
+         {/* Séparateur décoratif en haut */}
+         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl flex items-center justify-center gap-4">
+           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/20 to-transparent"></div>
+           <div className="w-1.5 h-1.5 rotate-45 bg-pm-gold/40"></div>
+           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/20 to-transparent"></div>
+         </div>
          <div className="lg:w-1/2 relative">
             <span className="section-label">Manifeste</span>
             <h2 className="text-4xl sm:text-6xl md:text-8xl font-playfair font-black leading-[1] italic">
@@ -144,7 +150,13 @@ const Home: React.FC = () => {
       </section>
 
       {/* 3. NEW TALENTS (ASYMMETRIC GRID) */}
-      <section className="bg-white/[0.02] py-20 sm:py-32 lg:py-40">
+      <section className="bg-white/[0.02] py-20 sm:py-32 lg:py-40 relative">
+        {/* Séparateur décoratif en haut */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl flex items-center justify-center gap-4">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/20 to-transparent"></div>
+          <div className="w-2 h-2 bg-pm-gold/30 rounded-full"></div>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/20 to-transparent"></div>
+        </div>
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 sm:mb-24 gap-6 sm:gap-8">
                 <div>
@@ -164,7 +176,17 @@ const Home: React.FC = () => {
       </section>
 
       {/* 4. SERVICES (EDITORIAL BLOCKS) */}
-      <section className="page-container">
+      <section className="page-container relative">
+         {/* Séparateur décoratif en haut */}
+         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl flex items-center justify-center gap-4 mb-16">
+           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/20 to-transparent"></div>
+           <div className="flex gap-1">
+             <div className="w-1 h-1 bg-pm-gold/40 rounded-full"></div>
+             <div className="w-1 h-1 bg-pm-gold/40 rounded-full"></div>
+             <div className="w-1 h-1 bg-pm-gold/40 rounded-full"></div>
+           </div>
+           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/20 to-transparent"></div>
+         </div>
          <div className="text-center mb-16 sm:mb-32">
             <span className="section-label">Nos Compétences</span>
             <h2 className="text-4xl sm:text-5xl md:text-7xl font-playfair font-black italic">Nos Services</h2>
@@ -178,7 +200,13 @@ const Home: React.FC = () => {
 
       {/* 5. GALERIE — albums en défilement */}
       {albums.length > 0 && (
-        <section className="py-20 sm:py-32 border-t border-white/5 overflow-hidden">
+        <section className="py-20 sm:py-32 border-t border-white/5 overflow-hidden relative">
+          {/* Séparateur décoratif en haut */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl flex items-center justify-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/30 to-pm-gold/10"></div>
+            <div className="w-3 h-3 border border-pm-gold/30 rotate-45"></div>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent via-pm-gold/30 to-pm-gold/10"></div>
+          </div>
           <div className="max-w-[1800px] mx-auto px-4 sm:px-6">
             <div className="flex justify-between items-end mb-10 sm:mb-16">
               <div>
@@ -240,7 +268,17 @@ const Home: React.FC = () => {
 
       {/* 6. ARTICLES — défilement horizontal */}
       {data.articles.length > 0 && (
-        <section className="py-20 sm:py-32 bg-white/[0.02] border-t border-white/5 overflow-hidden">
+        <section className="py-20 sm:py-32 bg-white/[0.02] border-t border-white/5 overflow-hidden relative">
+          {/* Séparateur décoratif en haut */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl flex items-center justify-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/20 to-transparent"></div>
+            <div className="flex gap-2 items-center">
+              <div className="w-1 h-1 bg-pm-gold/50 rounded-full"></div>
+              <div className="w-2 h-2 bg-pm-gold/40 rounded-full"></div>
+              <div className="w-1 h-1 bg-pm-gold/50 rounded-full"></div>
+            </div>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/20 to-transparent"></div>
+          </div>
           <div className="max-w-[1800px] mx-auto px-4 sm:px-6">
             <div className="flex justify-between items-end mb-10 sm:mb-16">
               <div>
@@ -288,6 +326,15 @@ const Home: React.FC = () => {
 
       {/* 7. IMMERSIVE CALL TO ACTION */}
       <section className="relative min-h-[60vh] sm:h-[90vh] flex items-center justify-center overflow-hidden border-t border-white/5">
+          {/* Séparateur décoratif en haut */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl flex items-center justify-center gap-4 z-20">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-pm-gold/30 to-pm-gold/10"></div>
+            <div className="flex gap-1">
+              <div className="w-1.5 h-1.5 rotate-45 bg-pm-gold/50"></div>
+              <div className="w-1.5 h-1.5 rotate-45 bg-pm-gold/50"></div>
+            </div>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent via-pm-gold/30 to-pm-gold/10"></div>
+          </div>
           <div className="absolute inset-0 bg-pm-dark">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-pm-gold rounded-full opacity-[0.03] blur-[120px] animate-glow"></div>
           </div>

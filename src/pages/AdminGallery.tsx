@@ -214,14 +214,24 @@ const AdminGallery: React.FC = () => {
   const { items: gallery, refresh: refreshGallery } = useFirebaseCollection<GalleryItem>('gallery', { orderBy: 'createdAt' });
   const { items: albums, refresh: refreshAlbums } = useFirebaseCollection<GalleryAlbum>('galleryAlbums', { orderBy: 'createdAt' });
 
-  const [activeTab, setActiveTab] = useState<GalleryCategory | 'Tout'>('Tout');
+  const [activeTab, setActiveTab] = useState<GalleryCategory | 'Tout' | 'Sans Album'>('Tout');
   const [uploading, setUploading] = useState<UploadingFile[]>([]);
   const [captionMap, setCaptionMap] = useState<Record<string, string>>({});
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editAlbum, setEditAlbum] = useState<GalleryAlbum | null>(null);
+  const [assignItem, setAssignItem] = useState<GalleryItem | null>(null);
+  
+  // Mode sélection multiple
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [showCreateAlbumFromSelection, setShowCreateAlbumFromSelection] = useState(false);
 
-  const filtered = activeTab === 'Tout' ? gallery : gallery.filter(i => i.category === activeTab);
+  const filtered = activeTab === 'Tout' 
+    ? gallery 
+    : activeTab === 'Sans Album'
+      ? gallery.filter(i => !i.albumId)
+      : gallery.filter(i => i.category === activeTab);
 
   // Trouver l'album d'un item
   const getAlbum = (item: GalleryItem) => albums.find(a => a.id === item.albumId);
@@ -272,7 +282,7 @@ const AdminGallery: React.FC = () => {
     const newAlbum: GalleryAlbum = {
       id: albumId,
       name,
-      description: description || undefined,
+      description: description || '',
       category,
       coverUrl,
       createdAt: new Date().toISOString(),
@@ -285,7 +295,7 @@ const AdminGallery: React.FC = () => {
 
   const handleAlbumEdit = async (name: string, description: string, category: GalleryCategory) => {
     if (!editAlbum) return;
-    await update(dbRef(db, `galleryAlbums/${editAlbum.id}`), { name, description: description || null, category });
+    await update(dbRef(db, `galleryAlbums/${editAlbum.id}`), { name, description: description || '', category });
     invalidateCache('galleryAlbums');
     refreshAlbums();
     setEditAlbum(null);
@@ -312,6 +322,75 @@ const AdminGallery: React.FC = () => {
     refreshGallery();
   };
 
+  const handleAssignToAlbum = async (itemId: string, albumId: string) => {
+    await update(dbRef(db, `gallery/${itemId}`), { albumId });
+    invalidateCache('gallery');
+    refreshGallery();
+    setAssignItem(null);
+  };
+
+  // Gestion sélection multiple
+  const toggleSelection = (id: string) => {
+    setSelectedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    setSelectedItems(new Set(filtered.map(i => i.id)));
+  };
+
+  const deselectAll = () => {
+    setSelectedItems(new Set());
+  };
+
+  const deleteSelected = async () => {
+    if (!window.confirm(`Supprimer ${selectedItems.size} média(s) ?`)) return;
+    for (const id of selectedItems) {
+      await remove(dbRef(db, `gallery/${id}`));
+    }
+    invalidateCache('gallery');
+    refreshGallery();
+    setSelectedItems(new Set());
+    setSelectionMode(false);
+  };
+
+  const createAlbumFromSelection = async (name: string, description: string, category: GalleryCategory) => {
+    const albumId = push(dbRef(db, 'galleryAlbums')).key!;
+    const albumRef = dbRef(db, `galleryAlbums/${albumId}`);
+    
+    // Trouver la première image comme cover
+    const firstItem = gallery.find(i => selectedItems.has(i.id));
+    const coverUrl = firstItem?.mediaType === 'video' ? firstItem.thumbnailUrl : firstItem?.url;
+
+    const newAlbum: GalleryAlbum = {
+      id: albumId,
+      name,
+      description: description || '',
+      category,
+      coverUrl: coverUrl || '',
+      createdAt: new Date().toISOString(),
+    };
+    
+    await set(albumRef, newAlbum);
+    
+    // Assigner tous les médias sélectionnés à cet album
+    for (const itemId of selectedItems) {
+      await update(dbRef(db, `gallery/${itemId}`), { albumId });
+    }
+    
+    invalidateCache('galleryAlbums');
+    invalidateCache('gallery');
+    refreshAlbums();
+    refreshGallery();
+    setSelectedItems(new Set());
+    setSelectionMode(false);
+    setShowCreateAlbumFromSelection(false);
+  };
+
   const handleSaveCaption = async (item: GalleryItem) => {
     const caption = captionMap[item.id] ?? item.caption ?? '';
     await update(dbRef(db, `gallery/${item.id}`), { caption });
@@ -334,9 +413,44 @@ const AdminGallery: React.FC = () => {
             <h1 className="admin-page-title">Galerie Média</h1>
             <p className="admin-page-subtitle">Gérez les photos et vidéos de vos prestations, collaborations et entraînements.</p>
           </div>
-          <button onClick={() => setShowModal(true)} className="action-btn !flex !items-center !gap-2">
-            <FolderPlusIcon className="w-5 h-5" /> Créer un album
-          </button>
+          <div className="flex flex-wrap gap-3">
+            {selectionMode ? (
+              <>
+                <button 
+                  onClick={() => setShowCreateAlbumFromSelection(true)} 
+                  disabled={selectedItems.size === 0}
+                  className="action-btn !bg-pm-gold !text-pm-dark disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Créer Album ({selectedItems.size})
+                </button>
+                <button onClick={selectAll} className="action-btn !bg-white/10">
+                  Tout sélectionner
+                </button>
+                <button onClick={deselectAll} className="action-btn !bg-white/10">
+                  Tout désélectionner
+                </button>
+                <button 
+                  onClick={deleteSelected} 
+                  disabled={selectedItems.size === 0}
+                  className="action-btn !bg-red-500/20 !text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Supprimer ({selectedItems.size})
+                </button>
+                <button onClick={() => { setSelectionMode(false); deselectAll(); }} className="action-btn">
+                  Annuler
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => setSelectionMode(true)} className="action-btn !flex !items-center !gap-2">
+                  <CheckIcon className="w-5 h-5" /> Sélection Multiple
+                </button>
+                <button onClick={() => setShowModal(true)} className="action-btn !flex !items-center !gap-2">
+                  <FolderPlusIcon className="w-5 h-5" /> Créer un album
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Albums */}
@@ -406,14 +520,18 @@ const AdminGallery: React.FC = () => {
 
         {/* Tabs */}
         <div className="flex gap-1 border-b border-white/5 mb-8 overflow-x-auto">
-          {(['Tout', ...CATEGORIES] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
+          {(['Tout', 'Sans Album', ...CATEGORIES] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab as any)}
               className={`flex-shrink-0 px-5 py-3 text-[10px] font-black uppercase tracking-[0.3em] border-b-2 -mb-px transition-all ${
                 activeTab === tab ? 'border-pm-gold text-pm-gold' : 'border-transparent text-white/30 hover:text-white/60'
               }`}>
               {tab}
               <span className="ml-2 text-white/20">
-                {tab === 'Tout' ? gallery.length : gallery.filter(i => i.category === tab).length}
+                {tab === 'Tout' 
+                  ? gallery.length 
+                  : tab === 'Sans Album'
+                    ? gallery.filter(i => !i.albumId).length
+                    : gallery.filter(i => i.category === tab).length}
               </span>
             </button>
           ))}
@@ -432,9 +550,24 @@ const AdminGallery: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {filtered.map(item => {
               const album = getAlbum(item);
+              const isSelected = selectedItems.has(item.id);
               return (
                 <div key={item.id} className="group relative bg-white/5 rounded-sm overflow-hidden">
-                  <div className="aspect-square cursor-pointer" onClick={() => setLightbox(item)}>
+                  {/* Checkbox en mode sélection */}
+                  {selectionMode && (
+                    <div className="absolute top-2 left-2 z-10">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelection(item.id)}
+                        className="w-5 h-5 rounded border-2 border-pm-gold/50 bg-black/60 checked:bg-pm-gold checked:border-pm-gold cursor-pointer"
+                      />
+                    </div>
+                  )}
+                  <div 
+                    className={`aspect-square cursor-pointer ${isSelected ? 'ring-2 ring-pm-gold' : ''}`}
+                    onClick={() => selectionMode ? toggleSelection(item.id) : setLightbox(item)}
+                  >
                     {item.mediaType === 'video' ? (
                       <div className="w-full h-full relative bg-black/40">
                         {item.thumbnailUrl
@@ -459,13 +592,25 @@ const AdminGallery: React.FC = () => {
                       onBlur={() => handleSaveCaption(item)}
                       className="w-full bg-transparent text-xs text-white/50 placeholder-white/20 border-b border-white/10 focus:border-pm-gold/50 outline-none py-1"
                     />
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <span className="text-[8px] font-black uppercase tracking-widest text-pm-gold/40 truncate">
                         {album ? album.name : item.category}
                       </span>
-                      <button onClick={() => handleDelete(item.id)} className="text-red-500/40 hover:text-red-500 transition-colors" aria-label="Supprimer">
-                        <TrashIcon className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        {!item.albumId && (
+                          <button 
+                            onClick={() => setAssignItem(item)} 
+                            className="text-pm-gold/40 hover:text-pm-gold transition-colors" 
+                            aria-label="Assigner à un album"
+                            title="Assigner à un album"
+                          >
+                            <FolderPlusIcon className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <button onClick={() => handleDelete(item.id)} className="text-red-500/40 hover:text-red-500 transition-colors" aria-label="Supprimer">
+                          <TrashIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -478,6 +623,132 @@ const AdminGallery: React.FC = () => {
       {/* Modale création */}
       {showModal && (
         <AlbumModal onClose={() => setShowModal(false)} onSave={handleAlbumSave} />
+      )}
+
+      {/* Modale création depuis sélection */}
+      {showCreateAlbumFromSelection && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setShowCreateAlbumFromSelection(false)}>
+          <div className="bg-[#0d0d0d] border border-pm-gold/20 rounded-2xl w-full max-w-2xl shadow-2xl shadow-black/60" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-pm-gold/10 flex items-center justify-center">
+                  <FolderPlusIcon className="w-5 h-5 text-pm-gold" />
+                </div>
+                <div>
+                  <h2 className="text-base font-playfair font-black text-white">Créer un Album</h2>
+                  <p className="text-[10px] text-white/30 uppercase tracking-widest">{selectedItems.size} média(s) sélectionné(s)</p>
+                </div>
+              </div>
+              <button onClick={() => setShowCreateAlbumFromSelection(false)} className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white transition-colors rounded-full hover:bg-white/5">
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              createAlbumFromSelection(
+                formData.get('name') as string,
+                formData.get('description') as string,
+                formData.get('category') as GalleryCategory
+              );
+            }} className="p-6 space-y-5">
+              <div>
+                <label className="admin-label">Nom de l'album *</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  className="admin-input"
+                  placeholder="Ex: Fashion Day 2024"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Description</label>
+                <textarea
+                  name="description"
+                  rows={3}
+                  className="admin-input"
+                  placeholder="Description de l'album..."
+                />
+              </div>
+              <div>
+                <label className="admin-label">Catégorie *</label>
+                <select name="category" required className="admin-input">
+                  {CATEGORIES.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button type="submit" className="action-btn !bg-pm-gold !text-pm-dark flex-1">
+                  Créer l'Album
+                </button>
+                <button type="button" onClick={() => setShowCreateAlbumFromSelection(false)} className="action-btn flex-1">
+                  Annuler
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modale édition */}
+      {editAlbum && (
+        <AlbumModal
+          initial={editAlbum}
+          onClose={() => setEditAlbum(null)}
+          onSave={(name, description, category) => handleAlbumEdit(name, description, category)}
+        />
+      )}
+
+      {/* Modale assignation à un album */}
+      {assignItem && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setAssignItem(null)}>
+          <div className="bg-[#0d0d0d] border border-pm-gold/20 rounded-2xl w-full max-w-md shadow-2xl shadow-black/60" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-pm-gold/10 flex items-center justify-center">
+                  <FolderPlusIcon className="w-5 h-5 text-pm-gold" />
+                </div>
+                <div>
+                  <h2 className="text-base font-playfair font-black text-white">Assigner à un album</h2>
+                  <p className="text-[10px] text-white/30 uppercase tracking-widest">Choisir un album</p>
+                </div>
+              </div>
+              <button onClick={() => setAssignItem(null)} className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white transition-colors rounded-full hover:bg-white/5">
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 max-h-[60vh] overflow-y-auto space-y-2">
+              {albums.length === 0 ? (
+                <p className="text-white/30 text-sm text-center py-8">Aucun album disponible. Créez-en un d'abord.</p>
+              ) : (
+                albums.map(album => (
+                  <button
+                    key={album.id}
+                    onClick={() => handleAssignToAlbum(assignItem.id, album.id)}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-pm-gold/10 border border-white/5 hover:border-pm-gold/30 transition-all text-left group"
+                  >
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-black/40 flex-shrink-0">
+                      {album.coverUrl ? (
+                        <img src={album.coverUrl} alt={album.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <PhotoIcon className="w-5 h-5 text-white/20" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-white group-hover:text-pm-gold transition-colors truncate">{album.name}</p>
+                      <p className="text-[10px] text-white/30 uppercase tracking-widest">{album.category}</p>
+                    </div>
+                    <ArrowUpTrayIcon className="w-4 h-4 text-pm-gold/40 group-hover:text-pm-gold transition-colors flex-shrink-0" />
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Modale édition */}
