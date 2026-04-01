@@ -5,6 +5,7 @@ import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { invalidateCache } from '../hooks/useFirebaseCollection';
 import CloudinaryUploader from '../components/CloudinaryUploader';
+import { notifyAdmin } from '../utils/adminNotify';
 
 const STEPS = ['Infos personnelles', 'Mensurations', 'Expérience', 'Photos'];
 
@@ -47,6 +48,10 @@ const CastingForm: React.FC = () => {
         passageNumber: Math.floor(Math.random() * 9000) + 1000,
       });
       invalidateCache('castingApplications');
+      
+      // Notification push admin
+      notifyAdmin('casting', `${form.firstName} ${form.lastName} — ${form.city}`, '/admin/casting-applications').catch(() => {});
+      
       setDone(true);
     } catch (e: any) {
       setError(e.message || 'Erreur lors de la soumission');

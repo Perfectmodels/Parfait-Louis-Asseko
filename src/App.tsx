@@ -10,6 +10,8 @@ import { PWAInstaller } from './components/PWAInstaller';
 import { registerServiceWorker } from './utils/pwa';
 import { restoreFcmSession } from './utils/fcmService';
 import { notifyAdmin } from './utils/adminNotify';
+import { useCapacitor } from './hooks/useCapacitor';
+import { initNativePush } from './utils/nativePush';
 
 // Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -253,12 +255,18 @@ const AppContent: React.FC = () => {
 }
 
 const App: React.FC = () => {
+    const { isNative, platform } = useCapacitor();
 
     useEffect(() => {
-        registerServiceWorker();
-        // Restaure la session FCM silencieusement si permission déjà accordée
-        restoreFcmSession().catch(() => {});
-    }, []);
+        if (isNative) {
+            // Native mobile: use Capacitor push notifications
+            initNativePush();
+        } else {
+            // Web: use service worker and FCM
+            registerServiceWorker();
+            restoreFcmSession().catch(() => {});
+        }
+    }, [isNative]);
 
     return (
         <DataProvider>

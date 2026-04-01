@@ -158,17 +158,17 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </AnimatePresence>
 
             {/* Main Content */}
-            <div className="flex flex-col flex-1 lg:pl-72">
-                <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/5 bg-pm-dark/60 backdrop-blur-xl px-6 sm:px-10">
-                    <div className="flex items-center gap-6">
-                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-pm-off-white/80">
+            <div className="flex flex-col flex-1 lg:pl-72 min-w-0">
+                <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/5 bg-pm-dark/60 backdrop-blur-xl px-4 sm:px-6 lg:px-10">
+                    <div className="flex items-center gap-3 sm:gap-6 min-w-0 flex-1">
+                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-pm-off-white/80 shrink-0">
                             <Bars3Icon className="w-6 h-6" />
                         </button>
-                        <div className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold">
+                        <div className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] text-pm-gold truncate">
                             {location.pathname.split('/').pop()?.replace(/-/g, ' ') || 'Tableau de Bord'}
                         </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4 shrink-0">
                         <button
                             onClick={handleBellClick}
                             disabled={isLoading || permission === 'denied'}
@@ -192,11 +192,11 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                                 : <BellSlashIcon className="w-5 h-5" />
                             }
                         </button>
-                        <Link to="/" className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 hover:text-pm-gold transition-colors">Site Public</Link>
-                        <div className="w-8 h-8 rounded-full bg-pm-gold/20 border border-pm-gold/40 flex items-center justify-center text-pm-gold text-[10px] font-bold">AD</div>
+                        <Link to="/" className="hidden sm:block text-[9px] font-black uppercase tracking-[0.2em] text-white/30 hover:text-pm-gold transition-colors whitespace-nowrap">Site Public</Link>
+                        <div className="w-8 h-8 rounded-full bg-pm-gold/20 border border-pm-gold/40 flex items-center justify-center text-pm-gold text-[10px] font-bold shrink-0">AD</div>
                     </div>
                 </header>
-                <main className="p-6 sm:p-10 lg:p-16">
+                <main className="p-4 sm:p-6 lg:p-10 xl:p-16 min-w-0 overflow-x-hidden">
                     {children}
                 </main>
             </div>

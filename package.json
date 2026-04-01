@@ -6,9 +6,24 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "mobile:build": "npm run build && npx cap sync",
+    "mobile:ios": "npm run mobile:build && npx cap open ios",
+    "mobile:android": "npm run mobile:build && npx cap open android",
+    "mobile:sync": "npx cap sync"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/camera": "^8.0.2",
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.3.0",
+    "@capacitor/push-notifications": "^8.0.3",
+    "@capacitor/share": "^8.0.1",
+    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.2",
     "@dataconnect/generated": "file:src/dataconnect-generated",
     "@google/genai": "^1.17.0",
     "@heroicons/react": "^2.1.3",
