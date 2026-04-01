@@ -1,0 +1,3 @@
+## 2024-04-01 - Icon-only Interactive Element Accessibility
+**Learning:** Found that icon-only interactive elements in the codebase, such as the mobile navigation toggle (`AnimatedHamburgerIcon` wrapper), lack explicit ARIA attributes and visible focus states, making them inaccessible to screen readers and keyboard navigation users.
+**Action:** Always add `aria-label`, `aria-expanded` (if applicable), and `aria-controls` to icon-only buttons. Use `focus-visible:ring-2 focus-visible:ring-pm-gold` to provide clear focus states while avoiding unwanted outlines on mouse clicks. Ensure the target element has the corresponding `id` matching `aria-controls`.
