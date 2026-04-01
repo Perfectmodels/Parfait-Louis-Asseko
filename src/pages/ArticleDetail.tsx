@@ -8,6 +8,7 @@ import { ArticleContent, ArticleComment, Article } from '../types';
 import { ChevronLeftIcon, UserCircleIcon, EyeIcon, HandThumbUpIcon, HandThumbDownIcon, ShareIcon, XMarkIcon, CheckIcon, ClipboardDocumentIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { FacebookIcon, TwitterIcon, WhatsAppIcon } from '../components/icons/SocialIcons';
 import html2canvas from 'html2canvas';
+import { escapeHtml } from '../utils/escapeHtml';
 
 // --- Helper & Modal Components for Sharing ---
 const generateShortLink = async (
@@ -121,10 +122,10 @@ const ShareModal: React.FC<{
 const generateArticleHtml = (article: Article, siteConfig: any): string => {
     const renderContentHtml = (content: ArticleContent): string => {
         switch (content.type) {
-            case 'heading': return `<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 22px; color: #D4AF37; margin: 24px 0 12px 0; font-weight: bold;">${content.text}</h2>`;
-            case 'paragraph': return `<p style="margin-bottom: 1em; line-height: 1.6;">${content.text}</p>`;
-            case 'quote': return `<blockquote style="margin: 1.5em 0; padding: 1em; border-left: 4px solid #D4AF37; background-color: #f9f9f9; font-style: italic;"><p>"${content.text}"</p>${content.author ? `<cite style="display: block; text-align: right; margin-top: 0.5em; font-style: normal;">— ${content.author}</cite>` : ''}</blockquote>`;
-            case 'image': return `<figure style="margin: 24px 0;"><img src="${content.src}" alt="${content.alt}" style="width: 100%; height: auto; border-radius: 4px;" />${content.caption ? `<figcaption style="font-size: 12px; text-align: center; color: #777; margin-top: 8px;">${content.caption}</figcaption>` : ''}</figure>`;
+            case 'heading': return `<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 22px; color: #D4AF37; margin: 24px 0 12px 0; font-weight: bold;">${escapeHtml(content.text)}</h2>`;
+            case 'paragraph': return `<p style="margin-bottom: 1em; line-height: 1.6;">${escapeHtml(content.text)}</p>`;
+            case 'quote': return `<blockquote style="margin: 1.5em 0; padding: 1em; border-left: 4px solid #D4AF37; background-color: #f9f9f9; font-style: italic;"><p>"${escapeHtml(content.text)}"</p>${content.author ? `<cite style="display: block; text-align: right; margin-top: 0.5em; font-style: normal;">— ${escapeHtml(content.author)}</cite>` : ''}</blockquote>`;
+            case 'image': return `<figure style="margin: 24px 0;"><img src="${escapeHtml(content.src)}" alt="${escapeHtml(content.alt || '')}" style="width: 100%; height: auto; border-radius: 4px;" />${content.caption ? `<figcaption style="font-size: 12px; text-align: center; color: #777; margin-top: 8px;">${escapeHtml(content.caption)}</figcaption>` : ''}</figure>`;
             default: return '';
         }
     };
@@ -136,7 +137,7 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>${article.title}</title>
+            <title>${escapeHtml(article.title)}</title>
             <style>
                 body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.5; background-color: #fff; }
                 .page { max-width: 800px; margin: auto; padding: 40px; }
@@ -154,13 +155,13 @@ const generateArticleHtml = (article: Article, siteConfig: any): string => {
             <div class="page">
                 <header class="header">
                     <div>
-                        <p class="category">${article.category}</p>
-                        <h1>${article.title}</h1>
-                        <p class="meta">Par ${article.author} • ${new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                        <p class="category">${escapeHtml(article.category)}</p>
+                        <h1>${escapeHtml(article.title)}</h1>
+                        <p class="meta">Par ${escapeHtml(article.author)} • ${new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                     </div>
-                     ${siteConfig?.logo ? `<img src="${siteConfig.logo}" alt="Logo" />` : ''}
+                     ${siteConfig?.logo ? `<img src="${escapeHtml(siteConfig.logo)}" alt="Logo" />` : ''}
                 </header>
-                <img src="${article.imageUrl}" alt="${article.title}" class="main-image" />
+                <img src="${escapeHtml(article.imageUrl)}" alt="${escapeHtml(article.title)}" class="main-image" />
                 <div class="content">${contentHtml}</div>
                 <footer class="footer">&copy; ${new Date().getFullYear()} Perfect Models Management - Focus Model 241</footer>
             </div>
