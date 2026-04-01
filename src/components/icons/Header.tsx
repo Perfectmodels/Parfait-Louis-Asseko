@@ -151,7 +151,7 @@ const Header: React.FC = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden z-50 text-pm-gold focus:outline-none">
+        <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden z-50 text-pm-gold focus:outline-none" aria-label={isOpen ? 'Close menu' : 'Open menu'} aria-expanded={isOpen}>
           <AnimatedHamburgerIcon isOpen={isOpen} />
         </button>
       </div>
