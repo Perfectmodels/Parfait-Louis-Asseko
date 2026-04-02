@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { NavLink, useLocation, Link } from 'react-router-dom';
 import { 
-    HomeIcon, UsersIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
+    HomeIcon, UsersIcon, PhotoIcon, NewspaperIcon, CalendarDaysIcon, Cog6ToothIcon, ClipboardDocumentListIcon,
     KeyIcon, PresentationChartLineIcon,
     BuildingStorefrontIcon, SparklesIcon, ChatBubbleLeftRightIcon, BriefcaseIcon,
     ClipboardDocumentCheckIcon, CurrencyDollarIcon, CalendarIcon, PaintBrushIcon,
