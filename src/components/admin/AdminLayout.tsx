@@ -46,6 +46,7 @@ const navSections = [
         links: [
             { to: '/admin', icon: HomeIcon, label: 'Tableau de Bord' },
             { to: '/admin/models', icon: UsersIcon, label: 'Mannequins' },
+            { to: '/admin/media-library', icon: PhotoIcon, label: 'Médiathèque' },
             { to: '/admin/magazine', icon: NewspaperIcon, label: 'Magazine' },
             { to: '/admin/bookings', icon: BriefcaseIcon, label: 'Réservations' },
             { to: '/admin/messages', icon: ChatBubbleLeftRightIcon, label: 'Messages' },
