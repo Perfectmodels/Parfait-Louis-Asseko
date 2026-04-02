@@ -2,7 +2,8 @@
  * CloudinaryMultiUploader — upload multiple images/videos, returns array of URLs.
  */
 import React, { useRef, useState, useCallback } from 'react';
-import { PhotoIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon, PlusIcon, Square2StackIcon } from '@heroicons/react/24/outline';
+import MediaPicker from './admin/MediaPicker';
 import {
   uploadToCloudinary,
   validateFile,
@@ -39,6 +40,7 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<UploadingItem[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   const accept =
     resourceType === 'image' ? ACCEPTED_IMAGE_TYPES :
@@ -167,6 +169,33 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
           <span className="text-[9px] text-white/20">Plusieurs fichiers acceptés</span>
         </div>
       )}
+
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          onClick={() => setShowPicker(true)}
+          className="text-[9px] text-pm-gold/60 hover:text-pm-gold underline transition-colors flex items-center gap-1"
+        >
+          <Square2StackIcon className="w-3 h-3" />
+          Ouvrir la bibliothèque
+        </button>
+      </div>
+
+      <MediaPicker
+        isOpen={showPicker}
+        onClose={() => setShowPicker(false)}
+        onSelect={(urls) => {
+          const newUrls = [...values];
+          urls.forEach(url => {
+            if (!newUrls.includes(url) && newUrls.length < maxFiles) {
+              newUrls.push(url);
+            }
+          });
+          onChange(newUrls);
+        }}
+        multiple={true}
+        resourceType={resourceType === 'auto' ? 'auto' : resourceType}
+      />
 
       <input
         ref={inputRef}
