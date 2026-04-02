@@ -75,6 +75,7 @@ const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfUse = lazy(() => import('./pages/TermsOfUse'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const AdminMediaLibrary = lazy(() => import('./pages/AdminMediaLibrary'));
 
 
 const ScrollToTop: React.FC = () => {
@@ -155,6 +156,7 @@ const AnimatedRoutes: React.FC = () => {
 
                     <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
                     <Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
+                    <Route path="/admin/media-library" element={<ProtectedRoute role="admin"><AdminMediaLibrary /></ProtectedRoute>} />
                     <Route path="/admin/magazine" element={<ProtectedRoute role="admin"><AdminMagazine /></ProtectedRoute>} />
                     <Route path="/admin/classroom" element={<ProtectedRoute role="admin"><AdminClassroom /></ProtectedRoute>} />
                     <Route path="/admin/settings" element={<ProtectedRoute role="admin"><AdminSettings /></ProtectedRoute>} />

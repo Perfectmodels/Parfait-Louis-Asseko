@@ -3,7 +3,8 @@
  * Supporte drag & drop, prévisualisation, barre de progression.
  */
 import React, { useRef, useState, useCallback } from 'react';
-import { PhotoIcon, VideoCameraIcon, XMarkIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, VideoCameraIcon, XMarkIcon, ArrowUpTrayIcon, Square2StackIcon } from '@heroicons/react/24/outline';
+import MediaPicker from "./admin/MediaPicker";
 import {
   uploadToCloudinary,
   validateFile,
@@ -41,6 +42,7 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [urlMode, setUrlMode] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   const accept =
     resourceType === 'image' ? ACCEPTED_IMAGE_TYPES :
@@ -161,27 +163,46 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
         className="hidden"
       />
 
-      {/* URL fallback */}
-      {allowUrl && (
-        <div>
+      {/* URL fallback & Media Library */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-4">
+          {allowUrl && (
+            <button
+              type="button"
+              onClick={() => setUrlMode(v => !v)}
+              className="text-[9px] text-white/20 hover:text-white/50 underline transition-colors"
+            >
+              {urlMode ? 'Masquer URL' : 'Ou coller une URL'}
+            </button>
+          )}
           <button
             type="button"
-            onClick={() => setUrlMode(v => !v)}
-            className="text-[9px] text-white/20 hover:text-white/50 underline transition-colors"
+            onClick={() => setShowPicker(true)}
+            className="text-[9px] text-pm-gold/60 hover:text-pm-gold underline transition-colors flex items-center gap-1"
           >
-            {urlMode ? 'Masquer' : 'Ou coller une URL'}
+            <Square2StackIcon className="w-3 h-3" />
+            Bibliothèque
           </button>
-          {urlMode && (
-            <input
-              type="text"
-              value={value}
-              onChange={e => onChange(e.target.value)}
-              placeholder="https://..."
-              className="admin-input mt-2"
-            />
-          )}
         </div>
-      )}
+
+        {urlMode && (
+          <input
+            type="text"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder="https://..."
+            className="admin-input"
+          />
+        )}
+      </div>
+
+      <MediaPicker
+        isOpen={showPicker}
+        onClose={() => setShowPicker(false)}
+        onSelect={(urls) => onChange(urls[0])}
+        multiple={false}
+        resourceType={resourceType === 'auto' ? 'auto' : resourceType}
+      />
 
       {error && <p className="text-xs text-red-400">{error}</p>}
     </div>
