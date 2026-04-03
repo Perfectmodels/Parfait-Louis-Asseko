@@ -66,13 +66,22 @@ const AdminCastingResults: React.FC = () => {
         const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
 
         const initial = app.firstName.charAt(0).toUpperCase();
-        const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
-        const existingNumbers = modelsWithSameInitial.map(m => {
-            const numPart = m.username.replace(`Man-PMM${initial}`, '');
-            return parseInt(numPart, 10) || 0;
-        });
-        const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
-        const username = `Man-PMM${initial}${String(nextNumber).padStart(2, '0')}`;
+
+        // ⚡ Bolt: Replaced chained array allocations (filter/map/Math.max) with a single-pass loop
+        const prefix = `Man-PMM${initial}`;
+        let maxNumber = 0;
+        for (const m of (data.models || [])) {
+            if (m.username && m.username.startsWith(prefix)) {
+                const numPart = m.username.slice(prefix.length);
+                const parsedNum = parseInt(numPart, 10);
+                if (!isNaN(parsedNum) && parsedNum > maxNumber) {
+                    maxNumber = parsedNum;
+                }
+            }
+        }
+        const nextNumber = maxNumber + 1;
+
+        const username = `${prefix}${String(nextNumber).padStart(2, '0')}`;
         const password = `${sanitizeForPassword(app.firstName)}${currentYear}`;
         const id = `${app.lastName.toLowerCase()}-${app.firstName.toLowerCase()}`.replace(/[^a-z0-9-]/g, '') + `-${app.id.slice(-4)}`;
 
