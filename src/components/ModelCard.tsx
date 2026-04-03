@@ -7,7 +7,15 @@ interface ModelCardProps {
   model: Model;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
+/**
+ * ⚡ Bolt Optimization:
+ * Wrapped ModelCard in React.memo() to prevent unnecessary re-renders when parent
+ * components (like Models.tsx) update their state (e.g., search/filter inputs).
+ *
+ * Impact: Prevents deep re-renders of the image and Framer Motion animations
+ * for models whose data hasn't changed.
+ */
+const ModelCard = React.memo(({ model }: ModelCardProps) => {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -42,6 +50,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       </Link>
     </motion.div>
   );
-};
+});
 
 export default ModelCard;
