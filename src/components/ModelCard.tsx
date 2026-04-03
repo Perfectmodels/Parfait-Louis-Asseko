@@ -7,7 +7,10 @@ interface ModelCardProps {
   model: Model;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
+// ⚡ Bolt Optimization: Wrapped in React.memo to prevent unnecessary re-renders when parent
+// components like Models.tsx update their filter or search states.
+// Note: React.FC type is removed as it conflicts with React.memo's NamedExoticComponent return type.
+const ModelCard = React.memo(({ model }: ModelCardProps) => {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -42,6 +45,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       </Link>
     </motion.div>
   );
-};
+});
 
 export default ModelCard;
