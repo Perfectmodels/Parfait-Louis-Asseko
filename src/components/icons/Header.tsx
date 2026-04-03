@@ -102,8 +102,10 @@ const Header: React.FC = () => {
             </Link>
             <button
               onClick={() => setMenuOpen(v => !v)}
-              className="lg:hidden flex flex-col gap-1.5 p-2 -mr-1 group"
+              className="lg:hidden flex flex-col gap-1.5 p-2 -mr-1 group focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:outline-none rounded"
               aria-label="Menu"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
             >
               <span className={`block h-px w-6 bg-white transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
               <span className={`block h-px w-6 bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
@@ -117,6 +119,7 @@ const Header: React.FC = () => {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            id="mobile-menu"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
