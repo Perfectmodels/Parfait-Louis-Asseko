@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeftIcon, TrashIcon, PlusIcon, PhotoIcon,
@@ -227,14 +227,43 @@ const AdminGallery: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [showCreateAlbumFromSelection, setShowCreateAlbumFromSelection] = useState(false);
 
-  const filtered = activeTab === 'Tout' 
-    ? gallery 
-    : activeTab === 'Sans Album'
-      ? gallery.filter(i => !i.albumId)
-      : gallery.filter(i => i.category === activeTab);
+  // --- BOLT OPTIMIZATION ---
+  // Precompute lookup maps and filtered array to avoid O(N*M) complexity in render loops
+  const { filtered, albumCounts, categoryCounts, sansAlbumCount, albumMap } = useMemo(() => {
+    const albumCounts: Record<string, number> = {};
+    const categoryCounts: Record<string, number> = {};
+    let sansAlbumCount = 0;
+    const albumMap: Record<string, GalleryAlbum> = {};
 
-  // Trouver l'album d'un item
-  const getAlbum = (item: GalleryItem) => albums.find(a => a.id === item.albumId);
+    albums.forEach(a => { albumMap[a.id] = a; });
+
+    const filteredItems = [];
+
+    for (const item of gallery) {
+      if (item.albumId) {
+        albumCounts[item.albumId] = (albumCounts[item.albumId] || 0) + 1;
+      } else {
+        sansAlbumCount++;
+      }
+
+      if (item.category) {
+        categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
+      }
+
+      if (activeTab === 'Tout') {
+        filteredItems.push(item);
+      } else if (activeTab === 'Sans Album') {
+        if (!item.albumId) filteredItems.push(item);
+      } else {
+        if (item.category === activeTab) filteredItems.push(item);
+      }
+    }
+
+    return { filtered: filteredItems, albumCounts, categoryCounts, sansAlbumCount, albumMap };
+  }, [gallery, albums, activeTab]);
+
+  // Trouver l'album d'un item (optimized)
+  const getAlbum = useCallback((item: GalleryItem) => item.albumId ? albumMap[item.albumId] : undefined, [albumMap]);
 
   const handleAlbumSave = async (name: string, description: string, category: GalleryCategory, files: File[]) => {
     setShowModal(false);
@@ -459,7 +488,7 @@ const AdminGallery: React.FC = () => {
             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Albums ({albums.length})</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {albums.map(album => {
-                const count = gallery.filter(i => i.albumId === album.id).length;
+                const count = albumCounts[album.id] || 0;
                 return (
                   <div key={album.id} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/5 hover:border-pm-gold/20 transition-all">
                     {/* Cover */}
@@ -530,8 +559,8 @@ const AdminGallery: React.FC = () => {
                 {tab === 'Tout' 
                   ? gallery.length 
                   : tab === 'Sans Album'
-                    ? gallery.filter(i => !i.albumId).length
-                    : gallery.filter(i => i.category === tab).length}
+                    ? sansAlbumCount
+                    : (categoryCounts[tab] || 0)}
               </span>
             </button>
           ))}
