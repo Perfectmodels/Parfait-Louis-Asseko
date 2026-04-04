@@ -1,0 +1,3 @@
+## 2024-04-04 - Floating Utility Buttons A11y
+**Learning:** Icon-only floating utility buttons (like Back to Top) often lack visible focus states in their default styles, making them invisible to keyboard-only users navigating the page.
+**Action:** Always verify keyboard navigation (`Tab` key) on floating/fixed positioning interactive elements. Apply `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold` pattern to ensure a clear visual indicator without affecting mouse users. Included `focus-visible:ring-offset-2 focus-visible:ring-offset-pm-dark` to make it visible on overlapping backgrounds.
