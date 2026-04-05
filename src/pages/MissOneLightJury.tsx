@@ -108,35 +108,39 @@ const Miss5emeJuryPage: React.FC = () => {
 
     // Check if this jury number is already in use
     const juryRef = ref(db, 'miss5emeJury');
-    onValue(juryRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const juryList = Object.values(data) as Miss5emeJury[];
-        const existingJury = juryList.find(j => j.juryNumber === selectedJuryNumber);
-        
-        if (existingJury) {
-          // Use existing jury session
-          setCurrentJury(existingJury);
-          setIsAuthenticated(true);
-          showToast(`Connexion réussie - Juré ${selectedJuryNumber}`);
-          return;
+    onValue(juryRef, async (snapshot) => {
+      try {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const juryList = Object.values(data) as Miss5emeJury[];
+          const existingJury = juryList.find(j => j.juryNumber === selectedJuryNumber);
+          
+          if (existingJury) {
+            // Use existing jury session
+            setCurrentJury(existingJury);
+            setIsAuthenticated(true);
+            showToast(`Connexion réussie - Juré ${selectedJuryNumber}`);
+            return;
+          }
         }
-      }
 
-      // Create new jury member
-      const newJuryRef = push(ref(db, 'miss5emeJury'));
-      const newJury: Miss5emeJury = {
-        id: newJuryRef.key!,
-        name: `Juré ${selectedJuryNumber}`,
-        juryNumber: selectedJuryNumber,
-        pin: '0000'
-      };
+        // Create new jury member with unique key
+        const newJuryRef = push(ref(db, 'miss5emeJury'));
+        const newJury: Miss5emeJury = {
+          id: newJuryRef.key!,
+          name: `Juré ${selectedJuryNumber}`,
+          juryNumber: selectedJuryNumber,
+          pin: '0000'
+        };
 
-      set(newJuryRef, newJury).then(() => {
+        await set(newJuryRef, newJury);
         setCurrentJury(newJury);
         setIsAuthenticated(true);
         showToast(`Connexion réussie - Juré ${selectedJuryNumber}`);
-      });
+      } catch (error) {
+        console.error('Erreur de connexion:', error);
+        showError('Erreur de connexion. Veuillez réessayer.');
+      }
     }, { onlyOnce: true });
   };
 
@@ -171,25 +175,33 @@ const Miss5emeJuryPage: React.FC = () => {
       return;
     }
 
-    const scoreData: Miss5emeScore = {
-      juryId: currentJury.id,
-      juryNumber: currentJury.juryNumber,
-      candidateId: selectedCandidate.id,
-      passage: currentPassage,
-      sourire: scores.sourire,
-      gestuelle: scores.gestuelle,
-      performanceTechnique: scores.performanceTechnique,
-      prestanceElegance: scores.prestanceElegance,
-      totalPassage: total,
-      timestamp: new Date().toISOString()
-    };
+    try {
+      const scoreData: Miss5emeScore = {
+        juryId: currentJury.id,
+        juryNumber: currentJury.juryNumber,
+        candidateId: selectedCandidate.id,
+        passage: currentPassage,
+        sourire: scores.sourire,
+        gestuelle: scores.gestuelle,
+        performanceTechnique: scores.performanceTechnique,
+        prestanceElegance: scores.prestanceElegance,
+        totalPassage: total,
+        timestamp: new Date().toISOString()
+      };
 
-    const newScoreRef = push(ref(db, 'miss5emeScores'));
-    await set(newScoreRef, scoreData);
+      // Use push to generate unique key and avoid conflicts
+      const newScoreRef = push(ref(db, 'miss5emeScores'));
+      
+      // Atomic write operation
+      await set(newScoreRef, scoreData);
 
-    showToast('Note enregistrée avec succès');
-    setScores({ sourire: 0, gestuelle: 0, performanceTechnique: 0, prestanceElegance: 0 });
-    setSelectedCandidate(null);
+      showToast('Note enregistrée avec succès');
+      setScores({ sourire: 0, gestuelle: 0, performanceTechnique: 0, prestanceElegance: 0 });
+      setSelectedCandidate(null);
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement:', error);
+      showError('Erreur lors de l\'enregistrement. Veuillez réessayer.');
+    }
   };
 
   if (!isAuthenticated) {
