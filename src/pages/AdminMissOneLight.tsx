@@ -192,33 +192,42 @@ const AdminMiss5eme: React.FC = () => {
       return;
     }
 
-    const candidateRef = push(ref(db, 'miss5emeCandidates'));
-    const candidateData: any = {
-      id: candidateRef.key!,
-      name: newCandidate.name.trim(),
-      number: newCandidate.number
-    };
-    
-    // Only add photoUrl if it has a value
-    if (newCandidate.photoUrl.trim()) {
-      candidateData.photoUrl = newCandidate.photoUrl.trim();
-    }
+    try {
+      const candidateRef = push(ref(db, 'miss5emeCandidates'));
+      const candidateData: any = {
+        id: candidateRef.key!,
+        name: newCandidate.name.trim(),
+        number: newCandidate.number
+      };
+      
+      // Only add photoUrl if it has a value
+      if (newCandidate.photoUrl.trim()) {
+        candidateData.photoUrl = newCandidate.photoUrl.trim();
+      }
 
-    await set(candidateRef, candidateData);
-    showToast('Candidate ajoutée');
-    setNewCandidate({ name: '', number: candidates.length + 1, photoUrl: '' });
+      await set(candidateRef, candidateData);
+      showToast('Candidate ajoutée');
+      setNewCandidate({ name: '', number: candidates.length + 1, photoUrl: '' });
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout:', error);
+      showError('Erreur lors de l\'ajout. Veuillez réessayer.');
+    }
   };
 
   const handleDeleteCandidate = async (candidateId: string) => {
     if (!confirm('Supprimer cette candidate et toutes ses notes ?')) return;
     
-    await remove(ref(db, `miss5emeCandidates/${candidateId}`));
-    
-    // Delete all scores for this candidate
-    const candidateScores = scores.filter(s => s.candidateId === candidateId);
-    for (const score of candidateScores) {
-      const scoreRef = ref(db, `miss5emeScores`);
-      onValue(scoreRef, (snapshot) => {
+    try {
+      await remove(ref(db, `miss5emeCandidates/${candidateId}`));
+      
+      // Delete all scores for this candidate
+      const candidateScores = scores.filter(s => s.candidateId === candidateId);
+      const deletePromises = candidateScores.map(async (score) => {
+        const scoreRef = ref(db, 'miss5emeScores');
+        const snapshot = await new Promise<any>((resolve) => {
+          onValue(scoreRef, resolve, { onlyOnce: true });
+        });
+        
         if (snapshot.exists()) {
           const data = snapshot.val();
           const scoreKey = Object.keys(data).find(key => 
@@ -227,21 +236,32 @@ const AdminMiss5eme: React.FC = () => {
             data[key].passage === score.passage
           );
           if (scoreKey) {
-            remove(ref(db, `miss5emeScores/${scoreKey}`));
+            await remove(ref(db, `miss5emeScores/${scoreKey}`));
           }
         }
-      }, { onlyOnce: true });
+      });
+      
+      await Promise.all(deletePromises);
+      showToast('Candidate supprimée');
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      showError('Erreur lors de la suppression. Veuillez réessayer.');
     }
-    
-    showToast('Candidate supprimée');
   };
 
   const handleResetAllScores = async () => {
     if (!confirm('Supprimer toutes les notes ? Cette action est irréversible.')) return;
     
-    await remove(ref(db, 'miss5emeScores'));
-    await remove(ref(db, 'miss5emeJury'));
-    showToast('Toutes les notes ont été supprimées');
+    try {
+      await Promise.all([
+        remove(ref(db, 'miss5emeScores')),
+        remove(ref(db, 'miss5emeJury'))
+      ]);
+      showToast('Toutes les notes ont été supprimées');
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation:', error);
+      showError('Erreur lors de la réinitialisation. Veuillez réessayer.');
+    }
   };
 
   const openNotationModal = (candidate: Miss5emeCandidate) => {
@@ -259,11 +279,15 @@ const AdminMiss5eme: React.FC = () => {
       return;
     }
 
-    // Check if jury already exists
-    const juryRef = ref(db, 'miss5emeJury');
-    let juryId = '';
-    
-    await onValue(juryRef, (snapshot) => {
+    try {
+      // Check if jury already exists
+      const juryRef = ref(db, 'miss5emeJury');
+      let juryId = '';
+      
+      const snapshot = await new Promise<any>((resolve) => {
+        onValue(juryRef, resolve, { onlyOnce: true });
+      });
+
       if (snapshot.exists()) {
         const data = snapshot.val();
         const juryList = Object.values(data) as Miss5emeJury[];
@@ -273,40 +297,43 @@ const AdminMiss5eme: React.FC = () => {
           juryId = existingJury.id;
         }
       }
-    }, { onlyOnce: true });
 
-    // Create jury if doesn't exist
-    if (!juryId) {
-      const newJuryRef = push(ref(db, 'miss5emeJury'));
-      const newJury: Miss5emeJury = {
-        id: newJuryRef.key!,
-        name: `Juré ${selectedJuryForNotation}`,
+      // Create jury if doesn't exist
+      if (!juryId) {
+        const newJuryRef = push(ref(db, 'miss5emeJury'));
+        const newJury: Miss5emeJury = {
+          id: newJuryRef.key!,
+          name: `Juré ${selectedJuryForNotation}`,
+          juryNumber: selectedJuryForNotation,
+          pin: '0000'
+        };
+        await set(newJuryRef, newJury);
+        juryId = newJuryRef.key!;
+      }
+
+      const scoreData: Miss5emeScore = {
+        juryId: juryId,
         juryNumber: selectedJuryForNotation,
-        pin: '0000'
+        candidateId: selectedCandidateForNotation.id,
+        passage: selectedPassageForNotation,
+        sourire: notationScores.sourire,
+        gestuelle: notationScores.gestuelle,
+        performanceTechnique: notationScores.performanceTechnique,
+        prestanceElegance: notationScores.prestanceElegance,
+        totalPassage: total,
+        timestamp: new Date().toISOString()
       };
-      await set(newJuryRef, newJury);
-      juryId = newJuryRef.key!;
+
+      const newScoreRef = push(ref(db, 'miss5emeScores'));
+      await set(newScoreRef, scoreData);
+
+      showToast('Note enregistrée avec succès');
+      setIsNotationModalOpen(false);
+      setNotationScores({ sourire: 0, gestuelle: 0, performanceTechnique: 0, prestanceElegance: 0 });
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement:', error);
+      showError('Erreur lors de l\'enregistrement. Veuillez réessayer.');
     }
-
-    const scoreData: Miss5emeScore = {
-      juryId: juryId,
-      juryNumber: selectedJuryForNotation,
-      candidateId: selectedCandidateForNotation.id,
-      passage: selectedPassageForNotation,
-      sourire: notationScores.sourire,
-      gestuelle: notationScores.gestuelle,
-      performanceTechnique: notationScores.performanceTechnique,
-      prestanceElegance: notationScores.prestanceElegance,
-      totalPassage: total,
-      timestamp: new Date().toISOString()
-    };
-
-    const newScoreRef = push(ref(db, 'miss5emeScores'));
-    await set(newScoreRef, scoreData);
-
-    showToast('Note enregistrée avec succès');
-    setIsNotationModalOpen(false);
-    setNotationScores({ sourire: 0, gestuelle: 0, performanceTechnique: 0, prestanceElegance: 0 });
   };
 
   return (
