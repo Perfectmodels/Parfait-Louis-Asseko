@@ -30,6 +30,8 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
+  const [loginMode, setLoginMode] = useState<'normal' | 'jury'>('normal');
+  const [selectedJuryNumber, setSelectedJuryNumber] = useState<1 | 2 | 3 | 4 | null>(null);
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
@@ -40,6 +42,31 @@ const Login: React.FC = () => {
     if (!isInitialized || !data) {
         setError('Service indisponible. Veuillez réessayer dans un instant.');
         return;
+    }
+
+    // Jury Miss 5ème login
+    if (loginMode === 'jury') {
+      if (password !== '0000') {
+        setError('PIN incorrect.');
+        setPassword('');
+        return;
+      }
+
+      if (!selectedJuryNumber) {
+        setError('Veuillez sélectionner votre numéro de juré.');
+        return;
+      }
+
+      // Store jury session
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'miss5eme_jury');
+      sessionStorage.setItem('juryNumber', selectedJuryNumber.toString());
+      sessionStorage.setItem('userName', `Juré ${selectedJuryNumber}`);
+
+      notifyAdmin('visit', `Connexion Jury Miss 5ème: Juré ${selectedJuryNumber}`, '/jury/miss-5eme').catch(() => {});
+      
+      navigate('/jury/miss-5eme');
+      return;
     }
 
     const timestamp = new Date().toISOString();
@@ -127,42 +154,125 @@ const Login: React.FC = () => {
                 <img src={data?.siteConfig.logo} alt="Logo" className="h-20 w-auto mx-auto mb-6 bg-black rounded-full border-2 border-pm-gold p-1" />
             </Link>
             <h1 className="text-3xl font-playfair text-pm-gold mb-2">Accès Privé</h1>
-            <p className="text-pm-off-white/70 mb-8">
+            <p className="text-pm-off-white/70 mb-6">
               Bienvenue sur votre espace personnel.
             </p>
+
+            {/* Mode Selection */}
+            <div className="flex gap-2 mb-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginMode('normal');
+                  setError('');
+                  setSelectedJuryNumber(null);
+                }}
+                className={`flex-1 py-2 px-4 rounded-full text-sm font-semibold transition-all ${
+                  loginMode === 'normal'
+                    ? 'bg-pm-gold text-pm-dark'
+                    : 'bg-pm-dark/70 text-pm-off-white/70 border border-pm-off-white/20 hover:border-pm-gold/50'
+                }`}
+              >
+                Connexion Standard
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginMode('jury');
+                  setError('');
+                  setUsername('');
+                  setPassword('');
+                }}
+                className={`flex-1 py-2 px-4 rounded-full text-sm font-semibold transition-all ${
+                  loginMode === 'jury'
+                    ? 'bg-pink-600 text-white'
+                    : 'bg-pm-dark/70 text-pm-off-white/70 border border-pm-off-white/20 hover:border-pink-500/50'
+                }`}
+              >
+                Jury Miss 5ème
+              </button>
+            </div>
+
             <form onSubmit={handleLogin} className="space-y-6">
-                <div className="relative">
-                   <UserIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
-                   <input
-                     type="text" value={username} onChange={(e) => { setUsername(e.target.value); setError(''); }}
-                     placeholder="Identifiant ou Nom"
-                     className="w-full bg-pm-dark/70 border-2 border-pm-off-white/20 rounded-full py-3 px-12 focus:outline-none focus:border-pm-gold transition-colors"
-                     required
-                   />
-                </div>
-                <div className="relative">
-                   <LockClosedIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
-                   <input
-                     type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                     placeholder="Mot de passe"
-                     className="w-full bg-pm-dark/70 border-2 border-pm-off-white/20 rounded-full py-3 px-12 focus:outline-none focus:border-pm-gold transition-colors"
-                     required
-                   />
-                </div>
+              {loginMode === 'normal' ? (
+                <>
+                  <div className="relative">
+                     <UserIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
+                     <input
+                       type="text" value={username} onChange={(e) => { setUsername(e.target.value); setError(''); }}
+                       placeholder="Identifiant ou Nom"
+                       className="w-full bg-pm-dark/70 border-2 border-pm-off-white/20 rounded-full py-3 px-12 focus:outline-none focus:border-pm-gold transition-colors"
+                       required
+                     />
+                  </div>
+                  <div className="relative">
+                     <LockClosedIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
+                     <input
+                       type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                       placeholder="Mot de passe"
+                       className="w-full bg-pm-dark/70 border-2 border-pm-off-white/20 rounded-full py-3 px-12 focus:outline-none focus:border-pm-gold transition-colors"
+                       required
+                     />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-pm-off-white/70 mb-3 text-left">
+                      Sélectionnez votre numéro de juré
+                    </label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[1, 2, 3, 4].map((num) => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => {
+                            setSelectedJuryNumber(num as 1 | 2 | 3 | 4);
+                            setError('');
+                          }}
+                          className={`py-3 rounded-lg font-semibold transition-all ${
+                            selectedJuryNumber === num
+                              ? 'bg-pink-600 text-white shadow-lg'
+                              : 'bg-pm-dark/70 text-pm-off-white/70 border border-pm-off-white/20 hover:border-pink-500/50'
+                          }`}
+                        >
+                          Juré {num}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="relative">
+                     <LockClosedIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
+                     <input
+                       type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                       placeholder="Code PIN (0000)"
+                       maxLength={4}
+                       className="w-full bg-pm-dark/70 border-2 border-pm-off-white/20 rounded-full py-3 px-12 focus:outline-none focus:border-pink-500 transition-colors text-center tracking-widest"
+                       required
+                     />
+                  </div>
+                </>
+              )}
               {error && <p className="text-red-400 text-sm !mt-4">{error}</p>}
               <button
                 type="submit" disabled={!isInitialized}
-                className="w-full group flex items-center justify-center gap-2 px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white !mt-8 disabled:opacity-50"
+                className={`w-full group flex items-center justify-center gap-2 px-8 py-3 font-bold uppercase tracking-widest rounded-full transition-all duration-300 !mt-8 disabled:opacity-50 ${
+                  loginMode === 'jury'
+                    ? 'bg-pink-600 text-white hover:bg-pink-700'
+                    : 'bg-pm-gold text-pm-dark hover:bg-white'
+                }`}
               >
                 <span>{isInitialized ? 'Connexion' : 'Chargement...'}</span>
                 <ArrowRightIcon className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
             </form>
-            <div className="mt-6">
-              <button onClick={() => setIsRecoveryModalOpen(true)} className="text-xs text-pm-off-white/60 hover:text-pm-gold hover:underline">
-                Coordonnées oubliées ?
-              </button>
-            </div>
+            {loginMode === 'normal' && (
+              <div className="mt-6">
+                <button onClick={() => setIsRecoveryModalOpen(true)} className="text-xs text-pm-off-white/60 hover:text-pm-gold hover:underline">
+                  Coordonnées oubliées ?
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

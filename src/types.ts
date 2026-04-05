@@ -443,6 +443,64 @@ export interface AdminProfile {
   avatarUrl?: string;
 }
 
+// Miss 5ème Contest Types
+export interface Miss5emeJury {
+  id: string;
+  name: string;
+  juryNumber: 1 | 2 | 3 | 4;
+  pin: string; // PIN code for authentication (0000)
+}
+
+export interface Miss5emeCandidate {
+  id: string;
+  name: string;
+  number: number; // Candidate number (1-10)
+  photoUrl?: string;
+}
+
+export interface Miss5emeScore {
+  juryId: string;
+  juryNumber: number;
+  candidateId: string;
+  passage: 1 | 2 | 3; // Passage number
+  sourire: number; // Score out of 4
+  gestuelle: number; // Score out of 4
+  performanceTechnique: number; // Score out of 4
+  prestanceElegance: number; // Score out of 4
+  totalPassage: number; // Total score out of 20 for this passage
+  timestamp: string;
+}
+
+export interface Miss5emeResult {
+  candidateId: string;
+  candidateName: string;
+  candidateNumber: number;
+  passage1Total: number;
+  passage2Total: number;
+  passage3Total: number;
+  finalScore: number; // Average of 3 passages
+  rank?: number;
+}
+
+export interface Miss5emeCandidateSheet {
+  candidateId: string;
+  candidateName: string;
+  candidateNumber: number;
+  scoresByJury: {
+    [juryNumber: number]: {
+      passage1?: Miss5emeScore;
+      passage2?: Miss5emeScore;
+      passage3?: Miss5emeScore;
+    };
+  };
+  averageByPassage: {
+    passage1: number;
+    passage2: number;
+    passage3: number;
+  };
+  finalScore: number;
+}
+
 export type GalleryCategory =
   | 'Défilés'
   | 'Shootings Photo'

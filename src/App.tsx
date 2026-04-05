@@ -65,11 +65,13 @@ const AdminAbsences = lazy(() => import('./pages/AdminAbsences'));
 const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection'));
 const AdminGallery = lazy(() => import('./pages/AdminGallery'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
+const AdminMiss5eme = lazy(() => import('./pages/AdminMissOneLight'));
 
 
 // Role-specific pages
 const JuryCasting = lazy(() => import('./pages/JuryCasting'));
 const RegistrationCasting = lazy(() => import('./pages/RegistrationCasting'));
+const Miss5emeJury = lazy(() => import('./pages/MissOneLightJury'));
 
 // Static Pages
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
@@ -152,6 +154,7 @@ const AnimatedRoutes: React.FC = () => {
 
                     <Route path="/jury/casting" element={<ProtectedRoute role="jury"><JuryCasting /></ProtectedRoute>} />
                     <Route path="/enregistrement/casting" element={<ProtectedRoute role="registration"><RegistrationCasting /></ProtectedRoute>} />
+                    <Route path="/jury/miss-5eme" element={<Miss5emeJury />} />
 
                     <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
                     <Route path="/admin/models" element={<ProtectedRoute role="admin"><AdminModels /></ProtectedRoute>} />
@@ -179,6 +182,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/live-chat" element={<ProtectedRoute role="admin"><LiveChat /></ProtectedRoute>} />
                     <Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
                     <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
+                    <Route path="/admin/miss-5eme" element={<ProtectedRoute role="admin"><AdminMiss5eme /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>
