@@ -173,7 +173,9 @@ export default function MissOneLight() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
         >
-          <div className="relative w-full max-w-md bg-pm-dark border border-white/10 rounded-3xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="relative w-full max-w-md bg-pm-dark border border-white/10 rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-2xl max-h-[92vh] overflow-y-auto"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
             <button
               onClick={closeModal}
               disabled={submitting}
@@ -235,17 +237,17 @@ export default function MissOneLight() {
 
                   <div>
                     <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2">Nombre de votes</label>
-                    <div className="flex flex-wrap gap-2 mb-3">
+                    <div className="grid grid-cols-5 gap-1.5 mb-3">
                       {VOTE_SUGGESTIONS.map(n => (
                         <button key={n} type="button"
                           onClick={() => setForm({ ...form, votes: n })}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border flex flex-col items-center ${
+                          className={`py-2 rounded-lg text-[10px] font-bold transition-all border flex flex-col items-center leading-tight ${
                             form.votes === n
                               ? 'bg-[#FCD116] text-pm-dark border-[#FCD116]'
                               : 'bg-white/5 text-white/60 border-white/10 hover:border-[#FCD116]/40 hover:text-white'
                           }`}>
-                          <span>{n} votes</span>
-                          <span className="font-normal opacity-70">{(n * PRICE_PER_VOTE).toLocaleString()} F</span>
+                          <span>{n}</span>
+                          <span className="font-normal opacity-70 text-[8px]">{(n * PRICE_PER_VOTE / 1000).toFixed(0)}k F</span>
                         </button>
                       ))}
                     </div>

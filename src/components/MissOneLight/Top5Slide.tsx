@@ -34,58 +34,54 @@ export default function Top5Slide({ candidates, onVote, votedCandidates }: Top5S
   };
 
   return (
-    <div className="relative px-6 md:px-12 py-10 bg-pm-dark">
+    <div className="relative px-4 md:px-12 py-8 md:py-10 bg-pm-dark">
       <div className="absolute top-0 right-0 w-1/2 h-full bg-[#3A75C4]/5 blur-[150px] pointer-events-none" />
 
       {/* Title */}
-      <div className="relative z-10 text-center mb-16">
-        <span className="text-pm-gold text-[10px] font-black tracking-[0.5em] uppercase mb-4 block">Fierté Nationale</span>
-        <h2 className="text-5xl md:text-7xl font-playfair font-bold text-white mb-4">
+      <div className="relative z-10 text-center mb-8 md:mb-12">
+        <span className="text-pm-gold text-[9px] md:text-[10px] font-black tracking-[0.4em] uppercase mb-2 block">Fierté Nationale</span>
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-playfair font-bold text-white mb-2">
           Le <span className="text-[#FCD116]">Top 5</span> Direct
         </h2>
-        <p className="text-white/40 text-sm max-w-md mx-auto">
-          Le classement évolue en temps réel selon vos votes.
+        <p className="text-white/40 text-xs md:text-sm max-w-xs mx-auto">
+          Classement en temps réel.
         </p>
       </div>
 
-      {/* Podium */}
-      <div className="relative z-10 flex items-end justify-center gap-4 md:gap-8 mb-16 w-full max-w-5xl mx-auto">
+      {/* Podium — tighter on mobile */}
+      <div className="relative z-10 flex items-end justify-center gap-2 md:gap-8 mb-6 md:mb-10 w-full max-w-2xl mx-auto">
         {podium.map((candidate) => {
           const rank = candidate.rank ?? 0;
           const isWinner = rank === 1;
           return (
-            <div
-              key={candidate.id}
-              className={`flex flex-col items-center ${isWinner ? 'w-[38%]' : 'w-[28%]'}`}
-            >
-              {/* Card */}
-              <div className="relative w-full mb-4 mt-8">
+            <div key={candidate.id} className={`flex flex-col items-center ${isWinner ? 'w-[38%]' : 'w-[28%]'}`}>
+              <div className="relative w-full mb-2 mt-6">
                 {/* Rank badge */}
-                <div className={`absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br ${getRankGradient(rank)} flex items-center justify-center z-20 border-2 border-pm-dark shadow-lg`}>
+                <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br ${getRankGradient(rank)} flex items-center justify-center z-20 border-2 border-pm-dark shadow-lg`}>
                   {rank === 1
-                    ? <Trophy size={18} className="text-pm-dark" />
-                    : <span className="text-pm-dark font-black text-sm">{rank}</span>
+                    ? <Trophy size={14} className="text-pm-dark" />
+                    : <span className="text-pm-dark font-black text-xs">{rank}</span>
                   }
                 </div>
 
                 {/* Number badge */}
-                <div className="absolute top-3 left-3 z-20 bg-pm-dark/80 backdrop-blur-md border border-white/20 text-white font-black text-xs px-2 py-1 rounded-full">
-                  <span className="text-[9px] text-white/40">NO.</span>{candidate.number}
+                <div className="absolute top-2 left-2 z-20 bg-pm-dark/80 backdrop-blur-md border border-white/20 text-white font-black text-[9px] px-1.5 py-0.5 rounded-full">
+                  {candidate.number}
                 </div>
 
                 {/* Photo */}
-                <div className={`relative rounded-2xl overflow-hidden border-2 ${getRankBorder(rank)} shadow-2xl ${isWinner ? 'aspect-[3/4]' : 'aspect-[3/4]'}`}>
+                <div className={`relative rounded-xl md:rounded-2xl overflow-hidden border-2 ${getRankBorder(rank)} shadow-xl aspect-[3/4]`}>
                   {candidate.photo ? (
                     <img src={candidate.photo} alt={candidate.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20 text-4xl font-playfair">
+                    <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20 text-2xl font-playfair">
                       {candidate.name[0]}
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-transparent to-transparent opacity-80" />
-                  <div className="absolute bottom-4 left-0 right-0 px-4 text-center">
-                    <h3 className="text-white font-playfair font-bold text-sm md:text-base mb-1 truncate">{candidate.name}</h3>
-                    <span className="text-[#FCD116] font-bold text-xs tracking-widest">{candidate.votes} VOTES</span>
+                  <div className="absolute bottom-2 left-0 right-0 px-2 text-center">
+                    <h3 className="text-white font-playfair font-bold text-[10px] md:text-sm truncate">{candidate.name}</h3>
+                    <span className="text-[#FCD116] font-bold text-[9px] md:text-xs">{candidate.votes}</span>
                   </div>
                 </div>
 
@@ -93,20 +89,20 @@ export default function Top5Slide({ candidates, onVote, votedCandidates }: Top5S
                 <button
                   onClick={() => onVote(candidate.id)}
                   disabled={votedCandidates.has(candidate.id)}
-                  className={`mt-3 w-full py-2.5 rounded-full font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                  className={`mt-2 w-full py-2 rounded-full font-bold text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-95 ${
                     votedCandidates.has(candidate.id)
                       ? 'bg-white/10 text-white/40 cursor-not-allowed'
                       : 'bg-white text-pm-dark hover:bg-[#FCD116]'
                   }`}
                 >
-                  <Heart size={12} fill={votedCandidates.has(candidate.id) ? 'none' : 'currentColor'} />
+                  <Heart size={10} fill={votedCandidates.has(candidate.id) ? 'none' : 'currentColor'} />
                   {votedCandidates.has(candidate.id) ? 'Voté' : 'Voter'}
                 </button>
               </div>
 
               {/* Podium base */}
-              <div className={`w-full bg-white/5 border-x border-t border-white/10 rounded-t-2xl flex items-center justify-center ${
-                rank === 1 ? 'h-24' : rank === 2 ? 'h-16' : 'h-10'
+              <div className={`w-full bg-white/5 border-x border-t border-white/10 rounded-t-xl ${
+                rank === 1 ? 'h-16 md:h-24' : rank === 2 ? 'h-10 md:h-16' : 'h-6 md:h-10'
               }`} />
             </div>
           );
@@ -115,32 +111,32 @@ export default function Top5Slide({ candidates, onVote, votedCandidates }: Top5S
 
       {/* Ranks 4-5 */}
       {rest.length > 0 && (
-        <div className="relative z-10 w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
+        <div className="relative z-10 w-full max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
           {rest.map((candidate) => (
-            <div key={candidate.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 hover:border-[#009E60]/30 transition-all">
-              <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sm font-black text-white/60 shrink-0">
+            <div key={candidate.id} className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-white/60 shrink-0">
                 {candidate.rank}
               </div>
-              <div className="w-14 h-14 rounded-xl overflow-hidden border border-white/10 shrink-0">
+              <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
                 {candidate.photo
                   ? <img src={candidate.photo} alt={candidate.name} className="w-full h-full object-cover" />
-                  : <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20 font-playfair">{candidate.name[0]}</div>
+                  : <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20 font-playfair text-sm">{candidate.name[0]}</div>
                 }
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-white font-playfair font-bold truncate">{candidate.name}</h4>
-                <span className="text-[10px] font-bold text-[#009E60] tracking-widest">{candidate.votes} Votes</span>
+                <h4 className="text-white font-playfair font-bold text-sm truncate">{candidate.name}</h4>
+                <span className="text-[9px] font-bold text-[#009E60] tracking-widest">{candidate.votes} Votes</span>
               </div>
               <button
                 onClick={() => onVote(candidate.id)}
                 disabled={votedCandidates.has(candidate.id)}
-                className={`p-3 rounded-xl transition-all shrink-0 ${
+                className={`p-2.5 rounded-xl transition-all shrink-0 active:scale-95 ${
                   votedCandidates.has(candidate.id)
                     ? 'bg-white/5 text-white/20'
                     : 'bg-white/10 text-white hover:bg-[#009E60]'
                 }`}
               >
-                <Heart size={16} fill={votedCandidates.has(candidate.id) ? 'currentColor' : 'none'} />
+                <Heart size={14} fill={votedCandidates.has(candidate.id) ? 'currentColor' : 'none'} />
               </button>
             </div>
           ))}
@@ -149,4 +145,3 @@ export default function Top5Slide({ candidates, onVote, votedCandidates }: Top5S
     </div>
   );
 }
-
