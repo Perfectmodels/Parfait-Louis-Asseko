@@ -3,6 +3,7 @@ import { db } from '../realtimedbConfig';
 import { ref, onValue, set, get, update, remove, push } from 'firebase/database';
 import logger from '../utils/logger';
 import { invalidateCache } from './useFirebaseCollection';
+import { navLinks as initialNavLinks } from '../constants/data';
 
 /**
  * Collections lourdes exclues du listener global.
@@ -190,8 +191,14 @@ export const useRealtimeDB = () => {
             items: convertToArray(achievement.items),
         })));
 
-        // Process navLinks and filter out Accueil and Fashion Day
-        const processedNavLinks = deduplicateNavLinks(convertToArray(dbData.navLinks));
+        // Process navLinks — merge DB links with seed to ensure new entries always appear
+        const processedNavLinks = deduplicateNavLinks([
+            ...convertToArray(dbData.navLinks),
+            // Inject any seed links missing from DB (e.g. newly added pages)
+            ...initialNavLinks.filter(
+                seed => !convertToArray(dbData.navLinks).some((db: any) => db?.path === seed.path)
+            ),
+        ]);
         const filteredNavLinks = processedNavLinks.filter(link => {
             const shouldExclude = link && (link.path === '/' || link.path === '/fashion-day');
             if (shouldExclude) {
