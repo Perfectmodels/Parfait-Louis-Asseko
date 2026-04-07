@@ -6,6 +6,7 @@ import HeroSlide from '../components/MissOneLight/HeroSlide';
 import Top5Slide from '../components/MissOneLight/Top5Slide';
 import CandidatesSlide from '../components/MissOneLight/CandidatesSlide';
 import { sendVoteConfirmation } from '../utils/brevoService';
+import SEO from '../components/SEO';
 
 const WHATSAPP_NUMBER = '24174799319';
 const PRICE_PER_VOTE = 100;
@@ -143,6 +144,12 @@ export default function MissOneLight() {
 
   return (
     <div className="bg-pm-dark min-h-screen">
+      <SEO
+        title="Miss One Light 2026 — Votez pour votre candidate"
+        description="Participez au concours Miss One Light 2026 organisé par Perfect Models Management. Votez pour votre candidate préférée et soutenez la beauté gabonaise !"
+        image="https://i.ibb.co/C5rcPJHz/titostyle-53.jpg"
+        type="website"
+      />
       <section className="min-h-screen">
         <HeroSlide
           totalVotes={totalVotes}
@@ -197,7 +204,7 @@ export default function MissOneLight() {
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-left mb-6">
                   <p className="text-[10px] uppercase tracking-widest text-white/40 mb-2">Prochaines étapes</p>
                   <p className="text-white/70 text-sm leading-relaxed">
-                    1. Payez via Airtel Money <strong>074799319</strong> ou Moov Money <strong>062708998</strong><br />
+                    1. Payez via Airtel Money <strong>074799319</strong> ou Moov Money <strong>065 23 54 84</strong><br />
                     2. Envoyez la confirmation WhatsApp avec votre capture d'ecran<br />
                     3. L'admin validera vos <strong className="text-white">{submitted.total} votes</strong> sous 24h
                   </p>

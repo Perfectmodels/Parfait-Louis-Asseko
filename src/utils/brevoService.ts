@@ -238,7 +238,7 @@ export const sendVoteConfirmation = (p: {
       <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;margin-bottom:24px">
         <p style="color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">💳 Effectuez votre paiement</p>
         <p style="color:#f5f0e8;margin:0 0 8px">📞 Airtel Money : <strong>074799319</strong></p>
-        <p style="color:#f5f0e8;margin:0 0 8px">📱 Moov Money : <strong>062708998</strong></p>
+        <p style="color:#f5f0e8;margin:0 0 8px">📱 Moov Money : <strong>065 23 54 84</strong></p>
         <p style="color:#f5f0e8aa;font-size:13px;margin:0">Mentionnez la référence <strong style="color:#c9a84c">${p.txRef}</strong> lors du paiement.</p>
       </div>
       <p style="color:#f5f0e8aa;font-size:13px;line-height:1.7;margin:0">

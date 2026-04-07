@@ -489,6 +489,8 @@ export interface MissOneLightPendingVote {
   phone: string;
   txRef: string;
   validated: boolean;
+  cancelled?: boolean;   // annulé lors d'un reset votes
   timestamp: string;
   validatedAt?: string;
+  cancelledAt?: string;
 }
