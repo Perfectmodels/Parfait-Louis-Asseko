@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Search } from 'lucide-react';
+import { Heart, ChevronLeft, ChevronRight, User } from 'lucide-react';
 
 interface Candidate {
   id: string;
@@ -11,120 +11,158 @@ interface Candidate {
   order: number;
 }
 
-interface CandidatesSlideProp {
+interface Props {
   candidates: Candidate[];
   onVote: (candidateId: string) => void;
   votedCandidates: Set<string>;
 }
 
-export default function CandidatesSlide({ candidates, onVote, votedCandidates }: CandidatesSlideProp) {
-  const [searchTerm, setSearchTerm] = useState('');
+const PAGE_SIZE = 4;
 
-  // Sort by order of passage
+export default function CandidatesSlide({ candidates, onVote, votedCandidates }: Props) {
+  const [page, setPage] = useState(0);
+
   const sorted = [...candidates].sort((a, b) => (a.order ?? a.number) - (b.order ?? b.number));
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+  const visible = sorted.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
+  const maxVotes = Math.max(...candidates.map(c => c.votes), 1);
 
-  const filtered = sorted.filter(
-    (c) =>
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.number.toString().includes(searchTerm)
-  );
-
-  const maxVotes = Math.max(...candidates.map((c) => c.votes), 1);
+  const prev = () => setPage(p => Math.max(0, p - 1));
+  const next = () => setPage(p => Math.min(totalPages - 1, p + 1));
 
   return (
-    <div className="w-full px-6 md:px-12 pt-10 pb-10 bg-pm-dark relative">
+    <div className="w-full px-4 md:px-12 py-8 md:py-10 bg-pm-dark">
 
-      {/* Header */}
-      <div className="relative z-10 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#009E60] mb-3 block">Ordre de passage</span>
-          <h2 className="text-4xl md:text-5xl font-playfair font-bold text-white">
-            Toutes les <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#009E60] via-[#FCD116] to-[#3A75C4]">Candidates</span>
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="min-w-0">
+          <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-[#009E60] mb-1 block">
+            Ordre de passage
+          </span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-playfair font-bold text-white leading-tight">
+            Toutes les{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#009E60] via-[#FCD116] to-[#3A75C4]">
+              Candidates
+            </span>
           </h2>
         </div>
 
-        <div className="relative w-full md:w-80 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-pm-gold transition-colors" size={16} />
-          <input
-            type="text"
-            placeholder="Rechercher..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-pm-gold/50 text-sm"
-          />
+        {/* Arrows + counter — large tap targets on mobile */}
+        <div className="flex items-center gap-2 shrink-0 ml-4">
+          <button
+            onClick={prev}
+            disabled={safePage === 0}
+            aria-label="Page précédente"
+            className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-[#FCD116]/60 disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-90"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <span className="text-white/40 text-xs font-mono tabular-nums w-10 text-center">
+            {safePage + 1}/{totalPages}
+          </span>
+          <button
+            onClick={next}
+            disabled={safePage === totalPages - 1}
+            aria-label="Page suivante"
+            className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-white hover:border-[#FCD116]/60 disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-90"
+          >
+            <ChevronRight size={18} />
+          </button>
         </div>
       </div>
 
-      {/* Vertical list */}
-      <div className="relative z-10 flex flex-col gap-3">
-        {filtered.map((candidate) => (
+      {/* 2-col on mobile, 4-col on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        {visible.map((candidate) => (
           <div
             key={candidate.id}
-            className="group flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-[#FCD116]/30 hover:bg-white/[0.07] transition-all duration-300"
+            className="group relative bg-white/5 border border-white/10 rounded-xl md:rounded-2xl overflow-hidden hover:border-[#FCD116]/30 transition-all duration-300 flex flex-col"
           >
-            {/* Passage number — very prominent left column */}
-            <div className="shrink-0 w-20 md:w-24 self-stretch flex flex-col items-center justify-center bg-white/5 border-r border-white/10 group-hover:bg-[#FCD116]/10 transition-colors">
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 group-hover:text-[#FCD116]/60 transition-colors">Passage</span>
-              <span className="text-3xl md:text-4xl font-playfair font-black text-white group-hover:text-[#FCD116] transition-colors leading-none">
-                {candidate.order ?? candidate.number}
-              </span>
-            </div>
-
             {/* Photo */}
-            <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border border-white/10">
+            <div className="relative aspect-[3/4] overflow-hidden">
               {candidate.photo
-                ? <img src={candidate.photo} alt={candidate.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                : <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20 font-playfair text-xl">{candidate.name[0]}</div>
+                ? <img src={candidate.photo} alt={candidate.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                : <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                    <User size={28} className="text-white/20" />
+                  </div>
               }
+              <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-transparent to-transparent opacity-70" />
+
+              {/* Passage number badge */}
+              <div className="absolute top-2 right-2 bg-pm-dark/70 backdrop-blur-md border border-white/20 rounded-lg w-9 h-9 md:w-11 md:h-11 flex flex-col items-center justify-center group-hover:bg-[#FCD116] group-hover:border-[#FCD116] transition-colors duration-300">
+                <span className="text-[7px] font-black uppercase text-white/40 group-hover:text-pm-dark/60 leading-none">N°</span>
+                <span className="text-sm md:text-base font-black text-white group-hover:text-pm-dark leading-none">{candidate.order ?? candidate.number}</span>
+              </div>
+
+              {/* Rank badge */}
+              {candidate.rank && candidate.rank <= 3 && (
+                <div className="absolute top-2 left-2 bg-gradient-to-br from-[#FCD116] to-[#D4AF37] text-pm-dark font-black px-1.5 py-0.5 rounded-md text-[8px] uppercase tracking-tight shadow-lg">
+                  #{candidate.rank}
+                </div>
+              )}
             </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0 py-3">
-              <div className="flex items-center gap-2 mb-1">
-                {candidate.rank && candidate.rank <= 3 && (
-                  <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#FCD116]/20 text-[#FCD116]">
-                    Top {candidate.rank}
-                  </span>
-                )}
-              </div>
-              <h3 className="text-white font-playfair font-bold text-base md:text-lg truncate">{candidate.name}</h3>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="flex-1 bg-white/5 rounded-full h-1 overflow-hidden max-w-[160px]">
+            <div className="p-3 md:p-4 flex flex-col flex-1">
+              <h3 className="text-white font-playfair font-bold text-sm md:text-base truncate mb-2">
+                {candidate.name}
+              </h3>
+
+              {/* Progress bar */}
+              <div className="mb-3">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-[8px] uppercase tracking-widest text-white/30">Votes</span>
+                  <span className="text-[#FCD116] font-bold text-[10px]">{candidate.votes}</span>
+                </div>
+                <div className="w-full bg-white/5 rounded-full h-1 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-[#009E60] via-[#FCD116] to-[#3A75C4] h-full transition-all duration-1000"
+                    className="bg-gradient-to-r from-[#009E60] via-[#FCD116] to-[#3A75C4] h-full transition-all duration-700"
                     style={{ width: `${(candidate.votes / maxVotes) * 100}%` }}
                   />
                 </div>
-                <span className="text-[#FCD116] font-bold text-xs tracking-widest shrink-0">{candidate.votes} votes</span>
               </div>
-            </div>
 
-            {/* Vote button */}
-            <div className="shrink-0 pr-4">
+              {/* Vote button — full width, good tap target */}
               <button
                 onClick={() => onVote(candidate.id)}
                 disabled={votedCandidates.has(candidate.id)}
                 aria-label={`Voter pour ${candidate.name}`}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
+                className={`mt-auto w-full py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all active:scale-95 ${
                   votedCandidates.has(candidate.id)
                     ? 'bg-white/5 text-white/20 cursor-not-allowed'
-                    : 'bg-[#FCD116] text-pm-dark hover:bg-white active:scale-95 shadow-lg shadow-[#FCD116]/10'
+                    : 'bg-[#FCD116] text-pm-dark hover:bg-white shadow-md shadow-[#FCD116]/10'
                 }`}
               >
-                <Heart size={12} fill={votedCandidates.has(candidate.id) ? 'none' : 'currentColor'} />
-                <span className="hidden sm:inline">{votedCandidates.has(candidate.id) ? 'Voté' : 'Voter'}</span>
+                <Heart size={11} fill={votedCandidates.has(candidate.id) ? 'none' : 'currentColor'} />
+                {votedCandidates.has(candidate.id) ? 'Voté' : 'Voter'}
               </button>
             </div>
           </div>
         ))}
 
-        {filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-40 text-center">
-            <Search className="text-white/5 mb-3" size={36} />
-            <p className="text-white/20 text-sm">Aucune candidate trouvée</p>
-          </div>
-        )}
+        {/* Stable placeholders on last page (desktop only) */}
+        {Array.from({ length: PAGE_SIZE - visible.length }).map((_, i) => (
+          <div key={`ph-${i}`} className="rounded-2xl bg-white/[0.02] border border-white/5 aspect-[3/4] hidden lg:block" />
+        ))}
       </div>
+
+      {/* Dot pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 mt-6">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i)}
+              aria-label={`Page ${i + 1}`}
+              className={`rounded-full transition-all ${
+                i === safePage ? 'w-5 h-2 bg-[#FCD116]' : 'w-2 h-2 bg-white/20 hover:bg-white/40'
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
