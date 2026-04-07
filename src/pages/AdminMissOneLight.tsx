@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Edit2, Save, X, Upload, CheckCircle, Clock, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Upload, CheckCircle, Clock, TrendingUp, RotateCcw } from 'lucide-react';
 import { rtdb } from '../firebase';
 import {
   ref,
@@ -63,6 +63,7 @@ export default function AdminMissOneLight() {
   const [activeTab, setActiveTab] = useState<'candidates' | 'pending' | 'comptabilite'>('candidates');
   const [pendingVotes, setPendingVotes] = useState<MissOneLightPendingVote[]>([]);
   const [validating, setValidating] = useState<string | null>(null);
+  const [pendingSubTab, setPendingSubTab] = useState<'waiting' | 'done'>('waiting');
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -254,6 +255,28 @@ export default function AdminMissOneLight() {
       showToast('Candidate supprimée', 'success');
     } catch {
       showToast('Erreur lors de la suppression', 'error');
+    }
+  };
+
+  const handleResetVotes = async (c: { id: string; name: string }) => {
+    if (!confirm(`Remettre les votes de ${c.name} à zéro ?\nLes transactions validées seront marquées comme annulées dans la comptabilité.`)) return;
+    try {
+      // 1. Reset vote count on the candidate
+      await update(ref(rtdb, `${RTDB_PATH}/${c.id}`), { votes: 0 });
+
+      // 2. Mark all validated pending votes for this candidate as cancelled
+      //    so the accounting tab stays balanced
+      const toCancel = pendingVotes.filter(v => v.candidateId === c.id && v.validated && !v.cancelled);
+      await Promise.all(toCancel.map(v =>
+        update(ref(rtdb, `missOneLight/pendingVotes/${v.id}`), {
+          cancelled: true,
+          cancelledAt: new Date().toISOString(),
+        })
+      ));
+
+      showToast(`Votes de ${c.name} remis à zéro${toCancel.length > 0 ? ` · ${toCancel.length} transaction(s) annulée(s)` : ''}`, 'success');
+    } catch {
+      showToast('Erreur lors de la remise à zéro', 'error');
     }
   };
 
@@ -482,6 +505,11 @@ export default function AdminMissOneLight() {
                           className="bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 p-2 rounded-lg transition-all">
                           <Edit2 size={16} />
                         </button>
+                        <button onClick={() => handleResetVotes(c)}
+                          title="Remettre les votes à zéro"
+                          className="bg-orange-500/20 hover:bg-orange-500/40 text-orange-300 p-2 rounded-lg transition-all">
+                          <RotateCcw size={16} />
+                        </button>
                         <button onClick={() => handleDelete(c.id)}
                           className="bg-red-500/20 hover:bg-red-500/40 text-red-300 p-2 rounded-lg transition-all">
                           <Trash2 size={16} />
@@ -521,109 +549,155 @@ export default function AdminMissOneLight() {
         )} {/* end candidates tab */}
 
         {/* Pending Votes Tab */}
-        {activeTab === 'pending' && (
-          <div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white/10 border border-white/20 rounded-2xl p-5">
-                <p className="text-white/40 text-xs uppercase tracking-widest mb-1">En attente</p>
-                <p className="text-3xl font-bold text-amber-400">{pendingVotes.filter(v => !v.validated).length}</p>
+        {activeTab === 'pending' && (() => {
+          const waiting = pendingVotes.filter(v => !v.validated && !v.cancelled);
+          const done = pendingVotes.filter(v => v.validated || v.cancelled);
+
+          const VoteCard = ({ v }: { v: MissOneLightPendingVote }) => (
+            <div className={`bg-white/5 border rounded-2xl p-4 space-y-3 transition-all ${
+              v.cancelled ? 'border-red-500/20 opacity-50' : v.validated ? 'border-green-500/20 opacity-70' : 'border-white/10 hover:border-amber-400/30'
+            }`}>
+              {/* Top row: candidate + status + amount */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-white font-bold truncate">{v.candidateName}</p>
+                  <p className="text-white/40 text-xs font-mono mt-0.5 truncate">{v.txRef}</p>
+                </div>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  {v.cancelled
+                    ? <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-500/20 text-red-300">Annulé</span>
+                    : v.validated
+                    ? <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-green-500/20 text-green-300">Validé</span>
+                    : <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">En attente</span>
+                  }
+                  <span className="text-amber-400 font-black text-sm">{v.votes * 100} FCFA</span>
+                </div>
               </div>
-              <div className="bg-white/10 border border-white/20 rounded-2xl p-5">
-                <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Validés</p>
-                <p className="text-3xl font-bold text-green-400">{pendingVotes.filter(v => v.validated).length}</p>
+
+              {/* Votes row */}
+              <div className="flex gap-4 text-sm">
+                <div>
+                  <span className="text-white/30 text-xs">Achetés</span>
+                  <p className="text-pink-400 font-bold">{v.votes}</p>
+                </div>
+                {(v.bonusVotes ?? 0) > 0 && (
+                  <div>
+                    <span className="text-white/30 text-xs">Bonus</span>
+                    <p className="text-[#009E60] font-bold">+{v.bonusVotes}</p>
+                  </div>
+                )}
+                <div>
+                  <span className="text-white/30 text-xs">Total</span>
+                  <p className="text-white font-black">{v.totalVotes ?? v.votes}</p>
+                </div>
               </div>
-              <div className="bg-white/10 border border-white/20 rounded-2xl p-5">
-                <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Votes à valider</p>
-                <p className="text-3xl font-bold text-white">{pendingVotes.filter(v => !v.validated).reduce((s, v) => s + v.votes, 0)}</p>
+
+              {/* Contact row */}
+              <div className="text-xs text-white/40 space-y-0.5">
+                <p className="truncate">📧 {v.email}</p>
+                <p>📱 {v.phone}</p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-1">
+                {!v.validated && !v.cancelled && (
+                  <button
+                    onClick={() => handleValidateVote(v)}
+                    disabled={validating === v.id}
+                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 text-xs font-bold transition-all"
+                  >
+                    {validating === v.id
+                      ? <span className="w-3.5 h-3.5 border border-green-300/40 border-t-green-300 rounded-full animate-spin block" />
+                      : <CheckCircle size={14} />
+                    }
+                    Valider
+                  </button>
+                )}
+                <button
+                  onClick={() => handleWhatsApp(v)}
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-[#25D366]/20 hover:bg-[#25D366]/40 text-[#25D366] text-xs font-bold transition-all"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  WA
+                </button>
+                <button
+                  onClick={() => handleDeletePending(v.id)}
+                  className="flex items-center justify-center px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/40 text-red-300 transition-all"
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
             </div>
+          );
 
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10 bg-white/5">
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Candidate</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Achetés</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Bonus</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Total</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Montant</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Email</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Téléphone</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Référence</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Statut</th>
-                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pendingVotes.map((v) => (
-                      <tr key={v.id} className={`border-b border-white/10 transition-all ${v.validated ? 'opacity-50' : 'hover:bg-white/5'}`}>
-                        <td className="px-4 py-3 text-white font-semibold">{v.candidateName}</td>
-                        <td className="px-4 py-3 text-pink-400 font-bold">{v.votes}</td>
-                        <td className="px-4 py-3 text-[#009E60] font-bold">{v.bonusVotes > 0 ? `+${v.bonusVotes}` : '—'}</td>
-                        <td className="px-4 py-3 text-white font-black">{v.totalVotes ?? v.votes}</td>
-                        <td className="px-4 py-3 text-amber-400 font-bold">{v.votes * 100} FCFA</td>
-                        <td className="px-4 py-3 text-white/60 text-sm">{v.email}</td>
-                        <td className="px-4 py-3 text-white/60 text-sm">{v.phone}</td>
-                        <td className="px-4 py-3 text-white/40 font-mono text-xs">{v.txRef}</td>
-                        <td className="px-4 py-3">
-                          {v.validated
-                            ? <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-500/20 text-green-300">Validé</span>
-                            : <span className="text-xs font-semibold px-2 py-1 rounded-full bg-amber-500/20 text-amber-300">En attente</span>
-                          }
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex gap-2">
-                            {!v.validated && (
-                              <button
-                                onClick={() => handleValidateVote(v)}
-                                disabled={validating === v.id}
-                                title="Valider ce vote"
-                                className="bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 p-2 rounded-lg transition-all"
-                              >
-                                {validating === v.id
-                                  ? <span className="w-4 h-4 border border-green-300/40 border-t-green-300 rounded-full animate-spin block" />
-                                  : <CheckCircle size={16} />
-                                }
-                              </button>
-                            )}
-                            <button
-                              onClick={() => handleWhatsApp(v)}
-                              title="Contacter sur WhatsApp"
-                              className="bg-[#25D366]/20 hover:bg-[#25D366]/40 text-[#25D366] p-2 rounded-lg transition-all"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                            </button>
-                            <button
-                              onClick={() => handleDeletePending(v.id)}
-                              title="Supprimer"
-                              className="bg-red-500/20 hover:bg-red-500/40 text-red-300 p-2 rounded-lg transition-all"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {pendingVotes.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-gray-400">Aucune demande de vote pour l'instant.</p>
+          return (
+            <div className="space-y-6">
+              {/* KPI */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-white/10 border border-white/20 rounded-2xl p-4">
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">En attente</p>
+                  <p className="text-2xl font-bold text-amber-400">{waiting.length}</p>
                 </div>
+                <div className="bg-white/10 border border-white/20 rounded-2xl p-4">
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Validés</p>
+                  <p className="text-2xl font-bold text-green-400">{pendingVotes.filter(v => v.validated && !v.cancelled).length}</p>
+                </div>
+                <div className="bg-white/10 border border-white/20 rounded-2xl p-4">
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Votes à valider</p>
+                  <p className="text-2xl font-bold text-white">{waiting.reduce((s, v) => s + v.votes, 0)}</p>
+                </div>
+              </div>
+
+              {/* Sub-tabs */}
+              <div className="flex gap-2 border-b border-white/10 pb-0">
+                <button
+                  onClick={() => setPendingSubTab('waiting')}
+                  className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'waiting' ? 'bg-amber-500 text-white' : 'text-white/50 hover:text-white'}`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse" />
+                  En attente
+                  {waiting.length > 0 && (
+                    <span className="bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{waiting.length}</span>
+                  )}
+                </button>
+                <button
+                  onClick={() => setPendingSubTab('done')}
+                  className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'done' ? 'bg-green-600 text-white' : 'text-white/50 hover:text-white'}`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-green-400" />
+                  Traités ({done.length})
+                </button>
+              </div>
+
+              {/* Sub-tab content */}
+              {pendingSubTab === 'waiting' && (
+                waiting.length === 0
+                  ? <p className="text-white/30 text-sm py-10 text-center border border-white/10 rounded-2xl">Aucune demande en attente</p>
+                  : <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {waiting.map(v => <VoteCard key={v.id} v={v} />)}
+                    </div>
+              )}
+
+              {pendingSubTab === 'done' && (
+                done.length === 0
+                  ? <p className="text-white/30 text-sm py-10 text-center border border-white/10 rounded-2xl">Aucune transaction traitée</p>
+                  : <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {done.map(v => <VoteCard key={v.id} v={v} />)}
+                    </div>
               )}
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Comptabilité Tab */}
         {activeTab === 'comptabilite' && (() => {
-          const validated = pendingVotes.filter(v => v.validated);
-          const pending = pendingVotes.filter(v => !v.validated);
+          const validated = pendingVotes.filter(v => v.validated && !v.cancelled);
+          const cancelled = pendingVotes.filter(v => v.cancelled);
+          const pending = pendingVotes.filter(v => !v.validated && !v.cancelled);
 
           const totalRevenue = validated.reduce((s, v) => s + v.votes * 100, 0);
           const pendingRevenue = pending.reduce((s, v) => s + v.votes * 100, 0);
+          const cancelledRevenue = cancelled.reduce((s, v) => s + v.votes * 100, 0);
           const totalVotesSold = validated.reduce((s, v) => s + v.votes, 0);
           const totalBonusGiven = validated.reduce((s, v) => s + (v.bonusVotes ?? 0), 0);
           const totalVotesCredited = validated.reduce((s, v) => s + (v.totalVotes ?? v.votes), 0);
@@ -691,6 +765,12 @@ export default function AdminMissOneLight() {
                   <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Revenu total (+ attente)</p>
                   <p className="text-xl font-black text-white">{(totalRevenue + pendingRevenue).toLocaleString()} FCFA</p>
                 </div>
+                {cancelledRevenue > 0 && (
+                  <div>
+                    <p className="text-red-400/60 text-xs uppercase tracking-widest mb-1">Annulés (reset)</p>
+                    <p className="text-xl font-black text-red-400">-{cancelledRevenue.toLocaleString()} FCFA</p>
+                  </div>
+                )}
               </div>
 
               {/* Per-candidate breakdown */}
