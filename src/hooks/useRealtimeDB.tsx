@@ -30,6 +30,27 @@ export const LAZY_COLLECTIONS = [
 export type LazyCollection = typeof LAZY_COLLECTIONS[number];
 import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, Transaction, PhotoshootBrief, NavLink, AdminProfile, GalleryItem, GalleryAlbum, MailingContact } from '../types';
 
+// Seed candidates Miss One Light
+const MISS_ONE_LIGHT_CANDIDATES = [
+    { order: 1,  name: 'LÉONCIA',  slug: 'leoncia',  photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 2,  name: 'CELIA',    slug: 'celia',    photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 3,  name: 'LAÏCA',    slug: 'laica',    photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 4,  name: 'SARAH',    slug: 'sarah',    photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 5,  name: 'ANNA',     slug: 'anna',     photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 6,  name: 'RÉUSSITE', slug: 'reussite', photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 7,  name: 'JOHANNE',  slug: 'johanne',  photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 8,  name: 'LEÏLA',    slug: 'leila',    photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 9,  name: 'DJENIFER', slug: 'djenifer', photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 10, name: 'RENÉE',    slug: 'renee',    photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 11, name: 'FANELLA',  slug: 'fanella',  photo: '', bio: '', votes: 0, status: 'active' },
+    { order: 12, name: 'ARIANA',   slug: 'ariana',   photo: '', bio: '', votes: 0, status: 'active' },
+];
+
+// Convert array to keyed object (slug as key) for RTDB
+const missOneLightCandidatesObj = Object.fromEntries(
+    MISS_ONE_LIGHT_CANDIDATES.map(c => [c.slug, c])
+);
+
 // Lazy-load initial seed data — only needed if Firebase DB is empty (first run)
 const loadInitialData = async () => {
     const [{ articles }, { courseData }, data] = await Promise.all([
@@ -266,11 +287,24 @@ export const useRealtimeDB = () => {
                 const normalizedData = normalizeData(withLazyPlaceholders);
                 setData(normalizedData);
                 logger.log("✅ Realtime DB data loaded successfully");
+
+                // Patch: if missOneLight/candidates is missing, seed it now
+                if (!dbData.missOneLight?.candidates) {
+                    set(ref(db, 'missOneLight/candidates'), missOneLightCandidatesObj)
+                        .then(() => logger.log("✅ missOneLight/candidates seeded"))
+                        .catch(() => {});
+                }
+
                 setIsInitialized(true);
             } else {
                 // DB is empty — load seed data lazily then write it
                 getInitialData().then(initial => {
-                    set(dbRef, initial).then(() => {
+                    // Include Miss One Light candidates in the seed
+                    const withMissOneLight = {
+                        ...initial,
+                        missOneLight: { candidates: missOneLightCandidatesObj },
+                    };
+                    set(dbRef, withMissOneLight).then(() => {
                         setData(initial);
                         logger.log("✅ Realtime DB seeded with initial data.");
                     }).catch(error => {
