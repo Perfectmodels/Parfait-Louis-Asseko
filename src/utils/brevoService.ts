@@ -247,3 +247,38 @@ export const sendVoteConfirmation = (p: {
       </p>
     `, `Vote Miss One Light — ${p.votes} votes pour ${p.candidateName}`),
   });
+
+/** Email envoyé au votant UNIQUEMENT après validation par l'admin */
+export const sendVoteValidatedEmail = (p: {
+  email: string;
+  candidateName: string;
+  votes: number;
+  bonusVotes: number;
+  totalVotes: number;
+  txRef: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.email }],
+    subject: `✅ Vos votes sont activés — Miss One Light`,
+    htmlContent: buildEmailTemplate(`
+      <h2 style="color:#009E60;font-family:Georgia,serif;font-size:24px;margin:0 0 16px">🎉 Vos votes sont activés !</h2>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Votre paiement a été confirmé. Vos votes pour <strong style="color:#c9a84c">${p.candidateName}</strong> sont maintenant comptabilisés dans le classement en direct.
+      </p>
+      <div style="background:#009E600d;border:1px solid #009E6033;border-radius:8px;padding:20px;margin-bottom:24px">
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#009E60;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:140px">Candidate</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.candidateName}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#009E60;font-size:11px;text-transform:uppercase;letter-spacing:2px">Votes achetés</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.votes}</td></tr>
+          ${p.bonusVotes > 0 ? `<tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#009E60;font-size:11px;text-transform:uppercase;letter-spacing:2px">Bonus offerts</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#009E60;font-weight:bold">+${p.bonusVotes}</td></tr>` : ''}
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#009E60;font-size:11px;text-transform:uppercase;letter-spacing:2px">Total crédités</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8;font-weight:bold;font-size:18px">${p.totalVotes}</td></tr>
+          <tr><td style="padding:8px 0;color:#009E60;font-size:11px;text-transform:uppercase;letter-spacing:2px">Référence</td><td style="padding:8px 0;color:#f5f0e8;font-family:monospace">${p.txRef}</td></tr>
+        </table>
+      </div>
+      <div style="text-align:center;margin-bottom:24px">
+        <a href="https://perfectmodels.ga/miss-one-light" style="display:inline-block;background:#009E60;color:#fff;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px">Voir le classement en direct</a>
+      </div>
+      <p style="color:#f5f0e8aa;font-size:13px;line-height:1.7;margin:0;text-align:center">
+        Merci pour votre soutien à <strong style="color:#c9a84c">${p.candidateName}</strong> 🌟
+      </p>
+    `, `Vos ${p.totalVotes} votes pour ${p.candidateName} sont activés !`),
+  });
