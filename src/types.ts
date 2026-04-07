@@ -482,6 +482,7 @@ export interface MissOneLightPendingVote {
   id: string;
   candidateId: string;
   candidateName: string;
+  voterName?: string;      // nom du votant
   votes: number;         // votes achetés (payés)
   bonusVotes: number;    // votes bonus (+5 par tranche de 10)
   totalVotes: number;    // votes + bonusVotes

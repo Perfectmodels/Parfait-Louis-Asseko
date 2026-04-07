@@ -12,6 +12,7 @@ import {
 } from 'firebase/database';
 import { MissOneLightPendingVote } from '../types';
 import { uploadToCloudinary, validateFile } from '../utils/cloudinaryService';
+import { sendVoteValidatedEmail } from '../utils/brevoService';
 
 interface Candidate {
   id: string;
@@ -64,6 +65,8 @@ export default function AdminMissOneLight() {
   const [pendingVotes, setPendingVotes] = useState<MissOneLightPendingVote[]>([]);
   const [validating, setValidating] = useState<string | null>(null);
   const [pendingSubTab, setPendingSubTab] = useState<'waiting' | 'done'>('waiting');
+  const [pendingSort, setPendingSort] = useState<'date' | 'candidate' | 'amount'>('date');
+  const [pendingSortDir, setPendingSortDir] = useState<'asc' | 'desc'>('desc');
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -165,6 +168,17 @@ export default function AdminMissOneLight() {
       await update(ref(rtdb, `${RTDB_PATH}/${pending.candidateId}`), {
         votes: increment(credited),
       });
+
+      // Send validation email to the voter (non-blocking)
+      sendVoteValidatedEmail({
+        email: pending.email,
+        candidateName: pending.candidateName,
+        votes: pending.votes,
+        bonusVotes: pending.bonusVotes ?? 0,
+        totalVotes: credited,
+        txRef: pending.txRef,
+      }).catch(() => {});
+
       showToast(`✅ ${credited} vote(s) crédités pour ${pending.candidateName}`, 'success');
     } catch {
       showToast('Erreur lors de la validation', 'error');
@@ -180,8 +194,9 @@ export default function AdminMissOneLight() {
   };
 
   const handleWhatsApp = (pending: MissOneLightPendingVote) => {
-    const msg = `Bonjour, votre vote pour ${pending.candidateName} (${pending.votes} votes — ${pending.votes * 100} FCFA) a bien été validé ! Merci pour votre soutien. 🌟`;
-    window.open(`https://wa.me/${pending.phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+    const voterPhone = pending.phone.replace(/\D/g, '');
+    const msg = `Bonjour ${pending.voterName || ''}, votre vote pour ${pending.candidateName} (${pending.totalVotes ?? pending.votes} votes) a bien été validé ! Merci pour votre soutien. 🌟`;
+    window.open(`https://wa.me/${voterPhone}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   const handleImport = async () => {
@@ -553,6 +568,36 @@ export default function AdminMissOneLight() {
           const waiting = pendingVotes.filter(v => !v.validated && !v.cancelled);
           const done = pendingVotes.filter(v => v.validated || v.cancelled);
 
+          const sortFn = (a: MissOneLightPendingVote, b: MissOneLightPendingVote) => {
+            let cmp = 0;
+            if (pendingSort === 'date')      cmp = new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+            if (pendingSort === 'candidate') cmp = a.candidateName.localeCompare(b.candidateName);
+            if (pendingSort === 'amount')    cmp = a.votes - b.votes;
+            return pendingSortDir === 'asc' ? cmp : -cmp;
+          };
+
+          const toggleSort = (col: typeof pendingSort) => {
+            if (pendingSort === col) setPendingSortDir(d => d === 'asc' ? 'desc' : 'asc');
+            else { setPendingSort(col); setPendingSortDir('desc'); }
+          };
+
+          const SortBtn = ({ col, label }: { col: typeof pendingSort; label: string }) => (
+            <button
+              onClick={() => toggleSort(col)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-all border ${
+                pendingSort === col
+                  ? 'bg-white/20 border-white/30 text-white'
+                  : 'bg-white/5 border-white/10 text-white/40 hover:text-white hover:border-white/20'
+              }`}
+            >
+              {label}
+              {pendingSort === col && <span className="text-[10px]">{pendingSortDir === 'desc' ? '↓' : '↑'}</span>}
+            </button>
+          );
+
+          const sortedWaiting = [...waiting].sort(sortFn);
+          const sortedDone = [...done].sort(sortFn);
+
           const VoteCard = ({ v }: { v: MissOneLightPendingVote }) => (
             <div className={`bg-white/5 border rounded-2xl p-4 space-y-3 transition-all ${
               v.cancelled ? 'border-red-500/20 opacity-50' : v.validated ? 'border-green-500/20 opacity-70' : 'border-white/10 hover:border-amber-400/30'
@@ -594,8 +639,22 @@ export default function AdminMissOneLight() {
 
               {/* Contact row */}
               <div className="text-xs text-white/40 space-y-0.5">
+                {v.voterName && <p className="text-white/60 font-semibold">👤 {v.voterName}</p>}
                 <p className="truncate">📧 {v.email}</p>
                 <p>📱 {v.phone}</p>
+                <p className="text-white/25">
+                  🕐 {new Date(v.timestamp).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  {v.validatedAt && (
+                    <span className="ml-2 text-green-400/60">
+                      · validé {new Date(v.validatedAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                  {v.cancelledAt && (
+                    <span className="ml-2 text-red-400/60">
+                      · annulé {new Date(v.cancelledAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                </p>
               </div>
 
               {/* Actions */}
@@ -649,40 +708,49 @@ export default function AdminMissOneLight() {
               </div>
 
               {/* Sub-tabs */}
-              <div className="flex gap-2 border-b border-white/10 pb-0">
-                <button
-                  onClick={() => setPendingSubTab('waiting')}
-                  className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'waiting' ? 'bg-amber-500 text-white' : 'text-white/50 hover:text-white'}`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse" />
-                  En attente
-                  {waiting.length > 0 && (
-                    <span className="bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{waiting.length}</span>
-                  )}
-                </button>
-                <button
-                  onClick={() => setPendingSubTab('done')}
-                  className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'done' ? 'bg-green-600 text-white' : 'text-white/50 hover:text-white'}`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-green-400" />
-                  Traités ({done.length})
-                </button>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPendingSubTab('waiting')}
+                    className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'waiting' ? 'bg-amber-500 text-white' : 'text-white/50 hover:text-white'}`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse" />
+                    En attente
+                    {waiting.length > 0 && (
+                      <span className="bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{waiting.length}</span>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setPendingSubTab('done')}
+                    className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'done' ? 'bg-green-600 text-white' : 'text-white/50 hover:text-white'}`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-green-400" />
+                    Traités ({done.length})
+                  </button>
+                </div>
+                {/* Sort controls */}
+                <div className="flex items-center gap-2">
+                  <span className="text-white/30 text-xs">Trier :</span>
+                  <SortBtn col="date" label="Date" />
+                  <SortBtn col="candidate" label="Candidate" />
+                  <SortBtn col="amount" label="Montant" />
+                </div>
               </div>
 
               {/* Sub-tab content */}
               {pendingSubTab === 'waiting' && (
-                waiting.length === 0
+                sortedWaiting.length === 0
                   ? <p className="text-white/30 text-sm py-10 text-center border border-white/10 rounded-2xl">Aucune demande en attente</p>
                   : <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {waiting.map(v => <VoteCard key={v.id} v={v} />)}
+                      {sortedWaiting.map(v => <VoteCard key={v.id} v={v} />)}
                     </div>
               )}
 
               {pendingSubTab === 'done' && (
-                done.length === 0
+                sortedDone.length === 0
                   ? <p className="text-white/30 text-sm py-10 text-center border border-white/10 rounded-2xl">Aucune transaction traitée</p>
                   : <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {done.map(v => <VoteCard key={v.id} v={v} />)}
+                      {sortedDone.map(v => <VoteCard key={v.id} v={v} />)}
                     </div>
               )}
             </div>
