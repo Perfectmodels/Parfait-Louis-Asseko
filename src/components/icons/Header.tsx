@@ -32,6 +32,7 @@ export const Breadcrumb: React.FC = () => {
 const NAV_LINKS = [
   { path: '/agence', label: 'Agence' },
   { path: '/mannequins', label: 'Mannequins' },
+  { path: '/miss-one-light', label: 'Miss One Light', highlight: true },
   { path: '/fashion-day', label: 'Fashion Day' },
   { path: '/casting', label: 'Casting' },
   { path: '/services', label: 'Services' },
@@ -84,10 +85,19 @@ const Header: React.FC = () => {
                 key={link.path}
                 to={link.path}
                 className={`text-[10px] font-black uppercase tracking-[0.25em] xl:tracking-[0.3em] transition-colors duration-300 relative group ${
-                  location.pathname === link.path ? 'text-pm-gold' : 'text-white/50 hover:text-white'
+                  link.highlight
+                    ? location.pathname === link.path
+                      ? 'text-pm-gold'
+                      : 'text-pm-gold/70 hover:text-pm-gold'
+                    : location.pathname === link.path
+                    ? 'text-pm-gold'
+                    : 'text-white/50 hover:text-white'
                 }`}
               >
                 {link.label}
+                {link.highlight && location.pathname !== link.path && (
+                  <span className="ml-1.5 inline-block w-1.5 h-1.5 rounded-full bg-pm-gold animate-pulse align-middle" />
+                )}
                 <span className={`absolute -bottom-1 left-0 h-px bg-pm-gold transition-all duration-500 ${
                   location.pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
                 }`} />

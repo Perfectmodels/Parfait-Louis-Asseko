@@ -1,987 +1,769 @@
-import React, { useState, useEffect } from 'react';
-import { ref, onValue, set, push, remove } from 'firebase/database';
-import { db } from '../firebaseConfig';
-import { Miss5emeCandidate, Miss5emeScore, Miss5emeResult, Miss5emeCandidateSheet, Miss5emeJury } from '../types';
-import { useToast } from '../components/ui/Toast';
-import AdminLayout from '../components/admin/AdminLayout';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Trash2, Edit2, Save, X, Upload, CheckCircle, Clock, TrendingUp } from 'lucide-react';
+import { rtdb } from '../firebase';
+import {
+  ref,
+  set,
+  remove,
+  update,
+  onValue,
+  push,
+  increment,
+} from 'firebase/database';
+import { MissOneLightPendingVote } from '../types';
+import { uploadToCloudinary, validateFile } from '../utils/cloudinaryService';
 
-const AdminMiss5eme: React.FC = () => {
-  const { success: showToast, error: showError } = useToast();
-  const [activeTab, setActiveTab] = useState<'candidates' | 'results' | 'sheets'>('candidates');
-  const [candidates, setCandidates] = useState<Miss5emeCandidate[]>([]);
-  const [scores, setScores] = useState<Miss5emeScore[]>([]);
-  const [results, setResults] = useState<Miss5emeResult[]>([]);
-  const [candidateSheets, setCandidateSheets] = useState<Miss5emeCandidateSheet[]>([]);
-  const [selectedSheet, setSelectedSheet] = useState<Miss5emeCandidateSheet | null>(null);
-  
-  // Notation modal state
-  const [isNotationModalOpen, setIsNotationModalOpen] = useState(false);
-  const [selectedCandidateForNotation, setSelectedCandidateForNotation] = useState<Miss5emeCandidate | null>(null);
-  const [selectedJuryForNotation, setSelectedJuryForNotation] = useState<1 | 2 | 3 | 4>(1);
-  const [selectedPassageForNotation, setSelectedPassageForNotation] = useState<1 | 2 | 3>(1);
-  const [notationScores, setNotationScores] = useState({
-    sourire: 0,
-    gestuelle: 0,
-    performanceTechnique: 0,
-    prestanceElegance: 0
-  });
-  
-  const [newCandidate, setNewCandidate] = useState({
-    name: '',
-    number: 1,
-    photoUrl: ''
-  });
+interface Candidate {
+  id: string;
+  order: number;
+  name: string;
+  slug: string;
+  photo: string;
+  bio: string;
+  votes: number;
+  status: 'active' | 'hidden' | 'winner';
+}
 
-  // Load candidates
+const INITIAL_CANDIDATES = [
+  { order: 1,  name: 'LÉONCIA',  slug: 'leoncia'  },
+  { order: 2,  name: 'CELIA',    slug: 'celia'    },
+  { order: 3,  name: 'LAÏCA',    slug: 'laica'    },
+  { order: 4,  name: 'SARAH',    slug: 'sarah'    },
+  { order: 5,  name: 'ANNA',     slug: 'anna'     },
+  { order: 6,  name: 'RÉUSSITE', slug: 'reussite' },
+  { order: 7,  name: 'JOHANNE',  slug: 'johanne'  },
+  { order: 8,  name: 'LEÏLA',    slug: 'leila'    },
+  { order: 9,  name: 'DJENIFER', slug: 'djenifer' },
+  { order: 10, name: 'RENÉE',    slug: 'renee'    },
+  { order: 11, name: 'FANELLA',  slug: 'fanella'  },
+  { order: 12, name: 'ARIANA',   slug: 'ariana'   },
+];
+
+const EMPTY_FORM = {
+  order: '', name: '', slug: '', photo: '', bio: '', status: 'active' as Candidate['status'],
+};
+
+const RTDB_PATH = 'missOneLight/candidates';
+
+export default function AdminMissOneLight() {
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [formData, setFormData] = useState(EMPTY_FORM);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [formUploading, setFormUploading] = useState(false);
+  const rowFileRef = useRef<HTMLInputElement>(null);
+  const formFileRef = useRef<HTMLInputElement>(null);
+  const pendingRowId = useRef<string | null>(null);
+
+  // Pending votes state
+  const [activeTab, setActiveTab] = useState<'candidates' | 'pending' | 'comptabilite'>('candidates');
+  const [pendingVotes, setPendingVotes] = useState<MissOneLightPendingVote[]>([]);
+  const [validating, setValidating] = useState<string | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  // Upload photo depuis le tableau (quick upload)
+  const handleRowUpload = async (file: File) => {
+    const id = pendingRowId.current;
+    if (!id) return;
+    const err = validateFile(file, 'image');
+    if (err) { showToast(err, 'error'); return; }
+    setUploadingId(id);
+    try {
+      const res = await uploadToCloudinary(file, 'image', 'miss-one-light');
+      await update(ref(rtdb, `${RTDB_PATH}/${id}`), { photo: res.secure_url });
+      showToast('Photo mise à jour', 'success');
+    } catch {
+      showToast("Erreur lors de l'upload", 'error');
+    } finally {
+      setUploadingId(null);
+      pendingRowId.current = null;
+    }
+  };
+
+  // Upload photo depuis le formulaire
+  const handleFormUpload = async (file: File) => {
+    const err = validateFile(file, 'image');
+    if (err) { showToast(err, 'error'); return; }
+    setFormUploading(true);
+    try {
+      const res = await uploadToCloudinary(file, 'image', 'miss-one-light');
+      setFormData(prev => ({ ...prev, photo: res.secure_url }));
+      showToast('Photo uploadée', 'success');
+    } catch {
+      showToast("Erreur lors de l'upload", 'error');
+    } finally {
+      setFormUploading(false);
+    }
+  };
+
+  // Écoute temps réel RTDB
   useEffect(() => {
-    const candidatesRef = ref(db, 'miss5emeCandidates');
+    const candidatesRef = ref(rtdb, RTDB_PATH);
     const unsubscribe = onValue(candidatesRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const candidatesList = Object.keys(data).map(key => ({
-          id: key,
-          ...data[key]
-        })).sort((a, b) => a.number - b.number);
-        setCandidates(candidatesList);
+      const data = snapshot.val();
+      if (data) {
+        const list: Candidate[] = Object.entries(data).map(([id, val]) => ({
+          id,
+          ...(val as Omit<Candidate, 'id'>),
+        }));
+        list.sort((a, b) => a.order - b.order);
+        setCandidates(list);
       } else {
         setCandidates([]);
       }
+      setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  // Load scores
+  // Load pending votes
   useEffect(() => {
-    const scoresRef = ref(db, 'miss5emeScores');
-    const unsubscribe = onValue(scoresRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const scoresList = Object.values(data) as Miss5emeScore[];
-        setScores(scoresList);
+    const pendingRef = ref(rtdb, 'missOneLight/pendingVotes');
+    const unsubscribe = onValue(pendingRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list: MissOneLightPendingVote[] = Object.entries(data).map(([id, val]) => ({
+          id,
+          ...(val as Omit<MissOneLightPendingVote, 'id'>),
+        })).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        setPendingVotes(list);
       } else {
-        setScores([]);
+        setPendingVotes([]);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // Calculate results
-  useEffect(() => {
-    if (candidates.length === 0 || scores.length === 0) {
-      setResults([]);
-      return;
-    }
-
-    const calculatedResults: Miss5emeResult[] = candidates.map(candidate => {
-      const candidateScores = scores.filter(s => s.candidateId === candidate.id);
-      
-      // Calculate average for each passage across all jury members
-      const passage1Scores = candidateScores.filter(s => s.passage === 1);
-      const passage2Scores = candidateScores.filter(s => s.passage === 2);
-      const passage3Scores = candidateScores.filter(s => s.passage === 3);
-      
-      const passage1Total = passage1Scores.length > 0
-        ? passage1Scores.reduce((sum, s) => sum + s.totalPassage, 0) / passage1Scores.length
-        : 0;
-      
-      const passage2Total = passage2Scores.length > 0
-        ? passage2Scores.reduce((sum, s) => sum + s.totalPassage, 0) / passage2Scores.length
-        : 0;
-      
-      const passage3Total = passage3Scores.length > 0
-        ? passage3Scores.reduce((sum, s) => sum + s.totalPassage, 0) / passage3Scores.length
-        : 0;
-      
-      const validPassages = [passage1Total, passage2Total, passage3Total].filter(p => p > 0);
-      const finalScore = validPassages.length > 0
-        ? validPassages.reduce((sum, p) => sum + p, 0) / validPassages.length
-        : 0;
-
-      return {
-        candidateId: candidate.id,
-        candidateName: candidate.name,
-        candidateNumber: candidate.number,
-        passage1Total,
-        passage2Total,
-        passage3Total,
-        finalScore
-      };
-    });
-
-    // Sort by final score and assign ranks
-    const sortedResults = calculatedResults
-      .sort((a, b) => b.finalScore - a.finalScore)
-      .map((result, index) => ({
-        ...result,
-        rank: index + 1
-      }));
-
-    setResults(sortedResults);
-  }, [candidates, scores]);
-
-  // Calculate candidate sheets
-  useEffect(() => {
-    if (candidates.length === 0) {
-      setCandidateSheets([]);
-      return;
-    }
-
-    const sheets: Miss5emeCandidateSheet[] = candidates.map(candidate => {
-      const candidateScores = scores.filter(s => s.candidateId === candidate.id);
-      
-      const scoresByJury: { [juryNumber: number]: any } = {};
-      [1, 2, 3, 4].forEach(juryNum => {
-        const juryScores = candidateScores.filter(s => s.juryNumber === juryNum);
-        scoresByJury[juryNum] = {
-          passage1: juryScores.find(s => s.passage === 1),
-          passage2: juryScores.find(s => s.passage === 2),
-          passage3: juryScores.find(s => s.passage === 3)
-        };
-      });
-
-      // Calculate averages by passage
-      const passage1Scores = candidateScores.filter(s => s.passage === 1);
-      const passage2Scores = candidateScores.filter(s => s.passage === 2);
-      const passage3Scores = candidateScores.filter(s => s.passage === 3);
-
-      const passage1Avg = passage1Scores.length > 0
-        ? passage1Scores.reduce((sum, s) => sum + s.totalPassage, 0) / passage1Scores.length
-        : 0;
-      const passage2Avg = passage2Scores.length > 0
-        ? passage2Scores.reduce((sum, s) => sum + s.totalPassage, 0) / passage2Scores.length
-        : 0;
-      const passage3Avg = passage3Scores.length > 0
-        ? passage3Scores.reduce((sum, s) => sum + s.totalPassage, 0) / passage3Scores.length
-        : 0;
-
-      const validAvgs = [passage1Avg, passage2Avg, passage3Avg].filter(a => a > 0);
-      const finalScore = validAvgs.length > 0
-        ? validAvgs.reduce((sum, a) => sum + a, 0) / validAvgs.length
-        : 0;
-
-      return {
-        candidateId: candidate.id,
-        candidateName: candidate.name,
-        candidateNumber: candidate.number,
-        scoresByJury,
-        averageByPassage: {
-          passage1: passage1Avg,
-          passage2: passage2Avg,
-          passage3: passage3Avg
-        },
-        finalScore
-      };
-    });
-
-    setCandidateSheets(sheets);
-  }, [candidates, scores]);
-
-  const handleAddCandidate = async () => {
-    if (!newCandidate.name.trim()) {
-      showError('Veuillez entrer un nom');
-      return;
-    }
-
-    if (candidates.some(c => c.number === newCandidate.number)) {
-      showError('Ce numéro est déjà utilisé');
-      return;
-    }
-
-    if (candidates.length >= 10) {
-      showError('Maximum 10 candidates');
-      return;
-    }
-
+  const handleValidateVote = async (pending: MissOneLightPendingVote) => {
+    const credited = pending.totalVotes ?? pending.votes;
+    if (!confirm(`Valider ${credited} vote(s) pour ${pending.candidateName} ?\n(${pending.votes} achetés + ${pending.bonusVotes ?? 0} bonus)`)) return;
+    setValidating(pending.id);
     try {
-      const candidateRef = push(ref(db, 'miss5emeCandidates'));
-      const candidateData: any = {
-        id: candidateRef.key!,
-        name: newCandidate.name.trim(),
-        number: newCandidate.number
-      };
-      
-      // Only add photoUrl if it has a value
-      if (newCandidate.photoUrl.trim()) {
-        candidateData.photoUrl = newCandidate.photoUrl.trim();
+      // Re-read the record first to guard against double-validation
+      // (two admins clicking validate simultaneously)
+      const { get } = await import('firebase/database');
+      const snap = await get(ref(rtdb, `missOneLight/pendingVotes/${pending.id}`));
+      if (!snap.exists() || snap.val()?.validated === true) {
+        showToast('Ce vote a déjà été validé ou supprimé.', 'error');
+        return;
       }
-
-      await set(candidateRef, candidateData);
-      showToast('Candidate ajoutée');
-      setNewCandidate({ name: '', number: candidates.length + 1, photoUrl: '' });
-    } catch (error) {
-      console.error('Erreur lors de l\'ajout:', error);
-      showError('Erreur lors de l\'ajout. Veuillez réessayer.');
+      // Mark validated first, then increment — order matters for consistency
+      await update(ref(rtdb, `missOneLight/pendingVotes/${pending.id}`), {
+        validated: true,
+        validatedAt: new Date().toISOString(),
+      });
+      // increment() is atomic in RTDB — safe under concurrent writes
+      await update(ref(rtdb, `${RTDB_PATH}/${pending.candidateId}`), {
+        votes: increment(credited),
+      });
+      showToast(`✅ ${credited} vote(s) crédités pour ${pending.candidateName}`, 'success');
+    } catch {
+      showToast('Erreur lors de la validation', 'error');
+    } finally {
+      setValidating(null);
     }
   };
 
-  const handleDeleteCandidate = async (candidateId: string) => {
-    if (!confirm('Supprimer cette candidate et toutes ses notes ?')) return;
-    
+  const handleDeletePending = async (id: string) => {
+    if (!confirm('Supprimer cette demande ?')) return;
+    await remove(ref(rtdb, `missOneLight/pendingVotes/${id}`));
+    showToast('Demande supprimée', 'success');
+  };
+
+  const handleWhatsApp = (pending: MissOneLightPendingVote) => {
+    const msg = `Bonjour, votre vote pour ${pending.candidateName} (${pending.votes} votes — ${pending.votes * 100} FCFA) a bien été validé ! Merci pour votre soutien. 🌟`;
+    window.open(`https://wa.me/${pending.phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
+  const handleImport = async () => {
+    if (!confirm('Importer les 12 candidates dans le Realtime Database ?')) return;
+    setImporting(true);
     try {
-      await remove(ref(db, `miss5emeCandidates/${candidateId}`));
-      
-      // Delete all scores for this candidate
-      const candidateScores = scores.filter(s => s.candidateId === candidateId);
-      const deletePromises = candidateScores.map(async (score) => {
-        const scoreRef = ref(db, 'miss5emeScores');
-        const snapshot = await new Promise<any>((resolve) => {
-          onValue(scoreRef, resolve, { onlyOnce: true });
+      for (const c of INITIAL_CANDIDATES) {
+        const newRef = push(ref(rtdb, RTDB_PATH));
+        await set(newRef, {
+          order: c.order,
+          name: c.name,
+          slug: c.slug,
+          photo: '',
+          bio: '',
+          votes: 0,
+          status: 'active',
         });
-        
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const scoreKey = Object.keys(data).find(key => 
-            data[key].candidateId === candidateId && 
-            data[key].juryNumber === score.juryNumber && 
-            data[key].passage === score.passage
-          );
-          if (scoreKey) {
-            await remove(ref(db, `miss5emeScores/${scoreKey}`));
-          }
-        }
-      });
-      
-      await Promise.all(deletePromises);
-      showToast('Candidate supprimée');
-    } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
-      showError('Erreur lors de la suppression. Veuillez réessayer.');
+      }
+      showToast('12 candidates importées avec succès', 'success');
+    } catch {
+      showToast("Erreur lors de l'import", 'error');
+    } finally {
+      setImporting(false);
     }
   };
 
-  const handleResetAllScores = async () => {
-    if (!confirm('Supprimer toutes les notes ? Cette action est irréversible.')) return;
-    
-    try {
-      await Promise.all([
-        remove(ref(db, 'miss5emeScores')),
-        remove(ref(db, 'miss5emeJury'))
-      ]);
-      showToast('Toutes les notes ont été supprimées');
-    } catch (error) {
-      console.error('Erreur lors de la réinitialisation:', error);
-      showError('Erreur lors de la réinitialisation. Veuillez réessayer.');
-    }
-  };
-
-  const openNotationModal = (candidate: Miss5emeCandidate) => {
-    setSelectedCandidateForNotation(candidate);
-    setIsNotationModalOpen(true);
-    setNotationScores({ sourire: 0, gestuelle: 0, performanceTechnique: 0, prestanceElegance: 0 });
-  };
-
-  const handleSubmitNotation = async () => {
-    if (!selectedCandidateForNotation) return;
-
-    const total = Object.values(notationScores).reduce((sum, score) => sum + score, 0);
-    if (total > 20) {
-      showError('Le total ne peut pas dépasser 20 points');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.order || !formData.name || !formData.slug) {
+      showToast('Numéro, nom et slug sont requis', 'error');
       return;
     }
-
+    const payload = {
+      order: parseInt(formData.order),
+      name: formData.name,
+      slug: formData.slug,
+      photo: formData.photo,
+      bio: formData.bio,
+      status: formData.status,
+    };
     try {
-      // Check if jury already exists
-      const juryRef = ref(db, 'miss5emeJury');
-      let juryId = '';
-      
-      const snapshot = await new Promise<any>((resolve) => {
-        onValue(juryRef, resolve, { onlyOnce: true });
-      });
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const juryList = Object.values(data) as Miss5emeJury[];
-        const existingJury = juryList.find(j => j.juryNumber === selectedJuryForNotation);
-        
-        if (existingJury) {
-          juryId = existingJury.id;
-        }
+      if (editingId) {
+        await update(ref(rtdb, `${RTDB_PATH}/${editingId}`), payload);
+        showToast('Candidate mise à jour', 'success');
+      } else {
+        const newRef = push(ref(rtdb, RTDB_PATH));
+        await set(newRef, { ...payload, votes: 0 });
+        showToast('Candidate ajoutée', 'success');
       }
-
-      // Create jury if doesn't exist
-      if (!juryId) {
-        const newJuryRef = push(ref(db, 'miss5emeJury'));
-        const newJury: Miss5emeJury = {
-          id: newJuryRef.key!,
-          name: `Juré ${selectedJuryForNotation}`,
-          juryNumber: selectedJuryForNotation,
-          pin: '0000'
-        };
-        await set(newJuryRef, newJury);
-        juryId = newJuryRef.key!;
-      }
-
-      const scoreData: Miss5emeScore = {
-        juryId: juryId,
-        juryNumber: selectedJuryForNotation,
-        candidateId: selectedCandidateForNotation.id,
-        passage: selectedPassageForNotation,
-        sourire: notationScores.sourire,
-        gestuelle: notationScores.gestuelle,
-        performanceTechnique: notationScores.performanceTechnique,
-        prestanceElegance: notationScores.prestanceElegance,
-        totalPassage: total,
-        timestamp: new Date().toISOString()
-      };
-
-      const newScoreRef = push(ref(db, 'miss5emeScores'));
-      await set(newScoreRef, scoreData);
-
-      showToast('Note enregistrée avec succès');
-      setIsNotationModalOpen(false);
-      setNotationScores({ sourire: 0, gestuelle: 0, performanceTechnique: 0, prestanceElegance: 0 });
-    } catch (error) {
-      console.error('Erreur lors de l\'enregistrement:', error);
-      showError('Erreur lors de l\'enregistrement. Veuillez réessayer.');
+      setFormData(EMPTY_FORM);
+      setEditingId(null);
+      setShowForm(false);
+    } catch {
+      showToast('Erreur lors de la sauvegarde', 'error');
     }
   };
+
+  const handleEdit = (c: Candidate) => {
+    setFormData({
+      order: c.order.toString(), name: c.name, slug: c.slug,
+      photo: c.photo, bio: c.bio, status: c.status,
+    });
+    setEditingId(c.id);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Supprimer cette candidate ?')) return;
+    try {
+      await remove(ref(rtdb, `${RTDB_PATH}/${id}`));
+      showToast('Candidate supprimée', 'success');
+    } catch {
+      showToast('Erreur lors de la suppression', 'error');
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData(EMPTY_FORM);
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const statusLabel: Record<string, string> = { active: 'Active', hidden: 'Masquée', winner: 'Gagnante' };
+  const statusColor: Record<string, string> = {
+    active: 'bg-green-500/20 text-green-300',
+    hidden: 'bg-gray-500/20 text-gray-400',
+    winner: 'bg-yellow-500/20 text-yellow-300',
+  };
+
+  if (loading) return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="text-white text-xl">Chargement...</div>
+    </div>
+  );
 
   return (
-    <AdminLayout>
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-3xl font-bold text-pink-600 mb-2">Miss 5ème</h1>
-          <p className="text-gray-600">Gestion du concours et des résultats</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+      <div className="max-w-6xl mx-auto">
 
-        <div className="bg-white rounded-lg shadow-md mb-6">
-          <div className="flex border-b">
-            <button
-              onClick={() => setActiveTab('candidates')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                activeTab === 'candidates'
-                  ? 'text-pink-600 border-b-2 border-pink-600'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              Candidates ({candidates.length}/10)
-            </button>
-            <button
-              onClick={() => setActiveTab('sheets')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                activeTab === 'sheets'
-                  ? 'text-pink-600 border-b-2 border-pink-600'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              Fiches Individuelles
-            </button>
-            <button
-              onClick={() => setActiveTab('results')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                activeTab === 'results'
-                  ? 'text-pink-600 border-b-2 border-pink-600'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
-            >
-              Classement Final
-            </button>
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-4xl font-bold text-white">Gestion Miss One Light</h1>
+            <p className="text-white/40 text-sm mt-1">Realtime Database · missOneLight</p>
           </div>
-        </div>
-
-        {activeTab === 'candidates' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Accès Jury</h2>
-              <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
-                <p className="text-sm text-gray-700 mb-2">
-                  <strong>Lien pour les jurés :</strong>
-                </p>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    readOnly
-                    value={`${window.location.origin}/jury/miss-5eme`}
-                    className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded text-sm"
-                  />
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/jury/miss-5eme`);
-                      showToast('Lien copié');
-                    }}
-                    className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition-colors text-sm"
-                  >
-                    Copier
-                  </button>
-                </div>
-                <p className="text-xs text-gray-600 mt-2">
-                  PIN : <strong>0000</strong> (identique pour tous les jurés)
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Ajouter une candidate</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Numéro
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={newCandidate.number}
-                    onChange={(e) => setNewCandidate({ ...newCandidate, number: parseInt(e.target.value) || 1 })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom
-                  </label>
-                  <input
-                    type="text"
-                    value={newCandidate.name}
-                    onChange={(e) => setNewCandidate({ ...newCandidate, name: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                    placeholder="Nom de la candidate"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Photo URL (optionnel)
-                  </label>
-                  <input
-                    type="text"
-                    value={newCandidate.photoUrl}
-                    onChange={(e) => setNewCandidate({ ...newCandidate, photoUrl: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
-                    placeholder="https://..."
-                  />
-                </div>
-              </div>
+          <div className="flex gap-3">
+            {activeTab === 'candidates' && candidates.length === 0 && (
               <button
-                onClick={handleAddCandidate}
-                className="mt-4 px-6 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors"
+                onClick={handleImport}
+                disabled={importing}
+                className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:opacity-50 text-white font-bold py-2 px-5 rounded-lg flex items-center gap-2 transition-all"
               >
+                <Upload size={18} />
+                {importing ? 'Import...' : 'Importer les 12 candidates'}
+              </button>
+            )}
+            {activeTab === 'candidates' && (
+              <button
+                onClick={() => { setShowForm(!showForm); setEditingId(null); setFormData(EMPTY_FORM); }}
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-2 px-5 rounded-lg flex items-center gap-2 transition-all"
+              >
+                <Plus size={18} />
                 Ajouter
               </button>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-800">Liste des candidates</h2>
-                <button
-                  onClick={handleResetAllScores}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-                >
-                  Réinitialiser toutes les notes
-                </button>
-              </div>
-              
-              {candidates.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">Aucune candidate ajoutée</p>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {candidates.map((candidate) => {
-                    const candidateScores = scores.filter(s => s.candidateId === candidate.id);
-                    const totalScores = candidateScores.length;
-                    const maxScores = 12; // 4 jury × 3 passages
-                    
-                    return (
-                      <div key={candidate.id} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <div className="text-2xl font-bold text-pink-600">#{candidate.number}</div>
-                            <div className="font-semibold text-gray-800">{candidate.name}</div>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => openNotationModal(candidate)}
-                              className="text-pink-600 hover:text-pink-800 text-sm font-semibold"
-                              title="Noter cette candidate"
-                            >
-                              ✏️ Noter
-                            </button>
-                            <button
-                              onClick={() => handleDeleteCandidate(candidate.id)}
-                              className="text-red-600 hover:text-red-800"
-                              title="Supprimer"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Notes reçues: {totalScores}/{maxScores}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'sheets' && (
-          <div className="space-y-6">
-            {selectedSheet ? (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <button
-                  onClick={() => setSelectedSheet(null)}
-                  className="mb-4 text-pink-600 hover:text-pink-700 font-semibold"
-                >
-                  ← Retour à la liste
-                </button>
-                
-                <div className="mb-6 pb-6 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-3xl font-bold text-gray-800">
-                        Candidate #{selectedSheet.candidateNumber}
-                      </h2>
-                      <p className="text-xl text-gray-600 mt-1">{selectedSheet.candidateName}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Note Finale</p>
-                      <p className="text-4xl font-bold text-pink-600">
-                        {selectedSheet.finalScore.toFixed(2)}<span className="text-2xl">/20</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-8">
-                  {[1, 2, 3].map((passage) => {
-                    const passageKey = `passage${passage}` as 'passage1' | 'passage2' | 'passage3';
-                    const passageAvg = selectedSheet.averageByPassage[passageKey];
-                    
-                    return (
-                      <div key={passage} className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50">
-                        <div className="flex items-center justify-between mb-6">
-                          <h3 className="text-2xl font-bold text-gray-800">
-                            Passage {passage}
-                          </h3>
-                          <div className="text-right">
-                            <p className="text-sm text-gray-600">Moyenne</p>
-                            <p className="text-3xl font-bold text-pink-600">
-                              {passageAvg > 0 ? passageAvg.toFixed(2) : '-'}<span className="text-xl">/20</span>
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="overflow-x-auto">
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b-2 border-gray-300">
-                                <th className="text-left py-3 px-3 font-bold text-gray-700">Juré</th>
-                                <th className="text-center py-3 px-3 font-bold text-gray-700">
-                                  <div>😊</div>
-                                  <div className="text-xs font-normal">Sourire</div>
-                                </th>
-                                <th className="text-center py-3 px-3 font-bold text-gray-700">
-                                  <div>🤸</div>
-                                  <div className="text-xs font-normal">Gestuelle</div>
-                                </th>
-                                <th className="text-center py-3 px-3 font-bold text-gray-700">
-                                  <div>⭐</div>
-                                  <div className="text-xs font-normal">Perf. Tech.</div>
-                                </th>
-                                <th className="text-center py-3 px-3 font-bold text-gray-700">
-                                  <div>👗</div>
-                                  <div className="text-xs font-normal">Prestance</div>
-                                </th>
-                                <th className="text-center py-3 px-3 font-bold text-pink-600 bg-pink-50">
-                                  <div>Total</div>
-                                  <div className="text-xs font-normal">/20</div>
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {[1, 2, 3, 4].map((juryNum) => {
-                                const score = selectedSheet.scoresByJury[juryNum]?.[passageKey];
-                                const hasScore = !!score;
-                                
-                                return (
-                                  <tr 
-                                    key={juryNum} 
-                                    className={`border-b border-gray-200 ${hasScore ? 'hover:bg-white' : 'bg-gray-100'}`}
-                                  >
-                                    <td className="py-3 px-3 font-semibold text-gray-800">
-                                      Juré {juryNum}
-                                    </td>
-                                    <td className="text-center py-3 px-3">
-                                      {hasScore ? (
-                                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-800 font-bold">
-                                          {score.sourire}
-                                        </span>
-                                      ) : (
-                                        <span className="text-gray-400">-</span>
-                                      )}
-                                    </td>
-                                    <td className="text-center py-3 px-3">
-                                      {hasScore ? (
-                                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-800 font-bold">
-                                          {score.gestuelle}
-                                        </span>
-                                      ) : (
-                                        <span className="text-gray-400">-</span>
-                                      )}
-                                    </td>
-                                    <td className="text-center py-3 px-3">
-                                      {hasScore ? (
-                                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-800 font-bold">
-                                          {score.performanceTechnique}
-                                        </span>
-                                      ) : (
-                                        <span className="text-gray-400">-</span>
-                                      )}
-                                    </td>
-                                    <td className="text-center py-3 px-3">
-                                      {hasScore ? (
-                                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 text-orange-800 font-bold">
-                                          {score.prestanceElegance}
-                                        </span>
-                                      ) : (
-                                        <span className="text-gray-400">-</span>
-                                      )}
-                                    </td>
-                                    <td className="text-center py-3 px-3 bg-pink-50">
-                                      {hasScore ? (
-                                        <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-pink-600 text-white font-bold text-lg">
-                                          {score.totalPassage}
-                                        </span>
-                                      ) : (
-                                        <span className="text-gray-400">-</span>
-                                      )}
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                              {passageAvg > 0 && (
-                                <tr className="bg-pink-100 font-bold">
-                                  <td className="py-3 px-3 text-gray-800">MOYENNE</td>
-                                  <td className="text-center py-3 px-3">
-                                    {(() => {
-                                      const scores = [1, 2, 3, 4]
-                                        .map(j => selectedSheet.scoresByJury[j]?.[passageKey]?.sourire)
-                                        .filter(s => s !== undefined) as number[];
-                                      return scores.length > 0 
-                                        ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
-                                        : '-';
-                                    })()}
-                                  </td>
-                                  <td className="text-center py-3 px-3">
-                                    {(() => {
-                                      const scores = [1, 2, 3, 4]
-                                        .map(j => selectedSheet.scoresByJury[j]?.[passageKey]?.gestuelle)
-                                        .filter(s => s !== undefined) as number[];
-                                      return scores.length > 0 
-                                        ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
-                                        : '-';
-                                    })()}
-                                  </td>
-                                  <td className="text-center py-3 px-3">
-                                    {(() => {
-                                      const scores = [1, 2, 3, 4]
-                                        .map(j => selectedSheet.scoresByJury[j]?.[passageKey]?.performanceTechnique)
-                                        .filter(s => s !== undefined) as number[];
-                                      return scores.length > 0 
-                                        ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
-                                        : '-';
-                                    })()}
-                                  </td>
-                                  <td className="text-center py-3 px-3">
-                                    {(() => {
-                                      const scores = [1, 2, 3, 4]
-                                        .map(j => selectedSheet.scoresByJury[j]?.[passageKey]?.prestanceElegance)
-                                        .filter(s => s !== undefined) as number[];
-                                      return scores.length > 0 
-                                        ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
-                                        : '-';
-                                    })()}
-                                  </td>
-                                  <td className="text-center py-3 px-3 text-pink-600 text-lg">
-                                    {passageAvg.toFixed(2)}
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Summary Section */}
-                <div className="mt-8 bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 rounded-lg p-6">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Résumé des Passages</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="bg-white rounded-lg p-4 text-center">
-                      <p className="text-sm text-gray-600 mb-1">Passage 1</p>
-                      <p className="text-2xl font-bold text-pink-600">
-                        {selectedSheet.averageByPassage.passage1 > 0 
-                          ? selectedSheet.averageByPassage.passage1.toFixed(2) 
-                          : '-'}
-                      </p>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 text-center">
-                      <p className="text-sm text-gray-600 mb-1">Passage 2</p>
-                      <p className="text-2xl font-bold text-pink-600">
-                        {selectedSheet.averageByPassage.passage2 > 0 
-                          ? selectedSheet.averageByPassage.passage2.toFixed(2) 
-                          : '-'}
-                      </p>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 text-center">
-                      <p className="text-sm text-gray-600 mb-1">Passage 3</p>
-                      <p className="text-2xl font-bold text-pink-600">
-                        {selectedSheet.averageByPassage.passage3 > 0 
-                          ? selectedSheet.averageByPassage.passage3.toFixed(2) 
-                          : '-'}
-                      </p>
-                    </div>
-                    <div className="bg-pink-600 rounded-lg p-4 text-center">
-                      <p className="text-sm text-white mb-1">Note Finale</p>
-                      <p className="text-3xl font-bold text-white">
-                        {selectedSheet.finalScore.toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Sélectionner une candidate</h2>
-                
-                {candidateSheets.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">Aucune fiche disponible</p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {candidateSheets.map((sheet) => (
-                      <button
-                        key={sheet.candidateId}
-                        onClick={() => setSelectedSheet(sheet)}
-                        className="border border-gray-200 rounded-lg p-4 hover:border-pink-500 hover:shadow-md transition-all text-left"
-                      >
-                        <div className="text-2xl font-bold text-pink-600 mb-1">
-                          #{sheet.candidateNumber}
-                        </div>
-                        <div className="font-semibold text-gray-800 mb-2">
-                          {sheet.candidateName}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Note finale: <span className="font-bold text-pink-600">
-                            {sheet.finalScore.toFixed(2)}/20
-                          </span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
             )}
           </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8">
+          <button
+            onClick={() => setActiveTab('candidates')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'candidates' ? 'bg-pink-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+          >
+            Candidates ({candidates.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('pending')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'pending' ? 'bg-amber-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+          >
+            <Clock size={14} />
+            Votes en attente
+            {pendingVotes.filter(v => !v.validated).length > 0 && (
+              <span className="bg-red-500 text-white text-xs font-black px-2 py-0.5 rounded-full">
+                {pendingVotes.filter(v => !v.validated).length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('comptabilite')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'comptabilite' ? 'bg-emerald-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+          >
+            <TrendingUp size={14} />
+            Comptabilité
+          </button>
+        </div>
+
+        {/* Form */}
+        {activeTab === 'candidates' && showForm && (
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 mb-8">
+            <h2 className="text-xl font-bold text-white mb-5">
+              {editingId ? 'Modifier la candidate' : 'Nouvelle candidate'}
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-white/70 text-sm mb-1">Ordre de passage</label>
+                  <input type="number" min="1" value={formData.order}
+                    onChange={(e) => setFormData({ ...formData, order: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-pink-500"
+                    placeholder="1" />
+                </div>
+                <div>
+                  <label className="block text-white/70 text-sm mb-1">Nom</label>
+                  <input type="text" value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-pink-500"
+                    placeholder="LÉONCIA" />
+                </div>
+                <div>
+                  <label className="block text-white/70 text-sm mb-1">Slug</label>
+                  <input type="text" value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-pink-500"
+                    placeholder="leoncia" />
+                </div>
+                <div>
+                  <label className="block text-white/70 text-sm mb-1">Photo</label>
+                  <div className="flex gap-2">
+                    <input type="url" value={formData.photo}
+                      onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
+                      className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-pink-500"
+                      placeholder="https://... ou uploader →" />
+                    <button type="button" onClick={() => formFileRef.current?.click()}
+                      disabled={formUploading}
+                      className="bg-white/10 hover:bg-white/20 disabled:opacity-50 border border-white/20 text-white px-3 py-2 rounded-lg flex items-center gap-1 text-sm transition-all whitespace-nowrap">
+                      <Upload size={14} />
+                      {formUploading ? 'Upload...' : 'Fichier'}
+                    </button>
+                  </div>
+                  {formData.photo && (
+                    <img src={formData.photo} alt="Aperçu" className="h-20 w-20 object-cover rounded-lg mt-2" />
+                  )}
+                </div>
+                <div>
+                  <label className="block text-white/70 text-sm mb-1">Statut</label>
+                  <select value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value as Candidate['status'] })}
+                    className="w-full bg-slate-800 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-pink-500">
+                    <option value="active">Active</option>
+                    <option value="hidden">Masquée</option>
+                    <option value="winner">Gagnante</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-white/70 text-sm mb-1">Biographie courte</label>
+                <textarea value={formData.bio} rows={3}
+                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-pink-500 resize-none"
+                  placeholder="Quelques mots sur la candidate..." />
+              </div>
+              {formData.photo && (
+                <img src={formData.photo} alt="Aperçu" className="h-28 w-28 object-cover rounded-lg" />
+              )}
+              <div className="flex gap-3 pt-2">
+                <button type="submit"
+                  className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-2 px-6 rounded-lg flex items-center gap-2 transition-all">
+                  <Save size={16} />
+                  {editingId ? 'Mettre à jour' : 'Ajouter'}
+                </button>
+                <button type="button" onClick={handleCancel}
+                  className="bg-gray-500/30 hover:bg-gray-500/50 text-white font-bold py-2 px-6 rounded-lg flex items-center gap-2 transition-all">
+                  <X size={16} />
+                  Annuler
+                </button>
+              </div>
+            </form>
+          </div>
         )}
 
-        {activeTab === 'results' && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Classement Final</h2>
-            
-            {results.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">Aucun résultat disponible</p>
-            ) : (
+        {/* Hidden file inputs */}
+        <input ref={rowFileRef} type="file" accept="image/*" className="hidden"
+          onChange={(e) => { if (e.target.files?.[0]) handleRowUpload(e.target.files[0]); e.target.value = ''; }} />
+        <input ref={formFileRef} type="file" accept="image/*" className="hidden"
+          onChange={(e) => { if (e.target.files?.[0]) handleFormUpload(e.target.files[0]); e.target.value = ''; }} />
+
+        {/* Table */}
+        {activeTab === 'candidates' && (
+        <div>
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-white/10 bg-white/5">
+                  <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">#</th>
+                  <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Photo</th>
+                  <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Nom</th>
+                  <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Slug</th>
+                  <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Statut</th>
+                  <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Votes</th>
+                  <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {candidates.map((c) => (
+                  <tr key={c.id} className="border-b border-white/10 hover:bg-white/5 transition-all">
+                    <td className="px-4 py-3 text-white font-bold">{c.order}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        {c.photo
+                          ? <img src={c.photo} alt={c.name} className="h-10 w-10 object-cover rounded-lg" />
+                          : <div className="h-10 w-10 rounded-lg bg-white/10 flex items-center justify-center text-white/30 text-xs">—</div>
+                        }
+                        <button
+                          onClick={() => { pendingRowId.current = c.id; rowFileRef.current?.click(); }}
+                          disabled={uploadingId === c.id}
+                          title="Changer la photo"
+                          className="bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white/60 hover:text-white p-1.5 rounded-lg transition-all"
+                        >
+                          {uploadingId === c.id
+                            ? <span className="w-3.5 h-3.5 border border-white/40 border-t-white rounded-full animate-spin block" />
+                            : <Upload size={14} />
+                          }
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-white font-semibold">{c.name}</td>
+                    <td className="px-4 py-3 text-white/50 text-sm font-mono">{c.slug}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${statusColor[c.status]}`}>
+                        {statusLabel[c.status]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-pink-400 font-bold">{c.votes}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button onClick={() => handleEdit(c)}
+                          className="bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 p-2 rounded-lg transition-all">
+                          <Edit2 size={16} />
+                        </button>
+                        <button onClick={() => handleDelete(c.id)}
+                          className="bg-red-500/20 hover:bg-red-500/40 text-red-300 p-2 rounded-lg transition-all">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {candidates.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-400">Aucune candidate. Cliquez sur "Importer les 12 candidates" pour démarrer.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+            <p className="text-gray-400 text-sm mb-2">Total candidates</p>
+            <p className="text-4xl font-bold text-white">{candidates.length}</p>
+          </div>
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+            <p className="text-gray-400 text-sm mb-2">Total votes</p>
+            <p className="text-4xl font-bold text-pink-400">{candidates.reduce((s, c) => s + c.votes, 0)}</p>
+          </div>
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+            <p className="text-gray-400 text-sm mb-2">En tête</p>
+            <p className="text-2xl font-bold text-white">
+              {candidates.length > 0 ? candidates.reduce((m, c) => c.votes > m.votes ? c : m).name : '—'}
+            </p>
+          </div>
+        </div>
+        </div>
+        )} {/* end candidates tab */}
+
+        {/* Pending Votes Tab */}
+        {activeTab === 'pending' && (
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-white/10 border border-white/20 rounded-2xl p-5">
+                <p className="text-white/40 text-xs uppercase tracking-widest mb-1">En attente</p>
+                <p className="text-3xl font-bold text-amber-400">{pendingVotes.filter(v => !v.validated).length}</p>
+              </div>
+              <div className="bg-white/10 border border-white/20 rounded-2xl p-5">
+                <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Validés</p>
+                <p className="text-3xl font-bold text-green-400">{pendingVotes.filter(v => v.validated).length}</p>
+              </div>
+              <div className="bg-white/10 border border-white/20 rounded-2xl p-5">
+                <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Votes à valider</p>
+                <p className="text-3xl font-bold text-white">{pendingVotes.filter(v => !v.validated).reduce((s, v) => s + v.votes, 0)}</p>
+              </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Rang</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">N°</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Candidate</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Passage 1</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Passage 2</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Passage 3</th>
-                      <th className="text-center py-3 px-4 font-semibold text-gray-700">Note Finale</th>
+                    <tr className="border-b border-white/10 bg-white/5">
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Candidate</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Achetés</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Bonus</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Total</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Montant</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Email</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Téléphone</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Référence</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Statut</th>
+                      <th className="px-4 py-4 text-left text-white/70 text-sm font-semibold">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {results.map((result) => (
-                      <tr key={result.candidateId} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4">
-                          <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-bold ${
-                            result.rank === 1 ? 'bg-yellow-400 text-yellow-900' :
-                            result.rank === 2 ? 'bg-gray-300 text-gray-800' :
-                            result.rank === 3 ? 'bg-orange-400 text-orange-900' :
-                            'bg-gray-100 text-gray-700'
-                          }`}>
-                            {result.rank}
+                    {pendingVotes.map((v) => (
+                      <tr key={v.id} className={`border-b border-white/10 transition-all ${v.validated ? 'opacity-50' : 'hover:bg-white/5'}`}>
+                        <td className="px-4 py-3 text-white font-semibold">{v.candidateName}</td>
+                        <td className="px-4 py-3 text-pink-400 font-bold">{v.votes}</td>
+                        <td className="px-4 py-3 text-[#009E60] font-bold">{v.bonusVotes > 0 ? `+${v.bonusVotes}` : '—'}</td>
+                        <td className="px-4 py-3 text-white font-black">{v.totalVotes ?? v.votes}</td>
+                        <td className="px-4 py-3 text-amber-400 font-bold">{v.votes * 100} FCFA</td>
+                        <td className="px-4 py-3 text-white/60 text-sm">{v.email}</td>
+                        <td className="px-4 py-3 text-white/60 text-sm">{v.phone}</td>
+                        <td className="px-4 py-3 text-white/40 font-mono text-xs">{v.txRef}</td>
+                        <td className="px-4 py-3">
+                          {v.validated
+                            ? <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-500/20 text-green-300">Validé</span>
+                            : <span className="text-xs font-semibold px-2 py-1 rounded-full bg-amber-500/20 text-amber-300">En attente</span>
+                          }
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-2">
+                            {!v.validated && (
+                              <button
+                                onClick={() => handleValidateVote(v)}
+                                disabled={validating === v.id}
+                                title="Valider ce vote"
+                                className="bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 p-2 rounded-lg transition-all"
+                              >
+                                {validating === v.id
+                                  ? <span className="w-4 h-4 border border-green-300/40 border-t-green-300 rounded-full animate-spin block" />
+                                  : <CheckCircle size={16} />
+                                }
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleWhatsApp(v)}
+                              title="Contacter sur WhatsApp"
+                              className="bg-[#25D366]/20 hover:bg-[#25D366]/40 text-[#25D366] p-2 rounded-lg transition-all"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeletePending(v.id)}
+                              title="Supprimer"
+                              className="bg-red-500/20 hover:bg-red-500/40 text-red-300 p-2 rounded-lg transition-all"
+                            >
+                              <Trash2 size={16} />
+                            </button>
                           </div>
-                        </td>
-                        <td className="py-3 px-4 font-semibold text-pink-600">#{result.candidateNumber}</td>
-                        <td className="py-3 px-4 font-medium">{result.candidateName}</td>
-                        <td className="py-3 px-4 text-center">
-                          {result.passage1Total > 0 ? result.passage1Total.toFixed(2) : '-'}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          {result.passage2Total > 0 ? result.passage2Total.toFixed(2) : '-'}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          {result.passage3Total > 0 ? result.passage3Total.toFixed(2) : '-'}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <span className="font-bold text-pink-600 text-lg">
-                            {result.finalScore.toFixed(2)}/20
-                          </span>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Notation Modal */}
-      {isNotationModalOpen && selectedCandidateForNotation && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    Noter: {selectedCandidateForNotation.name}
-                  </h2>
-                  <p className="text-gray-600">Candidate #{selectedCandidateForNotation.number}</p>
+              {pendingVotes.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-400">Aucune demande de vote pour l'instant.</p>
                 </div>
-                <button
-                  onClick={() => setIsNotationModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Jury Selection */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sélectionner le juré
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {[1, 2, 3, 4].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      onClick={() => setSelectedJuryForNotation(num as 1 | 2 | 3 | 4)}
-                      className={`py-2 rounded-lg font-semibold transition-colors ${
-                        selectedJuryForNotation === num
-                          ? 'bg-pink-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      Juré {num}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Passage Selection */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sélectionner le passage
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[1, 2, 3].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      onClick={() => setSelectedPassageForNotation(num as 1 | 2 | 3)}
-                      className={`py-2 rounded-lg font-semibold transition-colors ${
-                        selectedPassageForNotation === num
-                          ? 'bg-pink-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      Passage {num}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Criteria Scoring */}
-              <div className="space-y-4 mb-6">
-                {[
-                  { key: 'sourire', label: 'Sourire', icon: '😊' },
-                  { key: 'gestuelle', label: 'Gestuelle', icon: '🤸' },
-                  { key: 'performanceTechnique', label: 'Performance Technique', icon: '⭐' },
-                  { key: 'prestanceElegance', label: 'Prestance et Élégance', icon: '👗' }
-                ].map(({ key, label, icon }) => (
-                  <div key={key}>
-                    <div className="flex justify-between items-center mb-2">
-                      <label className="font-medium text-gray-700">
-                        {icon} {label}
-                      </label>
-                      <span className="text-pink-600 font-bold text-lg">
-                        {notationScores[key as keyof typeof notationScores]} / 4
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      {[0, 1, 2, 3, 4].map((value) => (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => setNotationScores(prev => ({ ...prev, [key]: value }))}
-                          className={`flex-1 py-2 rounded-lg font-semibold transition-colors ${
-                            notationScores[key as keyof typeof notationScores] === value
-                              ? 'bg-pink-600 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {value}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Total */}
-              <div className="border-t pt-4 mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-800">Total</span>
-                  <span className={`text-3xl font-bold ${
-                    Object.values(notationScores).reduce((sum, score) => sum + score, 0) > 20 
-                      ? 'text-red-600' 
-                      : 'text-pink-600'
-                  }`}>
-                    {Object.values(notationScores).reduce((sum, score) => sum + score, 0)} / 20
-                  </span>
-                </div>
-                {Object.values(notationScores).reduce((sum, score) => sum + score, 0) > 20 && (
-                  <p className="text-red-600 text-sm mt-2">
-                    ⚠️ Le total ne peut pas dépasser 20 points
-                  </p>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setIsNotationModalOpen(false)}
-                  className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleSubmitNotation}
-                  disabled={Object.values(notationScores).reduce((sum, score) => sum + score, 0) > 20}
-                  className="flex-1 px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  Enregistrer la note
-                </button>
-              </div>
+              )}
             </div>
           </div>
+        )}
+
+        {/* Comptabilité Tab */}
+        {activeTab === 'comptabilite' && (() => {
+          const validated = pendingVotes.filter(v => v.validated);
+          const pending = pendingVotes.filter(v => !v.validated);
+
+          const totalRevenue = validated.reduce((s, v) => s + v.votes * 100, 0);
+          const pendingRevenue = pending.reduce((s, v) => s + v.votes * 100, 0);
+          const totalVotesSold = validated.reduce((s, v) => s + v.votes, 0);
+          const totalBonusGiven = validated.reduce((s, v) => s + (v.bonusVotes ?? 0), 0);
+          const totalVotesCredited = validated.reduce((s, v) => s + (v.totalVotes ?? v.votes), 0);
+
+          // Per-candidate breakdown
+          const byCandidate: Record<string, {
+            name: string;
+            revenue: number;
+            votesSold: number;
+            bonusVotes: number;
+            totalVotes: number;
+            transactions: number;
+          }> = {};
+          for (const v of validated) {
+            if (!byCandidate[v.candidateId]) {
+              byCandidate[v.candidateId] = { name: v.candidateName, revenue: 0, votesSold: 0, bonusVotes: 0, totalVotes: 0, transactions: 0 };
+            }
+            byCandidate[v.candidateId].revenue += v.votes * 100;
+            byCandidate[v.candidateId].votesSold += v.votes;
+            byCandidate[v.candidateId].bonusVotes += v.bonusVotes ?? 0;
+            byCandidate[v.candidateId].totalVotes += v.totalVotes ?? v.votes;
+            byCandidate[v.candidateId].transactions += 1;
+          }
+          const candidateRows = Object.values(byCandidate).sort((a, b) => b.revenue - a.revenue);
+
+          return (
+            <div className="space-y-6">
+              {/* KPI cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-5">
+                  <p className="text-emerald-400/60 text-xs uppercase tracking-widest mb-1">Revenus encaissés</p>
+                  <p className="text-2xl font-black text-emerald-400">{totalRevenue.toLocaleString()} FCFA</p>
+                </div>
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5">
+                  <p className="text-amber-400/60 text-xs uppercase tracking-widest mb-1">En attente</p>
+                  <p className="text-2xl font-black text-amber-400">{pendingRevenue.toLocaleString()} FCFA</p>
+                </div>
+                <div className="bg-pink-500/10 border border-pink-500/30 rounded-2xl p-5">
+                  <p className="text-pink-400/60 text-xs uppercase tracking-widest mb-1">Votes vendus</p>
+                  <p className="text-2xl font-black text-pink-400">{totalVotesSold}</p>
+                </div>
+                <div className="bg-[#009E60]/10 border border-[#009E60]/30 rounded-2xl p-5">
+                  <p className="text-[#009E60]/60 text-xs uppercase tracking-widest mb-1">Bonus offerts</p>
+                  <p className="text-2xl font-black text-[#009E60]">+{totalBonusGiven}</p>
+                </div>
+              </div>
+
+              {/* Summary row */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-wrap gap-6">
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Total votes crédités</p>
+                  <p className="text-xl font-black text-white">{totalVotesCredited}</p>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Transactions validées</p>
+                  <p className="text-xl font-black text-white">{validated.length}</p>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Taux bonus moyen</p>
+                  <p className="text-xl font-black text-[#009E60]">
+                    {totalVotesSold > 0 ? ((totalBonusGiven / totalVotesSold) * 100).toFixed(1) : 0}%
+                  </p>
+                </div>
+                <div>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Revenu total (+ attente)</p>
+                  <p className="text-xl font-black text-white">{(totalRevenue + pendingRevenue).toLocaleString()} FCFA</p>
+                </div>
+              </div>
+
+              {/* Per-candidate breakdown */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-white/10">
+                  <h3 className="text-white font-bold">Répartition par candidate</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-white/10 bg-white/5">
+                        <th className="px-4 py-3 text-left text-white/60 text-xs uppercase tracking-widest">Candidate</th>
+                        <th className="px-4 py-3 text-right text-white/60 text-xs uppercase tracking-widest">Transactions</th>
+                        <th className="px-4 py-3 text-right text-white/60 text-xs uppercase tracking-widest">Votes achetés</th>
+                        <th className="px-4 py-3 text-right text-[#009E60]/60 text-xs uppercase tracking-widest">Bonus</th>
+                        <th className="px-4 py-3 text-right text-white/60 text-xs uppercase tracking-widest">Total crédités</th>
+                        <th className="px-4 py-3 text-right text-emerald-400/60 text-xs uppercase tracking-widest">Revenus</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {candidateRows.map((row, i) => (
+                        <tr key={i} className="border-b border-white/10 hover:bg-white/5 transition-all">
+                          <td className="px-4 py-3 text-white font-semibold">{row.name}</td>
+                          <td className="px-4 py-3 text-white/50 text-right">{row.transactions}</td>
+                          <td className="px-4 py-3 text-pink-400 font-bold text-right">{row.votesSold}</td>
+                          <td className="px-4 py-3 text-[#009E60] font-bold text-right">+{row.bonusVotes}</td>
+                          <td className="px-4 py-3 text-white font-black text-right">{row.totalVotes}</td>
+                          <td className="px-4 py-3 text-emerald-400 font-black text-right">{row.revenue.toLocaleString()} FCFA</td>
+                        </tr>
+                      ))}
+                      {candidateRows.length === 0 && (
+                        <tr><td colSpan={6} className="text-center py-8 text-white/30">Aucune transaction validée</td></tr>
+                      )}
+                    </tbody>
+                    {candidateRows.length > 0 && (
+                      <tfoot>
+                        <tr className="bg-white/5 border-t-2 border-white/20">
+                          <td className="px-4 py-3 text-white font-black">TOTAL</td>
+                          <td className="px-4 py-3 text-white/50 text-right font-bold">{validated.length}</td>
+                          <td className="px-4 py-3 text-pink-400 font-black text-right">{totalVotesSold}</td>
+                          <td className="px-4 py-3 text-[#009E60] font-black text-right">+{totalBonusGiven}</td>
+                          <td className="px-4 py-3 text-white font-black text-right">{totalVotesCredited}</td>
+                          <td className="px-4 py-3 text-emerald-400 font-black text-right">{totalRevenue.toLocaleString()} FCFA</td>
+                        </tr>
+                      </tfoot>
+                    )}
+                  </table>
+                </div>
+              </div>
+
+              {/* Bonus rule reminder */}
+              <div className="bg-[#009E60]/5 border border-[#009E60]/20 rounded-2xl p-4 flex items-start gap-3">
+                <span className="text-[#009E60] text-xl">🎁</span>
+                <div>
+                  <p className="text-[#009E60] font-bold text-sm mb-1">Règle bonus active</p>
+                  <p className="text-white/50 text-sm">+5 votes offerts par tranche de 10 votes achetés (20%). Ex : 10 votes achetés = 15 crédités, 20 = 30, 50 = 75.</p>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-xl border shadow-2xl backdrop-blur-xl text-sm font-medium
+          ${toast.type === 'success' ? 'bg-green-500/10 border-green-500/40 text-green-300' : 'bg-red-500/10 border-red-500/40 text-red-300'}`}>
+          {toast.message}
+          <button onClick={() => setToast(null)} className="opacity-50 hover:opacity-100 ml-2">
+            <X size={14} />
+          </button>
         </div>
       )}
-    </AdminLayout>
+    </div>
   );
-};
-
-export default AdminMiss5eme;
+}

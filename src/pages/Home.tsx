@@ -117,6 +117,37 @@ const Home: React.FC = () => {
         )}
       </section>
 
+      {/* MISS ONE LIGHT PROMO */}
+      <section className="relative overflow-hidden bg-gradient-to-r from-pm-dark via-[#0a0a0a] to-pm-dark border-y border-pm-gold/20">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.07),transparent_70%)]" />
+        <div className="relative max-w-[1800px] mx-auto px-4 sm:px-8 lg:px-12 py-12 sm:py-16 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex items-center gap-6">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-pm-gold/40 flex items-center justify-center shrink-0">
+              <span className="text-2xl">👑</span>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold/60 mb-1">Événement Officiel</p>
+              <h2 className="font-playfair text-2xl sm:text-3xl font-black text-white">
+                Miss One Light <span className="text-pm-gold">2026</span>
+              </h2>
+              <p className="text-white/40 text-sm mt-1">Votez pour votre candidate favorite · 100 FCFA / vote</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 shrink-0">
+            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              Votes en direct
+            </span>
+            <Link
+              to="/miss-one-light"
+              className="btn-premium bg-pm-gold text-pm-dark border-none shadow-[0_0_40px_rgba(212,175,55,0.2)] hover:shadow-[0_0_60px_rgba(212,175,55,0.35)] !py-3 !px-8"
+            >
+              Voter maintenant
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* 2. MANIFESTO (EDITORIAL STYLE) */}
       <section className="page-container flex flex-col lg:flex-row gap-12 sm:gap-20 lg:gap-32 items-center relative">
          {/* Séparateur décoratif en haut */}
