@@ -62,8 +62,8 @@ const navSections = [
             { to: '/admin/casting-results', icon: ClipboardDocumentCheckIcon, label: 'Notation' },
             { to: '/admin/fashion-day-applications', icon: SparklesIcon, label: 'Candidatures PFD' },
             { to: '/admin/fashion-day-events', icon: CalendarDaysIcon, label: 'Événements PFD' },
-            { to: '/admin/miss-5eme', icon: SparklesIcon, label: 'Miss 5ème' },
             { to: '/admin/recovery-requests', icon: KeyIcon, label: 'Récupérations' },
+            { to: '/admin/miss-one-light', icon: SparklesIcon, label: 'Miss One Light' },
         ]
     },
     {

@@ -211,3 +211,39 @@ export const buildNewsletterBody = (p: {
       </p>` : '<div style="height:24px;border-bottom:1px solid #ffffff0d;margin-bottom:24px"></div>'}
   `).join('')}
 `;
+
+/** Confirmation de demande de vote Miss One Light */
+export const sendVoteConfirmation = (p: {
+  email: string;
+  candidateName: string;
+  votes: number;
+  txRef: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.email }],
+    subject: `Vote Miss One Light — Réf. ${p.txRef}`,
+    htmlContent: buildEmailTemplate(`
+      <h2 style="color:#c9a84c;font-family:Georgia,serif;font-size:24px;margin:0 0 16px">✅ Demande de vote reçue !</h2>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Votre demande de vote pour <strong style="color:#c9a84c">${p.candidateName}</strong> a bien été enregistrée.
+      </p>
+      <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;margin-bottom:24px">
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:120px">Candidate</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.candidateName}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Votes</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.votes}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Montant</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8;font-weight:bold">${p.votes * 100} FCFA</td></tr>
+          <tr><td style="padding:8px 0;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Référence</td><td style="padding:8px 0;color:#f5f0e8;font-family:monospace">${p.txRef}</td></tr>
+        </table>
+      </div>
+      <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;margin-bottom:24px">
+        <p style="color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">💳 Effectuez votre paiement</p>
+        <p style="color:#f5f0e8;margin:0 0 8px">📞 Airtel Money : <strong>074799319</strong></p>
+        <p style="color:#f5f0e8;margin:0 0 8px">📱 Moov Money : <strong>062708998</strong></p>
+        <p style="color:#f5f0e8aa;font-size:13px;margin:0">Mentionnez la référence <strong style="color:#c9a84c">${p.txRef}</strong> lors du paiement.</p>
+      </div>
+      <p style="color:#f5f0e8aa;font-size:13px;line-height:1.7;margin:0">
+        Après paiement, envoyez la confirmation sur WhatsApp au <strong>+241 74 79 93 19</strong>.<br/>
+        L'admin validera vos votes sous 24h.
+      </p>
+    `, `Vote Miss One Light — ${p.votes} votes pour ${p.candidateName}`),
+  });

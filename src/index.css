@@ -74,6 +74,9 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+  .bg-dots {
+    background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
+  }
 }
 
 @keyframes glow {
