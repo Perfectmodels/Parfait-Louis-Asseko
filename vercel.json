@@ -1,6 +1,20 @@
 {
   "rewrites": [
-    { "source": "/((?!api/|sitemap\\.xml|robots\\.txt|manifest\\.json|logo\\.svg|sw\\.js).*)","destination": "/index.html" }
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/robots.txt", "destination": "/api/robots" },
+    { "source": "/rss.xml", "destination": "/api/rss" },
+    { "source": "/magazine/:slug", "destination": "/api/og-preview?slug=:slug" },
+    { "source": "/mannequins/:id", "destination": "/api/og-preview?type=mannequins&slug=:id" },
+    { "source": "/services/:slug", "destination": "/api/og-preview?type=services&slug=:slug" },
+    { "source": "/agence", "destination": "/api/og-preview?path=agence" },
+    { "source": "/fashion-day", "destination": "/api/og-preview?path=fashion-day" },
+    { "source": "/casting", "destination": "/api/og-preview?path=casting" },
+    { "source": "/mannequins", "destination": "/api/og-preview?path=mannequins" },
+    { "source": "/services", "destination": "/api/og-preview?path=services" },
+    { "source": "/galerie", "destination": "/api/og-preview?path=galerie" },
+    { "source": "/miss-one-light", "destination": "/api/og-preview?path=miss-one-light" },
+    { "source": "/((?!api/|sitemap\\.xml|robots\\.txt|manifest\\.json|logo\\.svg|sw\\.js).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
