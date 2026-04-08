@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import CountdownTimer from '../components/CountdownTimer';
+import Loading from '../components/Loading';
 import { useData } from '../contexts/DataContext';
 
 const CASTING_DATE = '2025-09-06T14:00:00';
@@ -21,11 +22,7 @@ const Casting: React.FC = () => {
   const { data, isInitialized } = useData();
 
   if (!isInitialized || !data) {
-    return (
-      <div className="h-screen bg-pm-dark flex items-center justify-center">
-        <div className="w-12 h-px bg-pm-gold animate-pulse" />
-      </div>
-    );
+    return <Loading />;
   }
 
   const isUpcoming = new Date(CASTING_DATE) > new Date();

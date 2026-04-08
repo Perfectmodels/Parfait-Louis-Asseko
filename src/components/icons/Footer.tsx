@@ -29,8 +29,8 @@ const Footer: React.FC = () => {
             <div className="h-px bg-gradient-to-r from-transparent via-pm-gold/60 to-transparent" />
 
             {/* ── Hero CTA block ── */}
-            <div className="relative max-w-[1800px] mx-auto px-4 sm:px-8 lg:px-20 pt-16 sm:pt-24 pb-12 sm:pb-20">
-                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 sm:gap-12 lg:gap-16">
+            <div className="relative max-w-[1800px] mx-auto px-4 sm:px-8 lg:px-20 pt-8 sm:pt-12 pb-8 sm:pb-10">
+                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 sm:gap-8 lg:gap-12">
 
                     {/* Left : brand statement */}
                     <div className="max-w-xl">

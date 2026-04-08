@@ -12,12 +12,13 @@ import {
     ShieldCheckIcon,
     AcademicCapIcon
 } from '@heroicons/react/24/outline';
+import Loading from '../components/Loading';
 
 const Agency: React.FC = () => {
   const { data, isInitialized } = useData();
 
   if (!isInitialized || !data) {
-    return <div className="h-screen bg-pm-dark flex items-center justify-center"><div className="w-12 h-px bg-pm-gold animate-pulse"></div></div>;
+    return <Loading />;
   }
   
   const { agencyInfo, modelDistinctions, agencyTimeline, siteImages, agencyAchievements } = data;

@@ -6,6 +6,7 @@ import { useData } from '../contexts/DataContext';
 import ModelCard from '../components/ModelCard';
 import ServiceCard from '../components/ServiceCard';
 import CountdownTimer from '../components/CountdownTimer';
+import Loading from '../components/Loading';
 import { ArrowLongRightIcon, TicketIcon, ChevronLeftIcon, ChevronRightIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { GalleryAlbum, GalleryItem } from '../types';
 import { useFirebaseCollection } from '../hooks/useFirebaseCollection';
@@ -23,7 +24,7 @@ const Home: React.FC = () => {
     articlesTrackRef.current?.scrollBy({ left: dir === 'right' ? 320 : -320, behavior: 'smooth' });
 
   if (!isInitialized || !data) {
-    return <div className="h-screen bg-pm-dark flex items-center justify-center"><div className="w-12 h-px bg-pm-gold animate-pulse"></div></div>;
+    return <Loading />;
   }
 
   const { agencyInfo, models, siteImages, agencyServices, fashionDayEvents } = data;

@@ -6,6 +6,7 @@ import {
   ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon, PlayIcon,
 } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
+import Loading from '../components/Loading';
 import { useData } from '../contexts/DataContext';
 import { FashionDayEvent, Stylist, Artist } from '../types';
 
@@ -254,11 +255,7 @@ const FashionDay: React.FC = () => {
   }, [fashionDayEvents]);
 
   if (!isInitialized || !data) {
-    return (
-      <div className="h-screen bg-pm-dark flex items-center justify-center">
-        <div className="w-12 h-px bg-pm-gold animate-pulse" />
-      </div>
-    );
+    return <Loading />;
   }
 
   const heroBg =
