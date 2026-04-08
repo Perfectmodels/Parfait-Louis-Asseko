@@ -1,0 +1,56 @@
+# Documentation
+
+Cette documentation est organisee par categories.
+
+## Structure
+
+| Dossier | Fichiers |
+|---------|----------|
+| firebase/ | 0 |
+| guides/ | 0 |
+| miss5eme/ | 8 |
+| mobile/ | 9 |
+| notifications/ | 7 |
+| technical/ | 3 |
+| archive/ | 0 |
+
+## Index
+
+### MISS5EME
+
+- [CONNEXION_JURY_MISS5EME](miss5eme/CONNEXION_JURY_MISS5EME.md)
+- [FICHES_INDIVIDUELLES_MISS5EME](miss5eme/FICHES_INDIVIDUELLES_MISS5EME.md)
+- [GUIDE_JURY_MISS_ONE_LIGHT](miss5eme/GUIDE_JURY_MISS_ONE_LIGHT.md)
+- [MISS_5EME](miss5eme/MISS_5EME.md)
+- [MISS_5EME_COMPLET](miss5eme/MISS_5EME_COMPLET.md)
+- [MISS_5EME_GUIDE_RAPIDE](miss5eme/MISS_5EME_GUIDE_RAPIDE.md)
+- [MISS_5EME_RESUME](miss5eme/MISS_5EME_RESUME.md)
+- [MODALE_NOTATION_ADMIN](miss5eme/MODALE_NOTATION_ADMIN.md)
+
+### MOBILE
+
+- [ANDROID_SETUP](mobile/ANDROID_SETUP.md)
+- [IOS_ON_WINDOWS](mobile/IOS_ON_WINDOWS.md)
+- [IOS_SETUP](mobile/IOS_SETUP.md)
+- [MOBILE](mobile/MOBILE.md)
+- [MOBILE_CHECKLIST](mobile/MOBILE_CHECKLIST.md)
+- [MOBILE_COMMANDS](mobile/MOBILE_COMMANDS.md)
+- [MOBILE_SUMMARY](mobile/MOBILE_SUMMARY.md)
+- [QUICKSTART_MOBILE](mobile/QUICKSTART_MOBILE.md)
+- [README_MOBILE](mobile/README_MOBILE.md)
+
+### NOTIFICATIONS
+
+- [FIREBASE_PUSH_SETUP](notifications/FIREBASE_PUSH_SETUP.md)
+- [GET_FCM_KEY](notifications/GET_FCM_KEY.md)
+- [NOTIFICATIONS_CHANGELOG](notifications/NOTIFICATIONS_CHANGELOG.md)
+- [NOTIFICATIONS_INDEX](notifications/NOTIFICATIONS_INDEX.md)
+- [NOTIFICATIONS_README](notifications/NOTIFICATIONS_README.md)
+- [NOTIFICATIONS_SETUP](notifications/NOTIFICATIONS_SETUP.md)
+- [QUICK_START_NOTIFICATIONS](notifications/QUICK_START_NOTIFICATIONS.md)
+
+### TECHNICAL
+
+- [ICONS_GENERATED](technical/ICONS_GENERATED.md)
+- [READY_TO_TEST](technical/READY_TO_TEST.md)
+- [ROBUSTESSE_CONCURRENCE](technical/ROBUSTESSE_CONCURRENCE.md)
