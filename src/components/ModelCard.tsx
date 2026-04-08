@@ -7,7 +7,9 @@ interface ModelCardProps {
   model: Model;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
+// ⚡ Bolt: Wrapped in React.memo() to prevent unnecessary re-renders when parent lists (like search in Models.tsx) update
+// ⚡ Bolt: Removed React.FC because memo() returns a React.NamedExoticComponent which conflicts with React.FC return typing
+const ModelCard = React.memo(({ model }: ModelCardProps) => {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -42,6 +44,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       </Link>
     </motion.div>
   );
-};
+});
 
 export default ModelCard;
