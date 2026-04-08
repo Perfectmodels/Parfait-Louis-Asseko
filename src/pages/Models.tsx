@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import ModelCard from '../components/ModelCard';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import Loading from '../components/Loading';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type GenderFilter = 'Tous' | 'Femme' | 'Homme';
@@ -21,7 +22,7 @@ const Models: React.FC = () => {
   }, [filter, searchTerm, publicModels]);
 
   if (!isInitialized) {
-      return <div className="h-screen bg-pm-dark flex items-center justify-center"><div className="w-12 h-px bg-pm-gold animate-pulse"></div></div>;
+      return <Loading />;
   }
 
   return (

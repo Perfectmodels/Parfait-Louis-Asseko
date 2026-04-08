@@ -14,3 +14,16 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Hide loader when app is mounted
+window.addEventListener('load', () => {
+  const loader = document.getElementById('loader');
+  if (loader) {
+    // Add hidden class for smooth fade out
+    loader.classList.add('loader-hidden');
+    // Remove from DOM after animation
+    setTimeout(() => {
+      loader.remove();
+    }, 600);
+  }
+});

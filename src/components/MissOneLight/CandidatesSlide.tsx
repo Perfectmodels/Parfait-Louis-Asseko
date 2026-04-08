@@ -77,25 +77,14 @@ export default function CandidatesSlide({ candidates, onVote, votedCandidates }:
   useEffect(() => { setPage(0); }, [candidates.length]);
 
   return (
-    <div className="w-full px-4 md:px-12 py-8 md:py-10 bg-pm-dark"
+    <div className="w-full"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => setPaused(false)}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="min-w-0">
-          <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-[#009E60] mb-1 block">
-            Classement en direct
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-playfair font-bold text-white leading-tight">
-            Toutes les{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#009E60] via-[#FCD116] to-[#3A75C4]">
-              Candidates
-            </span>
-          </h2>
-        </div>
+      {/* Navigation */}
+      <div className="flex items-center justify-end gap-2 mb-4">
 
         <div className="flex items-center gap-2 shrink-0 ml-4">
           <button onClick={prev} aria-label="Précédent"

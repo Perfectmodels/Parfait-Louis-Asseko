@@ -67,6 +67,20 @@ export default function AdminMissOneLight() {
   const [pendingSubTab, setPendingSubTab] = useState<'waiting' | 'done'>('waiting');
   const [pendingSort, setPendingSort] = useState<'date' | 'candidate' | 'amount'>('date');
   const [pendingSortDir, setPendingSortDir] = useState<'asc' | 'desc'>('desc');
+  
+  // NEW: Advanced vote management states
+  const [selectedVotes, setSelectedVotes] = useState<Set<string>>(new Set());
+  const [batchValidating, setBatchValidating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCandidate, setFilterCandidate] = useState<string>('all');
+  const [quickValidateMode, setQuickValidateMode] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState<MissOneLightPendingVote | null>(null);
+  const [voteStats, setVoteStats] = useState<{
+    byCandidate: Record<string, { pending: number; validated: number; total: number; amount: number }>;
+    totalPending: number;
+    totalValidated: number;
+    totalAmount: number;
+  }>({ byCandidate: {}, totalPending: 0, totalValidated: 0, totalAmount: 0 });
 
   const showToast = (message: string, type: 'success' | 'error') => {
     setToast({ message, type });
@@ -146,6 +160,40 @@ export default function AdminMissOneLight() {
     return () => unsubscribe();
   }, []);
 
+  // Calculate vote statistics whenever pendingVotes changes
+  useEffect(() => {
+    const stats = {
+      byCandidate: {} as Record<string, { pending: number; validated: number; total: number; amount: number }>,
+      totalPending: 0,
+      totalValidated: 0,
+      totalAmount: 0,
+    };
+    
+    pendingVotes.forEach(vote => {
+      const candidateName = vote.candidateName;
+      if (!stats.byCandidate[candidateName]) {
+        stats.byCandidate[candidateName] = { pending: 0, validated: 0, total: 0, amount: 0 };
+      }
+      
+      const voteCount = vote.totalVotes ?? vote.votes;
+      const amount = vote.votes * 100;
+      
+      if (vote.validated && !vote.cancelled) {
+        stats.byCandidate[candidateName].validated += voteCount;
+        stats.totalValidated += voteCount;
+      } else if (!vote.validated && !vote.cancelled) {
+        stats.byCandidate[candidateName].pending += voteCount;
+        stats.totalPending += voteCount;
+      }
+      
+      stats.byCandidate[candidateName].total += voteCount;
+      stats.byCandidate[candidateName].amount += amount;
+      stats.totalAmount += amount;
+    });
+    
+    setVoteStats(stats);
+  }, [pendingVotes]);
+
   const handleValidateVote = async (pending: MissOneLightPendingVote) => {
     const credited = pending.totalVotes ?? pending.votes;
     if (!confirm(`Valider ${credited} vote(s) pour ${pending.candidateName} ?\n(${pending.votes} achetés + ${pending.bonusVotes ?? 0} bonus)`)) return;
@@ -197,6 +245,226 @@ export default function AdminMissOneLight() {
     const voterPhone = pending.phone.replace(/\D/g, '');
     const msg = `Bonjour ${pending.voterName || ''}, votre vote pour ${pending.candidateName} (${pending.totalVotes ?? pending.votes} votes) a bien été validé ! Merci pour votre soutien. 🌟`;
     window.open(`https://wa.me/${voterPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
+  // NEW: Batch validation function
+  const handleBatchValidate = async () => {
+    if (selectedVotes.size === 0) return;
+    if (!confirm(`Valider ${selectedVotes.size} vote(s) en masse ?`)) return;
+    
+    setBatchValidating(true);
+    const { get } = await import('firebase/database');
+    let success = 0;
+    let failed = 0;
+    
+    for (const voteId of selectedVotes) {
+      const vote = pendingVotes.find(v => v.id === voteId);
+      if (!vote || vote.validated || vote.cancelled) continue;
+      
+      try {
+        const snap = await get(ref(rtdb, `missOneLight/pendingVotes/${vote.id}`));
+        if (!snap.exists() || snap.val()?.validated === true) {
+          failed++;
+          continue;
+        }
+        
+        const credited = vote.totalVotes ?? vote.votes;
+        await update(ref(rtdb, `missOneLight/pendingVotes/${vote.id}`), {
+          validated: true,
+          validatedAt: new Date().toISOString(),
+        });
+        await update(ref(rtdb, `${RTDB_PATH}/${vote.candidateId}`), {
+          votes: increment(credited),
+        });
+        
+        sendVoteValidatedEmail({
+          email: vote.email,
+          candidateName: vote.candidateName,
+          votes: vote.votes,
+          bonusVotes: vote.bonusVotes ?? 0,
+          totalVotes: credited,
+          txRef: vote.txRef,
+        }).catch(() => {});
+        
+        success++;
+      } catch {
+        failed++;
+      }
+    }
+    
+    setSelectedVotes(new Set());
+    setBatchValidating(false);
+    showToast(`✅ ${success} validé(s) · ❌ ${failed} échec(s)`, success > 0 ? 'success' : 'error');
+  };
+
+  // NEW: Toggle vote selection
+  const toggleVoteSelection = (id: string) => {
+    setSelectedVotes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) newSet.delete(id);
+      else newSet.add(id);
+      return newSet;
+    });
+  };
+
+  // NEW: Select all waiting votes
+  const selectAllWaiting = () => {
+    const waiting = pendingVotes.filter(v => !v.validated && !v.cancelled);
+    if (selectedVotes.size === waiting.length) {
+      setSelectedVotes(new Set());
+    } else {
+      setSelectedVotes(new Set(waiting.map(v => v.id)));
+    }
+  };
+
+  // ENHANCED: Export votes to CSV with professional formatting
+  const exportVotes = () => {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    
+    // Calculate totals
+    const validated = pendingVotes.filter(v => v.validated && !v.cancelled);
+    const waiting = pendingVotes.filter(v => !v.validated && !v.cancelled);
+    const cancelled = pendingVotes.filter(v => v.cancelled);
+    
+    const totalValidatedVotes = validated.reduce((s, v) => s + (v.totalVotes ?? v.votes), 0);
+    const totalValidatedAmount = validated.reduce((s, v) => s + v.votes * 100, 0);
+    const totalWaitingVotes = waiting.reduce((s, v) => s + (v.totalVotes ?? v.votes), 0);
+    const totalWaitingAmount = waiting.reduce((s, v) => s + v.votes * 100, 0);
+    
+    // CSV Content with sections
+    const lines: string[] = [];
+    
+    // Header section
+    lines.push('MISS ONE LIGHT - RAPPORT DE VOTES');
+    lines.push(`Genere le,${dateStr} a ${timeStr}`);
+    lines.push('');
+    
+    // Summary section
+    lines.push('RESUME');
+    lines.push(`Statut,Nombre,Total Votes,Montant (FCFA)`);
+    lines.push(`VALIDES,${validated.length},${totalValidatedVotes},${totalValidatedAmount.toLocaleString()}`);
+    lines.push(`EN ATTENTE,${waiting.length},${totalWaitingVotes},${totalWaitingAmount.toLocaleString()}`);
+    lines.push(`ANNULES,${cancelled.length},${cancelled.reduce((s, v) => s + (v.totalVotes ?? v.votes), 0)},${cancelled.reduce((s, v) => s + v.votes * 100, 0).toLocaleString()}`);
+    lines.push(`TOTAL,${pendingVotes.length},${totalValidatedVotes + totalWaitingVotes},${(totalValidatedAmount + totalWaitingAmount).toLocaleString()}`);
+    lines.push('');
+    
+    // Detailed data section
+    lines.push('DETAIL DES TRANSACTIONS');
+    lines.push('Date,Heure,Candidate,Votant,Email,Telephone,Votes Achetes,Votes Bonus,Total Votes,Montant (FCFA),Statut,Reference,Telephone Votant');
+    
+    // Sort by date descending
+    const sortedVotes = [...pendingVotes].sort((a, b) => 
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+    
+    sortedVotes.forEach(v => {
+      const date = new Date(v.timestamp);
+      const dateFormatted = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const timeFormatted = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const status = v.cancelled ? 'ANNULE' : v.validated ? 'VALIDE' : 'EN ATTENTE';
+      
+      lines.push([
+        dateFormatted,
+        timeFormatted,
+        v.candidateName,
+        v.voterName || 'Anonyme',
+        v.email,
+        v.phone,
+        v.votes,
+        v.bonusVotes ?? 0,
+        v.totalVotes ?? v.votes,
+        v.votes * 100,
+        status,
+        v.txRef,
+        `'${v.phone}`,
+      ].map(c => {
+        // Escape special characters and wrap in quotes
+        const str = String(c);
+        if (str.includes(',') || str.includes(';') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      }).join(','));
+    });
+    
+    lines.push('');
+    lines.push(`Fin du rapport,,,,,,,,,,,`);
+    
+    // Add UTF-8 BOM for Excel compatibility
+    const BOM = '\uFEFF';
+    const csv = BOM + lines.join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `miss-one-light-votes-${now.toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    
+    showToast(`Export CSV telecharge (${pendingVotes.length} transactions)`, 'success');
+  };
+
+  // NEW: Filter and search function
+  const getFilteredVotes = (votes: MissOneLightPendingVote[]) => {
+    return votes.filter(v => {
+      const matchesCandidate = filterCandidate === 'all' || v.candidateName === filterCandidate;
+      const matchesSearch = !searchQuery || 
+        v.candidateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        v.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        v.phone.includes(searchQuery) ||
+        v.voterName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        v.txRef.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCandidate && matchesSearch;
+    });
+  };
+
+  // NEW: Quick validate without confirmation
+  const handleQuickValidate = async (pending: MissOneLightPendingVote) => {
+    setShowConfirmModal(pending);
+  };
+
+  const confirmValidate = async () => {
+    if (!showConfirmModal) return;
+    const pending = showConfirmModal;
+    setShowConfirmModal(null);
+    
+    const credited = pending.totalVotes ?? pending.votes;
+    setValidating(pending.id);
+    try {
+      const { get } = await import('firebase/database');
+      const snap = await get(ref(rtdb, `missOneLight/pendingVotes/${pending.id}`));
+      if (!snap.exists() || snap.val()?.validated === true) {
+        showToast('Ce vote a deja ete valide ou supprime.', 'error');
+        return;
+      }
+      
+      await update(ref(rtdb, `missOneLight/pendingVotes/${pending.id}`), {
+        validated: true,
+        validatedAt: new Date().toISOString(),
+      });
+      await update(ref(rtdb, `${RTDB_PATH}/${pending.candidateId}`), {
+        votes: increment(credited),
+      });
+      
+      sendVoteValidatedEmail({
+        email: pending.email,
+        candidateName: pending.candidateName,
+        votes: pending.votes,
+        bonusVotes: pending.bonusVotes ?? 0,
+        totalVotes: credited,
+        txRef: pending.txRef,
+      }).catch(() => {});
+      
+      showToast(`✅ ${credited} vote(s) credites pour ${pending.candidateName}`, 'success');
+    } catch {
+      showToast('Erreur lors de la validation', 'error');
+    } finally {
+      setValidating(null);
+    }
   };
 
   const handleImport = async () => {
@@ -565,8 +833,12 @@ export default function AdminMissOneLight() {
 
         {/* Pending Votes Tab */}
         {activeTab === 'pending' && (() => {
-          const waiting = pendingVotes.filter(v => !v.validated && !v.cancelled);
-          const done = pendingVotes.filter(v => v.validated || v.cancelled);
+          const allWaiting = pendingVotes.filter(v => !v.validated && !v.cancelled);
+          const allDone = pendingVotes.filter(v => v.validated || v.cancelled);
+          
+          // Apply filters
+          const waiting = getFilteredVotes(allWaiting);
+          const done = getFilteredVotes(allDone);
 
           const sortFn = (a: MissOneLightPendingVote, b: MissOneLightPendingVote) => {
             let cmp = 0;
@@ -599,11 +871,23 @@ export default function AdminMissOneLight() {
           const sortedDone = [...done].sort(sortFn);
 
           const VoteCard = ({ v }: { v: MissOneLightPendingVote }) => (
-            <div className={`bg-white/5 border rounded-2xl p-4 space-y-3 transition-all ${
+            <div className={`bg-white/5 border rounded-2xl p-4 space-y-3 transition-all relative ${
               v.cancelled ? 'border-red-500/20 opacity-50' : v.validated ? 'border-green-500/20 opacity-70' : 'border-white/10 hover:border-amber-400/30'
-            }`}>
+            } ${selectedVotes.has(v.id) ? 'ring-2 ring-amber-400/50' : ''}`}>
+              {/* Checkbox for batch selection */}
+              {!v.validated && !v.cancelled && (
+                <div className="absolute top-3 left-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedVotes.has(v.id)}
+                    onChange={() => toggleVoteSelection(v.id)}
+                    className="w-5 h-5 rounded border-white/30 bg-white/10 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                  />
+                </div>
+              )}
+              
               {/* Top row: candidate + status + amount */}
-              <div className="flex items-start justify-between gap-3">
+              <div className={`flex items-start justify-between gap-3 ${!v.validated && !v.cancelled ? 'pl-8' : ''}`}>
                 <div className="min-w-0">
                   <p className="text-white font-bold truncate">{v.candidateName}</p>
                   <p className="text-white/40 text-xs font-mono mt-0.5 truncate">{v.txRef}</p>
@@ -658,10 +942,10 @@ export default function AdminMissOneLight() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-2 pt-1 pl-8">
                 {!v.validated && !v.cancelled && (
                   <button
-                    onClick={() => handleValidateVote(v)}
+                    onClick={() => handleQuickValidate(v)}
                     disabled={validating === v.id}
                     className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 text-xs font-bold transition-all"
                   >
@@ -691,49 +975,126 @@ export default function AdminMissOneLight() {
 
           return (
             <div className="space-y-6">
-              {/* KPI */}
-              <div className="grid grid-cols-3 gap-3">
+              {/* ENHANCED KPI with Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="bg-white/10 border border-white/20 rounded-2xl p-4">
                   <p className="text-white/40 text-xs uppercase tracking-widest mb-1">En attente</p>
-                  <p className="text-2xl font-bold text-amber-400">{waiting.length}</p>
+                  <p className="text-2xl font-bold text-amber-400">{voteStats.totalPending}</p>
+                  <p className="text-white/30 text-xs mt-1">{waiting.length} transactions</p>
                 </div>
                 <div className="bg-white/10 border border-white/20 rounded-2xl p-4">
                   <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Validés</p>
-                  <p className="text-2xl font-bold text-green-400">{pendingVotes.filter(v => v.validated && !v.cancelled).length}</p>
+                  <p className="text-2xl font-bold text-green-400">{voteStats.totalValidated}</p>
+                  <p className="text-white/30 text-xs mt-1">{pendingVotes.filter(v => v.validated && !v.cancelled).length} transactions</p>
                 </div>
                 <div className="bg-white/10 border border-white/20 rounded-2xl p-4">
-                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Votes à valider</p>
-                  <p className="text-2xl font-bold text-white">{waiting.reduce((s, v) => s + v.votes, 0)}</p>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Montant Total</p>
+                  <p className="text-2xl font-bold text-pink-400">{voteStats.totalAmount.toLocaleString()} F</p>
+                  <p className="text-white/30 text-xs mt-1">{pendingVotes.length} transactions</p>
+                </div>
+                <div className="bg-white/10 border border-white/20 rounded-2xl p-4">
+                  <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Sélectionnés</p>
+                  <p className="text-2xl font-bold text-blue-400">{selectedVotes.size}</p>
+                  <p className="text-white/30 text-xs mt-1">votes à valider</p>
                 </div>
               </div>
 
-              {/* Sub-tabs */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setPendingSubTab('waiting')}
-                    className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'waiting' ? 'bg-amber-500 text-white' : 'text-white/50 hover:text-white'}`}
+              {/* ENHANCED Controls: Search, Filter, Batch Actions, Export */}
+              <div className="space-y-4">
+                {/* Row 1: Search and Filter */}
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex-1 min-w-[200px]">
+                    <input
+                      type="text"
+                      placeholder="Rechercher (nom, email, téléphone, transaction...)"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white placeholder-white/40 text-sm focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <select
+                    value={filterCandidate}
+                    onChange={(e) => setFilterCandidate(e.target.value)}
+                    className="bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-amber-500 cursor-pointer"
                   >
-                    <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse" />
-                    En attente
-                    {waiting.length > 0 && (
-                      <span className="bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{waiting.length}</span>
-                    )}
-                  </button>
+                    <option value="all" className="bg-slate-800">Toutes les candidates</option>
+                    {candidates.map(c => (
+                      <option key={c.id} value={c.name} className="bg-slate-800">
+                        {c.name} ({voteStats.byCandidate[c.name]?.pending || 0} en attente)
+                      </option>
+                    ))}
+                  </select>
                   <button
-                    onClick={() => setPendingSubTab('done')}
-                    className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'done' ? 'bg-green-600 text-white' : 'text-white/50 hover:text-white'}`}
+                    onClick={exportVotes}
+                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2"
                   >
-                    <span className="w-2 h-2 rounded-full bg-green-400" />
-                    Traités ({done.length})
+                    <Upload size={16} />
+                    Exporter CSV
                   </button>
                 </div>
-                {/* Sort controls */}
-                <div className="flex items-center gap-2">
-                  <span className="text-white/30 text-xs">Trier :</span>
-                  <SortBtn col="date" label="Date" />
-                  <SortBtn col="candidate" label="Candidate" />
-                  <SortBtn col="amount" label="Montant" />
+
+                {/* Row 2: Batch Actions and Mode */}
+                {pendingSubTab === 'waiting' && selectedVotes.size > 0 && (
+                  <div className="flex flex-wrap items-center gap-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                    <span className="text-amber-300 text-sm font-semibold">
+                      {selectedVotes.size} vote(s) sélectionné(s)
+                    </span>
+                    <button
+                      onClick={handleBatchValidate}
+                      disabled={batchValidating}
+                      className="bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2"
+                    >
+                      {batchValidating ? (
+                        <span className="w-4 h-4 border border-green-300/40 border-t-green-300 rounded-full animate-spin block" />
+                      ) : (
+                        <CheckCircle size={16} />
+                      )}
+                      Valider en masse
+                    </button>
+                    <button
+                      onClick={() => setSelectedVotes(new Set())}
+                      className="bg-white/10 hover:bg-white/20 text-white/70 px-3 py-2 rounded-lg text-sm transition-all"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+
+                {/* Row 3: Sub-tabs and Sort */}
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setPendingSubTab('waiting')}
+                      className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'waiting' ? 'bg-amber-500 text-white' : 'text-white/50 hover:text-white'}`}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse" />
+                      En attente
+                      {allWaiting.length > 0 && (
+                        <span className="bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{allWaiting.length}</span>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => setPendingSubTab('done')}
+                      className={`px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all flex items-center gap-2 ${pendingSubTab === 'done' ? 'bg-green-600 text-white' : 'text-white/50 hover:text-white'}`}
+                    >
+                      <span className="w-2 h-2 rounded-full bg-green-400" />
+                      Traités ({allDone.length})
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {pendingSubTab === 'waiting' && allWaiting.length > 0 && (
+                      <button
+                        onClick={selectAllWaiting}
+                        className="text-xs font-semibold text-white/50 hover:text-white px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
+                      >
+                        {selectedVotes.size === allWaiting.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                      </button>
+                    )}
+                    <span className="text-white/30 text-xs">Trier :</span>
+                    <SortBtn col="date" label="Date" />
+                    <SortBtn col="candidate" label="Candidate" />
+                    <SortBtn col="amount" label="Montant" />
+                  </div>
                 </div>
               </div>
 
@@ -910,6 +1271,56 @@ export default function AdminMissOneLight() {
           <button onClick={() => setToast(null)} className="opacity-50 hover:opacity-100 ml-2">
             <X size={14} />
           </button>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-slate-800 border border-white/20 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-white mb-4">Confirmer la validation</h3>
+            <div className="space-y-2 text-sm mb-6">
+              <p className="text-white/70">
+                <span className="text-white font-semibold">Candidate:</span> {showConfirmModal.candidateName}
+              </p>
+              <p className="text-white/70">
+                <span className="text-white font-semibold">Votant:</span> {showConfirmModal.voterName || 'Anonyme'} ({showConfirmModal.email})
+              </p>
+              <p className="text-white/70">
+                <span className="text-white font-semibold">Votes:</span>{' '}
+                <span className="text-pink-400 font-bold">{showConfirmModal.votes}</span> achetés
+                {(showConfirmModal.bonusVotes ?? 0) > 0 && (
+                  <span className="text-[#009E60]"> + {showConfirmModal.bonusVotes} bonus</span>
+                )}
+                {' = '}
+                <span className="text-amber-400 font-black">{showConfirmModal.totalVotes ?? showConfirmModal.votes} total</span>
+              </p>
+              <p className="text-white/70">
+                <span className="text-white font-semibold">Montant:</span>{' '}
+                <span className="text-emerald-400 font-bold">{(showConfirmModal.votes * 100).toLocaleString()} FCFA</span>
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowConfirmModal(null)}
+                className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-all"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmValidate}
+                disabled={validating === showConfirmModal.id}
+                className="flex-1 py-2.5 rounded-xl bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 font-bold transition-all flex items-center justify-center gap-2"
+              >
+                {validating === showConfirmModal.id ? (
+                  <span className="w-4 h-4 border border-green-300/40 border-t-green-300 rounded-full animate-spin block" />
+                ) : (
+                  <CheckCircle size={18} />
+                )}
+                Confirmer
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

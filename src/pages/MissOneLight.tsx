@@ -161,6 +161,15 @@ export default function MissOneLight() {
   const [submitted, setSubmitted] = useState<{ txRef: string; candidateName: string; total: number } | null>(null);
   const submitLock = useRef(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  // NEW: Live vote highlights
+  const [recentVotes, setRecentVotes] = useState<Array<{
+    id: string;
+    candidateName: string;
+    voterName: string;
+    votes: number;
+    timestamp: string;
+  }>>([]);
 
   // Debounce RTDB updates — with hundreds of concurrent voters the realtime
   // listener fires very frequently; cap re-renders to every 800ms.
@@ -190,6 +199,47 @@ export default function MissOneLight() {
     debounceRef.current = setTimeout(() => setCandidates(rawCandidates), 800);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [rawCandidates]);
+
+  // NEW: Load recent validated votes for live display
+  const [displayedVoteIndex, setDisplayedVoteIndex] = useState(0);
+  
+  useEffect(() => {
+    const pendingRef = ref(rtdb, 'missOneLight/pendingVotes');
+    const unsubscribe = onValue(pendingRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const validated = Object.entries(data)
+          .map(([id, val]: [string, any]) => ({
+            id,
+            candidateName: val.candidateName,
+            voterName: val.voterName || 'Anonyme',
+            votes: val.totalVotes || val.votes,
+            timestamp: val.timestamp,
+            validated: val.validated,
+            validatedAt: val.validatedAt,
+          }))
+          .filter((v) => v.validated === true)
+          .sort((a, b) => new Date(b.validatedAt || b.timestamp).getTime() - new Date(a.validatedAt || a.timestamp).getTime())
+          .slice(0, 20); // Keep last 20 validated votes
+        setRecentVotes(validated);
+        setDisplayedVoteIndex(0); // Reset index when data changes
+      } else {
+        setRecentVotes([]);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Auto-rotate votes every 3 seconds
+  useEffect(() => {
+    if (recentVotes.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setDisplayedVoteIndex((prev) => (prev + 1) % recentVotes.length);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [recentVotes.length]);
 
   const totalVotes = candidates.reduce((s, c) => s + (c.votes || 0), 0);
 
@@ -296,12 +346,26 @@ export default function MissOneLight() {
         />
       </section>
 
-      <section id="top5" className="px-4 md:px-12 py-8 bg-pm-dark">
-        {/* Countdown */}
-        <Countdown deadline={new Date('2026-04-17T20:00:00')} />
+      {/* Gradient transition from hero */}
+      <div className="h-24 bg-gradient-to-b from-transparent to-pm-dark" />
 
-        {/* Top5 + Procedure side by side on desktop */}
-        <div className="flex flex-col lg:flex-row gap-6 mt-8">
+      <section id="top5" className="px-4 md:px-6 lg:px-12 py-6 md:py-10 bg-pm-dark">
+        {/* Section Header */}
+        <div className="text-center mb-8 md:mb-12">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FCD116]/10 border border-[#FCD116]/30 text-[#FCD116] text-[10px] font-black uppercase tracking-[0.3em] mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FCD116] animate-pulse" />
+            Classement en temps réel
+          </span>
+          <h2 className="text-3xl md:text-5xl font-playfair font-bold text-white">
+            Le <span className="text-[#FCD116]">Top 5</span> des favorites
+          </h2>
+          <p className="text-white/40 text-sm mt-2 max-w-md mx-auto">
+            Découvrez les candidates en tête du classement et votez pour votre favorite
+          </p>
+        </div>
+
+        {/* Top5 + Sidebar side by side on desktop */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Top 5 */}
           <div className="flex-1 min-w-0">
             <Top5Slide
@@ -311,39 +375,132 @@ export default function MissOneLight() {
             />
           </div>
 
-          {/* Payment procedure */}
-          <div className="lg:w-80 shrink-0">
-            <div className="border border-[#FCD116]/30 rounded-3xl overflow-hidden flex flex-col">
-              <div className="bg-gradient-to-r from-[#009E60]/20 to-[#3A75C4]/20 px-5 py-4 border-b border-white/10">
-                <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#FCD116] mb-1">Comment voter</p>
+          {/* Sidebar - Live votes & Payment */}
+          <div className="lg:w-96 xl:w-[420px] shrink-0 space-y-4">
+            {/* Live Vote Highlights Panel */}
+            {recentVotes.length > 0 && (
+              <div className="border border-[#009E60]/30 rounded-3xl overflow-hidden flex flex-col bg-gradient-to-b from-[#009E60]/10 to-[#009E60]/5 shadow-lg shadow-[#009E60]/5">
+                <div className="bg-gradient-to-r from-[#009E60]/30 to-[#FCD116]/20 px-5 py-4 border-b border-white/10">
+                  <div className="flex items-center gap-3">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#009E60] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-[#009E60]"></span>
+                    </span>
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#009E60]">Live</p>
+                      <h2 className="text-base font-playfair font-bold text-white">Derniers votes validés</h2>
+                    </div>
+                  </div>
+                </div>
+                <div className="px-4 py-4 min-h-[100px] flex items-center justify-center overflow-hidden">
+                  {recentVotes.length > 0 && (
+                    <div
+                      key={displayedVoteIndex}
+                      className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-[#009E60]/30 w-full animate-in fade-in slide-in-from-right duration-500"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#009E60] to-[#FCD116] flex items-center justify-center shrink-0 animate-pulse">
+                        <Heart size={16} className="text-white" fill="currentColor" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-sm font-bold truncate">
+                          {recentVotes[displayedVoteIndex].voterName}
+                        </p>
+                        <p className="text-white/50 text-xs truncate">
+                          a voté pour <span className="text-[#FCD116] font-bold">{recentVotes[displayedVoteIndex].candidateName}</span>
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-[#009E60] font-black text-lg">+{recentVotes[displayedVoteIndex].votes}</p>
+                        <p className="text-white/30 text-[10px]">
+                          {new Date(recentVotes[displayedVoteIndex].timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Progress indicators */}
+                <div className="px-4 pb-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 flex gap-1">
+                      {recentVotes.slice(0, 5).map((_, idx) => (
+                        <div
+                          key={idx}
+                          className={`h-1 rounded-full transition-all duration-300 ${
+                            idx === displayedVoteIndex % recentVotes.length
+                              ? 'bg-[#009E60] w-4'
+                              : 'bg-white/20 w-2'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-white/40 text-[10px]">
+                      {displayedVoteIndex + 1} / {recentVotes.length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Payment Procedure Card */}
+            <div className="border border-[#FCD116]/40 rounded-3xl overflow-hidden flex flex-col bg-gradient-to-b from-[#FCD116]/10 to-transparent shadow-lg shadow-[#FCD116]/5">
+              <div className="bg-gradient-to-r from-[#FCD116]/30 to-[#009E60]/20 px-5 py-4 border-b border-white/10">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[#FCD116]">💳</span>
+                  <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#FCD116]">Comment voter</p>
+                </div>
                 <h2 className="text-lg font-playfair font-bold text-white">Procédure de paiement</h2>
               </div>
-              <div className="px-5 py-4 space-y-4 bg-white/[0.03]">
+              <div className="px-5 py-5 space-y-4 bg-white/[0.02]">
                 {[
-                  { n: '1', color: '#009E60', title: 'Choisissez votre candidate', desc: 'Cliquez sur "Voter" et remplissez le formulaire.' },
-                  { n: '2', color: '#FCD116', title: 'Effectuez le paiement', desc: (<>Airtel Money <span className="text-[#FCD116] font-black">074 79 93 19</span><br/>Moov Money <span className="text-[#FCD116] font-black">065 23 54 84</span></>) },
-                  { n: '3', color: '#25D366', title: "Envoyez la capture", desc: (<>WhatsApp <span className="text-[#25D366] font-black">+241 74 79 93 19</span> — capture <strong className="text-white">obligatoire</strong>.</>) },
-                  { n: '4', color: '#3A75C4', title: 'Votes activés sous 24h', desc: 'Vos votes apparaissent dans le classement en direct.' },
-                ].map(({ n, color, title, desc }) => (
-                  <div key={n} className="flex gap-3 items-start">
-                    <div className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center font-black text-xs text-pm-dark" style={{ background: color }}>{n}</div>
-                    <div>
-                      <p className="text-white font-bold text-xs mb-0.5">{title}</p>
-                      <p className="text-white/50 text-[11px] leading-relaxed">{desc}</p>
+                  { n: '1', color: '#009E60', icon: '👆', title: 'Choisissez votre candidate', desc: 'Cliquez sur "Voter" et remplissez le formulaire.' },
+                  { n: '2', color: '#FCD116', icon: '💰', title: 'Effectuez le paiement', desc: (<>Airtel Money <span className="text-[#FCD116] font-black">074 79 93 19</span> ou Moov <span className="text-[#FCD116] font-black">065 23 54 84</span></>) },
+                  { n: '3', color: '#25D366', icon: '📱', title: "Envoyez la capture", desc: (<>WhatsApp <span className="text-[#25D366] font-black">+241 74 79 93 19</span> avec la capture d'écran.</>) },
+                  { n: '4', color: '#3A75C4', icon: '✨', title: 'Votes activés sous 24h', desc: 'Vos votes apparaissent dans le classement en direct.' },
+                ].map(({ n, color, icon, title, desc }) => (
+                  <div key={n} className="flex gap-3 items-start group">
+                    <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-black text-sm text-pm-dark shadow-lg transition-transform group-hover:scale-110" style={{ background: color }}>
+                      {icon}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-bold text-sm mb-0.5">{title}</p>
+                      <p className="text-white/50 text-xs leading-relaxed">{desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="px-5 py-3 bg-[#009E60]/10 border-t border-[#009E60]/20 flex items-center gap-2">
-                <span>🎁</span>
-                <p className="text-white/60 text-[11px]"><strong className="text-[#009E60]">Bonus :</strong> +5 votes / 10 achetés.</p>
+              <div className="px-5 py-3 bg-gradient-to-r from-[#009E60]/20 to-[#FCD116]/20 border-t border-[#FCD116]/30 flex items-center gap-3">
+                <span className="text-xl">🎁</span>
+                <p className="text-white/80 text-xs"><strong className="text-[#FCD116]">Bonus :</strong> +5 votes offerts pour chaque tranche de 10 votes achetés !</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="candidates">
+      {/* Section Divider */}
+      <div className="py-4 md:py-6 bg-pm-dark">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        </div>
+      </div>
+
+      {/* All Candidates Section */}
+      <section id="candidates" className="px-4 md:px-6 lg:px-12 pb-6 md:pb-8 bg-pm-dark">
+        {/* Section Header */}
+        <div className="text-center mb-8 md:mb-12">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#009E60]/10 border border-[#009E60]/30 text-[#009E60] text-[10px] font-black uppercase tracking-[0.3em] mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#009E60] animate-pulse" />
+            Toutes les candidates
+          </span>
+          <h2 className="text-3xl md:text-5xl font-playfair font-bold text-white mb-2">
+            Découvrez <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#009E60] via-[#FCD116] to-[#3A75C4]">toutes nos candidates</span>
+          </h2>
+          <p className="text-white/40 text-sm max-w-lg mx-auto">
+            {candidates.length} candidates participent à cette édition 2026. Parcourez leurs profils et soutenez votre favorite !
+          </p>
+        </div>
+
         <CandidatesSlide
           candidates={candidates}
           onVote={(id) => { const c = candidates.find(c => c.id === id); if (c) openVoteModal(c); }}
@@ -525,6 +682,60 @@ export default function MissOneLight() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <footer className="bg-gradient-to-t from-black/40 to-pm-dark border-t border-white/10">
+        <div className="px-4 md:px-6 lg:px-12 py-8 md:py-12">
+          <div className="max-w-6xl mx-auto">
+            {/* Top bar with logo */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+              <div className="text-center md:text-left">
+                <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white mb-1">
+                  Miss <span className="text-[#FCD116]">One Light</span> 2026
+                </h3>
+                <p className="text-white/40 text-sm">Perfect Models Management</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <a 
+                  href="https://wa.me/24174799319" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366]/20 border border-[#25D366]/30 text-[#25D366] text-sm font-semibold hover:bg-[#25D366]/30 transition-all"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  Contact WhatsApp
+                </a>
+              </div>
+            </div>
+
+            {/* Info grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                <p className="text-[#FCD116] text-2xl mb-1">📅</p>
+                <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Date de la finale</p>
+                <p className="text-white font-bold">17 Avril 2026</p>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                <p className="text-[#009E60] text-2xl mb-1">🕐</p>
+                <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Heure</p>
+                <p className="text-white font-bold">20h00 (GMT+1)</p>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                <p className="text-[#3A75C4] text-2xl mb-1">📍</p>
+                <p className="text-white/60 text-xs uppercase tracking-widest mb-1">Lieu</p>
+                <p className="text-white font-bold">Libreville, Gabon</p>
+              </div>
+            </div>
+
+            {/* Copyright */}
+            <div className="pt-6 border-t border-white/10 text-center">
+              <p className="text-white/30 text-xs">
+                © 2026 Perfect Models Management. Tous droits réservés. | Miss One Light 2026
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
