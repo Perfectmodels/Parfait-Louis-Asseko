@@ -768,7 +768,7 @@ export default function AdminMissOneLight() {
                           className="bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white/60 hover:text-white p-1.5 rounded-lg transition-all"
                         >
                           {uploadingId === c.id
-                            ? <span className="w-3.5 h-3.5 border border-white/40 border-t-white rounded-full animate-spin block" />
+                            ? <span className="loading loading-spinner loading-xs text-white" />
                             : <Upload size={14} />
                           }
                         </button>
@@ -950,7 +950,7 @@ export default function AdminMissOneLight() {
                     className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 text-xs font-bold transition-all"
                   >
                     {validating === v.id
-                      ? <span className="w-3.5 h-3.5 border border-green-300/40 border-t-green-300 rounded-full animate-spin block" />
+                      ? <span className="loading loading-spinner loading-xs text-green-300" />
                       : <CheckCircle size={14} />
                     }
                     Valider
@@ -1045,7 +1045,7 @@ export default function AdminMissOneLight() {
                       className="bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2"
                     >
                       {batchValidating ? (
-                        <span className="w-4 h-4 border border-green-300/40 border-t-green-300 rounded-full animate-spin block" />
+                        <span className="loading loading-spinner loading-xs text-green-300" />
                       ) : (
                         <CheckCircle size={16} />
                       )}
@@ -1313,7 +1313,7 @@ export default function AdminMissOneLight() {
                 className="flex-1 py-2.5 rounded-xl bg-green-500/20 hover:bg-green-500/40 disabled:opacity-50 text-green-300 font-bold transition-all flex items-center justify-center gap-2"
               >
                 {validating === showConfirmModal.id ? (
-                  <span className="w-4 h-4 border border-green-300/40 border-t-green-300 rounded-full animate-spin block" />
+                  <span className="loading loading-spinner loading-xs text-green-300" />
                 ) : (
                   <CheckCircle size={18} />
                 )}

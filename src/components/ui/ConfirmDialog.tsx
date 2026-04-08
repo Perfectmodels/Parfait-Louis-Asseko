@@ -60,7 +60,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
-                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                <span className="loading loading-spinner loading-xs" />
                 Traitement...
               </span>
             ) : confirmLabel}

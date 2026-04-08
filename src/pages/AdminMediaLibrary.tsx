@@ -272,7 +272,7 @@ const AdminMediaLibrary: React.FC = () => {
       {/* Grid Section */}
       {isLoading ? (
         <div className="h-96 flex items-center justify-center">
-          <div className="w-10 h-10 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" />
+          <span className="loading loading-ring loading-lg text-pm-gold" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="h-96 flex flex-col items-center justify-center gap-4 opacity-20">
