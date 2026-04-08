@@ -7,25 +7,36 @@ interface HeroSlideProps {
   onDiscover: () => void;
 }
 
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
 export default function HeroSlide({ totalVotes, candidatesCount, onDiscover }: HeroSlideProps) {
-  const [timeLeft, setTimeLeft] = useState('');
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
     const update = () => {
       const now = new Date();
-      const deadline = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+      // Finale le 17 avril 2026 à 20h00 (heure du Gabon UTC+1)
+      const deadline = new Date(2026, 3, 17, 20, 0, 0); // Month is 0-indexed: 3 = April
       const diff = deadline.getTime() - now.getTime();
       if (diff > 0) {
-        const d = Math.floor(diff / 86400000);
-        const h = Math.floor((diff % 86400000) / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        setTimeLeft(`${d}j ${h}h ${m}m`);
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        setTimeLeft({ days, hours, minutes, seconds });
+        setIsFinished(false);
       } else {
-        setTimeLeft('Terminé');
+        setIsFinished(true);
       }
     };
     update();
-    const id = setInterval(update, 60000);
+    const id = setInterval(update, 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -77,13 +88,42 @@ export default function HeroSlide({ totalVotes, candidatesCount, onDiscover }: H
             <p className="text-[8px] md:text-[10px] uppercase tracking-widest text-[#FCD116]">Votes</p>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8">
-            <div className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-[#3A75C4]/10 text-[#3A75C4] mx-auto mb-2 md:mb-4">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6">
+            <div className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-[#3A75C4]/10 text-[#3A75C4] mx-auto mb-2 md:mb-3">
               <Calendar size={16} className="md:hidden" />
               <Calendar size={24} className="hidden md:block" />
             </div>
-            <p className="text-lg md:text-3xl font-playfair font-bold text-white mb-0.5 leading-tight">{timeLeft}</p>
-            <p className="text-[8px] md:text-[10px] uppercase tracking-widest text-white/40">Clôture</p>
+            {isFinished ? (
+              <p className="text-lg md:text-2xl font-playfair font-bold text-white mb-0.5 leading-tight text-center">🎉 Finale !</p>
+            ) : (
+              <div className="flex gap-2 md:gap-3 justify-center">
+                <div className="text-center">
+                  <span className="countdown font-mono text-xl md:text-3xl text-white">
+                    <span style={{ '--value': timeLeft.days } as React.CSSProperties} aria-live="polite">{timeLeft.days}</span>
+                  </span>
+                  <p className="text-[7px] md:text-[9px] uppercase tracking-widest text-white/40 mt-0.5">j</p>
+                </div>
+                <div className="text-center">
+                  <span className="countdown font-mono text-xl md:text-3xl text-white">
+                    <span style={{ '--value': timeLeft.hours } as React.CSSProperties} aria-live="polite">{timeLeft.hours}</span>
+                  </span>
+                  <p className="text-[7px] md:text-[9px] uppercase tracking-widest text-white/40 mt-0.5">h</p>
+                </div>
+                <div className="text-center">
+                  <span className="countdown font-mono text-xl md:text-3xl text-white">
+                    <span style={{ '--value': timeLeft.minutes } as React.CSSProperties} aria-live="polite">{timeLeft.minutes}</span>
+                  </span>
+                  <p className="text-[7px] md:text-[9px] uppercase tracking-widest text-white/40 mt-0.5">m</p>
+                </div>
+                <div className="text-center">
+                  <span className="countdown font-mono text-xl md:text-3xl text-[#FCD116]">
+                    <span style={{ '--value': timeLeft.seconds } as React.CSSProperties} aria-live="polite">{timeLeft.seconds}</span>
+                  </span>
+                  <p className="text-[7px] md:text-[9px] uppercase tracking-widest text-white/40 mt-0.5">s</p>
+                </div>
+              </div>
+            )}
+            <p className="text-[8px] md:text-[10px] uppercase tracking-widest text-white/40 mt-1 text-center">17 avril 20h</p>
           </div>
         </div>
 
@@ -95,6 +135,26 @@ export default function HeroSlide({ totalVotes, candidatesCount, onDiscover }: H
           <ChevronDown size={14} />
         </button>
       </div>
+
+      {/* DaisyUI Countdown Animation Styles */}
+      <style>{`
+        .countdown {
+          display: inline-flex;
+          overflow: hidden;
+        }
+        .countdown > * {
+          display: inline-block;
+          transition: all 0.3s ease;
+        }
+        @keyframes countdown-bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-2px); }
+        }
+        .countdown span {
+          animation: countdown-bounce 1s ease infinite;
+          animation-delay: calc(var(--value) * 0.1s);
+        }
+      `}</style>
     </div>
   );
 }

@@ -312,7 +312,7 @@ const SubmitButton: React.FC<{ loading: boolean; label: string }> = ({ loading, 
   <button type="submit" disabled={loading}
     className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-pm-gold text-pm-dark font-black uppercase tracking-widest rounded-full transition-all hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed">
     {loading
-      ? <><span className="w-5 h-5 border-2 border-pm-dark/30 border-t-pm-dark rounded-full animate-spin" />Envoi en cours…</>
+      ? <><span className="loading loading-spinner loading-sm text-pm-dark" />Envoi en cours…</>
       : <><PaperAirplaneIcon className="w-5 h-5" />{label}</>}
   </button>
 );

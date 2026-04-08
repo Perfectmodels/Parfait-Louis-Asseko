@@ -297,7 +297,7 @@ const Gallery: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {isLoading ? (
           <div className="flex items-center justify-center py-32">
-            <div className="w-8 h-8 border-2 border-pm-gold/30 border-t-pm-gold rounded-full animate-spin" />
+            <span className="loading loading-ring loading-md text-pm-gold" />
           </div>
         ) : selectedAlbum ? (
           <AlbumDetail

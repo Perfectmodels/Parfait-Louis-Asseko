@@ -364,7 +364,7 @@ const AdminMailing: React.FC = () => {
                   className="w-full flex items-center justify-center gap-2 bg-pm-gold text-pm-dark font-black py-3 rounded-full text-xs uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                   {sending
                     ? <>
-                        <span className="w-4 h-4 border-2 border-pm-dark/30 border-t-pm-dark rounded-full animate-spin" />
+                        <span className="loading loading-spinner loading-sm text-pm-dark" />
                         Lot {Math.ceil(progress.sent / 25)}/{Math.ceil(progress.total / 25)} — {progress.sent}/{progress.total}
                       </>
                     : <><PaperAirplaneIcon className="w-4 h-4" />Envoyer à {targetEmails.length} destinataire(s)</>}
@@ -450,7 +450,7 @@ const AdminMailing: React.FC = () => {
                   className="w-full flex items-center justify-center gap-2 bg-pm-gold text-pm-dark font-black py-3 rounded-full text-xs uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                   {sending
                     ? <>
-                        <span className="w-4 h-4 border-2 border-pm-dark/30 border-t-pm-dark rounded-full animate-spin" />
+                        <span className="loading loading-spinner loading-sm text-pm-dark" />
                         Lot {Math.ceil(progress.sent / 25)}/{Math.ceil(progress.total / 25)} — {progress.sent}/{progress.total}
                       </>
                     : <><PaperAirplaneIcon className="w-4 h-4" />Envoyer la newsletter à {targetEmails.length} destinataire(s)</>}

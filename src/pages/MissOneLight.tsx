@@ -320,8 +320,8 @@ export default function MissOneLight() {
     return (
       <div className="w-full min-h-screen bg-pm-dark flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-pm-gold border-t-transparent rounded-full animate-spin" />
-          <p className="text-pm-gold font-playfair animate-pulse">Chargement Miss One Light...</p>
+          <span className="loading loading-ring loading-lg text-pm-gold"></span>
+          <p className="text-pm-gold text-sm font-montserrat animate-pulse">Chargement Miss One Light...</p>
         </div>
       </div>
     );
@@ -672,7 +672,7 @@ export default function MissOneLight() {
                   <button type="submit" disabled={submitting}
                     className="w-full py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] disabled:opacity-50 text-white font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all">
                     {submitting
-                      ? <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Envoi...</>
+                      ? <><span className="loading loading-spinner loading-sm" /> Envoi...</>
                       : <><MessageCircle size={18} /> Soumettre → WhatsApp</>
                     }
                   </button>

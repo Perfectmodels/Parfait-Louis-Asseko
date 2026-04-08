@@ -188,7 +188,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             }`}
                         >
                             {isLoading
-                                ? <span className="w-5 h-5 border-2 border-pm-gold/40 border-t-pm-gold rounded-full animate-spin block" />
+                                ? <span className="loading loading-spinner loading-sm text-pm-gold" />
                                 : permission === 'granted'
                                 ? <BellIcon className="w-5 h-5" />
                                 : <BellSlashIcon className="w-5 h-5" />

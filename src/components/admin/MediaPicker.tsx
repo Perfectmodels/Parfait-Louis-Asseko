@@ -118,7 +118,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
         <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           {isLoading ? (
             <div className="h-full flex items-center justify-center">
-              <div className="w-8 h-8 border-2 border-pm-gold border-t-transparent rounded-full animate-spin" />
+              <span className="loading loading-ring loading-md text-pm-gold" />
             </div>
           ) : filtered.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center gap-4 opacity-20">

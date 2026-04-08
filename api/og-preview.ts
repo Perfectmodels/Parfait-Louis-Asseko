@@ -330,10 +330,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Check if request is from a crawler
   const userAgent = req.headers['user-agent'] || '';
   
-  // Real users → redirect to SPA (the SPA rewrite will serve index.html)
+  // Real users → redirect to root to serve the SPA (avoid redirect loops)
+  // The SPA's client-side router will handle the URL client-side
   if (!isCrawler(userAgent)) {
-    res.setHeader('Location', content.url);
-    return res.status(302).send('Redirecting...');
+    res.setHeader('Location', '/');
+    return res.status(302).send('Redirecting to SPA...');
   }
 
   // Crawlers → return OG HTML with meta tags
