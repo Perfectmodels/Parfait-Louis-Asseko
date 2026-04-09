@@ -6,7 +6,7 @@ const AIAssistantIcon: React.FC = () => {
     return (
         <Link 
             to="/chat"
-            className="fixed bottom-12 right-12 z-[100] group"
+            className="fixed bottom-12 right-12 z-[100] group rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:ring-offset-2"
             aria-label="Assistant IA Concierge"
         >
             <div className="relative">
