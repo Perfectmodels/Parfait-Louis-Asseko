@@ -1,0 +1,3 @@
+## 2026-13-09 - Memoizing List Items to Prevent Over-Rendering
+**Learning:** List items like `ModelCard` are rendered frequently and inside maps (like in `Models.tsx` and `Home.tsx`). Changing a parent state (such as search filters or text input) causes the parent to re-render, which deeply re-renders all list items even if their individual `model` data hasn't changed.
+**Action:** Wrap such frequently rendered read-only list components with `React.memo()`. Remove the `React.FC` annotation from the component to avoid typing conflicts with `React.NamedExoticComponent` that cause `tsc --noEmit` CI failures.
