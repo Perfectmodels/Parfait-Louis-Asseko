@@ -7,7 +7,8 @@ interface ModelCardProps {
   model: Model;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
+const ModelCard = React.memo(({ model }: ModelCardProps) => {
+  // ⚡ Bolt: Using React.memo to prevent unnecessary re-renders when parent states (like search or filter inputs) update.
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -42,6 +43,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       </Link>
     </motion.div>
   );
-};
+});
 
 export default ModelCard;
