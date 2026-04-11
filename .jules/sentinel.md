@@ -1,0 +1,4 @@
+## 2025-04-11 - Prevent XSS in Raw HTML Generation
+**Vulnerability:** XSS vulnerability found in `src/pages/ArticleDetail.tsx`. Unsanitized user data (e.g., article titles, content, author names, categories) from the database was interpolated directly into raw HTML strings using template literals to generate PDFs via `window.open().document.write()`.
+**Learning:** The application builds custom HTML for printable articles dynamically on the client-side. Since React's built-in XSS protection (`{}`) doesn't cover manually constructed string templates, any malicious script tags saved in the database (e.g., if an admin was compromised or an API had no validation) would execute when generating the PDF window.
+**Prevention:** Always wrap untrusted or dynamic data with an `escapeHtml()` function (like replacing `&`, `<`, `>`, `"`, `'` with entities) when manually generating raw HTML strings, bypassing framework-level protections.
