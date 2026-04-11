@@ -1,0 +1,3 @@
+## 2026-04-11 - Floating Elements Focus Rings
+**Learning:** Floating interactive elements (like Back to Top or AI Assistants) with bounding radius classes (e.g., `rounded-full`) require explicit focus states (`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color] focus-visible:ring-offset-2`) for keyboard accessibility. This ensures the focus ring properly follows the element's visual contour instead of defaulting to a square outline.
+**Action:** When adding or auditing floating action buttons, always explicitly define `focus-visible` tailwind rings with an offset matching the background to guarantee clear, accessible keyboard navigation.
