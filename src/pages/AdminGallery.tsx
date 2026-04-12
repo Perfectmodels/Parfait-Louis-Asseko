@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeftIcon, TrashIcon, PlusIcon, PhotoIcon,
@@ -233,8 +233,30 @@ const AdminGallery: React.FC = () => {
       ? gallery.filter(i => !i.albumId)
       : gallery.filter(i => i.category === activeTab);
 
+  // Precompute stats to avoid O(N*M) lookups in render loops
+  const { albumMap, albumCounts, categoryCounts, sansAlbumCount } = useMemo(() => {
+    const aMap = new Map(albums.map(a => [a.id, a]));
+    const aCounts: Record<string, number> = {};
+    const cCounts: Record<string, number> = {};
+    let sCount = 0;
+
+    for (const item of gallery) {
+      if (item.albumId) {
+        aCounts[item.albumId] = (aCounts[item.albumId] || 0) + 1;
+      } else {
+        sCount++;
+      }
+
+      if (item.category) {
+        cCounts[item.category] = (cCounts[item.category] || 0) + 1;
+      }
+    }
+
+    return { albumMap: aMap, albumCounts: aCounts, categoryCounts: cCounts, sansAlbumCount: sCount };
+  }, [albums, gallery]);
+
   // Trouver l'album d'un item
-  const getAlbum = (item: GalleryItem) => albums.find(a => a.id === item.albumId);
+  const getAlbum = (item: GalleryItem) => item.albumId ? albumMap.get(item.albumId) : undefined;
 
   const handleAlbumSave = async (name: string, description: string, category: GalleryCategory, files: File[]) => {
     setShowModal(false);
@@ -459,7 +481,7 @@ const AdminGallery: React.FC = () => {
             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Albums ({albums.length})</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {albums.map(album => {
-                const count = gallery.filter(i => i.albumId === album.id).length;
+                const count = albumCounts[album.id] || 0;
                 return (
                   <div key={album.id} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/5 hover:border-pm-gold/20 transition-all">
                     {/* Cover */}
@@ -530,8 +552,8 @@ const AdminGallery: React.FC = () => {
                 {tab === 'Tout' 
                   ? gallery.length 
                   : tab === 'Sans Album'
-                    ? gallery.filter(i => !i.albumId).length
-                    : gallery.filter(i => i.category === tab).length}
+                    ? sansAlbumCount
+                    : (categoryCounts[tab] || 0)}
               </span>
             </button>
           ))}
