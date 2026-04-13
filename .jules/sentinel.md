@@ -1,0 +1,4 @@
+## 2025-04-13 - [Security Theater: Vite Environment Variables Exposure]
+**Vulnerability:** Hardcoded admin credentials were removed from the codebase and replaced with `import.meta.env.VITE_ADMIN_PASSWORD` in `src/hooks/useRealtimeDB.tsx` and `src/pages/Login.tsx`.
+**Learning:** This is a partial improvement for code hygiene, but it represents a "security theater" pattern in Vite-based applications. Any environment variable prefixed with `VITE_` is statically embedded into the frontend client bundle during the build process (`pnpm build`). A determined attacker inspecting the JavaScript bundle can still retrieve the `VITE_ADMIN_PASSWORD`.
+**Prevention:** True security for admin endpoints and credentials requires server-side validation (e.g., proper backend authentication like Firebase Auth) or backend functions for verification, rather than hardcoding passwords in client-side code, whether as raw strings or as build-time environment variables.
