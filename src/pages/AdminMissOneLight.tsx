@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Edit2, Save, X, Upload, CheckCircle, Clock, TrendingUp, RotateCcw } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Upload, CheckCircle, Clock, TrendingUp, RotateCcw, User } from 'lucide-react';
 import { rtdb } from '../firebase';
 import {
   ref,
@@ -125,7 +125,7 @@ export default function AdminMissOneLight() {
   // Écoute temps réel RTDB
   useEffect(() => {
     const candidatesRef = ref(rtdb, RTDB_PATH);
-    const unsubscribe = onValue(candidatesRef, (snapshot) => {
+    const unsubscribe = onValue(candidatesRef, (snapshot: { val: () => any; }) => {
       const data = snapshot.val();
       if (data) {
         const list: Candidate[] = Object.entries(data).map(([id, val]) => ({
@@ -145,7 +145,7 @@ export default function AdminMissOneLight() {
   // Load pending votes
   useEffect(() => {
     const pendingRef = ref(rtdb, 'missOneLight/pendingVotes');
-    const unsubscribe = onValue(pendingRef, (snapshot) => {
+    const unsubscribe = onValue(pendingRef, (snapshot: { val: () => any; }) => {
       const data = snapshot.val();
       if (data) {
         const list: MissOneLightPendingVote[] = Object.entries(data).map(([id, val]) => ({
@@ -194,46 +194,6 @@ export default function AdminMissOneLight() {
     setVoteStats(stats);
   }, [pendingVotes]);
 
-  const handleValidateVote = async (pending: MissOneLightPendingVote) => {
-    const credited = pending.totalVotes ?? pending.votes;
-    if (!confirm(`Valider ${credited} vote(s) pour ${pending.candidateName} ?\n(${pending.votes} achetés + ${pending.bonusVotes ?? 0} bonus)`)) return;
-    setValidating(pending.id);
-    try {
-      // Re-read the record first to guard against double-validation
-      // (two admins clicking validate simultaneously)
-      const { get } = await import('firebase/database');
-      const snap = await get(ref(rtdb, `missOneLight/pendingVotes/${pending.id}`));
-      if (!snap.exists() || snap.val()?.validated === true) {
-        showToast('Ce vote a déjà été validé ou supprimé.', 'error');
-        return;
-      }
-      // Mark validated first, then increment — order matters for consistency
-      await update(ref(rtdb, `missOneLight/pendingVotes/${pending.id}`), {
-        validated: true,
-        validatedAt: new Date().toISOString(),
-      });
-      // increment() is atomic in RTDB — safe under concurrent writes
-      await update(ref(rtdb, `${RTDB_PATH}/${pending.candidateId}`), {
-        votes: increment(credited),
-      });
-
-      // Send validation email to the voter (non-blocking)
-      sendVoteValidatedEmail({
-        email: pending.email,
-        candidateName: pending.candidateName,
-        votes: pending.votes,
-        bonusVotes: pending.bonusVotes ?? 0,
-        totalVotes: credited,
-        txRef: pending.txRef,
-      }).catch(() => {});
-
-      showToast(`✅ ${credited} vote(s) crédités pour ${pending.candidateName}`, 'success');
-    } catch {
-      showToast('Erreur lors de la validation', 'error');
-    } finally {
-      setValidating(null);
-    }
-  };
 
   const handleDeletePending = async (id: string) => {
     if (!confirm('Supprimer cette demande ?')) return;
@@ -425,6 +385,57 @@ export default function AdminMissOneLight() {
   // NEW: Quick validate without confirmation
   const handleQuickValidate = async (pending: MissOneLightPendingVote) => {
     setShowConfirmModal(pending);
+  };
+
+  // NEW: Edit voter information
+  const [editingVote, setEditingVote] = useState<MissOneLightPendingVote | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    voterName: '',
+    email: '',
+    phone: '',
+  });
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const startEditVote = (vote: MissOneLightPendingVote) => {
+    setEditingVote(vote);
+    setEditFormData({
+      voterName: vote.voterName || '',
+      email: vote.email,
+      phone: vote.phone,
+    });
+  };
+
+  const handleSaveEditVote = async () => {
+    if (!editingVote) return;
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(editFormData.email)) {
+      showToast('Email invalide', 'error');
+      return;
+    }
+
+    // Validate phone (at least 8 digits)
+    const phoneDigits = editFormData.phone.replace(/\D/g, '');
+    if (phoneDigits.length < 8) {
+      showToast('Numéro de téléphone invalide (min 8 chiffres)', 'error');
+      return;
+    }
+
+    setSavingEdit(true);
+    try {
+      await update(ref(rtdb, `missOneLight/pendingVotes/${editingVote.id}`), {
+        voterName: editFormData.voterName.trim() || null,
+        email: editFormData.email.trim(),
+        phone: editFormData.phone.trim(),
+      });
+      showToast('Informations du votant mises à jour', 'success');
+      setEditingVote(null);
+    } catch {
+      showToast('Erreur lors de la mise à jour', 'error');
+    } finally {
+      setSavingEdit(false);
+    }
   };
 
   const confirmValidate = async () => {
@@ -942,7 +953,7 @@ export default function AdminMissOneLight() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 pt-1 pl-8">
+              <div className={`flex gap-2 pt-1 ${!v.validated && !v.cancelled ? 'pl-8' : ''}`}>
                 {!v.validated && !v.cancelled && (
                   <button
                     onClick={() => handleQuickValidate(v)}
@@ -969,6 +980,16 @@ export default function AdminMissOneLight() {
                 >
                   <Trash2 size={14} />
                 </button>
+                {/* Edit button - available for all non-cancelled votes (including validated) */}
+                {!v.cancelled && (
+                  <button
+                    onClick={() => startEditVote(v)}
+                    className="flex items-center justify-center px-3 py-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 transition-all"
+                    title="Modifier les informations du votant"
+                  >
+                    <User size={14} />
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -1318,6 +1339,80 @@ export default function AdminMissOneLight() {
                   <CheckCircle size={18} />
                 )}
                 Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Voter Modal */}
+      {editingVote && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-slate-800 border border-white/20 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-white mb-1">Modifier le votant</h3>
+            <p className="text-white/50 text-sm mb-3">
+              Candidate: <span className="text-pink-400 font-semibold">{editingVote.candidateName}</span>
+            </p>
+            {editingVote.validated && (
+              <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2.5 mb-4">
+                <span className="text-amber-400 text-base mt-0.5">⚠️</span>
+                <p className="text-amber-300 text-xs leading-relaxed">
+                  Ce vote est déjà <strong>validé</strong>. La modification met à jour uniquement les coordonnées du votant, sans affecter les votes crédités.
+                </p>
+              </div>
+            )}
+            
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-white/60 text-sm mb-1.5">Nom du votant</label>
+                <input
+                  type="text"
+                  value={editFormData.voterName}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, voterName: e.target.value }))}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:border-blue-500"
+                  placeholder="Nom complet"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1.5">Email *</label>
+                <input
+                  type="email"
+                  value={editFormData.email}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:border-blue-500"
+                  placeholder="email@exemple.com"
+                />
+              </div>
+              <div>
+                <label className="block text-white/60 text-sm mb-1.5">Téléphone *</label>
+                <input
+                  type="tel"
+                  value={editFormData.phone}
+                  onChange={(e) => setEditFormData(prev => ({ ...prev, phone: e.target.value }))}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:border-blue-500"
+                  placeholder="+237 6XX XXX XXX"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setEditingVote(null)}
+                className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-all"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleSaveEditVote}
+                disabled={savingEdit}
+                className="flex-1 py-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 disabled:opacity-50 text-blue-300 font-bold transition-all flex items-center justify-center gap-2"
+              >
+                {savingEdit ? (
+                  <span className="loading loading-spinner loading-xs text-blue-300" />
+                ) : (
+                  <Save size={18} />
+                )}
+                Enregistrer
               </button>
             </div>
           </div>

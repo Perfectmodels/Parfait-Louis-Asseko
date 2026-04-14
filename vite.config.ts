@@ -65,7 +65,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     optimizeDeps: {
-      include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+      include: ['react', 'react-dom', 'react-router-dom', 'framer-motion', 'lucide-react'],
+    },
+    resolve: {
+      conditions: ['import', 'module', 'browser', 'default', 'require'],
     },
   }
 })
