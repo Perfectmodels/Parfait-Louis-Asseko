@@ -6,6 +6,7 @@ import { useData } from '../contexts/DataContext';
 import { RecoveryRequest } from '../types';
 import { motion } from 'framer-motion';
 import { notifyAdmin } from '../utils/adminNotify';
+import { hashPassword } from '../utils/hash';
 
 interface ActiveUser {
   name: string;
@@ -45,20 +46,32 @@ const Login: React.FC = () => {
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
 
+    let hashedPasswordInput = '';
+    try {
+        hashedPasswordInput = await hashPassword(password);
+    } catch (err) {
+        setError('Le contexte sécurisé est requis (HTTPS).');
+        return;
+    }
+
     // Secure mapping of users with fallbacks for each array
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: { name: 'Admin', username: 'admin', password: '0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    const foundUser = users.find(u => {
+        const usernameMatch = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) ||
+                              u.user.name.toLowerCase() === normalizedUsername;
+        if (!usernameMatch) return false;
+
+        if (u.type === 'admin') {
+            return u.user.password === hashedPasswordInput;
+        }
+        return u.user.password === password;
+    });
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
