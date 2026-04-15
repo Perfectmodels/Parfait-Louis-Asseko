@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { BookingRequest } from '../types';
 import { notifyAdmin } from '../utils/adminNotify';
+import { sendBookingNotificationToAdmin, sendBookingConfirmationToUser } from '../utils/brevoService';
 
 interface BookingFormProps {
     prefilledModelName?: string;
@@ -54,6 +55,25 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
             const updatedRequests = [...(data.bookingRequests || []), newRequest];
             await saveData({ ...data, bookingRequests: updatedRequests });
             notifyAdmin('booking', `${formData.clientName} — ${formData.requestedModels}`, '/admin/bookings').catch(() => {});
+
+            const notifEmail = data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga';
+            await Promise.allSettled([
+                sendBookingNotificationToAdmin({
+                    clientName: formData.clientName,
+                    clientEmail: formData.clientEmail,
+                    clientCompany: formData.clientCompany,
+                    requestedModels: formData.requestedModels,
+                    startDate: formData.startDate,
+                    endDate: formData.endDate,
+                    message: formData.message,
+                    notificationEmail: notifEmail
+                }),
+                sendBookingConfirmationToUser({
+                    clientName: formData.clientName,
+                    clientEmail: formData.clientEmail,
+                    requestedModels: formData.requestedModels
+                }),
+            ]);
 
             setStatus('success');
             setStatusMessage('Demande de booking envoyée ! Notre équipe vous contactera prochainement.');
