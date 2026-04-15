@@ -6,6 +6,7 @@ import { useData } from '../contexts/DataContext';
 import { invalidateCache } from '../hooks/useFirebaseCollection';
 import CloudinaryUploader from '../components/CloudinaryUploader';
 import { notifyAdmin } from '../utils/adminNotify';
+import { sendCastingNotificationToAdmin, sendCastingConfirmationToUser } from '../utils/brevoService';
 
 const STEPS = ['Infos personnelles', 'Mensurations', 'Expérience', 'Photos'];
 
@@ -27,7 +28,7 @@ const labelCls = "text-xs uppercase tracking-widest text-pm-off-white/40 mb-1.5 
 
 const CastingForm: React.FC = () => {
   const navigate = useNavigate();
-  const { addDocument } = useData();
+  const { data, addDocument } = useData();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormData>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
@@ -52,6 +53,23 @@ const CastingForm: React.FC = () => {
       // Notification push admin
       notifyAdmin('casting', `${form.firstName} ${form.lastName} — ${form.city}`, '/admin/casting-applications').catch(() => {});
       
+      const notifEmail = data?.contactInfo?.notificationEmail || data?.contactInfo?.email || 'contact@perfectmodels.ga';
+      await Promise.allSettled([
+        sendCastingNotificationToAdmin({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          city: form.city,
+          notificationEmail: notifEmail
+        }),
+        sendCastingConfirmationToUser({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email
+        }),
+      ]);
+
       setDone(true);
     } catch (e: any) {
       setError(e.message || 'Erreur lors de la soumission');

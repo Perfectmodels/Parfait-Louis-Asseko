@@ -144,6 +144,102 @@ export const sendContactNotificationToAdmin = (p: {
     `, `Nouveau message de ${p.name}`),
   });
 
+
+/** Confirmation de réception de booking au visiteur */
+export const sendBookingConfirmationToUser = (p: {
+  clientName: string; clientEmail: string; requestedModels: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.clientEmail, name: p.clientName }],
+    subject: 'Nous avons bien reçu votre demande de booking — Perfect Models Management',
+    htmlContent: buildEmailTemplate(`
+      <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.clientName}</strong>,</p>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Nous avons bien reçu votre demande de booking pour <em>"${p.requestedModels}"</em>.<br/>
+        Notre équipe va l'étudier et vous répondra dans les plus brefs délais, généralement sous <strong>24 à 48 heures ouvrées</strong>.
+      </p>
+      <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">En attendant</p>
+        <p style="color:#f5f0e8aa;font-size:14px;margin:0 0 16px">Découvrez nos autres mannequins et nos services.</p>
+        <a href="https://perfectmodels.ga/mannequins" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Voir les mannequins</a>
+      </div>
+      <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
+    `, `Votre demande de booking a bien été reçue — nous vous répondons sous 48h`),
+  });
+
+/** Notification de booking à l'admin */
+export const sendBookingNotificationToAdmin = (p: {
+  clientName: string; clientEmail: string; clientCompany?: string; requestedModels: string; startDate?: string; endDate?: string; message: string; notificationEmail: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    replyTo: { email: p.clientEmail, name: p.clientName },
+    subject: `[Booking PMM] Demande de ${p.clientName}`,
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#c9a84c0d;border-left:3px solid #c9a84c;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Nouvelle demande de booking</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">${p.requestedModels}</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:120px">Client</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.clientName} ${p.clientCompany ? `(${p.clientCompany})` : ''}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Email</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d"><a href="mailto:${p.clientEmail}" style="color:#c9a84c">${p.clientEmail}</a></td></tr>
+        ${p.startDate ? `<tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Date de début</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.startDate}</td></tr>` : ''}
+        ${p.endDate ? `<tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Date de fin</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.endDate}</td></tr>` : ''}
+      </table>
+      <p style="color:#f5f0e8aa;font-size:11px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">Détails du projet</p>
+      <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;color:#f5f0e8;line-height:1.8;white-space:pre-wrap">${p.message}</div>
+      <p style="color:#ffffff30;font-size:11px;text-align:center;margin-top:24px">Répondez directement à cet email pour contacter ${p.clientName}</p>
+    `, `Nouvelle demande de booking de ${p.clientName}`),
+  });
+
+/** Confirmation de candidature de casting au visiteur */
+export const sendCastingConfirmationToUser = (p: {
+  firstName: string; lastName: string; email: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.email, name: `${p.firstName} ${p.lastName}` }],
+    subject: 'Nous avons bien reçu votre candidature — Perfect Models Management',
+    htmlContent: buildEmailTemplate(`
+      <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.firstName}</strong>,</p>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Nous vous confirmons la bonne réception de votre dossier de candidature.<br/>
+        Notre équipe en charge des recrutements l'étudiera avec attention. Vous recevrez un retour de notre part dans les plus brefs délais.
+      </p>
+      <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">En attendant</p>
+        <p style="color:#f5f0e8aa;font-size:14px;margin:0 0 16px">N'hésitez pas à nous suivre sur nos réseaux pour être tenu(e) informé(e) de nos actualités.</p>
+        <a href="https://instagram.com" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Nous suivre sur Instagram</a>
+      </div>
+      <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
+    `, `Votre candidature a bien été reçue`),
+  });
+
+/** Notification de casting à l'admin */
+export const sendCastingNotificationToAdmin = (p: {
+  firstName: string; lastName: string; email: string; phone: string; city: string; notificationEmail: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    replyTo: { email: p.email, name: `${p.firstName} ${p.lastName}` },
+    subject: `[Casting PMM] Nouvelle candidature de ${p.firstName} ${p.lastName}`,
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#c9a84c0d;border-left:3px solid #c9a84c;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Nouvelle candidature</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">${p.firstName} ${p.lastName}</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:120px">Candidat</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.firstName} ${p.lastName}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Email</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d"><a href="mailto:${p.email}" style="color:#c9a84c">${p.email}</a></td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Téléphone</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.phone}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Ville</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.city}</td></tr>
+      </table>
+      <div style="text-align:center;margin-top:24px">
+        <a href="https://perfectmodels.ga/admin/casting-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Voir la candidature</a>
+      </div>
+      <p style="color:#ffffff30;font-size:11px;text-align:center;margin-top:24px">Répondez directement à cet email pour contacter ${p.firstName}</p>
+    `, `Nouvelle candidature de ${p.firstName} ${p.lastName}`),
+  });
+
 /** Réponse admin à un message de contact */
 export const sendReplyToContact = (p: {
   toName: string; toEmail: string; originalSubject: string;
