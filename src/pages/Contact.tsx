@@ -11,6 +11,8 @@ import { ContactMessage, BookingRequest } from '../types';
 import {
   sendContactNotificationToAdmin,
   sendContactConfirmationToUser,
+  sendBookingConfirmationToUser,
+  sendBookingNotificationToAdmin,
 } from '../utils/brevoService';
 import { notifyAdmin } from '../utils/adminNotify';
 import { ref, push, set } from 'firebase/database';
@@ -111,6 +113,27 @@ const Contact: React.FC = () => {
       await set(newRef, { ...newRequest, id: newRef.key });
       invalidateCache('bookingRequests');
       notifyAdmin('booking', `${bk.clientName} — ${bk.requestedModels}`, '/admin/bookings').catch(() => {});
+
+      // Emails Brevo (non-bloquant)
+      Promise.allSettled([
+        sendBookingConfirmationToUser({
+          clientName: bk.clientName,
+          clientEmail: bk.clientEmail,
+          requestedModels: bk.requestedModels,
+          startDate: bk.startDate || undefined,
+          endDate: bk.endDate || undefined,
+        }),
+        sendBookingNotificationToAdmin({
+          clientName: bk.clientName,
+          clientEmail: bk.clientEmail,
+          clientCompany: bk.clientCompany || undefined,
+          requestedModels: bk.requestedModels,
+          startDate: bk.startDate || undefined,
+          endDate: bk.endDate || undefined,
+          message: bk.message,
+          notificationEmail: data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga',
+        }),
+      ]).catch(() => {});
 
       setStatus('success');
       setBk({ clientName: '', clientEmail: '', clientCompany: '', requestedModels: '', startDate: '', endDate: '', message: '' });

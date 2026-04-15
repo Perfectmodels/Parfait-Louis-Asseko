@@ -6,6 +6,7 @@ import HeroSlide from '../components/MissOneLight/HeroSlide';
 import Top5Slide from '../components/MissOneLight/Top5Slide';
 import CandidatesSlide from '../components/MissOneLight/CandidatesSlide';
 import SEO from '../components/SEO';
+import { sendVoteConfirmation } from '../utils/brevoService';
 
 const WHATSAPP_NUMBER = '24174799319';
 const PRICE_PER_VOTE = 100;
@@ -297,6 +298,14 @@ export default function MissOneLight() {
         email: form.email.trim().toLowerCase(),
         phone: form.phone.trim(),
       });
+
+      // 1b. Send confirmation email to voter (non-blocking)
+      sendVoteConfirmation({
+        email: form.email.trim().toLowerCase(),
+        candidateName: selectedCandidate.name,
+        votes,
+        txRef,
+      }).catch(() => {});
 
       // 2. Open WhatsApp with pre-filled message (slight delay so PDF triggers first)
       await new Promise(r => setTimeout(r, 400));
