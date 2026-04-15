@@ -1,0 +1,3 @@
+## 2024-04-15 - Interactive Floating Elements Focus States
+**Learning:** For floating circular utility components (like AIAssistantIcon), applying a bounding radius class like `rounded-full` to the outer interactive wrapper (`<Link>` or `<button>`) instead of just its inner content is necessary so the browser or Tailwind `focus-visible:ring` perfectly traces the visual circular shape rather than falling back to a square outline.
+**Action:** Next time I design or update a floating circular button, I will ensure `rounded-full` and proper `focus-visible` states (`focus-visible:outline-none focus-visible:ring-2 ...`) are applied simultaneously on the outermost interactable tag.

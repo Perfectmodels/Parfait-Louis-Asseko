@@ -15,7 +15,7 @@ const BackToTopButton: React.FC = () => {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className="fixed bottom-8 right-8 z-50 p-3 bg-pm-gold text-pm-dark rounded-full shadow-lg hover:bg-pm-gold/80 transition-colors"
+      className="fixed bottom-8 right-8 z-50 p-3 bg-pm-gold text-pm-dark rounded-full shadow-lg hover:bg-pm-gold/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:ring-offset-2 focus-visible:ring-offset-pm-dark"
       aria-label="Retour en haut"
     >
       <ChevronUpIcon className="w-5 h-5" />
