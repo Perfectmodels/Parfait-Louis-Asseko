@@ -282,3 +282,166 @@ export const sendVoteValidatedEmail = (p: {
       </p>
     `, `Vos ${p.totalVotes} votes pour ${p.candidateName} sont activés !`),
   });
+
+// ─── Casting Application ──────────────────────────────────────────────────────
+
+/** Confirmation au candidat après soumission du formulaire casting */
+export const sendCastingConfirmationToUser = (p: {
+  firstName: string; lastName: string; email: string; city: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.email, name: `${p.firstName} ${p.lastName}` }],
+    subject: 'Candidature reçue — Perfect Models Management',
+    htmlContent: buildEmailTemplate(`
+      <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.firstName}</strong>,</p>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Nous avons bien reçu votre candidature au casting Perfect Models Management depuis <strong>${p.city}</strong>.<br/>
+        Notre équipe de sélection examinera votre dossier et vous contactera sous <strong>48 à 72 heures ouvrées</strong>.
+      </p>
+      <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;margin-bottom:24px;text-align:center">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">Prochaine étape</p>
+        <p style="color:#f5f0e8aa;font-size:14px;margin:0 0 16px">Si votre profil est retenu, vous serez convoqué(e) pour un entretien en personne.</p>
+        <a href="https://perfectmodels.ga/casting" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Voir le casting</a>
+      </div>
+      <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
+    `, `Votre candidature casting a bien été reçue`),
+  });
+
+/** Notification admin d'une nouvelle candidature casting */
+export const sendCastingNotificationToAdmin = (p: {
+  firstName: string; lastName: string; email: string; phone: string;
+  city: string; gender: string; height: string; experience: string;
+  instagram?: string; notificationEmail: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    replyTo: { email: p.email, name: `${p.firstName} ${p.lastName}` },
+    subject: `[Casting PMM] ${p.firstName} ${p.lastName} — ${p.city}`,
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#c9a84c0d;border-left:3px solid #c9a84c;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Nouvelle candidature casting</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">${p.firstName} ${p.lastName}</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:120px">Nom</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.firstName} ${p.lastName}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Email</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d"><a href="mailto:${p.email}" style="color:#c9a84c">${p.email}</a></td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Téléphone</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.phone}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Ville</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.city}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Genre</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.gender}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Taille</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.height ? p.height + ' cm' : '—'}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Expérience</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.experience}</td></tr>
+        ${p.instagram ? `<tr><td style="padding:10px 0;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Instagram</td><td style="padding:10px 0;color:#f5f0e8">${p.instagram}</td></tr>` : ''}
+      </table>
+      <div style="text-align:center">
+        <a href="https://perfectmodels.ga/admin/casting-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
+      </div>
+    `, `Nouvelle candidature de ${p.firstName} ${p.lastName}`),
+  });
+
+// ─── Fashion Day Application ──────────────────────────────────────────────────
+
+/** Confirmation au candidat après soumission candidature Fashion Day */
+export const sendFashionDayConfirmationToUser = (p: {
+  name: string; email: string; role: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.email, name: p.name }],
+    subject: 'Candidature Perfect Fashion Day reçue — PMM',
+    htmlContent: buildEmailTemplate(`
+      <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.name}</strong>,</p>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Votre candidature en tant que <strong style="color:#c9a84c">${p.role}</strong> pour le <strong>Perfect Fashion Day</strong> a bien été reçue.<br/>
+        Notre équipe organisatrice vous recontactera prochainement pour la suite du processus.
+      </p>
+      <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">Perfect Fashion Day</p>
+        <p style="color:#f5f0e8aa;font-size:14px;margin:0 0 16px">Restez connecté(e) pour les prochaines annonces de l'événement.</p>
+        <a href="https://perfectmodels.ga/fashion-day" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">En savoir plus</a>
+      </div>
+      <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
+    `, `Votre candidature Perfect Fashion Day a bien été reçue`),
+  });
+
+/** Notification admin d'une nouvelle candidature Fashion Day */
+export const sendFashionDayNotificationToAdmin = (p: {
+  name: string; email: string; phone: string; role: string; message: string; notificationEmail: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    replyTo: { email: p.email, name: p.name },
+    subject: `[Fashion Day] ${p.name} — ${p.role}`,
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#c9a84c0d;border-left:3px solid #c9a84c;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Nouvelle candidature Perfect Fashion Day</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">${p.name} — ${p.role}</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:120px">Nom</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.name}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Email</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d"><a href="mailto:${p.email}" style="color:#c9a84c">${p.email}</a></td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Téléphone</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.phone}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Rôle</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.role}</td></tr>
+      </table>
+      <p style="color:#f5f0e8aa;font-size:11px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">Message</p>
+      <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;color:#f5f0e8;line-height:1.8;white-space:pre-wrap">${p.message}</div>
+      <div style="text-align:center;margin-top:24px">
+        <a href="https://perfectmodels.ga/admin/fashion-day-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
+      </div>
+    `, `Nouvelle candidature Fashion Day de ${p.name}`),
+  });
+
+// ─── Booking Request ──────────────────────────────────────────────────────────
+
+/** Confirmation au client après soumission d'une demande de booking */
+export const sendBookingConfirmationToUser = (p: {
+  clientName: string; clientEmail: string; requestedModels: string;
+  startDate?: string; endDate?: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.clientEmail, name: p.clientName }],
+    subject: 'Demande de booking reçue — Perfect Models Management',
+    htmlContent: buildEmailTemplate(`
+      <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.clientName}</strong>,</p>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Nous avons bien reçu votre demande de booking. Notre équipe commerciale vous contactera sous <strong>24 à 48 heures ouvrées</strong> pour discuter des détails et établir un devis.
+      </p>
+      <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;margin-bottom:24px">
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:140px">Mannequin(s)</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.requestedModels}</td></tr>
+          ${p.startDate ? `<tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Date début</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.startDate}</td></tr>` : ''}
+          ${p.endDate ? `<tr><td style="padding:8px 0;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Date fin</td><td style="padding:8px 0;color:#f5f0e8">${p.endDate}</td></tr>` : ''}
+        </table>
+      </div>
+      <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
+    `, `Votre demande de booking a bien été reçue`),
+  });
+
+/** Notification admin d'une nouvelle demande de booking */
+export const sendBookingNotificationToAdmin = (p: {
+  clientName: string; clientEmail: string; clientCompany?: string;
+  requestedModels: string; startDate?: string; endDate?: string;
+  message: string; notificationEmail: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    replyTo: { email: p.clientEmail, name: p.clientName },
+    subject: `[Booking PMM] ${p.clientName} — ${p.requestedModels}`,
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#c9a84c0d;border-left:3px solid #c9a84c;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Nouvelle demande de booking</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">${p.clientName}${p.clientCompany ? ` — ${p.clientCompany}` : ''}</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:140px">Client</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.clientName}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Email</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d"><a href="mailto:${p.clientEmail}" style="color:#c9a84c">${p.clientEmail}</a></td></tr>
+        ${p.clientCompany ? `<tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Société</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.clientCompany}</td></tr>` : ''}
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Mannequin(s)</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.requestedModels}</td></tr>
+        ${p.startDate ? `<tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Date début</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.startDate}</td></tr>` : ''}
+        ${p.endDate ? `<tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Date fin</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.endDate}</td></tr>` : ''}
+      </table>
+      <p style="color:#f5f0e8aa;font-size:11px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">Message</p>
+      <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;color:#f5f0e8;line-height:1.8;white-space:pre-wrap">${p.message}</div>
+      <div style="text-align:center;margin-top:24px">
+        <a href="https://perfectmodels.ga/admin/bookings" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
+      </div>
+    `, `Nouvelle demande de booking de ${p.clientName}`),
+  });

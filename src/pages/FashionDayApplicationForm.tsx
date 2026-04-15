@@ -6,6 +6,7 @@ import { useData } from '../contexts/DataContext';
 import { FashionDayApplication, FashionDayApplicationRole } from '../types';
 import { Link } from 'react-router-dom';
 import { notifyAdmin } from '../utils/adminNotify';
+import { sendFashionDayConfirmationToUser, sendFashionDayNotificationToAdmin } from '../utils/brevoService';
 
 const FashionDayApplicationForm: React.FC = () => {
     const { data, saveData } = useData();
@@ -50,6 +51,23 @@ const FashionDayApplicationForm: React.FC = () => {
             const updatedApplications = [...(data.fashionDayApplications || []), newApplication];
             await saveData({ ...data, fashionDayApplications: updatedApplications });
             notifyAdmin('fashionday', `${formData.name} — ${formData.role}`, '/admin/fashion-day-applications').catch(() => {});
+
+            // Emails Brevo (non-bloquant)
+            Promise.allSettled([
+              sendFashionDayConfirmationToUser({
+                name: formData.name,
+                email: formData.email,
+                role: formData.role,
+              }),
+              sendFashionDayNotificationToAdmin({
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                role: formData.role,
+                message: formData.message,
+                notificationEmail: 'contact@perfectmodels.ga',
+              }),
+            ]).catch(() => {});
 
             setStatus('success');
             setStatusMessage('Votre candidature a été envoyée ! L\'équipe du Perfect Fashion Day vous recontactera prochainement.');

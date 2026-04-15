@@ -6,6 +6,7 @@ import { useData } from '../contexts/DataContext';
 import { invalidateCache } from '../hooks/useFirebaseCollection';
 import CloudinaryUploader from '../components/CloudinaryUploader';
 import { notifyAdmin } from '../utils/adminNotify';
+import { sendCastingConfirmationToUser, sendCastingNotificationToAdmin } from '../utils/brevoService';
 
 const STEPS = ['Infos personnelles', 'Mensurations', 'Expérience', 'Photos'];
 
@@ -51,6 +52,28 @@ const CastingForm: React.FC = () => {
       
       // Notification push admin
       notifyAdmin('casting', `${form.firstName} ${form.lastName} — ${form.city}`, '/admin/casting-applications').catch(() => {});
+
+      // Emails Brevo (non-bloquant)
+      Promise.allSettled([
+        sendCastingConfirmationToUser({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          city: form.city,
+        }),
+        sendCastingNotificationToAdmin({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          city: form.city,
+          gender: form.gender,
+          height: form.height,
+          experience: form.experience,
+          instagram: form.instagram || undefined,
+          notificationEmail: 'contact@perfectmodels.ga',
+        }),
+      ]).catch(() => {});
       
       setDone(true);
     } catch (e: any) {
