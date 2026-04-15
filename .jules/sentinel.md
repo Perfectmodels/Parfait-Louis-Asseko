@@ -1,0 +1,4 @@
+## 2025-02-27 - Fixed XSS Vulnerability in dynamic PDF generation
+**Vulnerability:** In `src/pages/ArticleDetail.tsx`, the `generateArticleHtml` function constructs a raw HTML string using unescaped user inputs (like article text, author, and image URLs) which is then injected directly into a new window's document (`printWindow.document.write()`). This bypasses React's built-in XSS protection and allows attackers to execute arbitrary JavaScript if they can control the article content.
+**Learning:** Functions that generate raw HTML strings outside of React components (such as for popups, printing, or PDF generation) are a common source of XSS. React's auto-escaping only applies to JSX.
+**Prevention:** Whenever generating raw HTML strings containing user data, always explicitly sanitize the inputs. An `escapeHtml` utility should be used to convert dangerous characters (`<`, `>`, `&`, `"`, `'`) into safe HTML entities before concatenation.
