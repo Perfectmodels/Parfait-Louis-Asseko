@@ -1,0 +1,3 @@
+## 2024-04-16 - Add contour-matching focus rings to floating utility buttons
+**Learning:** When adding `focus-visible` to interactive floating components (like AI Assistant icons or Back to Top buttons) that appear circular due to inner children, the focus ring will default to a square outline unless the parent `<button>` or `<Link>` element itself has `rounded-full` applied directly to it.
+**Action:** Always ensure the interactive parent element carries the structural bounding class (`rounded-full`) before applying `focus-visible:ring-*` classes so the keyboard focus contour perfectly matches the visual contour of the component.
