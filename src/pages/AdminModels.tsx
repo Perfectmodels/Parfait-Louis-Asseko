@@ -29,6 +29,16 @@ const EMPTY_MODEL: Model = {
   quizScores: {},
 };
 
+const generateMatricule = (name: string, existingUsernames: string[]): string => {
+  const initial = name.trim().charAt(0).toUpperCase();
+  const prefix = `Man-PMM${initial}`;
+  const existing = existingUsernames
+    .filter(u => u && u.startsWith(prefix))
+    .map(u => parseInt(u.replace(prefix, ''), 10) || 0);
+  const nextNumber = existing.length > 0 ? Math.max(...existing) + 1 : 1;
+  return `${prefix}${String(nextNumber).padStart(2, '0')}`;
+};
+
 const AdminModels: React.FC = () => {
   const { data, saveData } = useData();
   const models = data?.models ?? [];
@@ -65,6 +75,23 @@ const AdminModels: React.FC = () => {
     setEditingModel({ ...EMPTY_MODEL });
   };
 
+  const handleGenerateMissingMatricules = () => {
+    if (!data) return;
+    const missing = data.models.filter(m => !m.username?.trim());
+    if (missing.length === 0) { alert('Tous les mannequins ont déjà un matricule.'); return; }
+    if (!window.confirm(`Générer automatiquement ${missing.length} matricule(s) manquant(s) ?`)) return;
+    const existingUsernames = data.models.map(m => m.username).filter(Boolean);
+    const updated = data.models.map(m => {
+      if (!m.username?.trim()) {
+        const matricule = generateMatricule(m.name, existingUsernames);
+        existingUsernames.push(matricule);
+        return { ...m, username: matricule };
+      }
+      return m;
+    });
+    saveData({ ...data, models: updated });
+  };
+
   const handleEdit = (model: Model) => {
     setIsCreating(false);
     setEditingModel({ ...model });
@@ -91,9 +118,16 @@ const AdminModels: React.FC = () => {
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <h1 className="text-4xl font-playfair text-pm-gold">Mannequins ({models.length})</h1>
-          <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark text-sm font-bold rounded-full hover:bg-pm-gold/80">
-            <PlusIcon className="w-4 h-4" /> Ajouter un Mannequin
-          </button>
+          <div className="flex items-center gap-3">
+            {models.some(m => !m.username?.trim()) && (
+              <button onClick={handleGenerateMissingMatricules} className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-sm font-bold rounded-full hover:bg-amber-500/30 transition-colors">
+                ⚠ Générer matricules manquants ({models.filter(m => !m.username?.trim()).length})
+              </button>
+            )}
+            <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 bg-pm-gold text-pm-dark text-sm font-bold rounded-full hover:bg-pm-gold/80">
+              <PlusIcon className="w-4 h-4" /> Ajouter un Mannequin
+            </button>
+          </div>
         </div>
 
         {/* Filtres */}
@@ -126,7 +160,10 @@ const AdminModels: React.FC = () => {
                         {m.imageUrl && <img src={m.imageUrl} alt={m.name} className="w-8 h-8 rounded-full object-cover hidden sm:block" />}
                         <div>
                           <div className="font-semibold">{m.name}</div>
-                          <div className="text-xs text-pm-off-white/40">{m.username}</div>
+                          {m.username?.trim()
+                            ? <div className="text-xs text-pm-off-white/40 font-mono">{m.username}</div>
+                            : <div className="text-xs text-amber-400/80 font-bold">⚠ Sans matricule</div>
+                          }
                         </div>
                       </div>
                     </td>
