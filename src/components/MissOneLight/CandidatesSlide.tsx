@@ -15,6 +15,7 @@ interface Props {
   candidates: Candidate[];
   onVote: (candidateId: string) => void;
   votedCandidates: Set<string>;
+  votingEnabled?: boolean;
 }
 
 const PAGE_SIZE = 4;
@@ -51,7 +52,7 @@ function RankBadge({ rank }: { rank: number }) {
   );
 }
 
-export default function CandidatesSlide({ candidates, onVote, votedCandidates }: Props) {
+export default function CandidatesSlide({ candidates, onVote, votedCandidates, votingEnabled = true }: Props) {
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -148,19 +149,25 @@ export default function CandidatesSlide({ candidates, onVote, votedCandidates }:
                 </div>
               </div>
 
-              <button
-                onClick={() => onVote(candidate.id)}
-                disabled={votedCandidates.has(candidate.id)}
-                aria-label={`Voter pour ${candidate.name}`}
-                className={`mt-auto w-full py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all active:scale-95 ${
-                  votedCandidates.has(candidate.id)
-                    ? 'bg-white/5 text-white/20 cursor-not-allowed'
-                    : 'bg-[#FCD116] text-pm-dark hover:bg-white shadow-md shadow-[#FCD116]/10'
-                }`}
-              >
-                <Heart size={11} fill={votedCandidates.has(candidate.id) ? 'none' : 'currentColor'} />
-                {votedCandidates.has(candidate.id) ? 'Voté' : 'Voter'}
-              </button>
+              {votingEnabled ? (
+                <button
+                  onClick={() => onVote(candidate.id)}
+                  disabled={votedCandidates.has(candidate.id)}
+                  aria-label={`Voter pour ${candidate.name}`}
+                  className={`mt-auto w-full py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all active:scale-95 ${
+                    votedCandidates.has(candidate.id)
+                      ? 'bg-white/5 text-white/20 cursor-not-allowed'
+                      : 'bg-[#FCD116] text-pm-dark hover:bg-white shadow-md shadow-[#FCD116]/10'
+                  }`}
+                >
+                  <Heart size={11} fill={votedCandidates.has(candidate.id) ? 'none' : 'currentColor'} />
+                  {votedCandidates.has(candidate.id) ? 'Voté' : 'Voter'}
+                </button>
+              ) : (
+                <div className="mt-auto w-full py-2.5 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 font-black text-[9px] md:text-[10px] uppercase tracking-widest flex items-center justify-center gap-1.5">
+                  🔒 Votes fermés
+                </div>
+              )}
             </div>
           </div>
         ))}

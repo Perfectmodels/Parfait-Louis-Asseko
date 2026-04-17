@@ -13,9 +13,10 @@ interface Top5SlideProps {
   candidates: Candidate[];
   onVote: (candidateId: string) => void;
   votedCandidates: Set<string>;
+  votingEnabled?: boolean;
 }
 
-export default function Top5Slide({ candidates, onVote, votedCandidates }: Top5SlideProps) {
+export default function Top5Slide({ candidates, onVote, votedCandidates, votingEnabled = true }: Top5SlideProps) {
   const podium = [candidates[1], candidates[0], candidates[2]].filter(Boolean);
   const rest = candidates.slice(3, 5);
 
@@ -86,18 +87,24 @@ export default function Top5Slide({ candidates, onVote, votedCandidates }: Top5S
                 </div>
 
                 {/* Vote button */}
-                <button
-                  onClick={() => onVote(candidate.id)}
-                  disabled={votedCandidates.has(candidate.id)}
-                  className={`mt-2 w-full py-2 rounded-full font-bold text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-95 ${
-                    votedCandidates.has(candidate.id)
-                      ? 'bg-white/10 text-white/40 cursor-not-allowed'
-                      : 'bg-white text-pm-dark hover:bg-[#FCD116]'
-                  }`}
-                >
-                  <Heart size={10} fill={votedCandidates.has(candidate.id) ? 'none' : 'currentColor'} />
-                  {votedCandidates.has(candidate.id) ? 'Voté' : 'Voter'}
-                </button>
+                {votingEnabled ? (
+                  <button
+                    onClick={() => onVote(candidate.id)}
+                    disabled={votedCandidates.has(candidate.id)}
+                    className={`mt-2 w-full py-2 rounded-full font-bold text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-95 ${
+                      votedCandidates.has(candidate.id)
+                        ? 'bg-white/10 text-white/40 cursor-not-allowed'
+                        : 'bg-white text-pm-dark hover:bg-[#FCD116]'
+                    }`}
+                  >
+                    <Heart size={10} fill={votedCandidates.has(candidate.id) ? 'none' : 'currentColor'} />
+                    {votedCandidates.has(candidate.id) ? 'Voté' : 'Voter'}
+                  </button>
+                ) : (
+                  <div className="mt-2 w-full py-2 rounded-full bg-red-500/20 border border-red-500/30 text-red-300 font-bold text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5">
+                    🔒 Votes fermés
+                  </div>
+                )}
               </div>
 
               {/* Podium base */}
@@ -127,17 +134,23 @@ export default function Top5Slide({ candidates, onVote, votedCandidates }: Top5S
                 <h4 className="text-white font-playfair font-bold text-sm truncate">{candidate.name}</h4>
                 <span className="text-[9px] font-bold text-[#009E60] tracking-widest">{candidate.votes} Votes</span>
               </div>
-              <button
-                onClick={() => onVote(candidate.id)}
-                disabled={votedCandidates.has(candidate.id)}
-                className={`p-2.5 rounded-xl transition-all shrink-0 active:scale-95 ${
-                  votedCandidates.has(candidate.id)
-                    ? 'bg-white/5 text-white/20'
-                    : 'bg-white/10 text-white hover:bg-[#009E60]'
-                }`}
-              >
-                <Heart size={14} fill={votedCandidates.has(candidate.id) ? 'currentColor' : 'none'} />
-              </button>
+              {votingEnabled ? (
+                <button
+                  onClick={() => onVote(candidate.id)}
+                  disabled={votedCandidates.has(candidate.id)}
+                  className={`p-2.5 rounded-xl transition-all shrink-0 active:scale-95 ${
+                    votedCandidates.has(candidate.id)
+                      ? 'bg-white/5 text-white/20'
+                      : 'bg-white/10 text-white hover:bg-[#009E60]'
+                  }`}
+                >
+                  <Heart size={14} fill={votedCandidates.has(candidate.id) ? 'currentColor' : 'none'} />
+                </button>
+              ) : (
+                <div className="px-2 py-1 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 text-[8px] font-bold uppercase">
+                  Fermé
+                </div>
+              )}
             </div>
           ))}
         </div>

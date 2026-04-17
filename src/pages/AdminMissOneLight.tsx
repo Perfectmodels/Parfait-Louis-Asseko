@@ -13,6 +13,8 @@ import {
 import { MissOneLightPendingVote } from '../types';
 import { uploadToCloudinary, validateFile } from '../utils/cloudinaryService';
 import { sendVoteValidatedEmail } from '../utils/brevoService';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Candidate {
   id: string;
@@ -61,7 +63,7 @@ export default function AdminMissOneLight() {
   const pendingRowId = useRef<string | null>(null);
 
   // Pending votes state
-  const [activeTab, setActiveTab] = useState<'candidates' | 'pending' | 'comptabilite'>('candidates');
+  const [activeTab, setActiveTab] = useState<'candidates' | 'pending' | 'comptabilite' | 'voting-control'>('candidates');
   const [pendingVotes, setPendingVotes] = useState<MissOneLightPendingVote[]>([]);
   const [validating, setValidating] = useState<string | null>(null);
   const [pendingSubTab, setPendingSubTab] = useState<'waiting' | 'done'>('waiting');
@@ -155,6 +157,19 @@ export default function AdminMissOneLight() {
         setPendingVotes(list);
       } else {
         setPendingVotes([]);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // NEW: Load voting configuration
+  useEffect(() => {
+    const configRef = ref(rtdb, 'missOneLight/config');
+    const unsubscribe = onValue(configRef, (snapshot: { val: () => any; }) => {
+      const data = snapshot.val();
+      if (data) {
+        setVotingEnabled(data.votingEnabled ?? true);
+        setVotingDeadline(data.votingDeadline ?? '2026-04-17T20:00:00');
       }
     });
     return () => unsubscribe();
@@ -277,95 +292,211 @@ export default function AdminMissOneLight() {
     }
   };
 
-  // ENHANCED: Export votes to CSV with professional formatting
+  // ENHANCED: Export votes to PDF - Official ranking from candidates collection
   const exportVotes = () => {
     const now = new Date();
     const dateStr = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     
+    // Get official ranking from candidates (sorted by votes)
+    const sortedCandidates = [...candidates]
+      .filter(c => c.status === 'active') // Only active candidates
+      .sort((a, b) => b.votes - a.votes); // Sort by votes descending
+    
     // Calculate totals
-    const validated = pendingVotes.filter(v => v.validated && !v.cancelled);
-    const waiting = pendingVotes.filter(v => !v.validated && !v.cancelled);
-    const cancelled = pendingVotes.filter(v => v.cancelled);
+    const totalVotes = sortedCandidates.reduce((s, c) => s + c.votes, 0);
+    const totalTransactions = pendingVotes.filter(v => v.validated && !v.cancelled).length;
+    const pendingTransactions = pendingVotes.filter(v => !v.validated && !v.cancelled).length;
     
-    const totalValidatedVotes = validated.reduce((s, v) => s + (v.totalVotes ?? v.votes), 0);
-    const totalValidatedAmount = validated.reduce((s, v) => s + v.votes * 100, 0);
-    const totalWaitingVotes = waiting.reduce((s, v) => s + (v.totalVotes ?? v.votes), 0);
-    const totalWaitingAmount = waiting.reduce((s, v) => s + v.votes * 100, 0);
+    // Create PDF
+    const doc = new jsPDF();
     
-    // CSV Content with sections
-    const lines: string[] = [];
+    // Colors
+    const primaryColor: [number, number, number] = [252, 209, 22]; // #FCD116 - Gold
+    const secondaryColor: [number, number, number] = [0, 158, 96]; // #009E60 - Green
+    const darkColor: [number, number, number] = [26, 26, 26]; // #1a1a1a - Dark
     
-    // Header section
-    lines.push('MISS ONE LIGHT - RAPPORT DE VOTES');
-    lines.push(`Genere le,${dateStr} a ${timeStr}`);
-    lines.push('');
+    // Header
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.rect(0, 0, 210, 45, 'F');
+    
+    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+    doc.setFontSize(26);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MISS ONE LIGHT 2026', 105, 15, { align: 'center' });
+    
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CLASSEMENT OFFICIEL', 105, 26, { align: 'center' });
+    
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Généré le ${dateStr} à ${timeStr}`, 105, 36, { align: 'center' });
     
     // Summary section
-    lines.push('RESUME');
-    lines.push(`Statut,Nombre,Total Votes,Montant (FCFA)`);
-    lines.push(`VALIDES,${validated.length},${totalValidatedVotes},${totalValidatedAmount.toLocaleString()}`);
-    lines.push(`EN ATTENTE,${waiting.length},${totalWaitingVotes},${totalWaitingAmount.toLocaleString()}`);
-    lines.push(`ANNULES,${cancelled.length},${cancelled.reduce((s, v) => s + (v.totalVotes ?? v.votes), 0)},${cancelled.reduce((s, v) => s + v.votes * 100, 0).toLocaleString()}`);
-    lines.push(`TOTAL,${pendingVotes.length},${totalValidatedVotes + totalWaitingVotes},${(totalValidatedAmount + totalWaitingAmount).toLocaleString()}`);
-    lines.push('');
+    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('RÉSUMÉ GÉNÉRAL', 14, 55);
     
-    // Detailed data section
-    lines.push('DETAIL DES TRANSACTIONS');
-    lines.push('Date,Heure,Candidate,Votant,Email,Telephone,Votes Achetes,Votes Bonus,Total Votes,Montant (FCFA),Statut,Reference,Telephone Votant');
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
     
-    // Sort by date descending
-    const sortedVotes = [...pendingVotes].sort((a, b) => 
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
+    const summaryData = [
+      ['Total des votes', totalVotes.toLocaleString('fr-FR')],
+      ['Nombre de candidates', sortedCandidates.length.toString()],
+      ['Transactions validées', totalTransactions.toString()],
+      ['Transactions en attente', pendingTransactions.toString()],
+    ];
     
-    sortedVotes.forEach(v => {
-      const date = new Date(v.timestamp);
-      const dateFormatted = date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-      const timeFormatted = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      const status = v.cancelled ? 'ANNULE' : v.validated ? 'VALIDE' : 'EN ATTENTE';
-      
-      lines.push([
-        dateFormatted,
-        timeFormatted,
-        v.candidateName,
-        v.voterName || 'Anonyme',
-        v.email,
-        v.phone,
-        v.votes,
-        v.bonusVotes ?? 0,
-        v.totalVotes ?? v.votes,
-        v.votes * 100,
-        status,
-        v.txRef,
-        `'${v.phone}`,
-      ].map(c => {
-        // Escape special characters and wrap in quotes
-        const str = String(c);
-        if (str.includes(',') || str.includes(';') || str.includes('"') || str.includes('\n')) {
-          return `"${str.replace(/"/g, '""')}"`;
-        }
-        return str;
-      }).join(','));
+    autoTable(doc, {
+      startY: 60,
+      head: [],
+      body: summaryData,
+      theme: 'plain',
+      styles: {
+        fontSize: 10,
+        cellPadding: 3,
+      },
+      columnStyles: {
+        0: { fontStyle: 'bold', textColor: [100, 100, 100] },
+        1: { fontStyle: 'bold', textColor: [primaryColor[0], primaryColor[1], primaryColor[2]], halign: 'right' },
+      },
+      margin: { left: 14, right: 14 },
     });
     
-    lines.push('');
-    lines.push(`Fin du rapport,,,,,,,,,,,`);
+    // Classement section
+    const finalY = (doc as any).lastAutoTable.finalY || 95;
     
-    // Add UTF-8 BOM for Excel compatibility
-    const BOM = '\uFEFF';
-    const csv = BOM + lines.join('\n');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+    doc.text('CLASSEMENT OFFICIEL DES CANDIDATES', 14, finalY + 10);
     
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `miss-one-light-votes-${now.toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
+    // Table data with medals for top 3
+    const tableData = sortedCandidates.map((candidate, index) => {
+      const position = index + 1;
+      let positionText = position.toString();
+      
+      // Add medals for top 3
+      if (position === 1) positionText = '🥇 1';
+      else if (position === 2) positionText = '🥈 2';
+      else if (position === 3) positionText = '🥉 3';
+      
+      return [
+        positionText,
+        candidate.name,
+        candidate.votes.toLocaleString('fr-FR'),
+        totalVotes > 0 ? `${((candidate.votes / totalVotes) * 100).toFixed(1)}%` : '0%',
+      ];
+    });
     
-    showToast(`Export CSV telecharge (${pendingVotes.length} transactions)`, 'success');
+    autoTable(doc, {
+      startY: finalY + 15,
+      head: [['Position', 'Candidate', 'Votes', 'Pourcentage']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [primaryColor[0], primaryColor[1], primaryColor[2]],
+        textColor: [darkColor[0], darkColor[1], darkColor[2]],
+        fontStyle: 'bold',
+        fontSize: 11,
+        halign: 'center',
+      },
+      styles: {
+        fontSize: 10,
+        cellPadding: 5,
+      },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 25, fontStyle: 'bold' },
+        1: { fontStyle: 'bold', cellWidth: 80 },
+        2: { halign: 'right', textColor: [secondaryColor[0], secondaryColor[1], secondaryColor[2]], fontStyle: 'bold', fontSize: 11 },
+        3: { halign: 'center', textColor: [primaryColor[0], primaryColor[1], primaryColor[2]], fontStyle: 'bold' },
+      },
+      alternateRowStyles: {
+        fillColor: [250, 250, 250],
+      },
+      margin: { left: 14, right: 14 },
+      didParseCell: function(data) {
+        // Highlight top 3
+        if (data.section === 'body' && data.row.index < 3) {
+          if (data.row.index === 0) {
+            data.cell.styles.fillColor = [255, 250, 205]; // Light gold for 1st
+          } else if (data.row.index === 1) {
+            data.cell.styles.fillColor = [245, 245, 245]; // Light silver for 2nd
+          } else if (data.row.index === 2) {
+            data.cell.styles.fillColor = [255, 243, 224]; // Light bronze for 3rd
+          }
+        }
+      },
+    });
+    
+    // Add winner announcement if votes are closed
+    const votingClosed = !votingEnabled || new Date() >= new Date(votingDeadline);
+    if (votingClosed && sortedCandidates.length > 0) {
+      const winnerY = (doc as any).lastAutoTable.finalY + 15;
+      
+      // Winner box
+      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.roundedRect(14, winnerY, 182, 25, 3, 3, 'F');
+      
+      doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('🏆 GAGNANTE', 105, winnerY + 10, { align: 'center' });
+      
+      doc.setFontSize(16);
+      doc.text(sortedCandidates[0].name.toUpperCase(), 105, winnerY + 19, { align: 'center' });
+    }
+    
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      
+      // Footer line
+      doc.setDrawColor(200, 200, 200);
+      doc.line(14, doc.internal.pageSize.height - 20, 196, doc.internal.pageSize.height - 20);
+      
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        'Perfect Models Management',
+        14,
+        doc.internal.pageSize.height - 12
+      );
+      doc.text(
+        'perfectmodels.ga',
+        14,
+        doc.internal.pageSize.height - 7
+      );
+      doc.text(
+        `Page ${i} / ${pageCount}`,
+        doc.internal.pageSize.width - 14,
+        doc.internal.pageSize.height - 10,
+        { align: 'right' }
+      );
+      
+      // Official stamp
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'bold');
+      doc.text(
+        'DOCUMENT OFFICIEL',
+        105,
+        doc.internal.pageSize.height - 10,
+        { align: 'center' }
+      );
+    }
+    
+    // Save PDF
+    const filename = votingClosed 
+      ? `miss-one-light-classement-OFFICIEL-${now.toISOString().split('T')[0]}.pdf`
+      : `miss-one-light-classement-${now.toISOString().split('T')[0]}.pdf`;
+    
+    doc.save(filename);
+    
+    showToast(`Export PDF téléchargé (${sortedCandidates.length} candidates)`, 'success');
   };
 
   // NEW: Filter and search function
@@ -395,6 +526,11 @@ export default function AdminMissOneLight() {
     phone: '',
   });
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // NEW: Voting control state
+  const [votingEnabled, setVotingEnabled] = useState(true);
+  const [votingDeadline, setVotingDeadline] = useState('2026-04-17T20:00:00');
+  const [savingVotingConfig, setSavingVotingConfig] = useState(false);
 
   const startEditVote = (vote: MissOneLightPendingVote) => {
     setEditingVote(vote);
@@ -435,6 +571,23 @@ export default function AdminMissOneLight() {
       showToast('Erreur lors de la mise à jour', 'error');
     } finally {
       setSavingEdit(false);
+    }
+  };
+
+  // NEW: Save voting configuration
+  const handleSaveVotingConfig = async () => {
+    setSavingVotingConfig(true);
+    try {
+      await update(ref(rtdb, 'missOneLight/config'), {
+        votingEnabled,
+        votingDeadline,
+        updatedAt: new Date().toISOString(),
+      });
+      showToast('Configuration des votes mise à jour', 'success');
+    } catch {
+      showToast('Erreur lors de la mise à jour', 'error');
+    } finally {
+      setSavingVotingConfig(false);
     }
   };
 
@@ -627,7 +780,7 @@ export default function AdminMissOneLight() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-8">
+        <div className="flex gap-2 mb-8 flex-wrap">
           <button
             onClick={() => setActiveTab('candidates')}
             className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'candidates' ? 'bg-pink-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
@@ -652,6 +805,13 @@ export default function AdminMissOneLight() {
           >
             <TrendingUp size={14} />
             Comptabilité
+          </button>
+          <button
+            onClick={() => setActiveTab('voting-control')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'voting-control' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}
+          >
+            <CheckCircle size={14} />
+            Contrôle des votes
           </button>
         </div>
 
@@ -1050,7 +1210,7 @@ export default function AdminMissOneLight() {
                     className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2"
                   >
                     <Upload size={16} />
-                    Exporter CSV
+                    Exporter PDF
                   </button>
                 </div>
 
@@ -1414,6 +1574,146 @@ export default function AdminMissOneLight() {
                 )}
                 Enregistrer
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Voting Control Tab */}
+      {activeTab === 'voting-control' && (
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+            <h2 className="text-2xl font-bold text-white mb-2">Contrôle des votes</h2>
+            <p className="text-white/50 text-sm">
+              Activez ou désactivez les votes manuellement, ou configurez une date limite pour une désactivation automatique.
+            </p>
+          </div>
+
+          {/* Status Card */}
+          <div className={`border rounded-2xl p-6 ${votingEnabled ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-4 h-4 rounded-full ${votingEnabled ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+              <h3 className="text-xl font-bold text-white">
+                Statut actuel : {votingEnabled ? 'Votes ACTIVÉS' : 'Votes DÉSACTIVÉS'}
+              </h3>
+            </div>
+            <p className="text-white/60 text-sm">
+              {votingEnabled 
+                ? '✅ Les utilisateurs peuvent actuellement voter pour les candidates.' 
+                : '🚫 Les votes sont actuellement désactivés. Les utilisateurs ne peuvent pas voter.'}
+            </p>
+          </div>
+
+          {/* Configuration Card */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 space-y-6">
+            <div>
+              <h3 className="text-lg font-bold text-white mb-4">Configuration</h3>
+              
+              {/* Manual Toggle */}
+              <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-white font-semibold mb-1">Activation manuelle</p>
+                    <p className="text-white/50 text-xs">Activez ou désactivez les votes immédiatement</p>
+                  </div>
+                  <button
+                    onClick={() => setVotingEnabled(!votingEnabled)}
+                    className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
+                      votingEnabled ? 'bg-green-500' : 'bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                        votingEnabled ? 'translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              {/* Deadline Configuration */}
+              <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+                <p className="text-white font-semibold mb-1">Date limite des votes</p>
+                <p className="text-white/50 text-xs mb-3">
+                  Les votes seront automatiquement désactivés à cette date
+                </p>
+                <input
+                  type="datetime-local"
+                  value={votingDeadline}
+                  onChange={(e) => setVotingDeadline(e.target.value)}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500"
+                />
+                <p className="text-white/40 text-xs mt-2">
+                  📅 Actuellement configuré pour : {new Date(votingDeadline).toLocaleString('fr-FR', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <button
+              onClick={handleSaveVotingConfig}
+              disabled={savingVotingConfig}
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all"
+            >
+              {savingVotingConfig ? (
+                <span className="loading loading-spinner loading-sm text-white" />
+              ) : (
+                <Save size={18} />
+              )}
+              Enregistrer la configuration
+            </button>
+          </div>
+
+          {/* Info Card */}
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-5">
+            <div className="flex items-start gap-3">
+              <span className="text-blue-400 text-xl">ℹ️</span>
+              <div className="flex-1">
+                <p className="text-blue-300 font-semibold mb-2">Comment ça fonctionne ?</p>
+                <ul className="text-white/60 text-sm space-y-1.5">
+                  <li>• <strong>Activation manuelle :</strong> Désactivez immédiatement les votes avec le bouton toggle</li>
+                  <li>• <strong>Date limite :</strong> Les votes seront automatiquement désactivés à la date configurée</li>
+                  <li>• <strong>Compte à rebours :</strong> Le compte à rebours sur la page publique s'arrête automatiquement</li>
+                  <li>• <strong>Boutons de vote :</strong> Les boutons "Voter" disparaissent quand les votes sont désactivés</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5">
+              <p className="text-white/40 text-xs uppercase tracking-widest mb-2">Temps restant</p>
+              <p className="text-2xl font-bold text-white">
+                {(() => {
+                  const now = new Date();
+                  const deadline = new Date(votingDeadline);
+                  const diff = deadline.getTime() - now.getTime();
+                  if (diff <= 0) return 'Terminé';
+                  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                  return `${days}j ${hours}h`;
+                })()}
+              </p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5">
+              <p className="text-white/40 text-xs uppercase tracking-widest mb-2">Total votes validés</p>
+              <p className="text-2xl font-bold text-pink-400">
+                {pendingVotes.filter(v => v.validated && !v.cancelled).reduce((s, v) => s + (v.totalVotes ?? v.votes), 0)}
+              </p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5">
+              <p className="text-white/40 text-xs uppercase tracking-widest mb-2">Candidates actives</p>
+              <p className="text-2xl font-bold text-white">
+                {candidates.filter(c => c.status === 'active').length}
+              </p>
             </div>
           </div>
         </div>
