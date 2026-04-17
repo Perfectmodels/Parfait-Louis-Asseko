@@ -163,6 +163,10 @@ export default function MissOneLight() {
   const submitLock = useRef(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
+  // NEW: Voting control state
+  const [votingEnabled, setVotingEnabled] = useState(true);
+  const [votingDeadline, setVotingDeadline] = useState('2026-04-17T20:00:00');
+  
   // NEW: Live vote highlights
   const [recentVotes, setRecentVotes] = useState<Array<{
     id: string;
@@ -231,6 +235,36 @@ export default function MissOneLight() {
     return () => unsubscribe();
   }, []);
 
+  // NEW: Load voting configuration
+  useEffect(() => {
+    const configRef = ref(rtdb, 'missOneLight/config');
+    const unsubscribe = onValue(configRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setVotingEnabled(data.votingEnabled ?? true);
+        setVotingDeadline(data.votingDeadline ?? '2026-04-17T20:00:00');
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Check if voting deadline has passed
+  useEffect(() => {
+    const checkDeadline = () => {
+      const now = new Date();
+      const deadline = new Date(votingDeadline);
+      if (now >= deadline && votingEnabled) {
+        // Voting deadline has passed, but still enabled - disable it
+        setVotingEnabled(false);
+      }
+    };
+    
+    checkDeadline();
+    const interval = setInterval(checkDeadline, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
+  }, [votingDeadline, votingEnabled]);
+
   // Auto-rotate votes every 3 seconds
   useEffect(() => {
     if (recentVotes.length <= 1) return;
@@ -245,6 +279,20 @@ export default function MissOneLight() {
   const totalVotes = candidates.reduce((s, c) => s + (c.votes || 0), 0);
 
   const openVoteModal = (candidate: Candidate) => {
+    // Check if voting is enabled
+    if (!votingEnabled) {
+      alert('Les votes sont actuellement fermés. Merci de votre participation !');
+      return;
+    }
+    
+    // Check if deadline has passed
+    const now = new Date();
+    const deadline = new Date(votingDeadline);
+    if (now >= deadline) {
+      alert('La période de vote est terminée. Merci de votre participation !');
+      return;
+    }
+    
     setSelectedCandidate(candidate);
     setForm({ name: '', email: '', phone: '', votes: 5 });
     setSubmitted(null);
@@ -381,6 +429,7 @@ export default function MissOneLight() {
               candidates={candidates.slice(0, 5)}
               onVote={(id) => { const c = candidates.find(c => c.id === id); if (c) openVoteModal(c); }}
               votedCandidates={new Set()}
+              votingEnabled={votingEnabled && new Date() < new Date(votingDeadline)}
             />
           </div>
 
@@ -514,6 +563,7 @@ export default function MissOneLight() {
           candidates={candidates}
           onVote={(id) => { const c = candidates.find(c => c.id === id); if (c) openVoteModal(c); }}
           votedCandidates={new Set()}
+          votingEnabled={votingEnabled && new Date() < new Date(votingDeadline)}
         />
       </section>
 
