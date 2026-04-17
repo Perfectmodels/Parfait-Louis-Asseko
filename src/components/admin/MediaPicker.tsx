@@ -80,7 +80,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white transition-colors rounded-full hover:bg-white/5">
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-white/30 hover:text-white transition-colors rounded-full hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d0d0d]" aria-label="Fermer la médiathèque">
             <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
