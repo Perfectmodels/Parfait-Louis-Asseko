@@ -1,0 +1,4 @@
+## 2025-04-17 - XSS in Window Document Write
+**Vulnerability:** Found an XSS vulnerability where un-escaped user-provided article contents (title, author, content blocks) were written directly into the DOM of a newly created browser window via `printWindow.document.write(htmlContent)` in the PDF download feature of `src/pages/ArticleDetail.tsx`.
+**Learning:** Because React's automatic escaping doesn't apply when concatenating raw HTML strings to write into `document.write()`, any user input must be manually sanitized. This codebase has an `escapeHtml` utility in `src/utils/sanitize.ts` for this purpose.
+**Prevention:** Always manually wrap user-generated strings passed into raw HTML generation pipelines, specifically when interacting with raw DOM APIs outside of the React lifecycle context.
