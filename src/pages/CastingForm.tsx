@@ -28,7 +28,7 @@ const labelCls = "text-xs uppercase tracking-widest text-pm-off-white/40 mb-1.5 
 
 const CastingForm: React.FC = () => {
   const navigate = useNavigate();
-  const { addDocument } = useData();
+  const { addDocument, data } = useData();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormData>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
@@ -60,6 +60,7 @@ const CastingForm: React.FC = () => {
           lastName: form.lastName,
           email: form.email,
           city: form.city,
+          agencyInfo: data?.contactInfo,
         }),
         sendCastingNotificationToAdmin({
           firstName: form.firstName,
@@ -71,7 +72,7 @@ const CastingForm: React.FC = () => {
           height: form.height,
           experience: form.experience,
           instagram: form.instagram || undefined,
-          notificationEmail: 'contact@perfectmodels.ga',
+          notificationEmail: data?.contactInfo?.notificationEmail || data?.contactInfo?.email || 'contact@perfectmodels.ga',
         }),
       ]).catch(() => {});
       

@@ -8,7 +8,12 @@ const SENDER = { name: 'Perfect Models Management', email: 'contact@perfectmodel
 const LOGO_URL = 'https://perfectmodels.ga/logo.svg';
 
 // ─── Base template ────────────────────────────────────────────────────────────
-export const buildEmailTemplate = (content: string, preheader = ''): string => `
+export const buildEmailTemplate = (content: string, preheader = '', agencyInfo?: { address?: string; phone?: string; email?: string }): string => {
+  const address = agencyInfo?.address || 'Libreville, Gabon';
+  const phone = agencyInfo?.phone || '+241 74 79 93 19';
+  const email = agencyInfo?.email || 'contact@perfectmodels.ga';
+
+  return `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -51,8 +56,12 @@ export const buildEmailTemplate = (content: string, preheader = ''): string => `
               <span style="color:#ffffff20">·</span>
               <a href="https://youtube.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">YouTube</a>
             </p>
+            <div style="width:40px;height:1px;background:#ffffff10;margin:16px auto"></div>
+            <p style="margin:0 0 4px;color:#ffffff40;font-size:11px">
+              ${address} • ${phone} • <a href="mailto:${email}" style="color:#ffffff40;text-decoration:none">${email}</a>
+            </p>
             <p style="margin:0;color:#ffffff20;font-size:10px">
-              © ${new Date().getFullYear()} Perfect Models Management · Libreville, Gabon<br/>
+              © ${new Date().getFullYear()} Perfect Models Management<br/>
               <a href="https://perfectmodels.ga" style="color:#c9a84c44;text-decoration:none">perfectmodels.ga</a>
             </p>
           </td>
@@ -63,6 +72,7 @@ export const buildEmailTemplate = (content: string, preheader = ''): string => `
   </table>
 </body>
 </html>`;
+};
 
 // ─── Core send ────────────────────────────────────────────────────────────────
 interface SendOptions {
@@ -101,7 +111,7 @@ export const sendEmail = async (opts: SendOptions): Promise<void> => {
 
 /** Confirmation de réception au visiteur */
 export const sendContactConfirmationToUser = (p: {
-  name: string; email: string; subject: string;
+  name: string; email: string; subject: string; agencyInfo?: any;
 }) =>
   sendEmail({
     to: [{ email: p.email, name: p.name }],
@@ -118,7 +128,7 @@ export const sendContactConfirmationToUser = (p: {
         <a href="https://perfectmodels.ga" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Visiter le site</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
-    `, `Votre message a bien été reçu — nous vous répondons sous 48h`),
+    `, `Votre message a bien été reçu — nous vous répondons sous 48h`, p.agencyInfo),
   });
 
 /** Notification admin d'un nouveau message de contact */
@@ -218,6 +228,7 @@ export const sendVoteConfirmation = (p: {
   candidateName: string;
   votes: number;
   txRef: string;
+  agencyInfo?: any;
 }) =>
   sendEmail({
     to: [{ email: p.email }],
@@ -245,7 +256,35 @@ export const sendVoteConfirmation = (p: {
         Après paiement, envoyez la confirmation sur WhatsApp au <strong>+241 74 79 93 19</strong>.<br/>
         L'admin validera vos votes sous 24h.
       </p>
-    `, `Vote Miss One Light — ${p.votes} votes pour ${p.candidateName}`),
+    `, `Vote Miss One Light — ${p.votes} votes pour ${p.candidateName}`, p.agencyInfo),
+  });
+
+/** Notification admin d'une demande de vote Miss One Light */
+export const sendVoteNotificationToAdmin = (p: {
+  candidateName: string; voterName: string; voterEmail: string; voterPhone: string;
+  votes: number; amount: number; txRef: string; notificationEmail: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    replyTo: { email: p.voterEmail, name: p.voterName },
+    subject: `[Miss One Light] Vote de ${p.voterName} pour ${p.candidateName}`,
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#c9a84c0d;border-left:3px solid #c9a84c;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Nouvelle demande de vote</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">${p.candidateName}</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:140px">Votant</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.voterName}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Email</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d"><a href="mailto:${p.voterEmail}" style="color:#c9a84c">${p.voterEmail}</a></td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Téléphone</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.voterPhone}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Votes</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.votes}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Montant</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8;font-weight:bold">${p.amount} FCFA</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Référence</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8;font-family:monospace">${p.txRef}</td></tr>
+      </table>
+      <div style="text-align:center;margin-top:24px">
+        <a href="https://perfectmodels.ga/admin/miss-one-light" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
+      </div>
+    `, `Nouveau vote pour ${p.candidateName}`),
   });
 
 /** Email envoyé au votant UNIQUEMENT après validation par l'admin */
@@ -287,7 +326,7 @@ export const sendVoteValidatedEmail = (p: {
 
 /** Confirmation au candidat après soumission du formulaire casting */
 export const sendCastingConfirmationToUser = (p: {
-  firstName: string; lastName: string; email: string; city: string;
+  firstName: string; lastName: string; email: string; city: string; agencyInfo?: any;
 }) =>
   sendEmail({
     to: [{ email: p.email, name: `${p.firstName} ${p.lastName}` }],
@@ -304,7 +343,7 @@ export const sendCastingConfirmationToUser = (p: {
         <a href="https://perfectmodels.ga/casting" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Voir le casting</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
-    `, `Votre candidature casting a bien été reçue`),
+    `, `Votre candidature casting a bien été reçue`, p.agencyInfo),
   });
 
 /** Notification admin d'une nouvelle candidature casting */
@@ -342,7 +381,7 @@ export const sendCastingNotificationToAdmin = (p: {
 
 /** Confirmation au candidat après soumission candidature Fashion Day */
 export const sendFashionDayConfirmationToUser = (p: {
-  name: string; email: string; role: string;
+  name: string; email: string; role: string; agencyInfo?: any;
 }) =>
   sendEmail({
     to: [{ email: p.email, name: p.name }],
@@ -359,7 +398,7 @@ export const sendFashionDayConfirmationToUser = (p: {
         <a href="https://perfectmodels.ga/fashion-day" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">En savoir plus</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
-    `, `Votre candidature Perfect Fashion Day a bien été reçue`),
+    `, `Votre candidature Perfect Fashion Day a bien été reçue`, p.agencyInfo),
   });
 
 /** Notification admin d'une nouvelle candidature Fashion Day */
@@ -394,7 +433,7 @@ export const sendFashionDayNotificationToAdmin = (p: {
 /** Confirmation au client après soumission d'une demande de booking */
 export const sendBookingConfirmationToUser = (p: {
   clientName: string; clientEmail: string; requestedModels: string;
-  startDate?: string; endDate?: string;
+  startDate?: string; endDate?: string; agencyInfo?: any;
 }) =>
   sendEmail({
     to: [{ email: p.clientEmail, name: p.clientName }],
@@ -412,7 +451,7 @@ export const sendBookingConfirmationToUser = (p: {
         </table>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
-    `, `Votre demande de booking a bien été reçue`),
+    `, `Votre demande de booking a bien été reçue`, p.agencyInfo),
   });
 
 /** Notification admin d'une nouvelle demande de booking */

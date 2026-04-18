@@ -84,7 +84,7 @@ const Contact: React.FC = () => {
       const notifEmail = data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga';
       await Promise.allSettled([
         sendContactNotificationToAdmin({ name: msg.name, email: msg.email, subject: finalSubject, message: msg.message, notificationEmail: notifEmail }),
-        sendContactConfirmationToUser({ name: msg.name, email: msg.email, subject: finalSubject }),
+        sendContactConfirmationToUser({ name: msg.name, email: msg.email, subject: finalSubject, agencyInfo: data?.contactInfo }),
       ]);
 
       setStatus('success');
@@ -122,6 +122,7 @@ const Contact: React.FC = () => {
           requestedModels: bk.requestedModels,
           startDate: bk.startDate || undefined,
           endDate: bk.endDate || undefined,
+          agencyInfo: data?.contactInfo,
         }),
         sendBookingNotificationToAdmin({
           clientName: bk.clientName,
