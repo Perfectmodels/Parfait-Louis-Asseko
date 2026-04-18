@@ -61,7 +61,7 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: (id: string) => void }> = (
     >
       <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${iconStyles[toast.type]}`} />
       <p className="text-sm font-medium flex-1 leading-snug">{toast.message}</p>
-      <button onClick={() => onDismiss(toast.id)} className="opacity-50 hover:opacity-100 transition-opacity shrink-0">
+      <button aria-label="Fermer la notification" onClick={() => onDismiss(toast.id)} className="opacity-50 hover:opacity-100 transition-opacity shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold">
         <XMarkIcon className="w-4 h-4" />
       </button>
     </motion.div>
