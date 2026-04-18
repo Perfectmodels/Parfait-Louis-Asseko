@@ -47,18 +47,51 @@ const Login: React.FC = () => {
 
     // Secure mapping of users with fallbacks for each array
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: { name: 'Admin', username: 'admin', password: '0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    let foundUser = null;
+    let computedHash = '';
+
+    // Pre-compute the hash for the input password
+    if (window.crypto && window.crypto.subtle) {
+        try {
+            const encoder = new TextEncoder();
+            const encodedPassword = encoder.encode(password);
+            const hashBuffer = await window.crypto.subtle.digest('SHA-256', encodedPassword);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            computedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        } catch (err) {
+            console.error('Crypto hashing failed:', err);
+        }
+    }
+
+    // Process authentication check
+    for (const u of users) {
+        const usernameMatch = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) ||
+                              u.user.name.toLowerCase() === normalizedUsername;
+
+        if (usernameMatch) {
+            if (u.type === 'admin') {
+                if (!computedHash) {
+                    setError('Erreur de sécurité : le contexte sécurisé (HTTPS) est requis pour la connexion administrateur.');
+                    return;
+                }
+
+                if (u.user.password === computedHash) {
+                    foundUser = u;
+                    break;
+                }
+            } else if (u.user.password === password) {
+                // Non-admin users continue using plaintext (as currently configured)
+                foundUser = u;
+                break;
+            }
+        }
+    }
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
