@@ -32,7 +32,7 @@ export const Breadcrumb: React.FC = () => {
 const NAV_LINKS = [
   { path: '/agence', label: 'Agence' },
   { path: '/mannequins', label: 'Mannequins' },
-  { path: '/miss-one-light', label: 'Miss One Light', highlight: true },
+  { path: '/concours', label: 'Concours', highlight: true },
   { path: '/fashion-day', label: 'Fashion Day' },
   { path: '/casting', label: 'Casting' },
   { path: '/services', label: 'Services' },

@@ -63,6 +63,7 @@ const navSections = [
             { to: '/admin/fashion-day-applications', icon: SparklesIcon, label: 'Candidatures PFD' },
             { to: '/admin/fashion-day-events', icon: CalendarDaysIcon, label: 'Événements PFD' },
             { to: '/admin/recovery-requests', icon: KeyIcon, label: 'Récupérations' },
+            { to: '/admin/beauty-contests', icon: SparklesIcon, label: 'Concours Beauté' },
             { to: '/admin/miss-one-light', icon: SparklesIcon, label: 'Miss One Light' },
         ]
     },

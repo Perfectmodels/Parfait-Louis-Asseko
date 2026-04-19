@@ -204,7 +204,7 @@ const Home: React.FC = () => {
               Votes en direct
             </span>
             <Link
-              to="/miss-one-light"
+              to="/concours"
               className="btn-premium bg-pm-gold text-pm-dark border-none shadow-[0_0_40px_rgba(212,175,55,0.2)] hover:shadow-[0_0_60px_rgba(212,175,55,0.35)] !py-3 !px-8"
             >
               Voter maintenant
