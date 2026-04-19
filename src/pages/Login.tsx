@@ -47,7 +47,36 @@ const Login: React.FC = () => {
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
 
-    // Secure mapping of users with fallbacks for each array
+    // ── 1. Jury concours beauté (RTDB beautyContests/{id}/juries) ─────────────
+    try {
+      const contestsSnap = await get(ref(rtdb, 'beautyContests'));
+      if (contestsSnap.exists()) {
+        const contestsData = contestsSnap.val() as Record<string, any>;
+        for (const [contestId, contestVal] of Object.entries(contestsData)) {
+          if (!contestVal?.juries) continue;
+          for (const [juryId, juryVal] of Object.entries(contestVal.juries as Record<string, any>)) {
+            if (
+              juryVal.username?.toLowerCase() === normalizedUsername &&
+              juryVal.password === password
+            ) {
+              sessionStorage.setItem('classroom_access', 'granted');
+              sessionStorage.setItem('classroom_role', 'jury-contest');
+              sessionStorage.setItem('userId', juryId);
+              sessionStorage.setItem('userName', juryVal.name);
+              sessionStorage.setItem('contestId', contestId);
+              updateUserActivity(juryVal.name, 'jury-contest');
+              notifyAdmin('visit', `Connexion Jury Concours: ${juryVal.name} (${contestVal.name || contestId})`, '/concours/jury').catch(() => {});
+              navigate('/concours/jury');
+              return;
+            }
+          }
+        }
+      }
+    } catch {
+      // RTDB indisponible, on continue avec l'auth standard
+    }
+
+    // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
         { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
@@ -70,21 +99,16 @@ const Login: React.FC = () => {
         
         updateUserActivity(foundUser.user.name, foundUser.type);
 
-        // Notification de connexion pour l'admin
         const roleLabels: Record<string, string> = {
-            admin: 'Admin',
-            student: 'Mannequin',
-            jury: 'Jury',
-            registration: 'Staff'
+            admin: 'Admin', student: 'Mannequin', jury: 'Jury', registration: 'Staff'
         };
         notifyAdmin('visit', `Connexion: ${foundUser.user.name} (${roleLabels[foundUser.type]})`, foundUser.path).catch(() => {});
 
         if (foundUser.type === 'student') {
-            const listKey = 'models';
-            const updatedList = (data as any)[listKey].map((item: any) => 
+            const updatedList = (data.models || []).map((item: any) => 
                 item.id === (foundUser.user as any).id ? { ...item, lastLogin: timestamp } : item
             );
-            await saveData({ ...data, [listKey]: updatedList });
+            await saveData({ ...data, models: updatedList });
         }
         
         navigate(foundUser.path);
