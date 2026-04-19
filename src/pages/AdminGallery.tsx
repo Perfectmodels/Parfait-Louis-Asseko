@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeftIcon, TrashIcon, PlusIcon, PhotoIcon,
@@ -227,6 +227,28 @@ const AdminGallery: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [showCreateAlbumFromSelection, setShowCreateAlbumFromSelection] = useState(false);
 
+  // Precompute lookups for performance
+  const { albumMap, albumCounts, categoryCounts, noAlbumCount } = useMemo(() => {
+    const map = new Map<string, GalleryAlbum>();
+    albums.forEach(a => map.set(a.id, a));
+
+    const aCounts = new Map<string, number>();
+    const cCounts = new Map<string, number>();
+    let noAlbum = 0;
+
+    gallery.forEach(item => {
+      if (item.albumId) {
+        aCounts.set(item.albumId, (aCounts.get(item.albumId) || 0) + 1);
+      } else {
+        noAlbum++;
+      }
+
+      cCounts.set(item.category, (cCounts.get(item.category) || 0) + 1);
+    });
+
+    return { albumMap: map, albumCounts: aCounts, categoryCounts: cCounts, noAlbumCount: noAlbum };
+  }, [albums, gallery]);
+
   const filtered = activeTab === 'Tout' 
     ? gallery 
     : activeTab === 'Sans Album'
@@ -234,7 +256,7 @@ const AdminGallery: React.FC = () => {
       : gallery.filter(i => i.category === activeTab);
 
   // Trouver l'album d'un item
-  const getAlbum = (item: GalleryItem) => albums.find(a => a.id === item.albumId);
+  const getAlbum = (item: GalleryItem) => item.albumId ? albumMap.get(item.albumId) : undefined;
 
   const handleAlbumSave = async (name: string, description: string, category: GalleryCategory, files: File[]) => {
     setShowModal(false);
@@ -459,7 +481,7 @@ const AdminGallery: React.FC = () => {
             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Albums ({albums.length})</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {albums.map(album => {
-                const count = gallery.filter(i => i.albumId === album.id).length;
+                const count = albumCounts.get(album.id) || 0;
                 return (
                   <div key={album.id} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/5 hover:border-pm-gold/20 transition-all">
                     {/* Cover */}
@@ -530,8 +552,8 @@ const AdminGallery: React.FC = () => {
                 {tab === 'Tout' 
                   ? gallery.length 
                   : tab === 'Sans Album'
-                    ? gallery.filter(i => !i.albumId).length
-                    : gallery.filter(i => i.category === tab).length}
+                    ? noAlbumCount
+                    : categoryCounts.get(tab as GalleryCategory) || 0}
               </span>
             </button>
           ))}
