@@ -6,6 +6,8 @@ import { useData } from '../contexts/DataContext';
 import { RecoveryRequest } from '../types';
 import { motion } from 'framer-motion';
 import { notifyAdmin } from '../utils/adminNotify';
+import { rtdb } from '../firebase';
+import { ref, get } from 'firebase/database';
 
 interface ActiveUser {
   name: string;

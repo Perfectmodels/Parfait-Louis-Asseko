@@ -66,7 +66,10 @@ const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection
 const AdminGallery = lazy(() => import('./pages/AdminGallery'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
 const MissOneLight = lazy(() => import('./pages/MissOneLight'));
+const BeautyContest = lazy(() => import('./pages/BeautyContest'));
+const JuryContest = lazy(() => import('./pages/JuryContest'));
 const AdminMissOneLight = lazy(() => import('./pages/AdminMissOneLight'));
+const AdminBeautyContest = lazy(() => import('./pages/AdminBeautyContest'));
 
 
 // Role-specific pages
@@ -144,6 +147,8 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
                     <Route path="/galerie" element={<Gallery />} />
                     <Route path="/miss-one-light" element={<MissOneLight />} />
+                    <Route path="/concours" element={<BeautyContest />} />
+                    <Route path="/concours/jury" element={<ProtectedRoute role="jury-contest"><JuryContest /></ProtectedRoute>} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />
@@ -185,6 +190,7 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/admin/gallery" element={<ProtectedRoute role="admin"><AdminGallery /></ProtectedRoute>} />
                     <Route path="/admin/mailing" element={<ProtectedRoute role="admin"><AdminMailing /></ProtectedRoute>} />
                     <Route path="/admin/miss-one-light" element={<ProtectedRoute role="admin"><AdminMissOneLight /></ProtectedRoute>} />
+                    <Route path="/admin/beauty-contests" element={<ProtectedRoute role="admin"><AdminBeautyContest /></ProtectedRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>
