@@ -1,0 +1,3 @@
+## 2026-04-20 - Icon-Only Buttons Accessibility on Admin Dashboards
+**Learning:** The application extensively uses icon-only buttons (from Heroicons) in admin dashboard tables and modals (e.g., `AdminRecovery.tsx`, `AdminCasting.tsx`) without providing `aria-label` attributes or explicit `focus-visible` outlines. This makes these critical management actions completely opaque to screen readers and difficult to navigate via keyboard.
+**Action:** When working on admin interfaces, always ensure icon-only action buttons are wrapped with descriptive `aria-label` and `title` attributes, and include bounding `focus-visible` utility classes (e.g., `focus-visible:outline-none focus-visible:ring-2 rounded-full`) to properly conform the focus ring to the element's visual footprint.
