@@ -1,0 +1,4 @@
+## 2025-02-14 - Fix XSS in PDF Download via window.open()
+**Vulnerability:** Raw HTML injection (XSS) vulnerability was present in the PDF generation process (`generateArticleHtml`) where unsanitized user-generated content (article titles, descriptions, image URLs, etc.) was directly inserted into a raw HTML string and rendered using `window.open().document.write()`.
+**Learning:** React's built-in XSS protection (which automatically escapes values rendered via JSX) does not apply when manually constructing raw HTML strings or directly writing to the DOM via APIs like `document.write()`.
+**Prevention:** Always manually escape/sanitize dynamic data using a utility like `escapeHtml` whenever raw HTML strings are constructed, especially when those strings will be evaluated by the browser via `document.write()`, `innerHTML`, or similar methods. Ensure both content and attributes are escaped.
