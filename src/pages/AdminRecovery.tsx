@@ -95,13 +95,13 @@ const AdminRecovery: React.FC = () => {
                       </td>
                       <td className="p-4">
                         <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => setSelected(r)} className="text-pm-gold/60 hover:text-pm-gold"><EyeIcon className="w-5 h-5" /></button>
+                          <button onClick={() => setSelected(r)} aria-label="Voir les détails" title="Voir les détails" className="text-pm-gold/60 hover:text-pm-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-full p-1"><EyeIcon className="w-5 h-5" /></button>
                           {r.status === 'Nouveau' && (
-                            <button onClick={() => handleMarkTreated(r.id)} className="text-green-400/70 hover:text-green-400">
+                            <button onClick={() => handleMarkTreated(r.id)} aria-label="Marquer comme traité" title="Marquer comme traité" className="text-green-400/70 hover:text-green-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400 rounded-full p-1">
                               <CheckCircleIcon className="w-5 h-5" />
                             </button>
                           )}
-                          <button onClick={() => handleDelete(r.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
+                          <button onClick={() => handleDelete(r.id)} aria-label="Supprimer la demande" title="Supprimer la demande" className="text-red-500/70 hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-full p-1"><TrashIcon className="w-5 h-5" /></button>
                         </div>
                       </td>
                     </tr>
@@ -122,7 +122,7 @@ const AdminRecovery: React.FC = () => {
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg w-full max-w-md">
               <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
                 <h2 className="text-xl font-playfair text-pm-gold">Demande de récupération</h2>
-                <button onClick={() => setSelected(null)} className="text-pm-off-white/60 hover:text-white"><XMarkIcon className="w-6 h-6" /></button>
+                <button onClick={() => setSelected(null)} aria-label="Fermer" title="Fermer" className="text-pm-off-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-full p-1"><XMarkIcon className="w-6 h-6" /></button>
               </header>
               <div className="p-6 space-y-4">
                 <Row label="Mannequin" value={selected.modelName} />
@@ -142,11 +142,11 @@ const AdminRecovery: React.FC = () => {
               </div>
               <footer className="p-4 border-t border-pm-gold/20 flex items-center justify-between">
                 {selected.status === 'Nouveau' && (
-                  <button onClick={() => handleMarkTreated(selected.id)} className="flex items-center gap-2 text-sm text-green-400 border border-green-400/30 px-3 py-1.5 rounded-full hover:bg-green-400/10">
+                  <button onClick={() => handleMarkTreated(selected.id)} className="flex items-center gap-2 text-sm text-green-400 border border-green-400/30 px-3 py-1.5 rounded-full hover:bg-green-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400">
                     <CheckCircleIcon className="w-4 h-4" /> Marquer traité
                   </button>
                 )}
-                <button onClick={() => handleDelete(selected.id)} className="text-red-500/70 hover:text-red-500 flex items-center gap-1 text-sm ml-auto">
+                <button onClick={() => handleDelete(selected.id)} className="text-red-500/70 hover:text-red-500 flex items-center gap-1 text-sm ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-full px-2 py-1">
                   <TrashIcon className="w-4 h-4" /> Supprimer
                 </button>
               </footer>
