@@ -1,0 +1,4 @@
+## 2024-05-18 - XSS Vulnerability in PDF Generator
+**Vulnerability:** A Cross-Site Scripting (XSS) vulnerability was found in the `generateArticleHtml` function within `src/pages/ArticleDetail.tsx`. Unsanitized user inputs (e.g., article titles, contents, and author names) were directly interpolated into an HTML string passed to `window.open().document.write()`.
+**Learning:** React's built-in XSS protection (via JSX) does not extend to raw string interpolation used outside of the component tree, such as when generating raw HTML strings for new windows. This pattern bypasses XSS protection completely.
+**Prevention:** Whenever constructing raw HTML strings from user input (e.g., for PDF downloads, emails, or `dangerouslySetInnerHTML`), all dynamic values must be explicitly sanitized using an escaping function (like `escapeHtml` or a dedicated library) before interpolation.
