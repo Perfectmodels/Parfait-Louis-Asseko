@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeftIcon, TrashIcon, PlusIcon, PhotoIcon,
@@ -233,8 +233,16 @@ const AdminGallery: React.FC = () => {
       ? gallery.filter(i => !i.albumId)
       : gallery.filter(i => i.category === activeTab);
 
-  // Trouver l'album d'un item
-  const getAlbum = (item: GalleryItem) => albums.find(a => a.id === item.albumId);
+  // Optimisation de la recherche d'album O(N) au lieu de O(N*M)
+  const albumsMap = useMemo(() => {
+    const map = new Map<string, GalleryAlbum>();
+    albums.forEach(a => map.set(a.id, a));
+    return map;
+  }, [albums]);
+
+  const getAlbum = (item: GalleryItem) => {
+    return item.albumId ? albumsMap.get(item.albumId) : undefined;
+  };
 
   const handleAlbumSave = async (name: string, description: string, category: GalleryCategory, files: File[]) => {
     setShowModal(false);
