@@ -1,0 +1,4 @@
+## 2026-04-12 - Cross-Site Scripting (XSS) in HTML String Generation
+**Vulnerability:** A cross-site scripting (XSS) vulnerability was found in `src/pages/ArticleDetail.tsx` where dynamic user input (article titles, content, authors) was concatenated directly into an HTML string for PDF generation and inserted via `window.open().document.write()`.
+**Learning:** This pattern completely bypasses React's built-in XSS protections (which normally escape text automatically). When manually constructing HTML strings to be evaluated or rendered by the browser, all dynamic data must be explicitly sanitized.
+**Prevention:** Created a reusable `escapeHtml` utility in `src/utils/sanitize.ts` and applied it to all untrusted variables within the `generateArticleHtml` function before concatenation to prevent execution of malicious scripts.
