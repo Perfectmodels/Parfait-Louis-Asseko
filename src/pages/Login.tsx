@@ -44,7 +44,20 @@ const Login: React.FC = () => {
         return;
     }
 
+
+    if (!window.crypto || !window.crypto.subtle) {
+      setError("Crypto API non disponible. Veuillez utiliser un contexte sécurisé (HTTPS).");
+      return;
+    }
+
+    const encoder = new TextEncoder();
+    const dataObj = encoder.encode(password);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataObj);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashedPasswordInput = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
     const timestamp = new Date().toISOString();
+
     const normalizedUsername = username.toLowerCase().trim();
 
     // ── 1. Jury concours beauté (RTDB beautyContests/{id}/juries) ─────────────
@@ -78,18 +91,21 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: { name: 'Admin', username: 'admin', password: '0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    const foundUser = users.find(u => {
+        const matchName = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || u.user.name.toLowerCase() === normalizedUsername;
+        if (!matchName) return false;
+
+        if (u.type === 'admin') {
+            return u.user.password === hashedPasswordInput;
+        }
+        return u.user.password === password;
+    });
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
