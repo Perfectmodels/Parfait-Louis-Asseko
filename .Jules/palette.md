@@ -1,0 +1,3 @@
+## 2024-04-17 - Add aria-labels to icon-only buttons
+**Learning:** Icon-only buttons (like those for closing modals or toggling sidebars in AdminLayout, MediaPicker, and ArticleGenerator) in this codebase often lack `aria-label` attributes and explicit focus outlines. This makes them invisible to screen readers and difficult to navigate via keyboard.
+**Action:** Always add `aria-label` to buttons that contain only icons. Also, ensure they have `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:ring-offset-2` or similar classes so keyboard users can see when they are focused.

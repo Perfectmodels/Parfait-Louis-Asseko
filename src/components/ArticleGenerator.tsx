@@ -136,7 +136,7 @@ const ArticleGenerator: React.FC<ArticleGeneratorProps> = ({ isOpen, onClose, on
                             <SparklesIcon className="w-6 h-6" />
                             Générateur d'Article par IA
                         </h2>
-                        <button onClick={onClose} className="text-pm-off-white/70 hover:text-white">
+                        <button onClick={onClose} className="text-pm-off-white/70 hover:text-white rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:ring-offset-2 focus-visible:ring-offset-pm-dark" aria-label="Fermer le générateur d'article">
                             <CloseIcon />
                         </button>
                     </div>
