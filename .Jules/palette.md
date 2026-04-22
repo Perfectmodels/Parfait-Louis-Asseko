@@ -1,0 +1,3 @@
+## 2024-05-18 - Floating Utility Button Focus Boundaries
+**Learning:** Floating utility buttons (like Back to Top or AI Assistants) require explicit focus states (`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color] focus-visible:ring-offset-2`) for keyboard accessibility. However, it is critical to ensure the bounding radius class (e.g., `rounded-full`) is applied directly to the interactive parent element (`<button>` or `<Link>`) so the focus ring properly follows the element's visual contour instead of defaulting to a square outline.
+**Action:** Always check that the interactive element receiving focus also has the correct `rounded-*` class, especially for custom circular floating buttons.
