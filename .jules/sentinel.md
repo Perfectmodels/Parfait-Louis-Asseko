@@ -1,0 +1,4 @@
+## 2025-01-20 - XSS in Dynamic HTML Generation via `document.write`
+**Vulnerability:** XSS vulnerability in `ArticleDetail.tsx` when generating PDF downloads. Dynamic user data (article title, content, author) was injected directly into a raw HTML string used in `window.open().document.write()` without sanitization.
+**Learning:** Functions that generate raw HTML strings for new windows bypass React's built-in XSS protection (which normally escapes variables). This creates an XSS vector if any of the dynamic data is user-controlled or malicious.
+**Prevention:** Always use a dedicated sanitization utility (like `escapeHtml`) to explicitly escape special characters (`&`, `<`, `>`, `"`, `'`) when building raw HTML strings manually from dynamic data.
