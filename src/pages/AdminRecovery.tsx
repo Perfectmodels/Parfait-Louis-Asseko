@@ -95,13 +95,13 @@ const AdminRecovery: React.FC = () => {
                       </td>
                       <td className="p-4">
                         <div className="flex items-center justify-end gap-2">
-                          <button onClick={() => setSelected(r)} className="text-pm-gold/60 hover:text-pm-gold"><EyeIcon className="w-5 h-5" /></button>
+                          <button aria-label="Voir la demande" onClick={() => setSelected(r)} className="text-pm-gold/60 hover:text-pm-gold focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:outline-none rounded"><EyeIcon className="w-5 h-5" /></button>
                           {r.status === 'Nouveau' && (
-                            <button onClick={() => handleMarkTreated(r.id)} className="text-green-400/70 hover:text-green-400">
+                            <button aria-label="Marquer comme traité" onClick={() => handleMarkTreated(r.id)} className="text-green-400/70 hover:text-green-400 focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:outline-none rounded">
                               <CheckCircleIcon className="w-5 h-5" />
                             </button>
                           )}
-                          <button onClick={() => handleDelete(r.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
+                          <button aria-label="Supprimer la demande" onClick={() => handleDelete(r.id)} className="text-red-500/70 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:outline-none rounded"><TrashIcon className="w-5 h-5" /></button>
                         </div>
                       </td>
                     </tr>
@@ -122,7 +122,7 @@ const AdminRecovery: React.FC = () => {
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg w-full max-w-md">
               <header className="p-4 flex justify-between items-center border-b border-pm-gold/20">
                 <h2 className="text-xl font-playfair text-pm-gold">Demande de récupération</h2>
-                <button onClick={() => setSelected(null)} className="text-pm-off-white/60 hover:text-white"><XMarkIcon className="w-6 h-6" /></button>
+                <button aria-label="Fermer" onClick={() => setSelected(null)} className="text-pm-off-white/60 hover:text-white focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:outline-none rounded"><XMarkIcon className="w-6 h-6" /></button>
               </header>
               <div className="p-6 space-y-4">
                 <Row label="Mannequin" value={selected.modelName} />
