@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeftIcon, TrashIcon, PlusIcon, PhotoIcon,
@@ -221,6 +221,25 @@ const AdminGallery: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editAlbum, setEditAlbum] = useState<GalleryAlbum | null>(null);
   const [assignItem, setAssignItem] = useState<GalleryItem | null>(null);
+
+  // ⚡ Bolt: Precompute album and category counts to avoid O(N*M) lookups in render loop
+  const { albumCounts, categoryCounts, orphanCount } = useMemo(() => {
+    const aCounts: Record<string, number> = {};
+    const cCounts: Record<string, number> = {};
+    let oCount = 0;
+
+    gallery.forEach(item => {
+      if (item.albumId) {
+        aCounts[item.albumId] = (aCounts[item.albumId] || 0) + 1;
+      } else {
+        oCount++;
+      }
+      cCounts[item.category] = (cCounts[item.category] || 0) + 1;
+    });
+
+    return { albumCounts: aCounts, categoryCounts: cCounts, orphanCount: oCount };
+  }, [gallery]);
+
   
   // Mode sélection multiple
   const [selectionMode, setSelectionMode] = useState(false);
@@ -459,7 +478,7 @@ const AdminGallery: React.FC = () => {
             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Albums ({albums.length})</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {albums.map(album => {
-                const count = gallery.filter(i => i.albumId === album.id).length;
+                const count = albumCounts[album.id] || 0;
                 return (
                   <div key={album.id} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/5 hover:border-pm-gold/20 transition-all">
                     {/* Cover */}
@@ -530,8 +549,8 @@ const AdminGallery: React.FC = () => {
                 {tab === 'Tout' 
                   ? gallery.length 
                   : tab === 'Sans Album'
-                    ? gallery.filter(i => !i.albumId).length
-                    : gallery.filter(i => i.category === tab).length}
+                    ? orphanCount
+                    : (categoryCounts[tab] || 0)}
               </span>
             </button>
           ))}
