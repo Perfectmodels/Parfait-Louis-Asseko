@@ -7,7 +7,9 @@ interface ModelCardProps {
   model: Model;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
+// ⚡ Bolt: Wrapped in React.memo() to prevent unnecessary deep re-renders when parent components (like Models.tsx) update states like search or filters.
+// Expected Impact: Reduces re-renders of list items by ~100% when non-relevant parent states change.
+const ModelCard = React.memo(({ model }: ModelCardProps) => {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -42,6 +44,8 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       </Link>
     </motion.div>
   );
-};
+});
+
+ModelCard.displayName = 'ModelCard';
 
 export default ModelCard;
