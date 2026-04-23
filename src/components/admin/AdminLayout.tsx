@@ -144,6 +144,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm lg:hidden"
                         />
                         <motion.div 
+                            id="mobile-sidebar"
                             initial={{ x: "-100%" }}
                             animate={{ x: 0 }}
                             exit={{ x: "-100%" }}
@@ -152,7 +153,15 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         >
                             <div className="flex items-center justify-between mb-16 px-4">
                                 <h1 className="font-playfair text-xl font-black italic">Admin Panel</h1>
-                                <button onClick={() => setSidebarOpen(false)} className="text-white/40 hover:text-white"><XMarkIcon className="w-6 h-6" /></button>
+                                <button
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="text-white/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-md"
+                                    aria-label="Fermer le menu"
+                                    aria-expanded={sidebarOpen}
+                                    aria-controls="mobile-sidebar"
+                                >
+                                    <XMarkIcon className="w-6 h-6" />
+                                </button>
                             </div>
                             <Sidebar onLinkClick={() => setSidebarOpen(false)} />
                         </motion.div>
@@ -164,7 +173,13 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="flex flex-col flex-1 lg:pl-72 min-w-0">
                 <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/5 bg-pm-dark/60 backdrop-blur-xl px-4 sm:px-6 lg:px-10">
                     <div className="flex items-center gap-3 sm:gap-6 min-w-0 flex-1">
-                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-pm-off-white/80 shrink-0">
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="lg:hidden p-2 text-pm-off-white/80 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-md"
+                            aria-label="Ouvrir le menu"
+                            aria-expanded={sidebarOpen}
+                            aria-controls="mobile-sidebar"
+                        >
                             <Bars3Icon className="w-6 h-6" />
                         </button>
                         <div className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] text-pm-gold truncate">

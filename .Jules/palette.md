@@ -1,0 +1,3 @@
+## 2025-02-28 - Icon-only buttons accessibility and focus styles
+**Learning:** Icon-only interactive elements (like mobile navigation toggles) often miss critical accessibility attributes resulting in poor keyboard and screen reader experiences.
+**Action:** Always ensure that icon-only buttons include ARIA attributes (`aria-label`, `aria-expanded`, `aria-controls` where applicable) and explicit `focus-visible` styling (`focus-visible:ring-2`, `focus-visible:ring-pm-gold`) to adhere to accessibility standards.
