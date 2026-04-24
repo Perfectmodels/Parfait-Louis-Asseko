@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { rtdb } from '../firebase';
 import { ref, onValue } from 'firebase/database';
 import { Trophy, Users, Award, Flag } from 'lucide-react';
@@ -48,20 +48,45 @@ function ContestView({ contest }: { contest: Contest }) {
     return () => u.forEach(f=>f());
   }, [contest.id, activeStage]);
 
-  // Compute average for a candidate — aggregate across all jury scores, anonymised
-  const getAvg = (candidateId: string): number | null => {
-    const cs = scores.filter(s => s.candidateId === candidateId);
-    if (!cs.length || !criteria.length) return null;
+  // ⚡ Pre-compute averages to prevent O(N * S) repeated filter scans inside render and sort loops
+  const { candidateAvgs, criteriaAvgs } = useMemo(() => {
+    const cAvgs: Record<string, number> = {};
+    const crAvgs: Record<string, Record<string, number>> = {};
     const totalWeight = criteria.reduce((s,c)=>s+c.weight,0) || 1;
-    const juryAvgs = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight);
-    return juryAvgs.reduce((a,b)=>a+b,0)/juryAvgs.length;
-  };
 
-  // Per-criteria average (anonymised — no jury names)
-  const getCriteriaAvg = (candidateId: string, criteriaId: string): number | null => {
-    const vals = scores.filter(s=>s.candidateId===candidateId).map(s=>s.scores[criteriaId]??0);
-    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
-  };
+    // Group scores by candidate
+    const scoresByCandidate: Record<string, Score[]> = {};
+    for (const s of scores) {
+      if (!scoresByCandidate[s.candidateId]) scoresByCandidate[s.candidateId] = [];
+      scoresByCandidate[s.candidateId].push(s);
+    }
+
+    if (criteria.length) {
+      for (const c of candidates) {
+        const cs = scoresByCandidate[c.id] || [];
+
+        // Overall average
+        if (cs.length) {
+          const juryAvgs = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight);
+          cAvgs[c.id] = juryAvgs.reduce((a,b)=>a+b,0)/juryAvgs.length;
+        }
+
+        // Per-criteria average
+        crAvgs[c.id] = {};
+        for (const cr of criteria) {
+          let sum = 0;
+          for (const s of cs) {
+            sum += s.scores[cr.id] ?? 0;
+          }
+          if (cs.length > 0) crAvgs[c.id][cr.id] = sum / cs.length;
+        }
+      }
+    }
+    return { candidateAvgs: cAvgs, criteriaAvgs: crAvgs };
+  }, [scores, criteria, candidates]);
+
+  const getAvg = (candidateId: string): number | null => candidateId in candidateAvgs ? candidateAvgs[candidateId] : null;
+  const getCriteriaAvg = (candidateId: string, criteriaId: string): number | null => criteriaAvgs[candidateId]?.[criteriaId] ?? null;
 
   const ranked = [...candidates].sort((a,b) => {
     const avgA = getAvg(a.id) ?? -1;
