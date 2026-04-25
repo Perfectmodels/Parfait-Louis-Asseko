@@ -570,19 +570,27 @@ export default function AdminBeautyContest() {
   // ── Results ───────────────────────────────────────────────────────────────
   const computeResults = () => {
     const totalWeight = criteria.reduce((s,c) => s+c.weight, 0) || 1;
+    const scoresByCandidate = new Map<string, typeof scores>();
+    scores.forEach(s => {
+      const arr = scoresByCandidate.get(s.candidateId) || [];
+      arr.push(s);
+      scoresByCandidate.set(s.candidateId, arr);
+    });
+
     return candidates.map(candidate => {
+      const candidateScores = scoresByCandidate.get(candidate.id) || [];
       let grandTotal = 0; let grandCount = 0;
       const byPassage: Record<string,number> = {};
       passages.forEach(p => {
         const crits = criteriaForPassage(p.id);
         const tw = crits.reduce((s,c) => s+c.weight, 0) || 1;
-        const ps = scores.filter(s => s.candidateId===candidate.id && s.passageId===p.id);
+        const ps = candidateScores.filter(s => s.passageId===p.id);
         if (!ps.length) return;
         const avg = ps.map(s => crits.reduce((sum,cr) => sum+(s.scores[cr.id]??0)*cr.weight, 0)/tw).reduce((a,b)=>a+b,0)/ps.length;
         byPassage[p.id] = avg; grandTotal += avg; grandCount++;
       });
       if (passages.length === 0) {
-        const cs = scores.filter(s => s.candidateId===candidate.id);
+        const cs = candidateScores;
         if (cs.length) { grandTotal = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight).reduce((a,b)=>a+b,0)/cs.length; grandCount=1; }
       }
       return { candidate, average: grandCount>0 ? grandTotal/grandCount : 0, byPassage };
