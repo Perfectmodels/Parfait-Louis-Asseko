@@ -44,8 +44,18 @@ const Login: React.FC = () => {
         return;
     }
 
+    if (!window.crypto?.subtle) {
+        setError('Votre navigateur ne supporte pas le chiffrement requis.');
+        return;
+    }
+
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
+
+    // Hash the password input for secure comparison
+    const encoder = new TextEncoder();
+    const passwordBuffer = await window.crypto.subtle.digest('SHA-256', encoder.encode(password));
+    const hashedPasswordInput = Array.from(new Uint8Array(passwordBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 
     // ── 1. Jury concours beauté (RTDB beautyContests/{id}/juries) ─────────────
     try {
@@ -78,18 +88,24 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: { name: 'Admin', username: 'admin', passwordHash: '0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    const foundUser = users.find(u => {
+        const usernameMatch = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) ||
+                              u.user.name.toLowerCase() === normalizedUsername;
+        if (!usernameMatch) return false;
+
+        // Prevent pass-the-hash by requiring explicit matching rules
+        if (u.type === 'admin') {
+            return (u.user as any).passwordHash === hashedPasswordInput;
+        } else {
+            return (u.user as any).password === password;
+        }
+    });
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');

@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevent Hardcoded Admin Passwords and Pass-The-Hash
+**Vulnerability:** A hardcoded plaintext admin password (`admin2025`) was present in both `useRealtimeDB.tsx` and `Login.tsx`, allowing anyone reading the source code to log in as the principal admin. Additionally, comparing passwords directly using a naive search allows pass-the-hash or equivalent injection logic.
+**Learning:** Hardcoding credentials in frontend code directly exposes them. Storing only the SHA-256 hash mitigates this. Furthermore, checking both hashed credentials and plaintext credentials in the same loop without explicit role isolation introduces a pass-the-hash vulnerability if not careful.
+**Prevention:** Use an asynchronous hashing mechanism (`window.crypto.subtle.digest`) for client-side password validations. Explicitly restrict hashed comparisons to administrative roles and ensure mutually exclusive checks to prevent pass-the-hash attacks.
