@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Trash2, Edit2, Save, X, Upload, Star, Users, Award, ChevronUp, Key, Copy, Eye, EyeOff, Layers, Shuffle, Flag, ChevronRight, CheckCircle } from 'lucide-react';
 import { rtdb } from '../firebase';
 import { ref, set, remove, update, onValue, push, get } from 'firebase/database';
@@ -551,6 +551,24 @@ export default function AdminBeautyContest() {
     scores.find(s => s.juryId===juryId && s.candidateId===candidateId && s.passageId===passageId);
   const criteriaForPassage = (passageId:string) =>
     criteria.filter(c => !c.passageId || c.passageId===passageId);
+
+  // Precompute matrices for fast rendering
+  const memoizedMatrixData = useMemo(() => {
+    const pData: Record<string, { crits: ScoringCriteria[], tw: number }> = {};
+    for (const p of passages) {
+      const crits = criteria.filter(c => !c.passageId || c.passageId===p.id);
+      pData[p.id] = { crits, tw: crits.reduce((s, c) => s + c.weight, 0) || 1 };
+    }
+
+    const sLookup: Record<string, Record<string, Record<string, Score>>> = {};
+    for (const s of scores) {
+      if (!sLookup[s.juryId]) sLookup[s.juryId] = {};
+      if (!sLookup[s.juryId][s.candidateId]) sLookup[s.juryId][s.candidateId] = {};
+      sLookup[s.juryId][s.candidateId][s.passageId] = s;
+    }
+
+    return { pData, sLookup };
+  }, [passages, criteria, scores]);
   const handleSaveScore = async () => {
     if (!sp || !scoringJuryId || !scoringCandidateId || !scoringPassageId) return;
     const crits = criteriaForPassage(scoringPassageId);
@@ -570,20 +588,58 @@ export default function AdminBeautyContest() {
   // ── Results ───────────────────────────────────────────────────────────────
   const computeResults = () => {
     const totalWeight = criteria.reduce((s,c) => s+c.weight, 0) || 1;
+
+    // Precompute passage data
+    const passageData: Record<string, { crits: ScoringCriteria[], tw: number }> = {};
+    for (const p of passages) {
+      const crits = criteriaForPassage(p.id);
+      passageData[p.id] = { crits, tw: crits.reduce((s,c) => s+c.weight, 0) || 1 };
+    }
+
+    // Precompute score lookups
+    const scoresByCand: Record<string, Score[]> = {};
+    const scoresByCandPass: Record<string, Record<string, Score[]>> = {};
+    for (const s of scores) {
+      if (!scoresByCand[s.candidateId]) scoresByCand[s.candidateId] = [];
+      scoresByCand[s.candidateId].push(s);
+
+      if (!scoresByCandPass[s.candidateId]) scoresByCandPass[s.candidateId] = {};
+      if (!scoresByCandPass[s.candidateId][s.passageId]) scoresByCandPass[s.candidateId][s.passageId] = [];
+      scoresByCandPass[s.candidateId][s.passageId].push(s);
+    }
+
     return candidates.map(candidate => {
       let grandTotal = 0; let grandCount = 0;
       const byPassage: Record<string,number> = {};
-      passages.forEach(p => {
-        const crits = criteriaForPassage(p.id);
-        const tw = crits.reduce((s,c) => s+c.weight, 0) || 1;
-        const ps = scores.filter(s => s.candidateId===candidate.id && s.passageId===p.id);
-        if (!ps.length) return;
-        const avg = ps.map(s => crits.reduce((sum,cr) => sum+(s.scores[cr.id]??0)*cr.weight, 0)/tw).reduce((a,b)=>a+b,0)/ps.length;
-        byPassage[p.id] = avg; grandTotal += avg; grandCount++;
-      });
-      if (passages.length === 0) {
-        const cs = scores.filter(s => s.candidateId===candidate.id);
-        if (cs.length) { grandTotal = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight).reduce((a,b)=>a+b,0)/cs.length; grandCount=1; }
+
+      if (passages.length > 0) {
+        passages.forEach(p => {
+          const pData = passageData[p.id];
+          const ps = scoresByCandPass[candidate.id]?.[p.id];
+          if (!ps || !ps.length) return;
+
+          let passageSum = 0;
+          for (const s of ps) {
+            let scoreSum = 0;
+            for (const cr of pData.crits) scoreSum += (s.scores[cr.id]??0)*cr.weight;
+            passageSum += scoreSum / pData.tw;
+          }
+          const avg = passageSum / ps.length;
+
+          byPassage[p.id] = avg; grandTotal += avg; grandCount++;
+        });
+      } else {
+        const cs = scoresByCand[candidate.id];
+        if (cs && cs.length) {
+          let totalSum = 0;
+          for (const s of cs) {
+            let scoreSum = 0;
+            for (const cr of criteria) scoreSum += (s.scores[cr.id]??0)*cr.weight;
+            totalSum += scoreSum / totalWeight;
+          }
+          grandTotal = totalSum / cs.length;
+          grandCount = 1;
+        }
       }
       return { candidate, average: grandCount>0 ? grandTotal/grandCount : 0, byPassage };
     }).sort((a,b) => b.average - a.average);
@@ -1150,8 +1206,15 @@ export default function AdminBeautyContest() {
                     <div className='overflow-x-auto'><table className='w-full bg-white/5 border border-white/10 rounded-xl overflow-hidden text-sm'>
                       <thead><tr className='border-b border-white/10 bg-white/5'><th className='px-3 py-2 text-left text-white/60'>Candidate</th>{juries.map(j=><th key={j.id} className='px-3 py-2 text-center text-white/60 whitespace-nowrap'>{j.name}</th>)}<th className='px-3 py-2 text-center text-amber-400 font-bold'>Moy.</th></tr></thead>
                       <tbody>{candidates.filter(c=>c.status==='active').map(c=>{
-                        const tw=criteriaForPassage(p.id).reduce((s,cr)=>s+cr.weight,0)||1;
-                        const juryAvgs=juries.map(j=>{const sc=getScore(j.id,c.id,p.id);return sc?criteriaForPassage(p.id).reduce((s,cr)=>s+(sc.scores[cr.id]??0)*cr.weight,0)/tw:null;});
+                        const pData = memoizedMatrixData.pData[p.id];
+                        const tw = pData?.tw || 1;
+                        const juryAvgs = juries.map(j => {
+                          const sc = memoizedMatrixData.sLookup[j.id]?.[c.id]?.[p.id];
+                          if (!sc || !pData) return null;
+                          let sum = 0;
+                          for (const cr of pData.crits) sum += (sc.scores[cr.id] ?? 0) * cr.weight;
+                          return sum / tw;
+                        });
                         const valid=juryAvgs.filter(v=>v!==null) as number[];
                         const avg=valid.length>0?valid.reduce((a,b)=>a+b,0)/valid.length:null;
                         return(<tr key={c.id} className='border-b border-white/10 hover:bg-white/5'>
