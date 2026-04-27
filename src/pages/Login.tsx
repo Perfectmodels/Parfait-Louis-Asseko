@@ -47,6 +47,13 @@ const Login: React.FC = () => {
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
 
+    if (!window.crypto || !window.crypto.subtle) {
+      setError("Erreur de sécurité: crypto API indisponible.");
+      return;
+    }
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
+    const hashedPassword = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+
     // ── 1. Jury concours beauté (RTDB beautyContests/{id}/juries) ─────────────
     try {
       const contestsSnap = await get(ref(rtdb, 'beautyContests'));
@@ -78,7 +85,7 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: { name: 'Admin', username: 'admin', password: '0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
@@ -88,7 +95,7 @@ const Login: React.FC = () => {
         (
             ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
             u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
+        ) && (u.type === 'admin' ? u.user.password === hashedPassword : u.user.password === password)
     );
 
     if (foundUser) {
