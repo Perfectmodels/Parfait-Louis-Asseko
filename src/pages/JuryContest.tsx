@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { rtdb } from '../firebase';
 import { ref, onValue, push, set, update } from 'firebase/database';
 import { Star, LogOut, CheckCircle, ChevronRight, ChevronLeft, Layers } from 'lucide-react';
@@ -96,11 +96,30 @@ export default function JuryContest() {
   const currentCandidate = candidates[currentCandidateIndex];
   const currentPassage   = effectivePassages[currentPassageIndex];
 
-  const criteriaForPassage = (passageId: string) =>
-    criteria.filter(c => !c.passageId || c.passageId === passageId);
+  const criteriaMap = useMemo(() => {
+    const map = new Map<string, ScoringCriteria[]>();
+    criteria.forEach(c => {
+      const key = c.passageId || 'global';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(c);
+    });
+    return map;
+  }, [criteria]);
+
+  const criteriaForPassage = (passageId: string) => {
+    const specific = criteriaMap.get(passageId) || [];
+    const global = criteriaMap.get('global') || [];
+    return [...global, ...specific];
+  };
+
+  const scoreMap = useMemo(() => {
+    const map = new Map<string, Score>();
+    scores.forEach(s => map.set(`${s.candidateId}_${s.passageId}`, s));
+    return map;
+  }, [scores]);
 
   const getScore = (candidateId: string, passageId: string) =>
-    scores.find(s => s.candidateId === candidateId && s.passageId === passageId);
+    scoreMap.get(`${candidateId}_${passageId}`);
 
   const totalCells  = candidates.length * effectivePassages.length;
   const scoredCells = candidates.reduce((n, c) => n + effectivePassages.filter(p => getScore(c.id, p.id)).length, 0);

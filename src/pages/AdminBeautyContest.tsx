@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Trash2, Edit2, Save, X, Upload, Star, Users, Award, ChevronUp, Key, Copy, Eye, EyeOff, Layers, Shuffle, Flag, ChevronRight, CheckCircle } from 'lucide-react';
 import { rtdb } from '../firebase';
 import { ref, set, remove, update, onValue, push, get } from 'firebase/database';
@@ -547,10 +547,51 @@ export default function AdminBeautyContest() {
   };
 
   // ── Scoring (stage-scoped) ────────────────────────────────────────────────
+  const scoreMap = useMemo(() => {
+    const map = new Map<string, Score>();
+    scores.forEach(s => map.set(`${s.juryId}_${s.candidateId}_${s.passageId}`, s));
+    return map;
+  }, [scores]);
+
+  const scoresByCandPassage = useMemo(() => {
+    const map = new Map<string, Score[]>();
+    scores.forEach(s => {
+      const key = `${s.candidateId}_${s.passageId}`;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(s);
+    });
+    return map;
+  }, [scores]);
+
+  const scoresByCand = useMemo(() => {
+    const map = new Map<string, Score[]>();
+    scores.forEach(s => {
+      const key = s.candidateId;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(s);
+    });
+    return map;
+  }, [scores]);
+
   const getScore = (juryId:string, candidateId:string, passageId:string) =>
-    scores.find(s => s.juryId===juryId && s.candidateId===candidateId && s.passageId===passageId);
-  const criteriaForPassage = (passageId:string) =>
-    criteria.filter(c => !c.passageId || c.passageId===passageId);
+    scoreMap.get(`${juryId}_${candidateId}_${passageId}`);
+
+  const criteriaMap = useMemo(() => {
+    const map = new Map<string, ScoringCriteria[]>();
+    criteria.forEach(c => {
+      const key = c.passageId || 'global';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(c);
+    });
+    return map;
+  }, [criteria]);
+
+  const criteriaForPassage = (passageId:string) => {
+    const specific = criteriaMap.get(passageId) || [];
+    const global = criteriaMap.get('global') || [];
+    return [...global, ...specific];
+  };
+
   const handleSaveScore = async () => {
     if (!sp || !scoringJuryId || !scoringCandidateId || !scoringPassageId) return;
     const crits = criteriaForPassage(scoringPassageId);
@@ -576,13 +617,13 @@ export default function AdminBeautyContest() {
       passages.forEach(p => {
         const crits = criteriaForPassage(p.id);
         const tw = crits.reduce((s,c) => s+c.weight, 0) || 1;
-        const ps = scores.filter(s => s.candidateId===candidate.id && s.passageId===p.id);
+        const ps = scoresByCandPassage.get(`${candidate.id}_${p.id}`) || [];
         if (!ps.length) return;
         const avg = ps.map(s => crits.reduce((sum,cr) => sum+(s.scores[cr.id]??0)*cr.weight, 0)/tw).reduce((a,b)=>a+b,0)/ps.length;
         byPassage[p.id] = avg; grandTotal += avg; grandCount++;
       });
       if (passages.length === 0) {
-        const cs = scores.filter(s => s.candidateId===candidate.id);
+        const cs = scoresByCand.get(candidate.id) || [];
         if (cs.length) { grandTotal = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight).reduce((a,b)=>a+b,0)/cs.length; grandCount=1; }
       }
       return { candidate, average: grandCount>0 ? grandTotal/grandCount : 0, byPassage };
