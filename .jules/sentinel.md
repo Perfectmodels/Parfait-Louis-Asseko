@@ -1,0 +1,4 @@
+## 2024-05-18 - Remove Hardcoded Plaintext Admin Password
+**Vulnerability:** The default admin password 'admin2025' was hardcoded in plaintext within src/hooks/useRealtimeDB.tsx and src/pages/Login.tsx.
+**Learning:** Hardcoding plaintext credentials in frontend source files exposes them to anyone who inspects the application bundle, leading to unauthorized admin access. Client-side password hashing using window.crypto.subtle can be implemented, but it is asynchronous and requires a secure context (HTTPS) to function.
+**Prevention:** Avoid embedding raw secrets in code. Use hashed values (like SHA-256) for any default passwords that must exist client-side. Always ensure asynchronous crypto operations are pre-computed before synchronous array searches (e.g., .find()), and verify the availability of crypto.subtle to prevent crashes in non-secure environments.
