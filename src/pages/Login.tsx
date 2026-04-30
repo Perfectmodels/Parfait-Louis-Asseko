@@ -35,6 +35,18 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
+
+  const hashPassword = async (pass: string) => {
+    if (!window.crypto || !window.crypto.subtle) {
+      throw new Error('Crypto API is not available. Please use a secure context (HTTPS).');
+    }
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pass);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -46,8 +58,19 @@ const Login: React.FC = () => {
 
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
+    let hashedPassword = password;
+    try {
+      hashedPassword = await hashPassword(password);
+    } catch (err: any) {
+      setError(err.message);
+      return;
+    }
+
+
+    const isHash = (str: string) => /^[a-f0-9]{64}$/i.test(str);
 
     // ── 1. Jury concours beauté (RTDB beautyContests/{id}/juries) ─────────────
+
     try {
       const contestsSnap = await get(ref(rtdb, 'beautyContests'));
       if (contestsSnap.exists()) {
@@ -57,7 +80,7 @@ const Login: React.FC = () => {
           for (const [juryId, juryVal] of Object.entries(contestVal.juries as Record<string, any>)) {
             if (
               juryVal.username?.toLowerCase() === normalizedUsername &&
-              juryVal.password === password
+              (isHash(juryVal.password) ? juryVal.password === hashedPassword : juryVal.password === password)
             ) {
               sessionStorage.setItem('classroom_access', 'granted');
               sessionStorage.setItem('classroom_role', 'jury-contest');
@@ -78,7 +101,7 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: { name: 'Admin', username: 'admin', password: '0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
@@ -88,7 +111,7 @@ const Login: React.FC = () => {
         (
             ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
             u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
+        ) && (isHash(u.user.password) ? u.user.password === hashedPassword : u.user.password === password)
     );
 
     if (foundUser) {
