@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Trash2, Edit2, Save, X, Upload, Star, Users, Award, ChevronUp, Key, Copy, Eye, EyeOff, Layers, Shuffle, Flag, ChevronRight, CheckCircle } from 'lucide-react';
 import { rtdb } from '../firebase';
 import { ref, set, remove, update, onValue, push, get } from 'firebase/database';
@@ -568,17 +568,17 @@ export default function AdminBeautyContest() {
   };
 
   // ── Results ───────────────────────────────────────────────────────────────
-  const computeResults = () => {
-    const totalWeight = criteria.reduce((s,c) => s+c.weight, 0) || 1;
+  const computedResults = useMemo(() => {
+    const totalWeight = criteria.reduce((s:number,c:any) => s+c.weight, 0) || 1;
     return candidates.map(candidate => {
       let grandTotal = 0; let grandCount = 0;
       const byPassage: Record<string,number> = {};
       passages.forEach(p => {
         const crits = criteriaForPassage(p.id);
-        const tw = crits.reduce((s,c) => s+c.weight, 0) || 1;
+        const tw = crits.reduce((s:number,c:any) => s+c.weight, 0) || 1;
         const ps = scores.filter(s => s.candidateId===candidate.id && s.passageId===p.id);
         if (!ps.length) return;
-        const avg = ps.map(s => crits.reduce((sum,cr) => sum+(s.scores[cr.id]??0)*cr.weight, 0)/tw).reduce((a,b)=>a+b,0)/ps.length;
+        const avg = ps.map((s:any) => crits.reduce((sum:number,cr:any) => sum+(s.scores[cr.id]??0)*cr.weight, 0)/tw).reduce((a:number,b:number)=>a+b,0)/ps.length;
         byPassage[p.id] = avg; grandTotal += avg; grandCount++;
       });
       if (passages.length === 0) {
@@ -587,7 +587,9 @@ export default function AdminBeautyContest() {
       }
       return { candidate, average: grandCount>0 ? grandTotal/grandCount : 0, byPassage };
     }).sort((a,b) => b.average - a.average);
-  };
+  }, [candidates, passages, criteria, scores]);
+
+  const computeResults = () => computedResults;
   // ── Helpers ───────────────────────────────────────────────────────────────
   const [selectedCandidates, setSelectedCandidates] = useState<Set<string>>(new Set());
   const toggleSelect = (id:string) => setSelectedCandidates(prev => { const s=new Set(prev); s.has(id)?s.delete(id):s.add(id); return s; });
@@ -1141,17 +1143,34 @@ export default function AdminBeautyContest() {
             )}
 
             {/* Overview matrix */}
-            {passages.length>0 && candidates.length>0 && (
+            {passages.length>0 && candidates.length>0 && (() => {
+              // Precompute scores map to avoid O(N^3) find lookups
+              const scoresMap = new Map();
+              scores.forEach(s => scoresMap.set(`${s.juryId}_${s.candidateId}_${s.passageId}`, s));
+
+              // Precompute criteria weights per passage
+              const passageWeightsMap = new Map();
+              passages.forEach(p => {
+                const pCrits = criteriaForPassage(p.id);
+                const tw = pCrits.reduce((s,cr)=>s+cr.weight,0)||1;
+                passageWeightsMap.set(p.id, { crits: pCrits, tw });
+              });
+
+              return (
               <div>
                 <h2 className='text-lg font-bold text-white mb-4'>Matrice des notes — {STAGE_LABELS[activeStage]}</h2>
-                {passages.map(p=>(
+                {passages.map(p=>{
+                  const pData = passageWeightsMap.get(p.id) || { crits: [], tw: 1 };
+                  return (
                   <div key={p.id} className='mb-6'>
                     <div className='flex items-center gap-2 mb-3'><div className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold ${STAGE_COLORS[activeStage]}`}>{p.order}</div><h3 className='text-white font-semibold'>{p.name}</h3></div>
                     <div className='overflow-x-auto'><table className='w-full bg-white/5 border border-white/10 rounded-xl overflow-hidden text-sm'>
                       <thead><tr className='border-b border-white/10 bg-white/5'><th className='px-3 py-2 text-left text-white/60'>Candidate</th>{juries.map(j=><th key={j.id} className='px-3 py-2 text-center text-white/60 whitespace-nowrap'>{j.name}</th>)}<th className='px-3 py-2 text-center text-amber-400 font-bold'>Moy.</th></tr></thead>
                       <tbody>{candidates.filter(c=>c.status==='active').map(c=>{
-                        const tw=criteriaForPassage(p.id).reduce((s,cr)=>s+cr.weight,0)||1;
-                        const juryAvgs=juries.map(j=>{const sc=getScore(j.id,c.id,p.id);return sc?criteriaForPassage(p.id).reduce((s,cr)=>s+(sc.scores[cr.id]??0)*cr.weight,0)/tw:null;});
+                        const juryAvgs=juries.map(j=>{
+                          const sc = scoresMap.get(`${j.id}_${c.id}_${p.id}`);
+                          return sc ? pData.crits.reduce((s,cr)=>s+(sc.scores[cr.id]??0)*cr.weight,0)/pData.tw : null;
+                        });
                         const valid=juryAvgs.filter(v=>v!==null) as number[];
                         const avg=valid.length>0?valid.reduce((a,b)=>a+b,0)/valid.length:null;
                         return(<tr key={c.id} className='border-b border-white/10 hover:bg-white/5'>
@@ -1162,9 +1181,9 @@ export default function AdminBeautyContest() {
                       })}</tbody>
                     </table></div>
                   </div>
-                ))}
+                )})}
               </div>
-            )}
+            );})()}
           </div>
         )}
         {/* ── RESULTS TAB (stage-scoped) ── */}

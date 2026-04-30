@@ -1,0 +1,3 @@
+## 2024-05-13 - Avoid O(N³) Lookups in React Render Loops
+**Learning:** Highly nested render structures (like Candidates * Passages * Juries) using Array \`.find()\` operations inside the innermost loops cause an O(N³) rendering bottleneck, significantly degrading UI performance. This happened in \`AdminBeautyContest.tsx\`, where computing scores on-the-fly made renders exceptionally slow.
+**Action:** When building matrix/grid UIs with nested iterations, always pre-calculate lookup dictionaries (e.g. \`Map\`) for required data before the rendering loop to shift expensive O(N) searches to O(1) lookups. Additionally, wrap derived state computations with \`useMemo\` to prevent recalculation across irrelevant renders.
