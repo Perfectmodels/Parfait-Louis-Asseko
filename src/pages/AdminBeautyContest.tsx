@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Trash2, Edit2, Save, X, Upload, Star, Users, Award, ChevronUp, Key, Copy, Eye, EyeOff, Layers, Shuffle, Flag, ChevronRight, CheckCircle } from 'lucide-react';
 import { rtdb } from '../firebase';
 import { ref, set, remove, update, onValue, push, get } from 'firebase/database';
@@ -547,10 +547,28 @@ export default function AdminBeautyContest() {
   };
 
   // ── Scoring (stage-scoped) ────────────────────────────────────────────────
+  // Bolt: Precompute O(1) hash map lookup instead of O(N) Array.find to prevent O(N³) bottlenecks in matrix rendering
+  const scoresMap = useMemo(() => {
+    const map = new Map<string, Score>();
+    for (const s of scores) {
+      map.set(`${s.juryId}_${s.candidateId}_${s.passageId}`, s);
+    }
+    return map;
+  }, [scores]);
+
   const getScore = (juryId:string, candidateId:string, passageId:string) =>
-    scores.find(s => s.juryId===juryId && s.candidateId===candidateId && s.passageId===passageId);
-  const criteriaForPassage = (passageId:string) =>
-    criteria.filter(c => !c.passageId || c.passageId===passageId);
+    scoresMap.get(`${juryId}_${candidateId}_${passageId}`);
+
+  const criteriaCache = useMemo(() => {
+    return new Map<string, Criterion[]>();
+  }, [criteria]);
+
+  const criteriaForPassage = (passageId:string) => {
+    if (!criteriaCache.has(passageId)) {
+      criteriaCache.set(passageId, criteria.filter(c => !c.passageId || c.passageId===passageId));
+    }
+    return criteriaCache.get(passageId)!;
+  };
   const handleSaveScore = async () => {
     if (!sp || !scoringJuryId || !scoringCandidateId || !scoringPassageId) return;
     const crits = criteriaForPassage(scoringPassageId);
@@ -570,19 +588,37 @@ export default function AdminBeautyContest() {
   // ── Results ───────────────────────────────────────────────────────────────
   const computeResults = () => {
     const totalWeight = criteria.reduce((s,c) => s+c.weight, 0) || 1;
+
+    // Bolt: Group scores by candidate/passage to optimize O(N) .filter inside inner loops into O(1) Map lookups
+    const scoresByCandPassage = new Map<string, Score[]>();
+    for (const s of scores) {
+      const key = `${s.candidateId}_${s.passageId}`;
+      let arr = scoresByCandPassage.get(key);
+      if (!arr) { arr = []; scoresByCandPassage.set(key, arr); }
+      arr.push(s);
+    }
+    const scoresByCand = new Map<string, Score[]>();
+    if (passages.length === 0) {
+      for (const s of scores) {
+        let arr = scoresByCand.get(s.candidateId);
+        if (!arr) { arr = []; scoresByCand.set(s.candidateId, arr); }
+        arr.push(s);
+      }
+    }
+
     return candidates.map(candidate => {
       let grandTotal = 0; let grandCount = 0;
       const byPassage: Record<string,number> = {};
       passages.forEach(p => {
         const crits = criteriaForPassage(p.id);
         const tw = crits.reduce((s,c) => s+c.weight, 0) || 1;
-        const ps = scores.filter(s => s.candidateId===candidate.id && s.passageId===p.id);
+        const ps = scoresByCandPassage.get(`${candidate.id}_${p.id}`) || [];
         if (!ps.length) return;
         const avg = ps.map(s => crits.reduce((sum,cr) => sum+(s.scores[cr.id]??0)*cr.weight, 0)/tw).reduce((a,b)=>a+b,0)/ps.length;
         byPassage[p.id] = avg; grandTotal += avg; grandCount++;
       });
       if (passages.length === 0) {
-        const cs = scores.filter(s => s.candidateId===candidate.id);
+        const cs = scoresByCand.get(candidate.id) || [];
         if (cs.length) { grandTotal = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight).reduce((a,b)=>a+b,0)/cs.length; grandCount=1; }
       }
       return { candidate, average: grandCount>0 ? grandTotal/grandCount : 0, byPassage };
