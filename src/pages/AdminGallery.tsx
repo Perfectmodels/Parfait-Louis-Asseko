@@ -169,7 +169,8 @@ const AlbumModal: React.FC<AlbumModalProps> = ({ initial, onClose, onSave }) => 
                         <span className="text-[9px] text-white/30 px-1 truncate w-full text-center">{p.file.name}</span>
                       </div>}
                   <button type="button" onClick={() => removeFile(i)}
-                    className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    aria-label="Supprimer"
+                    className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold transition-opacity">
                     <XMarkIcon className="w-5 h-5 text-red-400" />
                   </button>
                   <span className="absolute bottom-1 left-1 text-[8px] font-black uppercase tracking-widest bg-black/70 text-pm-gold/70 px-1.5 py-0.5 rounded">
