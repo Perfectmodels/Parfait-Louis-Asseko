@@ -106,7 +106,19 @@ const Admin: React.FC = () => {
         if (!data) return;
         setProfileSaving(true);
         try {
-            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            let passwordToSave = profileForm.password;
+            // Only hash the password if it has changed from what was loaded
+            if (profileForm.password !== profile?.password && profileForm.password !== '') {
+                if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
+                    const msgUint8 = new TextEncoder().encode(profileForm.password);
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    passwordToSave = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                }
+            }
+
+            const updatedProfileForm = { ...profileForm, password: passwordToSave };
+            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...updatedProfileForm } });
             setEditingProfile(false);
         } catch (e) {
             console.error('Erreur sauvegarde profil:', e);
