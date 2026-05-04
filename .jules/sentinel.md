@@ -1,0 +1,4 @@
+## 2024-05-24 - Removed plaintext passwords for admin authentication
+**Vulnerability:** Admin passwords were hardcoded in plaintext (`admin2025`) in standard fallback hooks (`useRealtimeDB`) and logic checks (`Login.tsx`), and the `saveProfile` function saved updated admin passwords back to the database as plaintext.
+**Learning:** Transitioning to client-side hashing (`window.crypto.subtle.digest`) requires careful handling since the API is asynchronous. Pre-computing the hash before calling synchronous array methods (e.g. `Array.prototype.find`) prevents bugs where Promises resolve to truthy values rather than correctly evaluating password equality.
+**Prevention:** Avoid storing fallback secrets in plaintext in version control or standard code paths. Ensure password comparisons and modifications (especially within profile settings) utilize one-way hashes like SHA-256 and pre-compute hashes asynchronously before synchronous validation steps.
