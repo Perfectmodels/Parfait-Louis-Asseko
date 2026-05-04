@@ -1,0 +1,3 @@
+## 2025-05-04 - Icon-Only Button Accessibility Pattern
+**Learning:** Found a recurring pattern in the UI where icon-only buttons (like the Toast dismiss button, or Modal close buttons) lack `aria-label` attributes and explicit `focus-visible` outlines, making them invisible to screen readers and difficult to navigate via keyboard.
+**Action:** When adding or reviewing new icon-only interactive elements, ensure they always have an `aria-label` describing the action, and include Tailwind utility classes like `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50` to guarantee keyboard accessibility.
