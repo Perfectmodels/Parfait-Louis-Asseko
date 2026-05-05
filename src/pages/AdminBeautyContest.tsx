@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Trash2, Edit2, Save, X, Upload, Star, Users, Award, ChevronUp, Key, Copy, Eye, EyeOff, Layers, Shuffle, Flag, ChevronRight, CheckCircle } from 'lucide-react';
 import { rtdb } from '../firebase';
 import { ref, set, remove, update, onValue, push, get } from 'firebase/database';
@@ -547,8 +547,17 @@ export default function AdminBeautyContest() {
   };
 
   // ── Scoring (stage-scoped) ────────────────────────────────────────────────
+  const scoresMapByKeys = useMemo(() => {
+    const map = new Map<string, Score>();
+    for (const s of scores) {
+      map.set(`${s.juryId}-${s.candidateId}-${s.passageId}`, s);
+    }
+    return map;
+  }, [scores]);
+
   const getScore = (juryId:string, candidateId:string, passageId:string) =>
-    scores.find(s => s.juryId===juryId && s.candidateId===candidateId && s.passageId===passageId);
+    scoresMapByKeys.get(`${juryId}-${candidateId}-${passageId}`);
+
   const criteriaForPassage = (passageId:string) =>
     criteria.filter(c => !c.passageId || c.passageId===passageId);
   const handleSaveScore = async () => {

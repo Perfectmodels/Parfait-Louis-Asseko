@@ -1,0 +1,3 @@
+## 2025-05-18 - Nested Loop Array `.find` Performance Bottleneck
+**Learning:** Found an $O(N^3)$ rendering bottleneck in the deeply nested `Candidate x Passage x Jury` loop, where `getScore` heavily utilized `Array.prototype.find()` on an array of `Score`s inside each render iteration. The nested loops meant `.find()` iterated over all scores for every table cell rendered.
+**Action:** Always precompute a lookup dictionary using `useMemo` with `Map` and composite string keys (e.g., `${juryId}-${candidateId}-${passageId}`) *before* entering deeply nested render loops. This shifts expensive repeated array `.find()` operations to $O(1)$ lookups, significantly reducing UI render times for large datasets.
