@@ -1,0 +1,4 @@
+## 2025-05-06 - Hardcoded Admin Password & Insecure Auth Logic
+**Vulnerability:** A hardcoded plaintext password ("admin2025") was used in the seed data for the admin profile, and the login page compared passwords against this plaintext fallback. Admin passwords were also stored in plaintext when updating the profile.
+**Learning:** Hardcoding credentials creates an easily exploitable backdoor, especially when the authentication logic defaults to plaintext comparison when checking against standard fallback accounts or when new admin accounts are updated without hashing.
+**Prevention:** Always replace default passwords with their SHA-256 hashes before inserting into seed data. Always hash input passwords and compare against hashed stored values for high-privilege accounts. Ensure that updating a password hashes it before saving it to the database.
