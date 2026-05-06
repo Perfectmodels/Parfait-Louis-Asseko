@@ -97,7 +97,7 @@ const Admin: React.FC = () => {
             role: profile.role ?? '',
             avatarUrl: profile.avatarUrl ?? '',
             username: profile.username ?? '',
-            password: profile.password ?? '',
+            password: '', // Initialize password as empty so we don't display the hash
         });
         setEditingProfile(true);
     };
@@ -106,7 +106,24 @@ const Admin: React.FC = () => {
         if (!data) return;
         setProfileSaving(true);
         try {
-            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            let passwordToSave = data.adminProfile?.password || '';
+            // Only hash and save if a new password was provided
+            if (profileForm.password && profileForm.password.trim() !== '') {
+                const encoder = new TextEncoder();
+                const passwordData = encoder.encode(profileForm.password);
+                if (window.crypto && window.crypto.subtle) {
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', passwordData);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    passwordToSave = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                } else {
+                    passwordToSave = profileForm.password;
+                }
+            }
+
+            const updatedProfileForm = { ...profileForm };
+            delete updatedProfileForm.password;
+
+            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...updatedProfileForm, password: passwordToSave } });
             setEditingProfile(false);
         } catch (e) {
             console.error('Erreur sauvegarde profil:', e);
