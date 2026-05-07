@@ -77,19 +77,43 @@ const Login: React.FC = () => {
     }
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
+
+    // Hash the entered password asynchronously
+    let hashedPassword = password;
+    if (window.crypto && window.crypto.subtle) {
+      try {
+        const msgUint8 = new TextEncoder().encode(password);
+        const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      } catch (e) {
+        console.error('Erreur lors du hashage du mot de passe:', e);
+      }
+    }
+
+    const fallbackAdminProfile = { name: 'Admin Principal', username: 'admin', password: '0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0', id: 'admin', email: 'contact@perfectmodels.ga' };
+    const adminProfile = data.adminProfile || fallbackAdminProfile;
+
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: adminProfile, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    const foundUser = users.find(u => {
+        const isMatchUsername = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) ||
+                                u.user.name.toLowerCase() === normalizedUsername;
+
+        // Backward compatibility: If the stored password looks like a SHA-256 hash (64 chars), compare with the hashed input.
+        // Otherwise (existing users with plaintext passwords), compare with the plaintext input.
+        const storedPasswordLength = u.user.password?.length || 0;
+        const isMatchPassword = u.type === 'admin'
+            ? (storedPasswordLength === 64 ? u.user.password === hashedPassword : u.user.password === password)
+            : u.user.password === password;
+
+        return isMatchUsername && isMatchPassword;
+    });
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
