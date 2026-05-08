@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeftIcon, TrashIcon, PlusIcon, PhotoIcon,
@@ -227,14 +227,44 @@ const AdminGallery: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [showCreateAlbumFromSelection, setShowCreateAlbumFromSelection] = useState(false);
 
-  const filtered = activeTab === 'Tout' 
-    ? gallery 
-    : activeTab === 'Sans Album'
-      ? gallery.filter(i => !i.albumId)
-      : gallery.filter(i => i.category === activeTab);
+  // Maps and Counts using useMemo for performance optimization
+  const { albumsMap, albumCountsMap, categoryCountsMap, noAlbumCount } = useMemo(() => {
+    const aMap = new Map<string, GalleryAlbum>();
+    albums.forEach(a => aMap.set(a.id, a));
 
-  // Trouver l'album d'un item
-  const getAlbum = (item: GalleryItem) => albums.find(a => a.id === item.albumId);
+    const aCounts = new Map<string, number>();
+    const cCounts = new Map<string, number>();
+    let noAlbum = 0;
+
+    gallery.forEach(item => {
+      // Counts for albums
+      if (item.albumId) {
+        aCounts.set(item.albumId, (aCounts.get(item.albumId) || 0) + 1);
+      } else {
+        noAlbum++;
+      }
+
+      // Counts for categories
+      if (item.category) {
+        cCounts.set(item.category, (cCounts.get(item.category) || 0) + 1);
+      }
+    });
+
+    return {
+      albumsMap: aMap,
+      albumCountsMap: aCounts,
+      categoryCountsMap: cCounts,
+      noAlbumCount: noAlbum
+    };
+  }, [albums, gallery]);
+
+  const filtered = useMemo(() => {
+    return activeTab === 'Tout'
+      ? gallery
+      : activeTab === 'Sans Album'
+        ? gallery.filter(i => !i.albumId)
+        : gallery.filter(i => i.category === activeTab);
+  }, [gallery, activeTab]);
 
   const handleAlbumSave = async (name: string, description: string, category: GalleryCategory, files: File[]) => {
     setShowModal(false);
@@ -459,7 +489,7 @@ const AdminGallery: React.FC = () => {
             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Albums ({albums.length})</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {albums.map(album => {
-                const count = gallery.filter(i => i.albumId === album.id).length;
+                const count = albumCountsMap.get(album.id) || 0;
                 return (
                   <div key={album.id} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/5 hover:border-pm-gold/20 transition-all">
                     {/* Cover */}
@@ -530,8 +560,8 @@ const AdminGallery: React.FC = () => {
                 {tab === 'Tout' 
                   ? gallery.length 
                   : tab === 'Sans Album'
-                    ? gallery.filter(i => !i.albumId).length
-                    : gallery.filter(i => i.category === tab).length}
+                    ? noAlbumCount
+                    : (categoryCountsMap.get(tab as string) || 0)}
               </span>
             </button>
           ))}
@@ -549,7 +579,7 @@ const AdminGallery: React.FC = () => {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {filtered.map(item => {
-              const album = getAlbum(item);
+              const album = item.albumId ? albumsMap.get(item.albumId) : undefined;
               const isSelected = selectedItems.has(item.id);
               return (
                 <div key={item.id} className="group relative bg-white/5 rounded-sm overflow-hidden">
