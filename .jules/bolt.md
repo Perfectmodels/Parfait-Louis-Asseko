@@ -1,0 +1,3 @@
+## 2024-05-18 - ModelCard Optimization
+**Learning:** React.memo is effective in this codebase for components like ModelCard which are rendered in large lists (e.g., Models.tsx) to prevent deep re-renders when parent states like search/filter change. Explicit React.FC type annotations conflict with React.memo's return type (React.NamedExoticComponent) and must be removed to avoid tsc --noEmit CI failures.
+**Action:** Always strip explicit React.FC typing when wrapping a component in React.memo to ensure type safety and CI compatibility.
