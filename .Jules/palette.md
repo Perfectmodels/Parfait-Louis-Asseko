@@ -1,0 +1,3 @@
+## 2025-04-06 - Explicit Focus States for Floating UI Elements
+**Learning:** Floating utility buttons (like Back to Top or AI Assistants) that act as interactive elements or links often lack proper keyboard focus visibility, particularly when they use custom shapes or complex grouping in Tailwind CSS. Relying on default focus outlines can cause awkward square rings around circular elements.
+**Action:** Always add explicit `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color] focus-visible:ring-offset-2` styles to custom floating buttons. Ensure the bounding radius class (e.g., `rounded-full`) is applied directly to the interactive parent element (like `<button>` or `<Link>`) so the focus ring properly follows the element's visual contour.
