@@ -64,6 +64,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
                 requestedModels: formData.requestedModels,
                 startDate: formData.startDate || undefined,
                 endDate: formData.endDate || undefined,
+                ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
               }),
               sendBookingNotificationToAdmin({
                 clientName: formData.clientName,
@@ -73,7 +74,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
                 startDate: formData.startDate || undefined,
                 endDate: formData.endDate || undefined,
                 message: formData.message,
-                notificationEmail: 'contact@perfectmodels.ga',
+                notificationEmail: data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga',
+                ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
               }),
             ]).catch(() => {});
 

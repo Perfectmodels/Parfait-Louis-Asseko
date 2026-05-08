@@ -83,8 +83,8 @@ const Contact: React.FC = () => {
 
       const notifEmail = data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga';
       await Promise.allSettled([
-        sendContactNotificationToAdmin({ name: msg.name, email: msg.email, subject: finalSubject, message: msg.message, notificationEmail: notifEmail }),
-        sendContactConfirmationToUser({ name: msg.name, email: msg.email, subject: finalSubject }),
+        sendContactNotificationToAdmin({ name: msg.name, email: msg.email, subject: finalSubject, message: msg.message, notificationEmail: notifEmail, ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks } }),
+        sendContactConfirmationToUser({ name: msg.name, email: msg.email, subject: finalSubject, ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks } }),
       ]);
 
       setStatus('success');

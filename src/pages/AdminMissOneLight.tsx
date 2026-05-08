@@ -48,7 +48,9 @@ const EMPTY_FORM = {
 
 const RTDB_PATH = 'missOneLight/candidates';
 
+import { useData } from '../contexts/DataContext';
 export default function AdminMissOneLight() {
+  const { data } = useData();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -259,6 +261,7 @@ export default function AdminMissOneLight() {
           bonusVotes: vote.bonusVotes ?? 0,
           totalVotes: credited,
           txRef: vote.txRef,
+          ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
         }).catch(() => {});
         
         success++;
@@ -621,6 +624,7 @@ export default function AdminMissOneLight() {
         bonusVotes: pending.bonusVotes ?? 0,
         totalVotes: credited,
         txRef: pending.txRef,
+        ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
       }).catch(() => {});
       
       showToast(`✅ ${credited} vote(s) credites pour ${pending.candidateName}`, 'success');

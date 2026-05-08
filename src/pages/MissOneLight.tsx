@@ -7,6 +7,7 @@ import Top5Slide from '../components/MissOneLight/Top5Slide';
 import CandidatesSlide from '../components/MissOneLight/CandidatesSlide';
 import SEO from '../components/SEO';
 import { sendVoteConfirmation } from '../utils/brevoService';
+import { useData } from '../contexts/DataContext';
 
 const WHATSAPP_NUMBER = '24174799319';
 const PRICE_PER_VOTE = 100;
@@ -153,6 +154,7 @@ interface Candidate {
 interface VoteForm { name: string; email: string; phone: string; votes: number; }
 
 export default function MissOneLight() {
+  const { data: siteData } = useData();
   const [rawCandidates, setRawCandidates] = useState<Candidate[]>([]);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -353,6 +355,7 @@ export default function MissOneLight() {
         candidateName: selectedCandidate.name,
         votes,
         txRef,
+        ctx: { contactInfo: siteData?.contactInfo, socialLinks: siteData?.socialLinks }
       }).catch(() => {});
 
       // 2. Open WhatsApp with pre-filled message (slight delay so PDF triggers first)

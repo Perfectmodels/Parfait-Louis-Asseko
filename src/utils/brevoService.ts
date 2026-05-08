@@ -4,11 +4,27 @@ const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 const BREVO_API_KEY = import.meta.env.VITE_BREVO_API_KEY as string;
 const SENDER = { name: 'Perfect Models Management', email: 'contact@perfectmodels.ga' };
 
+export interface MailContext {
+  contactInfo?: {
+    email?: string;
+    notificationEmail?: string;
+    phone?: string;
+    address?: string;
+    [key: string]: any;
+  };
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+    [key: string]: any;
+  };
+}
+
 // ─── Logo SVG inline (branding email) ────────────────────────────────────────
 const LOGO_URL = 'https://perfectmodels.ga/logo.svg';
 
 // ─── Base template ────────────────────────────────────────────────────────────
-export const buildEmailTemplate = (content: string, preheader = ''): string => `
+export const buildEmailTemplate = (content: string, preheader = '', ctx?: MailContext): string => `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -45,15 +61,18 @@ export const buildEmailTemplate = (content: string, preheader = ''): string => `
           <td style="background:#050505;border:1px solid #c9a84c22;border-top:none;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center">
             <p style="margin:0 0 8px;color:#ffffff20;font-size:11px;letter-spacing:3px;text-transform:uppercase">Suivez-nous</p>
             <p style="margin:0 0 16px">
-              <a href="https://facebook.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">Facebook</a>
+              ${ctx?.socialLinks?.facebook ? `<a href="${ctx.socialLinks.facebook}" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">Facebook</a>` : '<a href="https://facebook.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">Facebook</a>'}
               <span style="color:#ffffff20">·</span>
-              <a href="https://instagram.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">Instagram</a>
+              ${ctx?.socialLinks?.instagram ? `<a href="${ctx.socialLinks.instagram}" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">Instagram</a>` : '<a href="https://instagram.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">Instagram</a>'}
               <span style="color:#ffffff20">·</span>
-              <a href="https://youtube.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">YouTube</a>
+              ${ctx?.socialLinks?.youtube ? `<a href="${ctx.socialLinks.youtube}" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">YouTube</a>` : '<a href="https://youtube.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">YouTube</a>'}
             </p>
             <p style="margin:0;color:#ffffff20;font-size:10px">
-              © ${new Date().getFullYear()} Perfect Models Management · Libreville, Gabon<br/>
-              <a href="https://perfectmodels.ga" style="color:#c9a84c44;text-decoration:none">perfectmodels.ga</a>
+              © ${new Date().getFullYear()} Perfect Models Management · ${ctx?.contactInfo?.address || 'Libreville, Gabon'}
+              ${ctx?.contactInfo?.phone ? `<br/>${ctx.contactInfo.phone}` : ''}
+              ${ctx?.contactInfo?.email ? `<br/><a href="mailto:${ctx.contactInfo.email}" style="color:#c9a84c44;text-decoration:none">${ctx.contactInfo.email}</a>` : ''}
+              <br/>
+              <a href="https://perfectmodels.ga" style="color:#c9a84c44;text-decoration:none;margin-top:4px;display:inline-block">perfectmodels.ga</a>
             </p>
           </td>
         </tr>
@@ -71,9 +90,11 @@ interface SendOptions {
   htmlContent: string;
   replyTo?: { email: string; name?: string };
   apiKey?: string; // kept for backward compat, ignored
+  senderEmail?: string;
 }
 
 export const sendEmail = async (opts: SendOptions): Promise<void> => {
+  const finalSender = { name: SENDER.name, email: opts.senderEmail || SENDER.email };
   if (!BREVO_API_KEY) throw new Error('VITE_BREVO_API_KEY non configurée.');
 
   const res = await fetch(BREVO_API_URL, {
@@ -83,7 +104,7 @@ export const sendEmail = async (opts: SendOptions): Promise<void> => {
       'api-key': BREVO_API_KEY,
     },
     body: JSON.stringify({
-      sender: SENDER,
+      sender: finalSender,
       to: opts.to,
       subject: opts.subject,
       htmlContent: opts.htmlContent,
@@ -101,10 +122,11 @@ export const sendEmail = async (opts: SendOptions): Promise<void> => {
 
 /** Confirmation de réception au visiteur */
 export const sendContactConfirmationToUser = (p: {
-  name: string; email: string; subject: string;
+  name: string; email: string; subject: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.email, name: p.name }],
+    senderEmail: p.ctx?.contactInfo?.email || p.ctx?.contactInfo?.notificationEmail || SENDER.email,
     subject: 'Nous avons bien reçu votre message — Perfect Models Management',
     htmlContent: buildEmailTemplate(`
       <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.name}</strong>,</p>
@@ -118,15 +140,16 @@ export const sendContactConfirmationToUser = (p: {
         <a href="https://perfectmodels.ga" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Visiter le site</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
-    `, `Votre message a bien été reçu — nous vous répondons sous 48h`),
+    `, `Votre message a bien été reçu — nous vous répondons sous 48h`, p.ctx),
   });
 
 /** Notification admin d'un nouveau message de contact */
 export const sendContactNotificationToAdmin = (p: {
-  name: string; email: string; subject: string; message: string; notificationEmail: string;
+  name: string; email: string; subject: string; message: string; notificationEmail: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    senderEmail: p.ctx?.contactInfo?.email || SENDER.email,
     replyTo: { email: p.email, name: p.name },
     subject: `[Contact PMM] ${p.subject}`,
     htmlContent: buildEmailTemplate(`
@@ -141,22 +164,23 @@ export const sendContactNotificationToAdmin = (p: {
       <p style="color:#f5f0e8aa;font-size:11px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">Message</p>
       <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;color:#f5f0e8;line-height:1.8;white-space:pre-wrap">${p.message}</div>
       <p style="color:#ffffff30;font-size:11px;text-align:center;margin-top:24px">Répondez directement à cet email pour contacter ${p.name}</p>
-    `, `Nouveau message de ${p.name}`),
+    `, `Nouveau message de ${p.name}`, p.ctx),
   });
 
 /** Réponse admin à un message de contact */
 export const sendReplyToContact = (p: {
   toName: string; toEmail: string; originalSubject: string;
-  replyBody: string; adminName?: string;
+  replyBody: string; adminName?: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.toEmail, name: p.toName }],
+    senderEmail: p.ctx?.contactInfo?.email || SENDER.email,
     subject: `Re: ${p.originalSubject}`,
     htmlContent: buildEmailTemplate(`
       <p style="color:#f5f0e8;font-size:16px;margin:0 0 20px">Bonjour <strong style="color:#c9a84c">${p.toName}</strong>,</p>
       <div style="color:#f5f0e8cc;line-height:1.8;white-space:pre-wrap;margin-bottom:32px">${p.replyBody}</div>
       <p style="color:#f5f0e8cc;margin:0">Cordialement,<br/><strong style="color:#c9a84c">${p.adminName || "L'équipe Perfect Models Management"}</strong></p>
-    `, p.replyBody.substring(0, 80)),
+    `, p.replyBody.substring(0, 80), p.ctx),
   });
 
 /** Email générique / newsletter — envoi par lots pour éviter les blocages Brevo */
@@ -168,6 +192,7 @@ export const sendBulkEmail = async (p: {
   batchSize?: number;
   delayMs?: number;
   onProgress?: (sent: number, total: number) => void;
+  ctx?: MailContext;
 }): Promise<void> => {
   const batchSize = p.batchSize ?? 25;
   const delayMs = p.delayMs ?? 2000; // 2s entre chaque lot
@@ -180,7 +205,8 @@ export const sendBulkEmail = async (p: {
       to: batch,
       subject: p.subject,
       apiKey: p.apiKey,
-      htmlContent: buildEmailTemplate(p.bodyHtml),
+      senderEmail: p.ctx?.contactInfo?.email || SENDER.email,
+      htmlContent: buildEmailTemplate(p.bodyHtml, '', p.ctx),
     });
     sent += batch.length;
     p.onProgress?.(sent, total);
@@ -218,9 +244,11 @@ export const sendVoteConfirmation = (p: {
   candidateName: string;
   votes: number;
   txRef: string;
+  ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.email }],
+    senderEmail: p.ctx?.contactInfo?.email || SENDER.email,
     subject: `Vote Miss One Light — Réf. ${p.txRef}`,
     htmlContent: buildEmailTemplate(`
       <h2 style="color:#c9a84c;font-family:Georgia,serif;font-size:24px;margin:0 0 16px">✅ Demande de vote reçue !</h2>
@@ -245,7 +273,7 @@ export const sendVoteConfirmation = (p: {
         Après paiement, envoyez la confirmation sur WhatsApp au <strong>+241 74 79 93 19</strong>.<br/>
         L'admin validera vos votes sous 24h.
       </p>
-    `, `Vote Miss One Light — ${p.votes} votes pour ${p.candidateName}`),
+    `, `Vote Miss One Light — ${p.votes} votes pour ${p.candidateName}`, p.ctx),
   });
 
 /** Email envoyé au votant UNIQUEMENT après validation par l'admin */
@@ -256,9 +284,11 @@ export const sendVoteValidatedEmail = (p: {
   bonusVotes: number;
   totalVotes: number;
   txRef: string;
+  ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.email }],
+    senderEmail: p.ctx?.contactInfo?.email || SENDER.email,
     subject: `✅ Vos votes sont activés — Miss One Light`,
     htmlContent: buildEmailTemplate(`
       <h2 style="color:#009E60;font-family:Georgia,serif;font-size:24px;margin:0 0 16px">🎉 Vos votes sont activés !</h2>
@@ -280,17 +310,18 @@ export const sendVoteValidatedEmail = (p: {
       <p style="color:#f5f0e8aa;font-size:13px;line-height:1.7;margin:0;text-align:center">
         Merci pour votre soutien à <strong style="color:#c9a84c">${p.candidateName}</strong> 🌟
       </p>
-    `, `Vos ${p.totalVotes} votes pour ${p.candidateName} sont activés !`),
+    `, `Vos ${p.totalVotes} votes pour ${p.candidateName} sont activés !`, p.ctx),
   });
 
 // ─── Casting Application ──────────────────────────────────────────────────────
 
 /** Confirmation au candidat après soumission du formulaire casting */
 export const sendCastingConfirmationToUser = (p: {
-  firstName: string; lastName: string; email: string; city: string;
+  firstName: string; lastName: string; email: string; city: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.email, name: `${p.firstName} ${p.lastName}` }],
+    senderEmail: p.ctx?.contactInfo?.email || p.ctx?.contactInfo?.notificationEmail || SENDER.email,
     subject: 'Candidature reçue — Perfect Models Management',
     htmlContent: buildEmailTemplate(`
       <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.firstName}</strong>,</p>
@@ -304,17 +335,18 @@ export const sendCastingConfirmationToUser = (p: {
         <a href="https://perfectmodels.ga/casting" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Voir le casting</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
-    `, `Votre candidature casting a bien été reçue`),
+    `, `Votre candidature casting a bien été reçue`, p.ctx),
   });
 
 /** Notification admin d'une nouvelle candidature casting */
 export const sendCastingNotificationToAdmin = (p: {
   firstName: string; lastName: string; email: string; phone: string;
   city: string; gender: string; height: string; experience: string;
-  instagram?: string; notificationEmail: string;
+  instagram?: string; notificationEmail: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    senderEmail: p.ctx?.contactInfo?.email || SENDER.email,
     replyTo: { email: p.email, name: `${p.firstName} ${p.lastName}` },
     subject: `[Casting PMM] ${p.firstName} ${p.lastName} — ${p.city}`,
     htmlContent: buildEmailTemplate(`
@@ -335,17 +367,18 @@ export const sendCastingNotificationToAdmin = (p: {
       <div style="text-align:center">
         <a href="https://perfectmodels.ga/admin/casting-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
       </div>
-    `, `Nouvelle candidature de ${p.firstName} ${p.lastName}`),
+    `, `Nouvelle candidature de ${p.firstName} ${p.lastName}`, p.ctx),
   });
 
 // ─── Fashion Day Application ──────────────────────────────────────────────────
 
 /** Confirmation au candidat après soumission candidature Fashion Day */
 export const sendFashionDayConfirmationToUser = (p: {
-  name: string; email: string; role: string;
+  name: string; email: string; role: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.email, name: p.name }],
+    senderEmail: p.ctx?.contactInfo?.email || p.ctx?.contactInfo?.notificationEmail || SENDER.email,
     subject: 'Candidature Perfect Fashion Day reçue — PMM',
     htmlContent: buildEmailTemplate(`
       <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.name}</strong>,</p>
@@ -359,15 +392,16 @@ export const sendFashionDayConfirmationToUser = (p: {
         <a href="https://perfectmodels.ga/fashion-day" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">En savoir plus</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
-    `, `Votre candidature Perfect Fashion Day a bien été reçue`),
+    `, `Votre candidature Perfect Fashion Day a bien été reçue`, p.ctx),
   });
 
 /** Notification admin d'une nouvelle candidature Fashion Day */
 export const sendFashionDayNotificationToAdmin = (p: {
-  name: string; email: string; phone: string; role: string; message: string; notificationEmail: string;
+  name: string; email: string; phone: string; role: string; message: string; notificationEmail: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    senderEmail: p.ctx?.contactInfo?.email || SENDER.email,
     replyTo: { email: p.email, name: p.name },
     subject: `[Fashion Day] ${p.name} — ${p.role}`,
     htmlContent: buildEmailTemplate(`
@@ -386,7 +420,7 @@ export const sendFashionDayNotificationToAdmin = (p: {
       <div style="text-align:center;margin-top:24px">
         <a href="https://perfectmodels.ga/admin/fashion-day-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
       </div>
-    `, `Nouvelle candidature Fashion Day de ${p.name}`),
+    `, `Nouvelle candidature Fashion Day de ${p.name}`, p.ctx),
   });
 
 // ─── Booking Request ──────────────────────────────────────────────────────────
@@ -394,10 +428,11 @@ export const sendFashionDayNotificationToAdmin = (p: {
 /** Confirmation au client après soumission d'une demande de booking */
 export const sendBookingConfirmationToUser = (p: {
   clientName: string; clientEmail: string; requestedModels: string;
-  startDate?: string; endDate?: string;
+  startDate?: string; endDate?: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.clientEmail, name: p.clientName }],
+    senderEmail: p.ctx?.contactInfo?.email || p.ctx?.contactInfo?.notificationEmail || SENDER.email,
     subject: 'Demande de booking reçue — Perfect Models Management',
     htmlContent: buildEmailTemplate(`
       <p style="color:#f5f0e8;font-size:16px;margin:0 0 16px">Bonjour <strong style="color:#c9a84c">${p.clientName}</strong>,</p>
@@ -412,17 +447,18 @@ export const sendBookingConfirmationToUser = (p: {
         </table>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
-    `, `Votre demande de booking a bien été reçue`),
+    `, `Votre demande de booking a bien été reçue`, p.ctx),
   });
 
 /** Notification admin d'une nouvelle demande de booking */
 export const sendBookingNotificationToAdmin = (p: {
   clientName: string; clientEmail: string; clientCompany?: string;
   requestedModels: string; startDate?: string; endDate?: string;
-  message: string; notificationEmail: string;
+  message: string; notificationEmail: string; ctx?: MailContext;
 }) =>
   sendEmail({
     to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    senderEmail: p.ctx?.contactInfo?.email || SENDER.email,
     replyTo: { email: p.clientEmail, name: p.clientName },
     subject: `[Booking PMM] ${p.clientName} — ${p.requestedModels}`,
     htmlContent: buildEmailTemplate(`
@@ -443,5 +479,5 @@ export const sendBookingNotificationToAdmin = (p: {
       <div style="text-align:center;margin-top:24px">
         <a href="https://perfectmodels.ga/admin/bookings" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
       </div>
-    `, `Nouvelle demande de booking de ${p.clientName}`),
+    `, `Nouvelle demande de booking de ${p.clientName}`, p.ctx),
   });

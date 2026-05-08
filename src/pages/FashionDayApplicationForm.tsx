@@ -58,6 +58,7 @@ const FashionDayApplicationForm: React.FC = () => {
                 name: formData.name,
                 email: formData.email,
                 role: formData.role,
+                ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
               }),
               sendFashionDayNotificationToAdmin({
                 name: formData.name,
@@ -65,7 +66,8 @@ const FashionDayApplicationForm: React.FC = () => {
                 phone: formData.phone,
                 role: formData.role,
                 message: formData.message,
-                notificationEmail: 'contact@perfectmodels.ga',
+                notificationEmail: data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga',
+                ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
               }),
             ]).catch(() => {});
 
