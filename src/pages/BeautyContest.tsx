@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { rtdb } from '../firebase';
 import { ref, onValue } from 'firebase/database';
 import { Trophy, Users, Award, Flag } from 'lucide-react';
@@ -48,26 +48,51 @@ function ContestView({ contest }: { contest: Contest }) {
     return () => u.forEach(f=>f());
   }, [contest.id, activeStage]);
 
+  const scoresByCandidate = useMemo(() => {
+    const map = new Map<string, Score[]>();
+    for (const s of scores) {
+      const arr = map.get(s.candidateId);
+      if (arr) arr.push(s);
+      else map.set(s.candidateId, [s]);
+    }
+    return map;
+  }, [scores]);
+
+  const candidateAvgs = useMemo(() => {
+    const map = new Map<string, number | null>();
+    const totalWeight = criteria.reduce((s,c)=>s+c.weight,0) || 1;
+    for (const c of candidates) {
+      const cs = scoresByCandidate.get(c.id) || [];
+      if (!cs.length || !criteria.length) {
+        map.set(c.id, null);
+        continue;
+      }
+      const juryAvgs = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight);
+      const avg = juryAvgs.reduce((a,b)=>a+b,0)/juryAvgs.length;
+      map.set(c.id, avg);
+    }
+    return map;
+  }, [candidates, scoresByCandidate, criteria]);
+
   // Compute average for a candidate — aggregate across all jury scores, anonymised
   const getAvg = (candidateId: string): number | null => {
-    const cs = scores.filter(s => s.candidateId === candidateId);
-    if (!cs.length || !criteria.length) return null;
-    const totalWeight = criteria.reduce((s,c)=>s+c.weight,0) || 1;
-    const juryAvgs = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight);
-    return juryAvgs.reduce((a,b)=>a+b,0)/juryAvgs.length;
+    return candidateAvgs.get(candidateId) ?? null;
   };
 
   // Per-criteria average (anonymised — no jury names)
   const getCriteriaAvg = (candidateId: string, criteriaId: string): number | null => {
-    const vals = scores.filter(s=>s.candidateId===candidateId).map(s=>s.scores[criteriaId]??0);
+    const cs = scoresByCandidate.get(candidateId) || [];
+    const vals = cs.map(s=>s.scores[criteriaId]??0);
     return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
   };
 
-  const ranked = [...candidates].sort((a,b) => {
-    const avgA = getAvg(a.id) ?? -1;
-    const avgB = getAvg(b.id) ?? -1;
-    return avgB - avgA;
-  });
+  const ranked = useMemo(() => {
+    return [...candidates].sort((a,b) => {
+      const avgA = getAvg(a.id) ?? -1;
+      const avgB = getAvg(b.id) ?? -1;
+      return avgB - avgA;
+    });
+  }, [candidates, candidateAvgs]);
 
   const hasScores = scores.length > 0 && criteria.length > 0;
   const currentStageIdx = STAGE_ORDER.indexOf(contest.currentStage || 'preselection');
@@ -141,7 +166,7 @@ function ContestView({ contest }: { contest: Contest }) {
                   {passages.length > 0 && hasScores && (
                     <div className='flex flex-wrap gap-x-4 gap-y-1 mt-1'>
                       {passages.map(p => {
-                        const passageScores = scores.filter(s=>s.candidateId===c.id&&s.passageId===p.id);
+                        const passageScores = (scoresByCandidate.get(c.id) || []).filter(s=>s.passageId===p.id);
                         if (!passageScores.length) return null;
                         const crits = criteria.filter(cr=>cr.passageId===p.id||!cr.passageId);
                         const tw = crits.reduce((s,cr)=>s+cr.weight,0)||1;
@@ -156,8 +181,8 @@ function ContestView({ contest }: { contest: Contest }) {
                     <div>
                       <p className={`text-3xl font-black ${i===0?'text-yellow-400':i===1?'text-gray-300':i===2?'text-amber-600':'text-white'}`}>{avg.toFixed(2)}</p>
                       <p className='text-white/30 text-xs'>/10</p>
-                      {scores.filter(s=>s.candidateId===c.id).length > 0 && (
-                        <p className='text-white/20 text-[10px] mt-0.5'>{scores.filter(s=>s.candidateId===c.id).length} éval.</p>
+                      {(scoresByCandidate.get(c.id) || []).length > 0 && (
+                        <p className='text-white/20 text-[10px] mt-0.5'>{(scoresByCandidate.get(c.id) || []).length} éval.</p>
                       )}
                     </div>
                   ) : (
