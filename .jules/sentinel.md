@@ -1,0 +1,4 @@
+## 2025-02-18 - Remove Hardcoded Admin Password
+**Vulnerability:** Hardcoded admin password ('admin2025') found in `src/pages/Login.tsx` and `src/hooks/useRealtimeDB.tsx`.
+**Learning:** This is a critical security vulnerability that exposed the main admin account's credentials. It probably existed because the application uses a hardcoded fallback user for the admin profile in the application state context. The Vite `import.meta.env` system was not fully utilized for authentication logic at login or state initialization.
+**Prevention:** Make use of Vite's environment variables (`import.meta.env.VITE_...`) mapped via a defined Type (`src/vite-env.d.ts`). Enforce ESLint rules preventing hardcoded credentials (like `eslint-plugin-security`). Next time, ensure sensitive default properties use `import.meta.env` configuration properly cast.
