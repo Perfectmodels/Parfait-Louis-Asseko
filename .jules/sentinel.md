@@ -1,0 +1,4 @@
+## 2024-05-08 - Fixed DOM-based XSS in ArticleDetail
+**Vulnerability:** DOM-based Cross-Site Scripting (XSS) in `src/pages/ArticleDetail.tsx`.
+**Learning:** `generateArticleHtml` was generating an entire HTML document as a string and using it in `printWindow.document.write(htmlContent)`, directly interpolating user-supplied dynamic values (like `title`, `author`, `category`, and `content`) without HTML escaping, opening the app up to XSS attacks (e.g. if an article author uses `<script>`).
+**Prevention:** Implement and use an `escapeHtml` utility in `src/utils/sanitize.ts` for all user-supplied content embedded directly in generated raw HTML strings before outputting to the DOM.
