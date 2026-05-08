@@ -233,8 +233,25 @@ const AdminGallery: React.FC = () => {
       ? gallery.filter(i => !i.albumId)
       : gallery.filter(i => i.category === activeTab);
 
-  // Trouver l'album d'un item
-  const getAlbum = (item: GalleryItem) => albums.find(a => a.id === item.albumId);
+  // ⚡ Bolt: Precompute album map for O(1) lookups instead of O(N) .find() in render loop
+  const albumsMap = useMemo(() => {
+    const map: Record<string, GalleryAlbum> = {};
+    for (const album of albums) {
+      map[album.id] = album;
+    }
+    return map;
+  }, [albums]);
+
+  // ⚡ Bolt: Precompute item counts per album for O(1) lookups instead of O(M) .filter() in render loop
+  const albumCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const item of gallery) {
+      if (item.albumId) {
+        counts[item.albumId] = (counts[item.albumId] || 0) + 1;
+      }
+    }
+    return counts;
+  }, [gallery]);
 
   const handleAlbumSave = async (name: string, description: string, category: GalleryCategory, files: File[]) => {
     setShowModal(false);
@@ -459,7 +476,7 @@ const AdminGallery: React.FC = () => {
             <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3">Albums ({albums.length})</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {albums.map(album => {
-                const count = gallery.filter(i => i.albumId === album.id).length;
+                const count = albumCounts[album.id] || 0;
                 return (
                   <div key={album.id} className="group relative bg-white/5 rounded-xl overflow-hidden border border-white/5 hover:border-pm-gold/20 transition-all">
                     {/* Cover */}
@@ -549,7 +566,7 @@ const AdminGallery: React.FC = () => {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {filtered.map(item => {
-              const album = getAlbum(item);
+              const album = item.albumId ? albumsMap[item.albumId] : undefined;
               const isSelected = selectedItems.has(item.id);
               return (
                 <div key={item.id} className="group relative bg-white/5 rounded-sm overflow-hidden">
