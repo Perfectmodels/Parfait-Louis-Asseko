@@ -1,0 +1,3 @@
+## 2024-05-24 - Memoizing repeatedly rendered components
+**Learning:** In a heavily-animated, image-heavy list application like Perfect Models Management (especially on `Models.tsx` and `Home.tsx`), rendering many `ModelCard` components synchronously blocks the main thread when parent components re-render (e.g. from search/filter state changes).
+**Action:** Always use `React.memo()` on leaf components rendered inside lists (like `<ModelCard />`) to ensure shallow prop comparison prevents unnecessary re-renders. When doing so with TypeScript `React.FC` types, remove the `React.FC` wrapper to avoid TypeScript `tsc --noEmit` CI conflicts with `React.NamedExoticComponent` returned by `React.memo()`.
