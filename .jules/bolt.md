@@ -1,0 +1,3 @@
+## 2025-05-09 - O(N³) Rendering Bottlenecks with deeply nested array searches
+**Learning:** In heavily nested rendering loops (e.g., Juries × Passages × Candidates), using `Array.prototype.find()` inside the innermost loop causes an $O(N^3)$ performance bottleneck when iterating over relations like `scores` array to match specific pairs or triplets.
+**Action:** Always precompute `Map` or nested `Record` lookup dictionaries using `useMemo` before entering expensive rendering loops to change $O(N)$ operations into $O(1)$ dictionary lookups, resolving potential freezing in the UI during re-renders.
