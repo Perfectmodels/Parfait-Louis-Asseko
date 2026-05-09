@@ -78,18 +78,39 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: { name: data.adminProfile?.name || 'Admin Principal', username: data.adminProfile?.username || 'admin', password: data.adminProfile?.password || '$sha256$0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0', id: data.adminProfile?.id || 'admin' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    let foundUser = undefined;
+    for (const u of users) {
+        const matchName = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || u.user.name.toLowerCase() === normalizedUsername;
+        if (!matchName) continue;
+
+        let matchPassword = false;
+        if (u.user.password && u.user.password.startsWith('$sha256$')) {
+            if (window.crypto && window.crypto.subtle) {
+                const msgBuffer = new TextEncoder().encode(password);
+                const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                matchPassword = (u.user.password === `$sha256$${hashHex}`);
+            } else {
+                // If crypto is unavailable, we cannot verify the hash, fail safely
+                matchPassword = false;
+            }
+        } else {
+            // Fallback for non-hashed legacy passwords
+            matchPassword = (u.user.password === password);
+        }
+
+        if (matchPassword) {
+            foundUser = u;
+            break;
+        }
+    }
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
