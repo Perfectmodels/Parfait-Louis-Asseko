@@ -1,0 +1,3 @@
+## 2026-05-10 - Added focus-visible states to action buttons inside group-hover containers
+**Learning:** Found an accessibility anti-pattern where action buttons (like remove/edit) that only appear on mouse `group-hover:opacity-100` were invisible to keyboard users who navigate via `Tab`. This made file deletion and media management practically unusable for screen reader/keyboard users.
+**Action:** When using `opacity-0 group-hover:opacity-100` to hide actions until hovered, always pair it with `focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:outline-none` (or `focus-within:opacity-100` for wrapper divs) so that focusing elements inside via keyboard forces the container and element to become visible.
