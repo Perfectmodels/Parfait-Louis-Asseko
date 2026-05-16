@@ -1,0 +1,4 @@
+## 2024-05-24 - Hardcoded Admin Credential Replaced with SHA-256 Hash
+**Vulnerability:** A hardcoded plaintext admin password ("admin2025") was found in the initial database state (`src/hooks/useRealtimeDB.tsx`) and used as a fallback during the authentication flow (`src/pages/Login.tsx`).
+**Learning:** The application initialized its default state locally before connecting to Firebase. The default admin profile was populated directly with a plaintext password string, which would either be committed to the repo or persisted unencrypted in local storage/RTDB.
+**Prevention:** Always salt and hash default credentials (e.g., using `window.crypto.subtle.digest` or server-side bcrypt) before saving them to the database or providing them as fallbacks. Ensure authentication systems compare hashes securely and provide fallbacks to handle local non-secure contexts where Web Crypto might be unavailable.
