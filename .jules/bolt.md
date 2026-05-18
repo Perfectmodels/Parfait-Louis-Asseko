@@ -1,0 +1,3 @@
+## 2025-02-18 - Avoid O(N³) rendering bottlenecks via O(1) dictionary lookups
+**Learning:** In list-heavy or highly nested UI components (like Candidates x Passages x Juries in `AdminBeautyContest.tsx`), computing derived data repeatedly inside nested maps using `.find()` or `.filter()` arrays results in severe O(N³) time complexity which degrades rendering performance.
+**Action:** When building nested array renders, always precompute lookup dictionaries using `useMemo` with `Map` (often using composite string keys like `idA-idB` or `juryId-candidateId-passageId`) before the render loops. This shifts expensive array operations to O(1) lookups.
