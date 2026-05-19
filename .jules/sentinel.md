@@ -1,0 +1,4 @@
+## 2024-05-19 - Fix DOM-based XSS in Article PDF Generation
+**Vulnerability:** DOM-based XSS vulnerability during HTML generation for PDF creation due to unescaped user-supplied dynamic values (e.g., article titles, author names, category) being embedded directly in a raw HTML template via string interpolation.
+**Learning:** Raw HTML strings generated for document rendering (such as window.open().document.write() for PDF export) must be treated as execution contexts. Simply concatenating unsanitized content exposes the application to XSS attacks, even in hidden or generated elements.
+**Prevention:** Always use a robust HTML escaping function (`escapeHtml`) that explicitly replaces `<`, `>`, `&`, `"`, and `'` with their respective HTML entities before injecting any dynamic text into raw HTML generation templates.
