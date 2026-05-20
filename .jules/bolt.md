@@ -1,0 +1,3 @@
+## 2025-02-18 - AdminBeautyContest Render Bottleneck
+**Learning:** In complex tables like those displaying candidates, juries, and passages, invoking array operations like `.find()` and `.filter()` over a growing `scores` array within deeply nested `.map()` loops directly inside the render loop leads to an O(N³) or worse time complexity, causing serious UI lags or freezes during user interaction (e.g. typing or toggling selections).
+**Action:** Always pre-compute O(1) lookup dictionaries (such as `Map`s with composite string keys like `${juryId}-${candidateId}-${passageId}`) using `useMemo` before traversing nested lists to evaluate values for each cell, effectively bypassing repetitive high-complexity array lookups.

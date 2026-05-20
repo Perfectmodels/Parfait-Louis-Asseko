@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Trash2, Edit2, Save, X, Upload, Star, Users, Award, ChevronUp, Key, Copy, Eye, EyeOff, Layers, Shuffle, Flag, ChevronRight, CheckCircle } from 'lucide-react';
 import { rtdb } from '../firebase';
 import { ref, set, remove, update, onValue, push, get } from 'firebase/database';
@@ -547,8 +547,35 @@ export default function AdminBeautyContest() {
   };
 
   // ── Scoring (stage-scoped) ────────────────────────────────────────────────
+  const scoresDict = useMemo(() => {
+    const dict = new Map<string, Score>();
+    for (const s of scores) {
+      dict.set(`${s.juryId}-${s.candidateId}-${s.passageId}`, s);
+    }
+    return dict;
+  }, [scores]);
+
+  const scoresByCandidateAndPassage = useMemo(() => {
+    const dict = new Map<string, Score[]>();
+    for (const s of scores) {
+      const key = `${s.candidateId}-${s.passageId}`;
+      if (!dict.has(key)) dict.set(key, []);
+      dict.get(key)!.push(s);
+    }
+    return dict;
+  }, [scores]);
+
+  const scoresByCandidate = useMemo(() => {
+    const dict = new Map<string, Score[]>();
+    for (const s of scores) {
+      if (!dict.has(s.candidateId)) dict.set(s.candidateId, []);
+      dict.get(s.candidateId)!.push(s);
+    }
+    return dict;
+  }, [scores]);
+
   const getScore = (juryId:string, candidateId:string, passageId:string) =>
-    scores.find(s => s.juryId===juryId && s.candidateId===candidateId && s.passageId===passageId);
+    scoresDict.get(`${juryId}-${candidateId}-${passageId}`);
   const criteriaForPassage = (passageId:string) =>
     criteria.filter(c => !c.passageId || c.passageId===passageId);
   const handleSaveScore = async () => {
@@ -576,13 +603,13 @@ export default function AdminBeautyContest() {
       passages.forEach(p => {
         const crits = criteriaForPassage(p.id);
         const tw = crits.reduce((s,c) => s+c.weight, 0) || 1;
-        const ps = scores.filter(s => s.candidateId===candidate.id && s.passageId===p.id);
+        const ps = scoresByCandidateAndPassage.get(`${candidate.id}-${p.id}`) || [];
         if (!ps.length) return;
         const avg = ps.map(s => crits.reduce((sum,cr) => sum+(s.scores[cr.id]??0)*cr.weight, 0)/tw).reduce((a,b)=>a+b,0)/ps.length;
         byPassage[p.id] = avg; grandTotal += avg; grandCount++;
       });
       if (passages.length === 0) {
-        const cs = scores.filter(s => s.candidateId===candidate.id);
+        const cs = scoresByCandidate.get(candidate.id) || [];
         if (cs.length) { grandTotal = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight).reduce((a,b)=>a+b,0)/cs.length; grandCount=1; }
       }
       return { candidate, average: grandCount>0 ? grandTotal/grandCount : 0, byPassage };
