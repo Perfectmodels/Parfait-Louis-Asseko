@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { rtdb } from '../firebase';
 import { ref, onValue } from 'firebase/database';
 import { Trophy, Users, Award, Flag } from 'lucide-react';
@@ -48,9 +48,18 @@ function ContestView({ contest }: { contest: Contest }) {
     return () => u.forEach(f=>f());
   }, [contest.id, activeStage]);
 
+  const scoresByCandidate = useMemo(() => {
+    const dict = new Map<string, Score[]>();
+    for (const s of scores) {
+      if (!dict.has(s.candidateId)) dict.set(s.candidateId, []);
+      dict.get(s.candidateId)!.push(s);
+    }
+    return dict;
+  }, [scores]);
+
   // Compute average for a candidate — aggregate across all jury scores, anonymised
   const getAvg = (candidateId: string): number | null => {
-    const cs = scores.filter(s => s.candidateId === candidateId);
+    const cs = scoresByCandidate.get(candidateId) || [];
     if (!cs.length || !criteria.length) return null;
     const totalWeight = criteria.reduce((s,c)=>s+c.weight,0) || 1;
     const juryAvgs = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight);
@@ -59,7 +68,7 @@ function ContestView({ contest }: { contest: Contest }) {
 
   // Per-criteria average (anonymised — no jury names)
   const getCriteriaAvg = (candidateId: string, criteriaId: string): number | null => {
-    const vals = scores.filter(s=>s.candidateId===candidateId).map(s=>s.scores[criteriaId]??0);
+    const vals = (scoresByCandidate.get(candidateId) || []).map(s=>s.scores[criteriaId]??0);
     return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
   };
 
