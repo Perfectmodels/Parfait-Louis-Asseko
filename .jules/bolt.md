@@ -1,0 +1,3 @@
+## 2024-05-24 - Precompute lookup dictionaries using useMemo to avoid severe O(N³) rendering bottlenecks
+**Learning:** When building list-heavy or highly nested UI components (e.g., Candidates x Passages x Juries in beauty contests), using `.find()` inside rendering loops on arrays (like `scores`) creates an O(N³) complexity that severely impacts performance as the data grows.
+**Action:** Always precompute lookup dictionaries (e.g., `scoresMap`) using `useMemo` with `Map` (often using composite string keys like `idA-idB`) before the render loops. This shifts expensive array operations to O(1) lookups.
