@@ -58,11 +58,17 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: (id: string) => void }> = (
       exit={{ opacity: 0, x: 60, scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       className={`flex items-start gap-3 px-4 py-3 rounded-xl border backdrop-blur-xl shadow-2xl shadow-black/40 min-w-[280px] max-w-sm ${styles[toast.type]}`}
+      role={toast.type === 'error' || toast.type === 'warning' ? 'alert' : 'status'}
+      aria-live={toast.type === 'error' || toast.type === 'warning' ? 'assertive' : 'polite'}
     >
-      <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${iconStyles[toast.type]}`} />
+      <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${iconStyles[toast.type]}`} aria-hidden="true" />
       <p className="text-sm font-medium flex-1 leading-snug">{toast.message}</p>
-      <button onClick={() => onDismiss(toast.id)} className="opacity-50 hover:opacity-100 transition-opacity shrink-0">
-        <XMarkIcon className="w-4 h-4" />
+      <button
+        onClick={() => onDismiss(toast.id)}
+        className="opacity-50 hover:opacity-100 transition-opacity shrink-0 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current rounded-md p-0.5"
+        aria-label="Fermer la notification"
+      >
+        <XMarkIcon className="w-4 h-4" aria-hidden="true" />
       </button>
     </motion.div>
   );
