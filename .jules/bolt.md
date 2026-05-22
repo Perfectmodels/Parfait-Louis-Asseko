@@ -1,0 +1,3 @@
+## 2024-05-18 - Prevent O(N³) Rendering Bottlenecks in Nested React Loops
+**Learning:** In list-heavy or highly nested UI components (e.g., iterating through Candidates x Passages x Juries), looking up values inside the render loops using array methods like `.find()` or `.filter()` can lead to severe O(N³) rendering bottlenecks. This occurs because the search operation is repeated for every rendered combination, compounding the complexity exponentially.
+**Action:** When working with nested loops or frequent combinations, precompute lookup dictionaries using `useMemo` with `Map` (often using composite string keys like `idA-idB`) or nested `Record` types before the render loops. This shifts expensive array operations to O(1) lookups.
