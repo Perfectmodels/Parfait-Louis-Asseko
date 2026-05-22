@@ -97,7 +97,7 @@ const Admin: React.FC = () => {
             role: profile.role ?? '',
             avatarUrl: profile.avatarUrl ?? '',
             username: profile.username ?? '',
-            password: profile.password ?? '',
+            password: '', // Ne pas charger le hash existant
         });
         setEditingProfile(true);
     };
@@ -106,7 +106,27 @@ const Admin: React.FC = () => {
         if (!data) return;
         setProfileSaving(true);
         try {
-            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            let finalPassword = data.adminProfile.password;
+            if (profileForm.password && window.crypto && window.crypto.subtle) {
+                const encoder = new TextEncoder();
+                const dataBuffer = encoder.encode(profileForm.password);
+                const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                finalPassword = `$sha256$${hashHex}`;
+            } else if (profileForm.password) {
+                // Fallback (non recommandé en prod, mais évite de planter si crypto non dispo)
+                finalPassword = profileForm.password;
+            }
+
+            await saveData({
+                ...data,
+                adminProfile: {
+                    ...data.adminProfile,
+                    ...profileForm,
+                    password: finalPassword
+                }
+            });
             setEditingProfile(false);
         } catch (e) {
             console.error('Erreur sauvegarde profil:', e);
@@ -502,7 +522,8 @@ const Admin: React.FC = () => {
                                             <div className="relative">
                                                 <input type={showPassword ? 'text' : 'password'} value={profileForm.password}
                                                     onChange={e => setProfileForm(f => ({ ...f, password: e.target.value }))}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 pr-10 text-sm text-pm-off-white font-mono focus:outline-none focus:border-pm-gold transition-colors" />
+                                                    placeholder="•••••••••• (laisser vide pour conserver)"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 pr-10 text-sm text-pm-off-white placeholder:text-white/20 font-mono focus:outline-none focus:border-pm-gold transition-colors" />
                                                 <button type="button" onClick={() => setShowPassword(v => !v)}
                                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
                                                     {showPassword ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
