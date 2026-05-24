@@ -140,7 +140,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ isOpen, onClose, onInsertCont
                             <SparklesIcon className="w-6 h-6" />
                             Assistant IA pour "{fieldName}"
                         </h2>
-                        <button onClick={onClose} className="text-pm-off-white/70 hover:text-white">
+                        <button onClick={onClose} className="text-pm-off-white/70 hover:text-white" aria-label="Fermer l'assistant IA">
                             <CloseIcon />
                         </button>
                     </div>
