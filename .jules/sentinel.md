@@ -1,0 +1,4 @@
+## 2025-05-24 - DOM-based XSS in Raw HTML Generation
+**Vulnerability:** Dynamic user data (such as article content, title, and images) was being directly interpolated into a raw HTML template string in `generateArticleHtml` for PDF generation in `src/pages/ArticleDetail.tsx` without any sanitization or escaping.
+**Learning:** Generating raw HTML strings manually using template literals is highly susceptible to DOM-based XSS if user-controlled input contains malicious HTML or scripts. The application lacked a centralized `escapeHtml` utility or robust sanitization method before inserting data into the template.
+**Prevention:** Always escape dynamic user input using a secure `escapeHtml` function that replaces the 5 critical HTML entities (`&`, `<`, `>`, `"`, `'`) before interpolating it into raw HTML strings, especially when the resulting string is rendered or parsed by the browser (e.g., via `window.open` and `document.write`).
