@@ -1,0 +1,3 @@
+## 2025-05-27 - O(N³) rendering bottlenecks in React map structures
+**Learning:** Found significant O(N³) rendering latency in list-heavy structures like BeautyContest.tsx because deeply nested components repeatedly executed `.filter()` and `.reduce()` operations on the full generic `scores` array to perform relational data resolution for each Candidate x Criteria x Passage per render cycle.
+**Action:** Always precompute map structures via `useMemo` (e.g. Map<CandidateId, Map<PassageId, Score>>) upstream of nested JSX map iteration to replace expensive array queries `O(N)` with flat lookups `O(1)`.
