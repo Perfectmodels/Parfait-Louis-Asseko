@@ -43,6 +43,12 @@ export const buildEmailTemplate = (content: string, preheader = ''): string => `
         <!-- FOOTER -->
         <tr>
           <td style="background:#050505;border:1px solid #c9a84c22;border-top:none;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center">
+            <p style="margin:0 0 8px;color:#ffffff40;font-size:12px;line-height:1.6">
+              <strong>Perfect Models Management</strong><br/>
+              Libreville, Gabon<br/>
+              Email: contact@perfectmodels.ga | Tél: +241 74 79 93 19
+            </p>
+            <div style="width:40px;height:1px;background:#c9a84c22;margin:16px auto"></div>
             <p style="margin:0 0 8px;color:#ffffff20;font-size:11px;letter-spacing:3px;text-transform:uppercase">Suivez-nous</p>
             <p style="margin:0 0 16px">
               <a href="https://facebook.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">Facebook</a>
@@ -52,7 +58,7 @@ export const buildEmailTemplate = (content: string, preheader = ''): string => `
               <a href="https://youtube.com" style="color:#c9a84c;text-decoration:none;margin:0 8px;font-size:12px">YouTube</a>
             </p>
             <p style="margin:0;color:#ffffff20;font-size:10px">
-              © ${new Date().getFullYear()} Perfect Models Management · Libreville, Gabon<br/>
+              © ${new Date().getFullYear()} Perfect Models Management<br/>
               <a href="https://perfectmodels.ga" style="color:#c9a84c44;text-decoration:none">perfectmodels.ga</a>
             </p>
           </td>
