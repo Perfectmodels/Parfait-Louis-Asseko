@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { rtdb } from '../firebase';
 import { ref, onValue } from 'firebase/database';
 import { Trophy, Users, Award, Flag } from 'lucide-react';
@@ -48,20 +48,74 @@ function ContestView({ contest }: { contest: Contest }) {
     return () => u.forEach(f=>f());
   }, [contest.id, activeStage]);
 
-  // Compute average for a candidate — aggregate across all jury scores, anonymised
-  const getAvg = (candidateId: string): number | null => {
-    const cs = scores.filter(s => s.candidateId === candidateId);
-    if (!cs.length || !criteria.length) return null;
-    const totalWeight = criteria.reduce((s,c)=>s+c.weight,0) || 1;
-    const juryAvgs = cs.map(s => criteria.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/totalWeight);
-    return juryAvgs.reduce((a,b)=>a+b,0)/juryAvgs.length;
-  };
+  // ⚡ PERFORMANCE OPTIMIZATION: O(N) -> O(1) Precomputed Maps
+  // Avoid O(N³) array filtering and mapping on every render cycle (which occurs heavily in nested passage mapping)
 
-  // Per-criteria average (anonymised — no jury names)
-  const getCriteriaAvg = (candidateId: string, criteriaId: string): number | null => {
-    const vals = scores.filter(s=>s.candidateId===candidateId).map(s=>s.scores[criteriaId]??0);
-    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
-  };
+  // 1. Group scores by candidate ID
+  const scoresByCandidate = useMemo(() => {
+    const map = new Map<string, Score[]>();
+    scores.forEach(s => {
+      const list = map.get(s.candidateId) || [];
+      list.push(s);
+      if (list.length === 1) map.set(s.candidateId, list);
+    });
+    return map;
+  }, [scores]);
+
+  // 2. Precompute overall average per candidate
+  const candidateAvgs = useMemo(() => {
+    const map = new Map<string, number | null>();
+    if (!criteria.length) return map;
+    const totalWeight = criteria.reduce((s, c) => s + c.weight, 0) || 1;
+
+    candidates.forEach(c => {
+      const cs = scoresByCandidate.get(c.id) || [];
+      if (!cs.length) {
+        map.set(c.id, null);
+        return;
+      }
+      const juryAvgs = cs.map(s => criteria.reduce((sum, cr) => sum + (s.scores[cr.id] ?? 0) * cr.weight, 0) / totalWeight);
+      map.set(c.id, juryAvgs.reduce((a, b) => a + b, 0) / juryAvgs.length);
+    });
+    return map;
+  }, [scoresByCandidate, criteria, candidates]);
+
+  // 3. Precompute per-criteria averages
+  const candidateCriteriaAvgs = useMemo(() => {
+    const map = new Map<string, Map<string, number | null>>();
+    candidates.forEach(c => {
+      const cMap = new Map<string, number | null>();
+      const cs = scoresByCandidate.get(c.id) || [];
+      criteria.forEach(cr => {
+        const vals = cs.map(s => s.scores[cr.id] ?? 0);
+        cMap.set(cr.id, vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null);
+      });
+      map.set(c.id, cMap);
+    });
+    return map;
+  }, [scoresByCandidate, criteria, candidates]);
+
+  // 4. Precompute per-passage scores and lengths
+  const passageAverages = useMemo(() => {
+    const map = new Map<string, Map<string, number>>();
+    candidates.forEach(c => {
+      const pMap = new Map<string, number>();
+      const cs = scoresByCandidate.get(c.id) || [];
+      passages.forEach(p => {
+        const passageScores = cs.filter(s => s.passageId === p.id);
+        if (!passageScores.length) return;
+        const crits = criteria.filter(cr => cr.passageId === p.id || !cr.passageId);
+        const tw = crits.reduce((s, cr) => s + cr.weight, 0) || 1;
+        const avg = passageScores.map(s => crits.reduce((sum, cr) => sum + (s.scores[cr.id] ?? 0) * cr.weight, 0) / tw).reduce((a, b) => a + b, 0) / passageScores.length;
+        pMap.set(p.id, avg);
+      });
+      map.set(c.id, pMap);
+    });
+    return map;
+  }, [scoresByCandidate, criteria, passages, candidates]);
+
+  const getAvg = (candidateId: string): number | null => candidateAvgs.get(candidateId) ?? null;
+  const getCriteriaAvg = (candidateId: string, criteriaId: string): number | null => candidateCriteriaAvgs.get(candidateId)?.get(criteriaId) ?? null;
 
   const ranked = [...candidates].sort((a,b) => {
     const avgA = getAvg(a.id) ?? -1;
@@ -141,11 +195,8 @@ function ContestView({ contest }: { contest: Contest }) {
                   {passages.length > 0 && hasScores && (
                     <div className='flex flex-wrap gap-x-4 gap-y-1 mt-1'>
                       {passages.map(p => {
-                        const passageScores = scores.filter(s=>s.candidateId===c.id&&s.passageId===p.id);
-                        if (!passageScores.length) return null;
-                        const crits = criteria.filter(cr=>cr.passageId===p.id||!cr.passageId);
-                        const tw = crits.reduce((s,cr)=>s+cr.weight,0)||1;
-                        const avg = passageScores.map(s=>crits.reduce((sum,cr)=>sum+(s.scores[cr.id]??0)*cr.weight,0)/tw).reduce((a,b)=>a+b,0)/passageScores.length;
+                        const avg = passageAverages.get(c.id)?.get(p.id);
+                        if (avg === undefined) return null;
                         return <span key={p.id} className='text-xs text-white/30'>{p.name}: <span className='text-white/60 font-semibold'>{avg.toFixed(1)}/10</span></span>;
                       })}
                     </div>
@@ -156,8 +207,8 @@ function ContestView({ contest }: { contest: Contest }) {
                     <div>
                       <p className={`text-3xl font-black ${i===0?'text-yellow-400':i===1?'text-gray-300':i===2?'text-amber-600':'text-white'}`}>{avg.toFixed(2)}</p>
                       <p className='text-white/30 text-xs'>/10</p>
-                      {scores.filter(s=>s.candidateId===c.id).length > 0 && (
-                        <p className='text-white/20 text-[10px] mt-0.5'>{scores.filter(s=>s.candidateId===c.id).length} éval.</p>
+                      {(scoresByCandidate.get(c.id)?.length || 0) > 0 && (
+                        <p className='text-white/20 text-[10px] mt-0.5'>{scoresByCandidate.get(c.id)?.length} éval.</p>
                       )}
                     </div>
                   ) : (
