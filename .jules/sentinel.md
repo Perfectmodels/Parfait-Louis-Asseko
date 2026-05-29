@@ -1,0 +1,4 @@
+## 2025-05-29 - Fixed DOM-based XSS in Article Detail Share Feature
+**Vulnerability:** The `generateArticleHtml` function in `src/pages/ArticleDetail.tsx` manually concatenated unescaped article properties (e.g., `article.title`, `article.author`) directly into a raw HTML string used for sharing/printing the article.
+**Learning:** Even internal utility functions constructing HTML as strings require explicit escaping, especially when the inputs ultimately derive from external or user-generated content (like an article database). The lack of a centralized `escapeHtml` utility in `src/utils` left developers without a standard tool to perform this escaping.
+**Prevention:** Always use a helper function (like the newly added `escapeHtml` in `src/utils/sanitize.ts`) to sanitize dynamic values *before* interpolating them into HTML templates. When possible, prefer React's built-in JSX rendering (which escapes by default) over manual string concatenation.
