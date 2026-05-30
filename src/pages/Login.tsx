@@ -35,6 +35,18 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
+  const hashPassword = async (pass: string): Promise<string> => {
+    if (window.crypto && window.crypto.subtle) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(pass);
+      const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return `$sha256$${hashHex}`;
+    }
+    return pass;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -78,18 +90,36 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: { name: 'Admin', username: 'admin', password: data.adminProfile?.password || '$sha256$0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    let foundUser = null;
+
+    for (const u of users) {
+        const usernameMatch = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || u.user.name.toLowerCase() === normalizedUsername;
+        if (!usernameMatch) continue;
+
+        let passwordMatch = false;
+        if (u.user.password && u.user.password.startsWith('$sha256$')) {
+            const hashedAttempt = await hashPassword(password);
+            // If crypto is not available, we can't verify the hash securely, so it defaults to fail safely
+            if (hashedAttempt.startsWith('$sha256$')) {
+                passwordMatch = u.user.password === hashedAttempt;
+            } else {
+                passwordMatch = false;
+            }
+        } else {
+            passwordMatch = u.user.password === password;
+        }
+
+        if (passwordMatch) {
+            foundUser = u;
+            break;
+        }
+    }
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
