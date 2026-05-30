@@ -12,7 +12,7 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
     <motion.div 
       whileHover={{ y: -8 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative h-[420px] sm:h-[520px] lg:h-[650px] overflow-hidden bg-pm-gray border border-white/5"
+      className="group relative h-[420px] sm:h-[520px] lg:h-[650px] overflow-hidden bg-pm-gray border border-white/5 transition-all duration-700 hover:border-pm-gold/40 hover:shadow-gold-glow-lg"
     >
       <Link to={`/mannequins/${model.id}`} className="block h-full">
         <img 
@@ -21,6 +21,8 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
             className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110" 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-transparent to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-700"></div>
+        {/* Gold frame accent on hover */}
+        <div className="pointer-events-none absolute inset-3 border border-pm-gold/0 group-hover:border-pm-gold/30 transition-all duration-700"></div>
         
         <div className="absolute bottom-0 left-0 p-5 sm:p-8 lg:p-10 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700">
           <div className="overflow-hidden">
