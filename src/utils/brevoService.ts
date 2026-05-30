@@ -213,6 +213,41 @@ export const buildNewsletterBody = (p: {
 `;
 
 /** Confirmation de demande de vote Miss One Light */
+/** Notification admin pour un vote Miss One Light */
+export const sendVoteNotificationToAdmin = (p: {
+  voterName: string;
+  candidateName: string;
+  votes: number;
+  amount: number;
+  txRef: string;
+  email: string;
+  phone: string;
+  notificationEmail: string;
+}) =>
+  sendEmail({
+    to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
+    replyTo: { email: p.email, name: p.voterName },
+    subject: `[Miss One Light] Nouveau vote de ${p.voterName} pour ${p.candidateName}`,
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#c9a84c0d;border-left:3px solid #c9a84c;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Nouveau vote Miss One Light</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">${p.candidateName} (+${p.votes} votes)</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px;width:140px">Votant</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.voterName}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Email</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d"><a href="mailto:${p.email}" style="color:#c9a84c">${p.email}</a></td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Téléphone</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.phone}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Candidate</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.candidateName}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Nombre de votes</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.votes}</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Montant à régler</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.amount} FCFA</td></tr>
+        <tr><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Réf. transaction</td><td style="padding:10px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.txRef}</td></tr>
+      </table>
+      <div style="text-align:center;margin-top:24px">
+        <a href="https://perfectmodels.ga/admin/miss-one-light" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
+      </div>
+    `, `Nouveau vote pour ${p.candidateName}`),
+  });
+
 export const sendVoteConfirmation = (p: {
   email: string;
   candidateName: string;
