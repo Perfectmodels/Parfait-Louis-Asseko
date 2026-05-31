@@ -43,7 +43,7 @@ export const apiKeys: ApiKeys = {
     resendApiKey: 're_12345678_abcdefghijklmnopqrstuvwxyz',
     formspreeEndpoint: 'https://formspree.io/f/xovnyqnz',
     firebaseDynamicLinks: {
-        webApiKey: "AIzaSyB_jjJEXU7yvJv49aiPCJqEZgiyfJEJzrg",
+        webApiKey: import.meta.env.VITE_FIREBASE_DYNAMIC_LINKS_API_KEY || "",
         domainUriPrefix: 'https://perfectmodels.page.link'
     },
     imgbbApiKey: '59f0176178bae04b1f2cbd7f5bc03614',

@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyC_5TsXHPLloX80SzN9GQaaDL4EPlL-WSc",
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
     authDomain: "perfectmodels-4e5fa.firebaseapp.com",
     databaseURL: "https://perfectmodels-4e5fa-default-rtdb.firebaseio.com",
     projectId: "perfectmodels-4e5fa",
