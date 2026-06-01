@@ -97,7 +97,7 @@ const Admin: React.FC = () => {
             role: profile.role ?? '',
             avatarUrl: profile.avatarUrl ?? '',
             username: profile.username ?? '',
-            password: profile.password ?? '',
+            password: '', // Do not populate the existing hash
         });
         setEditingProfile(true);
     };
@@ -106,7 +106,31 @@ const Admin: React.FC = () => {
         if (!data) return;
         setProfileSaving(true);
         try {
-            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            let finalPassword = data.adminProfile?.password || '';
+            if (profileForm.password) {
+                if (window.crypto && window.crypto.subtle) {
+                    const encoder = new TextEncoder();
+                    const dataBuffer = encoder.encode(profileForm.password);
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    finalPassword = `$sha256$${hashHex}`;
+                } else {
+                    // Fallback in case subtle crypto is unavailable, though it should be in modern browsers
+                    console.warn('Crypto subtle unavailable. Password update skipped to avoid plaintext storage.');
+                    alert('Erreur: impossible de sécuriser le mot de passe dans cet environnement.');
+                    setProfileSaving(false);
+                    return;
+                }
+            }
+
+            const newAdminProfile = {
+                ...data.adminProfile,
+                ...profileForm,
+                password: finalPassword
+            };
+
+            await saveData({ ...data, adminProfile: newAdminProfile });
             setEditingProfile(false);
         } catch (e) {
             console.error('Erreur sauvegarde profil:', e);
