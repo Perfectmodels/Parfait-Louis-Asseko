@@ -44,4 +44,5 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+// ⚡ Bolt: Memoize component to prevent expensive framer-motion re-renders when parent search/filter state changes
+export default React.memo(ModelCard);

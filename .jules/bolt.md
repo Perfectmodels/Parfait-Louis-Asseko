@@ -1,0 +1,3 @@
+## 2024-05-24 - Memoize list items with framer-motion
+**Learning:** List item components containing expensive render operations like `framer-motion` animations cause input lag and thread blocking when the parent component manages search or filter state and re-renders frequently.
+**Action:** Always wrap child list item components containing expensive render operations in `React.memo()` to prevent unnecessary re-renders when the parent's state changes.
