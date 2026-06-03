@@ -49,8 +49,7 @@ const Casting: React.FC = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-pm-dark via-pm-dark/50 to-transparent" />
 
-        {/* Texte centré */};l
-        k
+        {/* Texte centré */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 gap-5 sm:gap-8">
           <motion.span {...fadeUp(0.2)} className="section-label">
             Tournée Nationale de Scouting 2025
