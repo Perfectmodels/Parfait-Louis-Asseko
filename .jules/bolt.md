@@ -1,0 +1,3 @@
+## 2024-05-18 - Memoizing Framer Motion List Items
+**Learning:** Components containing expensive operations like `framer-motion` animations can cause significant input lag and thread blocking when rendered within parent components that manage frequently updating state, such as search or filter states (e.g., `Models.tsx`). The re-renders cascade down to each individual animated list item.
+**Action:** Always wrap child list item components that contain expensive render operations (like `framer-motion` animations) in `React.memo()` to prevent unnecessary re-renders when the parent state changes.
