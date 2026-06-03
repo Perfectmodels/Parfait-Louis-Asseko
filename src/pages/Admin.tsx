@@ -97,7 +97,7 @@ const Admin: React.FC = () => {
             role: profile.role ?? '',
             avatarUrl: profile.avatarUrl ?? '',
             username: profile.username ?? '',
-            password: profile.password ?? '',
+            password: '', // Prevent exposing or overwriting hash with plaintext
         });
         setEditingProfile(true);
     };
@@ -106,7 +106,26 @@ const Admin: React.FC = () => {
         if (!data) return;
         setProfileSaving(true);
         try {
-            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            let finalPassword = data.adminProfile.password;
+
+            // Only hash and update if the user entered a new password
+            if (profileForm.password && profileForm.password.trim() !== '') {
+                if (window.crypto && window.crypto.subtle) {
+                    const encoder = new TextEncoder();
+                    const dataBuffer = encoder.encode(profileForm.password);
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    finalPassword = '$sha256$' + hashHex;
+                } else {
+                    // Fallback to plaintext only if crypto API is not available (rare)
+                    finalPassword = profileForm.password;
+                }
+            }
+
+            const updatedProfile = { ...data.adminProfile, ...profileForm, password: finalPassword };
+
+            await saveData({ ...data, adminProfile: updatedProfile });
             setEditingProfile(false);
         } catch (e) {
             console.error('Erreur sauvegarde profil:', e);
