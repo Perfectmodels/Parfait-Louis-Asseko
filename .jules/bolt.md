@@ -1,0 +1,3 @@
+## 2024-06-04 - Prevent Input Lag on Filtered Lists with Framer Motion
+**Learning:** List item components utilizing heavy animation libraries like `framer-motion` (e.g., `ModelCard`) will cause severe UI thread blocking and input lag when their parent component (e.g., `Models`) manages frequently updated state such as a search/filter input, because React will re-render *every* card on every keystroke.
+**Action:** Always wrap child list item components containing expensive render operations or complex animations in `React.memo()` to decouple their render cycle from the parent's rapid state changes, specifically when the parent manages search/filter states.
