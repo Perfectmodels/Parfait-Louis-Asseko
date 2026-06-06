@@ -1,0 +1,3 @@
+## 2024-06-06 - Accessible Hover-Reveal Elements
+**Learning:** Interactive elements like delete buttons that are hidden by default and only revealed on hover (using `opacity-0 group-hover:opacity-100`) are invisible to keyboard users when navigating.
+**Action:** When implementing hover-reveal interactions, explicitly add `focus-visible:opacity-100` alongside visual focus rings (e.g., `focus-visible:ring-2`) directly to the element to ensure it becomes visible and identifiable during keyboard navigation.
