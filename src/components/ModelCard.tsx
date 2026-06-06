@@ -7,6 +7,9 @@ interface ModelCardProps {
   model: Model;
 }
 
+// Optimization: React.memo prevents input lag and thread blocking in parent
+// components managing search/filter state (like Models.tsx) by avoiding
+// unnecessary re-renders of these expensive framer-motion animations.
 const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   return (
     <motion.div 
@@ -44,4 +47,4 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+export default React.memo(ModelCard);
