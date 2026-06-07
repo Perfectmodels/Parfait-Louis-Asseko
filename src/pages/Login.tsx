@@ -77,12 +77,50 @@ const Login: React.FC = () => {
     }
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
+    const adminUser = data?.adminProfile || { name: 'Admin', username: 'admin', password: '$sha256$0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' };
+
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
+
+    // ── 3. Authentification Admin ─────────────────────────────────────────────
+    let isAdminAuthenticated = false;
+    if (adminUser.username?.toLowerCase() === normalizedUsername) {
+        if (adminUser.password?.startsWith('$sha256$')) {
+            try {
+                if (window.crypto && window.crypto.subtle) {
+                    const msgUint8 = new TextEncoder().encode(password);
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    if (`$sha256$${hashHex}` === adminUser.password) {
+                        isAdminAuthenticated = true;
+                    }
+                }
+            } catch (err) {
+                console.error("Crypto error during admin login", err);
+            }
+        } else {
+            // Fallback for legacy plaintext password
+            if (adminUser.password === password) {
+                isAdminAuthenticated = true;
+            }
+        }
+    }
+
+    if (isAdminAuthenticated) {
+        sessionStorage.setItem('classroom_access', 'granted');
+        sessionStorage.setItem('classroom_role', 'admin');
+        sessionStorage.setItem('userId', adminUser.id || 'admin');
+        sessionStorage.setItem('userName', adminUser.name || 'Admin');
+
+        updateUserActivity(adminUser.name || 'Admin', 'admin');
+        notifyAdmin('visit', `Connexion: ${adminUser.name || 'Admin'} (Admin)`, '/admin').catch(() => {});
+        navigate('/admin');
+        return;
+    }
 
     const foundUser = users.find(u => 
         (
@@ -100,9 +138,9 @@ const Login: React.FC = () => {
         updateUserActivity(foundUser.user.name, foundUser.type);
 
         const roleLabels: Record<string, string> = {
-            admin: 'Admin', student: 'Mannequin', jury: 'Jury', registration: 'Staff'
+            student: 'Mannequin', jury: 'Jury', registration: 'Staff'
         };
-        notifyAdmin('visit', `Connexion: ${foundUser.user.name} (${roleLabels[foundUser.type]})`, foundUser.path).catch(() => {});
+        notifyAdmin('visit', `Connexion: ${foundUser.user.name} (${roleLabels[foundUser.type] || foundUser.type})`, foundUser.path).catch(() => {});
 
         if (foundUser.type === 'student') {
             const updatedList = (data.models || []).map((item: any) => 

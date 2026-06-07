@@ -97,7 +97,7 @@ const Admin: React.FC = () => {
             role: profile.role ?? '',
             avatarUrl: profile.avatarUrl ?? '',
             username: profile.username ?? '',
-            password: profile.password ?? '',
+            password: '', // Blank it out for safety so they don't see the hash, they only type if changing
         });
         setEditingProfile(true);
     };
@@ -106,7 +106,24 @@ const Admin: React.FC = () => {
         if (!data) return;
         setProfileSaving(true);
         try {
-            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            let passwordToSave = profileForm.password;
+
+            // Only hash if they typed a new password and it's not already a hash
+            if (passwordToSave && !passwordToSave.startsWith('$sha256$')) {
+                if (window.crypto && window.crypto.subtle) {
+                    const msgUint8 = new TextEncoder().encode(passwordToSave);
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    passwordToSave = `$sha256$${hashHex}`;
+                }
+            } else if (!passwordToSave) {
+                // If empty, retain existing stored password to avoid wiping credential
+                passwordToSave = data.adminProfile?.password || '';
+            }
+
+            const updatedProfileForm = { ...profileForm, password: passwordToSave };
+            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...updatedProfileForm } });
             setEditingProfile(false);
         } catch (e) {
             console.error('Erreur sauvegarde profil:', e);
