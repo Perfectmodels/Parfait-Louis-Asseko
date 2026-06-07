@@ -3,6 +3,7 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
 import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { sendCastingConfirmationToUser, sendCastingNotificationToAdmin } from '../utils/brevoService';
 
 const RegistrationCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -51,6 +52,31 @@ const RegistrationCasting: React.FC = () => {
         try {
             await saveData({ ...data, castingApplications: updatedApplications });
             setFormData(initialFormState); // Reset form
+
+            // Emails Brevo (non-bloquant)
+            const notifEmail = data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga';
+            if (formData.email) {
+                Promise.allSettled([
+                    sendCastingConfirmationToUser({
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        email: formData.email,
+                        city: formData.city,
+                    }),
+                    sendCastingNotificationToAdmin({
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        email: formData.email,
+                        phone: formData.phone,
+                        city: formData.city,
+                        gender: formData.gender,
+                        height: formData.height,
+                        experience: formData.experience,
+                        instagram: formData.instagram || undefined,
+                        notificationEmail: notifEmail,
+                    }),
+                ]).catch(() => {});
+            }
         } catch (error) {
             console.error(error);
             alert("Erreur lors de l'enregistrement.");
