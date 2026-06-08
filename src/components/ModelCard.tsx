@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Model } from '../types';
 import { motion } from 'framer-motion';
@@ -44,4 +44,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+// ⚡ Bolt Optimization: Wrapped in React.memo to prevent expensive framer-motion re-renders
+// when the parent component (e.g., Models.tsx) updates search or filter state.
+export default memo(ModelCard);
