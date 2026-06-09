@@ -78,18 +78,37 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: data.adminProfile || { name: 'Admin', username: 'admin', password: '$sha256$0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    let foundUser = null;
+    for (const u of users) {
+        const matchUsername = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || u.user.name.toLowerCase() === normalizedUsername;
+        if (matchUsername) {
+            let matchPassword = false;
+            if (u.user.password?.startsWith('$sha256$')) {
+                if (window.crypto && window.crypto.subtle) {
+                    const msgUint8 = new TextEncoder().encode(password);
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    matchPassword = u.user.password === `$sha256$${hashHex}`;
+                } else {
+                    matchPassword = false;
+                }
+            } else {
+                matchPassword = u.user.password === password;
+            }
+
+            if (matchPassword) {
+                foundUser = u;
+                break;
+            }
+        }
+    }
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
