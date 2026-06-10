@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Model } from '../types';
 import { motion } from 'framer-motion';
@@ -7,7 +7,7 @@ interface ModelCardProps {
   model: Model;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
+const ModelCard: React.FC<ModelCardProps> = memo(({ model }) => {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
@@ -42,6 +42,9 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
       </Link>
     </motion.div>
   );
-};
+});
+
+// Setting display name for debugging purposes since memo makes it anonymous
+ModelCard.displayName = 'ModelCard';
 
 export default ModelCard;
