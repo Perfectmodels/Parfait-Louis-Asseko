@@ -1,0 +1,3 @@
+## 2024-06-12 - Prevent Expensive Re-renders in Filterable Lists
+**Learning:** In components like `Models.tsx` that manage search/filter state, child list item components (like `ModelCard.tsx`) containing expensive render operations such as `framer-motion` animations will suffer from input lag and thread blocking if not memoized, because every keystroke triggers a full re-render of all items.
+**Action:** Always wrap child list item components containing expensive render operations in `React.memo()` when their parent manages rapidly changing state.
