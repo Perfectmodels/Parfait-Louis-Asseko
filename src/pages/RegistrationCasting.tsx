@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
+import { sendRegistrationCastingConfirmationToUser, sendRegistrationCastingNotificationToAdmin } from '../utils/brevoService';
 import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
 
 const RegistrationCasting: React.FC = () => {
@@ -50,6 +51,22 @@ const RegistrationCasting: React.FC = () => {
 
         try {
             await saveData({ ...data, castingApplications: updatedApplications });
+
+            Promise.allSettled([
+                sendRegistrationCastingConfirmationToUser({
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                }),
+                sendRegistrationCastingNotificationToAdmin({
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    notificationEmail: data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga',
+                })
+            ]).catch(() => {});
+
             setFormData(initialFormState); // Reset form
         } catch (error) {
             console.error(error);
