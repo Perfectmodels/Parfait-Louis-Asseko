@@ -73,7 +73,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ prefilledModelName, onSuccess
                 startDate: formData.startDate || undefined,
                 endDate: formData.endDate || undefined,
                 message: formData.message,
-                notificationEmail: 'contact@perfectmodels.ga',
+                notificationEmail: data?.contactInfo?.notificationEmail || data?.contactInfo?.email || 'contact@perfectmodels.ga',
               }),
             ]).catch(() => {});
 
