@@ -44,4 +44,5 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+// ⚡ Bolt: Wrapped in React.memo to prevent unnecessary re-renders during search/filter typing in Models.tsx
+export default React.memo(ModelCard);
