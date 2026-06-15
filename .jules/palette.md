@@ -1,0 +1,3 @@
+## 2024-10-26 - Hidden Hover-Reveal Elements
+**Learning:** Hover-reveal interactive elements (like delete buttons or action overlays) in this codebase are implemented using `opacity-0 group-hover:opacity-100`, which completely hides them during keyboard navigation.
+**Action:** Always explicitly add `focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold` alongside `aria-label` directly to the button, or `focus-within:opacity-100` to its container, to ensure these actions remain keyboard-accessible and identifiable.
