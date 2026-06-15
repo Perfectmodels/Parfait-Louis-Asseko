@@ -44,4 +44,5 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+// ⚡ Bolt: React.memo prevents unnecessary re-renders of the expensive framer-motion animations when the parent component updates state
+export default React.memo(ModelCard);
