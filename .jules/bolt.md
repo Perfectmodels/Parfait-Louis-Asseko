@@ -1,0 +1,3 @@
+## 2024-06-16 - Memoizing expensive animated components in lists
+**Learning:** Components containing expensive operations like `framer-motion` animations (e.g., `ModelCard`) can block the main thread and cause input lag in parent components (e.g., `Models`) that manage search/filter state, as every keystroke triggers a full re-render of the list.
+**Action:** Always wrap child list item components containing expensive render operations (like animations) in `React.memo()` to prevent input lag and thread blocking during parent state updates.
