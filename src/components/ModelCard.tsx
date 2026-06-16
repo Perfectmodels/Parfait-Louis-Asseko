@@ -44,4 +44,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+// ⚡ Bolt: Wrapped in React.memo to prevent unnecessary re-renders when parent state (e.g., search/filter) changes,
+// avoiding thread blocking and input lag caused by expensive framer-motion animations inside the list.
+export default React.memo(ModelCard);
