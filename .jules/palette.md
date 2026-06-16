@@ -1,0 +1,3 @@
+## 2024-10-25 - Invisible hover-only interactive elements
+**Learning:** Elements using the Tailwind combination `opacity-0 group-hover:opacity-100` are completely inaccessible to keyboard-only users who tab through the interface, as the element remains visually hidden even when focused.
+**Action:** When implementing hover-reveal interactive elements, always explicitly add `focus-visible:opacity-100` alongside visual focus rings (e.g., `focus-visible:ring-2`) directly to the element, or add `focus-within:opacity-100` to their wrapper div, to ensure they become visible and identifiable during keyboard navigation.
