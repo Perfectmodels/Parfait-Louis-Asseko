@@ -7,6 +7,7 @@ interface ModelCardProps {
   model: Model;
 }
 
+// ⚡ Bolt: Wrapped in React.memo() to prevent unnecessary re-renders during search/filter operations in parent components
 const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   return (
     <motion.div 
@@ -44,4 +45,4 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+export default React.memo(ModelCard);
