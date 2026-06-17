@@ -1,0 +1,4 @@
+## 2024-06-17 - Insecure Firebase Development Rules Left in Production
+**Vulnerability:** The `database.rules.json` and `firestore.rules` files were configured with development rules (`".read": true, ".write": true` and `allow read, write: if true;`) allowing unauthorized, unauthenticated users to read and manipulate database content.
+**Learning:** Development configurations with permissive rules can easily be left active by mistake, fully exposing the application's data.
+**Prevention:** Always ensure production security rules require at minimum `auth != null` for writes and strictly segregate development environments from production deployments.
