@@ -1,0 +1,4 @@
+## 2024-05-24 - Firebase Open Access Vulnerability
+**Vulnerability:** Realtime Database and Firestore rules were configured with permissive development settings (`.write: true` and `allow read, write: if true`), allowing unauthenticated users to read and write any data.
+**Learning:** Default or development rules are frequently committed instead of production rules, exposing the entire database to unauthorized access and potential data wiping or tampering.
+**Prevention:** Always verify that Firebase security rules are correctly configured to require authentication (`auth != null`) and role-based access controls before committing to production.
