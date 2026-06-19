@@ -1,0 +1,4 @@
+## 2024-05-18 - Fix DOM-based XSS in Article PDF Generator
+**Vulnerability:** DOM-based Cross-Site Scripting (XSS) in `generateArticleHtml` inside `src/pages/ArticleDetail.tsx`. Dynamic user data (such as `article.title`, `article.author`, `content.text`) was directly interpolated into the raw HTML string used for PDF generation without any sanitization or escaping.
+**Learning:** Raw HTML string generation using template literals is highly vulnerable to injection if the data contains HTML-like special characters or malicious script tags. Simple client-side generation without a virtual DOM (like React) bypasses built-in XSS protections.
+**Prevention:** Always use a robust HTML escaping function that replaces the 5 critical HTML entities (`&`, `<`, `>`, `"`, `'`) before interpolating dynamic user-controlled values into raw HTML strings.
