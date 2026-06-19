@@ -1,0 +1,3 @@
+## 2024-05-31 - Memoizing List Items with Expensive Animations
+**Learning:** Components wrapping expensive `framer-motion` animations (like `ModelCard` which contains hover/layout animations) can cause significant input lag and performance degradation when rendered inside a list whose parent frequently re-renders due to state changes (such as search filters in `Models.tsx`).
+**Action:** Always wrap child list items containing complex or expensive render operations in `React.memo()` when the parent component manages rapidly changing state like search or filters, especially when using animation libraries.
