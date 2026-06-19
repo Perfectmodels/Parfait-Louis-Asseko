@@ -97,8 +97,9 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
           )}
           <button
             type="button"
+            aria-label="Supprimer le fichier"
             onClick={() => onChange('')}
-            className="absolute top-2 right-2 bg-black/70 rounded-full p-1 text-white/60 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 bg-black/70 rounded-full p-1 text-white/60 hover:text-red-400 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 transition-opacity"
           >
             <XMarkIcon className="w-4 h-4" />
           </button>

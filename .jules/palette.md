@@ -1,0 +1,3 @@
+## 2024-05-24 - Interactive Hover-Reveal Elements Missing Focus Visibility
+**Learning:** Icon-only remove buttons within upload components used `opacity-0 group-hover:opacity-100` for visual tidiness, rendering them entirely invisible to keyboard-only users who tab to them. In addition, they lacked `aria-label` attributes, creating a double barrier for screen reader users.
+**Action:** When implementing interactive elements that are revealed on hover, always supplement `group-hover:opacity-100` with `focus-visible:opacity-100` and `focus-visible:ring-2` to ensure they appear when receiving keyboard focus. Always add an `aria-label` to icon-only buttons.
