@@ -77,19 +77,38 @@ const Login: React.FC = () => {
     }
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
+    let hashedInputPassword = '';
+    if (window.crypto && window.crypto.subtle) {
+      try {
+        const encoder = new TextEncoder();
+        const hashBuffer = await window.crypto.subtle.digest('SHA-256', encoder.encode(password));
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        hashedInputPassword = '$sha256$' + hashHex;
+      } catch (e) {
+        console.error('Erreur hachage mot de passe:', e);
+      }
+    }
+
+    const defaultAdminProfile = { name: 'Admin', username: 'admin', password: '$sha256$0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' };
+    const adminUser = data.adminProfile || defaultAdminProfile;
+
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: adminUser, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    const foundUser = users.find(u => {
+        const matchName = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || u.user.name.toLowerCase() === normalizedUsername;
+        if (!matchName) return false;
+
+        if (u.type === 'admin' && u.user.password && u.user.password.startsWith('$sha256$')) {
+            return hashedInputPassword !== '' && u.user.password === hashedInputPassword;
+        }
+        return u.user.password === password;
+    });
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
