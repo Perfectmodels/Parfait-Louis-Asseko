@@ -1,0 +1,4 @@
+## 2024-05-18 - [DOM-based XSS in PDF Generation HTML Templates]
+**Vulnerability:** Found a DOM-based Cross-Site Scripting (XSS) vulnerability in `src/pages/ArticleDetail.tsx`. Dynamic user data (such as article title, author, and content blocks) was injected directly into raw HTML strings during the generation of the PDF layout without proper sanitization.
+**Learning:** Simple string interpolation or tag stripping is insufficient to prevent XSS. It leaves attributes and content vulnerable to malicious script injections when rendered by `document.write` or parsed by a browser engine for printing/PDF generation.
+**Prevention:** Always use a robust HTML escaping function (e.g., replacing `&`, `<`, `>`, `"`, `'` with their corresponding HTML entities) for any dynamic user-supplied data injected into raw HTML templates, especially when the template is passed directly to functions like `document.write()` or used to generate downloadable content.
