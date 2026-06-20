@@ -1,0 +1,3 @@
+## 2024-04-14 - Focus states for floating utility buttons
+**Learning:** Floating utility buttons (like Back to Top or AI Assistants) without explicit focus styles fail keyboard accessibility because default focus rings are often clipped or invisible against the page background, and they don't follow the element's visual contour (e.g. circle).
+**Action:** Ensure the bounding radius class (e.g., `rounded-full`) is applied directly to the interactive parent element (`<button>` or `<Link>`) and add explicit focus states (`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color] focus-visible:ring-offset-2`) so the focus ring properly follows the element's visual contour instead of defaulting to a square outline.
