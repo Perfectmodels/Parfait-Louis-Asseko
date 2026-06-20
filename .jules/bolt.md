@@ -1,0 +1,3 @@
+## 2024-05-24 - Precompute Lookups to Avoid O(N³) Nested Array Filter Bottlenecks
+**Learning:** In the beauty contest views (`src/pages/BeautyContest.tsx`, etc.), heavily nested mapping loops (Candidates × Passages × Criteria) that filter flat arrays (like `scores.filter(s => s.candidateId === c.id)`) trigger an O(N³) complexity bottleneck during React renders, which can significantly degrade performance as the number of scores increases.
+**Action:** When building list-heavy or highly nested UI components that query flat arrays, precompute lookup dictionaries using `useMemo` with `Map` (e.g. mapping `candidateId` to `Score[]`). This shifts the expensive array operations from being run inside every nested loop to O(1) lookups, avoiding severe O(N³) rendering bottlenecks.
