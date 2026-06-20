@@ -7,6 +7,7 @@ interface ModelCardProps {
   model: Model;
 }
 
+// ⚡ Bolt: ModelCard is exported with React.memo() below to prevent unnecessary re-renders in parent lists (like Models.tsx) during search/filter state updates.
 const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   return (
     <motion.div 
@@ -44,4 +45,4 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+export default React.memo(ModelCard);
