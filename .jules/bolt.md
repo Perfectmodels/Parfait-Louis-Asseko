@@ -1,0 +1,3 @@
+## 2024-06-07 - React.memo for Expensive Framer Motion Children
+**Learning:** In list views with search or filter states managed by the parent (e.g., `Models.tsx`), mapping over child components that contain expensive `framer-motion` animations can cause severe thread blocking and input lag during keystrokes as the entire list re-renders on every state change.
+**Action:** Always wrap list item components that contain expensive render operations (like `framer-motion` animations) in `React.memo()` to prevent unnecessary re-renders when the parent state updates but the child's props haven't changed.
