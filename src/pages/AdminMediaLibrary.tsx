@@ -319,18 +319,18 @@ const AdminMediaLibrary: React.FC = () => {
 
               {/* Action Overlay (only when not in selection mode) */}
               {!selectionMode && (
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditingItem(item); }}
-                      className="w-10 h-10 rounded-full bg-white/10 hover:bg-pm-gold hover:text-pm-dark transition-all flex items-center justify-center"
+                      className="w-10 h-10 rounded-full bg-white/10 hover:bg-pm-gold hover:text-pm-dark focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:outline-none transition-all flex items-center justify-center"
                       title="Modifier"
                     >
                       <RectangleGroupIcon className="w-5 h-5" />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
-                      className="w-10 h-10 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+                      className="w-10 h-10 rounded-full bg-white/10 hover:bg-red-500 hover:text-white focus-visible:ring-2 focus-visible:ring-pm-gold focus-visible:outline-none transition-all flex items-center justify-center"
                       title="Supprimer"
                     >
                       <TrashIcon className="w-5 h-5" />
