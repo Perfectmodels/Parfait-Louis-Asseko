@@ -150,6 +150,7 @@ const AdminMailing: React.FC = () => {
           <div style="color:#f5f0e8cc;line-height:1.8;white-space:pre-wrap">${body.replace(/\n/g, '<br/>')}</div>`,
         apiKey: brevoKey,
         onProgress: (s, t) => setProgress({ sent: s, total: t }),
+        ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
       });
       setSent(true);
     } catch (err: any) {
@@ -179,6 +180,7 @@ const AdminMailing: React.FC = () => {
         }),
         apiKey: brevoKey,
         onProgress: (s, t) => setProgress({ sent: s, total: t }),
+        ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
       });
       setSent(true);
     } catch (err: any) {

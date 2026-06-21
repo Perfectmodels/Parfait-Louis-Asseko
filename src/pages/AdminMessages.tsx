@@ -283,6 +283,7 @@ const AdminMessages: React.FC = () => {
         originalSubject: selected.subject,
         replyBody,
         adminName: data?.adminProfile?.name,
+        ctx: { contactInfo: data?.contactInfo, socialLinks: data?.socialLinks }
       });
       setReplyDone(true);
       setReplyBody('');
