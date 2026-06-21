@@ -1,0 +1,3 @@
+## 2024-05-19 - O(N) optimizations for heavily nested lookups
+**Learning:** In heavily nested list computations (like Candidates x Passages x Juries in JuryContest), looking up scores using `.find()` inside the render loops leads to significant performance bottlenecks, resulting in O(N³) complexity for re-renders.
+**Action:** When working with nested UI data, use `useMemo` to precompute lookups into a `Map` via composite string keys (e.g., \`\${candidateId}-\${passageId}\`). This shifts the N+1 anti-pattern of continuous `.find()` calls to an efficient O(1) lookup map, drastically improving React render performance without modifying config defaults.

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Plus, Trash2, Edit2, Save, X, Upload, Star, Users, Award, ChevronUp, Key, Copy, Eye, EyeOff, Layers, Shuffle, Flag, ChevronRight, CheckCircle } from 'lucide-react';
 import { rtdb } from '../firebase';
 import { ref, set, remove, update, onValue, push, get } from 'firebase/database';
@@ -547,18 +547,24 @@ export default function AdminBeautyContest() {
   };
 
   // ── Scoring (stage-scoped) ────────────────────────────────────────────────
+  const scoresMap = useMemo(() => {
+    const map = new Map<string, Score>();
+    scores.forEach(s => map.set(`${s.juryId}-${s.candidateId}-${s.passageId}`, s));
+    return map;
+  }, [scores]);
+
   const getScore = (juryId:string, candidateId:string, passageId:string) =>
-    scores.find(s => s.juryId===juryId && s.candidateId===candidateId && s.passageId===passageId);
+    scoresMap.get(`${juryId}-${candidateId}-${passageId}`);
   const criteriaForPassage = (passageId:string) =>
     criteria.filter(c => !c.passageId || c.passageId===passageId);
   const handleSaveScore = async () => {
     if (!sp || !scoringJuryId || !scoringCandidateId || !scoringPassageId) return;
     const crits = criteriaForPassage(scoringPassageId);
-    const scoresMap: Record<string,number> = {};
-    crits.forEach(cr => { scoresMap[cr.id] = Math.min(10, Math.max(0, parseFloat(scoreInputs[cr.id]||'0'))); });
+    const scoresInputMap: Record<string,number> = {};
+    crits.forEach(cr => { scoresInputMap[cr.id] = Math.min(10, Math.max(0, parseFloat(scoreInputs[cr.id]||'0'))); });
     setSavingScore(true);
     try {
-      const payload = { juryId: scoringJuryId, candidateId: scoringCandidateId, passageId: scoringPassageId, scores: scoresMap, comment: scoreComment, submittedAt: new Date().toISOString() };
+      const payload = { juryId: scoringJuryId, candidateId: scoringCandidateId, passageId: scoringPassageId, scores: scoresInputMap, comment: scoreComment, submittedAt: new Date().toISOString() };
       const ex = getScore(scoringJuryId, scoringCandidateId, scoringPassageId);
       if (ex) await update(ref(rtdb, `${sp}/scores/${ex.id}`), payload);
       else { const r = push(ref(rtdb, `${sp}/scores`)); await set(r, payload); }

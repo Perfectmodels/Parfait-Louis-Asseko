@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { rtdb } from '../firebase';
 import { ref, onValue, push, set, update } from 'firebase/database';
 import { Star, LogOut, CheckCircle, ChevronRight, ChevronLeft, Layers } from 'lucide-react';
@@ -99,8 +99,14 @@ export default function JuryContest() {
   const criteriaForPassage = (passageId: string) =>
     criteria.filter(c => !c.passageId || c.passageId === passageId);
 
+  const scoresMap = useMemo(() => {
+    const map = new Map<string, Score>();
+    scores.forEach(s => map.set(`${s.candidateId}-${s.passageId}`, s));
+    return map;
+  }, [scores]);
+
   const getScore = (candidateId: string, passageId: string) =>
-    scores.find(s => s.candidateId === candidateId && s.passageId === passageId);
+    scoresMap.get(`${candidateId}-${passageId}`);
 
   const totalCells  = candidates.length * effectivePassages.length;
   const scoredCells = candidates.reduce((n, c) => n + effectivePassages.filter(p => getScore(c.id, p.id)).length, 0);
