@@ -77,19 +77,49 @@ const Login: React.FC = () => {
     }
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
+    const defaultAdminHash = '$sha256$0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0';
+    const adminProfile = data.adminProfile || { name: 'Admin', username: 'admin', password: defaultAdminHash };
+
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: adminProfile, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    let foundUser = null;
+    for (const u of users) {
+        const uUsername = ('username' in u.user && u.user.username) ? u.user.username.toLowerCase() : '';
+        const uName = u.user.name ? u.user.name.toLowerCase() : '';
+
+        if (uUsername === normalizedUsername || uName === normalizedUsername) {
+            const storedPassword = u.user.password || '';
+            let isMatch = false;
+
+            if (storedPassword.startsWith('$sha256$')) {
+                if (window.crypto && window.crypto.subtle) {
+                    const encoder = new TextEncoder();
+                    const dataBuffer = encoder.encode(password);
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    const computedHash = `$sha256$${hashHex}`;
+                    isMatch = computedHash === storedPassword;
+                } else {
+                    console.warn('Crypto subtle unavailable. Cannot verify hashed password.');
+                    // Fallback to false
+                    isMatch = false;
+                }
+            } else {
+                isMatch = storedPassword === password;
+            }
+
+            if (isMatch) {
+                foundUser = u;
+                break;
+            }
+        }
+    }
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
