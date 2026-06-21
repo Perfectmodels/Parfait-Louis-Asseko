@@ -1,0 +1,3 @@
+## 2024-06-21 - Memoizing Framer Motion List Items
+**Learning:** In React projects with list items containing expensive render operations like `framer-motion` animations (e.g. ModelCard), failing to memoize the component causes input lag in parent components managing search/filter state. Applying `React.memo()` directly at the variable assignment causes a TypeScript error because `MemoExoticComponent` is not assignable to `React.FC`.
+**Action:** Wrap the child component at the export statement (e.g., `export default React.memo(Comp)`) to prevent unnecessary re-renders when parent lists update, without triggering TS errors.
