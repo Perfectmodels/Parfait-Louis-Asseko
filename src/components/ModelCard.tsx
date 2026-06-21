@@ -44,4 +44,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+// React.memo prevents unnecessary re-renders of all model cards (which contain expensive framer-motion animations)
+// when the parent component's state (like the search term in Models.tsx) changes.
+export default React.memo(ModelCard);
