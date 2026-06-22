@@ -1,0 +1,3 @@
+## 2024-06-03 - Dynamic Accessibility Roles for Toast Notifications
+**Learning:** Hardcoding `role="alert"` for all toast notifications ignores the semantic difference between errors (which require immediate attention) and informational/success messages. Screen readers handle alerts assertively, which can unnecessarily interrupt users for low-priority notifications.
+**Action:** Always dynamically set the `role` and `aria-live` attributes based on the severity of the notification (e.g., `role={type === 'error' ? 'alert' : 'status'}` and `aria-live={type === 'error' ? 'assertive' : 'polite'}`). This provides semantic correctness and inherently maps to expected screen reader behavior.
