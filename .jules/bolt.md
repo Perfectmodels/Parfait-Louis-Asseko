@@ -1,0 +1,3 @@
+## 2024-05-24 - Memoize ModelCard with Framer Motion
+**Learning:** Child list item components containing expensive render operations like `framer-motion` animations cause input lag and thread blocking in parent components managing search/filter state (like `Models.tsx`) if not memoized.
+**Action:** Always wrap child list item components with expensive animations in `React.memo()` when the parent manages search or filter state to prevent unnecessary re-renders.
