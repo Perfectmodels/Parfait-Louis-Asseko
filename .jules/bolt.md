@@ -1,0 +1,3 @@
+## 2024-06-23 - Prevent Input Lag in Search Lists
+**Learning:** In React TypeScript projects, when managing search/filter state in a parent component (e.g., `Models.tsx`), child list items containing expensive render operations (like `framer-motion` animations) must be wrapped in `React.memo()`. Applying `React.memo()` directly at the variable assignment (e.g., `const Comp: React.FC<Props> = React.memo(...)`) causes a TypeScript error because `MemoExoticComponent` is not assignable to `React.FC`.
+**Action:** Always wrap the component at the export statement (e.g., `export default React.memo(Comp)`) to maintain type safety while preventing thread-blocking re-renders.
