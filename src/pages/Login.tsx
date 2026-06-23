@@ -77,19 +77,30 @@ const Login: React.FC = () => {
     }
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
+
+    let hashedPassword = password;
+    if (window.crypto && window.crypto.subtle) {
+        const encoder = new TextEncoder();
+        const passData = encoder.encode(password);
+        const hashBuffer = await window.crypto.subtle.digest('SHA-256', passData);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        hashedPassword = `$sha256$${hashHex}`;
+    }
+
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: data.adminProfile || { name: 'Admin Principal', username: 'admin', password: '$sha256$0e89f223e226ae63268cf39152ab75722e811b89d29efb22a852f1667bd22ae0' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    const foundUser = users.find(u => {
+        const usernameMatch = ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || u.user.name.toLowerCase() === normalizedUsername;
+        const isHashed = u.user.password?.startsWith('$sha256$');
+        const passwordMatch = isHashed ? u.user.password === hashedPassword : u.user.password === password;
+        return usernameMatch && passwordMatch;
+    });
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
