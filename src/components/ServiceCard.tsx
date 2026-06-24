@@ -22,8 +22,10 @@ const ServiceCard: React.FC<{ service: Service }> = ({ service }) => {
     return (
         <Link 
             to={service.buttonLink}
-            className="group relative flex flex-col h-auto min-h-[280px] sm:h-[380px] lg:h-[450px] p-6 sm:p-8 lg:p-12 bg-transparent hover:bg-pm-gold/5 transition-all duration-700 border border-white/5"
+            className="group relative flex flex-col h-auto min-h-[280px] sm:h-[380px] lg:h-[450px] p-6 sm:p-8 lg:p-12 bg-transparent hover:bg-pm-gold/[0.04] transition-all duration-700 border border-white/5 hover:border-pm-gold/30 overflow-hidden"
         >
+            {/* Top sweeping gold accent on hover */}
+            <span className="pointer-events-none absolute top-0 left-0 h-px w-0 bg-gradient-to-r from-pm-gold to-transparent group-hover:w-full transition-all duration-700"></span>
             <div className="flex-shrink-0 mb-6 sm:mb-10">
                 <Icon className="w-10 h-10 sm:w-14 sm:h-14 text-pm-gold/30 group-hover:text-pm-gold group-hover:scale-110 transition-all duration-700" strokeWidth={1} />
             </div>
