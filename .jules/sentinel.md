@@ -1,0 +1,4 @@
+## 2025-03-01 - Hash hardcoded fallback admin password
+**Vulnerability:** The default fallback admin password was hardcoded in plaintext ("admin2025") in `src/hooks/useRealtimeDB.tsx` and dynamically referenced during login and admin profile updates. This allowed local inspection of source files to reveal the fallback credentials.
+**Learning:** Hardcoded secrets often arise when developers set up fallback states or initialization logic for databases/stores, and plaintext comparison is sometimes naively preserved for backwards compatibility or simplicity during auth flows.
+**Prevention:** Store default initialization passwords as pre-computed hashes (e.g. SHA-256 with a unique prefix like `$sha256$`) in the source code. Enforce hashing during authentication verification and profile updates to prevent plaintext credentials from being recorded or transmitted unnecessarily. Ensure the system degrades safely if the Web Crypto API is unavailable.
