@@ -177,12 +177,12 @@ const AdminModels: React.FC = () => {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-3">
-                        <button onClick={() => handleTogglePublic(m.id)} title={m.isPublic ? 'Rendre privé' : 'Rendre public'} className="text-pm-gold/70 hover:text-pm-gold">
+                        <button onClick={() => handleTogglePublic(m.id)} title={m.isPublic ? 'Rendre privé' : 'Rendre public'} aria-label={m.isPublic ? 'Rendre privé' : 'Rendre public'} className="text-pm-gold/70 hover:text-pm-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-sm p-0.5">
                           {m.isPublic ? <LockOpenIcon className="w-5 h-5" /> : <LockClosedIcon className="w-5 h-5" />}
                         </button>
-                        <button onClick={() => handleEdit(m)} className="text-pm-gold/70 hover:text-pm-gold"><PencilIcon className="w-5 h-5" /></button>
-                        <Link to={`/mannequins/${m.id}`} className="text-pm-gold/70 hover:text-pm-gold"><EyeIcon className="w-5 h-5" /></Link>
-                        <button onClick={() => handleDelete(m.id)} className="text-red-500/70 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
+                        <button onClick={() => handleEdit(m)} title="Modifier" aria-label="Modifier" className="text-pm-gold/70 hover:text-pm-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-sm p-0.5"><PencilIcon className="w-5 h-5" /></button>
+                        <Link to={`/mannequins/${m.id}`} title="Voir" aria-label="Voir" className="text-pm-gold/70 hover:text-pm-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pm-gold rounded-sm p-0.5 inline-flex"><EyeIcon className="w-5 h-5" /></Link>
+                        <button onClick={() => handleDelete(m.id)} title="Supprimer" aria-label="Supprimer" className="text-red-500/70 hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-sm p-0.5"><TrashIcon className="w-5 h-5" /></button>
                       </div>
                     </td>
                   </tr>
