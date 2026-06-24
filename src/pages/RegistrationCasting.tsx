@@ -3,6 +3,7 @@ import { useData } from '../contexts/DataContext';
 import { CastingApplication } from '../types';
 import SEO from '../components/SEO';
 import { UserPlusIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import { sendOnSiteCastingRegistrationConfirmationToUser, sendOnSiteCastingRegistrationNotificationToAdmin } from '../utils/brevoService';
 
 const RegistrationCasting: React.FC = () => {
     const { data, saveData, isInitialized } = useData();
@@ -50,6 +51,30 @@ const RegistrationCasting: React.FC = () => {
 
         try {
             await saveData({ ...data, castingApplications: updatedApplications });
+
+            // Envoyer les emails via Brevo (non bloquant)
+            const emailPromises = [];
+            if (formData.email) {
+                emailPromises.push(
+                    sendOnSiteCastingRegistrationConfirmationToUser({
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        email: formData.email,
+                    })
+                );
+            }
+            emailPromises.push(
+                sendOnSiteCastingRegistrationNotificationToAdmin({
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    gender: formData.gender,
+                    notificationEmail: data?.contactInfo?.notificationEmail || data?.contactInfo?.email || 'contact@perfectmodels.ga',
+                })
+            );
+            Promise.allSettled(emailPromises).catch(() => {});
+
             setFormData(initialFormState); // Reset form
         } catch (error) {
             console.error(error);
