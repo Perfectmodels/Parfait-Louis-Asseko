@@ -97,7 +97,7 @@ const Admin: React.FC = () => {
             role: profile.role ?? '',
             avatarUrl: profile.avatarUrl ?? '',
             username: profile.username ?? '',
-            password: profile.password ?? '',
+            password: '',
         });
         setEditingProfile(true);
     };
@@ -106,8 +106,25 @@ const Admin: React.FC = () => {
         if (!data) return;
         setProfileSaving(true);
         try {
-            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            let finalPassword = data.adminProfile?.password ?? '';
+
+            if (profileForm.password.trim() !== '') {
+                if (window.crypto && window.crypto.subtle) {
+                    const msgUint8 = new TextEncoder().encode(profileForm.password);
+                    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    finalPassword = `$sha256$${hashHex}`;
+                } else {
+                    finalPassword = profileForm.password;
+                }
+            }
+
+            const updatedProfile = { ...profileForm, password: finalPassword };
+
+            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...updatedProfile } });
             setEditingProfile(false);
+            setProfileForm(f => ({ ...f, password: '' })); // Clear password field
         } catch (e) {
             console.error('Erreur sauvegarde profil:', e);
         } finally {
@@ -501,6 +518,7 @@ const Admin: React.FC = () => {
                                         {editingProfile ? (
                                             <div className="relative">
                                                 <input type={showPassword ? 'text' : 'password'} value={profileForm.password}
+                                                    placeholder="Laisser vide pour ne pas modifier"
                                                     onChange={e => setProfileForm(f => ({ ...f, password: e.target.value }))}
                                                     className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 pr-10 text-sm text-pm-off-white font-mono focus:outline-none focus:border-pm-gold transition-colors" />
                                                 <button type="button" onClick={() => setShowPassword(v => !v)}
