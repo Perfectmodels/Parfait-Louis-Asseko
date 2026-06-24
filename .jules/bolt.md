@@ -1,0 +1,3 @@
+## 2024-06-24 - React.memo() for Framer Motion children
+**Learning:** List item components containing expensive `framer-motion` animations should be wrapped in `React.memo()` to prevent input lag when the parent component manages rapidly changing state like search or filters.
+**Action:** Always wrap heavy animated list items in `React.memo()` at the export statement when their parent handles continuous text input or filter state.
