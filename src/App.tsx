@@ -93,7 +93,7 @@ const ScrollToTop: React.FC = () => {
 
 const LoadingFallback: React.FC = () => (
     <div className="w-full h-screen flex items-center justify-center bg-pm-dark">
-        <p className="text-pm-gold text-2xl font-playfair animate-pulse">Chargement...</p>
+        <p className="text-pm-gold text-2xl font-playfair animate-pulse" role="status" aria-live="polite">Chargement...</p>
     </div>
 );
 
