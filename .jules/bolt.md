@@ -1,0 +1,3 @@
+## 2024-10-25 - React.memo on Framer Motion List Items
+**Learning:** In lists with search/filter state (like Models.tsx), child items with expensive framer-motion renders cause main thread blocking and input lag if not memoized. However, in this React TypeScript project, applying `React.memo()` directly to a variable typed as `React.FC<Props>` causes a TS compilation error because `MemoExoticComponent` is not assignable to `React.FC`.
+**Action:** Always wrap the component at the export statement (e.g., `export default React.memo(Comp)`) instead of at variable assignment to avoid TypeScript errors while safely memoizing heavy list items.
