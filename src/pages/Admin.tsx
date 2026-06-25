@@ -97,7 +97,7 @@ const Admin: React.FC = () => {
             role: profile.role ?? '',
             avatarUrl: profile.avatarUrl ?? '',
             username: profile.username ?? '',
-            password: profile.password ?? '',
+            password: '',
         });
         setEditingProfile(true);
     };
@@ -106,7 +106,17 @@ const Admin: React.FC = () => {
         if (!data) return;
         setProfileSaving(true);
         try {
-            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm } });
+            let finalPassword = data.adminProfile?.password || '';
+            if (profileForm.password) {
+                const encoder = new TextEncoder();
+                const dataBuffer = encoder.encode(profileForm.password);
+                const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                finalPassword = `$sha256$${hashHex}`;
+            }
+
+            await saveData({ ...data, adminProfile: { ...data.adminProfile, ...profileForm, password: finalPassword } });
             setEditingProfile(false);
         } catch (e) {
             console.error('Erreur sauvegarde profil:', e);
