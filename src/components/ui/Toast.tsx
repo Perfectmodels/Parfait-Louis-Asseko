@@ -53,6 +53,8 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: (id: string) => void }> = (
   return (
     <motion.div
       layout
+      role={toast.type === 'error' ? 'alert' : 'status'}
+      aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
       initial={{ opacity: 0, x: 60, scale: 0.95 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 60, scale: 0.95 }}
@@ -61,7 +63,11 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: (id: string) => void }> = (
     >
       <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${iconStyles[toast.type]}`} />
       <p className="text-sm font-medium flex-1 leading-snug">{toast.message}</p>
-      <button onClick={() => onDismiss(toast.id)} className="opacity-50 hover:opacity-100 transition-opacity shrink-0">
+      <button
+        onClick={() => onDismiss(toast.id)}
+        className="opacity-50 hover:opacity-100 transition-opacity shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-md p-0.5 -m-0.5"
+        aria-label="Fermer la notification"
+      >
         <XMarkIcon className="w-4 h-4" />
       </button>
     </motion.div>

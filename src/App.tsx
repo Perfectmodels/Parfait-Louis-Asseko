@@ -288,7 +288,7 @@ const App: React.FC = () => {
                     <AppContent />
                     <PWAInstaller />
                 </BrowserRouter>
-            </ToastProvider>
+            <TestToast /></ToastProvider>
         </DataProvider>
     );
 };
