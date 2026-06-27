@@ -44,4 +44,7 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+// ⚡ Bolt Performance Optimization:
+// Memoize ModelCard to prevent expensive framer-motion re-renders
+// when the parent component updates search or filter state, avoiding input lag.
+export default React.memo(ModelCard);

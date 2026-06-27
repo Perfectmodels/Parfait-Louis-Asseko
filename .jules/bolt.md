@@ -1,0 +1,3 @@
+## 2024-10-25 - React.memo for Framer Motion List Items
+**Learning:** In parent components that manage search or filter state (like `Models.tsx`), mapping over child components with `framer-motion` animations without memoization causes severe thread blocking and input lag during keystrokes.
+**Action:** Always wrap child list item components containing expensive render operations (e.g., `ModelCard`) in `React.memo()` at the export statement to prevent unnecessary re-renders during parent state updates.
