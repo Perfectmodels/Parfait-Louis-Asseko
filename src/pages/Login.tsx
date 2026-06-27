@@ -47,6 +47,13 @@ const Login: React.FC = () => {
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
 
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(password);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const hashedPassword = '$sha256$' + hashHex;
+
     // ── 1. Jury concours beauté (RTDB beautyContests/{id}/juries) ─────────────
     try {
       const contestsSnap = await get(ref(rtdb, 'beautyContests'));
@@ -55,9 +62,10 @@ const Login: React.FC = () => {
         for (const [contestId, contestVal] of Object.entries(contestsData)) {
           if (!contestVal?.juries) continue;
           for (const [juryId, juryVal] of Object.entries(contestVal.juries as Record<string, any>)) {
+            const isPasswordMatch = juryVal.password?.startsWith('$sha256$') ? juryVal.password === hashedPassword : juryVal.password === password;
             if (
               juryVal.username?.toLowerCase() === normalizedUsername &&
-              juryVal.password === password
+              isPasswordMatch
             ) {
               sessionStorage.setItem('classroom_access', 'granted');
               sessionStorage.setItem('classroom_role', 'jury-contest');
@@ -78,18 +86,19 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: data.adminProfile, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
     ];
 
-    const foundUser = users.find(u => 
-        (
+    const foundUser = users.find(u => {
+        const isPasswordMatch = u.user.password?.startsWith('$sha256$') ? u.user.password === hashedPassword : u.user.password === password;
+        return (
             ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
             u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+        ) && isPasswordMatch;
+    });
 
     if (foundUser) {
         sessionStorage.setItem('classroom_access', 'granted');
