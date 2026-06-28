@@ -1,0 +1,3 @@
+## 2024-10-25 - React.memo for components with framer-motion
+**Learning:** List item components containing expensive render operations like `framer-motion` animations can cause input lag and thread blocking in parent components that manage high-frequency state updates like search and filtering.
+**Action:** Always wrap these child components in `React.memo()` at the export statement (e.g., `export default React.memo(Component)`) to prevent unnecessary re-renders.
