@@ -6,7 +6,7 @@ service cloud.firestore {
     // --- RÈGLES DE PRODUCTION (À activer après les tests) ---
     // Décommentez ces règles et commentez les règles de développement ci-dessous
     
-    /*
+
     // Collections publiques en lecture, admin en écriture
     match /models/{modelId} {
       allow read: if true;
@@ -133,11 +133,11 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if false;
     }
-    */
+
     
     // --- RÈGLES DE DÉVELOPPEMENT (Actuellement actives) ---
     // À DÉSACTIVER EN PRODUCTION !
-    
+    /*
     // Configurations
     match /config/{document} {
       allow read, write: if true;
@@ -172,5 +172,6 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if true;
     }
+    */
   }
 }
