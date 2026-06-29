@@ -1,0 +1,17 @@
+cat << 'MERGE' > diff.txt
+<<<<<<< SEARCH
+    const foundUser = users.find(u =>
+        (
+            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) ||
+            u.user.name.toLowerCase() === normalizedUsername
+        ) && (u.user.password === password || u.user.password === hashedPassword)
+    );
+=======
+    const foundUser = users.find(u =>
+        (
+            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) ||
+            u.user.name.toLowerCase() === normalizedUsername
+        ) && (u.user.password?.startsWith('$sha256$') ? u.user.password === hashedPassword : u.user.password === password)
+    );
+>>>>>>> REPLACE
+MERGE
