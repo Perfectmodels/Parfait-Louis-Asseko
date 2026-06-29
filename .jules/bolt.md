@@ -1,0 +1,3 @@
+## 2024-11-20 - React.memo() for Framer Motion List Items
+**Learning:** To prevent input lag and thread blocking in parent components managing search/filter state (e.g., `Models.tsx`), child list item components containing expensive render operations (like `framer-motion` animations) must be wrapped in `React.memo()`.
+**Action:** Always wrap child list item components with expensive render operations (like `framer-motion` animations) in `React.memo()` when the parent component manages rapid state changes like search filtering.
