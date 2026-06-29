@@ -47,6 +47,12 @@ const Login: React.FC = () => {
     const timestamp = new Date().toISOString();
     const normalizedUsername = username.toLowerCase().trim();
 
+    const msgUint8 = new TextEncoder().encode(password);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const hashedPassword = `$sha256$${hashHex}`;
+
     // ── 1. Jury concours beauté (RTDB beautyContests/{id}/juries) ─────────────
     try {
       const contestsSnap = await get(ref(rtdb, 'beautyContests'));
@@ -78,7 +84,7 @@ const Login: React.FC = () => {
 
     // ── 2. Utilisateurs standard ──────────────────────────────────────────────
     const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
+        { type: 'admin', user: data.adminProfile || { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
         ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
         ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
         ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
@@ -88,7 +94,7 @@ const Login: React.FC = () => {
         (
             ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
             u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
+        ) && (u.user.password?.startsWith('$sha256$') ? u.user.password === hashedPassword : u.user.password === password)
     );
 
     if (foundUser) {
