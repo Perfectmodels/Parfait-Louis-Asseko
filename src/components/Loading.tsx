@@ -16,9 +16,13 @@ const Loading: React.FC<LoadingProps> = ({
     : 'w-full h-full min-h-[200px]';
 
   return (
-    <div className={`${containerClasses} flex items-center justify-center bg-pm-dark`}>
+    <div
+      className={`${containerClasses} flex items-center justify-center bg-pm-dark`}
+      role="status"
+      aria-live="polite"
+    >
       <div className="flex flex-col items-center gap-4">
-        <span className={`loading loading-ring text-pm-gold loading-${size}`}></span>
+        <span className={`loading loading-ring text-pm-gold loading-${size}`} aria-hidden="true"></span>
         <p className="text-pm-gold text-sm font-montserrat animate-pulse">{text}</p>
       </div>
     </div>
