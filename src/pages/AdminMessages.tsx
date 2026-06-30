@@ -131,7 +131,7 @@ const ComposeModal: React.FC<ComposeProps> = ({ onClose, replyTo, adminName, onS
             <PencilSquareIcon className="w-5 h-5 text-pm-gold" />
             <span className="text-sm font-black uppercase tracking-widest text-white">{replyTo ? 'Répondre' : 'Nouveau message'}</span>
           </div>
-          <button onClick={onClose}><XMarkIcon className="w-5 h-5 text-white/30 hover:text-white" /></button>
+          <button onClick={onClose} aria-label="Fermer" title="Fermer"><XMarkIcon className="w-5 h-5 text-white/30 hover:text-white" /></button>
         </div>
 
         {done ? (
@@ -171,7 +171,7 @@ const ComposeModal: React.FC<ComposeProps> = ({ onClose, replyTo, adminName, onS
                   <div key={i} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
                     <PaperClipIcon className="w-3.5 h-3.5 text-pm-gold/60 shrink-0" />
                     <a href={m.url} target="_blank" rel="noreferrer" className="text-xs text-pm-gold/80 hover:text-pm-gold truncate flex-1">{m.name}</a>
-                    <button type="button" onClick={() => removeMedia(i)}><XMarkIcon className="w-3.5 h-3.5 text-white/30 hover:text-red-400" /></button>
+                    <button type="button" onClick={() => removeMedia(i)} aria-label="Supprimer la pièce jointe" title="Supprimer la pièce jointe"><XMarkIcon className="w-3.5 h-3.5 text-white/30 hover:text-red-400" /></button>
                   </div>
                 ))}
               </div>
@@ -442,10 +442,10 @@ const AdminMessages: React.FC = () => {
                     className="p-1.5 text-white/20 hover:text-white/60 transition-colors" title="Archiver">
                     <ArchiveBoxIcon className="w-4 h-4" />
                   </button>
-                  <button onClick={() => deleteMsg(selected.id)} className="p-1.5 text-red-500/40 hover:text-red-400 transition-colors">
+                  <button onClick={() => deleteMsg(selected.id)} className="p-1.5 text-red-500/40 hover:text-red-400 transition-colors" aria-label="Supprimer" title="Supprimer">
                     <TrashIcon className="w-4 h-4" />
                   </button>
-                  <button onClick={() => setSelected(null)} className="p-1.5 text-white/20 hover:text-white transition-colors">
+                  <button onClick={() => setSelected(null)} className="p-1.5 text-white/20 hover:text-white transition-colors" aria-label="Fermer" title="Fermer">
                     <XMarkIcon className="w-4 h-4" />
                   </button>
                 </div>
