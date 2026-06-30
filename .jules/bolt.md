@@ -1,0 +1,3 @@
+## 2024-10-25 - React.memo for List Items with Search State
+**Learning:** In React, typing in a search input causes the parent component (e.g., Models) to re-render, which in turn re-renders all child list items. If these child items contain expensive render operations like framer-motion animations, it causes noticeable input lag and blocks the main thread.
+**Action:** Always wrap child list item components in React.memo() when the parent manages search or filter state that changes frequently. When doing so in TypeScript, define the component normally and wrap it at the export statement (e.g., export default React.memo(Comp)) to avoid type mismatch errors with React.FC.

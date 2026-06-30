@@ -44,4 +44,6 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   );
 };
 
-export default ModelCard;
+// ⚡ Bolt: Wrapped in React.memo to prevent unnecessary re-renders when parent search state changes.
+// Impact: Reduces rendering time for large grids by skipping re-evaluation of unchanged items.
+export default React.memo(ModelCard);
