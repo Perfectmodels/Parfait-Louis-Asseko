@@ -1,0 +1,4 @@
+## 2024-10-25 - Fix Insecure Default Firebase Database Rules
+**Vulnerability:** The Firebase Realtime Database and Firestore rules were configured with overly permissive development rules (`allow read, write: if true;`), allowing unauthenticated read and write access to all data.
+**Learning:** Deploying an application while development rules are active exposes the entire database to unauthorized manipulation. Production rules must be explicitly enabled to enforce authentication and role-based access control.
+**Prevention:** Always verify Firebase security rules prior to deploying to a production environment. Use development environments with isolated databases for permissive testing.
