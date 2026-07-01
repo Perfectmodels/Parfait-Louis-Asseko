@@ -39,6 +39,10 @@ const ImageGeneration = lazy(() => import('./pages/ImageGeneration'));
 const ImageAnalysis = lazy(() => import('./pages/ImageAnalysis'));
 const LiveChat = lazy(() => import('./pages/LiveChat'));
 
+// Formation Avancée
+const AdvancedTraining = lazy(() => import('./pages/AdvancedTraining'));
+const TrainingModuleView = lazy(() => import('./pages/TrainingModuleView'));
+
 
 // Admin Pages
 const Admin = lazy(() => import('./pages/Admin'));
@@ -93,7 +97,7 @@ const ScrollToTop: React.FC = () => {
 
 const LoadingFallback: React.FC = () => (
     <div className="w-full h-screen flex items-center justify-center bg-pm-dark">
-        <p className="text-pm-gold text-2xl font-playfair animate-pulse">Chargement...</p>
+        <img src="/logo.svg" alt="PMM" className="w-24 h-24 animate-pulse" />
     </div>
 );
 
@@ -149,6 +153,10 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/miss-one-light" element={<MissOneLight />} />
                     <Route path="/concours" element={<BeautyContest />} />
                     <Route path="/concours/jury" element={<ProtectedRoute role="jury-contest"><JuryContest /></ProtectedRoute>} />
+                    
+                    {/* Formation Avancée - Accessible uniquement aux mannequins et admin */}
+                    <Route path="/formation" element={<ProtectedRoute role="student"><AdvancedTraining /></ProtectedRoute>} />
+                    <Route path="/formation/module/:moduleId" element={<ProtectedRoute role="student"><TrainingModuleView /></ProtectedRoute>} />
 
                     {/* Protected Routes */}
                     <Route path="/formations" element={<ProtectedRoute role="student"><Activity /></ProtectedRoute>} />

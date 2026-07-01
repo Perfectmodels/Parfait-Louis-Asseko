@@ -31,7 +31,7 @@ const TEMPLATES = [
     id: 'casting',
     label: 'Appel à Casting',
     subject: '🎬 Nouveau Casting — Perfect Models Management',
-    body: `Bonjour,\n\nNous avons le plaisir de vous annoncer l'ouverture d'un nouveau casting.\n\n📅 Date : [DATE]\n📍 Lieu : [LIEU]\n\nPour postuler, rendez-vous sur notre site : https://perfectmodels.ga/casting-formulaire\n\nNous comptons sur votre présence.\n\nCordialement,\nL'équipe Perfect Models Management`,
+    body: `Bonjour,\n\nNous avons le plaisir de vous annoncer l'ouverture d'un nouveau casting.\n\n📅 Date : [DATE]\n📍 Lieu : [LIEU]\n\nPour postuler, rendez-vous sur notre site : https://perfectmodels.online/casting-formulaire\n\nNous comptons sur votre présence.\n\nCordialement,\nL'équipe Perfect Models Management`,
   },
   {
     id: 'fashionday',

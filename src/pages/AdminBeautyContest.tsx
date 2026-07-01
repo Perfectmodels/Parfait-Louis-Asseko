@@ -601,7 +601,7 @@ export default function AdminBeautyContest() {
   const btnP = 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-2 px-5 rounded-lg flex items-center gap-2 transition-all';
   const btnS = 'bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 transition-all text-sm';
 
-  if (loading) return <div className='min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center'><div className='text-white text-xl'>Chargement...</div></div>;
+  if (loading) return <div className='min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center'><img src="/logo.svg" alt="PMM" className="w-24 h-24 animate-pulse" /></div>;
 
   // ── Stage selector bar (shown when a contest is selected) ─────────────────
   const StageSelectorBar = () => (

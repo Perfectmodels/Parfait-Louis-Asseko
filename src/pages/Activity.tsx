@@ -128,37 +128,20 @@ const StudentView: React.FC<{ onLogout: () => void; courseData: Module[]; siteIm
 
 // --- MAIN COMPONENT ---
 const Formations: React.FC = () => {
-    const { data, isInitialized } = useData();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const hasAccess = sessionStorage.getItem('classroom_access');
-        if (hasAccess !== 'granted') {
-            navigate('/login', { replace: true });
-        }
+        // Rediriger vers le nouveau système de formation avancée
+        navigate('/formation', { replace: true });
     }, [navigate]);
 
-    const handleLogout = () => {
-        sessionStorage.removeItem('classroom_access');
-        sessionStorage.removeItem('classroom_role');
-        sessionStorage.removeItem('userId');
-        navigate('/login');
-    };
-
-    if (!isInitialized || !data) {
-        return <div className="min-h-screen bg-pm-dark"></div>; 
-    }
-
     return (
-        <>
-            <SEO 
-              title="PMM Classroom | Formation Mannequin Professionnel"
-              description="Accès exclusif à la plateforme de formation PMM Classroom. Un programme complet pour les mannequins de l'agence, couvrant toutes les facettes du métier pour une carrière réussie."
-              keywords="formation mannequin gabon, cours de mannequinat, devenir mannequin professionnel, pmm classroom, école mannequin"
-              image={data.siteImages.classroomBg}
-            />
-            <StudentView onLogout={handleLogout} courseData={data.courseData} siteImages={data.siteImages} />
-        </>
+        <div className="min-h-screen bg-pm-dark flex items-center justify-center">
+            <div className="text-center">
+                <div className="w-12 h-px bg-pm-gold animate-pulse mx-auto mb-4" />
+                <p className="text-white/40 text-sm">Redirection vers la formation avancée...</p>
+            </div>
+        </div>
     );
 };
 

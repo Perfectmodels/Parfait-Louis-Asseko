@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const BASE_URL = 'https://www.perfectmodels.ga';
+const BASE_URL = 'https://perfectmodels.online';
 const SITE_NAME = 'Perfect Models Management';
 const SITE_DESCRIPTION = 'Actualités, interviews et tendances mode au Gabon. Découvrez les coulisses de la mode gabonaise avec Perfect Models Management.';
 

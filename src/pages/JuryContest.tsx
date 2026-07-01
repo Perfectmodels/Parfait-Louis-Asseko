@@ -141,7 +141,7 @@ export default function JuryContest() {
   };
 
   const handleLogout = () => { sessionStorage.clear(); navigate('/login'); };
-  if (loading) return <div className='min-h-screen bg-pm-dark flex items-center justify-center'><span className='loading loading-ring loading-lg text-pm-gold'></span></div>;
+  if (loading) return <div className='min-h-screen bg-pm-dark flex items-center justify-center'><img src="/logo.svg" alt="PMM" className="w-24 h-24 animate-pulse" /></div>;
   if (!contestId || !contest) return (
     <div className='min-h-screen bg-pm-dark flex flex-col items-center justify-center gap-4 px-4 text-center'>
       <SEO title='Jury — Notation' noIndex/>

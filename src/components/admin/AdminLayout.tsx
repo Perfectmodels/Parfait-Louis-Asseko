@@ -10,6 +10,7 @@ import {
     PaperAirplaneIcon,
     BellIcon,
     BellSlashIcon,
+    AcademicCapIcon,
 } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
@@ -70,7 +71,7 @@ const navSections = [
     {
         title: 'Opérations',
         links: [
-            { to: '/admin/classroom', icon: BookOpenIcon, label: 'Classroom' },
+            { to: '/formation', icon: AcademicCapIcon, label: 'Formation Avancée' },
             { to: '/admin/classroom-progress', icon: PresentationChartLineIcon, label: 'Progression' },
             { to: '/admin/model-access', icon: KeyIcon, label: 'Accès Modèles' },
             { to: '/admin/absences', icon: CalendarIcon, label: 'Présences'},

@@ -10,7 +10,7 @@ const TermsOfUse: React.FC = () => (
         <p>En accédant à ce site, vous acceptez les présentes conditions d'utilisation. Perfect Models Management se réserve le droit de modifier ces conditions à tout moment.</p>
         <p>Tout le contenu présent sur ce site (textes, images, vidéos) est la propriété exclusive de Perfect Models Management et est protégé par les lois sur la propriété intellectuelle.</p>
         <p>L'utilisation de ce site à des fins commerciales sans autorisation préalable est strictement interdite.</p>
-        <p>Pour toute question, contactez-nous à <a href="mailto:contact@perfectmodels.ga" className="text-pm-gold hover:underline">contact@perfectmodels.ga</a>.</p>
+        <p>Pour toute question, contactez-nous à <a href="mailto:contact@perfectmodels.online" className="text-pm-gold hover:underline">contact@perfectmodels.online</a>.</p>
         <p className="text-white/30 text-sm">Dernière mise à jour : Janvier 2025</p>
       </div>
     </div>

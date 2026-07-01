@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const BASE_URL = 'https://www.perfectmodels.ga';
+const BASE_URL = 'https://perfectmodels.online';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS

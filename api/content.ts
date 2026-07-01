@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const BASE_URL = 'https://www.perfectmodels.ga';
+const BASE_URL = 'https://perfectmodels.online';
 const FIREBASE_PROJECT_ID = 'perfectmodels-4e5fa';
 
 // Embedded data for fallback

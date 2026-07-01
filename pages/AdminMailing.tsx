@@ -47,7 +47,7 @@ const AdminMailing: React.FC = () => {
         const emailData = {
             sender: {
                 name: "Perfect Models Management",
-                email: "contact@perfectmodels.ga"
+                email: "contact@perfectmodels.online"
             },
             to: recipients.map(email => ({ email })),
             subject: subject,

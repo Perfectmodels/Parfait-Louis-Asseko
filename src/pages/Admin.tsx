@@ -15,6 +15,8 @@ import { useData } from '../contexts/DataContext';
 import { requestNotificationPermission, getCachedFcmToken } from '../utils/fcmService';
 import { ref, get } from 'firebase/database';
 import { db } from '../realtimedbConfig';
+import TrainingStatsWidget from '../components/TrainingStatsWidget';
+import { loadProgressFromLocal } from '../utils/trainingHelpers';
 
 // Import test utilities in development
 if (import.meta.env.DEV) {
@@ -174,6 +176,13 @@ const Admin: React.FC = () => {
         return { totalModels, recentActivities: [] as any[] };
     }, [data]);
 
+    // Charger la progression de formation
+    const [trainingProgress, setTrainingProgress] = useState<any[]>([]);
+    useEffect(() => {
+        const progress = loadProgressFromLocal();
+        setTrainingProgress(progress);
+    }, []);
+
     const activityIconMap: Record<string, React.ElementType> = {
         casting: ClipboardDocumentListIcon,
         booking: BriefcaseIcon,
@@ -238,6 +247,11 @@ const Admin: React.FC = () => {
                         <StatCard title="Demandes Booking"     value={lazyStats.newBookingRequests} icon={BriefcaseIcon}             link="/admin/bookings"            isNew={lazyStats.newBookingRequests > 0} accent="text-blue-400" />
                         <StatCard title="Réservations PFD"     value={lazyStats.newReservations}    icon={StarIcon}                  link="/admin/fashion-day-events"  isNew={lazyStats.newReservations > 0}    accent="text-purple-400" />
                         <StatCard title="Total Mannequins"     value={stats.totalModels}            icon={UsersIcon}                 link="/admin/models"                                                       accent="text-white/50" />
+                    </div>
+
+                    {/* Training Stats */}
+                    <div className="mb-8">
+                        <TrainingStatsWidget allProgress={trainingProgress} />
                     </div>
 
                     {/* Activity + Status */}
@@ -323,10 +337,10 @@ const Admin: React.FC = () => {
                         {
                             label: 'Formation',
                             cards: [
-                                { title: 'Classroom',     icon: AcademicCapIcon,          link: '/admin/classroom',          description: 'Modules de formation.' },
-                                { title: 'Progression',   icon: BookOpenIcon,             link: '/admin/classroom-progress', description: 'Suivi des mannequins.' },
-                                { title: 'Accès Modèles', icon: KeyIcon,                  link: '/admin/model-access',       description: 'Identifiants et accès.' },
-                                { title: 'Récupération',  icon: ExclamationTriangleIcon,  link: '/admin/recovery-requests',  description: 'Demandes de récupération.' },
+                                { title: 'Formation Avancée', icon: AcademicCapIcon,      link: '/formation',                description: 'Modules de formation professionnelle.' },
+                                { title: 'Progression',       icon: BookOpenIcon,         link: '/admin/classroom-progress', description: 'Suivi des mannequins.' },
+                                { title: 'Accès Modèles',     icon: KeyIcon,              link: '/admin/model-access',       description: 'Identifiants et accès.' },
+                                { title: 'Récupération',      icon: ExclamationTriangleIcon, link: '/admin/recovery-requests', description: 'Demandes de récupération.' },
                             ]
                         },
                         {
@@ -462,7 +476,7 @@ const Admin: React.FC = () => {
                         <div className="space-y-5">
                             {[
                                 { label: 'Nom complet',   field: 'name',      type: 'text',  placeholder: 'Ex: Parfait Louis Asseko' },
-                                { label: 'Email',         field: 'email',     type: 'email', placeholder: 'contact@perfectmodels.ga' },
+                                { label: 'Email',         field: 'email',     type: 'email', placeholder: 'contact@perfectmodels.online' },
                                 { label: 'Téléphone',     field: 'phone',     type: 'tel',   placeholder: '+241 077 00 00 00' },
                                 { label: 'Rôle / Titre',  field: 'role',      type: 'text',  placeholder: 'Ex: Directeur Artistique' },
                                 { label: "URL de l'avatar", field: 'avatarUrl', type: 'url', placeholder: 'https://...' },

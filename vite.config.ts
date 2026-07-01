@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', 'api-key': apiKey },
                   body: JSON.stringify({
-                    sender: { name: 'Perfect Models Management', email: env.DEFAULT_FROM_EMAIL || 'contact@perfectmodels.ga' },
+                    sender: { name: 'Perfect Models Management', email: env.DEFAULT_FROM_EMAIL || 'contact@perfectmodels.online' },
                     to, subject, htmlContent,
                     ...(replyTo ? { replyTo } : {}),
                   }),

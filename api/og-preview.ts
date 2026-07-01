@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const BASE_URL = 'https://www.perfectmodels.ga';
+const BASE_URL = 'https://perfectmodels.online';
 const SITE_NAME = 'Perfect Models Management';
-const DEFAULT_IMAGE = 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg';
+const DEFAULT_IMAGE = 'https://perfectmodels.online/og-image.jpg';
 const DEFAULT_DESCRIPTION = "Agence de mannequins d'élite à Libreville, Gabon. Découvrez nos talents, nos événements mode et nos services professionnels.";
 
 // Firebase config

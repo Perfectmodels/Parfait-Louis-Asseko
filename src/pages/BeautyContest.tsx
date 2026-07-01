@@ -236,7 +236,7 @@ export default function BeautyContest() {
 
   if (loading) return (
     <div className='w-full min-h-screen bg-pm-dark flex items-center justify-center'>
-      <span className='loading loading-ring loading-lg text-pm-gold'></span>
+      <img src="/logo.svg" alt="PMM" className="w-24 h-24 animate-pulse" />
     </div>
   );
 

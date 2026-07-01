@@ -61,18 +61,18 @@ const CastingForm: React.FC = () => {
           email: form.email,
           city: form.city,
         }),
-        sendCastingNotificationToAdmin({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          phone: form.phone,
-          city: form.city,
-          gender: form.gender,
-          height: form.height,
-          experience: form.experience,
-          instagram: form.instagram || undefined,
-          notificationEmail: 'contact@perfectmodels.ga',
-        }),
+sendCastingNotificationToAdmin({
+           firstName: form.firstName,
+           lastName: form.lastName,
+           email: form.email,
+           phone: form.phone,
+           city: form.city,
+           gender: form.gender,
+           height: form.height,
+           experience: form.experience,
+           instagram: form.instagram || undefined,
+           notificationEmail: 'contact@perfectmodels.online',
+         }),
       ]).catch(() => {});
       
       setDone(true);

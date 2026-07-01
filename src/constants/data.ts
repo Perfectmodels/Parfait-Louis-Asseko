@@ -24,10 +24,10 @@ export const socialLinks: SocialLinks = {
 };
 
 export const contactInfo: ContactInfo = {
-  email: 'contact@perfectmodels.ga',
+  email: 'contact@perfectmodels.online',
   phone: '+241 077 00 00 00',
   address: 'Libreville, Gabon',
-  notificationEmail: 'contact@perfectmodels.ga',
+  notificationEmail: 'contact@perfectmodels.online',
 };
 
 export const siteImages: SiteImages = {

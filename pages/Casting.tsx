@@ -7,7 +7,7 @@ import { useData } from '../contexts/DataContext';
 
 const Casting: React.FC = () => {
   const { data, isInitialized } = useData();
-  const castingDate = "2025-09-06T14:00:00";
+  const castingDate = "2026-09-06T14:00:00";
   
   if (!isInitialized || !data) {
     return <div className="min-h-screen bg-pm-dark" />;
@@ -40,7 +40,7 @@ const Casting: React.FC = () => {
       <SEO 
         title="Grand Casting National | Devenez Mannequin PMM"
         description="Saisissez votre chance ! Participez au grand casting national de Perfect Models Management pour devenir notre prochain visage. Découvrez les dates, lieux et conditions pour lancer votre carrière."
-        keywords="casting mannequin gabon 2025, devenir mannequin libreville, casting pmm, agence de casting gabon, comment devenir mannequin"
+        keywords="casting mannequin gabon 2026, devenir mannequin libreville, casting pmm, agence de casting gabon, comment devenir mannequin"
         image={posterUrl}
       />
       {/* Hero Section */}
@@ -52,7 +52,7 @@ const Casting: React.FC = () => {
         <div className="absolute inset-0 bg-pm-dark/80 backdrop-blur-sm"></div>
         <div className="relative z-10 p-6">
           <h1 id="casting-title" className="text-4xl md:text-6xl font-playfair text-pm-gold font-extrabold" style={{ textShadow: '0 0 15px rgba(212, 175, 55, 0.7)' }}>
-            Grand Casting National 2025
+            Grand Casting National 2026
           </h1>
           <p className="mt-4 text-lg md:text-xl text-pm-off-white/90 max-w-2xl mx-auto">
             Perfect Models Management recherche ses nouveaux visages. Saisissez votre chance de rejoindre l'élite de la mode.
@@ -65,7 +65,7 @@ const Casting: React.FC = () => {
             {/* Event Info Section */}
             <section aria-label="Informations sur le casting" className="bg-black p-8 border border-pm-gold/20 -mt-40 relative z-20 max-w-5xl mx-auto shadow-2xl shadow-pm-gold/10">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <InfoItem icon={CalendarDaysIcon} title="Date" content="Samedi 6 Sept. 2025" />
+                    <InfoItem icon={CalendarDaysIcon} title="Date" content="Samedi 6 Sept. 2026" />
                     <InfoItem icon={ClockIcon} title="Heure" content="14h00" />
                     <InfoItem icon={MapPinIcon} title="Lieu" content="Complexe Eli, Ancien Sobraga" />
                 </div>

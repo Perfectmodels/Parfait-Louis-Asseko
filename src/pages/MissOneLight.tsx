@@ -99,7 +99,7 @@ function downloadPaymentPDF(p: {
 <body>
 <div class="header">
   <h1>Miss One Light 2026</h1>
-  <p>Perfect Models Management · perfectmodels.ga</p>
+  <p>Perfect Models Management · perfectmodels.online</p>
 </div>
 
 <div style="text-align:center"><span class="badge">Bon de vote — À conserver</span></div>
@@ -376,10 +376,7 @@ export default function MissOneLight() {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-pm-dark flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <span className="loading loading-ring loading-lg text-pm-gold"></span>
-          <p className="text-pm-gold text-sm font-montserrat animate-pulse">Chargement Miss One Light...</p>
-        </div>
+        <img src="/logo.svg" alt="PMM" className="w-24 h-24 animate-pulse" />
       </div>
     );
   }

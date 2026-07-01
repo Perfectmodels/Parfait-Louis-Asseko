@@ -159,10 +159,10 @@ const ModelDashboard: React.FC = () => {
 
           {/* Liens rapides */}
           <div className="space-y-2 mt-auto">
-            <Link to="/formations"
+            <Link to="/formation"
               className="flex items-center gap-3 p-3 border border-white/5 hover:border-pm-gold/30 hover:bg-pm-gold/5 transition-all group">
               <BookOpenIcon className="w-4 h-4 text-pm-gold/60 group-hover:text-pm-gold" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors">Classroom</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors">Formation Avancée</span>
             </Link>
             <Link to={`/mannequins/${editableModel.id}`}
               className="flex items-center gap-3 p-3 border border-white/5 hover:border-pm-gold/30 hover:bg-pm-gold/5 transition-all group">
@@ -307,7 +307,7 @@ const ModelDashboard: React.FC = () => {
                 <div className="glass-card p-8 text-center">
                   <BookOpenIcon className="w-12 h-12 text-pm-gold/20 mx-auto mb-4" />
                   <p className="text-white/40 text-sm">Commencez votre formation pour voir vos résultats ici.</p>
-                  <Link to="/formations" className="inline-block mt-4 btn-premium !py-2 !px-6 !text-[10px]">Accéder au Classroom</Link>
+                  <Link to="/formation" className="inline-block mt-4 btn-premium !py-2 !px-6 !text-[10px]">Accéder à la Formation Avancée</Link>
                 </div>
               )}
             </div>

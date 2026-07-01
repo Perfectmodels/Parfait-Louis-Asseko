@@ -11,8 +11,8 @@ interface SEOProps {
 }
 
 const SITE_NAME = 'Perfect Models Management';
-const BASE_URL = 'https://www.perfectmodels.ga';
-const DEFAULT_IMAGE = 'https://i.ibb.co/K2wS0Pz/hero-bg.jpg';
+const BASE_URL = 'https://perfectmodels.online';
+const DEFAULT_IMAGE = 'https://perfectmodels.online/og-image.jpg';
 const DEFAULT_DESCRIPTION =
   "Agence de mannequins d'élite à Libreville, Gabon. Découvrez nos talents, nos événements mode et nos services professionnels.";
 const DEFAULT_KEYWORDS =
@@ -29,7 +29,7 @@ const LOCAL_BUSINESS_SCHEMA = {
   logo: 'https://i.ibb.co/fVBxPNTP/T-shirt.png',
   image: DEFAULT_IMAGE,
   telephone: '+241077000000',
-  email: 'contact@perfectmodels.ga',
+  email: 'contact@perfectmodels.online',
   foundingDate: '2021',
   address: {
     '@type': 'PostalAddress',
@@ -106,7 +106,15 @@ const SEO: React.FC<SEOProps> = ({
     setMeta('language', 'fr');
     setMeta('content-language', 'fr-GA');
 
-    // Open Graph
+    // Search Console verification
+setMeta('google-site-verification', 'your-google-search-console-token');
+
+// AI Engine Optimization (AIO) - for emerging AI crawlers
+setMeta('ai-crawler', 'allow');
+setMeta('index-agent', 'index,follow');
+
+// Open Graph
+setMeta('og:title', fullTitle, 'property');
     setMeta('og:title', fullTitle, 'property');
     setMeta('og:description', description, 'property');
     setMeta('og:image', absoluteImage, 'property');

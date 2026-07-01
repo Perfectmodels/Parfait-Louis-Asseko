@@ -742,7 +742,7 @@ export default function AdminMissOneLight() {
 
   if (loading) return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-      <div className="text-white text-xl">Chargement...</div>
+      <img src="/logo.svg" alt="PMM" className="w-24 h-24 animate-pulse" />
     </div>
   );
 
