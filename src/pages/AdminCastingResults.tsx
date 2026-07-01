@@ -9,6 +9,7 @@ import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
 import { ref, update } from 'firebase/database';
 import { db } from '../realtimedbConfig';
+import { sendCastingAcceptedNotification } from '../utils/brevoService';
 
 const AdminCastingResults: React.FC = () => {
     const { data, saveData } = useData();
@@ -118,6 +119,15 @@ const AdminCastingResults: React.FC = () => {
 
         try {
             await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+            sendCastingAcceptedNotification({
+                firstName: app.firstName,
+                lastName: app.lastName,
+                email: app.email,
+                phone: app.phone,
+                city: app.city,
+                height: app.height,
+                instagram: app.instagram,
+            }).catch(() => {});
             alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`);
         } catch (error) {
             console.error("Erreur lors de la création du mannequin:", error);

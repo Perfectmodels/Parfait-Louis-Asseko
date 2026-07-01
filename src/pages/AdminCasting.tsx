@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
 import { CastingApplication, CastingApplicationStatus, Model } from '../types';
 import SEO from '../components/SEO';
@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { sendCastingAcceptedNotification, sendCastingRejectedNotification, sendCastingPresignedNotification } from '../utils/brevoService';
 
 const PAGE_SIZE = 15;
@@ -23,7 +24,6 @@ const AdminCasting: React.FC = () => {
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
     const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
-    const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({});
 
     const filteredApps = useMemo(() => {
         if (filter === 'Toutes') return pagedApps;
@@ -43,39 +43,38 @@ const AdminCasting: React.FC = () => {
         }
     };
 
-    const handleUpdateStatus = async (appId: string, newStatus: CastingApplicationStatus) => {
+    const handleUpdateStatus = async (app: CastingApplication, newStatus: CastingApplicationStatus, rejectionReason?: string) => {
         try {
             const { update, ref: fbRef } = await import('firebase/database');
             const { db: fbDb } = await import('../realtimedbConfig');
-            await update(fbRef(fbDb, `castingApplications/${appId}`), { status: newStatus });
+            await update(fbRef(fbDb, `castingApplications/${app.id}`), { status: newStatus });
             invalidateCache('castingApplications');
             refresh();
-            if (selectedApp?.id === appId) setSelectedApp(prev => prev ? { ...prev, status: newStatus } : null);
-            
-            // Send email notification based on status
+            if (selectedApp?.id === app.id) setSelectedApp(prev => prev ? { ...prev, status: newStatus } : null);
+
             if (newStatus === 'Accepté') {
                 sendCastingAcceptedNotification({
-                    firstName: selectedApp?.firstName || '',
-                    lastName: selectedApp?.lastName || '',
-                    email: selectedApp?.email || '',
-                    phone: selectedApp?.phone || '',
-                    city: selectedApp?.city || '',
-                    height: selectedApp?.height || '',
-                    instagram: selectedApp?.instagram,
+                    firstName: app.firstName,
+                    lastName: app.lastName,
+                    email: app.email,
+                    phone: app.phone,
+                    city: app.city,
+                    height: app.height,
+                    instagram: app.instagram,
                 }).catch(() => {});
             } else if (newStatus === 'Refusé') {
-                const reasons = rejectionReasons[appId] || 'Votre profil ne correspond pas à nos besoins actuels. Nous vous encourageons à réessayer lors de futurs castings.';
+                const reasons = rejectionReason?.trim() || 'Votre profil ne correspond pas à nos besoins actuels. Nous vous encourageons à réessayer lors de futurs castings.';
                 sendCastingRejectedNotification({
-                    firstName: selectedApp?.firstName || '',
-                    lastName: selectedApp?.lastName || '',
-                    email: selectedApp?.email || '',
+                    firstName: app.firstName,
+                    lastName: app.lastName,
+                    email: app.email,
                     rejectionReasons: reasons,
                 }).catch(() => {});
             } else if (newStatus === 'Présélectionné') {
                 sendCastingPresignedNotification({
-                    firstName: selectedApp?.firstName || '',
-                    lastName: selectedApp?.lastName || '',
-                    email: selectedApp?.email || '',
+                    firstName: app.firstName,
+                    lastName: app.lastName,
+                    email: app.email,
                 }).catch(() => {});
             }
         } catch (e) {
@@ -259,20 +258,51 @@ const AdminCasting: React.FC = () => {
                 </div>
             </div>
         </div>
-        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={(id, status) => handleUpdateStatus(id, status)} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} rejectionReasons={rejectionReasons} setRejectionReasons={setRejectionReasons} />}
+        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} />}
         </>
     );
 };
 
 const ApplicationModal: React.FC<{
-    app: CastingApplication, 
-    onClose: () => void, 
-    onUpdateStatus: (id: string, status: CastingApplicationStatus, rejectionReasons?: Record<string, string>) => void, 
+    app: CastingApplication,
+    onClose: () => void,
+    onUpdateStatus: (app: CastingApplication, status: CastingApplicationStatus, rejectionReason?: string) => void,
     getStatusColor: (status: CastingApplicationStatus) => string,
     onValidateAndCreateModel: (app: CastingApplication) => void,
-    rejectionReasons?: Record<string, string>,
-    setRejectionReasons?: (reasons: Record<string, string>) => void,
-}> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel, rejectionReasons, setRejectionReasons }) => {
+}> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel }) => {
+    const [pendingStatus, setPendingStatus] = useState<CastingApplicationStatus>(app.status);
+    const [rejectionReason, setRejectionReason] = useState('');
+    const [confirmAction, setConfirmAction] = useState<{ status: CastingApplicationStatus; reason?: string } | null>(null);
+
+    useEffect(() => {
+        setPendingStatus(app.status);
+        setRejectionReason('');
+        setConfirmAction(null);
+    }, [app.id, app.status]);
+
+    const statusLabel = (status: CastingApplicationStatus) => {
+        switch (status) {
+            case 'Nouveau': return 'Mettre en Nouveau';
+            case 'Présélectionné': return 'Mettre en Présélectionné';
+            case 'Accepté': return 'Accepter la candidature';
+            case 'Refusé': return 'Refuser la candidature';
+        }
+    };
+
+    const handleSaveStatus = () => {
+        if (pendingStatus === app.status) return;
+        if (pendingStatus === 'Refusé' && !rejectionReason.trim()) return;
+        setConfirmAction({ status: pendingStatus, reason: pendingStatus === 'Refusé' ? rejectionReason.trim() : undefined });
+    };
+
+    const confirmMessage = confirmAction
+        ? confirmAction.status === 'Refusé'
+            ? 'Le candidat recevra un email de refus. Confirmez-vous l’envoi ?'
+            : confirmAction.status === 'Accepté'
+                ? 'Le candidat sera marqué comme accepté et recevra un email de notification. Confirmez-vous ?'
+                : 'Voulez-vous mettre à jour le statut de cette candidature ?'
+        : '';
+
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
@@ -290,7 +320,7 @@ const ApplicationModal: React.FC<{
                         <InfoItem label="Ville" value={app.city} />
                         <InfoItem label="Genre" value={app.gender} />
                     </Section>
-                     <Section title="Mensurations & Physique">
+                    <Section title="Mensurations & Physique">
                         <InfoItem label="Taille" value={`${app.height} cm`} />
                         <InfoItem label="Poids" value={`${app.weight} kg`} />
                         <InfoItem label="Poitrine" value={`${app.chest} cm`} />
@@ -337,34 +367,80 @@ const ApplicationModal: React.FC<{
                         <Section title="Statut">
                             <div className="flex items-center gap-2 flex-wrap">
                                 {(['Nouveau', 'Présélectionné', 'Accepté', 'Refusé'] as const).map(status => (
-                                    <button key={status} onClick={() => onUpdateStatus(app.id, status)} className={`px-2 py-0.5 text-xs font-bold rounded-full border transition-all ${app.status === status ? getStatusColor(status) : 'border-pm-off-white/50 text-pm-off-white/80 hover:bg-pm-dark'}`}>
+                                    <button
+                                        key={status}
+                                        type="button"
+                                        onClick={() => setPendingStatus(status)}
+                                        className={`px-2 py-0.5 text-xs font-bold rounded-full border transition-all ${pendingStatus === status ? getStatusColor(status) : 'border-pm-off-white/50 text-pm-off-white/80 hover:bg-pm-dark'}`}
+                                    >
                                         {status}
                                     </button>
                                 ))}
                             </div>
-                            {app.status === 'Refusé' && (
+                            <div className="mt-4 space-y-3">
+                                <div>
+                                    <p className="text-[10px] uppercase tracking-widest text-pm-off-white/40 mb-1">Statut actuel</p>
+                                    <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-full border ${getStatusColor(app.status)}`}>{app.status}</span>
+                                </div>
+                                {pendingStatus !== app.status && (
+                                    <div>
+                                        <p className="text-[10px] uppercase tracking-widest text-pm-off-white/40 mb-1">Nouveau statut</p>
+                                        <span className={`inline-flex items-center px-3 py-1 text-xs font-bold rounded-full border ${getStatusColor(pendingStatus)}`}>{pendingStatus}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {pendingStatus === 'Refusé' && (
                                 <div className="mt-4">
                                     <label className="text-[10px] uppercase tracking-widest text-pm-off-white/40 block mb-2">Raisons du refus (email envoyé au candidat)</label>
                                     <textarea
-                                        value={rejectionReasons[app.id] || ''}
-                                        onChange={(e) => setRejectionReasons && setRejectionReasons(prev => ({ ...prev, [app.id]: e.target.value }))}
-                                        placeholder="Ex: Silhouette ne correspond pas à nos besoins actuels..."
+                                        value={rejectionReason}
+                                        onChange={(e) => setRejectionReason(e.target.value)}
+                                        placeholder="Ex: La sélection actuelle cible un type de profil différent."
                                         className="w-full bg-pm-dark/50 border border-pm-gold/30 rounded-lg px-3 py-2 text-sm text-pm-off-white placeholder:text-pm-off-white/30 focus:outline-none focus:border-pm-gold"
-                                        rows={3}
+                                        rows={4}
                                     />
+                                    <p className="text-xs text-pm-off-white/50 mt-2">L'email de refus sera envoyé uniquement après l'enregistrement.</p>
                                 </div>
                             )}
                         </Section>
                     </div>
                 </main>
-                <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
+                <footer className="p-4 border-t border-pm-gold/20 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="flex-1">
+                        {pendingStatus !== app.status && (
+                            <button
+                                type="button"
+                                onClick={handleSaveStatus}
+                                disabled={pendingStatus === app.status || (pendingStatus === 'Refusé' && !rejectionReason.trim())}
+                                className="w-full md:w-auto px-4 py-2 text-sm font-bold rounded-full bg-pm-gold text-pm-dark hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {statusLabel(pendingStatus)}
+                            </button>
+                        )}
+                    </div>
                     {app.status === 'Présélectionné' && (
-                        <button onClick={() => onValidateAndCreateModel(app)} className="px-4 py-2 text-sm bg-green-600 text-white font-bold rounded-full hover:bg-green-500">
+                        <button onClick={() => onValidateAndCreateModel(app)} className="w-full md:w-auto px-4 py-2 text-sm bg-green-600 text-white font-bold rounded-full hover:bg-green-500">
                             Valider & Créer Profil Mannequin
                         </button>
                     )}
                 </footer>
             </div>
+            {confirmAction && (
+                <ConfirmDialog
+                    isOpen={true}
+                    onClose={() => setConfirmAction(null)}
+                    onConfirm={() => {
+                        onUpdateStatus(app, confirmAction.status, confirmAction.reason);
+                        setConfirmAction(null);
+                    }}
+                    title="Confirmer le changement de statut"
+                    message={confirmMessage}
+                    confirmLabel="Oui, confirmer"
+                    cancelLabel="Annuler"
+                    variant={confirmAction.status === 'Refusé' ? 'danger' : confirmAction.status === 'Accepté' ? 'warning' : 'default'}
+                />
+            )}
         </div>
     );
 };
