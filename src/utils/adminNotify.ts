@@ -17,7 +17,8 @@ export type NotifType =
   | 'casting'
   | 'contact'
   | 'booking'
-  | 'fashionday';
+  | 'fashionday'
+  | 'migration';
 
 const NOTIF_CONFIG: Record<NotifType, { title: string; icon: string }> = {
   visit:      { title: '👁️ Nouvelle visite', icon: '/logopmm.jpg' },
@@ -25,6 +26,7 @@ const NOTIF_CONFIG: Record<NotifType, { title: string; icon: string }> = {
   contact:    { title: '✉️ Nouveau message de contact', icon: '/logopmm.jpg' },
   booking:    { title: '📅 Nouvelle demande de booking', icon: '/logopmm.jpg' },
   fashionday: { title: '✨ Candidature Perfect Fashion Day', icon: '/logopmm.jpg' },
+  migration:  { title: '🔄 Compte migré vers Firebase', icon: '/logopmm.jpg' },
 };
 
 /** Récupère tous les tokens FCM admin depuis Firebase (multi-appareils) */

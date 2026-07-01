@@ -5,6 +5,7 @@ export interface Model {
   username: string;
   password: string;
   email?: string;
+  firebaseUid?: string;
   phone?: string;
   age?: number;
   height: string;
@@ -61,6 +62,7 @@ export interface FashionDayEvent {
   partners?: { type: string; name: string }[];
   description: string;
   announcementVideoUrl?: string;
+  announcementVideoEmbedUrl?: string;
   galleryImages?: string[];
 }
 
@@ -190,9 +192,6 @@ export interface ApiKeys {
   brevoApiKey?: string;
   dropboxAppKey?: string;
   dropboxAccessToken?: string;
-  cloudinaryCloudName?: string;
-  cloudinaryApiKey?: string;
-  cloudinaryApiSecret?: string;
   geminiApiKey?: string;
   vapidKey?: string;
   chatbotId?: string;
@@ -479,19 +478,34 @@ export interface GalleryItem {
 }
 
 export interface MissOneLightPendingVote {
-  id: string;
-  candidateId: string;
-  candidateName: string;
-  voterName?: string;      // nom du votant
-  votes: number;         // votes achetés (payés)
-  bonusVotes: number;    // votes bonus (+5 par tranche de 10)
-  totalVotes: number;    // votes + bonusVotes
-  email: string;
-  phone: string;
-  txRef: string;
-  validated: boolean;
-  cancelled?: boolean;   // annulé lors d'un reset votes
-  timestamp: string;
-  validatedAt?: string;
-  cancelledAt?: string;
+   id: string;
+   candidateId: string;
+   candidateName: string;
+   voterName?: string;      // nom du votant
+   votes: number;         // votes achetés (payés)
+   bonusVotes: number;    // votes bonus (+5 par tranche de 10)
+   totalVotes: number;    // votes + bonusVotes
+   email: string;
+   phone: string;
+   txRef: string;
+   validated: boolean;
+   cancelled?: boolean;   // annulé lors d'un reset votes
+   timestamp: string;
+   validatedAt?: string;
+   cancelledAt?: string;
+}
+
+export type NewsletterStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled';
+
+export interface Newsletter {
+   id: string;
+   subject: string;
+   htmlContent: string;
+   plainTextContent?: string;
+   status: NewsletterStatus;
+   createdAt: string;
+   updatedAt: string;
+   scheduledFor?: string;
+   sentAt?: string;
+   sentToCount?: number;
 }

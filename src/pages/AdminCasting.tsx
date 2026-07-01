@@ -8,6 +8,9 @@ import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { sendCastingAcceptedNotification, sendCastingRejectedNotification, sendCastingPresignedNotification } from '../utils/brevoService';
+import { notifyAdmin } from '../utils/adminNotify';
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const PAGE_SIZE = 15;
 
@@ -93,6 +96,7 @@ const AdminCasting: React.FC = () => {
 
         const currentYear = new Date().getFullYear();
         const sanitizeForPassword = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
+        const sanitizeForEmail = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f\']/g, "").replace(/[^a-z0-9-]/g, "");
 
         const initial = app.firstName.charAt(0).toUpperCase();
         const modelsWithSameInitial = data.models.filter(m => m.username && m.username.startsWith(`Man-PMM${initial}`));
@@ -104,6 +108,7 @@ const AdminCasting: React.FC = () => {
         const username = `Man-PMM${initial}${String(nextNumber).padStart(2, '0')}`;
         const password = `${sanitizeForPassword(app.firstName)}${currentYear}`;
         const id = `${app.lastName.toLowerCase()}-${app.firstName.toLowerCase()}`.replace(/[^a-z0-9-]/g, '') + `-${app.id}`;
+        const email = `${sanitizeForEmail(app.firstName)}.${sanitizeForEmail(app.lastName)}@perfectmodels.online`;
 
         let experienceText = "Expérience à renseigner par l'administrateur.";
         switch (app.experience) {
@@ -120,14 +125,14 @@ const AdminCasting: React.FC = () => {
             name: `${app.firstName} ${app.lastName}`,
             username: username,
             password: password,
-            email: app.email,
+            email: email,
             phone: app.phone,
             age: age,
             height: `${app.height}cm`,
             gender: app.gender,
             location: app.city,
-            imageUrl: app.photoPortraitUrl || app.photoFullBodyUrl || `https://i.ibb.co/fVBxPNTP/T-shirt.png`, // Use uploaded photo if available
-            isPublic: false, // Default to private
+            imageUrl: app.photoPortraitUrl || app.photoFullBodyUrl || `https://i.ibb.co/fVBxPNTP/T-shirt.png`,
+            isPublic: false,
             distinctions: [],
             measurements: {
                 chest: `${app.chest || '0'}cm`,
@@ -145,21 +150,61 @@ const AdminCasting: React.FC = () => {
         const updatedApps: CastingApplication[] = data.castingApplications.map(localApp => localApp.id === app.id ? { ...localApp, status: 'Accepté' } : localApp);
 
         try {
-            await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
-            sendCastingAcceptedNotification({
-                firstName: app.firstName,
-                lastName: app.lastName,
-                email: app.email,
-                phone: app.phone,
-                city: app.city,
-                height: app.height,
-                instagram: app.instagram,
-            }).catch(() => {});
-            alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`);
-            setSelectedApp(null); // Close modal on success
-        } catch (error) {
+            // Try to create Firebase Auth account
+            let firebaseUid = null;
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                firebaseUid = userCredential.user.uid;
+            } catch (authError: any) {
+                // If email already exists, continue without error
+                if (authError.code !== 'auth/email-already-in-use') {
+                    throw authError;
+                }
+            }
+
+            // Save model to RTDB
+            const { set: rtdbSet, ref: rtdbRef } = await import('firebase/database');
+            const rtdbDb = (await import('../realtimedbConfig')).default;
+            
+            if (firebaseUid) {
+                await rtdbSet(rtdbRef(rtdbDb, `models/${id}`), {
+                    ...newModel,
+                    firebaseUid,
+                    createdAt: new Date().toISOString()
+                });
+            } else {
+                // Email already exists in Firebase - just save the model
+                await rtdbSet(rtdbRef(rtdbDb, `models/${id}`), {
+                    ...newModel,
+                    createdAt: new Date().toISOString()
+                });
+            }
+
+await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+             sendCastingAcceptedNotification({
+                 firstName: app.firstName,
+                 lastName: app.lastName,
+                 email: app.email,
+                 phone: app.phone,
+                 city: app.city,
+                 height: app.height,
+                 instagram: app.instagram,
+             }).catch(() => {});
+             
+             // Notify admin of successful Firebase account creation
+             notifyAdmin('migration', `Nouveau compte Firebase créé: ${newModel.name} (${email})`, '/admin/model-access').catch(() => {});
+             
+             alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".\n\nIdentifiants de connexion:\nEmail: ${email}\nMot de passe: ${password}\n\nConservez ces informations pour la connexion.`);
+             setSelectedApp(null);
+        } catch (error: any) {
             console.error("Erreur lors de la création du mannequin:", error);
-            alert("Une erreur est survenue lors de la sauvegarde.");
+            if (error.code === 'auth/email-already-in-use') {
+                alert("Un compte existe déjà avec cet email. Le mannequin sera créé sans créer de nouveau compte Firebase.");
+                await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+                setSelectedApp(null);
+            } else {
+                alert("Une erreur est survenue lors de la sauvegarde.");
+            }
         }
     };
     

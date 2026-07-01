@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
@@ -47,12 +47,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   // Pour le rôle admin, vérifier aussi localStorage (session persistante)
   if (role === 'admin') {
     restoreAdminSession();
-    const hasAccess = sessionStorage.getItem('classroom_access') === 'granted';
-    const userRole = sessionStorage.getItem('classroom_role');
-    if (!hasAccess || userRole !== 'admin') {
-      return <Navigate to="/login" state={{ from: location }} replace />;
-    }
-    return children;
   }
 
   const userRole = sessionStorage.getItem('classroom_role');

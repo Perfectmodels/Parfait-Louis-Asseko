@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { LockClosedIcon, UserIcon, XMarkIcon, PhoneIcon, ArrowRightIcon, CogIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { RecoveryRequest } from '../types';
 import { motion } from 'framer-motion';
 import { notifyAdmin } from '../utils/adminNotify';
 import { rtdb } from '../firebase';
-import { ref, get } from 'firebase/database';
-import { persistAdminSession } from '../components/ProtectedRoute';
-import { restoreFcmSession } from '../utils/fcmService';
+import { ref, get, update } from 'firebase/database';
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword, updateEmail, updatePassword } from 'firebase/auth';
 
 interface ActiveUser {
   name: string;
@@ -28,18 +28,27 @@ const updateUserActivity = (name: string, role: string) => {
     localStorage.setItem('pmm_active_users', JSON.stringify(activeUsers));
 };
 
+const sanitizeForEmail = (name: string) => {
+    return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f']/g, '').replace(/[^a-z0-9-]/g, '');
+};
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
+  const [isMigrationModalOpen, setIsMigrationModalOpen] = useState(false);
+  const [migrationModel, setMigrationModel] = useState<any>(null);
+  const [migrationEmail, setMigrationEmail] = useState('');
+  const [migrationPassword, setMigrationPassword] = useState('');
   const navigate = useNavigate();
   const { data, isInitialized, saveData } = useData();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (!isInitialized || !data) {
         setError('Service indisponible. Veuillez réessayer dans un instant.');
@@ -75,58 +84,200 @@ const Login: React.FC = () => {
         }
       }
     } catch {
-      // RTDB indisponible, on continue avec l'auth standard
+      // Continue with standard auth
     }
 
-    // ── 2. Utilisateurs standard ──────────────────────────────────────────────
-    const users = [
-        { type: 'admin', user: { name: 'Admin', username: 'admin', password: 'admin2025' }, path: '/admin' },
-        ...(data.models || []).map(m => ({ type: 'student', user: m, path: '/profil' })),
-        ...(data.juryMembers || []).map(j => ({ type: 'jury', user: j, path: '/jury/casting' })),
-        ...(data.registrationStaff || []).map(s => ({ type: 'registration', user: s, path: '/enregistrement/casting' })),
-    ];
+    // ── 2. Try Firebase Auth ───────────────────────────────────────────────────
+    const modelsSnap = await get(ref(rtdb, 'models'));
+    const jurySnap = await get(ref(rtdb, 'juryMembers'));
+    const staffSnap = await get(ref(rtdb, 'registrationStaff'));
+    
+    let foundUser = null;
+    let userType = null;
+    let userId = null;
+    let emailToUse = null;
+    
+    // Try models first (check if migrated to Firebase)
+    if (modelsSnap.exists()) {
+      const models = modelsSnap.val();
+      for (const [mid, mdata] of Object.entries(models)) {
+        const model = mdata as any;
+        if (model.email?.toLowerCase() === normalizedUsername || 
+            model.username?.toLowerCase() === normalizedUsername ||
+            model.name?.toLowerCase() === normalizedUsername) {
+          if (model.email) {
+            emailToUse = model.email;
+            foundUser = model;
+            userType = 'student';
+            userId = mid;
+            break;
+          }
+        }
+      }
+    }
+    
+    // Try jury
+    if (!foundUser && jurySnap.exists()) {
+      const juryMembers = jurySnap.val();
+      for (const [jid, jdata] of Object.entries(juryMembers)) {
+        const jury = jdata as any;
+        if (jury.username?.toLowerCase() === normalizedUsername || 
+            jury.name?.toLowerCase() === normalizedUsername) {
+          foundUser = jury;
+          userType = 'jury';
+          userId = jid;
+          break;
+        }
+      }
+    }
+    
+    // Try registration staff
+    if (!foundUser && staffSnap.exists()) {
+      const staff = staffSnap.val();
+      for (const [sid, sdata] of Object.entries(staff)) {
+        const st = sdata as any;
+        if (st.username?.toLowerCase() === normalizedUsername || 
+            st.name?.toLowerCase() === normalizedUsername) {
+          foundUser = st;
+          userType = 'registration';
+          userId = sid;
+          break;
+        }
+      }
+    }
 
-    const foundUser = users.find(u => 
-        (
-            ('username' in u.user && u.user.username?.toLowerCase() === normalizedUsername) || 
-            u.user.name.toLowerCase() === normalizedUsername
-        ) && u.user.password === password
-    );
+    // Handle admin
+    if (!foundUser && normalizedUsername === 'admin' && password === 'admin2025') {
+      localStorage.setItem('pmm_admin_access', 'granted');
+      localStorage.setItem('pmm_admin_role', 'admin');
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'admin');
+      sessionStorage.setItem('userId', 'admin-id');
+      sessionStorage.setItem('userName', 'Admin');
+      navigate('/admin');
+      return;
+    }
 
-    if (foundUser) {
-        const userId = (foundUser.user as any).id || 'admin-id';
+    // If found with Firebase email, try Firebase Auth
+    if (emailToUse) {
+      try {
+        await import('firebase/auth').then(({ signInWithEmailAndPassword }) => 
+          signInWithEmailAndPassword(auth, emailToUse!, password)
+        );
+        
+        // Set session
         sessionStorage.setItem('classroom_access', 'granted');
-        sessionStorage.setItem('classroom_role', foundUser.type);
-        sessionStorage.setItem('userId', userId);
-        sessionStorage.setItem('userName', foundUser.user.name);
-
-        // Persister la session admin dans localStorage pour survivre aux fermetures d'onglet
-        if (foundUser.type === 'admin') {
-            persistAdminSession(foundUser.user.name, userId);
-            // Restaurer/enregistrer le token FCM pour cet appareil admin
-            restoreFcmSession().catch(() => {});
+        sessionStorage.setItem('classroom_role', 'student');
+        sessionStorage.setItem('userId', userId!);
+        sessionStorage.setItem('userName', foundUser!.name);
+        
+        // Update lastLogin
+        if (foundUser && userId) {
+          const updatedList = (data.models || []).map((item: any) => 
+            item.id === userId ? { ...item, lastLogin: timestamp } : item
+          );
+          await saveData({ ...data, models: updatedList });
         }
         
-        updateUserActivity(foundUser.user.name, foundUser.type);
+        notifyAdmin('visit', `Connexion: ${foundUser!.name} (Mannequin)`, '/profil').catch(() => {});
+        navigate('/profil');
+        return;
+      } catch (firebaseError: any) {
+        // Firebase auth failed - continue to legacy check
+      }
+    }
 
-        const roleLabels: Record<string, string> = {
-            admin: 'Admin', student: 'Mannequin', jury: 'Jury', registration: 'Staff'
-        };
-        notifyAdmin('visit', `Connexion: ${foundUser.user.name} (${roleLabels[foundUser.type]})`, foundUser.path).catch(() => {});
-
-        if (foundUser.type === 'student') {
-            const updatedList = (data.models || []).map((item: any) => 
-                item.id === (foundUser.user as any).id ? { ...item, lastLogin: timestamp } : item
-            );
-            await saveData({ ...data, models: updatedList });
+    // ── 3. Legacy auth fallback ───────────────────────────────────────────────
+    if (foundUser && foundUser.type !== 'student') {
+        // Jury or registration staff - legacy only
+        if (foundUser.password === password) {
+            sessionStorage.setItem('classroom_access', 'granted');
+            sessionStorage.setItem('classroom_role', userType!);
+            sessionStorage.setItem('userId', userId!);
+            sessionStorage.setItem('userName', foundUser.name);
+            
+            const roleLabels: Record<string, string> = {
+                admin: 'Admin', student: 'Mannequin', jury: 'Jury', registration: 'Staff'
+            };
+            notifyAdmin('visit', `Connexion: ${foundUser.name} (${roleLabels[userType as string]})`, '/').catch(() => {});
+            const redirectPath = userType === 'jury' ? '/jury/casting' : '/enregistrement/casting';
+            navigate(redirectPath);
+            return;
         }
-        
-        navigate(foundUser.path);
+    } else if (foundUser && foundUser.type === 'student') {
+        // Model - check legacy password
+        if (foundUser.password === password) {
+            // Offer migration
+            setMigrationModel(foundUser);
+            setMigrationEmail(foundUser.email || `${sanitizeForEmail(foundUser.name)}@perfectmodels.online`);
+            setMigrationPassword('');
+            setIsMigrationModalOpen(true);
+            return;
+        }
+    }
+
+    // Try legacy admin login
+    if (normalizedUsername === 'admin' && password === 'admin2025') {
+        localStorage.setItem('pmm_admin_access', 'granted');
+        localStorage.setItem('pmm_admin_role', 'admin');
+        sessionStorage.setItem('classroom_access', 'granted');
+        sessionStorage.setItem('classroom_role', 'admin');
+        sessionStorage.setItem('userId', 'admin-id');
+        sessionStorage.setItem('userName', 'Admin');
+        navigate('/admin');
         return;
     }
 
     setError('Identifiant ou mot de passe incorrect.');
     setPassword('');
+  };
+
+  const handleMigrateAccount = async () => {
+    if (!migrationModel || !migrationEmail || !migrationPassword) {
+      setError('Veuillez remplir tous les champs');
+      return;
+    }
+
+    try {
+      // Create Firebase Auth account
+      const userCredential = await createUserWithEmailAndPassword(auth, migrationEmail, migrationPassword);
+      
+      // Update model in RTDB with Firebase UID and email
+      await update(ref(rtdb, `models/${migrationModel.id}`), {
+        email: migrationEmail,
+        firebaseUid: userCredential.user.uid,
+        migratedAt: new Date().toISOString()
+      });
+
+      // Update local data
+      const updatedModels = (data?.models || []).map((m: any) => 
+        m.id === migrationModel.id ? { ...m, email: migrationEmail, firebaseUid: userCredential.user.uid } : m
+      );
+      await saveData({ ...data, models: updatedModels });
+
+      // Set session and redirect
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'student');
+      sessionStorage.setItem('userId', migrationModel.id);
+      sessionStorage.setItem('userName', migrationModel.name);
+      
+      // Notify admin of successful migration
+      notifyAdmin('migration', `Compte migré: ${migrationModel.name} (${migrationEmail})`, '/admin/model-access').catch(() => {});
+      
+      setSuccess(`Compte migré avec succès! Email: ${migrationEmail}`);
+      setTimeout(() => {
+        setIsMigrationModalOpen(false);
+        navigate('/profil');
+      }, 1500);
+    } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        setError('Cet email est déjà utilisé. Veuillez en choisir un autre.');
+      } else if (error.code === 'auth/weak-password') {
+        setError('Le mot de passe doit contenir au moins 6 caractères.');
+      } else {
+        setError(error.message || 'Erreur lors de la migration');
+      }
+    }
   };
 
   const handleSubmitRecovery = async (modelName: string, phone: string) => {
@@ -137,11 +288,24 @@ const Login: React.FC = () => {
     const updatedRequests = [...(data.recoveryRequests || []), newRequest];
     await saveData({ ...data, recoveryRequests: updatedRequests });
     
-    // Notification admin
     notifyAdmin('contact', `Récupération accès: ${modelName}`, '/admin/recovery-requests').catch(() => {});
     
     setIsRecoveryModalOpen(false);
     alert('Votre demande a été envoyée. Vous serez contacté prochainement.');
+  };
+
+  const handleSkipMigration = () => {
+    // Allow login without migration, but notify admin
+    if (migrationModel) {
+      sessionStorage.setItem('classroom_access', 'granted');
+      sessionStorage.setItem('classroom_role', 'student');
+      sessionStorage.setItem('userId', migrationModel.id);
+      sessionStorage.setItem('userName', migrationModel.name);
+      
+      notifyAdmin('contact', `Connexion mannequin (non migré): ${migrationModel.name}`, '/admin/model-access').catch(() => {});
+      setIsMigrationModalOpen(false);
+      navigate('/profil');
+    }
   };
 
   return (
@@ -170,7 +334,7 @@ const Login: React.FC = () => {
                 <div className="relative">
                    <UserIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
                    <input
-                     type="text" value={username} onChange={(e) => { setUsername(e.target.value); setError(''); }}
+                     type="text" value={username} onChange={(e) => { setUsername(e.target.value); setError(''); setSuccess(''); }}
                      placeholder="Identifiant ou Nom"
                      className="w-full bg-pm-dark/70 border-2 border-pm-off-white/20 rounded-full py-3 px-12 focus:outline-none focus:border-pm-gold transition-colors"
                      required
@@ -179,13 +343,14 @@ const Login: React.FC = () => {
                 <div className="relative">
                    <LockClosedIcon className="h-5 w-5 text-pm-off-white/50 absolute top-1/2 left-4 transform -translate-y-1/2" />
                    <input
-                     type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                     type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError(''); setSuccess(''); }}
                      placeholder="Mot de passe"
                      className="w-full bg-pm-dark/70 border-2 border-pm-off-white/20 rounded-full py-3 px-12 focus:outline-none focus:border-pm-gold transition-colors"
                      required
                    />
                 </div>
               {error && <p className="text-red-400 text-sm !mt-4">{error}</p>}
+              {success && <p className="text-green-400 text-sm !mt-4">{success}</p>}
               <button
                 type="submit" disabled={!isInitialized}
                 className="w-full group flex items-center justify-center gap-2 px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white !mt-8 disabled:opacity-50"
@@ -194,20 +359,41 @@ const Login: React.FC = () => {
                 <ArrowRightIcon className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
             </form>
-            <div className="mt-6">
-              <button onClick={() => setIsRecoveryModalOpen(true)} className="text-xs text-pm-off-white/60 hover:text-pm-gold hover:underline">
+            <div className="mt-6 space-y-2">
+              <button onClick={() => setIsRecoveryModalOpen(true)} className="text-xs text-pm-off-white/60 hover:text-pm-gold hover:underline block">
                 Coordonnées oubliées ?
+              </button>
+              <button onClick={() => navigate('/login/migration')} className="flex items-center justify-center gap-1 text-xs text-blue-400 hover:text-blue-300 hover:underline">
+                <CogIcon className="w-3 h-3" />
+                Migrer mon compte existant
               </button>
             </div>
           </div>
         </motion.div>
       </div>
+      
       {isRecoveryModalOpen && <RecoveryModal onClose={() => setIsRecoveryModalOpen(false)} onSubmit={handleSubmitRecovery} />}
+      
+      {isMigrationModalOpen && migrationModel && (
+        <MigrationModal 
+          model={migrationModel}
+          email={migrationEmail}
+          password={migrationPassword}
+          onEmailChange={setMigrationEmail}
+          onPasswordChange={setMigrationPassword}
+          onMigrate={handleMigrateAccount}
+          onSkip={handleSkipMigration}
+          onClose={() => setIsMigrationModalOpen(false)}
+        />
+      )}
     </>
   );
 };
 
-const RecoveryModal: React.FC<{onClose: () => void, onSubmit: (name: string, phone: string) => void}> = ({ onClose, onSubmit }) => {
+const RecoveryModal: React.FC<{
+  onClose: () => void; 
+  onSubmit: (name: string, phone: string) => void;
+}> = ({ onClose, onSubmit }) => {
   const [modelName, setModelName] = useState('');
   const [phone, setPhone] = useState('');
 
@@ -247,6 +433,76 @@ const RecoveryModal: React.FC<{onClose: () => void, onSubmit: (name: string, pho
             <button type="submit" className="w-full px-8 py-3 bg-pm-gold text-pm-dark font-bold uppercase tracking-widest rounded-full transition-all duration-300 hover:bg-white mt-4">
               Envoyer la demande
             </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MigrationModal: React.FC<{
+  model: any;
+  email: string;
+  password: string;
+  onEmailChange: (email: string) => void;
+  onPasswordChange: (password: string) => void;
+  onMigrate: () => void;
+  onSkip: () => void;
+  onClose: () => void;
+}> = ({ model, email, password, onEmailChange, onPasswordChange, onMigrate, onSkip, onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+      <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-md">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-playfair text-pm-gold">Migrer votre compte</h2>
+            <button onClick={onClose} className="text-pm-off-white/70 hover:text-white">
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="flex items-start gap-3 mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <ExclamationTriangleIcon className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-sm text-amber-300">
+              Votre compte n'est pas encore lié à Firebase Auth. Migrer vous permettra de retrouver vos identifiants en cas de perte.
+            </p>
+          </div>
+          <p className="text-sm text-pm-off-white/70 mb-4">
+            Mannequin: <strong className="text-white">{model.name}</strong>
+          </p>
+          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onMigrate(); }}>
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-pm-off-white/40 mb-1">Email Firebase *</label>
+              <input 
+                type="email" 
+                value={email} 
+                onChange={e => onEmailChange(e.target.value)} 
+                placeholder="votre.email@exemple.com" 
+                className="w-full admin-input" 
+                required 
+              />
+              <p className="text-xs text-pm-off-white/50 mt-1">Format recommandé: prenom.nom@perfectmodels.online</p>
+            </div>
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-pm-off-white/40 mb-1">Nouveau mot de passe *</label>
+              <input 
+                type="password" 
+                value={password} 
+                onChange={e => onPasswordChange(e.target.value)} 
+                placeholder="Minimum 6 caractères" 
+                className="w-full admin-input" 
+                required 
+                minLength={6}
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button type="submit" className="flex-1 px-4 py-2.5 bg-pm-gold text-pm-dark font-bold rounded-lg hover:bg-white transition-colors flex items-center justify-center gap-2">
+                <CheckCircleIcon className="w-4 h-4" />
+                Migrer maintenant
+              </button>
+              <button type="button" onClick={onSkip} className="px-4 py-2.5 border border-pm-gold/30 text-pm-off-white rounded-lg hover:bg-pm-dark/50 transition-colors">
+                Plus tard
+              </button>
+            </div>
           </form>
         </div>
       </div>

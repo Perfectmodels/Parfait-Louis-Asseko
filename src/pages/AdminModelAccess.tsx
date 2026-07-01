@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeftIcon, EyeIcon, EyeSlashIcon, KeyIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, EyeIcon, EyeSlashIcon, KeyIcon, ArrowPathIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
+import { useAuth } from '../contexts/AuthContext';
+import { rtdb } from '../firebase';
+import { ref, set as rtdbSet } from 'firebase/database';
 
 const generateMatricule = (name: string, existingUsernames: string[]): string => {
   const initial = name.trim().charAt(0).toUpperCase();
@@ -16,11 +19,61 @@ const generateMatricule = (name: string, existingUsernames: string[]): string =>
 
 const AdminModelAccess: React.FC = () => {
   const { data, saveData } = useData();
+  const { migrateModelToAuth } = useAuth();
   const models = data?.models ?? [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
   const [syncing, setSyncing] = useState(false);
+  const [migratingAll, setMigratingAll] = useState(false);
+
+  const sanitizeForEmail = (name: string) => {
+    return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f']/g, '').replace(/[^a-z0-9-]/g, '');
+  };
+
+  const handleMigrateAllToFirebase = async () => {
+    if (!data || !models.length) return;
+    
+    const needMigration = models.filter(m => !m.firebaseUid);
+    if (needMigration.length === 0) {
+      alert('✅ Tous les mannequins sont déjà migrés vers Firebase Auth.');
+      return;
+    }
+
+    if (!window.confirm(`Migrer ${needMigration.length} mannequin(s) vers Firebase Auth ?\n\nCela créera des comptes utilisateurs pour ceux qui n'en ont pas encore.`)) return;
+
+    setMigratingAll(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const model of needMigration) {
+      const email = model.email || `${sanitizeForEmail(model.name)}@perfectmodels.online`;
+      const password = model.password;
+      
+      if (!password) {
+        errorCount++;
+        continue;
+      }
+
+      if (!model.email) {
+        // Update model with generated email first
+        await saveData({ 
+          ...data, 
+          models: data.models.map(m => m.id === model.id ? { ...m, email } : m) 
+        });
+      }
+
+      const result = await migrateModelToAuth(model.id, email, password);
+      if (result.success) {
+        successCount++;
+      } else {
+        errorCount++;
+      }
+    }
+
+    alert(`Migration terminée : ${successCount} succès${errorCount > 0 ? `, ${errorCount} erreurs` : ''}`);
+    setMigratingAll(false);
+  };
 
   const handleSavePassword = (id: string) => {
     if (!data || !newPassword.trim()) return;
@@ -81,25 +134,35 @@ const AdminModelAccess: React.FC = () => {
     <div className="bg-pm-dark text-pm-off-white py-20 min-h-screen">
       <SEO title="Admin - Acces Mannequins" noIndex />
       <div className="container mx-auto px-6">
-        <Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
-          <ChevronLeftIcon className="w-5 h-5" /> Retour au Tableau de Bord
+<Link to="/admin" className="inline-flex items-center gap-2 text-pm-gold mb-4 hover:underline">
+           <ChevronLeftIcon className="w-5 h-5" /> Retour au Tableau de Bord
         </Link>
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
-          <div>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleMigrateAllToFirebase}
+              disabled={migratingAll}
+              className="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/40 text-blue-300 text-sm font-bold rounded-lg transition-colors disabled:opacity-50 shrink-0"
+            >
+              <ArrowUpTrayIcon className={`w-4 h-4 ${migratingAll ? 'animate-bounce' : ''}`} />
+              Migrer vers Firebase Auth
+            </button>
+            <button
+              onClick={handleSyncAllMatricules}
+              disabled={syncing}
+              className="flex items-center gap-2 px-4 py-2.5 bg-pm-gold/10 hover:bg-pm-gold/20 border border-pm-gold/40 text-pm-gold text-sm font-bold rounded-lg transition-colors disabled:opacity-50 shrink-0"
+            >
+              <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
+              Synchroniser les matricules
+              {missingCount > 0 && (
+                <span className="bg-amber-500 text-pm-dark text-xs font-black px-1.5 py-0.5 rounded-full">{missingCount}</span>
+              )}
+            </button>
+          </div>
+          <div className="text-right">
             <h1 className="text-4xl font-playfair text-pm-gold mb-1">Acces Mannequins</h1>
             <p className="text-pm-off-white/50 text-sm">Gerez les identifiants de connexion des mannequins.</p>
           </div>
-          <button
-            onClick={handleSyncAllMatricules}
-            disabled={syncing}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pm-gold/10 hover:bg-pm-gold/20 border border-pm-gold/40 text-pm-gold text-sm font-bold rounded-lg transition-colors disabled:opacity-50 shrink-0"
-          >
-            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-            Synchroniser les matricules
-            {missingCount > 0 && (
-              <span className="bg-amber-500 text-pm-dark text-xs font-black px-1.5 py-0.5 rounded-full">{missingCount}</span>
-            )}
-          </button>
         </div>
         {missingCount > 0 && (
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3 mb-6 text-amber-300 text-sm">
