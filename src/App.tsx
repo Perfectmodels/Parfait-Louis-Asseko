@@ -218,7 +218,7 @@ const AppContent: React.FC = () => {
         notifyAdmin('visit', `Page visitée : ${pageName}`).catch(() => {});
     }, [location.pathname]);
 
-    // Notification logic for browser tab title
+    // Notification logic for browser tab title + effacement badge quand admin est actif
     useEffect(() => {
         const originalTitle = "Perfect Models Management";
         if (data && location.pathname.startsWith('/admin')) {
@@ -235,8 +235,16 @@ const AppContent: React.FC = () => {
             } else {
                 document.title = `Admin | ${originalTitle}`;
             }
+
+            // Effacer le badge de l'app quand l'admin est sur le panel
+            if ('clearAppBadge' in navigator) {
+                (navigator as any).clearAppBadge().catch(() => {});
+            }
+            // Signaler au service worker d'effacer le badge
+            navigator.serviceWorker?.ready.then(reg => {
+                reg.active?.postMessage({ type: 'CLEAR_BADGE' });
+            }).catch(() => {});
         } else {
-            // Restore title if not on an admin page (this will be handled by SEO component for other pages)
             if (document.title.startsWith('(') || document.title.startsWith('Admin |')) {
                 document.title = originalTitle;
             }
@@ -276,7 +284,11 @@ const App: React.FC = () => {
         } else {
             // Web: use service worker and FCM
             registerServiceWorker();
-            restoreFcmSession().catch(() => {});
+            // Restaurer le token FCM uniquement si l'admin est connecté (session persistante)
+            const isAdminPersisted = localStorage.getItem('pmm_admin_access') === 'granted';
+            if (isAdminPersisted) {
+                restoreFcmSession().catch(() => {});
+            }
         }
     }, [isNative]);
 

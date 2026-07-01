@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, TrashIcon, EyeIcon, XMarkIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import PrintableCastingSheet from '../components/icons/PrintableCastingSheet';
 import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
+import { sendCastingAcceptedNotification, sendCastingRejectedNotification, sendCastingPresignedNotification } from '../utils/brevoService';
 
 const PAGE_SIZE = 15;
 
@@ -22,6 +23,7 @@ const AdminCasting: React.FC = () => {
     const [filter, setFilter] = useState<CastingApplicationStatus | 'Toutes'>('Nouveau');
     const [selectedApp, setSelectedApp] = useState<CastingApplication | null>(null);
     const [printingApp, setPrintingApp] = useState<CastingApplication | null>(null);
+    const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({});
 
     const filteredApps = useMemo(() => {
         if (filter === 'Toutes') return pagedApps;
@@ -49,6 +51,33 @@ const AdminCasting: React.FC = () => {
             invalidateCache('castingApplications');
             refresh();
             if (selectedApp?.id === appId) setSelectedApp(prev => prev ? { ...prev, status: newStatus } : null);
+            
+            // Send email notification based on status
+            if (newStatus === 'Accepté') {
+                sendCastingAcceptedNotification({
+                    firstName: selectedApp?.firstName || '',
+                    lastName: selectedApp?.lastName || '',
+                    email: selectedApp?.email || '',
+                    phone: selectedApp?.phone || '',
+                    city: selectedApp?.city || '',
+                    height: selectedApp?.height || '',
+                    instagram: selectedApp?.instagram,
+                }).catch(() => {});
+            } else if (newStatus === 'Refusé') {
+                const reasons = rejectionReasons[appId] || 'Votre profil ne correspond pas à nos besoins actuels. Nous vous encourageons à réessayer lors de futurs castings.';
+                sendCastingRejectedNotification({
+                    firstName: selectedApp?.firstName || '',
+                    lastName: selectedApp?.lastName || '',
+                    email: selectedApp?.email || '',
+                    rejectionReasons: reasons,
+                }).catch(() => {});
+            } else if (newStatus === 'Présélectionné') {
+                sendCastingPresignedNotification({
+                    firstName: selectedApp?.firstName || '',
+                    lastName: selectedApp?.lastName || '',
+                    email: selectedApp?.email || '',
+                }).catch(() => {});
+            }
         } catch (e) {
             console.error(e);
         }
@@ -118,6 +147,15 @@ const AdminCasting: React.FC = () => {
 
         try {
             await saveData({ ...data, models: updatedModels, castingApplications: updatedApps });
+            sendCastingAcceptedNotification({
+                firstName: app.firstName,
+                lastName: app.lastName,
+                email: app.email,
+                phone: app.phone,
+                city: app.city,
+                height: app.height,
+                instagram: app.instagram,
+            }).catch(() => {});
             alert(`Le mannequin ${newModel.name} a été créé avec succès et la candidature a été marquée comme "Accepté".`);
             setSelectedApp(null); // Close modal on success
         } catch (error) {
@@ -221,7 +259,7 @@ const AdminCasting: React.FC = () => {
                 </div>
             </div>
         </div>
-        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={handleUpdateStatus} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} />}
+        {selectedApp && <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onUpdateStatus={(id, status) => handleUpdateStatus(id, status)} getStatusColor={getStatusColor} onValidateAndCreateModel={handleValidateAndCreateModel} rejectionReasons={rejectionReasons} setRejectionReasons={setRejectionReasons} />}
         </>
     );
 };
@@ -229,10 +267,12 @@ const AdminCasting: React.FC = () => {
 const ApplicationModal: React.FC<{
     app: CastingApplication, 
     onClose: () => void, 
-    onUpdateStatus: (id: string, status: CastingApplicationStatus) => void, 
+    onUpdateStatus: (id: string, status: CastingApplicationStatus, rejectionReasons?: Record<string, string>) => void, 
     getStatusColor: (status: CastingApplicationStatus) => string,
     onValidateAndCreateModel: (app: CastingApplication) => void,
-}> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel }) => {
+    rejectionReasons?: Record<string, string>,
+    setRejectionReasons?: (reasons: Record<string, string>) => void,
+}> = ({ app, onClose, onUpdateStatus, getStatusColor, onValidateAndCreateModel, rejectionReasons, setRejectionReasons }) => {
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog">
             <div className="bg-pm-dark border border-pm-gold/30 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
@@ -293,7 +333,7 @@ const ApplicationModal: React.FC<{
                             </Section>
                         </div>
                     )}
-                     <div className="md:col-span-2">
+                    <div className="md:col-span-2">
                         <Section title="Statut">
                             <div className="flex items-center gap-2 flex-wrap">
                                 {(['Nouveau', 'Présélectionné', 'Accepté', 'Refusé'] as const).map(status => (
@@ -302,10 +342,22 @@ const ApplicationModal: React.FC<{
                                     </button>
                                 ))}
                             </div>
+                            {app.status === 'Refusé' && (
+                                <div className="mt-4">
+                                    <label className="text-[10px] uppercase tracking-widest text-pm-off-white/40 block mb-2">Raisons du refus (email envoyé au candidat)</label>
+                                    <textarea
+                                        value={rejectionReasons[app.id] || ''}
+                                        onChange={(e) => setRejectionReasons && setRejectionReasons(prev => ({ ...prev, [app.id]: e.target.value }))}
+                                        placeholder="Ex: Silhouette ne correspond pas à nos besoins actuels..."
+                                        className="w-full bg-pm-dark/50 border border-pm-gold/30 rounded-lg px-3 py-2 text-sm text-pm-off-white placeholder:text-pm-off-white/30 focus:outline-none focus:border-pm-gold"
+                                        rows={3}
+                                    />
+                                </div>
+                            )}
                         </Section>
                     </div>
                 </main>
-                 <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
+                <footer className="p-4 border-t border-pm-gold/20 flex justify-end items-center gap-4">
                     {app.status === 'Présélectionné' && (
                         <button onClick={() => onValidateAndCreateModel(app)} className="px-4 py-2 text-sm bg-green-600 text-white font-bold rounded-full hover:bg-green-500">
                             Valider & Créer Profil Mannequin

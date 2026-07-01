@@ -2,10 +2,11 @@
 
 const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 const BREVO_API_KEY = import.meta.env.VITE_BREVO_API_KEY as string;
-const SENDER = { name: 'Perfect Models Management', email: 'contact@perfectmodels.ga' };
+const SENDER = { name: 'Perfect Models Management', email: 'contact@perfectmodels.online' };
+const CASTING_SENDER = { name: 'Casting PMM', email: 'casting@perfectmodels.online' };
 
 // ─── Logo SVG inline (branding email) ────────────────────────────────────────
-const LOGO_URL = 'https://perfectmodels.ga/logo.svg';
+const LOGO_URL = 'https://perfectmodels.online/logo.svg';
 
 // ─── Base template ────────────────────────────────────────────────────────────
 export const buildEmailTemplate = (content: string, preheader = ''): string => `
@@ -53,7 +54,7 @@ export const buildEmailTemplate = (content: string, preheader = ''): string => `
             </p>
             <p style="margin:0;color:#ffffff20;font-size:10px">
               © ${new Date().getFullYear()} Perfect Models Management · Libreville, Gabon<br/>
-              <a href="https://perfectmodels.ga" style="color:#c9a84c44;text-decoration:none">perfectmodels.ga</a>
+              <a href="https://perfectmodels.online/" style="color:#c9a84c44;text-decoration:none">perfectmodels.online</a>
             </p>
           </td>
         </tr>
@@ -97,6 +98,30 @@ export const sendEmail = async (opts: SendOptions): Promise<void> => {
   }
 };
 
+export const sendCastingEmail = async (opts: SendOptions): Promise<void> => {
+  if (!BREVO_API_KEY) throw new Error('VITE_BREVO_API_KEY non configurée.');
+
+  const res = await fetch(BREVO_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: CASTING_SENDER,
+      to: opts.to,
+      subject: opts.subject,
+      htmlContent: opts.htmlContent,
+      ...(opts.replyTo ? { replyTo: opts.replyTo } : {}),
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Brevo error ${res.status}`);
+  }
+};
+
 // ─── Templates ────────────────────────────────────────────────────────────────
 
 /** Confirmation de réception au visiteur */
@@ -115,7 +140,7 @@ export const sendContactConfirmationToUser = (p: {
       <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
         <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">En attendant</p>
         <p style="color:#f5f0e8aa;font-size:14px;margin:0 0 16px">Découvrez nos mannequins, services et actualités.</p>
-        <a href="https://perfectmodels.ga" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Visiter le site</a>
+        <a href="https://perfectmodels.online/" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Visiter le site</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
     `, `Votre message a bien été reçu — nous vous répondons sous 48h`),
@@ -275,7 +300,7 @@ export const sendVoteValidatedEmail = (p: {
         </table>
       </div>
       <div style="text-align:center;margin-bottom:24px">
-        <a href="https://perfectmodels.ga/miss-one-light" style="display:inline-block;background:#009E60;color:#fff;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px">Voir le classement en direct</a>
+        <a href="https://perfectmodels.online//miss-one-light" style="display:inline-block;background:#009E60;color:#fff;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:100px">Voir le classement en direct</a>
       </div>
       <p style="color:#f5f0e8aa;font-size:13px;line-height:1.7;margin:0;text-align:center">
         Merci pour votre soutien à <strong style="color:#c9a84c">${p.candidateName}</strong> 🌟
@@ -289,7 +314,7 @@ export const sendVoteValidatedEmail = (p: {
 export const sendCastingConfirmationToUser = (p: {
   firstName: string; lastName: string; email: string; city: string;
 }) =>
-  sendEmail({
+  sendCastingEmail({
     to: [{ email: p.email, name: `${p.firstName} ${p.lastName}` }],
     subject: 'Candidature reçue — Perfect Models Management',
     htmlContent: buildEmailTemplate(`
@@ -301,7 +326,7 @@ export const sendCastingConfirmationToUser = (p: {
       <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;margin-bottom:24px;text-align:center">
         <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">Prochaine étape</p>
         <p style="color:#f5f0e8aa;font-size:14px;margin:0 0 16px">Si votre profil est retenu, vous serez convoqué(e) pour un entretien en personne.</p>
-        <a href="https://perfectmodels.ga/casting" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Voir le casting</a>
+        <a href="https://perfectmodels.online//casting" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Voir le casting</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
     `, `Votre candidature casting a bien été reçue`),
@@ -313,7 +338,7 @@ export const sendCastingNotificationToAdmin = (p: {
   city: string; gender: string; height: string; experience: string;
   instagram?: string; notificationEmail: string;
 }) =>
-  sendEmail({
+  sendCastingEmail({
     to: [{ email: p.notificationEmail, name: 'Équipe PMM' }],
     replyTo: { email: p.email, name: `${p.firstName} ${p.lastName}` },
     subject: `[Casting PMM] ${p.firstName} ${p.lastName} — ${p.city}`,
@@ -333,10 +358,113 @@ export const sendCastingNotificationToAdmin = (p: {
         ${p.instagram ? `<tr><td style="padding:10px 0;color:#c9a84c;font-size:11px;text-transform:uppercase;letter-spacing:2px">Instagram</td><td style="padding:10px 0;color:#f5f0e8">${p.instagram}</td></tr>` : ''}
       </table>
       <div style="text-align:center">
-        <a href="https://perfectmodels.ga/admin/casting-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
+        <a href="https://perfectmodels.online//admin/casting-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
       </div>
     `, `Nouvelle candidature de ${p.firstName} ${p.lastName}`),
   });
+
+// ─── Casting Status Notifications ─────────────────────────────────────────
+
+/** Email au candidat quand le profil est ACCEPTÉ */
+export const sendCastingAcceptedNotification = (p: {
+  firstName: string; lastName: string; email: string; phone: string;
+  city: string; height: string; instagram?: string;
+}) =>
+  sendCastingEmail({
+    to: [{ email: p.email, name: `${p.firstName} ${p.lastName}` }],
+    subject: '🎉 Félicitations — Votre profil a été retenu — Perfect Models Management',
+    htmlContent: buildEmailTemplate(`
+      <h2 style="color:#009E60;font-family:Georgia,serif;font-size:24px;margin:0 0 16px">🎉 Félicitations ${p.firstName} !</h2>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Votre profil a été retenu pour le casting Perfect Models Management.<br/>
+        Vous êtes officiellement invité(e) à rejoindre notre agence de mannequins.
+      </p>
+      <div style="background:#009E600d;border:1px solid #009E6033;border-radius:8px;padding:20px;margin-bottom:24px">
+        <p style="color:#009E60;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;font-weight:bold">Vos coordonnées</p>
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#009E60;font-size:11px;width:100px">Téléphone</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.phone}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#009E60;font-size:11px">Ville</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.city}</td></tr>
+          <tr><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#009E60;font-size:11px">Taille</td><td style="padding:8px 0;border-bottom:1px solid #ffffff0d;color:#f5f0e8">${p.height ? p.height + ' cm' : '—'}</td></tr>
+          ${p.instagram ? `<tr><td style="padding:8px 0;color:#009E60;font-size:11px">Instagram</td><td style="padding:8px 0;color:#f5f0e8">${p.instagram}</td></tr>` : ''}
+        </table>
+      </div>
+      <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;margin-bottom:24px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;font-weight:bold">Tableau de bord mannequins</p>
+        <p style="color:#f5f0e8cc;margin:0 0 12px;line-height:1.7">
+          Connectez-vous à votre espace personnel pour accéder aux missions, planning et documents.
+        </p>
+        <p style="color:#f5f0e8;margin:0 0 16px">
+          <strong>Email :</strong> <span style="color:#c9a84c">${p.email}</span><br/>
+          <strong>Mot de passe :</strong> À définir lors de votre première connexion
+        </p>
+        <a href="https://perfectmodels.online/model-login" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Accéder au tableau de bord</a>
+      </div>
+      <p style="color:#f5f0e8cc;line-height:1.7;margin:0">
+        Contactez-nous au <strong style="color:#c9a84c">+241 74 79 93 19</strong> pour convenir de votre entretien d'intégration.
+      </p>
+    `, `Votre candidature a été retenue — bienvenue chez PMM`),
+  });
+
+/** Email au candidat quand le profil est NON RETENU */
+export const sendCastingRejectedNotification = (p: {
+  firstName: string; lastName: string; email: string; rejectionReasons: string;
+}) =>
+  sendCastingEmail({
+    to: [{ email: p.email, name: `${p.firstName} ${p.lastName}` }],
+    subject: 'Candidature casting - Perfect Models Management',
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#ff47570d;border-left:3px solid #ff4757;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#ff4757;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Candidature analytique</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">Merci pour votre interet</p>
+      </div>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Bonjour <strong style="color:#c9a84c">${p.firstName}</strong>,<br/>
+        Apres analyse attentive de votre candidature, nous ne pouvons malheureusement pas retenir votre profil a ce stade.
+      </p>
+      <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;color:#f5f0e8cc;line-height:1.8;margin-bottom:24px">
+        <p style="color:#ff4757;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;font-weight:bold">Raisons du non-retenu</p>
+        <p style="margin:0">${p.rejectionReasons}</p>
+      </div>
+      <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">Conseil</p>
+        <p style="color:#f5f0e8aa;font-size:14px;margin:0 0 16px">Travaillez votre presence, votre silhouette et reessayez lors d'un futur casting.</p>
+        <a href="https://perfectmodels.online/casting" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">Voir les prochaines dates</a>
+      </div>
+      <p style="color:#f5f0e8aa;line-height:1.7;margin:0">
+        Nous vous remercions pour votre confiance.<br/>
+        <strong style="color:#c9a84c">L'equipe Perfect Models Management</strong>
+      </p>
+    `, 'Reponse a votre candidature casting'),
+  });
+
+/** Email au candidat quand le profil est PRESELECTIONNE */
+export const sendCastingPresignedNotification = (p: {
+  firstName: string; lastName: string; email: string;
+}) => {
+  const subjectText = '📋 Votre candidature est en cours d\'etude - Perfect Models Management';
+  return sendCastingEmail({
+    to: [{ email: p.email, name: `${p.firstName} ${p.lastName}` }],
+    subject: subjectText,
+    htmlContent: buildEmailTemplate(`
+      <div style="background:#c9a84c0d;border-left:3px solid #c9a84c;border-radius:4px;padding:16px 20px;margin-bottom:28px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px">Preselection</p>
+        <p style="color:#f5f0e8;font-size:18px;font-weight:bold;margin:0">Candidature en cours d'analyse</p>
+      </div>
+      <p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 24px">
+        Bonjour <strong style="color:#c9a84c">${p.firstName}</strong>,<br/>
+        Votre dossier a été retenu pour une préselection approfondie. Nous étudions actuellement votre profil.
+      </p>
+      <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;color:#f5f0e8cc;line-height:1.8;margin-bottom:24px">
+        <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 12px;font-weight:bold">Prochaine etape</p>
+        <p style="margin:0">Si vous êtes retenu(e), vous recevrez une invitation pour un entretien et la création de votre profil mannequin.</p>
+      </div>
+      <p style="color:#f5f0e8aa;line-height:1.7;margin:0">
+        Nous vous tiendrons informé(e) sous 48h.<br/>
+        <strong style="color:#c9a84c">L'equipe Perfect Models Management</strong>
+      </p>
+    `, 'Candidature en cours d\'etude'),
+  });
+};
 
 // ─── Fashion Day Application ──────────────────────────────────────────────────
 
@@ -356,7 +484,7 @@ export const sendFashionDayConfirmationToUser = (p: {
       <div style="background:#c9a84c0d;border:1px solid #c9a84c22;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
         <p style="color:#c9a84c;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 8px">Perfect Fashion Day</p>
         <p style="color:#f5f0e8aa;font-size:14px;margin:0 0 16px">Restez connecté(e) pour les prochaines annonces de l'événement.</p>
-        <a href="https://perfectmodels.ga/fashion-day" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">En savoir plus</a>
+        <a href="https://perfectmodels.online//fashion-day" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:12px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 28px;border-radius:100px">En savoir plus</a>
       </div>
       <p style="color:#f5f0e8cc;line-height:1.7;margin:0">Cordialement,<br/><strong style="color:#c9a84c">L'équipe Perfect Models Management</strong></p>
     `, `Votre candidature Perfect Fashion Day a bien été reçue`),
@@ -384,7 +512,7 @@ export const sendFashionDayNotificationToAdmin = (p: {
       <p style="color:#f5f0e8aa;font-size:11px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">Message</p>
       <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;color:#f5f0e8;line-height:1.8;white-space:pre-wrap">${p.message}</div>
       <div style="text-align:center;margin-top:24px">
-        <a href="https://perfectmodels.ga/admin/fashion-day-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
+        <a href="https://perfectmodels.online//admin/fashion-day-applications" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
       </div>
     `, `Nouvelle candidature Fashion Day de ${p.name}`),
   });
@@ -441,7 +569,7 @@ export const sendBookingNotificationToAdmin = (p: {
       <p style="color:#f5f0e8aa;font-size:11px;text-transform:uppercase;letter-spacing:3px;margin:0 0 12px">Message</p>
       <div style="background:#ffffff06;border:1px solid #ffffff0d;border-radius:8px;padding:20px;color:#f5f0e8;line-height:1.8;white-space:pre-wrap">${p.message}</div>
       <div style="text-align:center;margin-top:24px">
-        <a href="https://perfectmodels.ga/admin/bookings" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
+        <a href="https://perfectmodels.online//admin/bookings" style="display:inline-block;background:#c9a84c;color:#080808;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:12px 24px;border-radius:100px">Voir dans l'admin</a>
       </div>
     `, `Nouvelle demande de booking de ${p.clientName}`),
   });

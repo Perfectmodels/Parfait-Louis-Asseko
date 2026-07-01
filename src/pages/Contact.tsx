@@ -81,7 +81,7 @@ const Contact: React.FC = () => {
       invalidateCache('contactMessages');
       notifyAdmin('contact', `${msg.name} — ${finalSubject}`, '/admin/messages').catch(() => {});
 
-      const notifEmail = data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga';
+      const notifEmail = data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.online';
       await Promise.allSettled([
         sendContactNotificationToAdmin({ name: msg.name, email: msg.email, subject: finalSubject, message: msg.message, notificationEmail: notifEmail }),
         sendContactConfirmationToUser({ name: msg.name, email: msg.email, subject: finalSubject }),
@@ -131,7 +131,7 @@ const Contact: React.FC = () => {
           startDate: bk.startDate || undefined,
           endDate: bk.endDate || undefined,
           message: bk.message,
-          notificationEmail: data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.ga',
+          notificationEmail: data.contactInfo?.notificationEmail || data.contactInfo?.email || 'contact@perfectmodels.online',
         }),
       ]).catch(() => {});
 

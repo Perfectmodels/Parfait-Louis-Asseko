@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { notifyAdmin } from '../utils/adminNotify';
 import { rtdb } from '../firebase';
 import { ref, get } from 'firebase/database';
+import { persistAdminSession } from '../components/ProtectedRoute';
+import { restoreFcmSession } from '../utils/fcmService';
 
 interface ActiveUser {
   name: string;
@@ -92,10 +94,18 @@ const Login: React.FC = () => {
     );
 
     if (foundUser) {
+        const userId = (foundUser.user as any).id || 'admin-id';
         sessionStorage.setItem('classroom_access', 'granted');
         sessionStorage.setItem('classroom_role', foundUser.type);
-        sessionStorage.setItem('userId', (foundUser.user as any).id || 'admin-id');
+        sessionStorage.setItem('userId', userId);
         sessionStorage.setItem('userName', foundUser.user.name);
+
+        // Persister la session admin dans localStorage pour survivre aux fermetures d'onglet
+        if (foundUser.type === 'admin') {
+            persistAdminSession(foundUser.user.name, userId);
+            // Restaurer/enregistrer le token FCM pour cet appareil admin
+            restoreFcmSession().catch(() => {});
+        }
         
         updateUserActivity(foundUser.user.name, foundUser.type);
 

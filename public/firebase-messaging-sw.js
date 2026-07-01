@@ -16,33 +16,82 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+// Compteur de badge persisté dans IndexedDB via Cache API (simple)
+const BADGE_STORE = 'pmm-badge-store';
+const BADGE_KEY = 'badge-count';
+
+async function getBadgeCount() {
+    try {
+        const cache = await caches.open(BADGE_STORE);
+        const res = await cache.match(BADGE_KEY);
+        if (!res) return 0;
+        return parseInt(await res.text(), 10) || 0;
+    } catch { return 0; }
+}
+
+async function setBadgeCount(count) {
+    try {
+        const cache = await caches.open(BADGE_STORE);
+        await cache.put(BADGE_KEY, new Response(String(count)));
+    } catch {}
+}
+
+async function incrementBadge() {
+    const count = (await getBadgeCount()) + 1;
+    await setBadgeCount(count);
+    if ('setAppBadge' in self.navigator) {
+        await self.navigator.setAppBadge(count).catch(() => {});
+    }
+    return count;
+}
+
+async function clearBadge() {
+    await setBadgeCount(0);
+    if ('clearAppBadge' in self.navigator) {
+        await self.navigator.clearAppBadge().catch(() => {});
+    }
+}
+
 // Gestion des notifications en arrière-plan (app fermée / onglet inactif)
-messaging.onBackgroundMessage((payload) => {
+messaging.onBackgroundMessage(async (payload) => {
     console.log('[FCM SW] Message reçu en arrière-plan:', payload);
 
-    const { title = 'PMM', body = '', icon = '/logo.svg' } = payload.notification ?? {};
+    const { title = 'PMM', body = '', icon = '/logopmm.jpg' } = payload.notification ?? {};
+    const badgeCount = await incrementBadge();
 
-    self.registration.showNotification(title, {
+    await self.registration.showNotification(title, {
         body,
         icon,
-        badge: '/logo.svg',
-        data: payload.data,
+        badge: '/icons/icon-72.webp',
+        data: { ...payload.data, badgeCount },
+        tag: payload.data?.type || 'pmm-notif', // regroupe les notifs du même type
+        renotify: true,
     });
 });
 
-// Clic sur la notification → ouvre/focus l'app
+// Clic sur la notification → ouvre/focus l'app et efface le badge
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     const url = event.notification.data?.url || '/admin';
+
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            for (const client of clientList) {
-                if (client.url.includes(self.location.origin) && 'focus' in client) {
-                    client.navigate(url);
-                    return client.focus();
+        clearBadge().then(() =>
+            clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+                for (const client of clientList) {
+                    if (client.url.includes(self.location.origin) && 'focus' in client) {
+                        client.navigate(url);
+                        return client.focus();
+                    }
                 }
-            }
-            return clients.openWindow(url);
-        })
+                return clients.openWindow(url);
+            })
+        )
     );
+});
+
+// Message depuis l'app principale pour effacer le badge (ex: admin ouvre le panel)
+self.addEventListener('message', (event) => {
+    if (event.data?.type === 'CLEAR_BADGE') {
+        clearBadge();
+    }
 });
