@@ -1,9 +1,8 @@
 /**
- * ImageUploader — wrapper autour de CloudinaryUploader pour rétrocompatibilité.
- * Remplace l'ancien composant URL-only par un vrai upload Cloudinary.
+ * ImageUploader — wrapper autour de ImgBBUploader pour rétrocompatibilité.
  */
 import React from 'react';
-import CloudinaryUploader from './CloudinaryUploader';
+import ImgBBUploader from './ImgBBUploader';
 
 interface ImageUploaderProps {
   label?: string;
@@ -12,12 +11,11 @@ interface ImageUploaderProps {
   folder?: string;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange, folder = 'site' }) => (
-  <CloudinaryUploader
+const ImageUploader: React.FC<ImageUploaderProps> = ({ label, value, onChange, folder }) => (
+  <ImgBBUploader
     label={label}
     value={value}
     onChange={onChange}
-    resourceType="image"
     folder={folder}
     allowUrl
   />

@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DataProvider, useData } from './contexts/DataContext';
 import { ToastProvider } from './components/ui/Toast';
+import { AuthProvider } from './contexts/AuthContext';
 import Layout from './components/icons/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { PWAInstaller } from './components/PWAInstaller';
@@ -28,6 +29,7 @@ const Casting = lazy(() => import('./pages/Casting'));
 const CastingForm = lazy(() => import('./pages/CastingForm'));
 const FashionDayApplicationForm = lazy(() => import('./pages/FashionDayApplicationForm'));
 const Login = lazy(() => import('./pages/Login'));
+const ModelMigration = lazy(() => import('./pages/ModelMigration'));
 const Activity = lazy(() => import('./pages/Activity')); // Renamed Formations
 const ChapterDetail = lazy(() => import('./pages/ChapterDetail'));
 const ModelDashboard = lazy(() => import('./pages/ModelDashboard')); // Profil
@@ -70,8 +72,6 @@ const AdminArtisticDirection = lazy(() => import('./pages/AdminArtisticDirection
 const AdminGallery = lazy(() => import('./pages/AdminGallery'));
 const AdminMailing = lazy(() => import('./pages/AdminMailing'));
 const MissOneLight = lazy(() => import('./pages/MissOneLight'));
-const BeautyContest = lazy(() => import('./pages/BeautyContest'));
-const JuryContest = lazy(() => import('./pages/JuryContest'));
 const AdminMissOneLight = lazy(() => import('./pages/AdminMissOneLight'));
 const AdminBeautyContest = lazy(() => import('./pages/AdminBeautyContest'));
 
@@ -147,12 +147,11 @@ const AnimatedRoutes: React.FC = () => {
                     <Route path="/casting-formulaire" element={<CastingForm />} />
                     <Route path="/fashion-day-application" element={<FashionDayApplicationForm />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/login/migration" element={<ModelMigration />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-use" element={<TermsOfUse />} />
                     <Route path="/galerie" element={<Gallery />} />
                     <Route path="/miss-one-light" element={<MissOneLight />} />
-                    <Route path="/concours" element={<BeautyContest />} />
-                    <Route path="/concours/jury" element={<ProtectedRoute role="jury-contest"><JuryContest /></ProtectedRoute>} />
                     
                     {/* Formation Avancée - Accessible uniquement aux mannequins et admin */}
                     <Route path="/formation" element={<ProtectedRoute role="student"><AdvancedTraining /></ProtectedRoute>} />
@@ -302,13 +301,15 @@ const App: React.FC = () => {
 
     return (
         <DataProvider>
-            <ToastProvider>
-                <BrowserRouter>
-                    <ScrollToTop />
-                    <AppContent />
-                    <PWAInstaller />
-                </BrowserRouter>
-            </ToastProvider>
+            <AuthProvider>
+                <ToastProvider>
+                    <BrowserRouter>
+                        <ScrollToTop />
+                        <AppContent />
+                        <PWAInstaller />
+                    </BrowserRouter>
+                </ToastProvider>
+            </AuthProvider>
         </DataProvider>
     );
 };

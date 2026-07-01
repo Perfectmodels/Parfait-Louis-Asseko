@@ -127,9 +127,6 @@ const AdminSettings: React.FC = () => {
                             <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-5">Images & Stockage</p>
                             <div className="space-y-4">
                                 <SecretInput label="Clé API ImgBB" value={localData.apiKeys.imgbbApiKey || ''} onChange={v => handleSimpleChange('apiKeys', 'imgbbApiKey', v)} />
-                                <FormInput label="Cloudinary Cloud Name" value={localData.apiKeys.cloudinaryCloudName || ''} onChange={e => handleSimpleChange('apiKeys', 'cloudinaryCloudName', e.target.value)} />
-                                <SecretInput label="Cloudinary API Key" value={localData.apiKeys.cloudinaryApiKey || ''} onChange={v => handleSimpleChange('apiKeys', 'cloudinaryApiKey', v)} />
-                                <SecretInput label="Cloudinary API Secret" value={localData.apiKeys.cloudinaryApiSecret || ''} onChange={v => handleSimpleChange('apiKeys', 'cloudinaryApiSecret', v)} />
                                 <SecretInput label="Dropbox Access Token" value={localData.apiKeys.dropboxAccessToken || ''} onChange={v => handleSimpleChange('apiKeys', 'dropboxAccessToken', v)} />
                             </div>
                         </div>

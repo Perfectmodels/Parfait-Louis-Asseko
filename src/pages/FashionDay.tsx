@@ -168,7 +168,7 @@ const MarqueeTrack: React.FC<{ duration: number; children: React.ReactNode }> = 
 
 
 
-const VideoIntro: React.FC<{ url: string }> = ({ url }) => {
+const VideoIntro: React.FC<{ url?: string; embedUrl?: string }> = ({ url, embedUrl }) => {
   const [playing, setPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -182,6 +182,42 @@ const VideoIntro: React.FC<{ url: string }> = ({ url }) => {
       setPlaying(true);
     }
   };
+
+  if (embedUrl) {
+    const youtubeMatch = embedUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    const tiktokMatch = embedUrl.match(/tiktok\.com\/(@[^/]+\/video\/\d+)/);
+
+    if (youtubeMatch) {
+      const videoId = youtubeMatch[1];
+      return (
+        <div className="aspect-video overflow-hidden rounded-xl border border-pm-gold/20 bg-black">
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`} 
+            title="YouTube video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      );
+    }
+
+    if (tiktokMatch) {
+      const embedUrlValue = `https://www.tiktok.com/embed/${tiktokMatch[1]}`;
+      return (
+        <div className="aspect-[9/16] max-h-[720px] overflow-hidden rounded-xl border border-pm-gold/20 bg-black">
+          <iframe
+            src={embedUrlValue}
+            title="TikTok video"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      );
+    }
+  }
+
+  if (!url) return null;
 
   return (
     <div
@@ -366,14 +402,14 @@ const FashionDay: React.FC = () => {
             </section>
 
             {/* 2. VIDÉO D'INTRO */}
-            {selectedEdition.announcementVideoUrl && (
+            {(selectedEdition.announcementVideoUrl || selectedEdition.announcementVideoEmbedUrl) && (
               <section className="bg-[#050505] py-12 sm:py-20">
                 <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-20">
                   <div className="mb-8 sm:mb-10">
                     <span className="section-label">Teaser</span>
                     <h3 className="text-3xl sm:text-4xl font-playfair font-black">Le Spot de l'Édition</h3>
                   </div>
-                  <VideoIntro url={selectedEdition.announcementVideoUrl} />
+                  <VideoIntro url={selectedEdition.announcementVideoUrl} embedUrl={selectedEdition.announcementVideoEmbedUrl} />
                 </div>
               </section>
             )}

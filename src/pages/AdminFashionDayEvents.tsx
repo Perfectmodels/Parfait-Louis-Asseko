@@ -7,8 +7,9 @@ import {
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { FashionDayEvent, Stylist, Artist } from '../types';
-import CloudinaryUploader from '../components/CloudinaryUploader';
-import CloudinaryMultiUploader from '../components/CloudinaryMultiUploader';
+import { uploadToImgbb } from '../utils/imgbbService';
+import ImgBBUploader from '../components/ImgBBUploader';
+import { useToast } from '../components/ui/Toast';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -34,14 +35,39 @@ interface PersonEditorProps<T extends Stylist | Artist> {
   items: T[];
   onChange: (items: T[]) => void;
   emptyItem: T;
+  imgbbApiKey?: string;
 }
 
-function PersonEditor<T extends Stylist | Artist>({ title, items, onChange, emptyItem }: PersonEditorProps<T>) {
+function PersonEditor<T extends Stylist | Artist>({ title, items, onChange, emptyItem, imgbbApiKey }: PersonEditorProps<T>) {
   const [open, setOpen] = useState<number | null>(null);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const { success, error } = useToast();
+  const showToast = (message: string, isSuccess: boolean) => isSuccess ? success(message) : error(message);
 
   const update = (i: number, patch: Partial<T>) => {
     const next = items.map((it, idx) => idx === i ? { ...it, ...patch } : it);
     onChange(next);
+  };
+
+  const handleImageUpload = async (i: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!imgbbApiKey?.trim()) {
+      showToast('Configurez d’abord la clé ImgBB dans les paramètres admin.', false);
+      return;
+    }
+
+    setUploadingIndex(i);
+    try {
+      const url = await uploadToImgbb(file, imgbbApiKey);
+      update(i, { images: [...(items[i]?.images ?? []), url] } as Partial<T>);
+      showToast('Photo ajoutée', true);
+    } catch (error: any) {
+      showToast(error?.message || 'Échec de l’upload de la photo', false);
+    } finally {
+      setUploadingIndex(null);
+      e.target.value = '';
+    }
   };
 
   return (
@@ -73,13 +99,29 @@ function PersonEditor<T extends Stylist | Artist>({ title, items, onChange, empt
                   <Textarea value={item.description} onChange={e => update(i, { description: e.target.value } as Partial<T>)} rows={2} placeholder="Courte biographie..." />
                 </Field>
                 <Field label="Photos du passage">
-                  <CloudinaryMultiUploader
-                    values={item.images ?? []}
-                    onChange={images => update(i, { images } as Partial<T>)}
-                    resourceType="image"
-                    folder="fashion-day/passages"
-                    maxFiles={30}
-                  />
+                  <div className="space-y-2">
+                    <label className="inline-flex items-center gap-2 text-[11px] text-pm-gold/80 cursor-pointer">
+                      <PlusIcon className="w-4 h-4" />
+                      {uploadingIndex === i ? 'Upload en cours…' : 'Ajouter une photo depuis ImgBB'}
+                      <input type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(i, e)} />
+                    </label>
+                    {(item.images ?? []).length > 0 && (
+                      <div className="grid grid-cols-3 gap-2">
+                        {(item.images ?? []).map((img, idx) => (
+                          <div key={idx} className="relative aspect-square overflow-hidden rounded border border-pm-gold/20">
+                            <img src={img} alt="" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => update(i, { images: (item.images ?? []).filter((_, imageIndex) => imageIndex !== idx) } as Partial<T>)}
+                              className="absolute top-1 right-1 rounded-full bg-black/70 p-1 text-white/70 hover:text-red-400"
+                            >
+                              <XMarkIcon className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </Field>
               </div>
             )}
@@ -187,8 +229,32 @@ const EventEditor: React.FC<{
   onCancel: () => void;
 }> = ({ event, allModels, onSave, onCancel }) => {
   const [ev, setEv] = useState<FashionDayEvent>(JSON.parse(JSON.stringify(event)));
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const { data } = useData();
+  const { success, error } = useToast();
+  const showToast = (message: string, isSuccess: boolean) => isSuccess ? success(message) : error(message);
 
   const set = (patch: Partial<FashionDayEvent>) => setEv(prev => ({ ...prev, ...patch }));
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !data?.apiKeys?.imgbbApiKey) {
+      showToast('Configurez d’abord la clé ImgBB dans les paramètres admin.', false);
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const url = await uploadToImgbb(file, data.apiKeys.imgbbApiKey);
+      set({ galleryImages: [...(ev.galleryImages ?? []), url] });
+      showToast('Image ajoutée à la galerie', true);
+    } catch (error: any) {
+      showToast(error?.message || 'Échec de l’upload image', false);
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
+    }
+  };
 
   return (
     <div className="border-t border-pm-gold/20 p-5 space-y-6 bg-black/20">
@@ -219,15 +285,23 @@ const EventEditor: React.FC<{
       <hr className="border-pm-gold/10" />
 
       {/* Vidéo spot d'annonce */}
-      <div>
-        <h4 className="text-sm font-bold text-pm-gold uppercase tracking-widest mb-3">Spot d'Annonce (Vidéo)</h4>
-        <CloudinaryUploader
-          value={ev.announcementVideoUrl ?? ''}
-          onChange={url => set({ announcementVideoUrl: url })}
-          resourceType="video"
-          folder="fashion-day/announcements"
-          allowUrl
-        />
+      <div className="space-y-3">
+        <h4 className="text-sm font-bold text-pm-gold uppercase tracking-widest">Spot d'Annonce (Vidéo)</h4>
+        <Field label="Lien YouTube ou TikTok">
+          <Input
+            value={ev.announcementVideoEmbedUrl ?? ''}
+            onChange={e => set({ announcementVideoEmbedUrl: e.target.value })}
+            placeholder="https://www.youtube.com/watch?v=... ou https://www.tiktok.com/..."
+          />
+        </Field>
+        <Field label="URL directe de la vidéo (optionnelle)">
+          <Input
+            value={ev.announcementVideoUrl ?? ''}
+            onChange={e => set({ announcementVideoUrl: e.target.value })}
+            placeholder="https://...mp4"
+          />
+        </Field>
+        <p className="text-[10px] text-pm-off-white/40">Les vidéos peuvent être intégrées depuis YouTube ou TikTok. L’URL directe reste optionnelle pour les fichiers hébergés.</p>
       </div>
 
       <hr className="border-pm-gold/10" />
@@ -235,13 +309,27 @@ const EventEditor: React.FC<{
       {/* Galerie photos de l'édition */}
       <div>
         <h4 className="text-sm font-bold text-pm-gold uppercase tracking-widest mb-3">Galerie Photos de l'Édition</h4>
-        <CloudinaryMultiUploader
-          values={ev.galleryImages ?? []}
-          onChange={galleryImages => set({ galleryImages })}
-          resourceType="image"
-          folder="fashion-day/gallery"
-          maxFiles={50}
-        />
+        <div className="flex flex-col gap-3">
+          <label className="inline-flex items-center gap-2 text-[11px] text-pm-gold/80 cursor-pointer">
+            <PlusIcon className="w-4 h-4" />
+            {uploadingImage ? 'Upload en cours…' : 'Ajouter une photo depuis ImgBB'}
+            <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {(ev.galleryImages ?? []).map((img, idx) => (
+              <div key={idx} className="relative group aspect-square overflow-hidden rounded border border-pm-gold/20">
+                <img src={img} alt="" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => set({ galleryImages: (ev.galleryImages ?? []).filter((_, i) => i !== idx) })}
+                  className="absolute top-1 right-1 rounded-full bg-black/70 p-1 text-white/70 hover:text-red-400"
+                >
+                  <XMarkIcon className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <hr className="border-pm-gold/10" />
@@ -252,6 +340,7 @@ const EventEditor: React.FC<{
         items={ev.stylists ?? []}
         onChange={stylists => set({ stylists })}
         emptyItem={{ name: '', description: '', images: [] }}
+        imgbbApiKey={data?.apiKeys?.imgbbApiKey || import.meta.env.VITE_IMGBB_API_KEY || ''}
       />
 
       <hr className="border-pm-gold/10" />
@@ -262,6 +351,7 @@ const EventEditor: React.FC<{
         items={ev.artists ?? []}
         onChange={artists => set({ artists })}
         emptyItem={{ name: '', description: '', images: [] }}
+        imgbbApiKey={data?.apiKeys?.imgbbApiKey || import.meta.env.VITE_IMGBB_API_KEY || ''}
       />
 
       <hr className="border-pm-gold/10" />
@@ -379,7 +469,7 @@ const AdminFashionDayEvents: React.FC = () => {
             </div>
             <div className="sm:col-span-2">
               <Field label="Spot d'Annonce (Vidéo)">
-                <CloudinaryUploader
+                <ImgBBUploader
                   value={form.announcementVideoUrl ?? ''}
                   onChange={url => setForm(f => ({ ...f, announcementVideoUrl: url }))}
                   resourceType="video"

@@ -11,7 +11,7 @@ import ImageUploader from '../components/ImageUploader';
 import ArticleGenerator from '../components/ArticleGenerator';
 import AIAssistant from '../components/AIAssistant';
 import ArticlePreview from '../components/ArticlePreview';
-import { uploadToCloudinary } from '../utils/cloudinaryService';
+import { uploadToImgbb } from '../utils/imgbbService';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -74,8 +74,8 @@ const BlockEditor: React.FC<BlockEditorProps> = ({ blocks, onChange }) => {
   const handleImageUpload = async (file: File, idx: number) => {
     setUploading(`Envoi de ${file.name}…`);
     try {
-      const res = await uploadToCloudinary(file, 'image', 'magazine');
-      update(idx, { src: res.secure_url, alt: file.name } as any);
+      const url = await uploadToImgbb(file, '');
+      update(idx, { src: url, alt: file.name } as any);
     } catch { alert('Erreur upload image'); }
     setUploading(null);
   };
@@ -149,7 +149,7 @@ const BlockEditor: React.FC<BlockEditorProps> = ({ blocks, onChange }) => {
                 <button onClick={() => { setPendingImageIdx(idx); fileRef.current?.click(); }}
                   className="w-full h-24 border-2 border-dashed border-white/10 rounded-lg flex flex-col items-center justify-center gap-2 hover:border-pm-gold/40 transition-colors">
                   <PhotoIcon className="w-6 h-6 text-white/20" />
-                  <span className="text-xs text-white/30">Uploader via Cloudinary</span>
+                   <span className="text-xs text-white/30">Ajouter une photo</span>
                 </button>
               )}
               <input value={block.alt} onChange={e => update(idx, { alt: e.target.value })}

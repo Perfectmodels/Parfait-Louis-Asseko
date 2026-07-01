@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Edit2, Save, X, Upload, Star, Users, Award, ChevronUp, Key, Copy, Eye, EyeOff, Layers, Shuffle, Flag, ChevronRight, CheckCircle } from 'lucide-react';
 import { rtdb } from '../firebase';
 import { ref, set, remove, update, onValue, push, get } from 'firebase/database';
-import { uploadToCloudinary, validateFile } from '../utils/cloudinaryService';
+import { uploadToImgbb, validateFile } from '../utils/imgbbService';
 
 export type ContestStage = 'preselection' | 'semifinal' | 'final';
 
@@ -315,11 +315,11 @@ export default function AdminBeautyContest() {
     const err = validateFile(file, 'image'); if (err) { showToast(err, false); return; }
     if (candidateId) {
       setUploadingCandidateId(candidateId);
-      try { const res = await uploadToCloudinary(file, 'image', 'beauty-contest'); await update(ref(rtdb, `${sp}/candidates/${candidateId}`), { photo: res.secure_url }); showToast('Photo mise à jour'); }
+      try { const url = await uploadToImgbb(file, ''); await update(ref(rtdb, `${sp}/candidates/${candidateId}`), { photo: url }); showToast('Photo mise à jour'); }
       catch { showToast('Erreur upload', false); } finally { setUploadingCandidateId(null); pendingRowId.current = null; }
     } else {
       setFormUploading(true);
-      try { const res = await uploadToCloudinary(file, 'image', 'beauty-contest'); setCandidateForm(p => ({ ...p, photo: res.secure_url })); showToast('Photo uploadée'); }
+      try { const url = await uploadToImgbb(file, ''); setCandidateForm(p => ({ ...p, photo: url })); showToast('Photo uploadée'); }
       catch { showToast('Erreur upload', false); } finally { setFormUploading(false); }
     }
   };
@@ -509,7 +509,7 @@ export default function AdminBeautyContest() {
   const handleJuryPhotoUpload = async (file:File) => {
     const err = validateFile(file, 'image'); if (err) { showToast(err, false); return; }
     setJuryPhotoUploading(true);
-    try { const res = await uploadToCloudinary(file, 'image', 'beauty-contest'); setJuryForm(p => ({ ...p, photo: res.secure_url })); showToast('Photo uploadée'); }
+    try { const url = await uploadToImgbb(file, ''); setJuryForm(p => ({ ...p, photo: url })); showToast('Photo uploadée'); }
     catch { showToast('Erreur upload', false); } finally { setJuryPhotoUploading(false); }
   };
 

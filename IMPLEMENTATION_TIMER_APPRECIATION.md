@@ -232,6 +232,7 @@ const handleStartQuiz = () => {
 
 ### 6. Afficher une Question à la Fois
 
+{% raw %}
 ```tsx
 {showQuiz && quizStarted && !quizSubmitted && (
   <div className="space-y-6">
@@ -292,6 +293,7 @@ const handleStartQuiz = () => {
   </div>
 )}
 ```
+{% endraw %}
 
 ---
 

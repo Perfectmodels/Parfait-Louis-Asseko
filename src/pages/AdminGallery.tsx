@@ -7,7 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { GalleryAlbum, GalleryCategory, GalleryItem, GalleryMediaType } from '../types';
-import { uploadToCloudinary, validateFile } from '../utils/cloudinaryService';
+import { uploadToImgbb, validateFile } from '../utils/imgbbService';
 import { ref as dbRef, push, set, update, remove } from 'firebase/database';
 import { db } from '../realtimedbConfig';
 import { invalidateCache, useFirebaseCollection } from '../hooks/useFirebaseCollection';
@@ -250,23 +250,19 @@ const AdminGallery: React.FC = () => {
       setUploading(p => [...p, { id: uid, name: file.name, mediaType, progress: 0, done: false }]);
 
       try {
-        const result = await uploadToCloudinary(file, mediaType === 'video' ? 'video' : 'image', 'gallery', (pct) => {
+        const url = await uploadToImgbb(file, '', (pct) => {
           setUploading(p => p.map(u => u.id === uid ? { ...u, progress: pct } : u));
         });
 
-        if (!coverUrl && mediaType === 'image') coverUrl = result.secure_url;
+        if (!coverUrl && mediaType === 'image') coverUrl = url;
 
         const newRef = push(dbRef(db, 'gallery'));
         const newItem: GalleryItem = {
           id: newRef.key!,
-          url: result.secure_url,
-          publicId: result.public_id,
+          url,
           mediaType,
           category,
           albumId,
-          ...(mediaType === 'video' && {
-            thumbnailUrl: result.secure_url.replace('/upload/', '/upload/so_0,w_400/').replace(/\.\w+$/, '.jpg'),
-          }),
           createdAt: new Date().toISOString(),
         };
         await set(newRef, newItem);

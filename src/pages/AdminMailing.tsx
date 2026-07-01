@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeftIcon, PaperAirplaneIcon, UsersIcon, CheckCircleIcon,
@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/24/outline';
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
-import { sendBulkEmail, buildNewsletterBody, buildEmailTemplate } from '../utils/brevoService';
+import { sendBulkEmail, buildNewsletterBody, buildEmailTemplate, getBrevoDailyUsage } from '../utils/brevoService';
 
 type Tab = 'compose' | 'newsletter' | 'preview';
 type RecipientGroup = 'all' | 'models' | 'partners' | 'custom';
@@ -18,6 +18,16 @@ interface NewsSection {
   imageUrl: string;
   ctaLabel: string;
   ctaUrl: string;
+}
+
+interface ScheduledNewsletter {
+  id: string;
+  subject: string;
+  headline: string;
+  intro: string;
+  html: string;
+  recipients: { email: string; name?: string }[];
+  scheduledAt: string;
 }
 
 const TEMPLATES = [
@@ -47,6 +57,9 @@ const TEMPLATES = [
   },
 ];
 
+const NEWSLETTER_DRAFT_KEY = 'pmm_newsletter_draft';
+const NEWSLETTER_SCHEDULE_KEY = 'pmm_newsletter_schedules';
+
 const AdminMailing: React.FC = () => {
   const { data, saveData } = useData();
   const models = data?.models ?? [];
@@ -62,6 +75,12 @@ const AdminMailing: React.FC = () => {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
   const [progress, setProgress] = useState({ sent: 0, total: 0 });
+  const [sendSummary, setSendSummary] = useState<{ sent: number; total: number; limitReached: boolean; remainingToday: number } | null>(null);
+  const [nlHtml, setNlHtml] = useState(`<h1 style="color:#c9a84c;font-family:Georgia,serif;font-size:28px;margin:0 0 16px">Titre de la newsletter</h1>
+<p style="color:#f5f0e8cc;line-height:1.8;margin:0 0 20px">Écrivez ici votre contenu HTML complet, y compris les images, boutons et liens.</p>`);
+  const [scheduledAt, setScheduledAt] = useState('');
+  const [draftStatus, setDraftStatus] = useState('');
+  const [scheduleStatus, setScheduleStatus] = useState('');
 
   // Gestion contacts prédéfinis
   const [showAddContact, setShowAddContact] = useState(false);
@@ -72,6 +91,8 @@ const AdminMailing: React.FC = () => {
     const cats = [...new Set(mailingContacts.map(c => c.category ?? 'Autre'))].sort();
     return ['Toutes', ...cats];
   }, [mailingContacts]);
+
+  const dailyUsage = getBrevoDailyUsage();
 
   const filteredContacts = useMemo(() =>
     filterCategory === 'Toutes' ? mailingContacts : mailingContacts.filter(c => c.category === filterCategory),
@@ -99,6 +120,32 @@ const AdminMailing: React.FC = () => {
   ]);
   const [nlSubject, setNlSubject] = useState('');
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const storedDraft = window.localStorage.getItem(NEWSLETTER_DRAFT_KEY);
+      if (storedDraft) {
+        const draft = JSON.parse(storedDraft) as Partial<{
+          nlHeadline: string;
+          nlIntro: string;
+          nlSections: NewsSection[];
+          nlSubject: string;
+          nlHtml: string;
+          scheduledAt: string;
+        }>;
+        setNlHeadline(draft.nlHeadline ?? '');
+        setNlIntro(draft.nlIntro ?? '');
+        setNlSections(draft.nlSections ?? [{ id: '1', title: '', text: '', imageUrl: '', ctaLabel: '', ctaUrl: '' }]);
+        setNlSubject(draft.nlSubject ?? '');
+        setNlHtml(draft.nlHtml ?? '');
+        setScheduledAt(draft.scheduledAt ?? '');
+        setDraftStatus('Brouillon chargé');
+      }
+    } catch {
+      setDraftStatus('');
+    }
+  }, []);
+
   const targetEmails = useMemo((): { email: string; name?: string }[] => {
     const modelList = (recipientGroup === 'models' || recipientGroup === 'all')
       ? models.filter(m => m.email).map(m => ({ email: m.email!, name: m.name }))
@@ -120,7 +167,7 @@ const AdminMailing: React.FC = () => {
 
   const previewHtml = useMemo(() => {
     if (tab === 'newsletter') {
-      return buildEmailTemplate(buildNewsletterBody({
+      const htmlContent = nlHtml.trim() || buildNewsletterBody({
         headline: nlHeadline || 'Titre de la newsletter',
         intro: nlIntro || 'Introduction…',
         sections: nlSections.map(s => ({
@@ -130,7 +177,8 @@ const AdminMailing: React.FC = () => {
           ctaLabel: s.ctaLabel || undefined,
           ctaUrl: s.ctaUrl || undefined,
         })),
-      }));
+      });
+      return buildEmailTemplate(htmlContent);
     }
     return buildEmailTemplate(
       `<h2 style="color:#c9a84c;font-family:Georgia,serif;font-size:22px;margin:0 0 20px">${subject || 'Objet'}</h2>
@@ -141,9 +189,10 @@ const AdminMailing: React.FC = () => {
   const handleSendCompose = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!subject.trim() || !body.trim() || targetEmails.length === 0) return;
-    setSending(true); setError(''); setProgress({ sent: 0, total: targetEmails.length });
+    setSending(true); setError(''); setProgress({ sent: 0, total: Math.min(targetEmails.length, dailyUsage.remaining) });
+    setSendSummary(null);
     try {
-      await sendBulkEmail({
+      const result = await sendBulkEmail({
         to: targetEmails,
         subject,
         bodyHtml: `<h2 style="color:#c9a84c;font-family:Georgia,serif;font-size:22px;margin:0 0 20px">${subject}</h2>
@@ -151,6 +200,10 @@ const AdminMailing: React.FC = () => {
         apiKey: brevoKey,
         onProgress: (s, t) => setProgress({ sent: s, total: t }),
       });
+      setSendSummary({ sent: result.sent, total: targetEmails.length, limitReached: result.limitReached, remainingToday: result.remainingToday });
+      if (result.limitReached) {
+        setError(`Envoi arrêté à ${result.sent} destinataire(s) pour respecter la limite quotidienne Brevo.`);
+      }
       setSent(true);
     } catch (err: any) {
       setError(err.message || 'Erreur inconnue');
@@ -159,15 +212,99 @@ const AdminMailing: React.FC = () => {
     }
   };
 
+  const saveNewsletterDraft = () => {
+    if (typeof window === 'undefined') return;
+    const payload = { nlHeadline, nlIntro, nlSections, nlSubject, nlHtml, scheduledAt };
+    window.localStorage.setItem(NEWSLETTER_DRAFT_KEY, JSON.stringify(payload));
+    setDraftStatus(`Brouillon enregistré le ${new Date().toLocaleString('fr-FR')}`);
+    setError('');
+  };
+
+  const sendScheduledNewsletter = async (campaign: ScheduledNewsletter) => {
+    try {
+      const result = await sendBulkEmail({
+        to: campaign.recipients,
+        subject: campaign.subject,
+        bodyHtml: campaign.html,
+        apiKey: brevoKey,
+        onProgress: () => undefined,
+      });
+      if (typeof window !== 'undefined') {
+        const stored = window.localStorage.getItem(NEWSLETTER_SCHEDULE_KEY);
+        const list = stored ? (JSON.parse(stored) as ScheduledNewsletter[]) : [];
+        window.localStorage.setItem(NEWSLETTER_SCHEDULE_KEY, JSON.stringify(list.filter(item => item.id !== campaign.id)));
+      }
+      if (result.limitReached) {
+        setScheduleStatus(`Campagne programmée envoyée partiellement (${result.sent}/${campaign.recipients.length}) en raison de la limite quotidienne.`);
+      }
+    } catch (err: any) {
+      setScheduleStatus(`Échec de l'envoi programmé : ${err.message || 'Erreur inconnue'}`);
+    }
+  };
+
+  const scheduleNewsletter = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!nlSubject.trim() || !nlHeadline.trim() || targetEmails.length === 0) {
+      setError('Complétez le sujet, le titre et au moins un destinataire.');
+      return;
+    }
+    if (!scheduledAt) {
+      setError('Choisissez une date et une heure pour programmer l’envoi.');
+      return;
+    }
+
+    const scheduleDate = new Date(scheduledAt);
+    if (Number.isNaN(scheduleDate.getTime()) || scheduleDate <= new Date()) {
+      setError('La date de programmation doit être future.');
+      return;
+    }
+
+    const campaign: ScheduledNewsletter = {
+      id: `schedule-${Date.now()}`,
+      subject: nlSubject,
+      headline: nlHeadline,
+      intro: nlIntro,
+      html: nlHtml.trim() || buildNewsletterBody({
+        headline: nlHeadline,
+        intro: nlIntro,
+        sections: nlSections.map(s => ({
+          title: s.title, text: s.text,
+          imageUrl: s.imageUrl || undefined,
+          ctaLabel: s.ctaLabel || undefined,
+          ctaUrl: s.ctaUrl || undefined,
+        })),
+      }),
+      recipients: targetEmails,
+      scheduledAt: scheduleDate.toISOString(),
+    };
+
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem(NEWSLETTER_SCHEDULE_KEY);
+      const list = stored ? (JSON.parse(stored) as ScheduledNewsletter[]) : [];
+      window.localStorage.setItem(NEWSLETTER_SCHEDULE_KEY, JSON.stringify([...list, campaign]));
+    }
+
+    const delay = scheduleDate.getTime() - Date.now();
+    window.setTimeout(() => {
+      void sendScheduledNewsletter(campaign);
+    }, delay);
+
+    setScheduleStatus(`Newsletter programmée pour ${scheduleDate.toLocaleString('fr-FR')}`);
+    setError('');
+    setDraftStatus('');
+  };
+
   const handleSendNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nlSubject.trim() || !nlHeadline.trim() || targetEmails.length === 0) return;
-    setSending(true); setError(''); setProgress({ sent: 0, total: targetEmails.length });
+    setSending(true); setError(''); setProgress({ sent: 0, total: Math.min(targetEmails.length, dailyUsage.remaining) });
+    setSendSummary(null);
+    setScheduleStatus('');
     try {
-      await sendBulkEmail({
+      const result = await sendBulkEmail({
         to: targetEmails,
         subject: nlSubject,
-        bodyHtml: buildNewsletterBody({
+        bodyHtml: nlHtml.trim() || buildNewsletterBody({
           headline: nlHeadline,
           intro: nlIntro,
           sections: nlSections.map(s => ({
@@ -180,6 +317,10 @@ const AdminMailing: React.FC = () => {
         apiKey: brevoKey,
         onProgress: (s, t) => setProgress({ sent: s, total: t }),
       });
+      setSendSummary({ sent: result.sent, total: targetEmails.length, limitReached: result.limitReached, remainingToday: result.remainingToday });
+      if (result.limitReached) {
+        setError(`Envoi arrêté à ${result.sent} destinataire(s) pour respecter la limite quotidienne Brevo.`);
+      }
       setSent(true);
     } catch (err: any) {
       setError(err.message || 'Erreur inconnue');
@@ -200,8 +341,9 @@ const AdminMailing: React.FC = () => {
           <CheckCircleIcon className="w-10 h-10 text-green-400" />
         </div>
         <h2 className="text-2xl font-playfair text-pm-gold">Email envoyé</h2>
-        <p className="text-pm-off-white/50">{targetEmails.length} destinataire(s) contacté(s).</p>
-        <button onClick={() => { setSent(false); setSubject(''); setBody(''); }}
+        <p className="text-pm-off-white/50">{(sendSummary?.sent ?? targetEmails.length)} destinataire(s) contacté(s){sendSummary?.limitReached ? ' (limite quotidienne atteinte)' : ''}.</p>
+        {sendSummary?.limitReached && <p className="text-sm text-yellow-400">Il reste {sendSummary.remainingToday} place(s) disponible(s) aujourd'hui.</p>}
+        <button onClick={() => { setSent(false); setSubject(''); setBody(''); setSendSummary(null); setError(''); }}
           className="px-6 py-2.5 bg-pm-gold text-pm-dark font-bold rounded-full text-sm hover:bg-white transition-colors">
           Envoyer un autre email
         </button>
@@ -217,7 +359,7 @@ const AdminMailing: React.FC = () => {
           <ChevronLeftIcon className="w-4 h-4" /> Tableau de bord
         </Link>
 
-        <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
+        <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
           <div>
             <h1 className="text-4xl font-playfair font-black italic">Mailing</h1>
             <p className="text-pm-off-white/40 text-sm mt-1">Composez et envoyez des emails via Brevo.</p>
@@ -227,6 +369,15 @@ const AdminMailing: React.FC = () => {
               ⚠️ Clé Brevo non configurée dans Paramètres — utilisation de la clé .env
             </p>
           )}
+        </div>
+
+        <div className="flex flex-wrap gap-3 mb-8">
+          <div className="rounded-full border border-pm-gold/20 bg-pm-gold/10 px-3 py-2 text-xs text-pm-gold">
+            Envoi groupé: lots de 25 emails tous les 2s
+          </div>
+          <div className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/60">
+            Limite Brevo: {dailyUsage.used}/{dailyUsage.limit} envoyés aujourd'hui · {dailyUsage.remaining} restant(s)
+          </div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
@@ -401,6 +552,35 @@ const AdminMailing: React.FC = () => {
                     rows={3} placeholder="Texte d'introduction de la newsletter…"
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold resize-none" />
                 </div>
+
+                <div>
+                  <label className="text-xs uppercase tracking-widest text-white/30 mb-1.5 block">Contenu HTML *</label>
+                  <textarea value={nlHtml} onChange={e => setNlHtml(e.target.value)}
+                    rows={12} placeholder="Collez ici votre HTML complet…"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold resize-none" />
+                  <p className="text-[11px] text-white/30 mt-2">Le contenu HTML est utilisé pour l’envoi, l’aperçu et le brouillon.</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs uppercase tracking-widest text-white/30 mb-1.5 block">Programmer l'envoi</label>
+                    <input type="datetime-local" value={scheduledAt} onChange={e => setScheduledAt(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-pm-off-white focus:outline-none focus:border-pm-gold" />
+                  </div>
+                  <div className="flex items-end gap-2">
+                    <button type="button" onClick={saveNewsletterDraft}
+                      className="flex-1 bg-white/10 border border-white/10 text-white/70 py-3 rounded-full text-xs uppercase tracking-widest hover:bg-white/20 transition-colors">
+                      Brouillon
+                    </button>
+                    <button type="button" onClick={scheduleNewsletter}
+                      className="flex-1 bg-pm-gold/20 border border-pm-gold/30 text-pm-gold py-3 rounded-full text-xs uppercase tracking-widest hover:bg-pm-gold/30 transition-colors">
+                      Programmer
+                    </button>
+                  </div>
+                </div>
+
+                {draftStatus && <p className="text-xs text-green-400 bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2">{draftStatus}</p>}
+                {scheduleStatus && <p className="text-xs text-pm-gold bg-pm-gold/10 border border-pm-gold/20 rounded-lg px-3 py-2">{scheduleStatus}</p>}
 
                 {/* Sections */}
                 <div className="space-y-4">

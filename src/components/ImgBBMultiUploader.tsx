@@ -1,24 +1,21 @@
 /**
- * CloudinaryMultiUploader — upload multiple images/videos, returns array of URLs.
+ * ImgBBMultiUploader — upload multiple images, returns array of URLs.
  */
 import React, { useRef, useState, useCallback } from 'react';
 import { PhotoIcon, XMarkIcon, PlusIcon, Square2StackIcon } from '@heroicons/react/24/outline';
 import MediaPicker from './admin/MediaPicker';
 import {
-  uploadToCloudinary,
+  uploadToImgbb,
   validateFile,
   ACCEPTED_IMAGE_TYPES,
-  ACCEPTED_VIDEO_TYPES,
-  ACCEPTED_MEDIA_TYPES,
-  CloudinaryResourceType,
-} from '../utils/cloudinaryService';
+  MAX_IMAGE_SIZE_MB,
+} from '../utils/imgbbService';
+import { useData } from '../contexts/DataContext';
 
-interface CloudinaryMultiUploaderProps {
+interface ImgBBMultiUploaderProps {
   label?: string;
   values: string[];
   onChange: (urls: string[]) => void;
-  resourceType?: CloudinaryResourceType;
-  folder?: string;
   maxFiles?: number;
 }
 
@@ -29,27 +26,27 @@ interface UploadingItem {
   error?: string;
 }
 
-const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
+const ImgBBMultiUploader: React.FC<ImgBBMultiUploaderProps> = ({
   label,
   values,
   onChange,
-  resourceType = 'image',
-  folder,
   maxFiles = 20,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<UploadingItem[]>([]);
   const [dragging, setDragging] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-
-  const accept =
-    resourceType === 'image' ? ACCEPTED_IMAGE_TYPES :
-    resourceType === 'video' ? ACCEPTED_VIDEO_TYPES :
-    ACCEPTED_MEDIA_TYPES;
+  const { data } = useData();
+  const apiKey = data?.apiKeys?.imgbbApiKey || import.meta.env.VITE_IMGBB_API_KEY || '';
 
   const handleFiles = useCallback(async (files: FileList | File[]) => {
     const fileArray = Array.from(files).slice(0, maxFiles - values.length);
     if (!fileArray.length) return;
+
+    if (!apiKey) {
+      alert('Clé API ImgBB non configurée.');
+      return;
+    }
 
     const items: UploadingItem[] = fileArray.map(f => ({
       id: `${Date.now()}-${f.name}`,
@@ -60,15 +57,15 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
 
     const results = await Promise.allSettled(
       fileArray.map(async (file, idx) => {
-        const err = validateFile(file, resourceType);
+        const err = validateFile(file, 'image');
         if (err) {
           setUploading(prev => prev.map(u => u.id === items[idx].id ? { ...u, error: err } : u));
           throw new Error(err);
         }
-        const result = await uploadToCloudinary(file, resourceType, folder, (pct) => {
+        const url = await uploadToImgbb(file, apiKey, (pct) => {
           setUploading(prev => prev.map(u => u.id === items[idx].id ? { ...u, progress: pct } : u));
         });
-        return result.secure_url;
+        return url;
       })
     );
 
@@ -77,11 +74,10 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
       .map(r => r.value);
 
     onChange([...values, ...newUrls]);
-    // Remove successful items after short delay
     setTimeout(() => {
       setUploading(prev => prev.filter(u => items.find(i => i.id === u.id && u.error)));
     }, 800);
-  }, [values, onChange, resourceType, folder, maxFiles]);
+  }, [values, onChange, maxFiles, apiKey]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) handleFiles(e.target.files);
@@ -98,22 +94,15 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
     onChange(values.filter((_, i) => i !== index));
   };
 
-  const isVideo = (url: string) => /\.(mp4|webm|mov|avi)$/i.test(url) || url.includes('/video/');
-
   return (
     <div className="space-y-3">
       {label && <label className="admin-label">{label}</label>}
 
-      {/* Grid of existing items */}
       {(values.length > 0 || uploading.length > 0) && (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
           {values.map((url, i) => (
             <div key={i} className="relative group aspect-square">
-              {isVideo(url) ? (
-                <video src={url} className="w-full h-full object-cover rounded border border-pm-gold/20" />
-              ) : (
-                <img src={url} alt="" className="w-full h-full object-cover rounded border border-pm-gold/20" />
-              )}
+              <img src={url} alt="" className="w-full h-full object-cover rounded border border-pm-gold/20" />
               <button
                 type="button"
                 onClick={() => removeUrl(i)}
@@ -124,7 +113,6 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
             </div>
           ))}
 
-          {/* Uploading placeholders */}
           {uploading.map(item => (
             <div key={item.id} className="relative aspect-square bg-white/5 rounded border border-white/10 flex flex-col items-center justify-center gap-1 p-2">
               {item.error ? (
@@ -140,7 +128,6 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
             </div>
           ))}
 
-          {/* Add button */}
           {values.length < maxFiles && (
             <button
               type="button"
@@ -153,7 +140,6 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
         </div>
       )}
 
-      {/* Drop zone when empty */}
       {values.length === 0 && uploading.length === 0 && (
         <div
           onDrop={handleDrop}
@@ -194,13 +180,13 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
           onChange(newUrls);
         }}
         multiple={true}
-        resourceType={resourceType === 'auto' ? 'auto' : resourceType}
+        resourceType="image"
       />
 
       <input
         ref={inputRef}
         type="file"
-        accept={accept}
+        accept={ACCEPTED_IMAGE_TYPES}
         multiple
         onChange={handleInputChange}
         className="hidden"
@@ -209,4 +195,4 @@ const CloudinaryMultiUploader: React.FC<CloudinaryMultiUploaderProps> = ({
   );
 };
 
-export default CloudinaryMultiUploader;
+export default ImgBBMultiUploader;

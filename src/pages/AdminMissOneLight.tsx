@@ -11,7 +11,7 @@ import {
   increment,
 } from 'firebase/database';
 import { MissOneLightPendingVote } from '../types';
-import { uploadToCloudinary, validateFile } from '../utils/cloudinaryService';
+import { uploadToImgbb, validateFile } from '../utils/imgbbService';
 import { sendVoteValidatedEmail } from '../utils/brevoService';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -97,8 +97,8 @@ export default function AdminMissOneLight() {
     if (err) { showToast(err, 'error'); return; }
     setUploadingId(id);
     try {
-      const res = await uploadToCloudinary(file, 'image', 'miss-one-light');
-      await update(ref(rtdb, `${RTDB_PATH}/${id}`), { photo: res.secure_url });
+      const url = await uploadToImgbb(file, '');
+      await update(ref(rtdb, `${RTDB_PATH}/${id}`), { photo: url });
       showToast('Photo mise à jour', 'success');
     } catch {
       showToast("Erreur lors de l'upload", 'error');
@@ -114,8 +114,8 @@ export default function AdminMissOneLight() {
     if (err) { showToast(err, 'error'); return; }
     setFormUploading(true);
     try {
-      const res = await uploadToCloudinary(file, 'image', 'miss-one-light');
-      setFormData(prev => ({ ...prev, photo: res.secure_url }));
+      const url = await uploadToImgbb(file, '');
+      setFormData(prev => ({ ...prev, photo: url }));
       showToast('Photo uploadée', 'success');
     } catch {
       showToast("Erreur lors de l'upload", 'error');

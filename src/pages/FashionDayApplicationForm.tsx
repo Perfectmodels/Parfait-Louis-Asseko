@@ -65,7 +65,7 @@ sendFashionDayNotificationToAdmin({
          phone: formData.phone,
          role: formData.role,
          message: formData.message,
-         notificationEmail: 'contact@perfectmodels.online',
+         notificationEmail: data?.contactInfo?.notificationEmail || data?.contactInfo?.email || 'contact@perfectmodels.online',
        }),
             ]).catch(() => {});
 

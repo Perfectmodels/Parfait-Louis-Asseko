@@ -1,37 +1,32 @@
 /**
- * CloudinaryUploader — composant réutilisable pour upload image/vidéo vers Cloudinary.
+ * ImgBBUploader — composant réutilisable pour upload image vers ImgBB.
  * Supporte drag & drop, prévisualisation, barre de progression.
  */
 import React, { useRef, useState, useCallback } from 'react';
-import { PhotoIcon, VideoCameraIcon, XMarkIcon, ArrowUpTrayIcon, Square2StackIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon, ArrowUpTrayIcon, Square2StackIcon } from '@heroicons/react/24/outline';
 import MediaPicker from "./admin/MediaPicker";
 import {
-  uploadToCloudinary,
+  uploadToImgbb,
   validateFile,
   ACCEPTED_IMAGE_TYPES,
-  ACCEPTED_VIDEO_TYPES,
-  ACCEPTED_MEDIA_TYPES,
-  CloudinaryResourceType,
-} from '../utils/cloudinaryService';
+  MAX_IMAGE_SIZE_MB,
+} from '../utils/imgbbService';
+import { useData } from '../contexts/DataContext';
 
-interface CloudinaryUploaderProps {
+interface ImgBBUploaderProps {
   label?: string;
-  value: string;           // current URL
+  value: string;
   onChange: (url: string) => void;
-  resourceType?: CloudinaryResourceType;
   folder?: string;
-  /** Show URL input fallback */
   allowUrl?: boolean;
-  /** Compact mode (no big drop zone) */
   compact?: boolean;
   className?: string;
 }
 
-const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
+const ImgBBUploader: React.FC<ImgBBUploaderProps> = ({
   label,
   value,
   onChange,
-  resourceType = 'image',
   folder,
   allowUrl = true,
   compact = false,
@@ -43,29 +38,29 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [urlMode, setUrlMode] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-
-  const accept =
-    resourceType === 'image' ? ACCEPTED_IMAGE_TYPES :
-    resourceType === 'video' ? ACCEPTED_VIDEO_TYPES :
-    ACCEPTED_MEDIA_TYPES;
-
-  const isVideo = value && (value.includes('/video/') || /\.(mp4|webm|mov|avi)$/i.test(value));
+  const { data } = useData();
+  const apiKey = data?.apiKeys?.imgbbApiKey || import.meta.env.VITE_IMGBB_API_KEY || '';
 
   const handleFile = useCallback(async (file: File) => {
     setError(null);
-    const err = validateFile(file, resourceType);
+    const err = validateFile(file, 'image');
     if (err) { setError(err); return; }
+
+    if (!apiKey) {
+      setError('Clé API ImgBB non configurée. Configurez-la dans les paramètres.');
+      return;
+    }
 
     try {
       setProgress(0);
-      const result = await uploadToCloudinary(file, resourceType, folder, setProgress);
-      onChange(result.secure_url);
+      const url = await uploadToImgbb(file, apiKey, setProgress);
+      onChange(url);
     } catch (e: any) {
-      setError(e.message || 'Erreur lors de l\'upload');
+      setError(e.message || "Erreur lors de l'upload");
     } finally {
       setProgress(null);
     }
-  }, [resourceType, folder, onChange]);
+  }, [apiKey, onChange]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -87,14 +82,9 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
     <div className={`space-y-2 ${className}`}>
       {label && <label className="admin-label">{label}</label>}
 
-      {/* Preview */}
       {value && (
         <div className="relative group w-full">
-          {isVideo ? (
-            <video src={value} controls className="w-full max-h-48 rounded border border-pm-gold/20 object-cover" />
-          ) : (
-            <img src={value} alt="preview" className="w-full h-40 object-cover rounded border border-pm-gold/20" />
-          )}
+          <img src={value} alt="preview" className="w-full h-40 object-cover rounded border border-pm-gold/20" />
           <button
             type="button"
             onClick={() => onChange('')}
@@ -105,7 +95,6 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
         </div>
       )}
 
-      {/* Progress bar */}
       {progress !== null && (
         <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
           <div
@@ -115,7 +104,6 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
         </div>
       )}
 
-      {/* Drop zone */}
       {!compact && (
         <div
           onDrop={handleDrop}
@@ -127,22 +115,16 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
             ${progress !== null ? 'pointer-events-none opacity-60' : ''}
           `}
         >
-          {resourceType === 'video'
-            ? <VideoCameraIcon className="w-8 h-8 text-white/20" />
-            : <PhotoIcon className="w-8 h-8 text-white/20" />
-          }
+          <PhotoIcon className="w-8 h-8 text-white/20" />
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
             {progress !== null ? `Upload… ${progress}%` : 'Glisser ou cliquer pour uploader'}
           </span>
           <span className="text-[9px] text-white/20">
-            {resourceType === 'image' ? 'JPG, PNG, WEBP — max 10 Mo' :
-             resourceType === 'video' ? 'MP4, WEBM, MOV — max 100 Mo' :
-             'Image ou vidéo'}
+            JPG, PNG, WEBP — max {MAX_IMAGE_SIZE_MB} Mo
           </span>
         </div>
       )}
 
-      {/* Compact trigger */}
       {compact && (
         <button
           type="button"
@@ -158,12 +140,11 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
       <input
         ref={inputRef}
         type="file"
-        accept={accept}
+        accept={ACCEPTED_IMAGE_TYPES}
         onChange={handleInputChange}
         className="hidden"
       />
 
-      {/* URL fallback & Media Library */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-4">
           {allowUrl && (
@@ -201,7 +182,7 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
         onClose={() => setShowPicker(false)}
         onSelect={(urls) => onChange(urls[0])}
         multiple={false}
-        resourceType={resourceType === 'auto' ? 'auto' : resourceType}
+        resourceType="image"
       />
 
       {error && <p className="text-xs text-red-400">{error}</p>}
@@ -209,4 +190,4 @@ const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
   );
 };
 
-export default CloudinaryUploader;
+export default ImgBBUploader;

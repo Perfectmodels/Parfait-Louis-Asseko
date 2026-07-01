@@ -381,7 +381,6 @@ const Admin: React.FC = () => {
                                 { label: 'Notifications',        value: 'FCM Push' },
                                 { label: 'Clé Brevo',            value: import.meta.env.VITE_BREVO_API_KEY ? '••••••••' + import.meta.env.VITE_BREVO_API_KEY.slice(-6) : 'Non configurée' },
                                 { label: 'Clé ImgBB',            value: import.meta.env.VITE_IMGBB_API_KEY ? '••••••••' + import.meta.env.VITE_IMGBB_API_KEY.slice(-4) : 'Non configurée' },
-                                { label: 'Clé Cloudinary',       value: import.meta.env.VITE_CLOUDINARY_API_KEY ? '••••••••' + import.meta.env.VITE_CLOUDINARY_API_KEY.slice(-4) : 'Non configurée' },
                                 { label: 'VAPID Key (FCM)',       value: import.meta.env.VITE_FIREBASE_VAPID_KEY ? '••••••••' + import.meta.env.VITE_FIREBASE_VAPID_KEY.slice(-6) : 'Non configurée' },
                                 { label: 'Chatbot ID',           value: import.meta.env.VITE_CHATBOT_ID ? '••••••••' + import.meta.env.VITE_CHATBOT_ID.slice(-6) : 'Non configuré' },
                             ].map(row => (

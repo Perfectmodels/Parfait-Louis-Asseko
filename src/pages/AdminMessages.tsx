@@ -13,7 +13,8 @@ import { sendReplyToContact, sendEmail, buildEmailTemplate } from '../utils/brev
 import { useFirebaseCollection, invalidateCache } from '../hooks/useFirebaseCollection';
 import { ref, update, remove, push, set } from 'firebase/database';
 import { db } from '../realtimedbConfig';
-import { uploadToCloudinary } from '../utils/cloudinaryService';
+import { uploadToImgbb } from '../utils/imgbbService';
+import { validateFile } from '../utils/imgbbService';
 
 // ── Constantes ────────────────────────────────────────────────────────────────
 
@@ -68,8 +69,8 @@ const ComposeModal: React.FC<ComposeProps> = ({ onClose, replyTo, adminName, onS
   const handleUpload = async (file: File) => {
     setUploading(true);
     try {
-      const res = await uploadToCloudinary(file, file.type.startsWith('video/') ? 'video' : 'image', 'media-kit');
-      setMediaLinks(p => [...p, { name: file.name, url: res.secure_url }]);
+      const res = await uploadToImgbb(file, '');
+      setMediaLinks(p => [...p, { name: file.name, url: res }]);
     } catch { setErr('Erreur upload'); }
     setUploading(false);
   };
@@ -164,7 +165,7 @@ const ComposeModal: React.FC<ComposeProps> = ({ onClose, replyTo, adminName, onS
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-sm text-pm-off-white placeholder:text-white/20 focus:outline-none focus:border-pm-gold resize-none" />
             </div>
 
-            {/* Médias Cloudinary */}
+             {/* Médias joints */}
             {mediaLinks.length > 0 && (
               <div className="space-y-1">
                 {mediaLinks.map((m, i) => (

@@ -4,7 +4,7 @@ import { ChevronLeftIcon, ChevronRightIcon, CheckIcon } from '@heroicons/react/2
 import SEO from '../components/SEO';
 import { useData } from '../contexts/DataContext';
 import { invalidateCache } from '../hooks/useFirebaseCollection';
-import CloudinaryUploader from '../components/CloudinaryUploader';
+import ImgBBUploader from '../components/ImgBBUploader';
 import { notifyAdmin } from '../utils/adminNotify';
 import { sendCastingConfirmationToUser, sendCastingNotificationToAdmin } from '../utils/brevoService';
 
@@ -28,7 +28,7 @@ const labelCls = "text-xs uppercase tracking-widest text-pm-off-white/40 mb-1.5 
 
 const CastingForm: React.FC = () => {
   const navigate = useNavigate();
-  const { addDocument } = useData();
+  const { addDocument, data } = useData();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormData>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
@@ -71,7 +71,7 @@ sendCastingNotificationToAdmin({
            height: form.height,
            experience: form.experience,
            instagram: form.instagram || undefined,
-           notificationEmail: 'contact@perfectmodels.online',
+           notificationEmail: data?.contactInfo?.notificationEmail || data?.contactInfo?.email || 'contact@perfectmodels.online',
          }),
       ]).catch(() => {});
       
@@ -238,10 +238,10 @@ sendCastingNotificationToAdmin({
               ].map(({ label, field }) => (
                 <div key={field}>
                   <label className={labelCls}>{label}</label>
-                  <CloudinaryUploader
-                    value={(form as any)[field]}
-                    onChange={(url: string) => update(field as keyof FormData, url)}
-                  />
+                  <ImgBBUploader
+                     value={(form as any)[field]}
+                     onChange={(url: string) => update(field as keyof FormData, url)}
+                   />
                 </div>
               ))}
             </div>

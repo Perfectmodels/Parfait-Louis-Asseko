@@ -4,6 +4,53 @@ const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 const BREVO_API_KEY = import.meta.env.VITE_BREVO_API_KEY as string;
 const SENDER = { name: 'Perfect Models Management', email: 'contact@perfectmodels.online' };
 const CASTING_SENDER = { name: 'Casting PMM', email: 'casting@perfectmodels.online' };
+const BREVO_DAILY_LIMIT = 300;
+const BREVO_BATCH_SIZE = 25;
+const BREVO_DELAY_MS = 2000;
+const BREVO_DAILY_STATE_KEY = 'pmm_brevo_daily_state';
+
+interface BrevoDailyState {
+  date: string;
+  sent: number;
+}
+
+const getTodayKey = () => new Date().toISOString().slice(0, 10);
+
+const readBrevoDailyState = (): BrevoDailyState => {
+  if (typeof window === 'undefined') {
+    return { date: getTodayKey(), sent: 0 };
+  }
+
+  try {
+    const raw = window.localStorage.getItem(BREVO_DAILY_STATE_KEY);
+    if (!raw) return { date: getTodayKey(), sent: 0 };
+
+    const parsed = JSON.parse(raw) as Partial<BrevoDailyState>;
+    const today = getTodayKey();
+    if (parsed?.date === today) {
+      return { date: today, sent: Number(parsed.sent) || 0 };
+    }
+  } catch {
+    // ignore malformed storage and reset below
+  }
+
+  return { date: getTodayKey(), sent: 0 };
+};
+
+const writeBrevoDailyState = (state: BrevoDailyState) => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(BREVO_DAILY_STATE_KEY, JSON.stringify(state));
+};
+
+export const getBrevoDailyUsage = () => {
+  const state = readBrevoDailyState();
+  return {
+    used: state.sent,
+    limit: BREVO_DAILY_LIMIT,
+    remaining: Math.max(0, BREVO_DAILY_LIMIT - state.sent),
+    resetDate: state.date,
+  };
+};
 
 // ─── Logo SVG inline (branding email) ────────────────────────────────────────
 const LOGO_URL = 'https://perfectmodels.online/logo.svg';
@@ -75,13 +122,14 @@ interface SendOptions {
 }
 
 export const sendEmail = async (opts: SendOptions): Promise<void> => {
-  if (!BREVO_API_KEY) throw new Error('VITE_BREVO_API_KEY non configurée.');
+  const apiKey = opts.apiKey || BREVO_API_KEY;
+  if (!apiKey) throw new Error('VITE_BREVO_API_KEY non configurée.');
 
   const res = await fetch(BREVO_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'api-key': BREVO_API_KEY,
+      'api-key': apiKey,
     },
     body: JSON.stringify({
       sender: SENDER,
@@ -99,13 +147,14 @@ export const sendEmail = async (opts: SendOptions): Promise<void> => {
 };
 
 export const sendCastingEmail = async (opts: SendOptions): Promise<void> => {
-  if (!BREVO_API_KEY) throw new Error('VITE_BREVO_API_KEY non configurée.');
+  const apiKey = opts.apiKey || BREVO_API_KEY;
+  if (!apiKey) throw new Error('VITE_BREVO_API_KEY non configurée.');
 
   const res = await fetch(BREVO_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'api-key': BREVO_API_KEY,
+      'api-key': apiKey,
     },
     body: JSON.stringify({
       sender: CASTING_SENDER,
@@ -193,13 +242,19 @@ export const sendBulkEmail = async (p: {
   batchSize?: number;
   delayMs?: number;
   onProgress?: (sent: number, total: number) => void;
-}): Promise<void> => {
-  const batchSize = p.batchSize ?? 25;
-  const delayMs = p.delayMs ?? 2000; // 2s entre chaque lot
-  const total = p.to.length;
-  let sent = 0;
+}): Promise<{ sent: number; skipped: number; limitReached: boolean; remainingToday: number }> => {
+  const batchSize = Math.min(p.batchSize ?? BREVO_BATCH_SIZE, BREVO_BATCH_SIZE);
+  const delayMs = p.delayMs ?? BREVO_DELAY_MS;
+  const dailyState = readBrevoDailyState();
+  const availableSlots = Math.max(0, BREVO_DAILY_LIMIT - dailyState.sent);
+  const totalToSend = Math.min(p.to.length, availableSlots);
 
-  for (let i = 0; i < total; i += batchSize) {
+  if (totalToSend === 0) {
+    return { sent: 0, skipped: p.to.length, limitReached: true, remainingToday: 0 };
+  }
+
+  let sent = 0;
+  for (let i = 0; i < totalToSend; i += batchSize) {
     const batch = p.to.slice(i, i + batchSize);
     await sendEmail({
       to: batch,
@@ -208,13 +263,25 @@ export const sendBulkEmail = async (p: {
       htmlContent: buildEmailTemplate(p.bodyHtml),
     });
     sent += batch.length;
-    p.onProgress?.(sent, total);
+    p.onProgress?.(sent, totalToSend);
 
-    // Pause entre les lots (sauf après le dernier)
-    if (i + batchSize < total) {
+    if (i + batchSize < totalToSend) {
       await new Promise(resolve => setTimeout(resolve, delayMs));
     }
   }
+
+  const updatedState: BrevoDailyState = {
+    date: dailyState.date,
+    sent: dailyState.sent + sent,
+  };
+  writeBrevoDailyState(updatedState);
+
+  return {
+    sent,
+    skipped: p.to.length - sent,
+    limitReached: p.to.length > sent,
+    remainingToday: Math.max(0, BREVO_DAILY_LIMIT - updatedState.sent),
+  };
 };
 
 /** Template newsletter stylé */

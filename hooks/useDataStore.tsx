@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebaseConfig';
 import { ref, onValue, set } from 'firebase/database';
-import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink } from '../types';
+import { Model, FashionDayEvent, Service, AchievementCategory, ModelDistinction, Testimonial, ContactInfo, SiteImages, Partner, ApiKeys, CastingApplication, FashionDayApplication, NewsItem, ForumThread, ForumReply, Article, Module, ArticleComment, RecoveryRequest, JuryMember, RegistrationStaff, BookingRequest, ContactMessage, FAQCategory, Absence, MonthlyPayment, PhotoshootBrief, NavLink, Newsletter } from '../types';
 
 // Import initial data to seed the database if it's empty
 import { 
@@ -75,6 +75,7 @@ export interface AppData {
     absences: Absence[];
     monthlyPayments: MonthlyPayment[];
     photoshootBriefs: PhotoshootBrief[];
+    newsletters: Newsletter[];
 }
 
 // Utility to ensure data from Firebase (which might be an object) is always an array
@@ -122,6 +123,7 @@ export const useDataStore = () => {
         juryMembers: initialJuryMembers,
         registrationStaff: initialRegistrationStaff,
         faqData: initialFaqData,
+        newsletters: [],
     }), []);
     
     useEffect(() => {
@@ -155,6 +157,7 @@ export const useDataStore = () => {
                     absences: ensureArray(dbData.absences, initialData.absences),
                     monthlyPayments: ensureArray(dbData.monthlyPayments, initialData.monthlyPayments),
                     photoshootBriefs: ensureArray(dbData.photoshootBriefs, initialData.photoshootBriefs),
+                    newsletters: ensureArray(dbData.newsletters, initialData.newsletters),
                 };
                 
                 mergedData.navLinks = initialData.navLinks;

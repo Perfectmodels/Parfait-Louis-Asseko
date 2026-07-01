@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Model, ModelDistinction } from '../types';
-import CloudinaryUploader from './CloudinaryUploader';
-import CloudinaryMultiUploader from './CloudinaryMultiUploader';
+import ImgBBUploader from './ImgBBUploader';
+import ImgBBMultiUploader from './ImgBBMultiUploader';
 import { ChevronDownIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -126,12 +126,10 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                     </Section>
 
                     <Section title="Gestion du Portfolio">
-                        <CloudinaryMultiUploader
+                        <ImgBBMultiUploader
                             label="Photos du portfolio"
                             values={formData.portfolioImages || []}
                             onChange={(urls) => setFormData(prev => ({ ...prev, portfolioImages: urls }))}
-                            resourceType="image"
-                            folder="models/portfolio"
                             maxFiles={20}
                         />
                     </Section>
@@ -141,7 +139,7 @@ const ModelForm: React.FC<ModelFormProps> = ({ model, onSave, onCancel, isCreati
                 <div className="lg:col-span-4 space-y-16">
                     <div className="glass-card p-10 space-y-10">
                         <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-pm-gold mb-8">Photo Principale</h3>
-                        <CloudinaryUploader label="" value={formData.imageUrl} onChange={handleImageChange} resourceType="image" folder="models/profile" allowUrl />
+                        <ImgBBUploader label="" value={formData.imageUrl} onChange={handleImageChange} folder="models/profile" allowUrl />
                         <p className="text-[10px] text-white/20 italic">Cette image représente le mannequin sur la page du répertoire.</p>
                     </div>
 

@@ -1,8 +1,8 @@
 /**
- * ImageInput — wrapper CloudinaryUploader pour les images du site (AdminSettings).
+ * ImageInput — wrapper ImgBBUploader pour les images du site (AdminSettings).
  */
 import React from 'react';
-import CloudinaryUploader from '../CloudinaryUploader';
+import ImgBBUploader from '../ImgBBUploader';
 
 interface ImageInputProps {
   label: string;
@@ -11,11 +11,10 @@ interface ImageInputProps {
 }
 
 const ImageInput: React.FC<ImageInputProps> = ({ label, value, onChange }) => (
-  <CloudinaryUploader
+  <ImgBBUploader
     label={label}
     value={value}
     onChange={onChange}
-    resourceType="image"
     folder="site-images"
     allowUrl
   />
